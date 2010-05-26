@@ -1,23 +1,32 @@
 # Django settings for demozoo2 project.
 
+# Determine paths
+import os, sys
+FILEROOT = os.path.dirname(__file__)
+
+# Modify sys.path so it contains the right things
+sys.path.append(FILEROOT)
+sys.path.append(os.path.join(FILEROOT, "lib"))
+sys.path.insert(0, os.path.join(FILEROOT, "lib", "south"))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+	# ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+	'default': {
+		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+		'NAME': 'demozoo',                      # Or path to database file if using sqlite3.
+		'USER': 'postgres',                      # Not used with sqlite3.
+		'PASSWORD': '',                  # Not used with sqlite3.
+		'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+		'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+	}
 }
 
 # Local time zone for this installation. Choices can be found here:
@@ -62,33 +71,40 @@ SECRET_KEY = 'q=5-*%!&#5gbfk93oz!+y9it_m55^9a&!96i0@$_2mq^12($-g'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+	'django.template.loaders.filesystem.Loader',
+	'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+	'django.middleware.common.CommonMiddleware',
+	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.middleware.csrf.CsrfViewMiddleware',
+	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'demozoo2.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+	# Always use forward slashes, even on Windows.
+	# Don't forget to use absolute paths, not relative paths.
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+	'django.contrib.auth',
+	'django.contrib.contenttypes',
+	'django.contrib.sessions',
+	'django.contrib.sites',
+	'django.contrib.messages',
+	# Uncomment the next line to enable the admin:
+	# 'django.contrib.admin',
 )
+
+# Get local settings
+try:
+	from local_settings import *
+except ImportError:
+	print "You have no local_settings.py file! Run:   cp local_settings.py.example local_settings.py"
+	sys.exit(1)
