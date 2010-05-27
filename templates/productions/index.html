@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<ul>
+		{% for production in productions %}
+			<li>{{ production.title }}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

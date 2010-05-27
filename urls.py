@@ -17,4 +17,5 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('demoscene.views',
 	(r'^$', 'home.home', {}, 'home'),
+	(r'^productions/$', 'productions.index', {}, 'productions'),
 )
