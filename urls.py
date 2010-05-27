@@ -14,3 +14,7 @@ urlpatterns = patterns('',
 
 	(r'^admin/', include(admin.site.urls)),
 )
+
+urlpatterns += patterns('demoscene.views',
+	(r'^$', 'home.home', {}, 'home'),
+)
