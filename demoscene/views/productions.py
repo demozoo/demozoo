@@ -6,3 +6,9 @@ def index(request):
 	return render(request, 'productions/index.html', {
 		'productions': productions,
 	})
+
+def show(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	return render(request, 'productions/show.html', {
+		'production': production,
+	})

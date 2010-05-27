@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block base_main %}
+	<h2>Productions</h2>
 	<ul>
 		{% for production in productions %}
-			<li>{{ production.title }}</li>
+			<li><a href="{% url production production.id %}">{{ production.title }}</a></li>
 		{% endfor %}
 	</ul>
 {% endblock %}

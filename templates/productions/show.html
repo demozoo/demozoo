@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>{{ production.title }}</h2>
+	
+	<ul>
+		{% for production_type in production.types.all %}
+			<li>{{ production_type.name }}</li>
+		{% endfor %}
+	</ul>
+	
+	<ul>
+		{% for platform in production.platforms.all %}
+			<li>{{ platform.name }}</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
