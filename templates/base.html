@@ -2,12 +2,18 @@
 <html>
 	<head>
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
+		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 	</head>
 	<body>
-		<h1>Demozoo</h1>
-		<ul id="main_menu">
-			<li><a href="{% url productions %}">Productions</a></li>
-		</ul>
+		<header id="site_header">
+			<h1>Demozoo</h1>
+			<nav>
+				<ul id="main_menu">
+					<li><a href="{% url productions %}">Productions</a></li>
+				</ul>
+			</nav>
+			<br style="clear: both;" />
+		</header>
 		{% block base_main %}{% endblock %}
 	</body>
 </html>

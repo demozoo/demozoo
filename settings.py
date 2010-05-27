@@ -3,6 +3,7 @@
 # Determine paths
 import os, sys
 FILEROOT = os.path.dirname(__file__)
+STATICROOT = os.path.join(FILEROOT, "static")
 
 # Modify sys.path so it contains the right things
 sys.path.append(FILEROOT)

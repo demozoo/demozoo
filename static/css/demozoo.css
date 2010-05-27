@@ -1,0 +1,18 @@
+/* reset */
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+}
+
+header#site_header {
+	border-bottom: 1px solid #444;
+}
+
+header#site_header h1 {
+	width: 200px;
+	float: left;
+}
+
+header#site_header nav ul li {
+	float: left;
+}
