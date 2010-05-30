@@ -28,3 +28,15 @@ def edit(request, production_id):
 		'production': production,
 		'form': form,
 	})
+
+def create(request):
+	if request.method == 'POST':
+		form = ProductionForm(request.POST)
+		if form.is_valid():
+			production = form.save()
+			return redirect('production', args = [production.id])
+	else:
+		form = ProductionForm()
+	return render(request, 'productions/create.html', {
+		'form': form,
+	})

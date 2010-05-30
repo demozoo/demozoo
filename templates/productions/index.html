@@ -7,4 +7,6 @@
 			<li><a href="{% url production production.id %}">{{ production.title }}</a></li>
 		{% endfor %}
 	</ul>
+	
+	<p><a href="{% url new_production %}">New production</a></p>
 {% endblock %}
