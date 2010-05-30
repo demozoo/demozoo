@@ -1,0 +1,9 @@
+<ul>
+	{{ form.as_ul }}
+	{{ production_type_formset.management_form }}
+	{% for prod_type_form in production_type_formset.forms %}
+		<li>
+			<ul>{{ prod_type_form.as_ul }}</ul>
+		</li>
+	{% endfor %}
+</ul>
