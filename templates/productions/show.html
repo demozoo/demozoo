@@ -3,6 +3,8 @@
 {% block base_main %}
 	<h2>{{ production.title }}</h2>
 	
+	<a href="{% url edit_production production.id %}">edit</a>
+	
 	<ul>
 		{% for production_type in production.types.all %}
 			<li>{{ production_type.name }}</li>

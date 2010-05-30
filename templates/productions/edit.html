@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Editing production: {{ production.title }}</h2>
+	
+	<form action="." method="post">
+		{% csrf_token %}
+		<ul>
+			{{ form.as_ul }}
+		</ul>
+		<input type="submit" />
+	</form>
+{% endblock %}
