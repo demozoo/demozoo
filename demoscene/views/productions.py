@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production
-from demoscene.forms import ProductionForm
+from demoscene.forms import ProductionForm, ProductionTypeFormSet
 
 def index(request):
 	productions = Production.objects.order_by('title')
@@ -32,11 +32,16 @@ def edit(request, production_id):
 def create(request):
 	if request.method == 'POST':
 		form = ProductionForm(request.POST)
-		if form.is_valid():
+		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
+		if form.is_valid() and production_type_formset.is_valid():
 			production = form.save()
+			for prod_type_form in production_type_formset.forms:
+				production.types.add(prod_type_form.cleaned_data['production_type'])
 			return redirect('production', args = [production.id])
 	else:
 		form = ProductionForm()
+		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 	return render(request, 'productions/create.html', {
 		'form': form,
+		'production_type_formset': production_type_formset,
 	})
