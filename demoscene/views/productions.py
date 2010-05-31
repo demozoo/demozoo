@@ -63,19 +63,19 @@ def create(request):
 def get_production_types(production_type_formset):
 	prod_types = []
 	for prod_type_form in production_type_formset.forms:
-		if prod_type_form.cleaned_data.get('production_type'):
+		if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type'):
 			prod_types.append(prod_type_form.cleaned_data['production_type'])
 	for prod_type_form in production_type_formset.deleted_forms:
-		if prod_type_form.cleaned_data.get('production_type') and prod_type_form.cleaned_data['production_type'] in prod_types:
+		if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type') and prod_type_form.cleaned_data['production_type'] in prod_types:
 			prod_types.remove(prod_type_form.cleaned_data['production_type'])
 	return prod_types
 
 def get_production_platforms(production_platform_formset):
 	platforms = []
 	for prod_platform_form in production_platform_formset.forms:
-		if prod_platform_form.cleaned_data.get('platform'):
+		if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform'):
 			platforms.append(prod_platform_form.cleaned_data['platform'])
 	for prod_platform_form in production_platform_formset.deleted_forms:
-		if prod_platform_form.cleaned_data.get('platform') and prod_platform_form.cleaned_data['platform'] in platforms:
+		if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform') and prod_platform_form.cleaned_data['platform'] in platforms:
 			platforms.remove(prod_platform_form.cleaned_data['platform'])
 	return platforms
