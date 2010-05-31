@@ -4,6 +4,9 @@ h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 }
 
+
+/* site-wide styles */
+
 header#site_header {
 	border-bottom: 1px solid #444;
 	margin-bottom: 24px;
@@ -15,5 +18,19 @@ header#site_header h1 {
 }
 
 header#site_header nav ul li {
+	float: left;
+}
+
+
+/* data entry forms */
+form.entry_form .field {
+	clear: both;
+}
+form.entry_form .field label.field_label {
+	width: 150px;
+	float: left;
+}
+form.entry_form .field .field_input {
+	width: 500px;
 	float: left;
 }
