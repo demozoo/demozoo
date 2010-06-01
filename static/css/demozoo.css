@@ -4,20 +4,26 @@ h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 }
 
+ul, ol {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+
 
 /* site-wide styles */
 
-header#site_header {
+#site_header {
 	border-bottom: 1px solid #444;
 	margin-bottom: 24px;
 }
 
-header#site_header h1 {
+#site_header h1 {
 	width: 200px;
 	float: left;
 }
 
-header#site_header nav ul li {
+#site_header ul#main_menu li {
 	float: left;
 }
 
@@ -33,4 +39,35 @@ form.entry_form .field label.field_label {
 form.entry_form .field .field_input {
 	width: 500px;
 	float: left;
+}
+.spawning_formset li {
+	clear: both;
+	line-height: 24px;
+}
+.spawning_formset li .formset_item {
+	float: left;
+}
+.spawning_formset li a.delete_button {
+	float: left;
+	text-indent: -500px;
+	width: 16px;
+	height: 24px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url(/static/images/icons/delete.png);
+}
+.spawning_formset li a.add_button {
+	width: 100px;
+	background-color: #ccc;
+	background-image: url(/static/images/icons/add.png);
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	border: 1px solid #444;
+	padding: 2px;
+	padding-left: 20px;
+	text-decoration: none;
+	color: #444;
+}
+.spawning_formset li a.add_button:hover {
+	background-color: #888;
 }

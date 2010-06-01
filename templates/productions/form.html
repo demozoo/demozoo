@@ -15,7 +15,7 @@
 		<ul>
 			{% for prod_type_form in production_type_formset.forms %}
 				<li>
-					{{ prod_type_form.production_type }}
+					<div class="formset_item">{{ prod_type_form.production_type }}</div>
 					<span class="delete">{{ prod_type_form.DELETE }} {{ prod_type_form.DELETE.label_tag }}</span>
 				</li>
 			{% endfor %}
@@ -30,7 +30,7 @@
 		<ul>
 			{% for prod_platform_form in production_platform_formset.forms %}
 				<li>
-					{{ prod_platform_form.platform }}
+					<div class="formset_item">{{ prod_platform_form.platform }}</div>
 					<span class="delete">{{ prod_platform_form.DELETE }} {{ prod_platform_form.DELETE.label_tag }}</span>
 				</li>
 			{% endfor %}

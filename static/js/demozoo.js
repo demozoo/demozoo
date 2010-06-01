@@ -6,12 +6,12 @@ $(function() {
 		
 		function deleteForm(li) {
 			$('.delete input:checkbox', li).attr('checked', true);
-			$(li).fadeOut();
+			$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
 		}
 		
 		$('> ul > li', this).each(function() {
 			var li = this;
-			var deleteButton = $('<a href="javascript:void(0);" class="delete_button">delete</a>');
+			var deleteButton = $('<a href="javascript:void(0);" class="delete_button" title="delete">delete</a>');
 			deleteButton.click(function() {
 				deleteForm(li);
 			});
@@ -26,7 +26,7 @@ $(function() {
 			totalFormsInput.val(totalFormsInput.val() - 1);
 		}
 		
-		var addButton = $('<a href="javascript:void(0);">add</a>');
+		var addButton = $('<a href="javascript:void(0);" class="add_button">add</a>');
 		var addLi = $('<li></li>');
 		addLi.append(addButton);
 		addButton.click(function() {
@@ -46,6 +46,8 @@ $(function() {
 			$('a.delete_button', newForm).click(function() {
 				deleteForm(newForm);
 			});
+			newForm.hide().slideDown('fast');
+			$(":input", newForm).focus();
 		})
 		$('> ul', this).append(addLi);
 	})
