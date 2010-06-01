@@ -25,6 +25,7 @@ ul, ol {
 
 #site_header ul#main_menu li {
 	float: left;
+	padding-right: 20px;
 }
 
 

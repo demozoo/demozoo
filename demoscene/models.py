@@ -13,6 +13,13 @@ class ProductionType(models.Model):
 	def __unicode__(self):
 		return self.name
 
+class Releaser(models.Model):
+	name = models.CharField(max_length=255)
+	is_group = models.BooleanField()
+	
+	def __unicode__(self):
+		return self.name
+
 class Production(models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')

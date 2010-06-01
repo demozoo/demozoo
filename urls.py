@@ -19,8 +19,14 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('demoscene.views',
 	(r'^$', 'home.home', {}, 'home'),
+	
 	(r'^productions/$', 'productions.index', {}, 'productions'),
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/edit/$', 'productions.edit', {}, 'edit_production'),
 	(r'^productions/new/$', 'productions.create', {}, 'new_production'),
+	
+	(r'^groups/$', 'groups.index', {}, 'groups'),
+	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),
+	(r'^groups/(\d+)/edit/$', 'groups.edit', {}, 'edit_group'),
+	(r'^groups/new/$', 'groups.create', {}, 'new_group'),
 )
