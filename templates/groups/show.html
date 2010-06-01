@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>{{ group.name }}</h2>
+	
+	<a href="{% url edit_group group.id %}">edit</a>
+{% endblock %}
