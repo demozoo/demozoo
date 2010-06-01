@@ -21,3 +21,9 @@ class GroupForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
 		fields = ('name', )
+
+
+class ScenerForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ('name', )

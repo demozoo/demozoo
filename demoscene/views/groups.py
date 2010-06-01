@@ -14,8 +14,8 @@ def show(request, group_id):
 		'group': group,
 	})
 
-def edit(request, production_id):
-	group = get_object_or_404(Releaser, is_group = True, id = production_id)
+def edit(request, group_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	if request.method == 'POST':
 		form = GroupForm(request.POST, instance = group)
 		if form.is_valid():

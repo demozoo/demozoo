@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>{{ scener.name }}</h2>
+	
+	<a href="{% url edit_scener scener.id %}">edit</a>
+{% endblock %}

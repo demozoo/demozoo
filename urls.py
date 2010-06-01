@@ -29,4 +29,9 @@ urlpatterns += patterns('demoscene.views',
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),
 	(r'^groups/(\d+)/edit/$', 'groups.edit', {}, 'edit_group'),
 	(r'^groups/new/$', 'groups.create', {}, 'new_group'),
+
+	(r'^sceners/$', 'sceners.index', {}, 'sceners'),
+	(r'^sceners/(\d+)/$', 'sceners.show', {}, 'scener'),
+	(r'^sceners/(\d+)/edit/$', 'sceners.edit', {}, 'edit_scener'),
+	(r'^sceners/new/$', 'sceners.create', {}, 'new_scener'),
 )

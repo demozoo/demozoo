@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Sceners</h2>
+	<ul>
+		{% for scener in sceners %}
+			<li><a href="{% url scener scener.id %}">{{ scener.name }}</a></li>
+		{% endfor %}
+	</ul>
+	
+	<p><a href="{% url new_scener %}">New scener</a></p>
+{% endblock %}
