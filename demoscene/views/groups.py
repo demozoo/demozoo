@@ -13,10 +13,21 @@ def show(request, group_id):
 	return render(request, 'groups/show.html', {
 		'group': group,
 	})
-	pass
 
 def edit(request, production_id):
-	pass
+	group = get_object_or_404(Releaser, is_group = True, id = production_id)
+	if request.method == 'POST':
+		form = GroupForm(request.POST, instance = group)
+		if form.is_valid():
+			form.save()
+			return redirect('group', args = [group.id])
+	else:
+		form = GroupForm(instance = group)
+	
+	return render(request, 'groups/edit.html', {
+		'group': group,
+		'form': form,
+	})
 
 def create(request):
 	if request.method == 'POST':
