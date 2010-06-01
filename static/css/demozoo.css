@@ -31,6 +31,7 @@ ul, ol {
 /* data entry forms */
 form.entry_form .field {
 	clear: both;
+	padding-top: 12px;
 }
 form.entry_form .field label.field_label {
 	width: 150px;
@@ -60,11 +61,15 @@ form.entry_form .field .field_input {
 	width: 100px;
 	background-color: #ccc;
 	background-image: url(/static/images/icons/add.png);
-	background-position: 2px center;
+	background-position: 4px center;
 	background-repeat: no-repeat;
 	border: 1px solid #444;
-	padding: 2px;
-	padding-left: 20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 24px;
+	padding-right: 8px;
+	margin-left: 16px;
+	line-height: 32px;
 	text-decoration: none;
 	color: #444;
 }
