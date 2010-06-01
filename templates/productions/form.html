@@ -1,11 +1,5 @@
 {% for field in form %}
-	<div class="field">
-		<label for="id_{{ field.html_name }}" class="field_label">{{ field.label }}</label>
-		<div class="field_input">
-			{{ field.errors }}
-			{{ field }}
-		</div>
-	</div>
+	{% include "shared/form_field.html" %}
 {% endfor %}
 
 <div class="field">

@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform
+from demoscene.models import Production, ProductionType, Platform, Releaser
 
 class ProductionForm(forms.ModelForm):
 	class Meta:
@@ -15,3 +15,9 @@ class ProductionPlatformForm(forms.Form):
 	platform = forms.ModelChoiceField(queryset = Platform.objects.order_by('name'))
 
 ProductionPlatformFormSet = forms.formsets.formset_factory(ProductionPlatformForm, can_delete = True)
+
+
+class GroupForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ('name', )

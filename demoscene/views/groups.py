@@ -1,5 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser
+from demoscene.forms import GroupForm
 
 def index(request):
 	groups = Releaser.objects.filter(is_group = True).order_by('name')
@@ -18,4 +19,14 @@ def edit(request, production_id):
 	pass
 
 def create(request):
-	pass
+	if request.method == 'POST':
+		group = Releaser(is_group = True)
+		form = GroupForm(request.POST, instance = group)
+		if form.is_valid():
+			form.save()
+			return redirect('group', args = [group.id])
+	else:
+		form = GroupForm()
+	return render(request, 'groups/create.html', {
+		'form': form,
+	})
