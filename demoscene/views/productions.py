@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production
-from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet
+from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet
 
 def index(request):
 	productions = Production.objects.order_by('title')
@@ -20,8 +20,10 @@ def edit(request, production_id):
 		form = ProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
-		if form.is_valid() and production_type_formset.is_valid() and production_platform_formset.is_valid():
+		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
+		if form.is_valid() and production_type_formset.is_valid() and production_platform_formset.is_valid() and download_link_formset.is_valid():
 			form.save()
+			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
 			return redirect('production', args = [production.id])
@@ -31,21 +33,26 @@ def edit(request, production_id):
 			initial = [{'production_type': typ.id} for typ in production.types.all()])
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
 			initial = [{'platform': platform.id} for platform in production.platforms.all()])
+		download_link_formset = DownloadLinkFormSet(instance = production)
 	
 	return render(request, 'productions/edit.html', {
 		'production': production,
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
+		'download_link_formset': download_link_formset,
 	})
 
 def create(request):
 	if request.method == 'POST':
-		form = ProductionForm(request.POST)
+		production = Production()
+		form = ProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
+		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
 		if form.is_valid() and production_type_formset.is_valid() and production_platform_formset.is_valid():
-			production = form.save()
+			form.save()
+			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
 			return redirect('production', args = [production.id])
@@ -53,10 +60,12 @@ def create(request):
 		form = ProductionForm()
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
+		download_link_formset = DownloadLinkFormSet()
 	return render(request, 'productions/create.html', {
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
+		'download_link_formset': download_link_formset,
 	})
 
 # helper functions

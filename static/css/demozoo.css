@@ -42,6 +42,10 @@ form.entry_form .field .field_input {
 	width: 500px;
 	float: left;
 }
+form.entry_form .field .field_input input[type=text] {
+	width: 400px;
+}
+
 .spawning_formset li {
 	clear: both;
 	line-height: 24px;
@@ -51,7 +55,7 @@ form.entry_form .field .field_input {
 }
 .spawning_formset li a.delete_button {
 	float: left;
-	text-indent: -500px;
+	text-indent: -5000px;
 	width: 16px;
 	height: 24px;
 	background-repeat: no-repeat;

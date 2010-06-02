@@ -27,3 +27,7 @@ class Production(models.Model):
 	
 	def __unicode__(self):
 		return self.title
+
+class DownloadLink(models.Model):
+	production = models.ForeignKey(Production, related_name = 'download_links')
+	url = models.CharField(max_length = 2048)

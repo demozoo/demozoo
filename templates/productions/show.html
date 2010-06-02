@@ -16,4 +16,10 @@
 			<li>{{ platform.name }}</li>
 		{% endfor %}
 	</ul>
+	
+	<ul>
+		{% for link in production.download_links.all %}
+			<li><a href="{{ link.url }}">download</a></li>
+		{% endfor %}
+	</ul>
 {% endblock %}

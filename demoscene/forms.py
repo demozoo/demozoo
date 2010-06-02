@@ -1,5 +1,6 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Releaser
+from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink
+from django.forms.models import inlineformset_factory
 
 class ProductionForm(forms.ModelForm):
 	class Meta:
@@ -15,6 +16,8 @@ class ProductionPlatformForm(forms.Form):
 	platform = forms.ModelChoiceField(queryset = Platform.objects.order_by('name'))
 
 ProductionPlatformFormSet = forms.formsets.formset_factory(ProductionPlatformForm, can_delete = True)
+
+DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 
 
 class GroupForm(forms.ModelForm):
