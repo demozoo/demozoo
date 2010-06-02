@@ -2,6 +2,8 @@ from demoscene.shortcuts import *
 from demoscene.models import Production
 from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet
 
+from django.contrib import messages
+
 def index(request):
 	productions = Production.objects.order_by('title')
 	return render(request, 'productions/index.html', {
@@ -26,6 +28,7 @@ def edit(request, production_id):
 			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
+			messages.success(request, 'Production updated')
 			return redirect('production', args = [production.id])
 	else:
 		form = ProductionForm(instance = production)
@@ -55,6 +58,7 @@ def create(request):
 			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
+			messages.success(request, 'Production added')
 			return redirect('production', args = [production.id])
 	else:
 		form = ProductionForm()

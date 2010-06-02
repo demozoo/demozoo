@@ -28,6 +28,15 @@ ul, ol {
 	padding-right: 20px;
 }
 
+/* notification messages */
+ul.messages li.success {
+	background-color: #bfb;
+	color: #040;
+	border: 1px solid #040;
+	padding: 4px;
+	margin-bottom: 4px;
+}
+
 
 /* data entry forms */
 form.entry_form .field {

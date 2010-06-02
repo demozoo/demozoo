@@ -4,6 +4,7 @@
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
 		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/js/jquery.color.js"></script>{# TODO: minify #}
 		<script type="text/javascript" src="/static/js/demozoo.js"></script>
 	</head>
 	<body>
@@ -16,6 +17,15 @@
 			</ul>
 			<br style="clear: both;" />
 		</div>
+		
+		{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+		
 		{% block base_main %}{% endblock %}
 	</body>
 </html>

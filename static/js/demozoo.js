@@ -1,4 +1,6 @@
 $(function() {
+	$('ul.messages li').animate({'backgroundColor': 'white'}, 5000);
+	
 	$('.spawning_formset').each(function() {
 		var formset = this;
 		var totalFormsInput = $("input[type='hidden'][name$='TOTAL_FORMS']", this);

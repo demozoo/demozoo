@@ -2,6 +2,8 @@ from demoscene.shortcuts import *
 from demoscene.models import Releaser
 from demoscene.forms import GroupForm
 
+from django.contrib import messages
+
 def index(request):
 	groups = Releaser.objects.filter(is_group = True).order_by('name')
 	return render(request, 'groups/index.html', {
@@ -20,6 +22,7 @@ def edit(request, group_id):
 		form = GroupForm(request.POST, instance = group)
 		if form.is_valid():
 			form.save()
+			messages.success(request, 'Group updated')
 			return redirect('group', args = [group.id])
 	else:
 		form = GroupForm(instance = group)
@@ -35,6 +38,7 @@ def create(request):
 		form = GroupForm(request.POST, instance = group)
 		if form.is_valid():
 			form.save()
+			messages.success(request, 'Group added')
 			return redirect('group', args = [group.id])
 	else:
 		form = GroupForm()
