@@ -20,6 +20,13 @@ class Releaser(models.Model):
 	def __unicode__(self):
 		return self.name
 
+class Nick(models.Model):
+	releaser = models.ForeignKey(Releaser, related_name = 'nicks')
+	name = models.CharField(max_length=255)
+	
+	def __unicode__(self):
+		return self.name
+
 class Production(models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')
