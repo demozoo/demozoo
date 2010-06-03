@@ -103,6 +103,13 @@ INSTALLED_APPS = (
 	'demoscene',
 )
 
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS += (
+	'django.core.context_processors.request',
+) 
+
+LOGIN_REDIRECT_URL = '/'
+
 # Get local settings
 try:
 	from local_settings import *

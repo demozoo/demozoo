@@ -3,6 +3,7 @@ from demoscene.models import Releaser
 from demoscene.forms import ScenerForm
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def index(request):
 	sceners = Releaser.objects.filter(is_group = False).order_by('name')
@@ -16,6 +17,7 @@ def show(request, scener_id):
 		'scener': scener,
 	})
 
+@login_required
 def edit(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	if request.method == 'POST':
@@ -32,6 +34,7 @@ def edit(request, scener_id):
 		'form': form,
 	})
 
+@login_required
 def create(request):
 	if request.method == 'POST':
 		scener = Releaser(is_group = False)

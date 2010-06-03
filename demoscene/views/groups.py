@@ -3,6 +3,7 @@ from demoscene.models import Releaser
 from demoscene.forms import GroupForm
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def index(request):
 	groups = Releaser.objects.filter(is_group = True).order_by('name')
@@ -16,6 +17,7 @@ def show(request, group_id):
 		'group': group,
 	})
 
+@login_required
 def edit(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	if request.method == 'POST':
@@ -32,6 +34,7 @@ def edit(request, group_id):
 		'form': form,
 	})
 
+@login_required
 def create(request):
 	if request.method == 'POST':
 		group = Releaser(is_group = True)

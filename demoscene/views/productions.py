@@ -3,6 +3,7 @@ from demoscene.models import Production
 from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def index(request):
 	productions = Production.objects.order_by('title')
@@ -16,6 +17,7 @@ def show(request, production_id):
 		'production': production,
 	})
 
+@login_required
 def edit(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
@@ -46,6 +48,7 @@ def edit(request, production_id):
 		'download_link_formset': download_link_formset,
 	})
 
+@login_required
 def create(request):
 	if request.method == 'POST':
 		production = Production()
