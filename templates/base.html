@@ -16,10 +16,9 @@
 				<li><a href="{% url sceners %}">Sceners</a></li>
 			</ul>
 			{% if user.is_authenticated %}
-				Logged in as <b>{{ user.username }}</b> - <a href="{% url log_out_next next_page=request.get_full_path %}">Log out</a>
+				Logged in as <b>{{ user.username }}</b> - <a href="{% url log_out %}">Log out</a>
 			{% else %}
-				<a href="{% url log_in %}?next={% if request.path == '/accounts/login/' %}{{ next|urlencode }}{% else %}{{ request.get_full_path|urlencode }}{% endif %}">Log in</a> |
-				<a href="{% url user_signup %}">Register</a>
+				<a href="{% url log_in %}">Log in</a> | <a href="{% url user_signup %}">Register</a>
 			{% endif %}
 			<br style="clear: both;" />
 		</div>
