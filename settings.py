@@ -10,12 +10,12 @@ sys.path.append(FILEROOT)
 sys.path.append(os.path.join(FILEROOT, "lib"))
 sys.path.insert(0, os.path.join(FILEROOT, "lib", "south"))
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = True
 
 ADMINS = (
-	# ('Your Name', 'your_email@domain.com'),
+	('Matt Westcott', 'matt@west.co.tt'),
 )
+SERVER_EMAIL = 'matt@west.co.tt'
 
 MANAGERS = ADMINS
 
