@@ -16,6 +16,8 @@ class ProductionType(models.Model):
 class Releaser(models.Model):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
+	groups = models.ManyToManyField('Releaser',
+		limit_choices_to = {'is_group': True}, related_name = 'members')
 	
 	def __unicode__(self):
 		return self.name

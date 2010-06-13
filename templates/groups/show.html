@@ -4,4 +4,13 @@
 	<h2>{{ group.name }}</h2>
 	
 	<a href="{% url edit_group group.id %}">edit</a>
+
+	<h3>Members:</h3>
+	<ul>
+		{% for scener in group.members.all %}
+			<li>
+				<a href="{% url scener scener.id %}">{{ scener.name }}</a>
+			</li>
+		{% endfor %}
+	</ul>
 {% endblock %}
