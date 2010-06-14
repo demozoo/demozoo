@@ -12,5 +12,10 @@
 				<a href="{% url scener scener.id %}">{{ scener.name }}</a>
 			</li>
 		{% endfor %}
+		{% if user.is_authenticated %}
+			<li class="add">
+				<a href="{% url group_add_member group.id %}">Add member</a>
+			</li>
+		{% endif %}
 	</ul>
 {% endblock %}

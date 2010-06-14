@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser
-from demoscene.forms import GroupForm
+from demoscene.forms import GroupForm, GroupAddMemberForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -46,6 +46,27 @@ def create(request):
 	else:
 		form = GroupForm()
 	return render(request, 'groups/create.html', {
+		'form': form,
+	})
+
+@login_required
+def add_member(request, group_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	if request.method == 'POST':
+		form = GroupAddMemberForm(request.POST)
+		if form.is_valid():
+			if form.cleaned_data['scener_id'] == 'new':
+				scener = Releaser(name = form.cleaned_data['scener_name'], is_group = False)
+				scener.save()
+			else:
+				# TODO: test for blank scener_id (as sent by non-JS)
+				scener = Releaser.objects.get(id = form.cleaned_data['scener_id'], is_group = False)
+			group.members.add(scener)
+			return redirect('group', args = [group.id])
+	else:
+		form = GroupAddMemberForm()
+	return render(request, 'groups/add_member.html', {
+		'group': group,
 		'form': form,
 	})
 

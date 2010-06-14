@@ -33,6 +33,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),
 	(r'^groups/(\d+)/edit/$', 'groups.edit', {}, 'edit_group'),
 	(r'^groups/new/$', 'groups.create', {}, 'new_group'),
+	(r'^groups/(\d+)/add_member/$', 'groups.add_member', {}, 'group_add_member'),
 	(r'^groups/autocomplete/$', 'groups.autocomplete', {}),
 
 	(r'^sceners/$', 'sceners.index', {}, 'sceners'),

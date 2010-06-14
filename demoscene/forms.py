@@ -36,3 +36,9 @@ class ScenerAddGroupForm(forms.Form):
 	# group_id can contain a releaser ID, or 'new' to indicate that a new group
 	# should be created with the above name
 	group_id = forms.CharField(widget = forms.HiddenInput)
+
+class GroupAddMemberForm(forms.Form):
+	scener_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'scener_autocomplete'}))
+	# scener_id can contain a releaser ID, or 'new' to indicate that a new scener
+	# should be created with the above name
+	scener_id = forms.CharField(widget = forms.HiddenInput)

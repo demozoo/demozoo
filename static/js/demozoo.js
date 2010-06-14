@@ -58,21 +58,25 @@ $(function() {
 		$('> ul', this).append(addLi);
 	})
 	
-	$('input.group_autocomplete').autocomplete('/groups/autocomplete/', {
-		autoFill: true,
-		formatItem: function(row) {return htmlEncode(decodeURIComponent(row[1]))},
-		formatResult: function(row) {
-			if (row[0] == 'new') {
-				return decodeURIComponent(row[2])
-			} else {
-				return decodeURIComponent(row[1])
-			}
-		},
-		selectFirst: true,
-		matchSubset: false,
-		matchCase: true,
-		extraParams: {'new_option': true}
-	}).result(function(evt, result) {
-		$('input#id_group_id').val(result[0]);
-	});
+	function addAutocompleteRule(selector, url, idField) {
+		$(selector).autocomplete(url, {
+			autoFill: true,
+			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[1]))},
+			formatResult: function(row) {
+				if (row[0] == 'new') {
+					return decodeURIComponent(row[2])
+				} else {
+					return decodeURIComponent(row[1])
+				}
+			},
+			selectFirst: true,
+			matchSubset: false,
+			matchCase: true,
+			extraParams: {'new_option': true}
+		}).result(function(evt, result) {
+			$(idField).val(result[0]);
+		});
+	}
+	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id');
+	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id');
 })
