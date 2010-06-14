@@ -10,6 +10,11 @@
 		{% for group in scener.groups.all %}
 			<li class="group">
 				<a href="{% url group group.id %}">{{ group.name }}</a>
+				{% if user.is_authenticated %}
+					<a href="{% url scener_remove_group scener.id group.id %}">
+						<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove group" title="Remove group" />
+					</a>
+				{% endif %}
 			</li>
 		{% endfor %}
 		{% if user.is_authenticated %}

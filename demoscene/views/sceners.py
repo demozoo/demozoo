@@ -72,7 +72,17 @@ def add_group(request, scener_id):
 
 @login_required
 def remove_group(request, scener_id, group_id):
-	pass
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			scener.groups.remove(group)
+		return redirect('scener', args = [scener.id])
+	else:
+		return render(request, 'sceners/remove_group.html', {
+			'scener': scener,
+			'group': group,
+		})
 
 def autocomplete(request):
 	query = request.GET.get('q')
