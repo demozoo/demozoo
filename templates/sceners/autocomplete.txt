@@ -1,0 +1,3 @@
+{% for scener in sceners %}{{scener.id}}|{{scener.name}}
+{% endfor %}{% if new_option %}new|Add a new scener named '{{query}}'|{{query}}
+{% endif %}

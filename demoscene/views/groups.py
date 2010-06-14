@@ -48,3 +48,20 @@ def create(request):
 	return render(request, 'groups/create.html', {
 		'form': form,
 	})
+
+def autocomplete(request):
+	query = request.GET.get('q')
+	limit = request.GET.get('limit', 10)
+	new_option = request.GET.get('new_option', False)
+	if query:
+		# TODO: search on nick variants, not just group names
+		groups = Releaser.objects.filter(
+			is_group = True, name__istartswith = query)[:limit]
+	else:
+		groups = Releaser.objects.none()
+	return render(request, 'groups/autocomplete.txt', {
+		'query': query,
+		'groups': groups,
+		'new_option': new_option,
+	}, mimetype = 'text/plain')
+	

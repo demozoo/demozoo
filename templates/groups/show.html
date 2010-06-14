@@ -8,7 +8,7 @@
 	<h3>Members:</h3>
 	<ul>
 		{% for scener in group.members.all %}
-			<li>
+			<li class="scener">
 				<a href="{% url scener scener.id %}">{{ scener.name }}</a>
 			</li>
 		{% endfor %}

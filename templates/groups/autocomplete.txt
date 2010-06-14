@@ -1,0 +1,3 @@
+{% for group in groups %}{{group.id}}|{{group.name}}
+{% endfor %}{% if new_option %}new|Add a new group named '{{query}}'|{{query}}
+{% endif %}

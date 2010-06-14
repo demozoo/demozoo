@@ -30,3 +30,9 @@ class ScenerForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
 		fields = ('name', )
+
+class ScenerAddGroupForm(forms.Form):
+	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))
+	# group_id can contain a releaser ID, or 'new' to indicate that a new group
+	# should be created with the above name
+	group_id = forms.CharField(widget = forms.HiddenInput)

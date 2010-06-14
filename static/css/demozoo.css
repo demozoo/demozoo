@@ -90,3 +90,26 @@ form.entry_form .field .field_input input[type=text] {
 .spawning_formset li a.add_button:hover {
 	background-color: #888;
 }
+
+/* listings */
+li.scener {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/scener.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+li.group {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/group.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+li.add {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/add.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}

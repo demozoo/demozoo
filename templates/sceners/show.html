@@ -8,9 +8,14 @@
 	<h3>Member of:</h3>
 	<ul>
 		{% for group in scener.groups.all %}
-			<li>
+			<li class="group">
 				<a href="{% url group group.id %}">{{ group.name }}</a>
 			</li>
 		{% endfor %}
+		{% if user.is_authenticated %}
+			<li class="add">
+				<a href="{% url scener_add_group scener.id %}">Add group</a>
+			</li>
+		{% endif %}
 	</ul>
 {% endblock %}

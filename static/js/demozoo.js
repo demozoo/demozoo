@@ -53,4 +53,22 @@ $(function() {
 		})
 		$('> ul', this).append(addLi);
 	})
+	
+	$('input.group_autocomplete').autocomplete('/groups/autocomplete/', {
+		autoFill: true,
+		formatItem: function(row) {return row[1]},
+		formatResult: function(row) {
+			if (row[0] == 'new') {
+				return row[2]
+			} else {
+				return row[1]
+			}
+		},
+		selectFirst: true,
+		matchSubset: false,
+		matchCase: true,
+		extraParams: {'new_option': true}
+	}).result(function(evt, result) {
+		$('input#id_group_id').val(result[0]);
+	});
 })
