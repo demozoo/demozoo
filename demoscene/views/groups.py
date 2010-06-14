@@ -70,6 +70,20 @@ def add_member(request, group_id):
 		'form': form,
 	})
 
+@login_required
+def remove_member(request, group_id, scener_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			group.members.remove(scener)
+		return redirect('group', args = [group.id])
+	else:
+		return render(request, 'groups/remove_member.html', {
+			'group': group,
+			'scener': scener,
+		})
+
 def autocomplete(request):
 	query = request.GET.get('q')
 	limit = request.GET.get('limit', 10)

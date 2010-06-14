@@ -70,6 +70,10 @@ def add_group(request, scener_id):
 		'form': form,
 	})
 
+@login_required
+def remove_group(request, scener_id, group_id):
+	pass
+
 def autocomplete(request):
 	query = request.GET.get('q')
 	limit = request.GET.get('limit', 10)
