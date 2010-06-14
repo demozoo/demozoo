@@ -1,3 +1,7 @@
+function htmlEncode(str) {
+	return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+}
+	
 $(function() {
 	$('ul.messages li').animate({'backgroundColor': 'white'}, 5000);
 	
@@ -56,12 +60,12 @@ $(function() {
 	
 	$('input.group_autocomplete').autocomplete('/groups/autocomplete/', {
 		autoFill: true,
-		formatItem: function(row) {return row[1]},
+		formatItem: function(row) {return htmlEncode(decodeURIComponent(row[1]))},
 		formatResult: function(row) {
 			if (row[0] == 'new') {
-				return row[2]
+				return decodeURIComponent(row[2])
 			} else {
-				return row[1]
+				return decodeURIComponent(row[1])
 			}
 		},
 		selectFirst: true,
