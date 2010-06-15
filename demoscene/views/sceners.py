@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser
+from demoscene.models import Releaser, Nick
 from demoscene.forms import ScenerForm, ScenerAddGroupForm, NickForm, NickFormSet
 
 from django.contrib import messages
@@ -46,15 +46,26 @@ def edit(request, scener_id):
 def create(request):
 	if request.method == 'POST':
 		scener = Releaser(is_group = False)
-		form = ScenerForm(request.POST, instance = scener)
-		if form.is_valid():
-			form.save()
+		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
+		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
+		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			scener.name = primary_nick_form.cleaned_data['name']
+			scener.save() # this will cause a primary nick record to be created; update it with form details
+			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = scener.primary_nick)
+			primary_nick_form.save()
+			alternative_nicks = alternative_nicks_formset.save(commit = False)
+			for nick in alternative_nicks:
+				nick.releaser = scener
+				nick.save()
+			
 			messages.success(request, 'Scener added')
 			return redirect('scener', args = [scener.id])
 	else:
-		form = ScenerForm()
+		primary_nick_form = NickForm(prefix = 'primary_nick')
+		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
 	return render(request, 'sceners/create.html', {
-		'form': form,
+		'primary_nick_form': primary_nick_form,
+		'alternative_nicks_formset': alternative_nicks_formset,
 	})
 
 @login_required
