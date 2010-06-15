@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser
-from demoscene.forms import ScenerForm, ScenerAddGroupForm
+from demoscene.forms import ScenerForm, ScenerAddGroupForm, NickForm, NickFormSet
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,17 +21,25 @@ def show(request, scener_id):
 def edit(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	if request.method == 'POST':
-		form = ScenerForm(request.POST, instance = scener)
-		if form.is_valid():
-			form.save()
+		primary_nick = scener.primary_nick
+		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
+		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
+		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			primary_nick_form.save() # may indirectly update name of Releaser and save it too
+			alternative_nicks = alternative_nicks_formset.save(commit = False)
+			for nick in alternative_nicks:
+				nick.releaser = scener
+				nick.save()
 			messages.success(request, 'Scener updated')
 			return redirect('scener', args = [scener.id])
 	else:
-		form = ScenerForm(instance = scener)
+		primary_nick_form = NickForm(prefix = 'primary_nick', instance = scener.primary_nick)
+		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
 	
 	return render(request, 'sceners/edit.html', {
 		'scener': scener,
-		'form': form,
+		'primary_nick_form': primary_nick_form,
+		'alternative_nicks_formset': alternative_nicks_formset,
 	})
 
 @login_required

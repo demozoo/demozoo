@@ -3,6 +3,17 @@
 {% block base_main %}
 	<h2>{{ scener.name }}</h2>
 	
+	{% with scener.alternative_nicks as alternative_nicks %}
+		{% if alternative_nicks %}
+			<h3>Also known as:</h3>
+			<ul>
+				{% for nick in alternative_nicks %}
+					<li>{{ nick.name }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	
 	<a href="{% url edit_scener scener.id %}">edit</a>
 	
 	<h3>Member of:</h3>

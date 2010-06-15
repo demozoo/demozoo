@@ -6,9 +6,29 @@
 	<form action="." method="post" class="entry_form">
 		{% csrf_token %}
 		
-		{% for field in form %}
+		{% for field in primary_nick_form %}
 			{% include "shared/form_field.html" %}
 		{% endfor %}
+		
+		<h3 style="clear: both;">Also known as:</h3>
+		<div class="spawning_formset initially_hidden">
+			{{ alternative_nicks_formset.management_form }}
+			<ul>
+				{% for alternative_nick_form in alternative_nicks_formset.forms %}
+					<li>
+						<div class="formset_item">
+							{% with alternative_nick_form.name as field %}
+								{% include "shared/form_field.html" %}
+							{% endwith %}
+							{% for hidden in alternative_nick_form.hidden_fields %}
+								{{ hidden }}
+							{% endfor %}
+							<span class="delete">{{ alternative_nick_form.DELETE }} {{ alternative_nick_form.DELETE.label_tag }}</span>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
 		
 		<div class="field">
 			<input type="submit" />

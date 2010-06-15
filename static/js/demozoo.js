@@ -27,7 +27,7 @@ $(function() {
 		var newFormTemplate = lastElement.clone();
 		var newFormInitialIndex = totalFormsInput.val() - 1;
 		
-		if (totalFormsInput.val() > 1) {
+		if (totalFormsInput.val() > 1 || $(this).hasClass('initially_hidden')) {
 			lastElement.remove();
 			totalFormsInput.val(totalFormsInput.val() - 1);
 		}

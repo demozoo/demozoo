@@ -62,6 +62,14 @@ form.entry_form .field .field_input input[type=text] {
 .spawning_formset li .formset_item {
 	float: left;
 }
+.spawning_formset li .formset_item .field {
+	float: left;
+	padding-top: 0;
+}
+.spawning_formset li .formset_item .field .field_input {
+	width: 420px;
+}
+
 .spawning_formset li a.delete_button {
 	float: left;
 	text-indent: -5000px;

@@ -1,6 +1,7 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink
-from django.forms.models import inlineformset_factory
+from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick
+from django.forms.formsets import formset_factory
+from django.forms.models import inlineformset_factory, modelformset_factory
 
 class ProductionForm(forms.ModelForm):
 	class Meta:
@@ -10,12 +11,12 @@ class ProductionForm(forms.ModelForm):
 class ProductionTypeForm(forms.Form):
 	production_type = forms.ModelChoiceField(queryset = ProductionType.objects.order_by('name'))
 
-ProductionTypeFormSet = forms.formsets.formset_factory(ProductionTypeForm, can_delete = True)
+ProductionTypeFormSet = formset_factory(ProductionTypeForm, can_delete = True)
 
 class ProductionPlatformForm(forms.Form):
 	platform = forms.ModelChoiceField(queryset = Platform.objects.order_by('name'))
 
-ProductionPlatformFormSet = forms.formsets.formset_factory(ProductionPlatformForm, can_delete = True)
+ProductionPlatformFormSet = formset_factory(ProductionPlatformForm, can_delete = True)
 
 DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 
@@ -25,11 +26,17 @@ class GroupForm(forms.ModelForm):
 		model = Releaser
 		fields = ('name', )
 
-
 class ScenerForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
 		fields = ('name', )
+
+class NickForm(forms.ModelForm):
+	class Meta:
+		model = Nick
+		fields = ('name', )
+
+NickFormSet = modelformset_factory(Nick, can_delete = True, fields = ('name',))
 
 class ScenerAddGroupForm(forms.Form):
 	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))
