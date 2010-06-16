@@ -5,11 +5,7 @@
 	
 	<form action="." method="post" class="entry_form">
 		{% csrf_token %}
-		
-		{% for field in form %}
-			{% include "shared/form_field.html" %}
-		{% endfor %}
-		
+		{% include "groups/form.html" %}
 		<div class="field">
 			<input type="submit" />
 		</div>

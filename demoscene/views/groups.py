@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser
-from demoscene.forms import GroupForm, GroupAddMemberForm
+from demoscene.models import Releaser, Nick
+from demoscene.forms import GroupForm, GroupAddMemberForm, NickForm, NickFormSet
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,17 +21,25 @@ def show(request, group_id):
 def edit(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	if request.method == 'POST':
-		form = GroupForm(request.POST, instance = group)
-		if form.is_valid():
-			form.save()
+		primary_nick = group.primary_nick
+		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
+		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
+		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			primary_nick_form.save() # may indirectly update name of Releaser and save it too
+			alternative_nicks = alternative_nicks_formset.save(commit = False)
+			for nick in alternative_nicks:
+				nick.releaser = group
+				nick.save()
 			messages.success(request, 'Group updated')
 			return redirect('group', args = [group.id])
 	else:
-		form = GroupForm(instance = group)
+		primary_nick_form = NickForm(prefix = 'primary_nick', instance = group.primary_nick)
+		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = group.alternative_nicks)
 	
 	return render(request, 'groups/edit.html', {
 		'group': group,
-		'form': form,
+		'primary_nick_form': primary_nick_form,
+		'alternative_nicks_formset': alternative_nicks_formset,
 	})
 
 @login_required
