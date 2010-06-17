@@ -12,6 +12,9 @@
 					{% with alternative_nick_form.name as field %}
 						{% include "shared/form_field.html" %}
 					{% endwith %}
+					{% with alternative_nick_form.nick_variant_list as field %}
+						{% include "shared/form_field.html" %}
+					{% endwith %}
 					{% for hidden in alternative_nick_form.hidden_fields %}
 						{{ hidden }}
 					{% endfor %}

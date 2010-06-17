@@ -32,11 +32,26 @@ class ScenerForm(forms.ModelForm):
 		fields = ('name', )
 
 class NickForm(forms.ModelForm):
+	nick_variant_list = forms.CharField(label = "Alternative spellings / abbreviations", required = False)
+	
+	def __init__(self, *args, **kwargs):
+		super(NickForm, self).__init__(*args, **kwargs)
+		if kwargs.has_key('instance'):
+			instance = kwargs['instance']
+			self.initial['nick_variant_list'] = instance.nick_variant_list
+	
+	def save(self, commit = True):
+		instance = super(NickForm, self).save(commit=False)
+		instance.nick_variant_list = self.cleaned_data['nick_variant_list']
+		if commit:
+			instance.save()
+		return instance
+	
 	class Meta:
 		model = Nick
 		fields = ('name', )
 
-NickFormSet = modelformset_factory(Nick, can_delete = True, fields = ('name',))
+NickFormSet = modelformset_factory(Nick, can_delete = True, form = NickForm)
 
 class ScenerAddGroupForm(forms.Form):
 	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))

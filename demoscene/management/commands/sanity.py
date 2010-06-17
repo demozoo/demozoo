@@ -1,4 +1,4 @@
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, NickVariant
 
 from django.core.management.base import NoArgsCommand
 
@@ -21,5 +21,23 @@ class Command(NoArgsCommand):
 			print "creating nick for %s" % releaser
 			nick = Nick(releaser = releaser, name = releaser.name)
 			nick.save()
+		
+		print "Looking for Nicks without their name as a NickVariant"
+		
+		nicks = Nick.objects.raw('''
+			SELECT demoscene_nick.*
+			FROM
+				demoscene_nick
+				LEFT JOIN demoscene_nickvariant ON (
+					demoscene_nick.id = demoscene_nickvariant.nick_id
+					AND demoscene_nick.name = demoscene_nickvariant.name
+				)
+			WHERE
+				demoscene_nickvariant.id IS NULL
+		''')
+		for nick in nicks:
+			print "creating nick_variant for %s" % nick
+			nick_variant = NickVariant(nick = nick, name = nick.name)
+			nick_variant.save()
 		
 		print "done."
