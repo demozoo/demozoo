@@ -46,15 +46,26 @@ def edit(request, group_id):
 def create(request):
 	if request.method == 'POST':
 		group = Releaser(is_group = True)
-		form = GroupForm(request.POST, instance = group)
-		if form.is_valid():
-			form.save()
+		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
+		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
+		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			group.name = primary_nick_form.cleaned_data['name']
+			group.save() # this will cause a primary nick record to be created; update it with form details
+			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = group.primary_nick)
+			primary_nick_form.save()
+			alternative_nicks = alternative_nicks_formset.save(commit = False)
+			for nick in alternative_nicks:
+				nick.releaser = group
+				nick.save()
+			
 			messages.success(request, 'Group added')
 			return redirect('group', args = [group.id])
 	else:
-		form = GroupForm()
+		primary_nick_form = NickForm(prefix = 'primary_nick')
+		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
 	return render(request, 'groups/create.html', {
-		'form': form,
+		'primary_nick_form': primary_nick_form,
+		'alternative_nicks_formset': alternative_nicks_formset,
 	})
 
 @login_required
