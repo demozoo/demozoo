@@ -9,3 +9,7 @@ def deploy():
 		run('./manage.py syncdb')
 		run('./manage.py migrate')
 		run('/etc/init.d/apache2 reload')
+
+def sanity():
+	with cd('/var/www/demozoo2'):
+		run('./manage.py sanity')
