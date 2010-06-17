@@ -6,9 +6,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-	groups = Releaser.objects.filter(is_group = True).order_by('name')
+	nicks = Nick.objects.filter(releaser__is_group = True).order_by('name')
 	return render(request, 'groups/index.html', {
-		'groups': groups,
+		'nicks': nicks,
 	})
 
 def show(request, group_id):

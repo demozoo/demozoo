@@ -1,10 +1,14 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
 
 {% block base_main %}
 	<h2>Sceners</h2>
 	<ul>
-		{% for scener in sceners %}
-			<li><a href="{% url scener scener.id %}">{{ scener.name }}</a></li>
+		{% for nick in nicks %}
+			<li>
+				<a href="{% url scener nick.releaser_id %}">{{ nick.name }}</a>
+				{% nick_variants nick %}
+			</li>
 		{% endfor %}
 	</ul>
 	

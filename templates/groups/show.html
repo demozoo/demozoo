@@ -1,28 +1,15 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
 
 {% block base_main %}
-	<h2>
-		{{ group.name }}
-		{% with group.primary_nick.nick_variant_list as variants %}
-			{% if variants %}
-				<span class="annotation">({{ variants }})</span>
-			{% endif %}
-		{% endwith %}
-	</h2>
+	<h2>{{ group.name }} {% nick_variants group.primary_nick %}</h2>
 	
 	{% with group.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
 			<h3>Also known as:</h3>
 			<ul>
 				{% for nick in alternative_nicks %}
-					<li>
-						{{ nick.name }}
-						{% with nick.nick_variant_list as variants %}
-							{% if variants %}
-								<span class="annotation">({{ variants }})</span>
-							{% endif %}
-						{% endwith %}
-					</li>
+					<li>{{ nick.name }} {% nick_variants nick %}</li>
 				{% endfor %}
 			</ul>
 		{% endif %}
