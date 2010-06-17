@@ -28,6 +28,11 @@ ul, ol {
 	padding-right: 20px;
 }
 
+.annotation {
+	font-size: 0.66em;
+	color: #666;
+}
+
 /* notification messages */
 ul.messages li.success {
 	background-color: #bfb;

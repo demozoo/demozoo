@@ -1,14 +1,28 @@
 {% extends "base.html" %}
 
 {% block base_main %}
-	<h2>{{ scener.name }}</h2>
+	<h2>
+		{{ scener.name }}
+		{% with scener.primary_nick.nick_variant_list as variants %}
+			{% if variants %}
+				<span class="annotation">({{ variants }})</span>
+			{% endif %}
+		{% endwith %}
+	</h2>
 	
 	{% with scener.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
 			<h3>Also known as:</h3>
 			<ul>
 				{% for nick in alternative_nicks %}
-					<li>{{ nick.name }}</li>
+					<li>
+						{{ nick.name }}
+						{% with nick.nick_variant_list as variants %}
+							{% if variants %}
+								<span class="annotation">({{ variants }})</span>
+							{% endif %}
+						{% endwith %}
+					</li>
 				{% endfor %}
 			</ul>
 		{% endif %}
