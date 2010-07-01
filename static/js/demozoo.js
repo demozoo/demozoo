@@ -62,13 +62,7 @@ $(function() {
 		$(selector).autocomplete(url, {
 			autoFill: true,
 			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[1]))},
-			formatResult: function(row) {
-				if (row[0] == 'new') {
-					return decodeURIComponent(row[2])
-				} else {
-					return decodeURIComponent(row[1])
-				}
-			},
+			formatResult: function(row) {return decodeURIComponent(row[2])},
 			selectFirst: true,
 			matchSubset: false,
 			matchCase: true,

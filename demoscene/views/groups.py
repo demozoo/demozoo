@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, NickVariant
 from demoscene.forms import GroupForm, GroupAddMemberForm, NickForm, NickFormSet
 
 from django.contrib import messages
@@ -108,14 +108,14 @@ def autocomplete(request):
 	limit = request.GET.get('limit', 10)
 	new_option = request.GET.get('new_option', False)
 	if query:
-		# TODO: search on nick variants, not just group names
-		groups = Releaser.objects.filter(
-			is_group = True, name__istartswith = query)[:limit]
+		nick_variants = NickVariant.objects.filter(
+			nick__releaser__is_group = True,
+			name__istartswith = query)[:limit]
 	else:
 		groups = Releaser.objects.none()
 	return render(request, 'groups/autocomplete.txt', {
 		'query': query,
-		'groups': groups,
+		'nick_variants': nick_variants,
 		'new_option': new_option,
 	}, mimetype = 'text/plain')
 	
