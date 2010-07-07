@@ -106,13 +106,35 @@ def remove_member(request, group_id, scener_id):
 def autocomplete(request):
 	query = request.GET.get('q')
 	limit = request.GET.get('limit', 10)
+	members = [name.lower() for name in request.GET.getlist('member')]
 	new_option = request.GET.get('new_option', False)
 	if query:
 		nick_variants = NickVariant.objects.filter(
 			nick__releaser__is_group = True,
-			name__istartswith = query)[:limit]
+			name__istartswith = query)
+		if members:
+			nick_variants = nick_variants.extra(
+				select = {
+					'score': '''
+						SELECT COUNT(*) FROM demoscene_releaser_groups
+						INNER JOIN demoscene_releaser AS member ON (demoscene_releaser_groups.from_releaser_id = member.id)
+						INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
+						INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
+						WHERE demoscene_releaser_groups.to_releaser_id = demoscene_releaser.id
+						AND LOWER(member_nickvariant.name) IN (%s)
+					'''
+				},
+				select_params = (tuple(members), ),
+				order_by = ('-score','name')
+			)
+		else:
+			nick_variants = nick_variants.extra(
+				select = {'score': '0'},
+				order_by = ('name',)
+			)
+		nick_variants = nick_variants[:limit]
 	else:
-		groups = Releaser.objects.none()
+		nick_variants = NickVariant.objects.none()
 	return render(request, 'groups/autocomplete.txt', {
 		'query': query,
 		'nick_variants': nick_variants,
