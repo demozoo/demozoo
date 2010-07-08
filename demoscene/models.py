@@ -93,6 +93,72 @@ class NickVariant(models.Model):
 	
 	def __unicode__(self):
 		return self.name
+	
+	@staticmethod
+	def autocompletion_search(query, **kwargs):
+		limit = kwargs.get('limit')
+		exact = kwargs.get('exact', False)
+		groups_only = kwargs.get('groups_only', False)
+		sceners_only = kwargs.get('sceners_only', False)
+		
+		groups = [name.lower() for name in kwargs.get('groups', [])]
+		members = [name.lower() for name in kwargs.get('members', [])]
+		
+		if query:
+			if exact:
+				nick_variants = NickVariant.objects.filter(name__iexact = query)
+			else:
+				nick_variants = NickVariant.objects.filter(name__istartswith = query)
+			
+			if groups_only:
+				nick_variants = nick_variants.filter(nick__releaser__is_group = True)
+			elif sceners_only:
+				nick_variants = nick_variants.filter(nick__releaser__is_group = False)
+			else:
+				# nasty hack to ensure that we're joining on releaser, for the 'groups' subquery
+				nick_variants = nick_variants.filter(nick__releaser__is_group__in = [True, False])
+			
+			if groups:
+				nick_variants = nick_variants.extra(
+					select = {
+						'score': '''
+							SELECT COUNT(*) FROM demoscene_releaser_groups
+							INNER JOIN demoscene_releaser AS demogroup ON (demoscene_releaser_groups.to_releaser_id = demogroup.id)
+							INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
+							INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
+							WHERE demoscene_releaser_groups.from_releaser_id = demoscene_releaser.id
+							AND LOWER(group_nickvariant.name) IN %s
+						'''
+					},
+					select_params = (tuple(groups), ),
+					order_by = ('-score','name')
+				)
+			elif members:
+				nick_variants = nick_variants.extra(
+					select = {
+						'score': '''
+							SELECT COUNT(*) FROM demoscene_releaser_groups
+							INNER JOIN demoscene_releaser AS member ON (demoscene_releaser_groups.from_releaser_id = member.id)
+							INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
+							INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
+							WHERE demoscene_releaser_groups.to_releaser_id = demoscene_releaser.id
+							AND LOWER(member_nickvariant.name) IN %s
+						'''
+					},
+					select_params = (tuple(members), ),
+					order_by = ('-score','name')
+				)
+			else:
+				nick_variants = nick_variants.extra(
+					select = {'score': '0'},
+					order_by = ('name',)
+				)
+			if limit:
+				nick_variants = nick_variants[:limit]
+		else:
+			nick_variants = NickVariant.objects.none()
+			
+		return nick_variants
 
 class Production(models.Model):
 	title = models.CharField(max_length=255)

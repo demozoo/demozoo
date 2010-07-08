@@ -44,4 +44,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^sceners/(\d+)/add_group/$', 'sceners.add_group', {}, 'scener_add_group'),
 	(r'^sceners/(\d+)/remove_group/(\d+)/$', 'sceners.remove_group', {}, 'scener_remove_group'),
 	(r'^sceners/autocomplete/$', 'sceners.autocomplete', {}),
+	
+	(r'^releasers/autocomplete/$', 'releasers.autocomplete', {}),
 )
