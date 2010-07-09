@@ -162,7 +162,7 @@ $(function() {
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResultInner.text(author);
-			authorIdInput.val('error');
+			authorIdInput.val('error'); /* TODO: JS (and server-side?) validation for presence of these */
 			authorNameInput.val('');
 		}
 		container.append(selectedResult);

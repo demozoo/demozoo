@@ -51,6 +51,19 @@ class Nick(models.Model):
 	def __unicode__(self):
 		return self.name
 	
+	@staticmethod
+	def from_id_and_name(id, name):
+		if id == 'newgroup':
+			releaser = Releaser(name = name, is_group = True)
+			releaser.save()
+			return releaser.primary_nick
+		elif id == 'newscener':
+			releaser = Releaser(name = name, is_group = False)
+			releaser.save()
+			return releaser.primary_nick
+		else:
+			return Nick.objects.get(id = id)
+	
 	def get_nick_variant_list(self):
 		if self._has_written_nick_variant_list:
 			return self._nick_variant_list
@@ -170,6 +183,8 @@ class Production(models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
+	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
+	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions')
 	
 	def __unicode__(self):
 		return self.title
