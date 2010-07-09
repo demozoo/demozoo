@@ -1,4 +1,4 @@
-{% for nick_variant in nick_variants %}{{nick_variant.nick.releaser.id}}|{{ nick_variant.nick.name|urlencode }}{% if nick_variant.nick.name != nick_variant.name %} ({{ nick_variant.name|urlencode}}){% endif %}|{{nick_variant.nick.name|urlencode}}|{{nick_variant.score}}|{% if nick_variant.nick.releaser.is_group %}group{% else %}scener{% endif %}
-{% endfor %}{% if new_option %}newscener|Add a new scener named '{{query|urlencode}}'|{{query|urlencode}}|-1|add_scener
-newgroup|Add a new group named '{{query|urlencode}}'|{{query|urlencode}}|-2|add_group
+{% for nick_variant in nick_variants %}{{nick_variant.nick.releaser.id}}|{{nick_variant.nick.id}}|{{ nick_variant.nick.name|urlencode }}{% if nick_variant.nick.name != nick_variant.name %} ({{ nick_variant.name|urlencode}}){% endif %}|{{nick_variant.nick.name|urlencode}}|{{nick_variant.score}}|{% if nick_variant.nick.releaser.is_group %}group{% else %}scener{% endif %}
+{% endfor %}{% if new_option %}newscener|newscener|Add a new scener named '{{query|urlencode}}'|{{query|urlencode}}|-1|add_scener
+newgroup|newgroup|Add a new group named '{{query|urlencode}}'|{{query|urlencode}}|-2|add_group
 {% endif %}

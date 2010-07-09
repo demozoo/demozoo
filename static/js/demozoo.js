@@ -61,8 +61,8 @@ $(function() {
 	function addAutocompleteRule(selector, url, idField) {
 		$(selector).autocomplete(url, {
 			autoFill: true,
-			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[1]))},
-			formatResult: function(row) {return decodeURIComponent(row[2])},
+			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
+			formatResult: function(row) {return decodeURIComponent(row[3])},
 			selectFirst: true,
 			matchSubset: false,
 			matchCase: true,
@@ -81,11 +81,11 @@ $(function() {
 			var resultFields = resultLines[i].split('|');
 			if (resultFields.length > 1) {
 				results.push({
-					'id': resultFields[0],
-					'label': decodeURIComponent(resultFields[1]),
-					'name': decodeURIComponent(resultFields[2]),
-					'score': parseInt(resultFields[3]),
-					'icon': resultFields[4]
+					'id': resultFields[1], // use nick ID, not releaser ID
+					'label': decodeURIComponent(resultFields[2]),
+					'name': decodeURIComponent(resultFields[3]),
+					'score': parseInt(resultFields[4]),
+					'icon': resultFields[5]
 				})
 			}
 		}
@@ -144,7 +144,7 @@ $(function() {
 	}
 	
 	function buildAuthorMatchElement(author, results, container, basename, index) {
-		var authorIdInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_id');
+		var authorIdInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_nick_id');
 		var authorNameInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_name');
 		
 		container.append(authorIdInput, authorNameInput);

@@ -74,7 +74,7 @@ def add_member(request, group_id):
 	if request.method == 'POST':
 		form = GroupAddMemberForm(request.POST)
 		if form.is_valid():
-			if form.cleaned_data['scener_id'] == 'new':
+			if form.cleaned_data['scener_id'] == 'newscener':
 				scener = Releaser(name = form.cleaned_data['scener_name'], is_group = False)
 				scener.save()
 			else:
