@@ -72,6 +72,10 @@ class Nick(models.Model):
 				self.releaser.save()
 		else:
 			super(Nick, self).save(*args, **kwargs) # Call the original save() method
+			if not self._has_written_nick_variant_list:
+				# force writing a nick variant list containing just the primary nick
+				self._has_written_nick_variant_list = True
+				self._nick_variant_list = ''
 			
 		if kwargs.get('commit', True) and self._has_written_nick_variant_list:
 			# update the nick variant list
@@ -83,9 +87,11 @@ class Nick(models.Model):
 				if variant.name not in new_variant_names:
 					variant.delete()
 			for variant_name in new_variant_names:
-				if variant_name not in old_variant_names:
+				if variant_name and variant_name not in old_variant_names:
 					variant = NickVariant(nick = self, name = variant_name)
 					variant.save()
+					
+			self._has_written_nick_variant_list = False
 
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name = 'variants')
