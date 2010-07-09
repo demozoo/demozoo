@@ -2,6 +2,15 @@
 	{% include "shared/form_field.html" %}
 {% endfor %}
 
+<div class="field"
+	<label for="byline_autocomplete" class="field_label">By</label>
+	<div class="field_input">
+		<input type="text" id="byline_autocomplete" value="" />{# TODO: prepopulate byline. And probably make this into a proper form field #}
+		<div id="matched_names">
+		</div>
+	</div>
+</div>
+
 <div class="field">
 	<label for="id_prod_type-0-production_type" class="field_label">Type</label>
 	<div class="field_input spawning_formset">

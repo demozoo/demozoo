@@ -73,4 +73,131 @@ $(function() {
 	}
 	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id');
 	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id');
+	
+	function parseAutocompleteResults(data) {
+		var results = [];
+		var resultLines = data.split(/\n/);
+		for (var i = 0; i < resultLines.length; i++) {
+			var resultFields = resultLines[i].split('|');
+			if (resultFields.length > 1) {
+				results.push({
+					'id': resultFields[0],
+					'label': decodeURIComponent(resultFields[1]),
+					'name': decodeURIComponent(resultFields[2]),
+					'score': parseInt(resultFields[3]),
+					'icon': resultFields[4]
+				})
+			}
+		}
+		return results;
+	}
+	
+	var previousAuthorSuggestions = {}
+	function getAuthorSuggestions(name, groups, callback) {
+		if (previousAuthorSuggestions[name] && previousAuthorSuggestions[name][groups]) {
+			callback(previousAuthorSuggestions[name][groups]);
+		} else {
+			$.get('/releasers/autocomplete/', {
+				'q': name, 'group': groups, 'exact': 'true', 'new_option': 'true'
+			}, function(data) {
+				var results = parseAutocompleteResults(data);
+				if (!previousAuthorSuggestions[name]) previousAuthorSuggestions[name] = {};
+				previousAuthorSuggestions[name][groups] = results;
+				callback(results);
+			})
+		}
+	}
+	
+	var previousGroupSuggestions = {}
+	function getGroupSuggestions(name, members, callback) {
+		if (previousGroupSuggestions[name] && previousGroupSuggestions[name][members]) {
+			callback(previousGroupSuggestions[name][members]);
+		} else {
+			$.get('/groups/autocomplete/', {
+				'q': name, 'member': members, 'exact': 'true', 'new_option': 'true'
+			}, function(data) {
+				var results = parseAutocompleteResults(data);
+				if (!previousGroupSuggestions[name]) previousGroupSuggestions[name] = {};
+				previousGroupSuggestions[name][members] = results;
+				callback(results);
+			})
+		}
+	}
+	
+	function suggestionsHaveTopResult(results) {
+		if (results.length == 0) return false;
+		if (results[0].score < 0) return false;
+		if (results.length == 1) return true;
+		return (results[0].score > results[1].score);
+	}
+	
+	function buildAuthorMatchElement(author, results) {
+		if (suggestionsHaveTopResult(results)) {
+			var selectedResult = $('<a class="selected_result"></a>');
+			var selectedResultInner = $('<span></span>');
+			selectedResult.append(selectedResultInner);
+			selectedResult.addClass('icon_' + results[0].icon);
+			selectedResultInner.text(results[0].label);
+		} else {
+			var selectedResult = $('<a class="selected_result icon_error"></a>');
+			var selectedResultInner = $('<span></span>');
+			selectedResult.append(selectedResultInner);
+			selectedResultInner.text(author);
+		}
+		return selectedResult;
+	}
+	
+	function parseByline() {
+		var byline = $(this).val();
+		/* try to split on the first '/' into authors and affiliations */
+		var match = byline.match(/^(.+?)\/(.*)/)
+		if (match) {
+			/* split author / affiliation lists on standard separators: / + ^ , & */
+			var rawAuthors = match[1].split(/[\/\+\^\,\&]/);
+			var rawAffiliations = match[2].split(/[\/\+\^\,\&]/);
+		} else {
+			/* treat the entire thing as a list of authors */
+			var rawAuthors = byline.split(/[\/\+\^\,\&]/);
+			var rawAffiliations = [];
+		}
+		/* clean up list - strip leading/trailing whitespace and remove blank entries */
+		var authors = [];
+		var affiliations = [];
+		for (var i = 0; i < rawAuthors.length; i++) {
+			var author = rawAuthors[i].replace(/^\s+/, '').replace(/\s+$/, '')
+			if (author != '') authors.push(author);
+		}
+		for (var i = 0; i < rawAffiliations.length; i++) {
+			var affiliation = rawAffiliations[i].replace(/^\s+/, '').replace(/\s+$/, '')
+			if (affiliation != '') affiliations.push(affiliation);
+		}
+		
+		$('#matched_names').empty();
+		if (authors.length || affiliations.length) {
+			var matchedAuthorsUl = $('<ul></ul>');
+			var matchedGroupsUl = $('<ul></ul>');
+			$('#matched_names').append(
+				'Matched names:',
+				matchedAuthorsUl,
+				matchedGroupsUl)
+			
+			$.each(authors, function(i, author) {
+				var authorLi = $('<li class="matched_name"></li>');
+				matchedAuthorsUl.append(authorLi);
+				getAuthorSuggestions(author, affiliations, function(results) {
+					var selectedResult = buildAuthorMatchElement(author, results);
+					authorLi.append(selectedResult);
+				});
+			});
+			$.each(affiliations, function(i, affiliation) {
+				var groupLi = $('<li class="matched_name"></li>');
+				matchedGroupsUl.append(groupLi);
+				getGroupSuggestions(affiliation, authors, function(results) {
+					var selectedResult = buildAuthorMatchElement(affiliation, results);
+					groupLi.append(selectedResult);
+				});
+			});
+		}
+	}
+	$('input#byline_autocomplete').blur(parseByline);
 })

@@ -111,7 +111,7 @@ def autocomplete(request):
 		limit = request.GET.get('limit', 10),
 		exact = request.GET.get('exact', False),
 		sceners_only = True,
-		groups = request.GET.getlist('group')
+		groups = request.GET.getlist('group[]')
 	)
 	return render(request, 'sceners/autocomplete.txt', {
 		'query': query,

@@ -110,7 +110,7 @@ def autocomplete(request):
 		limit = request.GET.get('limit', 10),
 		exact = request.GET.get('exact', False),
 		groups_only = True,
-		members = request.GET.getlist('member')
+		members = request.GET.getlist('member[]')
 	)
 	return render(request, 'groups/autocomplete.txt', {
 		'query': query,

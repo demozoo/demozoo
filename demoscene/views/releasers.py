@@ -7,7 +7,7 @@ def autocomplete(request):
 	nick_variants = NickVariant.autocompletion_search(query,
 		limit = request.GET.get('limit', 10),
 		exact = request.GET.get('exact', False),
-		groups = request.GET.getlist('group')
+		groups = request.GET.getlist('group[]')
 	)
 	return render(request, 'releasers/autocomplete.txt', {
 		'query': query,

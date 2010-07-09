@@ -126,3 +126,58 @@ li.add {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
+
+/* byline matches */
+#matched_names {
+	font-size: 0.9em;
+}
+
+#matched_names ul li.matched_name a.selected_result {
+	line-height: 24px;
+	display: block;
+	padding-left: 24px;
+	padding-right: 4px;
+	cursor: pointer;
+	border: 2px solid white;
+	padding-left: 20px;
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
+
+#matched_names ul li.matched_name a.selected_result span {
+	padding-right: 20px;
+	padding-left: 4px;
+}
+
+#matched_names ul li a.icon_error {
+	background-image: url(/static/images/icons/error.png);
+	color: red;
+}
+#matched_names ul li a.icon_scener {
+	background-image: url(/static/images/icons/scener.png);
+}
+#matched_names ul li a.icon_group {
+	background-image: url(/static/images/icons/group.png);
+}
+#matched_names ul li a.icon_add_scener {
+	background-image: url(/static/images/icons/add_scener.png);
+}
+#matched_names ul li a.icon_add_group {
+	background-image: url(/static/images/icons/add_group.png);
+}
+
+#matched_names ul li.matched_name {
+	float: left;
+	margin-right: 4px;
+}
+#matched_names ul li.matched_name a:hover.selected_result {
+	border-top: 2px solid #ccc;
+	border-left: 2px solid #ccc;
+	border-bottom: 2px solid #888;
+	border-right: 2px solid #888;
+}
+#matched_names ul li.matched_name a:hover.selected_result span {
+	background-image: url(/static/images/icons/arrow_down.png);
+	background-position: right center;
+	background-repeat: no-repeat;
+}
