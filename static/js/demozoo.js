@@ -131,26 +131,46 @@ $(function() {
 		return (results[0].score > results[1].score);
 	}
 	
-	function buildAuthorMatchElement(author, results, container) {
+	function buildSuggestionLink(result, authorIdInput, authorNameInput, selectedResult, selectedResultInner) {
+		var suggestionA = $('<a href="javascript:void(0)"></a>');
+		suggestionA.text(result.label).addClass('icon_' + result.icon);
+		suggestionA.click(function() {
+			authorIdInput.val(result.id);
+			authorNameInput.val(result.name);
+			selectedResult.removeClass().addClass("selected_result icon_" + result.icon);
+			selectedResultInner.text(result.name);
+		})
+		return suggestionA;
+	}
+	
+	function buildAuthorMatchElement(author, results, container, basename, index) {
+		var authorIdInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_id');
+		var authorNameInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_name');
+		
+		container.append(authorIdInput, authorNameInput);
+		
 		if (suggestionsHaveTopResult(results)) {
 			var selectedResult = $('<a href="javascript:void(0)" class="selected_result"></a>');
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResult.addClass('icon_' + results[0].icon);
 			selectedResultInner.text(results[0].label);
+			authorIdInput.val(results[0].id);
+			authorNameInput.val(results[0].name);
 		} else {
 			var selectedResult = $('<a href="javascript:void(0)" class="selected_result icon_error"></a>');
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResultInner.text(author);
+			authorIdInput.val('error');
+			authorNameInput.val('');
 		}
 		container.append(selectedResult);
 		var suggestionsUl = $('<ul class="suggestions"></ul>');
 		for (var i = 0; i < results.length; i++) {
 			var suggestionLi = $('<li></li>');
-			var suggestionA = $('<a href="javascript:void(0)"></a>');
+			var suggestionA = buildSuggestionLink(results[i], authorIdInput, authorNameInput, selectedResult, selectedResultInner);
 			suggestionLi.append(suggestionA);
-			suggestionA.text(results[i].label).addClass('icon_' + results[i].icon);
 			suggestionsUl.append(suggestionLi);
 		}
 		/* TODO: fake a selector bar that moves with up/down arrow keys, to make the list
@@ -158,18 +178,21 @@ $(function() {
 		container.append(suggestionsUl);
 		suggestionsUl.hide();
 		selectedResult.click(function() {
-			if ($(this).is('.active')) {
-				$(this).blur();
+			if (selectedResult.is('.active')) {
+				selectedResult.blur();
 			} else {
-				$(this).focus();
+				selectedResult.focus();
 			}
 			return false;
 		}).focus(function() {
-			$(this).addClass('active');
+			selectedResult.addClass('active');
 			suggestionsUl.show();
 		}).blur(function() {
-			$(this).removeClass('active');
-			suggestionsUl.hide();
+			
+			setTimeout(function() {
+				selectedResult.removeClass('active');
+				suggestionsUl.hide();
+			}, 100);
 		})
 	}
 	
@@ -216,14 +239,14 @@ $(function() {
 				var authorLi = $('<li class="matched_name"></li>');
 				matchedAuthorsUl.append(authorLi);
 				getAuthorSuggestions(author, affiliations, function(results) {
-					buildAuthorMatchElement(author, results, authorLi);
+					buildAuthorMatchElement(author, results, authorLi, 'author', i);
 				});
 			});
 			$.each(affiliations, function(i, affiliation) {
 				var groupLi = $('<li class="matched_name"></li>');
 				matchedGroupsUl.append(groupLi);
 				getGroupSuggestions(affiliation, authors, function(results) {
-					buildAuthorMatchElement(affiliation, results, groupLi);
+					buildAuthorMatchElement(affiliation, results, groupLi, 'affiliation', i);
 				});
 			});
 		}

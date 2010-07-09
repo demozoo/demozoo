@@ -181,12 +181,12 @@ li.add {
 	border-right: 2px solid #888;
 }
 #matched_names ul li.matched_name a:hover.selected_result span,
-#matched_names ul li.matched_name a:focus.selected_result span {
+#matched_names ul li.matched_name a.active.selected_result span {
 	background-image: url(/static/images/icons/arrow_down.png);
 	background-position: right center;
 	background-repeat: no-repeat;
 }
-#matched_names ul li.matched_name a:focus.selected_result {
+#matched_names ul li.matched_name a.active.selected_result {
 	border-bottom: 2px solid #ccc;
 	border-right: 2px solid #ccc;
 	border-top: 2px solid #888;
