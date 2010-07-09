@@ -153,6 +153,8 @@ $(function() {
 			suggestionA.text(results[i].label).addClass('icon_' + results[i].icon);
 			suggestionsUl.append(suggestionLi);
 		}
+		/* TODO: fake a selector bar that moves with up/down arrow keys, to make the list
+		keyboard accessible */
 		container.append(suggestionsUl);
 		suggestionsUl.hide();
 		selectedResult.click(function() {
@@ -161,6 +163,7 @@ $(function() {
 			} else {
 				$(this).focus();
 			}
+			return false;
 		}).focus(function() {
 			$(this).addClass('active');
 			suggestionsUl.show();
