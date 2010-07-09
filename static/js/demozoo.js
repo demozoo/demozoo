@@ -131,24 +131,50 @@ $(function() {
 		return (results[0].score > results[1].score);
 	}
 	
-	function buildAuthorMatchElement(author, results) {
+	function buildAuthorMatchElement(author, results, container) {
 		if (suggestionsHaveTopResult(results)) {
-			var selectedResult = $('<a class="selected_result"></a>');
+			var selectedResult = $('<a href="javascript:void(0)" class="selected_result"></a>');
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResult.addClass('icon_' + results[0].icon);
 			selectedResultInner.text(results[0].label);
 		} else {
-			var selectedResult = $('<a class="selected_result icon_error"></a>');
+			var selectedResult = $('<a href="javascript:void(0)" class="selected_result icon_error"></a>');
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResultInner.text(author);
 		}
-		return selectedResult;
+		container.append(selectedResult);
+		var suggestionsUl = $('<ul class="suggestions"></ul>');
+		for (var i = 0; i < results.length; i++) {
+			var suggestionLi = $('<li></li>');
+			var suggestionA = $('<a href="javascript:void(0)"></a>');
+			suggestionLi.append(suggestionA);
+			suggestionA.text(results[i].label).addClass('icon_' + results[i].icon);
+			suggestionsUl.append(suggestionLi);
+		}
+		container.append(suggestionsUl);
+		suggestionsUl.hide();
+		selectedResult.click(function() {
+			if ($(this).is('.active')) {
+				$(this).blur();
+			} else {
+				$(this).focus();
+			}
+		}).focus(function() {
+			$(this).addClass('active');
+			suggestionsUl.show();
+		}).blur(function() {
+			$(this).removeClass('active');
+			suggestionsUl.hide();
+		})
 	}
 	
+	var lastByline;
 	function parseByline() {
 		var byline = $(this).val();
+		if (byline == lastByline) return;
+		lastByline = byline;
 		/* try to split on the first '/' into authors and affiliations */
 		var match = byline.match(/^(.+?)\/(.*)/)
 		if (match) {
@@ -173,6 +199,8 @@ $(function() {
 		}
 		
 		$('#matched_names').empty();
+		/* TODO: detect if focus is on one of the elements being deleted, and prevent it from
+		sending the tab index into outer space */
 		if (authors.length || affiliations.length) {
 			var matchedAuthorsUl = $('<ul></ul>');
 			var matchedGroupsUl = $('<ul></ul>');
@@ -185,16 +213,14 @@ $(function() {
 				var authorLi = $('<li class="matched_name"></li>');
 				matchedAuthorsUl.append(authorLi);
 				getAuthorSuggestions(author, affiliations, function(results) {
-					var selectedResult = buildAuthorMatchElement(author, results);
-					authorLi.append(selectedResult);
+					buildAuthorMatchElement(author, results, authorLi);
 				});
 			});
 			$.each(affiliations, function(i, affiliation) {
 				var groupLi = $('<li class="matched_name"></li>');
 				matchedGroupsUl.append(groupLi);
 				getGroupSuggestions(affiliation, authors, function(results) {
-					var selectedResult = buildAuthorMatchElement(affiliation, results);
-					groupLi.append(selectedResult);
+					buildAuthorMatchElement(affiliation, results, groupLi);
 				});
 			});
 		}
