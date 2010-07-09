@@ -32,7 +32,7 @@ class ScenerForm(forms.ModelForm):
 		fields = ('name', )
 
 class NickForm(forms.ModelForm):
-	nick_variant_list = forms.CharField(label = "Alternative spellings / abbreviations", required = False)
+	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False)
 	
 	def __init__(self, *args, **kwargs):
 		super(NickForm, self).__init__(*args, **kwargs)
