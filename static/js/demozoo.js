@@ -264,8 +264,7 @@ $(function() {
 		}
 	}
 	$('input.byline_autocomplete').each(function() {
-		var matchedNamesContainer = $('<div class="matched_names"></div>');
-		$(this).after(matchedNamesContainer);
+		var matchedNamesContainer = $('#' + this.id + '_matched_names');
 		$(this).blur(function() {
 			parseByline(this, matchedNamesContainer);
 		});

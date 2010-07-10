@@ -85,4 +85,4 @@ class AttachedNickForm(forms.Form):
 		name = cleaned_data.get("name")
 		return Nick.from_id_and_name(nick_id, name)
 
-AttachedNickFormSet = formset_factory(AttachedNickForm)
+AttachedNickFormSet = formset_factory(AttachedNickForm, extra=0)

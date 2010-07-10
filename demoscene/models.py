@@ -205,6 +205,17 @@ class Production(models.Model):
 	@models.permalink
 	def get_absolute_url(self):
 		return ('demoscene.views.productions.show', [str(self.id)])
+		
+	def byline(self):
+		author_nicks = self.author_nicks.all()
+		affiliation_nicks = self.author_affiliation_nicks.all()
+		
+		authors_string = ' + '.join([nick.name for nick in author_nicks])
+		if affiliation_nicks:
+			affiliations_string = ' ^ '.join([nick.name for nick in affiliation_nicks])
+			return "%s / %s" % (authors_string, affiliations_string)
+		else:
+			return authors_string
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
