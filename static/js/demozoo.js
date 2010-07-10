@@ -144,8 +144,8 @@ $(function() {
 	}
 	
 	function buildAuthorMatchElement(author, results, container, basename, index) {
-		var authorIdInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_nick_id');
-		var authorNameInput = $('<input type="hidden" />').attr('name', basename + '_' + index + '_name');
+		var authorIdInput = $('<input type="hidden" />').attr('name', basename + '-' + index + '-nick_id');
+		var authorNameInput = $('<input type="hidden" />').attr('name', basename + '-' + index + '-name');
 		
 		container.append(authorIdInput, authorNameInput);
 		
@@ -197,8 +197,8 @@ $(function() {
 	}
 	
 	var lastByline;
-	function parseByline() {
-		var byline = $(this).val();
+	function parseByline(input, matchedNamesContainer) {
+		var byline = $(input).val();
 		if (byline == lastByline) return;
 		lastByline = byline;
 		/* try to split on the first '/' into authors and affiliations */
@@ -224,13 +224,25 @@ $(function() {
 			if (affiliation != '') affiliations.push(affiliation);
 		}
 		
-		$('#matched_names').empty();
+		$(matchedNamesContainer).empty();
+		var authorsTotalForms = $('<input type="hidden" name="authors-TOTAL_FORMS" />').val(authors.length);
+		var affiliationsTotalForms = $('<input type="hidden" name="affiliations-TOTAL_FORMS" />').val(affiliations.length);
+		
+		$(matchedNamesContainer).append(
+			authorsTotalForms,
+			'<input type="hidden" name="authors-INITIAL_FORMS" value="0" />',
+			'<input type="hidden" name="authors-MAX_NUM_FORMS" value="" />',
+			affiliationsTotalForms,
+			'<input type="hidden" name="affiliations-INITIAL_FORMS" value="0" />',
+			'<input type="hidden" name="affiliations-MAX_NUM_FORMS" value="" />'
+		);
+		
 		/* TODO: detect if focus is on one of the elements being deleted, and prevent it from
 		sending the tab index into outer space */
 		if (authors.length || affiliations.length) {
 			var matchedAuthorsUl = $('<ul></ul>');
 			var matchedGroupsUl = $('<ul></ul>');
-			$('#matched_names').append(
+			$(matchedNamesContainer).append(
 				'Matched names:',
 				matchedAuthorsUl,
 				matchedGroupsUl)
@@ -239,17 +251,23 @@ $(function() {
 				var authorLi = $('<li class="matched_name"></li>');
 				matchedAuthorsUl.append(authorLi);
 				getAuthorSuggestions(author, affiliations, function(results) {
-					buildAuthorMatchElement(author, results, authorLi, 'author', i);
+					buildAuthorMatchElement(author, results, authorLi, 'authors', i);
 				});
 			});
 			$.each(affiliations, function(i, affiliation) {
 				var groupLi = $('<li class="matched_name"></li>');
 				matchedGroupsUl.append(groupLi);
 				getGroupSuggestions(affiliation, authors, function(results) {
-					buildAuthorMatchElement(affiliation, results, groupLi, 'affiliation', i);
+					buildAuthorMatchElement(affiliation, results, groupLi, 'affiliations', i);
 				});
 			});
 		}
 	}
-	$('input#byline_autocomplete').blur(parseByline);
+	$('input.byline_autocomplete').each(function() {
+		var matchedNamesContainer = $('<div class="matched_names"></div>');
+		$(this).after(matchedNamesContainer);
+		$(this).blur(function() {
+			parseByline(this, matchedNamesContainer);
+		});
+	})
 })

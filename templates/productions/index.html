@@ -4,7 +4,7 @@
 	<h2>Productions</h2>
 	<ul>
 		{% for production in productions %}
-			<li><a href="{% url production production.id %}">{{ production.title }}</a></li>
+			<li><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 		{% endfor %}
 	</ul>
 	

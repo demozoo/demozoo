@@ -64,3 +64,25 @@ class GroupAddMemberForm(forms.Form):
 	# scener_id can contain a releaser ID, or 'new' to indicate that a new scener
 	# should be created with the above name
 	scener_id = forms.CharField(widget = forms.HiddenInput)
+
+class AttachedNickForm(forms.Form):
+	nick_id = forms.CharField(widget = forms.HiddenInput)
+	name = forms.CharField(widget = forms.HiddenInput)
+	
+	def clean(self):
+		cleaned_data = self.cleaned_data
+		nick_id = cleaned_data.get("nick_id")
+		
+		if nick_id == 'error':
+			raise forms.ValidationError("Name has not been matched to a scener/group")
+		
+		# Always return the full collection of cleaned data.
+		return cleaned_data
+	
+	def matched_nick(self):
+		cleaned_data = self.cleaned_data
+		nick_id = cleaned_data.get("nick_id")
+		name = cleaned_data.get("name")
+		return Nick.from_id_and_name(nick_id, name)
+
+AttachedNickFormSet = formset_factory(AttachedNickForm)

@@ -35,4 +35,18 @@
 			</li>
 		{% endif %}
 	</ul>
+
+	<h3>Productions:</h3>
+	<ul>
+		{% for prod in group.productions %}
+			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+		{% endfor %}
+	</ul>
+	
+	<h3>Member productions:</h3>
+	<ul>
+		{% for prod in group.member_productions %}
+			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+		{% endfor %}
+	</ul>
 {% endblock %}

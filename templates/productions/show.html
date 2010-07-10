@@ -2,6 +2,22 @@
 
 {% block base_main %}
 	<h2>{{ production.title }}</h2>
+	{% if author_nicks %}
+		<h3>
+			By
+			{% for nick in author_nicks %}
+				{% if not forloop.first %} + {% endif %}
+				<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
+			{% endfor %}
+			{% if author_affiliation_nicks %}
+				/
+				{% for nick in author_affiliation_nicks %}
+					{% if not forloop.first %} ^ {% endif %}
+					<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
+				{% endfor %}
+			{% endif %}
+		</h3>
+	{% endif %}
 	
 	<a href="{% url edit_production production.id %}">edit</a>
 	

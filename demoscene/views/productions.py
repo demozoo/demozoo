@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production
-from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet
+from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,6 +15,8 @@ def show(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	return render(request, 'productions/show.html', {
 		'production': production,
+		'author_nicks': production.author_nicks.all(),
+		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
 	})
 
 @login_required
@@ -25,11 +27,20 @@ def edit(request, production_id):
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
-		if form.is_valid() and production_type_formset.is_valid() and production_platform_formset.is_valid() and download_link_formset.is_valid():
+		author_formset = AttachedNickFormSet(request.POST, prefix = 'authors')
+		affiliation_formset = AttachedNickFormSet(request.POST, prefix = 'affiliations')
+		
+		if (
+			form.is_valid() and production_type_formset.is_valid()
+			and production_platform_formset.is_valid() and download_link_formset.is_valid()
+			and author_formset.is_valid() and affiliation_formset.is_valid()
+			):
 			form.save()
 			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
+			production.author_nicks = [form.matched_nick() for form in author_formset.forms]
+			production.author_affiliation_nicks = [form.matched_nick() for form in affiliation_formset.forms]
 			messages.success(request, 'Production updated')
 			return redirect('production', args = [production.id])
 	else:

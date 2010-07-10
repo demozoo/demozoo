@@ -27,6 +27,19 @@ class Releaser(models.Model):
 	
 	def __unicode__(self):
 		return self.name
+		
+	@models.permalink
+	def get_absolute_url(self):
+		if self.is_group:
+			return ('demoscene.views.groups.show', [str(self.id)])
+		else:
+			return ('demoscene.views.sceners.show', [str(self.id)])
+	
+	def productions(self):
+		return Production.objects.filter(author_nicks__releaser = self)
+
+	def member_productions(self):
+		return Production.objects.filter(author_affiliation_nicks__releaser = self)
 	
 	@property
 	def primary_nick(self):
@@ -188,6 +201,10 @@ class Production(models.Model):
 	
 	def __unicode__(self):
 		return self.title
+	
+	@models.permalink
+	def get_absolute_url(self):
+		return ('demoscene.views.productions.show', [str(self.id)])
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
