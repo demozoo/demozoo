@@ -33,6 +33,23 @@
 		{% endfor %}
 	</ul>
 	
+	<h3>Credits</h3>
+	<ul>
+		{% for credit in credits %}
+			<li>
+				<a href="{{ credit.nick.releaser.get_absolute_url }}">{{ credit.nick }}</a>
+				{% if credit.role %}
+					- {{ credit.role }}
+				{% endif %}
+			</li>
+		{% endfor %}
+		{% if user.is_authenticated %}
+			<li class="add">
+				<a href="{% url production_add_credit production.id %}">Add credit</a>
+			</li>
+		{% endif %}
+	</ul>
+	
 	<ul>
 		{% for link in production.download_links.all %}
 			<li><a href="{{ link.url }}">download</a></li>

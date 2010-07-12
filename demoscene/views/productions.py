@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production
-from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet
+from demoscene.models import Production, Nick, Credit
+from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -17,6 +17,7 @@ def show(request, production_id):
 		'production': production,
 		'author_nicks': production.author_nicks.all(),
 		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
+		'credits': production.credits.order_by('nick__name'),
 	})
 
 @login_required
@@ -103,6 +104,35 @@ def create(request):
 		'author_formset': author_formset,
 		'affiliation_formset': affiliation_formset,
 	})
+
+@login_required
+def add_credit(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if request.method == 'POST':
+		form = ProductionAddCreditForm(request.POST)
+		if form.is_valid():
+			nick = Nick.from_id_and_name(form.cleaned_data['nick_id'], form.cleaned_data['nick_name'])
+			credit = Credit(
+				production = production,
+				nick = nick,
+				role = form.cleaned_data['role']
+			)
+			credit.save()
+			return redirect('production', args = [production.id])
+	else:
+		form = ProductionAddCreditForm()
+	return render(request, 'productions/add_credit.html', {
+		'production': production,
+		'form': form,
+	})
+
+def autocomplete(request):
+	query = request.GET.get('q')
+	productions = Production.objects.filter(title__istartswith = query)[:10]
+	return render(request, 'productions/autocomplete.txt', {
+		'query': query,
+		'productions': productions,
+	}, mimetype = 'text/plain')
 
 # helper functions
 def get_production_types(production_type_formset):

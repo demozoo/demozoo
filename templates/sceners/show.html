@@ -42,4 +42,24 @@
 			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
 		{% endfor %}
 	</ul>
+	
+	<h3>Credited on:</h3>
+	<ul>
+		{% for credit in scener.credits %}
+			<li>
+				<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
+				{% if credit.role %}
+					- {{ credit.role }}
+				{% endif %}
+				{% if credit.nick.name != scener.name %}
+					<i>(as {{ credit.nick.name }})</i>
+				{% endif %}
+			</li>
+		{% endfor %}
+		{% if user.is_authenticated %}
+			<li class="add">
+				<a href="{% url releaser_add_credit scener.id %}">Add credit</a>
+			</li>
+		{% endif %}
+	</ul>
 {% endblock %}

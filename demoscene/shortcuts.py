@@ -6,5 +6,6 @@ from django.core.urlresolvers import reverse
 def render(request, template, context={}, **kwargs):
 	return render_to_response(template, context, context_instance=RequestContext(request), **kwargs)
 
+# TODO: see if we can (largely) replace this with get_absolute_url
 def redirect(*args, **kwargs):
 	return HttpResponseRedirect(reverse(*args, **kwargs))

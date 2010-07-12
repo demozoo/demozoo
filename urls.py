@@ -28,6 +28,8 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/edit/$', 'productions.edit', {}, 'edit_production'),
 	(r'^productions/new/$', 'productions.create', {}, 'new_production'),
+	(r'^productions/(\d+)/add_credit/$', 'productions.add_credit', {}, 'production_add_credit'),
+	(r'^productions/autocomplete/$', 'productions.autocomplete', {}),
 	
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),
@@ -46,4 +48,5 @@ urlpatterns += patterns('demoscene.views',
 	(r'^sceners/autocomplete/$', 'sceners.autocomplete', {}),
 	
 	(r'^releasers/autocomplete/$', 'releasers.autocomplete', {}),
+	(r'^releasers/(\d+)/add_credit/$', 'releasers.add_credit', {}, 'releaser_add_credit'),
 )

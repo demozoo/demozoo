@@ -55,13 +55,13 @@ NickFormSet = modelformset_factory(Nick, can_delete = True, form = NickForm)
 
 class ScenerAddGroupForm(forms.Form):
 	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))
-	# group_id can contain a releaser ID, or 'new' to indicate that a new group
+	# group_id can contain a releaser ID, or 'newgroup' to indicate that a new group
 	# should be created with the above name
 	group_id = forms.CharField(widget = forms.HiddenInput)
 
 class GroupAddMemberForm(forms.Form):
 	scener_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'scener_autocomplete'}))
-	# scener_id can contain a releaser ID, or 'new' to indicate that a new scener
+	# scener_id can contain a releaser ID, or 'newscener' to indicate that a new scener
 	# should be created with the above name
 	scener_id = forms.CharField(widget = forms.HiddenInput)
 
@@ -86,3 +86,22 @@ class AttachedNickForm(forms.Form):
 		return Nick.from_id_and_name(nick_id, name)
 
 AttachedNickFormSet = formset_factory(AttachedNickForm, extra=0)
+
+class ProductionAddCreditForm(forms.Form):
+	nick_name = forms.CharField(label = 'Name', widget = forms.TextInput(attrs = {'class': 'nick_autocomplete'}))
+	# nick_id can contain a nick ID, 'newscener' or 'newgroup' as per Nick.from_id_and_name
+	nick_id = forms.CharField(widget = forms.HiddenInput)
+	role = forms.CharField()
+
+class ReleaserAddCreditForm(forms.Form):
+	def __init__(self, releaser, *args, **kwargs):
+		super(ReleaserAddCreditForm, self).__init__(*args, **kwargs)
+		self.fields['nick_id'] = forms.ModelChoiceField(
+			label = 'Credited as',
+			queryset = releaser.nicks.order_by('name'),
+			initial = releaser.primary_nick.id
+		)
+		self.fields['production_name'] = forms.CharField(label = 'On production', widget = forms.TextInput(attrs = {'class': 'production_autocomplete'}))
+		self.fields['production_id'] = forms.CharField(widget = forms.HiddenInput)
+		self.fields['role'] = forms.CharField()
+		

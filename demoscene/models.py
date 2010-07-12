@@ -41,6 +41,9 @@ class Releaser(models.Model):
 	def member_productions(self):
 		return Production.objects.filter(author_affiliation_nicks__releaser = self)
 	
+	def credits(self):
+		return Credit.objects.filter(nick__releaser = self)
+	
 	@property
 	def primary_nick(self):
 		# find the nick which matches this releaser by name
@@ -220,3 +223,12 @@ class Production(models.Model):
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
 	url = models.CharField(max_length = 2048)
+
+class Credit(models.Model):
+	production = models.ForeignKey(Production, related_name = 'credits')
+	nick = models.ForeignKey(Nick, related_name = 'credits')
+	role = models.CharField(max_length = 255, blank = True)
+	
+	def __unicode__(self):
+		return "%s - %s (%s)" % (self.production.title, self.nick.name, self.role)
+	

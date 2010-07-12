@@ -58,7 +58,7 @@ $(function() {
 		$('> ul', this).append(addLi);
 	})
 	
-	function addAutocompleteRule(selector, url, idField) {
+	function addAutocompleteRule(selector, url, idField, useNickId) {
 		$(selector).autocomplete(url, {
 			autoFill: true,
 			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
@@ -68,11 +68,14 @@ $(function() {
 			matchCase: true,
 			extraParams: {'new_option': true}
 		}).result(function(evt, result) {
-			$(idField).val(result[0]);
+			$(idField).val(result[useNickId ? 1 : 0]);
 		});
 	}
+	/* TODO: instead of hard-coding hidden field IDs, derive them from the text field ID (thus supporting prefixes -> multiple forms per page) */
 	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id');
 	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id');
+	addAutocompleteRule('input.nick_autocomplete', '/releasers/autocomplete/', 'input#id_nick_id', true);
+	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', 'input#id_production_id');
 	
 	function parseAutocompleteResults(data) {
 		var results = [];

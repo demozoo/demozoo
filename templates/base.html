@@ -4,7 +4,11 @@
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
 		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 		<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		{% if use_local_jquery %}
+			<script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
+		{% else %}
+			<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		{% endif %}
 		<script type="text/javascript" src="/static/js/jquery.color.js"></script>{# TODO: minify #}
 		<script type="text/javascript" src="/static/js/jquery.autocomplete.min.js"></script>
 		<script type="text/javascript" src="/static/js/demozoo.js"></script>
