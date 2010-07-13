@@ -30,6 +30,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/new/$', 'productions.create', {}, 'new_production'),
 	(r'^productions/(\d+)/add_credit/$', 'productions.add_credit', {}, 'production_add_credit'),
 	(r'^productions/autocomplete/$', 'productions.autocomplete', {}),
+	(r'^productions/(\d+)/edit_credit/(\d+)/$', 'productions.edit_credit', {}, 'production_edit_credit'),
 	
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),

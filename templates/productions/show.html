@@ -41,6 +41,11 @@
 				{% if credit.role %}
 					- {{ credit.role }}
 				{% endif %}
+				{% if user.is_authenticated %}
+					<a href="{% url production_edit_credit production.id credit.id %}">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+					</a>
+				{% endif %}
 			</li>
 		{% endfor %}
 		{% if user.is_authenticated %}

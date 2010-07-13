@@ -126,6 +126,30 @@ def add_credit(request, production_id):
 		'form': form,
 	})
 
+@login_required
+def edit_credit(request, production_id, credit_id):
+	production = get_object_or_404(Production, id = production_id)
+	credit = get_object_or_404(Credit, production = production, id = credit_id)
+	if request.method == 'POST':
+		form = ProductionAddCreditForm(request.POST)
+		if form.is_valid():
+			nick = Nick.from_id_and_name(form.cleaned_data['nick_id'], form.cleaned_data['nick_name'])
+			credit.nick = nick
+			credit.role = form.cleaned_data['role']
+			credit.save()
+			return redirect('production', args = [production.id])
+	else:
+		form = ProductionAddCreditForm({
+			'nick_name': credit.nick.name,
+			'nick_id': credit.nick_id,
+			'role': credit.role
+		})
+	return render(request, 'productions/edit_credit.html', {
+		'production': production,
+		'credit': credit,
+		'form': form,
+	})
+
 def autocomplete(request):
 	query = request.GET.get('q')
 	productions = Production.objects.filter(title__istartswith = query)[:10]
