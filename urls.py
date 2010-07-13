@@ -50,4 +50,5 @@ urlpatterns += patterns('demoscene.views',
 	
 	(r'^releasers/autocomplete/$', 'releasers.autocomplete', {}),
 	(r'^releasers/(\d+)/add_credit/$', 'releasers.add_credit', {}, 'releaser_add_credit'),
+	(r'^releasers/(\d+)/edit_credit/(\d+)/$', 'releasers.edit_credit', {}, 'releaser_edit_credit'),
 )

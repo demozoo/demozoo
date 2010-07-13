@@ -37,3 +37,29 @@ def add_credit(request, releaser_id):
 		'releaser': releaser,
 		'form': form,
 	})
+
+@login_required
+def edit_credit(request, releaser_id, credit_id):
+	releaser = get_object_or_404(Releaser, id = releaser_id)
+	credit = get_object_or_404(Credit, nick__releaser = releaser, id = credit_id)
+	if request.method == 'POST':
+		form = ReleaserAddCreditForm(releaser, request.POST)
+		if form.is_valid():
+			production = Production.objects.get(id = form.cleaned_data['production_id'])
+			credit.production = production
+			credit.nick = form.cleaned_data['nick_id']
+			credit.role = form.cleaned_data['role']
+			credit.save()
+			return HttpResponseRedirect(releaser.get_absolute_url())
+	else:
+		form = ReleaserAddCreditForm(releaser, {
+			'nick_id': credit.nick_id,
+			'production_id': credit.production_id,
+			'production_name': credit.production.title,
+			'role': credit.role
+		})
+	return render(request, 'releasers/edit_credit.html', {
+		'releaser': releaser,
+		'credit': credit,
+		'form': form,
+	})
