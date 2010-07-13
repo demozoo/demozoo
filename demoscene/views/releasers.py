@@ -63,3 +63,17 @@ def edit_credit(request, releaser_id, credit_id):
 		'credit': credit,
 		'form': form,
 	})
+
+@login_required
+def delete_credit(request, releaser_id, credit_id):
+	releaser = get_object_or_404(Releaser, id = releaser_id)
+	credit = get_object_or_404(Credit, nick__releaser = releaser, id = credit_id)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			credit.delete()
+		return HttpResponseRedirect(releaser.get_absolute_url())
+	else:
+		return render(request, 'releasers/delete_credit.html', {
+			'releaser': releaser,
+			'credit': credit,
+		})
