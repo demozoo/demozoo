@@ -150,6 +150,20 @@ def edit_credit(request, production_id, credit_id):
 		'form': form,
 	})
 
+@login_required
+def delete_credit(request, production_id, credit_id):
+	production = get_object_or_404(Production, id = production_id)
+	credit = get_object_or_404(Credit, production = production, id = credit_id)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			credit.delete()
+		return redirect('production', args = [production.id])
+	else:
+		return render(request, 'productions/delete_credit.html', {
+			'production': production,
+			'credit': credit,
+		})
+
 def autocomplete(request):
 	query = request.GET.get('q')
 	productions = Production.objects.filter(title__istartswith = query)[:10]
