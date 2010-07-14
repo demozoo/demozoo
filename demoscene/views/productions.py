@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit
-from demoscene.forms import ProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm
+from demoscene.forms import ProductionForm, AdminProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -24,7 +24,10 @@ def show(request, production_id):
 def edit(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
-		form = ProductionForm(request.POST, instance = production)
+		if request.user.is_staff:
+			form = AdminProductionForm(request.POST, instance = production)
+		else:
+			form = ProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
@@ -45,7 +48,10 @@ def edit(request, production_id):
 			messages.success(request, 'Production updated')
 			return redirect('production', args = [production.id])
 	else:
-		form = ProductionForm(instance = production)
+		if request.user.is_staff:
+			form = AdminProductionForm(instance = production)
+		else:
+			form = ProductionForm(instance = production)
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type',
 			initial = [{'production_type': typ.id} for typ in production.types.all()])
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
@@ -70,7 +76,10 @@ def edit(request, production_id):
 def create(request):
 	if request.method == 'POST':
 		production = Production()
-		form = ProductionForm(request.POST, instance = production)
+		if request.user.is_staff:
+			form = AdminProductionForm(request.POST, instance = production)
+		else:
+			form = ProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
@@ -90,7 +99,10 @@ def create(request):
 			messages.success(request, 'Production added')
 			return redirect('production', args = [production.id])
 	else:
-		form = ProductionForm()
+		if request.user.is_staff:
+			form = AdminProductionForm()
+		else:
+			form = ProductionForm()
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet()

@@ -7,7 +7,12 @@ class ProductionForm(forms.ModelForm):
 	class Meta:
 		model = Production
 		fields = ('title', )
-		
+
+class AdminProductionForm(forms.ModelForm):
+	class Meta:
+		model = Production
+		fields = ('title', 'notes')
+
 class ProductionTypeForm(forms.Form):
 	production_type = forms.ModelChoiceField(queryset = ProductionType.objects.order_by('name'))
 
@@ -24,12 +29,22 @@ DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 class GroupForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
-		fields = ('name', )
+		fields = ('',)
+
+class AdminGroupForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ('notes',)
 
 class ScenerForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
-		fields = ('name', )
+		fields = ()
+
+class AdminScenerForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ('notes',)
 
 class NickForm(forms.ModelForm):
 	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False)

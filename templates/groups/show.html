@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
+{% load safe_markdown %}
 
 {% block base_main %}
 	<h2>{{ group.name }} {% nick_variants group.primary_nick %}</h2>
@@ -17,6 +18,12 @@
 	
 	<a href="{% url edit_group group.id %}">edit</a>
 
+	{% if group.notes %}
+		<div class="notes">
+			{{ group.notes|safe_markdown }}
+		</div>
+	{% endif %}
+	
 	<h3>Members:</h3>
 	<ul>
 		{% for scener in group.members.all %}

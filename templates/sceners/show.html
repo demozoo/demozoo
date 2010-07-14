@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
+{% load safe_markdown %}
 
 {% block base_main %}
 	<h2>{{ scener.name }} {% nick_variants scener.primary_nick %}</h2>
@@ -16,6 +17,12 @@
 	{% endwith %}
 	
 	<a href="{% url edit_scener scener.id %}">edit</a>
+	
+	{% if scener.notes %}
+		<div class="notes">
+			{{ scener.notes|safe_markdown }}
+		</div>
+	{% endif %}
 	
 	<h3>Member of:</h3>
 	<ul>

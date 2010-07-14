@@ -19,6 +19,7 @@ class Releaser(models.Model):
 	is_group = models.BooleanField()
 	groups = models.ManyToManyField('Releaser',
 		limit_choices_to = {'is_group': True}, related_name = 'members')
+	notes = models.TextField(blank = True)
 	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser
@@ -201,6 +202,7 @@ class Production(models.Model):
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions')
+	notes = models.TextField(blank = True)
 	
 	def __unicode__(self):
 		return self.title

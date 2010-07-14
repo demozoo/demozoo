@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import ScenerForm, ScenerAddGroupForm, NickForm, NickFormSet
+from demoscene.forms import ScenerForm, AdminScenerForm, ScenerAddGroupForm, NickForm, NickFormSet
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,10 +21,16 @@ def show(request, scener_id):
 def edit(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	if request.method == 'POST':
+		if request.user.is_staff:
+			form = AdminScenerForm(request.POST, instance = scener)
+		else:
+			form = None # ScenerForm(request.POST, instance = scener)
 		primary_nick = scener.primary_nick
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
-		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			if form:
+				form.save()
 			primary_nick_form.save() # may indirectly update name of Releaser and save it too
 			alternative_nicks = alternative_nicks_formset.save(commit = False)
 			for nick in alternative_nicks:
@@ -33,11 +39,16 @@ def edit(request, scener_id):
 			messages.success(request, 'Scener updated')
 			return redirect('scener', args = [scener.id])
 	else:
+		if request.user.is_staff:
+			form = AdminScenerForm(instance = scener)
+		else:
+			form = None # ScenerForm(instance = scener)
 		primary_nick_form = NickForm(prefix = 'primary_nick', instance = scener.primary_nick)
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
 	
 	return render(request, 'sceners/edit.html', {
 		'scener': scener,
+		'form': form,
 		'primary_nick_form': primary_nick_form,
 		'alternative_nicks_formset': alternative_nicks_formset,
 	})
@@ -46,10 +57,16 @@ def edit(request, scener_id):
 def create(request):
 	if request.method == 'POST':
 		scener = Releaser(is_group = False)
+		if request.user.is_staff:
+			form = AdminScenerForm(request.POST, instance = scener)
+		else:
+			form = None # ScenerForm(request.POST, instance = scener)
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
-		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
 			scener.name = primary_nick_form.cleaned_data['name']
+			if form:
+				form.save()
 			scener.save() # this will cause a primary nick record to be created; update it with form details
 			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = scener.primary_nick)
 			primary_nick_form.save()
@@ -61,9 +78,14 @@ def create(request):
 			messages.success(request, 'Scener added')
 			return redirect('scener', args = [scener.id])
 	else:
+		if request.user.is_staff:
+			form = AdminScenerForm()
+		else:
+			form = None # ScenerForm()
 		primary_nick_form = NickForm(prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
 	return render(request, 'sceners/create.html', {
+		'form': form,
 		'primary_nick_form': primary_nick_form,
 		'alternative_nicks_formset': alternative_nicks_formset,
 	})

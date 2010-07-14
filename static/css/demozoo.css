@@ -33,6 +33,15 @@ ul, ol {
 	color: #666;
 }
 
+.notes {
+	border: 1px solid #eee;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding-left: 8px;
+	padding-right: 8px;
+	color: #444;
+}
+
 /* notification messages */
 ul.messages li.success {
 	background-color: #bfb;
@@ -57,6 +66,9 @@ form.entry_form .field .field_input {
 	float: left;
 }
 form.entry_form .field .field_input input[type=text] {
+	width: 400px;
+}
+form.entry_form .field .field_input textarea {
 	width: 400px;
 }
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load safe_markdown %}
 
 {% block base_main %}
 	<h2>{{ production.title }}</h2>
@@ -32,6 +33,12 @@
 			<li>{{ platform.name }}</li>
 		{% endfor %}
 	</ul>
+	
+	{% if production.notes %}
+		<div class="notes">
+			{{ production.notes|safe_markdown }}
+		</div>
+	{% endif %}
 	
 	<h3>Credits</h3>
 	<ul>

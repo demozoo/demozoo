@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import GroupForm, GroupAddMemberForm, NickForm, NickFormSet
+from demoscene.forms import GroupForm, AdminGroupForm, GroupAddMemberForm, NickForm, NickFormSet
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,10 +21,16 @@ def show(request, group_id):
 def edit(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	if request.method == 'POST':
+		if request.user.is_staff:
+			form = AdminGroupForm(request.POST, instance = group)
+		else:
+			form = None # GroupForm(request.POST, instance = group)
 		primary_nick = group.primary_nick
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
-		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+			if form:
+				form.save()
 			primary_nick_form.save() # may indirectly update name of Releaser and save it too
 			alternative_nicks = alternative_nicks_formset.save(commit = False)
 			for nick in alternative_nicks:
@@ -33,11 +39,16 @@ def edit(request, group_id):
 			messages.success(request, 'Group updated')
 			return redirect('group', args = [group.id])
 	else:
+		if request.user.is_staff:
+			form = AdminGroupForm(instance = group)
+		else:
+			form = None # GroupForm(instance = group)
 		primary_nick_form = NickForm(prefix = 'primary_nick', instance = group.primary_nick)
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = group.alternative_nicks)
 	
 	return render(request, 'groups/edit.html', {
 		'group': group,
+		'form': form,
 		'primary_nick_form': primary_nick_form,
 		'alternative_nicks_formset': alternative_nicks_formset,
 	})
@@ -46,10 +57,16 @@ def edit(request, group_id):
 def create(request):
 	if request.method == 'POST':
 		group = Releaser(is_group = True)
+		if request.user.is_staff:
+			form = AdminGroupForm(request.POST, instance = group)
+		else:
+			form = None # GroupForm(request.POST, instance = group)
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
-		if primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
+		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
 			group.name = primary_nick_form.cleaned_data['name']
+			if form:
+				form.save()
 			group.save() # this will cause a primary nick record to be created; update it with form details
 			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = group.primary_nick)
 			primary_nick_form.save()
@@ -61,9 +78,14 @@ def create(request):
 			messages.success(request, 'Group added')
 			return redirect('group', args = [group.id])
 	else:
+		if request.user.is_staff:
+			form = AdminGroupForm()
+		else:
+			form = None # GroupForm()
 		primary_nick_form = NickForm(prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
 	return render(request, 'groups/create.html', {
+		'form': form,
 		'primary_nick_form': primary_nick_form,
 		'alternative_nicks_formset': alternative_nicks_formset,
 	})

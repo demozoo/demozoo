@@ -24,3 +24,7 @@
 		{% endfor %}
 	</ul>
 </div>
+
+{% for field in form %}
+	{% include "shared/form_field.html" %}
+{% endfor %}

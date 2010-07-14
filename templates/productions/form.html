@@ -1,6 +1,6 @@
-{% for field in form %}
+{% with form.title as field %}
 	{% include "shared/form_field.html" %}
-{% endfor %}
+{% endwith %}
 
 <div class="field"
 	<label for="byline" class="field_label">By</label>
@@ -42,6 +42,10 @@
 		</ul>
 	</div>
 </div>
+
+{% with form.notes as field %}
+	{% include "shared/form_field.html" %}
+{% endwith %}
 
 <div class="field">
 	<label for="id_download_links-0-url" class="field_label">Download URL</label>
