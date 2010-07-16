@@ -201,7 +201,7 @@ class Production(models.Model):
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
-	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions')
+	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
 	notes = models.TextField(blank = True)
 	
 	def __unicode__(self):
