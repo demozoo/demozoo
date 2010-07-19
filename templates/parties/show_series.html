@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>{{ party_series.name }}</h2>
+	{% with party_series.parties_by_date as parties %}
+		{% if parties %}
+			<ul class="parties">
+				{% for party in parties %}
+					<li>
+						<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
+						{{ party.start_date }} - {{ party.end_date }}
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Parties</h2>
+	<ul class="party_series_index">
+		{% for ps in party_series %}
+			<li>
+				<a href="{{ ps.get_absolute_url }}" class="party_series_link">{{ ps.name }}</a>
+				{% with ps.parties_by_date as parties %}
+					{% if parties %}
+						<ul class="parties">
+							{% for party in parties %}
+								<li><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				{% endwith %}
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

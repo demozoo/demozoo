@@ -227,3 +227,24 @@ li.add {
 .matched_names ul li.matched_name ul.suggestions li a:hover {
 	background-color: #ddd;
 }
+
+/* party series listing */
+ul.party_series_index li a.party_series_link {
+	font-weight: bold;
+}
+ul.party_series_index li ul.parties {
+	display: inline;
+}
+ul.party_series_index li ul.parties li {
+	display: inline;
+}
+
+ul.parties_in_series {
+	display: inline;
+}
+ul.parties_in_series li {
+	display: inline;
+}
+ul.parties_in_series li.current {
+	font-weight: bold;
+}

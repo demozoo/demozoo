@@ -20,6 +20,7 @@
 				<li><a href="{% url productions %}">Productions</a></li>
 				<li><a href="{% url groups %}">Groups</a></li>
 				<li><a href="{% url sceners %}">Sceners</a></li>
+				<li><a href="{% url parties %}">Parties</a></li>
 			</ul>
 			{% if user.is_authenticated %}
 				Logged in as <b>{{ user.username }}</b> - <a href="{% url log_out %}">Log out</a>

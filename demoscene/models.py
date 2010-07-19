@@ -233,4 +233,36 @@ class Credit(models.Model):
 	
 	def __unicode__(self):
 		return "%s - %s (%s)" % (self.production.title, self.nick.name, self.role)
+
+class PartySeries(models.Model):
+	name = models.CharField(max_length = 255)
 	
+	def __unicode__(self):
+		return self.name
+	
+	def parties_by_date(self):
+		return self.parties.order_by('start_date') # TODO: can this be done as a native ordering on the parties relation instead?
+	
+	@models.permalink
+	def get_absolute_url(self):
+		return ('demoscene.views.parties.show_series', [str(self.id)])
+	
+	class Meta:
+		verbose_name_plural = "Party series"
+
+class Party(models.Model):
+	party_series = models.ForeignKey(PartySeries, related_name = 'parties')
+	name = models.CharField(max_length = 255)
+	start_date = models.DateField()
+	end_date = models.DateField()
+	
+	def __unicode__(self):
+		return self.name
+	
+	@models.permalink
+	def get_absolute_url(self):
+		return ('demoscene.views.parties.show', [str(self.id)])
+	
+	class Meta:
+		verbose_name_plural = "Parties"
+
