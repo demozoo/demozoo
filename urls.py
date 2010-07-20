@@ -57,4 +57,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/$', 'parties.index', {}, 'parties'),
 	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),
 	(r'^parties/series/(\d+)/$', 'parties.show_series', {}, 'party_series'),
+	(r'^parties/new/$', 'parties.create', {}, 'new_party'),
+	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
 )

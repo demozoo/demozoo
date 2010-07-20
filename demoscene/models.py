@@ -266,3 +266,9 @@ class Party(models.Model):
 	class Meta:
 		verbose_name_plural = "Parties"
 
+class Competition(models.Model):
+	party = models.ForeignKey(Party, related_name = 'competitions')
+	name = models.CharField(max_length = 255)
+	
+	def __unicode__(self):
+		return "%s %s" % (self.party.name, self.name)

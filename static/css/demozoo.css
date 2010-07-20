@@ -228,6 +228,15 @@ li.add {
 	background-color: #ddd;
 }
 
+/* production view */
+body.show_production h2 {
+	display: inline;
+}
+body.show_production h3 {
+	padding-left: 4px;
+	display: inline;
+}
+
 /* party series listing */
 ul.party_series_index li a.party_series_link {
 	font-weight: bold;

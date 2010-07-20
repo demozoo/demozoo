@@ -3,6 +3,7 @@
 {% block base_main %}
 	<h2>{{ party.name }}</h2>
 	{{ party.start_date }} - {{ party.end_date }}
+	<a href="{% url edit_party party.id %}">edit</a>
 	
 	{% with party.party_series.parties_by_date as parties_in_series %}
 		{% if parties_in_series.count > 1 %}
@@ -22,4 +23,8 @@
 			</div>
 		{% endif %}
 	{% endwith %}
+	
+	{% for compo in party.competitions.all %}
+		<h3>{{ compo.name }}</h3>
+	{% endfor %}
 {% endblock %}

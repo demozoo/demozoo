@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick
+from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick, Party, PartySeries
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
@@ -120,3 +120,15 @@ class ReleaserAddCreditForm(forms.Form):
 		self.fields['production_id'] = forms.CharField(widget = forms.HiddenInput)
 		self.fields['role'] = forms.CharField()
 		
+class PartyForm(forms.ModelForm):
+	existing_party_series = forms.ModelChoiceField(label = 'Party series', queryset = PartySeries.objects.order_by('name'), required = False)
+	new_party_series_name = forms.CharField(label = '- or, add a new one', required = False)
+	name = forms.CharField(label = 'Party name')
+	class Meta:
+		model = Party
+		fields = ('existing_party_series', 'new_party_series_name', 'start_date', 'end_date', 'name')
+
+class EditPartyForm(forms.ModelForm):
+	class Meta:
+		model = Party
+		fields = ('name', 'start_date', 'end_date')

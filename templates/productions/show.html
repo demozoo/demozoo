@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
 
+{% block body_class %}show_production{% endblock %}
+
 {% block base_main %}
 	<h2>{{ production.title }}</h2>
 	{% if author_nicks %}
 		<h3>
-			By
+			by
 			{% for nick in author_nicks %}
-				{% if not forloop.first %} + {% endif %}
+				{% if not forloop.first %} and {% endif %}
 				<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
 			{% endfor %}
 			{% if author_affiliation_nicks %}
