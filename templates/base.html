@@ -4,6 +4,7 @@
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
 		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 		<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
+		<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
 		{% if use_local_jquery %}
 			<script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
 		{% else %}
@@ -11,6 +12,8 @@
 		{% endif %}
 		<script type="text/javascript" src="/static/js/jquery.color.js"></script>{# TODO: minify #}
 		<script type="text/javascript" src="/static/js/jquery.autocomplete.min.js"></script>
+		<script type="text/javascript" src="/static/js/jquery.ui.core.js"></script>{# TODO: minify #}
+		<script type="text/javascript" src="/static/js/jquery.ui.datepicker.js"></script>{# TODO: minify, and consider folding into widget resources to reduce up-front load times #}
 		<script type="text/javascript" src="/static/js/demozoo.js"></script>
 	</head>
 	<body class="{% block body_class %}default{% endblock %}">

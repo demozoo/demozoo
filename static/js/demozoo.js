@@ -272,4 +272,9 @@ $(function() {
 			parseByline(this, matchedNamesContainer);
 		});
 	})
+	
+	$('input.date').each(function() {
+		var opts = {dateFormat: 'd M yy'};
+		$(this).datepicker(opts);
+	});
 })

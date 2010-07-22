@@ -270,5 +270,19 @@ class Competition(models.Model):
 	party = models.ForeignKey(Party, related_name = 'competitions')
 	name = models.CharField(max_length = 255)
 	
+	def results(self):
+		return self.placings.order_by('position')
+	
 	def __unicode__(self):
 		return "%s %s" % (self.party.name, self.name)
+
+class CompetitionPlacing(models.Model):
+	competition = models.ForeignKey(Competition, related_name = 'placings')
+	production = models.ForeignKey(Production, related_name = 'competition_placings')
+	ranking = models.CharField(max_length = 32, blank = True)
+	position = models.IntegerField()
+	score = models.CharField(max_length = 32, blank = True)
+	
+	def __unicode__(self):
+		return self.production.__unicode__()
+	

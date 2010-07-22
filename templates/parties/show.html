@@ -26,5 +26,19 @@
 	
 	{% for compo in party.competitions.all %}
 		<h3>{{ compo.name }}</h3>
+		{% with compo.results as results %}
+			{% if results %}
+				<table>
+					{% for result in results %}
+						<tr>
+							<td>{{ result.ranking }}</td>
+							<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
+							<td>{# TODO: byline #}</td>
+							<td>{{ result.score }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			{% endif %}
+		{% endwith %}
 	{% endfor %}
 {% endblock %}
