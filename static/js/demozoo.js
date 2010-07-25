@@ -157,7 +157,7 @@ $(function() {
 			var selectedResultInner = $('<span></span>');
 			selectedResult.append(selectedResultInner);
 			selectedResult.addClass('icon_' + results[0].icon);
-			selectedResultInner.text(results[0].label);
+			selectedResultInner.text(results[0].name);
 			authorIdInput.val(results[0].id);
 			authorNameInput.val(results[0].name);
 		} else {

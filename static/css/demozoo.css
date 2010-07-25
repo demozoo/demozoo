@@ -232,6 +232,7 @@ ul.actions li a:hover {
 
 .matched_names ul li.matched_name ul.suggestions {
 	position: absolute;
+	z-index: 100;
 	white-space: nowrap;
 	top: 28px;
 	border: 1px solid #888;

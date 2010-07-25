@@ -92,6 +92,13 @@ class Releaser(models.Model):
 		else:
 			return None
 	
+	def name_with_affiliations(self):
+		groups = [group.name for group in self.groups.all()]
+		if groups:
+			return "%s / %s" % (self.name, ' ^ '.join(groups))
+		else:
+			return self.name
+	
 	@property
 	def primary_nick(self):
 		# find the nick which matches this releaser by name
@@ -169,6 +176,15 @@ class Nick(models.Model):
 					variant.save()
 					
 			self._has_written_nick_variant_list = False
+	
+	def name_with_affiliations(self):
+		groups = [group.name for group in self.releaser.groups.all()]
+		if groups:
+			return "%s / %s" % (self.name, ' ^ '.join(groups))
+		else:
+			return self.name
+	
+
 
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name = 'variants')
