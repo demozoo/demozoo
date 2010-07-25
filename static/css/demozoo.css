@@ -71,6 +71,9 @@ form.entry_form .field .field_input input[type=text] {
 form.entry_form .field .field_input input.date[type=text] {
 	width: 150px;
 }
+form.entry_form .field .field_input input.numeric[type=text] {
+	width: 100px;
+}
 form.entry_form .field .field_input textarea {
 	width: 400px;
 }

@@ -60,15 +60,28 @@ class AdminGroupForm(forms.ModelForm):
 		fields = ('notes',)
 
 class ScenerForm(forms.ModelForm):
+	external_site_ref_fields = []
 	class Meta:
 		model = Releaser
 		fields = ()
 
 class AdminScenerForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(AdminScenerForm, self).__init__(*args, **kwargs)
+		self.external_site_ref_fields = [self[field] for field in Releaser.external_site_ref_field_names]
+	
 	class Meta:
 		model = Releaser
-		fields = ('notes',)
-
+		fields = ['notes'] + Releaser.external_site_ref_field_names
+		widgets = {
+			'sceneid_user_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'slengpung_user_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'amp_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'csdb_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'nectarine_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+		}
+	
 class NickForm(forms.ModelForm):
 	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False)
 	

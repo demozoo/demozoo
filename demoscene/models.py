@@ -15,11 +15,19 @@ class ProductionType(models.Model):
 		return self.name
 
 class Releaser(models.Model):
+	external_site_ref_field_names = ['sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id','bitjam_author_id']
+	
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
 	groups = models.ManyToManyField('Releaser',
 		limit_choices_to = {'is_group': True}, related_name = 'members')
 	notes = models.TextField(blank = True)
+	sceneid_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'SceneID / Pouet user ID')
+	slengpung_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung user ID')
+	amp_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'AMP author ID')
+	csdb_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB author ID')
+	nectarine_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Nectarine author ID')
+	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
 	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser
@@ -44,6 +52,45 @@ class Releaser(models.Model):
 	
 	def credits(self):
 		return Credit.objects.filter(nick__releaser = self)
+	
+	def has_any_external_links(self):
+		return [True for field in self.external_site_ref_field_names if self.__dict__[field] != None]
+	
+	def pouet_user_url(self):
+		if self.sceneid_user_id:
+			return "http://pouet.net/user.php?who=%s" % self.sceneid_user_id
+		else:
+			return None
+	
+	def slengpung_user_url(self):
+		if self.slengpung_user_id:
+			return "http://www.slengpung.com/v3/show_user.php?id=%s" % self.slengpung_user_id
+		else:
+			return None
+	
+	def amp_author_url(self):
+		if self.amp_author_id:
+			return "http://amp.dascene.net/detail.php?view=%s" % self.amp_author_id
+		else:
+			return None
+	
+	def csdb_author_url(self):
+		if self.csdb_author_id:
+			return "http://noname.c64.org/csdb/scener/?id=%s" % self.csdb_author_id
+		else:
+			return None
+	
+	def nectarine_author_url(self):
+		if self.nectarine_author_id:
+			return "http://www.scenemusic.net/demovibes/artist/%s/" % self.nectarine_author_id
+		else:
+			return None
+	
+	def bitjam_author_url(self):
+		if self.bitjam_author_id:
+			return "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1" % self.bitjam_author_id
+		else:
+			return None
 	
 	@property
 	def primary_nick(self):

@@ -25,6 +25,13 @@
 	</ul>
 </div>
 
-{% for field in form %}
+{% with form.notes as field %}
 	{% include "shared/form_field.html" %}
-{% endfor %}
+{% endwith %}
+
+{% if form.external_site_ref_fields %}
+	<h3 style="clear: both;">External site cross-references:</h3>
+	{% for field in form.external_site_ref_fields %}
+		{% include "shared/form_field.html" %}
+	{% endfor %}
+{% endif %}

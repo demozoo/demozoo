@@ -74,4 +74,16 @@
 			</li>
 		{% endif %}
 	</ul>
+	
+	{% if scener.has_any_external_links %}
+		<h3>External links</h3>
+		<ul>
+			{% if scener.pouet_user_url %}<li><a href="{{ scener.pouet_user_url }}">{{ scener.name }} on Pouët</a></li>{% endif %}
+			{# Leave Slengpung URLs out for now - they're a can of worms. {% if scener.slengpung_user_url %}<li><a href="{{ scener.slengpung_user_url }}">{{ scener.name }} on Slengpung</a></li>{% endif %} #}
+			{% if scener.amp_author_url %}<li><a href="{{ scener.amp_author_url }}">{{ scener.name }} on Amiga Music Preservation</a></li>{% endif %}
+			{% if scener.csdb_author_url %}<li><a href="{{ scener.csdb_author_url }}">{{ scener.name }} on CSDb</a></li>{% endif %}
+			{% if scener.nectarine_author_url %}<li><a href="{{ scener.nectarine_author_url }}">{{ scener.name }} on Nectarine Demoscene Radio</a></li>{% endif %}
+			{% if scener.bitjam_author_url %}<li><a href="{{ scener.bitjam_author_url }}">{{ scener.name }} on BitJam</a></li>{% endif %}
+		</ul>
+	{% endif %}
 {% endblock %}
