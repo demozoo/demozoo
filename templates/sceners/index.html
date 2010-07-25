@@ -3,6 +3,11 @@
 
 {% block base_main %}
 	<h2>Sceners</h2>
+	
+	<ul class="actions">
+		<li><a href="{% url new_scener %}">New scener</a></li>
+	</ul>
+	
 	<ul>
 		{% for nick in nicks %}
 			<li>
@@ -11,6 +16,4 @@
 			</li>
 		{% endfor %}
 	</ul>
-	
-	<p><a href="{% url new_scener %}">New scener</a></p>
 {% endblock %}

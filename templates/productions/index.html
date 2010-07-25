@@ -2,11 +2,14 @@
 
 {% block base_main %}
 	<h2>Productions</h2>
+	
+	<ul class="actions">
+		<li><a href="{% url new_production %}">New production</a></li>
+	</ul>
+	
 	<ul>
 		{% for production in productions %}
 			<li><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 		{% endfor %}
 	</ul>
-	
-	<p><a href="{% url new_production %}">New production</a></p>
 {% endblock %}

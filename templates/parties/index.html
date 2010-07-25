@@ -2,6 +2,11 @@
 
 {% block base_main %}
 	<h2>Parties</h2>
+	
+	<ul class="actions">
+		<li><a href="{% url new_party %}">New party</a></li>
+	</ul>
+	
 	<ul class="party_series_index">
 		{% for ps in party_series %}
 			<li>
@@ -18,6 +23,4 @@
 			</li>
 		{% endfor %}
 	</ul>
-	
-	<p><a href="{% url new_party %}">New party</a></p>
 {% endblock %}

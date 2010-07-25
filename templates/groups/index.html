@@ -3,6 +3,11 @@
 
 {% block base_main %}
 	<h2>Groups</h2>
+	
+	<ul class="actions">
+		<li><a href="{% url new_group %}">New group</a></li>
+	</ul>
+	
 	<ul>
 		{% for nick in nicks %}
 			<li>
@@ -11,6 +16,4 @@
 			</li>
 		{% endfor %}
 	</ul>
-	
-	<p><a href="{% url new_group %}">New group</a></p>
 {% endblock %}

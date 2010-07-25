@@ -145,6 +145,24 @@ li.add {
 	background-repeat: no-repeat;
 }
 
+ul.actions {
+	float: right;
+}
+ul.actions li {
+	display: inline;
+}
+ul.actions li a {
+	border: 1px solid #888;
+	background-color: #eee;
+	color: #008;
+	padding: 4px;
+	margin-left: 4px;
+	text-decoration: none;
+}
+ul.actions li a:hover {
+	background-color: #ccc;
+}
+
 /* byline matches */
 .matched_names {
 	font-size: 0.9em;
