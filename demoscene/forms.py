@@ -20,7 +20,6 @@ class AnyFormatDateField(forms.DateField):
 			return value.date()
 		if isinstance(value, datetime.date):
 			return value
-		print "attempting to parse an anyformat date"
 		try:
 			return timelib.strtodatetime(value).date()
 		except ValueError:
