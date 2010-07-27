@@ -15,7 +15,7 @@ class ProductionType(models.Model):
 		return self.name
 
 class Releaser(models.Model):
-	external_site_ref_field_names = ['sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id','bitjam_author_id']
+	external_site_ref_field_names = ['sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id','bitjam_author_id','artcity_author_id']
 	
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
@@ -28,6 +28,7 @@ class Releaser(models.Model):
 	csdb_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB author ID')
 	nectarine_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Nectarine author ID')
 	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
+	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
 	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser
@@ -89,6 +90,12 @@ class Releaser(models.Model):
 	def bitjam_author_url(self):
 		if self.bitjam_author_id:
 			return "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1" % self.bitjam_author_id
+		else:
+			return None
+	
+	def artcity_author_url(self):
+		if self.artcity_author_id:
+			return "http://artcity.bitfellas.org/index.php?a=artist&id=%s" % self.artcity_author_id
 		else:
 			return None
 	

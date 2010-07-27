@@ -79,6 +79,7 @@ class AdminScenerForm(forms.ModelForm):
 			'csdb_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'nectarine_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'artcity_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 	
 class NickForm(forms.ModelForm):
