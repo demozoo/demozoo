@@ -59,4 +59,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/series/(\d+)/$', 'parties.show_series', {}, 'party_series'),
 	(r'^parties/new/$', 'parties.create', {}, 'new_party'),
 	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
+	
+	(r'^search/', include('haystack.urls')),
 )

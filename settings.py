@@ -100,6 +100,7 @@ INSTALLED_APPS = (
 	'django.contrib.messages',
 	'django.contrib.admin',
 	'south',
+	'haystack',
 	
 	'demoscene',
 )
@@ -111,6 +112,10 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 ) 
 
 LOGIN_REDIRECT_URL = '/'
+
+HAYSTACK_SITECONF = 'search_sites'
+HAYSTACK_SEARCH_ENGINE = 'whoosh'
+HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index')
 
 # Get local settings
 try:
