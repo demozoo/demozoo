@@ -30,6 +30,10 @@
 			{% else %}
 				<a href="{% url log_in %}">Log in</a> | <a href="{% url user_signup %}">Register</a>
 			{% endif %}
+			<form class="search" method="get" action="{% url search %}">
+				{{ global_search_form }}
+				<input type="submit" value="search" />
+			</form>
 			<br style="clear: both;" />
 		</div>
 		

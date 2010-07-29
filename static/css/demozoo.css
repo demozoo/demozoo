@@ -28,6 +28,10 @@ ul, ol {
 	padding-right: 20px;
 }
 
+#site_header form.search {
+	float: right;
+}
+
 .annotation {
 	font-size: 0.66em;
 	color: #666;
