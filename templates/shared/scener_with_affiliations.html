@@ -1,0 +1,8 @@
+<a href="{{ releaser.get_absolute_url }}">{{ name }}</a>
+{% if groups %}
+	/
+	{% for group in groups %}
+		<a href="{{ group.get_absolute_url }}">{{ group }}</a>
+		{% if not forloop.last %}^{% endif %}
+	{% endfor %}
+{% endif %}

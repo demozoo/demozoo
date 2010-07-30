@@ -10,8 +10,8 @@
 	
 	<ul>
 		{% for nick in nicks %}
-			<li>
-				<a href="{% url scener nick.releaser_id %}">{{ nick.name }}</a>
+			<li class="scener">
+				{% scener_with_affiliations nick %}
 				{% nick_variants nick %}
 			</li>
 		{% endfor %}

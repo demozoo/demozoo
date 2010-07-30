@@ -10,7 +10,7 @@
 	
 	<ul>
 		{% for nick in nicks %}
-			<li>
+			<li class="group">
 				<a href="{% url group nick.releaser_id %}">{{ nick.name }}</a>
 				{% nick_variants nick %}
 			</li>
