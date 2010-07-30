@@ -1,0 +1,12 @@
+<li class="scener">
+	<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+	{% with result.object.groups.all as groups %}
+		{% if groups %}
+			/
+			{% for group in groups %}
+				<a href="{{ group.get_absolute_url }}">{{ group }}</a>
+				{% if not forloop.last %}^{% endif %}
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+</li>

@@ -17,13 +17,21 @@
 		{% if query %}
 			<h3>Results</h3>
 
-			{% for result in page.object_list %}
-				<p>
-					<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
-				</p>
-			{% empty %}
+			{% if page.object_list %}
+				<ul>
+					{% for result in page.object_list %}
+						{% if result.object.search_result_template %}
+							{% include result.object.search_result_template %}
+						{% else %}
+							<li>
+								<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+							</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+			{% else %}
 				<p>No results found.</p>
-			{% endfor %}
+			{% endif %}
 
 			{% if page.has_previous or page.has_next %}
 				<div>

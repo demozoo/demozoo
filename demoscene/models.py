@@ -38,6 +38,9 @@ class Releaser(models.Model):
 	def __unicode__(self):
 		return self.name
 		
+	def search_result_template(self):
+		return 'search/results/group.html' if self.is_group else 'search/results/scener.html'
+		
 	@models.permalink
 	def get_absolute_url(self):
 		if self.is_group:
@@ -274,6 +277,8 @@ class Production(models.Model):
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
 	notes = models.TextField(blank = True)
 	
+	search_result_template = 'search/results/production.html'
+	
 	def __unicode__(self):
 		return self.title
 	
@@ -325,6 +330,8 @@ class Party(models.Model):
 	name = models.CharField(max_length = 255)
 	start_date = models.DateField()
 	end_date = models.DateField()
+	
+	search_result_template = 'search/results/party.html'
 	
 	def __unicode__(self):
 		return self.name

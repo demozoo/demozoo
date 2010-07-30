@@ -141,6 +141,20 @@ li.group {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
+li.production {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/production.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+li.party {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/party.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
 li.add {
 	line-height: 24px;
 	padding-left: 24px;
