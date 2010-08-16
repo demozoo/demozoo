@@ -80,6 +80,7 @@ class AdminScenerForm(forms.ModelForm):
 			'nectarine_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'artcity_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'mobygames_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 	
 class NickForm(forms.ModelForm):
