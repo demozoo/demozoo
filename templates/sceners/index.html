@@ -13,6 +13,9 @@
 			<li class="scener">
 				{% scener_with_affiliations nick %}
 				{% nick_variants nick %}
+				{% if nick.releaser.country_code %}
+					<img src="/static/images/icons/flags/{{ nick.releaser.country_code|lower }}.png" alt="({{ nick.releaser.country_code }})" title="{{ nick.releaser.location }}" />
+				{% endif %}
 			</li>
 		{% endfor %}
 	</ul>
