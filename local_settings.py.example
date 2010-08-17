@@ -13,3 +13,5 @@ DATABASES = {
 SECRET_KEY = 'q=5-*%!&#5gbfk93oz!+y9it_m55^9a&!96i0@$_2mq^12($-g'
 DEBUG = True
 EMAIL_HOST = 'localhost'
+
+YAHOO_API_KEY = 'get one from http://developer.yahoo.com/wsregapp/'

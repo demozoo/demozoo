@@ -5,6 +5,8 @@
 {% block base_main %}
 	<h2>{{ scener.name }} {% nick_variants scener.primary_nick %}</h2>
 	
+	{% if scener.location %}<p>Location: {{ scener.location }}</p>{% endif %}
+	
 	{% with scener.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
 			<h3>Also known as:</h3>

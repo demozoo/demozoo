@@ -22,6 +22,7 @@ class Releaser(models.Model):
 	groups = models.ManyToManyField('Releaser',
 		limit_choices_to = {'is_group': True}, related_name = 'members')
 	notes = models.TextField(blank = True)
+	
 	sceneid_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'SceneID / Pouet user ID')
 	slengpung_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung user ID')
 	amp_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'AMP author ID')
@@ -30,6 +31,12 @@ class Releaser(models.Model):
 	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
 	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
 	mobygames_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'MobyGames author ID')
+	
+	location = models.CharField(max_length = 255, blank = True)
+	country_code = models.CharField(max_length = 5, blank = True)
+	latitude = models.FloatField(null = True, blank = True)
+	longitude = models.FloatField(null = True, blank = True)
+	woe_id = models.BigIntegerField(null = True, blank = True)
 	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser

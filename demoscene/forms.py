@@ -3,6 +3,9 @@ from demoscene.models import Production, ProductionType, Platform, Releaser, Dow
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
+from geocode import geocode
+from django.core.exceptions import ValidationError
+
 import timelib # for any-format date parsing
 import datetime
 from django.core import validators
@@ -25,6 +28,7 @@ class AnyFormatDateField(forms.DateField):
 		except ValueError:
 			raise ValidationError(self.error_messages['invalid'])
 		
+
 class ProductionForm(forms.ModelForm):
 	class Meta:
 		model = Production
@@ -60,18 +64,53 @@ class AdminGroupForm(forms.ModelForm):
 
 class ScenerForm(forms.ModelForm):
 	external_site_ref_fields = []
+	
+	def clean_location(self):
+		if self.cleaned_data['location']:
+			if self.instance and self.instance.location == self.cleaned_data['location']:
+				self.location_has_changed = False
+			else:
+				self.location_has_changed = True
+				# look up new location
+				self.geocoded_location = geocode(self.cleaned_data['location'])
+				if not self.geocoded_location:
+					raise ValidationError('Location not recognised')
+					
+		return self.cleaned_data['location']
+	
+	def save(self, commit = True, **kwargs):
+		model = super(ScenerForm, self).save(commit = False, **kwargs)
+		
+		if self.cleaned_data['location']:
+			if self.location_has_changed:
+				model.location = self.geocoded_location['location']
+				model.country_code = self.geocoded_location['country_code']
+				model.latitude = self.geocoded_location['latitude']
+				model.longitude = self.geocoded_location['longitude']
+				model.woe_id = self.geocoded_location['woeid']
+		else:
+			# clear location data
+			model.country_code = ''
+			model.latitude = None
+			model.longitude = None
+			model.woe_id = None
+		
+		if commit:
+			model.save()
+			
+		return model
+	
 	class Meta:
 		model = Releaser
-		fields = ()
+		fields = ('location',)
 
-class AdminScenerForm(forms.ModelForm):
+class AdminScenerForm(ScenerForm):
 	def __init__(self, *args, **kwargs):
 		super(AdminScenerForm, self).__init__(*args, **kwargs)
 		self.external_site_ref_fields = [self[field] for field in Releaser.external_site_ref_field_names]
 	
-	class Meta:
-		model = Releaser
-		fields = ['notes'] + Releaser.external_site_ref_field_names
+	class Meta(ScenerForm.Meta):
+		fields = ['notes', 'location'] + Releaser.external_site_ref_field_names
 		widgets = {
 			'sceneid_user_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'slengpung_user_id': forms.TextInput(attrs={'class': 'numeric'}),

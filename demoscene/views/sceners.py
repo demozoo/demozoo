@@ -24,7 +24,7 @@ def edit(request, scener_id):
 		if request.user.is_staff:
 			form = AdminScenerForm(request.POST, instance = scener)
 		else:
-			form = None # ScenerForm(request.POST, instance = scener)
+			form = ScenerForm(request.POST, instance = scener)
 		primary_nick = scener.primary_nick
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
@@ -42,7 +42,7 @@ def edit(request, scener_id):
 		if request.user.is_staff:
 			form = AdminScenerForm(instance = scener)
 		else:
-			form = None # ScenerForm(instance = scener)
+			form = ScenerForm(instance = scener)
 		primary_nick_form = NickForm(prefix = 'primary_nick', instance = scener.primary_nick)
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
 	
@@ -60,7 +60,7 @@ def create(request):
 		if request.user.is_staff:
 			form = AdminScenerForm(request.POST, instance = scener)
 		else:
-			form = None # ScenerForm(request.POST, instance = scener)
+			form = ScenerForm(request.POST, instance = scener)
 		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
 		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
@@ -81,7 +81,7 @@ def create(request):
 		if request.user.is_staff:
 			form = AdminScenerForm()
 		else:
-			form = None # ScenerForm()
+			form = ScenerForm()
 		primary_nick_form = NickForm(prefix = 'primary_nick')
 		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
 	return render(request, 'sceners/create.html', {

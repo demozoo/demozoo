@@ -25,6 +25,10 @@
 	</ul>
 </div>
 
+{% with form.location as field %}
+	{% include "shared/form_field.html" %}
+{% endwith %}
+
 {% with form.notes as field %}
 	{% include "shared/form_field.html" %}
 {% endwith %}
