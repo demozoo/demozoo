@@ -29,6 +29,7 @@
 		{% for scener in group.members.all %}
 			<li class="scener">
 				<a href="{% url scener scener.id %}">{{ scener.name }}</a>
+				{% releaser_flag scener %}
 				{% if user.is_authenticated %}
 					<a href="{% url group_remove_member group.id scener.id %}">
 						<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
