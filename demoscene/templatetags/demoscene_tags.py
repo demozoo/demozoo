@@ -23,3 +23,7 @@ def scener_with_affiliations(scener):
 			'releaser': scener,
 			'groups': scener.groups.all()
 		}
+
+@register.inclusion_tag('shared/releaser_flag.html')
+def releaser_flag(releaser):
+	return {'releaser': releaser}
