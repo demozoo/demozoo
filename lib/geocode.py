@@ -7,7 +7,7 @@ except ImportError:
 
 def geocode(location):
 	params = {
-		'location': location,
+		'location': location.encode('utf-8'),
 		'flags': 'J',
 		'appid': settings.YAHOO_API_KEY
 	}
