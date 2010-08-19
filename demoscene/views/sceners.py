@@ -9,7 +9,7 @@ def index(request):
 	
 	nick_page = get_page(
 		Nick.objects.filter(releaser__is_group = False).extra(
-			select={'lower_name': 'lower(demoscene_releaser.name)'}
+			select={'lower_name': 'lower(demoscene_nick.name)'}
 		).order_by('lower_name'),
 		request.GET.get('page', '1') )
 	
