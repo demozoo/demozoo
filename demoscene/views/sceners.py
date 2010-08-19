@@ -6,9 +6,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-	nicks = Nick.objects.filter(releaser__is_group = False).order_by('name')
+	
+	nick_page = get_page(
+		Nick.objects.filter(releaser__is_group = False).extra(
+			select={'lower_name': 'lower(demoscene_releaser.name)'}
+		).order_by('lower_name'),
+		request.GET.get('page', '1') )
+	
 	return render(request, 'sceners/index.html', {
-		'nicks': nicks,
+		'nick_page': nick_page,
 	})
 
 def show(request, scener_id):

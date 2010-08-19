@@ -6,9 +6,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def index(request):
-	productions = Production.objects.order_by('title')
+	production_page = get_page(
+		Production.objects.extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
 	return render(request, 'productions/index.html', {
-		'productions': productions,
+		'production_page': production_page,
 	})
 
 def show(request, production_id):

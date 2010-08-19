@@ -9,11 +9,15 @@
 	</ul>
 	
 	<ul>
-		{% for nick in nicks %}
+		{% for nick in nick_page.object_list %}
 			<li class="group">
 				<a href="{% url group nick.releaser_id %}">{{ nick.name }}</a>
 				{% nick_variants nick %}
 			</li>
 		{% endfor %}
 	</ul>
+	
+	{% with nick_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
 {% endblock %}

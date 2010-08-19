@@ -8,8 +8,12 @@
 	</ul>
 	
 	<ul>
-		{% for production in productions %}
+		{% for production in production_page.object_list %}
 			<li><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 		{% endfor %}
 	</ul>
+	
+	{% with production_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
 {% endblock %}

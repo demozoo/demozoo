@@ -9,7 +9,7 @@
 	</ul>
 	
 	<ul>
-		{% for nick in nicks %}
+		{% for nick in nick_page.object_list %}
 			<li class="scener">
 				{% scener_with_affiliations nick %}
 				{% nick_variants nick %}
@@ -17,4 +17,8 @@
 			</li>
 		{% endfor %}
 	</ul>
+	
+	{% with nick_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
 {% endblock %}
