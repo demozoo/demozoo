@@ -2,9 +2,11 @@
 {% if groups %}
 	/
 	{% for group in groups %}
-		<a href="{{ group.get_absolute_url }}">
-			{% if abbreviate_groups and group.abbreviation %}{{ group.abbreviation }}{% else %}{{ group }}{% endif %}
-		</a>
+		{% if abbreviate_groups and group.abbreviation %}
+			<a href="{{ group.get_absolute_url }}" title="{{ group.name }}">{{ group.abbreviation }}</a>
+		{% else %}
+			<a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+		{% endif %}
 		{% if not forloop.last %}^{% endif %}
 	{% endfor %}
 {% endif %}
