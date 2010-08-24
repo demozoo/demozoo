@@ -52,19 +52,17 @@ ProductionPlatformFormSet = formset_factory(ProductionPlatformForm, can_delete =
 DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 
 
-class GroupForm(forms.ModelForm):
+class CreateGroupForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
-		fields = ('',)
+		fields = ('name',)
 
-class AdminGroupForm(forms.ModelForm):
+class CreateScenerForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
-		fields = ('notes',)
+		fields = ('name',)
 
-class ScenerForm(forms.ModelForm):
-	external_site_ref_fields = []
-	
+class ScenerEditLocationForm(forms.ModelForm):
 	def clean_location(self):
 		if self.cleaned_data['location']:
 			if self.instance and self.instance.location == self.cleaned_data['location']:
@@ -79,7 +77,7 @@ class ScenerForm(forms.ModelForm):
 		return self.cleaned_data['location']
 	
 	def save(self, commit = True, **kwargs):
-		model = super(ScenerForm, self).save(commit = False, **kwargs)
+		model = super(forms.ModelForm, self).save(commit = False, **kwargs)
 		
 		if self.cleaned_data['location']:
 			if self.location_has_changed:
@@ -104,13 +102,10 @@ class ScenerForm(forms.ModelForm):
 		model = Releaser
 		fields = ('location',)
 
-class AdminScenerForm(ScenerForm):
-	def __init__(self, *args, **kwargs):
-		super(AdminScenerForm, self).__init__(*args, **kwargs)
-		self.external_site_ref_fields = [self[field] for field in Releaser.external_site_ref_field_names]
-	
-	class Meta(ScenerForm.Meta):
-		fields = ['notes', 'location'] + Releaser.external_site_ref_field_names
+class ScenerEditExternalLinksForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = Releaser.external_site_ref_field_names
 		widgets = {
 			'sceneid_user_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'slengpung_user_id': forms.TextInput(attrs={'class': 'numeric'}),
@@ -121,15 +116,29 @@ class AdminScenerForm(ScenerForm):
 			'artcity_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'mobygames_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
-	
+
+class ReleaserEditNotesForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ['notes']
+
 class NickForm(forms.ModelForm):
-	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False)
+	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False,
+		help_text = "(as a comma-separated list)")
 	
-	def __init__(self, *args, **kwargs):
+	def __init__(self, releaser, *args, **kwargs):
 		super(NickForm, self).__init__(*args, **kwargs)
 		if kwargs.has_key('instance'):
 			instance = kwargs['instance']
 			self.initial['nick_variant_list'] = instance.nick_variant_list
+		else:
+			instance = None
+		
+		# allow them to set this as the primary nick, unless they're editing the primary nick now
+		if not (instance and instance.name == releaser.name):
+			self.fields['override_primary_nick'] = forms.BooleanField(
+				label = "Use this as their preferred nick, instead of '%s'" % releaser.name,
+				required = False)
 	
 	def save(self, commit = True):
 		instance = super(NickForm, self).save(commit=False)
@@ -140,9 +149,14 @@ class NickForm(forms.ModelForm):
 	
 	class Meta:
 		model = Nick
-		fields = ('name', )
 
-NickFormSet = modelformset_factory(Nick, can_delete = True, form = NickForm)
+class ScenerNickForm(NickForm):
+	class Meta(NickForm.Meta):
+		fields = ['name']
+
+class GroupNickForm(NickForm):
+	class Meta(NickForm.Meta):
+		fields = ['name', 'abbreviation']
 
 class ScenerAddGroupForm(forms.Form):
 	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))

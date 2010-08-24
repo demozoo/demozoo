@@ -1,6 +1,8 @@
-<h2>Add credit for {{ releaser.name }}:</h2>
+{% if title %}
+	<h2>{{ title }}</h2>
+{% endif %}
 
-<form action="{% url releaser_add_credit releaser.id %}" method="post" class="entry_form">
+<form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}

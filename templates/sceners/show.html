@@ -3,98 +3,164 @@
 {% load safe_markdown %}
 
 {% block base_main %}
-	<h2>{{ scener.name }} {% nick_variants scener.primary_nick %}</h2>
+	<div class="panel">
 	
-	{% if scener.location %}
-		<p>
-			Location: {{ scener.location }}
-			{% if scener.country_code %}
-				<img src="/static/images/icons/flags/{{ scener.country_code|lower }}.png" alt="" />
+		<ul class="actions">
+			{% if editing %}
+				<li><a href="{% url scener scener.id %}" class="done">Done</a></li>
+			{% else %}
+				<li><a href="{% url edit_scener scener.id %}" class="edit">Edit</a></li>
 			{% endif %}
-		</p>
-	{% endif %}
-	
-	{% with scener.alternative_nicks as alternative_nicks %}
-		{% if alternative_nicks %}
-			<h3>Also known as:</h3>
-			<ul>
-				{% for nick in alternative_nicks %}
-					<li>{{ nick.name }} {% nick_variants nick %}</li>
-				{% endfor %}
-			</ul>
+		</ul>
+		<h2>
+			{{ scener.name }} {% nick_variants scener.primary_nick %}
+			{% if editing %}
+				<a href="{% url releaser_edit_primary_nick scener.id %}" class="open_in_lightbox">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+				</a>
+			{% endif %}
+		</h2>
+		
+		{% with scener.alternative_nicks as alternative_nicks %}
+			{% if alternative_nicks or editing %}
+				<h3>Also known as:</h3>
+				<ul>
+					{% for nick in alternative_nicks %}
+						<li>
+							{{ nick.name }} {% nick_variants nick %}
+							{% if editing %}
+								<a href="{% url releaser_edit_nick scener.id nick.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url releaser_add_nick scener.id %}" class="open_in_lightbox">Add another nick</a>
+						</li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+		
+		{% if scener.location or editing %}
+			<p>
+				Location:
+				{% if scener.location %}
+					{{ scener.location }}
+					{% if scener.country_code %}
+						<img src="/static/images/icons/flags/{{ scener.country_code|lower }}.png" alt="" />
+					{% endif %}
+				{% endif %}
+				{% if editing %}
+					<a href="{% url scener_edit_location scener.id %}" class="open_in_lightbox">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
+					</a>
+				{% endif %}
+			</p>
 		{% endif %}
-	{% endwith %}
+		
+		{% if scener.has_any_external_links or editing_as_admin %}
+			<div class="external_links">
+				<h3>External links:</h3>
+				<ul>
+					{% if scener.pouet_user_url %}<li><a href="{{ scener.pouet_user_url }}" class="pouet" title="{{ scener.name }} on Pouët">Pouët</a></li>{% endif %}
+					{# Leave Slengpung URLs out for now - they're a can of worms. {% if scener.slengpung_user_url %}<li><a href="{{ scener.slengpung_user_url }}">{{ scener.name }} on Slengpung</a></li>{% endif %} #}
+					{% if scener.amp_author_url %}<li><a href="{{ scener.amp_author_url }}" class="amp" title="{{ scener.name }} on Amiga Music Preservation">AMP</a></li>{% endif %}
+					{% if scener.csdb_author_url %}<li><a href="{{ scener.csdb_author_url }}" class="csdb" title="{{ scener.name }} on CSDb">CSDb</a></li>{% endif %}
+					{% if scener.nectarine_author_url %}<li><a href="{{ scener.nectarine_author_url }}" class="nectarine" title="{{ scener.name }} on Nectarine Demoscene Radio">Nectarine</a></li>{% endif %}
+					{% if scener.bitjam_author_url %}<li><a href="{{ scener.bitjam_author_url }}" class="bitjam" title="{{ scener.name }} on BitJam">BitJam</a></li>{% endif %}
+					{% if scener.artcity_author_url %}<li><a href="{{ scener.artcity_author_url }}" class="artcity" title="{{ scener.name }} on ArtCity">ArtCity</a></li>{% endif %}
+					{% if scener.mobygames_author_url %}<li><a href="{{ scener.mobygames_author_url }}" class="mobygames" title="{{ scener.name }} on MobyGames">MobyGames</a></li>{% endif %}
+					{% if editing_as_admin %}<li><a href="{% url scener_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+				</ul>
+			</div>
+		{% endif %}
+	</div>
 	
-	<a href="{% url edit_scener scener.id %}">edit</a>
-	
-	{% if scener.notes %}
+	{% if scener.notes or editing_as_admin %}
 		<div class="notes">
+			{% if editing_as_admin %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url releaser_edit_notes scener.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
 			{{ scener.notes|safe_markdown }}
+			<div style="clear: both;"></div>
 		</div>
 	{% endif %}
 	
-	<h3>Member of:</h3>
-	<ul>
-		{% for group in scener.groups.all %}
-			<li class="group">
-				<a href="{% url group group.id %}">{{ group.name }}</a>
-				{% if user.is_authenticated %}
-					<a href="{% url scener_remove_group scener.id group.id %}">
-						<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove group" title="Remove group" />
-					</a>
-				{% endif %}
-			</li>
-		{% endfor %}
-		{% if user.is_authenticated %}
-			<li class="add">
-				<a href="{% url scener_add_group scener.id %}">Add group</a>
-			</li>
-		{% endif %}
-	</ul>
+	<div id="side_column">
+		{% with scener.groups.all as groups %}
+			{% if groups or editing %}
+				<div class="panel">
+					<h3>Member of:</h3>
+					<ul>
+						{% for group in groups %}
+							<li class="group">
+								<a href="{% url group group.id %}">{{ group.name }}</a>
+								{% if editing %}
+									<a href="{% url scener_remove_group scener.id group.id %}" class="open_in_lightbox">
+										<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove group" title="Remove group" />
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+						{% if editing %}
+							<li class="add">
+								<a href="{% url scener_add_group scener.id %}" class="open_in_lightbox">Add group</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
 	
-	<h3>Productions:</h3>
-	<ul>
-		{% for prod in scener.productions %}
-			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-		{% endfor %}
-	</ul>
-	
-	<h3>Credited on:</h3>
-	<ul>
-		{% for credit in scener.credits %}
-			<li>
-				<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
-				{% if credit.role %}
-					- {{ credit.role }}
-				{% endif %}
-				{% if credit.nick.name != scener.name %}
-					<i>(as {{ credit.nick.name }})</i>
-				{% endif %}
-				{% if user.is_authenticated %}
-					<a href="{% url releaser_edit_credit scener.id credit.id %}">
-						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-					</a>
-				{% endif %}
-			</li>
-		{% endfor %}
-		{% if user.is_authenticated %}
-			<li class="add">
-				<a href="{% url releaser_add_credit scener.id %}">Add credit</a>
-			</li>
-		{% endif %}
-	</ul>
-	
-	{% if scener.has_any_external_links %}
-		<h3>External links</h3>
-		<ul>
-			{% if scener.pouet_user_url %}<li><a href="{{ scener.pouet_user_url }}">{{ scener.name }} on Pouët</a></li>{% endif %}
-			{# Leave Slengpung URLs out for now - they're a can of worms. {% if scener.slengpung_user_url %}<li><a href="{{ scener.slengpung_user_url }}">{{ scener.name }} on Slengpung</a></li>{% endif %} #}
-			{% if scener.amp_author_url %}<li><a href="{{ scener.amp_author_url }}">{{ scener.name }} on Amiga Music Preservation</a></li>{% endif %}
-			{% if scener.csdb_author_url %}<li><a href="{{ scener.csdb_author_url }}">{{ scener.name }} on CSDb</a></li>{% endif %}
-			{% if scener.nectarine_author_url %}<li><a href="{{ scener.nectarine_author_url }}">{{ scener.name }} on Nectarine Demoscene Radio</a></li>{% endif %}
-			{% if scener.bitjam_author_url %}<li><a href="{{ scener.bitjam_author_url }}">{{ scener.name }} on BitJam</a></li>{% endif %}
-			{% if scener.artcity_author_url %}<li><a href="{{ scener.artcity_author_url }}">{{ scener.name }} on ArtCity</a></li>{% endif %}
-			{% if scener.mobygames_author_url %}<li><a href="{{ scener.mobygames_author_url }}">{{ scener.name }} on MobyGames</a></li>{% endif %}
-		</ul>
-	{% endif %}
+	<div id="main_column">
+		{% with scener.productions as prods %}
+			{% if prods %}
+				<div class="panel">
+					<h3 class="productions_header">Productions:</h3>
+					<ul>
+						{% for prod in prods %}
+							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+		
+		{% with scener.credits as credits %}
+			{% if credits or editing %}
+				<div class="panel">
+					<h3 class="credits_header">Credited on:</h3>
+					<ul>
+						{% for credit in scener.credits %}
+							<li>
+								<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
+								{% if credit.role %}
+									- {{ credit.role }}
+								{% endif %}
+								{% if credit.nick.name != scener.name %}
+									<i>(as {{ credit.nick.name }})</i>
+								{% endif %}
+								{% if editing %}
+									<a href="{% url releaser_edit_credit scener.id credit.id %}" class="open_in_lightbox">
+										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+						{% if editing %}
+							<li class="add">
+								<a href="{% url releaser_add_credit scener.id %}" class="open_in_lightbox">Add credit</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
 {% endblock %}

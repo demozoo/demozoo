@@ -32,6 +32,16 @@ ul, ol {
 	float: right;
 }
 
+#side_column {
+	float: left;
+	width: 25%;
+}
+
+#main_column {
+	float: left;
+	width: 75%;
+}
+
 .annotation {
 	font-size: 0.66em;
 	color: #666;
@@ -44,6 +54,21 @@ ul, ol {
 	padding-left: 8px;
 	padding-right: 8px;
 	color: #444;
+}
+
+.panel {
+	border: 1px solid #ccc;
+	margin-top: 16px;
+	padding: 16px;
+}
+#main_column .panel {
+	margin-left: 16px;
+}
+
+.membership_panel {
+	width: 200px;
+	float: left;
+	margin-right: 16px;
 }
 
 /* notification messages */
@@ -66,8 +91,11 @@ form.entry_form .field label.field_label {
 	float: left;
 }
 form.entry_form .field .field_input {
-	width: 500px;
+	width: 450px;
 	float: left;
+}
+form.entry_form .field .unlabelled_field_input {
+	padding-left: 150px;
 }
 form.entry_form .field .field_input input[type=text] {
 	width: 400px;
@@ -81,7 +109,17 @@ form.entry_form .field .field_input input.numeric[type=text] {
 form.entry_form .field .field_input textarea {
 	width: 400px;
 }
+form.entry_form .field .field_input .help_text {
+	font-size: 0.66em;
+}
 
+/* external links form needs bigger labels */
+form.external_links_form .field label.field_label {
+	width: 200px;
+}
+form.external_links_form .field .field_input {
+	width: 400px;
+}
 .spawning_formset li {
 	clear: both;
 	line-height: 24px;
@@ -170,6 +208,7 @@ ul.actions li {
 	display: inline;
 }
 ul.actions li a {
+	line-height: 32px;
 	border: 1px solid #888;
 	background-color: #eee;
 	color: #008;
@@ -179,6 +218,25 @@ ul.actions li a {
 }
 ul.actions li a:hover {
 	background-color: #ccc;
+}
+
+ul.actions li a.add {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/add.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
+ul.actions li a.edit {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/edit.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
+ul.actions li a.done {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/tick.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
 }
 
 /* byline matches */
@@ -299,4 +357,78 @@ ul.parties_in_series li {
 }
 ul.parties_in_series li.current {
 	font-weight: bold;
+}
+
+
+.productions_header {
+	padding-left: 24px;
+	background-image: url('/static/images/icons/package.png');
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.member_productions_header {
+	padding-left: 24px;
+	background-image: url('/static/images/icons/membership.png');
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.credits_header {
+	padding-left: 24px;
+	background-image: url('/static/images/icons/wrench.png');
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.external_links {
+	margin-top: 16px;
+}
+.external_links h3 {
+	display: inline;
+}
+.external_links ul {
+	display: inline;
+}
+.external_links li {
+	display: inline;
+}
+.external_links a {
+	padding-left: 20px;
+	background-position: left center;
+	background-repeat: no-repeat;
+	margin-left: 16px;
+}
+.external_links a.pouet {
+	background-image: url('/static/images/icons/external_sites/pouet.png');
+}
+.external_links a.amp {
+	background-image: url('/static/images/icons/external_sites/amp.png');
+}
+.external_links a.csdb {
+	background-image: url('/static/images/icons/external_sites/csdb.png');
+}
+.external_links a.nectarine {
+	background-image: url('/static/images/icons/external_sites/nectarine.png');
+}
+.external_links a.bitjam {
+	background-image: url('/static/images/icons/external_sites/bitfellas.png');
+}
+.external_links a.artcity {
+	background-image: url('/static/images/icons/external_sites/bitfellas.png');
+}
+.external_links a.mobygames {
+	background-image: url('/static/images/icons/external_sites/mobygames.png');
+}
+.external_links a.edit {
+	background-image: url('/static/images/icons/edit.png');
+	font-weight: bold;
+}
+
+ul.nick_change_options {
+	list-style-type: disc;
+	margin-left: 3em;
+}
+ul.nick_change_options li {
+	margin-bottom: 1em;
 }

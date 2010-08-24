@@ -3,5 +3,8 @@
 	<div class="field_input">
 		{{ field.errors }}
 		{{ field }}
+		{% if field.help_text %}
+			<div class="help_text">{{ field.help_text }}</div>
+		{% endif %}
 	</div>
 </div>

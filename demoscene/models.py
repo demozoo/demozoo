@@ -55,6 +55,13 @@ class Releaser(models.Model):
 			return ('demoscene.views.groups.show', [str(self.id)])
 		else:
 			return ('demoscene.views.sceners.show', [str(self.id)])
+
+	@models.permalink
+	def get_absolute_edit_url(self):
+		if self.is_group:
+			return ('demoscene.views.groups.edit', [str(self.id)])
+		else:
+			return ('demoscene.views.sceners.edit', [str(self.id)])
 	
 	def productions(self):
 		return Production.objects.filter(author_nicks__releaser = self)
@@ -137,6 +144,7 @@ class Releaser(models.Model):
 class Nick(models.Model):
 	releaser = models.ForeignKey(Releaser, related_name = 'nicks')
 	name = models.CharField(max_length=255)
+	abbreviation = models.CharField(max_length = 255, blank = True, help_text = "(optional - only if there's one that's actively being used. Don't just make one up!)")
 	
 	def __init__(self, *args, **kwargs):
 		super(Nick, self).__init__(*args, **kwargs)
@@ -163,12 +171,17 @@ class Nick(models.Model):
 		if self._has_written_nick_variant_list:
 			return self._nick_variant_list
 		else:
-			variant_names = [variant.name for variant in self.variants.exclude(name = self.name)]
+			variant_names = [variant.name for variant in self.variants.exclude(name__in = [self.name, self.abbreviation])]
 			return ", ".join(variant_names)
 	def set_nick_variant_list(self, new_list):
 		self._nick_variant_list = new_list
 		self._has_written_nick_variant_list = True
 	nick_variant_list = property(get_nick_variant_list, set_nick_variant_list)
+	
+	@property
+	def nick_variant_and_abbreviation_list(self):
+		variant_names = [variant.name for variant in self.variants.exclude(name = self.name)]
+		return ", ".join(variant_names)
 	
 	def save(self, *args, **kwargs):
 		# update releaser's name if it matches this nick's previous name
@@ -181,7 +194,7 @@ class Nick(models.Model):
 		else:
 			super(Nick, self).save(*args, **kwargs) # Call the original save() method
 			if not self._has_written_nick_variant_list:
-				# force writing a nick variant list containing just the primary nick
+				# force writing a nick variant list containing just the primary nick (and abbreviation if specified)
 				self._has_written_nick_variant_list = True
 				self._nick_variant_list = ''
 			
@@ -190,6 +203,8 @@ class Nick(models.Model):
 			old_variant_names = [variant.name for variant in self.variants.all()]
 			new_variant_names = re.split(r"\s*\,\s*", self._nick_variant_list)
 			new_variant_names.append(self.name)
+			if self.abbreviation:
+				new_variant_names.append(self.abbreviation)
 			
 			for variant in self.variants.all():
 				if variant.name not in new_variant_names:

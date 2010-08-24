@@ -27,3 +27,24 @@ def get_page(queryset, page_number, **kwargs):
 		return paginator.page(page)
 	except (EmptyPage, InvalidPage):
 		return paginator.page(paginator.num_pages)
+
+def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
+	if request.method == 'POST':
+		form = form_class(request.POST, instance = instance)
+		if form.is_valid():
+			form.save()
+		return HttpResponseRedirect(instance.get_absolute_edit_url())
+	else:
+		form = form_class(instance = instance)
+	
+	if request.is_ajax():
+		template = 'shared/simple_form.html'
+	else:
+		template = 'shared/simple_form_page.html'
+	
+	return render(request, template, {
+		'form': form,
+		'html_form_class': kwargs.get('html_form_class'),
+		'title': kwargs.get('title'),
+		'action_url': reverse(url_name, args=[instance.id]),
+	})

@@ -1,8 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import GroupForm, AdminGroupForm, GroupAddMemberForm, NickForm, NickFormSet
+from demoscene.forms import GroupAddMemberForm, CreateGroupForm
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -25,74 +24,31 @@ def show(request, group_id):
 @login_required
 def edit(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
-	if request.method == 'POST':
-		if request.user.is_staff:
-			form = AdminGroupForm(request.POST, instance = group)
-		else:
-			form = None # GroupForm(request.POST, instance = group)
-		primary_nick = group.primary_nick
-		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
-		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
-		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
-			if form:
-				form.save()
-			primary_nick_form.save() # may indirectly update name of Releaser and save it too
-			alternative_nicks = alternative_nicks_formset.save(commit = False)
-			for nick in alternative_nicks:
-				nick.releaser = group
-				nick.save()
-			messages.success(request, 'Group updated')
-			return redirect('group', args = [group.id])
-	else:
-		if request.user.is_staff:
-			form = AdminGroupForm(instance = group)
-		else:
-			form = None # GroupForm(instance = group)
-		primary_nick_form = NickForm(prefix = 'primary_nick', instance = group.primary_nick)
-		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = group.alternative_nicks)
-	
-	return render(request, 'groups/edit.html', {
+	return render(request, 'groups/show.html', {
 		'group': group,
-		'form': form,
-		'primary_nick_form': primary_nick_form,
-		'alternative_nicks_formset': alternative_nicks_formset,
+		'editing': True,
+		'editing_as_admin': request.user.is_staff,
 	})
 
 @login_required
 def create(request):
 	if request.method == 'POST':
 		group = Releaser(is_group = True)
-		if request.user.is_staff:
-			form = AdminGroupForm(request.POST, instance = group)
-		else:
-			form = None # GroupForm(request.POST, instance = group)
-		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
-		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = group.alternative_nicks)
-		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
-			group.name = primary_nick_form.cleaned_data['name']
-			if form:
-				form.save()
-			group.save() # this will cause a primary nick record to be created; update it with form details
-			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = group.primary_nick)
-			primary_nick_form.save()
-			alternative_nicks = alternative_nicks_formset.save(commit = False)
-			for nick in alternative_nicks:
-				nick.releaser = group
-				nick.save()
-			
-			messages.success(request, 'Group added')
-			return redirect('group', args = [group.id])
+		form = CreateGroupForm(request.POST, instance = group)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
-		if request.user.is_staff:
-			form = AdminGroupForm()
-		else:
-			form = None # GroupForm()
-		primary_nick_form = NickForm(prefix = 'primary_nick')
-		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
-	return render(request, 'groups/create.html', {
+		form = CreateGroupForm()
+	
+	if request.is_ajax():
+		template = 'shared/simple_form.html'
+	else:
+		template = 'shared/simple_form_page.html'
+	return render(request, template, {
 		'form': form,
-		'primary_nick_form': primary_nick_form,
-		'alternative_nicks_formset': alternative_nicks_formset,
+		'title': "New group",
+		'action_url': reverse('new_group'),
 	})
 
 @login_required
@@ -108,10 +64,14 @@ def add_member(request, group_id):
 				# TODO: test for blank scener_id (as sent by non-JS)
 				scener = Releaser.objects.get(id = form.cleaned_data['scener_id'], is_group = False)
 			group.members.add(scener)
-			return redirect('group', args = [group.id])
+			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupAddMemberForm()
-	return render(request, 'groups/add_member.html', {
+	if request.is_ajax():
+		template = 'groups/add_member.html'
+	else:
+		template = 'groups/add_member_page.html'
+	return render(request, template, {
 		'group': group,
 		'form': form,
 	})
@@ -123,9 +83,13 @@ def remove_member(request, group_id, scener_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			group.members.remove(scener)
-		return redirect('group', args = [group.id])
+		return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
-		return render(request, 'groups/remove_member.html', {
+		if request.is_ajax():
+			template = 'groups/remove_member.html'
+		else:
+			template = 'groups/remove_member_page.html'
+		return render(request, template, {
 			'group': group,
 			'scener': scener,
 		})

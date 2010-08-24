@@ -3,58 +3,113 @@
 {% load safe_markdown %}
 
 {% block base_main %}
-	<h2>{{ group.name }} {% nick_variants group.primary_nick %}</h2>
+	<div class="panel">
+		
+		<ul class="actions">
+			{% if editing %}
+				<li><a href="{% url group group.id %}" class="done">Done</a></li>
+			{% else %}
+				<li><a href="{% url edit_group group.id %}" class="edit">Edit</a></li>
+			{% endif %}
+		</ul>
+		<h2>
+			{{ group.name }} {% nick_variants group.primary_nick %}
+			{% if editing %}
+				<a href="{% url releaser_edit_primary_nick group.id %}" class="open_in_lightbox">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+				</a>
+			{% endif %}
+		</h2>
+		
+		{% with group.alternative_nicks as alternative_nicks %}
+			{% if alternative_nicks or editing %}
+				<h3>Also known as:</h3>
+				<ul>
+					{% for nick in alternative_nicks %}
+						<li>
+							{{ nick.name }} {% nick_variants nick %}
+							{% if editing %}
+								<a href="{% url releaser_edit_nick group.id nick.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url releaser_add_nick group.id %}" class="open_in_lightbox">Add another nick</a>
+						</li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+	</div>
 	
-	{% with group.alternative_nicks as alternative_nicks %}
-		{% if alternative_nicks %}
-			<h3>Also known as:</h3>
-			<ul>
-				{% for nick in alternative_nicks %}
-					<li>{{ nick.name }} {% nick_variants nick %}</li>
-				{% endfor %}
-			</ul>
-		{% endif %}
-	{% endwith %}
-	
-	<a href="{% url edit_group group.id %}">edit</a>
-
-	{% if group.notes %}
+	{% if group.notes or editing_as_admin %}
 		<div class="notes">
+			{% if editing_as_admin %}
+					<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url releaser_edit_notes group.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
 			{{ group.notes|safe_markdown }}
+			<div style="clear: both;"></div>
 		</div>
 	{% endif %}
 	
-	<h3>Members:</h3>
-	<ul>
-		{% for scener in group.members.all %}
-			<li class="scener">
-				<a href="{% url scener scener.id %}">{{ scener.name }}</a>
-				{% releaser_flag scener %}
-				{% if user.is_authenticated %}
-					<a href="{% url group_remove_member group.id scener.id %}">
-						<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
-					</a>
-				{% endif %}
-			</li>
-		{% endfor %}
-		{% if user.is_authenticated %}
-			<li class="add">
-				<a href="{% url group_add_member group.id %}">Add member</a>
-			</li>
-		{% endif %}
-	</ul>
+	<div id="side_column">
+		{% with group.members.all as members %}
+			{% if members or editing %}
+				<div class="panel">
+					<h3>Members:</h3>
+					<ul>
+						{% for scener in members %}
+							<li class="scener">
+								<a href="{% url scener scener.id %}">{{ scener.name }}</a>
+								{% releaser_flag scener %}
+								{% if editing %}
+									<a href="{% url group_remove_member group.id scener.id %}" class="open_in_lightbox">
+										<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+						{% if editing %}
+							<li class="add">
+								<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
 
-	<h3>Productions:</h3>
-	<ul>
-		{% for prod in group.productions %}
-			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-		{% endfor %}
-	</ul>
-	
-	<h3>Member productions:</h3>
-	<ul>
-		{% for prod in group.member_productions %}
-			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-		{% endfor %}
-	</ul>
+	<div id="main_column">
+		{% with group.productions as prods %}
+			{% if prods %}
+				<div class="panel">
+					<h3 class="productions_header">Productions:</h3>
+					<ul>
+						{% for prod in group.productions %}
+							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+		
+		{% with group.member_productions as prods %}
+			{% if prods %}
+				<div class="panel">
+					<h3 class="member_productions_header">Member productions:</h3>
+					<ul>
+						{% for prod in group.member_productions %}
+							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+		{% endwith %}
+	</div>
 {% endblock %}

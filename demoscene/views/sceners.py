@@ -1,8 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import ScenerForm, AdminScenerForm, ScenerAddGroupForm, NickForm, NickFormSet
+from demoscene.forms import ScenerAddGroupForm, ScenerEditExternalLinksForm, ScenerEditLocationForm, CreateScenerForm
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -26,74 +25,58 @@ def show(request, scener_id):
 @login_required
 def edit(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
-	if request.method == 'POST':
-		if request.user.is_staff:
-			form = AdminScenerForm(request.POST, instance = scener)
-		else:
-			form = ScenerForm(request.POST, instance = scener)
-		primary_nick = scener.primary_nick
-		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = primary_nick)
-		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
-		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
-			if form:
-				form.save()
-			primary_nick_form.save() # may indirectly update name of Releaser and save it too
-			alternative_nicks = alternative_nicks_formset.save(commit = False)
-			for nick in alternative_nicks:
-				nick.releaser = scener
-				nick.save()
-			messages.success(request, 'Scener updated')
-			return redirect('scener', args = [scener.id])
-	else:
-		if request.user.is_staff:
-			form = AdminScenerForm(instance = scener)
-		else:
-			form = ScenerForm(instance = scener)
-		primary_nick_form = NickForm(prefix = 'primary_nick', instance = scener.primary_nick)
-		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
-	
-	return render(request, 'sceners/edit.html', {
+	return render(request, 'sceners/show.html', {
 		'scener': scener,
-		'form': form,
-		'primary_nick_form': primary_nick_form,
-		'alternative_nicks_formset': alternative_nicks_formset,
+		'editing': True,
+		'editing_as_admin': request.user.is_staff,
 	})
+
+@login_required
+def edit_external_links(request, scener_id):
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+		
+	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm, {
+		'html_form_class': 'external_links_form',
+	})
+
+@login_required
+def edit_external_links(request, scener_id):
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+		
+	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm,
+		title = 'Editing external links for %s' % scener.name,
+		html_form_class = 'external_links_form')
+		
+@login_required
+def edit_location(request, scener_id):
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	
+	return simple_ajax_form(request, 'scener_edit_location', scener, ScenerEditLocationForm,
+		title = 'Editing location for %s' % scener.name)
 
 @login_required
 def create(request):
 	if request.method == 'POST':
 		scener = Releaser(is_group = False)
-		if request.user.is_staff:
-			form = AdminScenerForm(request.POST, instance = scener)
-		else:
-			form = ScenerForm(request.POST, instance = scener)
-		primary_nick_form = NickForm(request.POST, prefix = 'primary_nick')
-		alternative_nicks_formset = NickFormSet(request.POST, prefix = 'alternative_nicks', queryset = scener.alternative_nicks)
-		if (not form or form.is_valid()) and primary_nick_form.is_valid() and alternative_nicks_formset.is_valid():
-			scener.name = primary_nick_form.cleaned_data['name']
-			if form:
-				form.save()
-			scener.save() # this will cause a primary nick record to be created; update it with form details
-			primary_nick_form = NickForm(request.POST, prefix = 'primary_nick', instance = scener.primary_nick)
-			primary_nick_form.save()
-			alternative_nicks = alternative_nicks_formset.save(commit = False)
-			for nick in alternative_nicks:
-				nick.releaser = scener
-				nick.save()
-			
-			messages.success(request, 'Scener added')
-			return redirect('scener', args = [scener.id])
+		form = CreateScenerForm(request.POST, instance = scener)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
-		if request.user.is_staff:
-			form = AdminScenerForm()
-		else:
-			form = ScenerForm()
-		primary_nick_form = NickForm(prefix = 'primary_nick')
-		alternative_nicks_formset = NickFormSet(prefix = 'alternative_nicks', queryset = Nick.objects.none())
-	return render(request, 'sceners/create.html', {
+		form = CreateScenerForm()
+	
+	if request.is_ajax():
+		template = 'shared/simple_form.html'
+	else:
+		template = 'shared/simple_form_page.html'
+	return render(request, template, {
 		'form': form,
-		'primary_nick_form': primary_nick_form,
-		'alternative_nicks_formset': alternative_nicks_formset,
+		'title': "New scener",
+		'action_url': reverse('new_scener'),
 	})
 
 @login_required
@@ -109,10 +92,14 @@ def add_group(request, scener_id):
 				# TODO: test for blank group_id (as sent by non-JS)
 				group = Releaser.objects.get(id = form.cleaned_data['group_id'], is_group = True)
 			scener.groups.add(group)
-			return redirect('scener', args = [scener.id])
+			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		form = ScenerAddGroupForm()
-	return render(request, 'sceners/add_group.html', {
+	if request.is_ajax():
+		template = 'sceners/add_group.html'
+	else:
+		template = 'sceners/add_group_page.html'
+	return render(request, template, {
 		'scener': scener,
 		'form': form,
 	})
@@ -124,9 +111,13 @@ def remove_group(request, scener_id, group_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			scener.groups.remove(group)
-		return redirect('scener', args = [scener.id])
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
-		return render(request, 'sceners/remove_group.html', {
+		if request.is_ajax():
+			template = 'sceners/remove_group.html'
+		else:
+			template = 'sceners/remove_group_page.html'
+		return render(request, template, {
 			'scener': scener,
 			'group': group,
 		})

@@ -2,10 +2,10 @@ function htmlEncode(str) {
 	return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 }
 	
-$(function() {
-	$('ul.messages li').animate({'backgroundColor': 'white'}, 5000);
+function applyGlobalBehaviours(context) {
+	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 	
-	$('.spawning_formset').each(function() {
+	$('.spawning_formset', context).each(function() {
 		var formset = this;
 		var totalFormsInput = $("input[type='hidden'][name$='TOTAL_FORMS']", this);
 		var fieldPrefix = totalFormsInput.attr('name').replace(/TOTAL_FORMS$/, '');
@@ -58,8 +58,8 @@ $(function() {
 		$('> ul', this).append(addLi);
 	})
 	
-	function addAutocompleteRule(selector, url, idField, useNickId) {
-		$(selector).autocomplete(url, {
+	function addAutocompleteRule(selector, url, idField, useNickId, context) {
+		$(selector, context).autocomplete(url, {
 			autoFill: true,
 			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
 			formatResult: function(row) {return decodeURIComponent(row[3])},
@@ -72,10 +72,10 @@ $(function() {
 		});
 	}
 	/* TODO: instead of hard-coding hidden field IDs, derive them from the text field ID (thus supporting prefixes -> multiple forms per page) */
-	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id');
-	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id');
-	addAutocompleteRule('input.nick_autocomplete', '/releasers/autocomplete/', 'input#id_nick_id', true);
-	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', 'input#id_production_id');
+	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id', false, context);
+	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id', false, context);
+	addAutocompleteRule('input.nick_autocomplete', '/releasers/autocomplete/', 'input#id_nick_id', true, context);
+	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', 'input#id_production_id', false, context);
 	
 	function parseAutocompleteResults(data) {
 		var results = [];
@@ -266,15 +266,45 @@ $(function() {
 			});
 		}
 	}
-	$('input.byline_autocomplete').each(function() {
+	$('input.byline_autocomplete', context).each(function() {
 		var matchedNamesContainer = $('#' + this.id + '_matched_names');
 		$(this).blur(function() {
 			parseByline(this, matchedNamesContainer);
 		});
 	})
 	
-	$('input.date').each(function() {
+	$('input.date', context).each(function() {
 		var opts = {dateFormat: 'd M yy'};
 		$(this).datepicker(opts);
 	});
-})
+	
+	function openUrlInLightbox(url) {
+		lightbox.load(url, function() {
+			//$('span#close_link').html("<a href='#'>Close this popup</a>");
+			//availabilityInfoModal.jqmAddClose($('span#close_link a'));
+			applyGlobalBehaviours(lightbox);
+			lightbox.jqmShow();
+		});
+	}
+	$('a.open_in_lightbox', context).click(function(e) {
+		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+			/* probably means they want to open it in a new window, so let them... */
+			return true;
+		}
+		openUrlInLightbox(this.href);
+		return false;
+	})
+	$('form.open_in_lightbox', context).submit(function() {
+		/* only use this for forms with method="get"! */
+		openUrlInLightbox(this.action + '?' + $(this).serialize());
+		return false;
+	})
+}
+
+var lightbox;
+$(function() {
+	lightbox = $('<div class="jqmWindow"></div>');
+	$('body').append(lightbox);
+	lightbox.jqm();
+	applyGlobalBehaviours();
+});
