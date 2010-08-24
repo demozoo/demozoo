@@ -137,6 +137,10 @@ class Releaser(models.Model):
 		return self.nicks.get(name = self.name)
 	
 	@property
+	def abbreviation(self):
+		return self.primary_nick.abbreviation
+	
+	@property
 	def alternative_nicks(self):
 		# A queryset of all nicks except the primary one
 		return self.nicks.exclude(name = self.name)
