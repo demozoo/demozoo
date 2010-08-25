@@ -58,31 +58,29 @@
 	{% endif %}
 	
 	<div id="side_column">
-		{% with group.members.all as members %}
-			{% if members or editing %}
-				<div class="panel">
-					<h3>Members:</h3>
-					<ul>
-						{% for scener in members %}
-							<li class="scener">
-								<a href="{% url scener scener.id %}">{{ scener.name }}</a>
-								{% releaser_flag scener %}
-								{% if editing %}
-									<a href="{% url group_remove_member group.id scener.id %}" class="open_in_lightbox">
-										<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
-									</a>
-								{% endif %}
-							</li>
-						{% endfor %}
-						{% if editing %}
-							<li class="add">
-								<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
-							</li>
-						{% endif %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+		{% if members or editing %}
+			<div class="panel">
+				<h3>Members:</h3>
+				<ul>
+					{% for scener in members %}
+						<li class="scener">
+							<a href="{% url scener scener.id %}">{{ scener.name }}</a>
+							{% releaser_flag scener %}
+							{% if editing %}
+								<a href="{% url group_remove_member group.id scener.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endif %}
 	</div>
 
 	<div id="main_column">
