@@ -432,3 +432,11 @@ ul.nick_change_options {
 ul.nick_change_options li {
 	margin-bottom: 1em;
 }
+
+a.lightbox_close {
+	float: right;
+	width: 16px;
+	height: 16px;
+	text-indent: -5000px;
+	background-image: url('/static/images/icons/cross.png');
+}

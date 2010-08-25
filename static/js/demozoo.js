@@ -279,9 +279,7 @@ function applyGlobalBehaviours(context) {
 	});
 	
 	function openUrlInLightbox(url) {
-		lightbox.load(url, function() {
-			//$('span#close_link').html("<a href='#'>Close this popup</a>");
-			//availabilityInfoModal.jqmAddClose($('span#close_link a'));
+		lightboxContent.load(url, function() {
 			applyGlobalBehaviours(lightbox);
 			lightbox.jqmShow();
 		});
@@ -301,10 +299,14 @@ function applyGlobalBehaviours(context) {
 	})
 }
 
-var lightbox;
+var lightbox, lightboxContent;
 $(function() {
 	lightbox = $('<div class="jqmWindow"></div>');
+	var lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
+	lightboxContent = $('<div></div>');
+	lightbox.append(lightboxClose, lightboxContent);
 	$('body').append(lightbox);
 	lightbox.jqm();
+	lightbox.jqmAddClose(lightboxClose);
 	applyGlobalBehaviours();
 });
