@@ -137,7 +137,7 @@ class NickForm(forms.ModelForm):
 		# allow them to set this as the primary nick, unless they're editing the primary nick now
 		if not (instance and instance.name == releaser.name):
 			self.fields['override_primary_nick'] = forms.BooleanField(
-				label = "Use this as their preferred nick, instead of '%s'" % releaser.name,
+				label = "Use this as their preferred name, instead of '%s'" % releaser.name,
 				required = False)
 	
 	def save(self, commit = True):

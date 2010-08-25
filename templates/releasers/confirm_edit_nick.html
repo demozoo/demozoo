@@ -16,7 +16,7 @@
 					<form action="{% url releaser_change_primary_nick releaser.id %}" method="post">
 						{% csrf_token %}
 						<strong>
-							Their preferred nick is actually
+							Their preferred name is actually
 							<select name="nick_id">
 								{% for nick in alternative_nicks %}
 									<option value="{{ nick.id }}">{{ nick.name }}</option>

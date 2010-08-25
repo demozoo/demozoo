@@ -16,7 +16,7 @@
 			{{ scener.name }} {% nick_variants scener.primary_nick %}
 			{% if editing %}
 				<a href="{% url releaser_edit_primary_nick scener.id %}" class="open_in_lightbox">
-					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
 			{% endif %}
 		</h2>
@@ -30,14 +30,14 @@
 							{{ nick.name }} {% nick_variants nick %}
 							{% if editing %}
 								<a href="{% url releaser_edit_nick scener.id nick.id %}" class="open_in_lightbox">
-									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit nick" title="Edit nick" />
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
 						</li>
 					{% endfor %}
 					{% if editing %}
 						<li class="add">
-							<a href="{% url releaser_add_nick scener.id %}" class="open_in_lightbox">Add another nick</a>
+							<a href="{% url releaser_add_nick scener.id %}" class="open_in_lightbox">Add another name</a>
 						</li>
 					{% endif %}
 				</ul>
