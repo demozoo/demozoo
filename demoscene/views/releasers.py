@@ -110,7 +110,7 @@ def edit_nick(request, releaser_id, nick_id):
 		form = nick_form_class(releaser, request.POST, instance = nick)
 		if form.is_valid():
 			form.save()
-			if form.cleaned_data['override_primary_nick']:
+			if form.cleaned_data.get('override_primary_nick'):
 				releaser.name = nick.name
 				releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
@@ -140,7 +140,7 @@ def add_nick(request, releaser_id):
 		form = nick_form_class(releaser, request.POST, instance = nick)
 		if form.is_valid():
 			form.save()
-			if form.cleaned_data['override_primary_nick']:
+			if form.cleaned_data.get('override_primary_nick'):
 				releaser.name = nick.name
 				releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
