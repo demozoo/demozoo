@@ -227,7 +227,14 @@ class Nick(models.Model):
 		else:
 			return self.name
 	
-
+	# Determine whether or not this nick is referenced in any external records (credits, authorships etc);
+	# if not, it's safe to delete
+	def is_referenced(self):
+		return (
+			self.releaser.name == self.name
+			or self.credits.count()
+			or self.productions.count()
+			or self.member_productions.count() )
 
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name = 'variants')

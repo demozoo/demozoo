@@ -69,11 +69,7 @@ def create(request):
 	else:
 		form = CreateScenerForm()
 	
-	if request.is_ajax():
-		template = 'shared/simple_form.html'
-	else:
-		template = 'shared/simple_form_page.html'
-	return render(request, template, {
+	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "New scener",
 		'action_url': reverse('new_scener'),
@@ -95,11 +91,8 @@ def add_group(request, scener_id):
 			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		form = ScenerAddGroupForm()
-	if request.is_ajax():
-		template = 'sceners/add_group.html'
-	else:
-		template = 'sceners/add_group_page.html'
-	return render(request, template, {
+	
+	return ajaxable_render(request, 'sceners/add_group.html', {
 		'scener': scener,
 		'form': form,
 	})
@@ -113,14 +106,9 @@ def remove_group(request, scener_id, group_id):
 			scener.groups.remove(group)
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
-		if request.is_ajax():
-			template = 'sceners/remove_group.html'
-		else:
-			template = 'sceners/remove_group_page.html'
-		return render(request, template, {
-			'scener': scener,
-			'group': group,
-		})
+		return simple_ajax_confirmation(request,
+			reverse('scener_remove_group', args = [scener_id, group_id]),
+			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
 
 def autocomplete(request):
 	query = request.GET.get('q')

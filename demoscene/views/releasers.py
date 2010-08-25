@@ -33,11 +33,8 @@ def add_credit(request, releaser_id):
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserAddCreditForm(releaser)
-	if request.is_ajax():
-		template = 'releasers/add_credit.html'
-	else:
-		template = 'releasers/add_credit_page.html'
-	return render(request, template, {
+	
+	return ajaxable_render(request, 'releasers/add_credit.html', {
 		'releaser': releaser,
 		'form': form,
 	})
@@ -62,11 +59,7 @@ def edit_credit(request, releaser_id, credit_id):
 			'production_name': credit.production.title,
 			'role': credit.role
 		})
-	if request.is_ajax():
-		template = 'releasers/edit_credit.html'
-	else:
-		template = 'releasers/edit_credit_page.html'
-	return render(request, template, {
+	return ajaxable_render(request, 'releasers/edit_credit.html', {
 		'releaser': releaser,
 		'credit': credit,
 		'form': form,
@@ -81,14 +74,9 @@ def delete_credit(request, releaser_id, credit_id):
 			credit.delete()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		if request.is_ajax():
-			template = 'releasers/delete_credit.html'
-		else:
-			template = 'releasers/delete_credit_page.html'
-		return render(request, template, {
-			'releaser': releaser,
-			'credit': credit,
-		})
+		return simple_ajax_confirmation(request,
+			reverse('releaser_delete_credit', args = [releaser_id, credit_id]),
+			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, credit.production.title) )
 
 @login_required
 def edit_notes(request, releaser_id):
@@ -116,14 +104,11 @@ def edit_nick(request, releaser_id, nick_id):
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = nick_form_class(releaser, instance = nick)
-	if request.is_ajax():
-		template = 'releasers/nick_form.html'
-	else:
-		template = 'releasers/nick_form_page.html'
 	
-	return render(request, template, {
+	return ajaxable_render(request, 'releasers/edit_nick_form.html', {
 		'form': form,
-		'title': "Editing nick: %s" % nick.name,
+		'nick': nick,
+		'title': "Editing name: %s" % nick.name,
 		'action_url': reverse('releaser_edit_nick', args = [releaser.id, nick.id]),
 	})
 
@@ -146,12 +131,8 @@ def add_nick(request, releaser_id):
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = nick_form_class(releaser)
-	if request.is_ajax():
-		template = 'releasers/nick_form.html'
-	else:
-		template = 'releasers/nick_form_page.html'
 	
-	return render(request, template, {
+	return ajaxable_render(request, 'releasers/nick_form.html', {
 		'form': form,
 		'title': "Adding another nick for %s" % releaser.name,
 		'action_url': reverse('releaser_add_nick', args = [releaser.id]),
@@ -160,11 +141,7 @@ def add_nick(request, releaser_id):
 @login_required
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
-	if request.is_ajax():
-		template = 'releasers/confirm_edit_nick.html'
-	else:
-		template = 'releasers/confirm_edit_nick_page.html'
-	return render(request, template, {
+	return ajaxable_render(request, 'releasers/confirm_edit_nick.html', {
 		'releaser': releaser,
 	})
 
@@ -176,3 +153,18 @@ def change_primary_nick(request, releaser_id):
 		releaser.name = nick.name
 		releaser.save()
 	return HttpResponseRedirect(releaser.get_absolute_edit_url())
+
+@login_required
+def delete_nick(request, releaser_id, nick_id):
+	releaser = get_object_or_404(Releaser, id = releaser_id)
+	nick = get_object_or_404(Nick, releaser = releaser, id = nick_id)
+	if nick.is_referenced():
+		return HttpResponseRedirect(releaser.get_absolute_edit_url())
+	
+	if request.method == 'POST':
+		nick.delete()
+		return HttpResponseRedirect(releaser.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('releaser_delete_nick', args = [releaser_id, nick_id]),
+			"Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name) )

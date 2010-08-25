@@ -7,6 +7,13 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 def render(request, template, context={}, **kwargs):
 	return render_to_response(template, context, context_instance=RequestContext(request), **kwargs)
 
+def ajaxable_render(request, template, context={}, **kwargs):
+	if request.is_ajax():
+		return render(request, template, context, **kwargs)
+	else:
+		context['subtemplate_name'] = template
+		return render(request, "base_wrapper.html", context, **kwargs)
+
 # TODO: see if we can (largely) replace this with get_absolute_url
 def redirect(*args, **kwargs):
 	return HttpResponseRedirect(reverse(*args, **kwargs))
@@ -37,14 +44,15 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 	else:
 		form = form_class(instance = instance)
 	
-	if request.is_ajax():
-		template = 'shared/simple_form.html'
-	else:
-		template = 'shared/simple_form_page.html'
-	
-	return render(request, template, {
+	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'html_form_class': kwargs.get('html_form_class'),
 		'title': kwargs.get('title'),
 		'action_url': reverse(url_name, args=[instance.id]),
+	})
+
+def simple_ajax_confirmation(request, action_url, message):
+	return ajaxable_render(request, 'shared/simple_confirmation.html', {
+		'message': message,
+		'action_url': action_url,
 	})

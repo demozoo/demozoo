@@ -41,11 +41,7 @@ def create(request):
 	else:
 		form = CreateGroupForm()
 	
-	if request.is_ajax():
-		template = 'shared/simple_form.html'
-	else:
-		template = 'shared/simple_form_page.html'
-	return render(request, template, {
+	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "New group",
 		'action_url': reverse('new_group'),
@@ -67,11 +63,7 @@ def add_member(request, group_id):
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupAddMemberForm()
-	if request.is_ajax():
-		template = 'groups/add_member.html'
-	else:
-		template = 'groups/add_member_page.html'
-	return render(request, template, {
+	return ajaxable_render(request, 'groups/add_member.html', {
 		'group': group,
 		'form': form,
 	})
@@ -85,14 +77,9 @@ def remove_member(request, group_id, scener_id):
 			group.members.remove(scener)
 		return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
-		if request.is_ajax():
-			template = 'groups/remove_member.html'
-		else:
-			template = 'groups/remove_member_page.html'
-		return render(request, template, {
-			'group': group,
-			'scener': scener,
-		})
+		return simple_ajax_confirmation(request,
+			reverse('group_remove_member', args = [group_id, scener_id]),
+			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
 
 def autocomplete(request):
 	query = request.GET.get('q')
