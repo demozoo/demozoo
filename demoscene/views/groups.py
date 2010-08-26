@@ -27,6 +27,7 @@ def edit(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	return render(request, 'groups/show.html', {
 		'group': group,
+		'members': group.members.order_by('name'),
 		'editing': True,
 		'editing_as_admin': request.user.is_staff,
 	})
