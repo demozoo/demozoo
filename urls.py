@@ -61,6 +61,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^releasers/(\d+)/edit_primary_nick/$', 'releasers.edit_primary_nick', {}, 'releaser_edit_primary_nick'),
 	(r'^releasers/(\d+)/change_primary_nick/$', 'releasers.change_primary_nick', {}, 'releaser_change_primary_nick'),
 	(r'^releasers/(\d+)/delete_nick/(\d+)/$', 'releasers.delete_nick', {}, 'releaser_delete_nick'),
+	(r'^releasers/(\d+)/delete/$', 'releasers.delete', {}, 'delete_releaser'),
 	
 	(r'^parties/$', 'parties.index', {}, 'parties'),
 	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),

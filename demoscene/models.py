@@ -144,6 +144,15 @@ class Releaser(models.Model):
 	def alternative_nicks(self):
 		# A queryset of all nicks except the primary one
 		return self.nicks.exclude(name = self.name)
+	
+	# Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
+	# that should prevent its deletion
+	def is_referenced(self):
+		return (
+			self.credits().count()
+			or self.members.count() # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
+			or self.productions().count()
+			or self.member_productions().count() )
 
 class Nick(models.Model):
 	releaser = models.ForeignKey(Releaser, related_name = 'nicks')

@@ -163,4 +163,10 @@
 			{% endif %}
 		{% endwith %}
 	</div>
+	
+	{% if editing_as_admin and not scener.is_referenced %}
+		<ul class="maintenance_actions">
+			<li><a href="{% url delete_releaser scener.id %}" class="delete open_in_lightbox">Delete scener</a></li>
+		</ul>
+	{% endif %}
 {% endblock %}

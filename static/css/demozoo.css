@@ -239,6 +239,33 @@ ul.actions li a.done {
 	background-repeat: no-repeat;
 }
 
+ul.maintenance_actions {
+	clear: both;
+	padding-top: 16px;
+}
+ul.maintenance_actions li a {
+	line-height: 32px;
+	border: 1px solid #888;
+	background-color: #eee;
+	color: #008;
+	padding: 4px;
+	margin-left: 4px;
+	text-decoration: none;
+}
+ul.maintenance_actions li a:hover {
+	background-color: #ccc;
+}
+ul.maintenance_actions li a.delete {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/delete.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
+
+ul.maintenance_actions li {
+	display: inline;
+}
+
 /* byline matches */
 .matched_names {
 	font-size: 0.9em;

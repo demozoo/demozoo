@@ -110,4 +110,9 @@
 			{% endif %}
 		{% endwith %}
 	</div>
+	{% if editing_as_admin and not group.is_referenced %}
+		<ul class="maintenance_actions">
+			<li><a href="{% url delete_releaser group.id %}" class="delete open_in_lightbox">Delete group</a></li>
+		</ul>
+	{% endif %}
 {% endblock %}

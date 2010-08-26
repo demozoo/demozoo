@@ -2,6 +2,7 @@ from demoscene.shortcuts import *
 from demoscene.models import Releaser, NickVariant, Production, Nick, Credit
 from demoscene.forms import ReleaserAddCreditForm, ReleaserEditNotesForm, ScenerNickForm, GroupNickForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def autocomplete(request):
 	query = request.GET.get('q')
@@ -168,3 +169,23 @@ def delete_nick(request, releaser_id, nick_id):
 		return simple_ajax_confirmation(request,
 			reverse('releaser_delete_nick', args = [releaser_id, nick_id]),
 			"Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name) )
+
+@login_required
+def delete(request, releaser_id):
+	releaser = get_object_or_404(Releaser, id = releaser_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			releaser.delete()
+			messages.success(request, "'%s' deleted" % releaser.name)
+			if releaser.is_group:
+				return HttpResponseRedirect(reverse('groups'))
+			else:
+				return HttpResponseRedirect(reverse('sceners'))
+		else:
+			return HttpResponseRedirect(releaser.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('delete_releaser', args = [releaser_id]),
+			"Are you sure you want to delete %s?" % releaser.name )
