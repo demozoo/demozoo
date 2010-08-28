@@ -345,10 +345,18 @@ class Production(models.Model):
 			return "%s / %s" % (authors_string, affiliations_string)
 		else:
 			return authors_string
+	
+	@models.permalink
+	def get_absolute_url(self):
+		return ('demoscene.views.productions.show', [str(self.id)])
+
+	@models.permalink
+	def get_absolute_edit_url(self):
+		return ('demoscene.views.productions.edit', [str(self.id)])
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
-	url = models.CharField(max_length = 2048)
+	url = models.CharField(max_length = 2048, verbose_name = 'download URL')
 
 class Credit(models.Model):
 	production = models.ForeignKey(Production, related_name = 'credits')

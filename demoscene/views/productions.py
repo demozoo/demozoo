@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit
-from demoscene.forms import ProductionForm, AdminProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm
+from demoscene.models import Production, Nick, Credit, DownloadLink
+from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -28,63 +28,116 @@ def show(request, production_id):
 @login_required
 def edit(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
+	return render(request, 'productions/show.html', {
+		'production': production,
+		'author_nicks': production.author_nicks.all(),
+		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
+		'credits': production.credits.order_by('nick__name'),
+		'editing': True,
+		'editing_as_admin': request.user.is_staff,
+	})
+	
+@login_required
+def edit_core_details(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
-		if request.user.is_staff:
-			form = AdminProductionForm(request.POST, instance = production)
-		else:
-			form = ProductionForm(request.POST, instance = production)
+		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
-		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
 		author_formset = AttachedNickFormSet(request.POST, prefix = 'authors')
 		affiliation_formset = AttachedNickFormSet(request.POST, prefix = 'affiliations')
 		
 		if (
 			form.is_valid() and production_type_formset.is_valid()
-			and production_platform_formset.is_valid() and download_link_formset.is_valid()
+			and production_platform_formset.is_valid()
 			and author_formset.is_valid() and affiliation_formset.is_valid()
 			):
 			form.save()
-			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
 			production.author_nicks = [form.matched_nick() for form in author_formset.forms]
 			production.author_affiliation_nicks = [form.matched_nick() for form in affiliation_formset.forms]
-			messages.success(request, 'Production updated')
-			return redirect('production', args = [production.id])
+			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		if request.user.is_staff:
-			form = AdminProductionForm(instance = production)
-		else:
-			form = ProductionForm(instance = production)
+		form = ProductionEditCoreDetailsForm(instance = production)
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type',
 			initial = [{'production_type': typ.id} for typ in production.types.all()])
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
 			initial = [{'platform': platform.id} for platform in production.platforms.all()])
-		download_link_formset = DownloadLinkFormSet(instance = production)
 		author_formset = AttachedNickFormSet(prefix = 'authors',
 			initial = [{'nick_id': nick.id, 'name': nick.name} for nick in production.author_nicks.all()])
 		affiliation_formset = AttachedNickFormSet(prefix = 'affiliations',
 			initial = [{'nick_id': nick.id, 'name': nick.name} for nick in production.author_affiliation_nicks.all()])
 	
-	return render(request, 'productions/edit.html', {
+	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'production': production,
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
-		'download_link_formset': download_link_formset,
 		'author_formset': author_formset,
 		'affiliation_formset': affiliation_formset,
 	})
 
 @login_required
+def edit_notes(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_edit_url())
+	return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
+		title = 'Editing notes for %s' % production.title)
+
+@login_required
+def add_download_link(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	download_link = DownloadLink(production = production)
+	if request.method == 'POST':
+		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		form = ProductionDownloadLinkForm(instance = download_link)
+	return ajaxable_render(request, 'shared/simple_form.html', {
+		'form': form,
+		'title': "Adding download link for %s:" % production.title,
+		'action_url': reverse('production_add_download_link', args=[production.id]),
+	})
+
+@login_required
+def edit_download_link(request, production_id, download_link_id):
+	production = get_object_or_404(Production, id = production_id)
+	download_link = get_object_or_404(DownloadLink, id = download_link_id, production = production)
+	if request.method == 'POST':
+		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		form = ProductionDownloadLinkForm(instance = download_link)
+	return ajaxable_render(request, 'productions/edit_download_link.html', {
+		'form': form,
+		'production': production,
+		'download_link': download_link,
+	})
+
+@login_required
+def delete_download_link(request, production_id, download_link_id):
+	production = get_object_or_404(Production, id = production_id)
+	download_link = get_object_or_404(DownloadLink, id = download_link_id, production = production)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			download_link.delete()
+		return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('production_delete_download_link', args = [production_id, download_link_id]),
+			"Are you sure you want to delete this download link for %s?" % production.title )
+
+@login_required
 def create(request):
 	if request.method == 'POST':
 		production = Production()
-		if request.user.is_staff:
-			form = AdminProductionForm(request.POST, instance = production)
-		else:
-			form = ProductionForm(request.POST, instance = production)
+		form = CreateProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
@@ -101,19 +154,15 @@ def create(request):
 			production.platforms = get_production_platforms(production_platform_formset)
 			production.author_nicks = [form.matched_nick() for form in author_formset.forms]
 			production.author_affiliation_nicks = [form.matched_nick() for form in affiliation_formset.forms]
-			messages.success(request, 'Production added')
-			return redirect('production', args = [production.id])
+			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		if request.user.is_staff:
-			form = AdminProductionForm()
-		else:
-			form = ProductionForm()
+		form = CreateProductionForm()
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet()
 		author_formset = AttachedNickFormSet(prefix = 'authors')
 		affiliation_formset = AttachedNickFormSet(prefix = 'affiliations')
-	return render(request, 'productions/create.html', {
+	return ajaxable_render(request, 'productions/create.html', {
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
@@ -135,10 +184,10 @@ def add_credit(request, production_id):
 				role = form.cleaned_data['role']
 			)
 			credit.save()
-			return redirect('production', args = [production.id])
+			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionAddCreditForm()
-	return render(request, 'productions/add_credit.html', {
+	return ajaxable_render(request, 'productions/add_credit.html', {
 		'production': production,
 		'form': form,
 	})
@@ -154,14 +203,14 @@ def edit_credit(request, production_id, credit_id):
 			credit.nick = nick
 			credit.role = form.cleaned_data['role']
 			credit.save()
-			return redirect('production', args = [production.id])
+			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionAddCreditForm({
 			'nick_name': credit.nick.name,
 			'nick_id': credit.nick_id,
 			'role': credit.role
 		})
-	return render(request, 'productions/edit_credit.html', {
+	return ajaxable_render(request, 'productions/edit_credit.html', {
 		'production': production,
 		'credit': credit,
 		'form': form,
@@ -174,12 +223,11 @@ def delete_credit(request, production_id, credit_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			credit.delete()
-		return redirect('production', args = [production.id])
+		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		return render(request, 'productions/delete_credit.html', {
-			'production': production,
-			'credit': credit,
-		})
+		return simple_ajax_confirmation(request,
+			reverse('production_delete_credit', args = [production_id, credit_id]),
+			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, production.title) )
 
 def autocomplete(request):
 	query = request.GET.get('q')

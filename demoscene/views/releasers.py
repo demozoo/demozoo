@@ -163,7 +163,8 @@ def delete_nick(request, releaser_id, nick_id):
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	
 	if request.method == 'POST':
-		nick.delete()
+		if request.POST.get('yes'):
+			nick.delete()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

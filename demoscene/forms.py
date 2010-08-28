@@ -29,15 +29,15 @@ class AnyFormatDateField(forms.DateField):
 			raise ValidationError(self.error_messages['invalid'])
 		
 
-class ProductionForm(forms.ModelForm):
+class ProductionEditCoreDetailsForm(forms.ModelForm):
 	class Meta:
 		model = Production
 		fields = ('title', )
 
-class AdminProductionForm(forms.ModelForm):
+class CreateProductionForm(forms.ModelForm):
 	class Meta:
 		model = Production
-		fields = ('title', 'notes')
+		fields = ('title', )
 
 class ProductionTypeForm(forms.Form):
 	production_type = forms.ModelChoiceField(queryset = ProductionType.objects.order_by('name'))
@@ -51,6 +51,15 @@ ProductionPlatformFormSet = formset_factory(ProductionPlatformForm, can_delete =
 
 DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 
+class ProductionEditNotesForm(forms.ModelForm):
+	class Meta:
+		model = Production
+		fields = ['notes']
+
+class ProductionDownloadLinkForm(forms.ModelForm):
+	class Meta:
+		model = DownloadLink
+		fields = ['url']
 
 class CreateGroupForm(forms.ModelForm):
 	class Meta:

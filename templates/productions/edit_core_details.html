@@ -1,13 +1,13 @@
-<h2>New production</h2>
+<h2>Editing production: {{ production.title }}</h2>
 
-<form action="{% url new_production %}" method="post" class="entry_form">
+<form action="{% url production_edit_core_details production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% with form.title as field %}
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	<div class="field"
+	<div class="field">
 		<label for="byline" class="field_label">By</label>
 		<div class="field_input">
 			<input type="text" id="byline" class="byline_autocomplete" value="{{ production.byline }}" />
@@ -42,26 +42,6 @@
 					<li>
 						<div class="formset_item">{{ prod_platform_form.platform }}</div>
 						<span class="delete">{{ prod_platform_form.DELETE }} {{ prod_platform_form.DELETE.label_tag }}</span>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-	
-	<div class="field">
-		<label for="id_download_links-0-url" class="field_label">Download URL</label>
-		<div class="field_input spawning_formset">
-			{{ download_link_formset.management_form }}
-			<ul>
-				{% for dl_form in download_link_formset.forms %}
-					<li>
-						<div class="formset_item">
-							{{ dl_form.url }}
-							{% for hidden in dl_form.hidden_fields %}
-								{{ hidden }}
-							{% endfor %}
-						</div>
-						<span class="delete">{{ dl_form.DELETE }} {{ dl_form.DELETE.label_tag }}</span>
 					</li>
 				{% endfor %}
 			</ul>

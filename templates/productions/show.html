@@ -4,69 +4,110 @@
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	<h2>{{ production.title }}</h2>
-	{% if author_nicks %}
-		<h3>
-			by
-			{% for nick in author_nicks %}
-				{% if not forloop.first %} and {% endif %}
-				<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
-			{% endfor %}
-			{% if author_affiliation_nicks %}
-				/
-				{% for nick in author_affiliation_nicks %}
-					{% if not forloop.first %} ^ {% endif %}
+	<div class="panel">
+		<ul class="actions">
+			{% if editing %}
+				<li><a href="{% url production production.id %}" class="done">Done</a></li>
+			{% else %}
+				<li><a href="{% url edit_production production.id %}" class="edit">Edit</a></li>
+			{% endif %}
+		</ul>
+		
+		<h2>{{ production.title }}</h2>
+		{% if author_nicks %}
+			<h3>
+				by
+				{% for nick in author_nicks %}
+					{% if not forloop.first %} and {% endif %}
 					<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
 				{% endfor %}
-			{% endif %}
-		</h3>
-	{% endif %}
+				{% if author_affiliation_nicks %}
+					/
+					{% for nick in author_affiliation_nicks %}
+						{% if not forloop.first %} ^ {% endif %}
+						<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
+					{% endfor %}
+				{% endif %}
+			</h3>
+		{% endif %}
+		
+		<a href="{% url production_edit_core_details production.id %}" class="open_in_lightbox">
+			<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
+		</a>
+		
+		<ul>
+			{% for production_type in production.types.all %}
+				<li>{{ production_type.name }}</li>
+			{% endfor %}
+		</ul>
+		
+		<ul>
+			{% for platform in production.platforms.all %}
+				<li>{{ platform.name }}</li>
+			{% endfor %}
+		</ul>
+	</div>
 	
-	<a href="{% url edit_production production.id %}">edit</a>
-	
-	<ul>
-		{% for production_type in production.types.all %}
-			<li>{{ production_type.name }}</li>
-		{% endfor %}
-	</ul>
-	
-	<ul>
-		{% for platform in production.platforms.all %}
-			<li>{{ platform.name }}</li>
-		{% endfor %}
-	</ul>
-	
-	{% if production.notes %}
+	{% if production.notes or editing_as_admin %}
 		<div class="notes">
+			{% if editing_as_admin %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url production_edit_notes production.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
 			{{ production.notes|safe_markdown }}
+			<div style="clear: both;"></div>
 		</div>
 	{% endif %}
 	
-	<h3>Credits</h3>
-	<ul>
-		{% for credit in credits %}
-			<li>
-				<a href="{{ credit.nick.releaser.get_absolute_url }}">{{ credit.nick }}</a>
-				{% if credit.role %}
-					- {{ credit.role }}
+	{% if credits or editing %}
+		<div class="panel">
+			<h3>Credits</h3>
+			<ul>
+				{% for credit in credits %}
+					<li>
+						<a href="{{ credit.nick.releaser.get_absolute_url }}">{{ credit.nick }}</a>
+						{% if credit.role %}
+							- {{ credit.role }}
+						{% endif %}
+						{% if editing %}
+							<a href="{% url production_edit_credit production.id credit.id %}" class="open_in_lightbox">
+								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+							</a>
+						{% endif %}
+					</li>
+				{% endfor %}
+				{% if editing %}
+					<li class="add">
+						<a href="{% url production_add_credit production.id %}" class="open_in_lightbox">Add credit</a>
+					</li>
 				{% endif %}
-				{% if user.is_authenticated %}
-					<a href="{% url production_edit_credit production.id credit.id %}">
-						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-					</a>
-				{% endif %}
-			</li>
-		{% endfor %}
-		{% if user.is_authenticated %}
-			<li class="add">
-				<a href="{% url production_add_credit production.id %}">Add credit</a>
-			</li>
-		{% endif %}
-	</ul>
+			</ul>
+		</div>
+	{% endif %}
 	
-	<ul>
-		{% for link in production.download_links.all %}
-			<li><a href="{{ link.url }}">download</a></li>
-		{% endfor %}
-	</ul>
+	{% with production.download_links.all as links %}
+		{% if links or editing %}
+			<div class="panel">
+				<h3>Downloads</h3>
+				<ul>
+					{% for link in production.download_links.all %}
+						<li class="download_link">
+							<a href="{{ link.url }}">download</a>
+							{% if editing %}
+								<a href="{% url production_edit_download_link production.id link.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit download link" title="Edit download link" />
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url production_add_download_link production.id %}" class="open_in_lightbox">Add download link</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endif %}
+	{% endwith %}
 {% endblock %}
