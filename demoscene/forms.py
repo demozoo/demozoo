@@ -4,6 +4,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
 from geocode import geocode
+from fuzzy_date import FuzzyDate
 from django.core.exceptions import ValidationError
 
 import timelib # for any-format date parsing
@@ -28,11 +29,40 @@ class AnyFormatDateField(forms.DateField):
 		except ValueError:
 			raise ValidationError(self.error_messages['invalid'])
 		
-
+class FuzzyDateField(forms.Field):
+	widget = forms.DateInput(format = '%e %b %Y', attrs={'class':'date'})
+	def to_python(self, value):
+		"""
+		Validates that the input can be converted to a date. Returns a
+		FuzzyDate object.
+		"""
+		if value in validators.EMPTY_VALUES:
+			return None
+		if isinstance(value, FuzzyDate):
+			return value
+		try:
+			return FuzzyDate.parse(value)
+		except ValueError:
+			raise ValidationError(self.error_messages['invalid'])
+	
 class ProductionEditCoreDetailsForm(forms.ModelForm):
+	release_date = FuzzyDateField()
+	def __init__(self, *args, **kwargs):
+		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
+		if kwargs.has_key('instance'):
+			instance = kwargs['instance']
+			self.initial['release_date'] = instance.release_date
+	
+	def save(self, commit = True):
+		instance = super(ProductionEditCoreDetailsForm, self).save(commit=False)
+		instance.release_date = self.cleaned_data['release_date']
+		if commit:
+			instance.save()
+		return instance
+		
 	class Meta:
 		model = Production
-		fields = ('title', )
+		fields = ('title', 'release_date')
 
 class CreateProductionForm(forms.ModelForm):
 	class Meta:

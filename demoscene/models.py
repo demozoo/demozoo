@@ -1,5 +1,6 @@
 from django.db import models
 import re
+from fuzzy_date import FuzzyDate
 
 # Create your models here.
 class Platform(models.Model):
@@ -325,6 +326,8 @@ class Production(models.Model):
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
 	notes = models.TextField(blank = True)
+	release_date_date = models.DateField(null = True, blank = True)
+	release_date_precision = models.CharField(max_length = 1, blank = True)
 	
 	search_result_template = 'search/results/production.html'
 	
@@ -353,6 +356,20 @@ class Production(models.Model):
 	@models.permalink
 	def get_absolute_edit_url(self):
 		return ('demoscene.views.productions.edit', [str(self.id)])
+	
+	def _get_release_date(self):
+		if self.release_date_date and self.release_date_precision:
+			return FuzzyDate(self.release_date_date, self.release_date_precision)
+		else:
+			return None
+	def _set_release_date(self, fuzzy_date):
+		if fuzzy_date:
+			self.release_date_date = fuzzy_date.date
+			self.release_date_precision = fuzzy_date.precision
+		else:
+			self.release_date_date = None
+			self.release_date_precision = ''
+	release_date = property(_get_release_date,_set_release_date)
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

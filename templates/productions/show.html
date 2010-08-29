@@ -35,6 +35,10 @@
 			<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 		</a>
 		
+		{% if production.release_date %}
+			<p>Release date: {{ production.release_date }}</p>
+		{% endif %}
+		
 		<ul>
 			{% for production_type in production.types.all %}
 				<li>{{ production_type.name }}</li>
