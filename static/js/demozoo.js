@@ -274,7 +274,7 @@ function applyGlobalBehaviours(context) {
 	})
 	
 	$('input.date', context).each(function() {
-		var opts = {dateFormat: 'd M yy'};
+		var opts = {dateFormat: 'd M yy', constrainInput: false};
 		$(this).datepicker(opts);
 	});
 	

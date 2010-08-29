@@ -500,10 +500,13 @@ $.extend(Datepicker.prototype, {
 						break; // hide on tab out
 				case 13: var sel = $('td.' + $.datepicker._dayOverClass, inst.dpDiv).
 							add($('td.' + $.datepicker._currentClass, inst.dpDiv));
+						/* MW 2010-08-29: Don't select date on enter. It always chooses something stupid.
 						if (sel[0])
 							$.datepicker._selectDay(event.target, inst.selectedMonth, inst.selectedYear, sel[0]);
 						else
 							$.datepicker._hideDatepicker();
+						*/
+						$.datepicker._hideDatepicker();
 						return false; // don't submit the form
 						break; // select the value on enter
 				case 27: $.datepicker._hideDatepicker();

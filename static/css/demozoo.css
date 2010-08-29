@@ -113,6 +113,10 @@ form.entry_form .field .field_input .help_text {
 	font-size: 0.66em;
 }
 
+#ui-datepicker-div {
+	z-index: 3010; /* jqmodal uses 3000 - need to be ahead of that */
+}
+
 /* external links form needs bigger labels */
 form.external_links_form .field label.field_label {
 	width: 200px;
