@@ -84,31 +84,41 @@
 	</div>
 
 	<div id="main_column">
-		{% with group.productions as prods %}
-			{% if prods %}
-				<div class="panel">
-					<h3 class="productions_header">Productions:</h3>
-					<ul>
-						{% for prod in group.productions %}
-							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-						{% endfor %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+		{% if productions %}
+			<div class="panel">
+				<h3 class="productions_header">Productions:</h3>
+				<table width="100%">
+					<col width="50%" />
+					<col width="10%" />
+					<col width="40%" />
+					{% for prod in productions %}
+						<tr>
+							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+							<td>{{ prod.release_date.short_format }}</td>
+							<td>{% byline prod %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
 		
-		{% with group.member_productions as prods %}
-			{% if prods %}
-				<div class="panel">
-					<h3 class="member_productions_header">Member productions:</h3>
-					<ul>
-						{% for prod in group.member_productions %}
-							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-						{% endfor %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+		{% if member_productions %}
+			<div class="panel">
+				<h3 class="member_productions_header">Member productions:</h3>
+				<table width="100%">
+					<col width="50%" />
+					<col width="10%" />
+					<col width="40%" />
+					{% for prod in member_productions %}
+						<tr>
+							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+							<td>{{ prod.release_date.short_format }}</td>
+							<td>{% byline prod %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
 	</div>
 	{% if editing_as_admin and not group.is_referenced %}
 		<ul class="maintenance_actions">

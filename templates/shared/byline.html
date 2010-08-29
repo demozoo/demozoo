@@ -1,0 +1,11 @@
+{% for nick in author_nicks %}
+	{% if not forloop.first %} and {% endif %}
+	<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
+{% endfor %}
+{% if author_affiliation_nicks %}
+	/
+	{% for nick in author_affiliation_nicks %}
+		{% if not forloop.first %} ^ {% endif %}
+		<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
+	{% endfor %}
+{% endif %}

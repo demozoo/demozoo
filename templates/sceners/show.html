@@ -119,26 +119,34 @@
 	</div>
 	
 	<div id="main_column">
-		{% with scener.productions as prods %}
-			{% if prods %}
-				<div class="panel">
-					<h3 class="productions_header">Productions:</h3>
-					<ul>
-						{% for prod in prods %}
-							<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
-						{% endfor %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+		{% if productions %}
+			<div class="panel">
+				<h3 class="productions_header">Productions:</h3>
+				<table width="100%">
+					<col width="50%" />
+					<col width="10%" />
+					<col width="40%" />
+					{% for prod in productions %}
+						<tr>
+							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+							<td>{{ prod.release_date.short_format }}</td>
+							<td>{% byline prod %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
 		
-		{% with scener.credits as credits %}
-			{% if credits or editing %}
-				<div class="panel">
-					<h3 class="credits_header">Credited on:</h3>
-					<ul>
-						{% for credit in scener.credits %}
-							<li>
+		{% if credits or editing %}
+			<div class="panel">
+				<h3 class="credits_header">Credited on:</h3>
+				<table width="100%">
+					<col width="50%" />
+					<col width="10%" />
+					<col width="40%" />
+					{% for credit in credits %}
+						<tr>
+							<td>
 								<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
 								{% if credit.role %}
 									- {{ credit.role }}
@@ -146,22 +154,21 @@
 								{% if credit.nick.name != scener.name %}
 									<i>(as {{ credit.nick.name }})</i>
 								{% endif %}
-								{% if editing %}
+							</td>
+							<td>{{ credit.production.release_date.short_format }}</td>
+							<td>{% byline credit.production %}</td>
+							{% if editing %}
+								<td>
 									<a href="{% url releaser_edit_credit scener.id credit.id %}" class="open_in_lightbox">
 										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
 									</a>
-								{% endif %}
-							</li>
-						{% endfor %}
-						{% if editing %}
-							<li class="add">
-								<a href="{% url releaser_add_credit scener.id %}" class="open_in_lightbox">Add credit</a>
-							</li>
-						{% endif %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+								</td>
+							{% endif %}
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
 	</div>
 	
 	{% if editing_as_admin and not scener.is_referenced %}

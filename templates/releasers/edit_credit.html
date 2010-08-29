@@ -1,4 +1,4 @@
-<h2>Editing credit for {{ releaser.name }}:</h2>
+<h2>Editing credit for {{ credit.production.title }}:</h2>
 
 <form action="{% url releaser_edit_credit releaser.id credit.id %}" method="post" class="entry_form">
 	{% csrf_token %}

@@ -21,6 +21,12 @@ class FuzzyDate():
 	def __unicode__(self):
 		return self.__str__()
 	
+	def short_format(self):
+		if self.precision == 'y':
+			return self.date.strftime("%Y")
+		else:
+			return self.date.strftime("%b %Y")
+	
 	@staticmethod
 	def parse(str):
 		date = dateutil.parser.parse(str, dayfirst = True).date()

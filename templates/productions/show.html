@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
+{% load demoscene_tags %}
 
 {% block body_class %}show_production{% endblock %}
 
@@ -14,20 +15,9 @@
 		</ul>
 		
 		<h2>{{ production.title }}</h2>
-		{% if author_nicks %}
+		{% if production.author_nicks %}
 			<h3>
-				by
-				{% for nick in author_nicks %}
-					{% if not forloop.first %} and {% endif %}
-					<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
-				{% endfor %}
-				{% if author_affiliation_nicks %}
-					/
-					{% for nick in author_affiliation_nicks %}
-						{% if not forloop.first %} ^ {% endif %}
-						<a href="{{ nick.releaser.get_absolute_url }}">{{ nick }}</a>
-					{% endfor %}
-				{% endif %}
+				by {% byline production %}
 			</h3>
 		{% endif %}
 		
@@ -35,8 +25,8 @@
 			<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 		</a>
 		
-		{% if production.release_date %}
-			<p>Release date: {{ production.release_date }}</p>
+		{% if production.release_date or editing %}
+			<p>Release date: {% if production.release_date %}{{ production.release_date }}{% else %}<em>not set</em>{% endif %}</p>
 		{% endif %}
 		
 		<ul>
