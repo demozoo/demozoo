@@ -279,8 +279,10 @@ function applyGlobalBehaviours(context) {
 	});
 	
 	function openUrlInLightbox(url) {
+		$('body').addClass('loading');
 		lightboxContent.load(url, function() {
 			applyGlobalBehaviours(lightbox);
+			$('body').removeClass('loading');
 			lightbox.jqmShow();
 		});
 	}
