@@ -65,6 +65,20 @@ class ProductionEditCoreDetailsForm(forms.ModelForm):
 		fields = ('title', 'release_date')
 
 class CreateProductionForm(forms.ModelForm):
+	release_date = FuzzyDateField()
+	def __init__(self, *args, **kwargs):
+		super(CreateProductionForm, self).__init__(*args, **kwargs)
+		if kwargs.has_key('instance'):
+			instance = kwargs['instance']
+			self.initial['release_date'] = instance.release_date
+	
+	def save(self, commit = True):
+		instance = super(CreateProductionForm, self).save(commit=False)
+		instance.release_date = self.cleaned_data['release_date']
+		if commit:
+			instance.save()
+		return instance
+	
 	class Meta:
 		model = Production
 		fields = ('title', )

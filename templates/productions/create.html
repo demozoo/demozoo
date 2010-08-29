@@ -18,6 +18,10 @@
 		</div>
 	</div>
 	
+	{% with form.release_date as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
+	
 	<div class="field">
 		<label for="id_prod_type-0-production_type" class="field_label">Type</label>
 		<div class="field_input spawning_formset">
