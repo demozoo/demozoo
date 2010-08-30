@@ -16,6 +16,6 @@ class Command(NoArgsCommand):
 					print "%s: %s" % (prod.title, date)
 				except ValueError:
 					raise ValueError("can't parse date %s for prod %s (%s)" % (note_match.group(1), prod.id, prod.title))
-				# prod.release_date = date
-				# prod.notes = replace(prod.notes, note_match.group(0), '')
-				# prod.save()
+				prod.release_date = date
+				prod.notes = replace(prod.notes, note_match.group(0), '')
+				prod.save()
