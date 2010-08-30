@@ -1,6 +1,6 @@
 from demoscene.models import Releaser
 import re
-from string import rstrip
+from string import rstrip, replace
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):
@@ -22,6 +22,10 @@ class Command(NoArgsCommand):
 						surname = name_match.group(2)
 					else:
 						first_name = rstrip(full_name, '.')
-						surname = None
+						surname = ''
 				print "%s => [%s] [%s]" % (releaser.name, first_name, surname)
-
+				if first_name != 'n/a':
+					releaser.first_name = first_name
+					releaser.surname = surname
+					releaser.notes = replace(releaser.notes, note_match.group(0), note_match.group(2))
+					releaser.save()
