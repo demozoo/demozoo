@@ -3,4 +3,6 @@
 		{{ variant.name }}
 	{% endfor %}
 {% endfor %}
+{{ object.first_name }} {{ object.surname }}
+{{ object.location }}
 {{ object.notes }}
