@@ -20,8 +20,8 @@ def show(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
-		'productions': scener.productions().order_by('release_date_date'),
-		'credits': scener.credits().order_by('production__release_date_date'),
+		'productions': scener.productions().order_by('-release_date_date'),
+		'credits': scener.credits().order_by('-production__release_date_date'),
 	})
 
 @login_required
@@ -29,8 +29,8 @@ def edit(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
-		'productions': scener.productions().order_by('release_date_date'),
-		'credits': scener.credits().order_by('production__release_date_date'),
+		'productions': scener.productions().order_by('-release_date_date'),
+		'credits': scener.credits().order_by('-production__release_date_date'),
 		'editing': True,
 		'editing_as_admin': request.user.is_staff,
 	})

@@ -20,8 +20,8 @@ def show(request, group_id):
 	return render(request, 'groups/show.html', {
 		'group': group,
 		'members': group.members.order_by('name'),
-		'productions': group.productions().order_by('release_date_date'),
-		'member_productions': group.member_productions().order_by('release_date_date'),
+		'productions': group.productions().order_by('-release_date_date'),
+		'member_productions': group.member_productions().order_by('-release_date_date'),
 	})
 
 @login_required
@@ -30,8 +30,8 @@ def edit(request, group_id):
 	return render(request, 'groups/show.html', {
 		'group': group,
 		'members': group.members.order_by('name'),
-		'productions': group.productions().order_by('release_date_date'),
-		'member_productions': group.member_productions().order_by('release_date_date'),
+		'productions': group.productions().order_by('-release_date_date'),
+		'member_productions': group.member_productions().order_by('-release_date_date'),
 		'editing': True,
 		'editing_as_admin': request.user.is_staff,
 	})
