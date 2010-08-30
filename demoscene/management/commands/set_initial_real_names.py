@@ -1,5 +1,6 @@
 from demoscene.models import Releaser
 import re
+from string import rstrip
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):
