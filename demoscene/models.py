@@ -339,9 +339,10 @@ class Production(models.Model):
 	release_date_date = models.DateField(null = True, blank = True)
 	release_date_precision = models.CharField(max_length = 1, blank = True)
 
-	external_site_ref_field_names = ['pouet_id','csdb_id']
+	external_site_ref_field_names = ['pouet_id','csdb_id','bitworld_id']
 	pouet_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet ID')
 	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
+	bitworld_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld ID')
 	
 	search_result_template = 'search/results/production.html'
 	
@@ -395,7 +396,16 @@ class Production(models.Model):
 			return None
 			
 	def csdb_url(self):
-		pass # FIXME: find out the format of CSDb links...
+		if self.csdb_id:
+			return "http://noname.c64.org/csdb/release/?id=%s" % self.csdb_id
+		else:
+			return None
+	
+	def bitworld_url(self):
+		if self.bitworld_id:
+			return "http://bitworld.bitfellas.org/demo.php?id=%s" % self.bitworld_id
+		else:
+			return None
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

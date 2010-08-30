@@ -468,6 +468,9 @@ ul.parties_in_series li.current {
 .external_links a.artcity {
 	background-image: url('/static/images/icons/external_sites/bitfellas.png');
 }
+.external_links a.bitworld {
+	background-image: url('/static/images/icons/external_sites/bitfellas.png');
+}
 .external_links a.mobygames {
 	background-image: url('/static/images/icons/external_sites/mobygames.png');
 }

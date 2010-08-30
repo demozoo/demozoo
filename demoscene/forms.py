@@ -112,6 +112,7 @@ class ProductionEditExternalLinksForm(forms.ModelForm):
 		widgets = {
 			'pouet_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'csdb_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 
 class CreateGroupForm(forms.ModelForm):

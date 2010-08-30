@@ -49,6 +49,7 @@
 				<ul>
 					{% if production.pouet_id %}<li><a href="{{ production.pouet_url }}" class="pouet" title="{{ production.title }} on Pouët">Pouët</a></li>{% endif %}
 					{% if production.csdb_id %}<li><a href="{{ production.csdb_url }}" class="csdb" title="{{ production.title }} on CSDb">CSDb</a></li>{% endif %}
+					{% if production.bitworld_id %}<li><a href="{{ production.bitworld_url }}" class="bitworld" title="{{ production.title }} on Bitworld">Bitworld</a></li>{% endif %}
 					{% if editing_as_admin %}<li><a href="{% url production_edit_external_links production.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>
