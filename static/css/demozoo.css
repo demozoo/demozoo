@@ -56,6 +56,15 @@ ul, ol {
 	color: #444;
 }
 
+.notes a:link {
+	text-decoration: none;
+	border-bottom: 1px solid #000088;
+}
+.notes a:visited {
+	text-decoration: none;
+	border-bottom: 1px solid #880088;
+}
+
 .panel {
 	border: 1px solid #ccc;
 	margin-top: 16px;

@@ -27,7 +27,7 @@ class Releaser(models.Model):
 	sceneid_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'SceneID / Pouet user ID')
 	slengpung_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung user ID')
 	amp_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'AMP author ID')
-	csdb_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB author ID')
+	csdb_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb author ID')
 	nectarine_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Nectarine author ID')
 	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
 	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
@@ -38,6 +38,9 @@ class Releaser(models.Model):
 	latitude = models.FloatField(null = True, blank = True)
 	longitude = models.FloatField(null = True, blank = True)
 	woe_id = models.BigIntegerField(null = True, blank = True)
+	
+	first_name = models.CharField(max_length = 255, blank = True)
+	surname = models.CharField(max_length = 255, blank = True)
 	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser
@@ -145,6 +148,13 @@ class Releaser(models.Model):
 	def alternative_nicks(self):
 		# A queryset of all nicks except the primary one
 		return self.nicks.exclude(name = self.name)
+	
+	@property
+	def real_name(self):
+		if self.first_name or self.surname:
+			return "%s %s" % (self.first_name, self.surname)
+		else:
+			return None
 	
 	# Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
 	# that should prevent its deletion
@@ -328,6 +338,10 @@ class Production(models.Model):
 	notes = models.TextField(blank = True)
 	release_date_date = models.DateField(null = True, blank = True)
 	release_date_precision = models.CharField(max_length = 1, blank = True)
+
+	external_site_ref_field_names = ['pouet_id','csdb_id']
+	pouet_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet ID')
+	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
 	
 	search_result_template = 'search/results/production.html'
 	
@@ -370,6 +384,18 @@ class Production(models.Model):
 			self.release_date_date = None
 			self.release_date_precision = ''
 	release_date = property(_get_release_date,_set_release_date)
+	
+	def has_any_external_links(self):
+		return [True for field in self.external_site_ref_field_names if self.__dict__[field] != None]
+		
+	def pouet_url(self):
+		if self.pouet_id:
+			return "http://pouet.net/prod.php?which=%s" % self.pouet_id
+		else:
+			return None
+			
+	def csdb_url(self):
+		pass # FIXME: find out the format of CSDb links...
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

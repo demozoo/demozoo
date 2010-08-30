@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import ScenerAddGroupForm, ScenerEditExternalLinksForm, ScenerEditLocationForm, CreateScenerForm
+from demoscene.forms import ScenerAddGroupForm, ScenerEditExternalLinksForm, ScenerEditLocationForm, CreateScenerForm, ScenerEditRealNameForm
 
 from django.contrib.auth.decorators import login_required
 
@@ -52,7 +52,7 @@ def edit_external_links(request, scener_id):
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 		
 	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm,
-		title = 'Editing external links for %s' % scener.name,
+		title = 'Editing external links for %s:' % scener.name,
 		html_form_class = 'external_links_form')
 		
 @login_required
@@ -60,7 +60,16 @@ def edit_location(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	
 	return simple_ajax_form(request, 'scener_edit_location', scener, ScenerEditLocationForm,
-		title = 'Editing location for %s' % scener.name)
+		title = 'Editing location for %s:' % scener.name)
+
+@login_required
+def edit_real_name(request, scener_id):
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+		
+	return simple_ajax_form(request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
+		title = "Editing %s's real name:" % scener.name)
 
 @login_required
 def create(request):

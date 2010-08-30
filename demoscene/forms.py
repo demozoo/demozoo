@@ -105,6 +105,15 @@ class ProductionDownloadLinkForm(forms.ModelForm):
 		model = DownloadLink
 		fields = ['url']
 
+class ProductionEditExternalLinksForm(forms.ModelForm):
+	class Meta:
+		model = Production
+		fields = Production.external_site_ref_field_names
+		widgets = {
+			'pouet_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'csdb_id': forms.TextInput(attrs={'class': 'numeric'}),
+		}
+
 class CreateGroupForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
@@ -154,6 +163,11 @@ class ScenerEditLocationForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
 		fields = ('location',)
+
+class ScenerEditRealNameForm(forms.ModelForm):
+	class Meta:
+		model = Releaser
+		fields = ['first_name', 'surname']
 
 class ScenerEditExternalLinksForm(forms.ModelForm):
 	class Meta:

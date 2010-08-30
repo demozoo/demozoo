@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit, DownloadLink
-from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm
+from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -82,7 +82,15 @@ def edit_notes(request, production_id):
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
-		title = 'Editing notes for %s' % production.title)
+		title = 'Editing notes for %s:' % production.title)
+
+@login_required
+def edit_external_links(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_edit_url())
+	return simple_ajax_form(request, 'production_edit_external_links', production, ProductionEditExternalLinksForm,
+		title = 'Editing external links for %s:' % production.title)
 
 @login_required
 def add_download_link(request, production_id):
