@@ -8,7 +8,7 @@ class Command(NoArgsCommand):
 		for releaser in Releaser.objects.all():
 			if releaser.first_name and releaser.surname:
 				continue
-			note_match = re.search(r'real name:\s*(.*?)\s*(\n|\,|\()', releaser.notes, re.I)
+			note_match = re.search(r'real name:\s*(.*?)\s*(\n|\,|\(|$)', releaser.notes, re.I)
 			if note_match:
 				full_name = note_match.group(1)
 				name_match = re.match(r'(.+) (van|von) (.*[^\.])', full_name, re.I)
