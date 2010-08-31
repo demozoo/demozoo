@@ -2,7 +2,7 @@
 	<h2>{{ title }}</h2>
 {% endif %}
 
-<form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
+<form action="{{ action_url }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {{ html_form_class }}">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}

@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit, DownloadLink
-from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm
+from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot
+from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm, ProductionAddScreenshotForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -138,6 +138,23 @@ def delete_download_link(request, production_id, download_link_id):
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_download_link', args = [production_id, download_link_id]),
 			"Are you sure you want to delete this download link for %s?" % production.title )
+
+@login_required
+def add_screenshot(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	screenshot = Screenshot(production = production)
+	if request.method == 'POST':
+		form = ProductionAddScreenshotForm(request.POST, request.FILES, instance = screenshot)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		form = ProductionAddScreenshotForm(instance = screenshot)
+	return ajaxable_render(request, 'shared/simple_form.html', {
+		'form': form,
+		'title': "Adding screenshot for %s:" % production.title,
+		'action_url': reverse('production_add_screenshot', args=[production.id]),
+	})
 
 @login_required
 def create(request):

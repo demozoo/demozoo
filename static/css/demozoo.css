@@ -388,6 +388,10 @@ body.show_production h3 {
 	padding-left: 4px;
 	display: inline;
 }
+ul.screenshots {
+	float: left;
+	margin-right: 16px;
+}
 
 /* party series listing */
 ul.party_series_index li a.party_series_link {

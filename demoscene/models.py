@@ -419,6 +419,10 @@ class Credit(models.Model):
 	def __unicode__(self):
 		return "%s - %s (%s)" % (self.production.title, self.nick.name, self.role)
 
+class Screenshot(models.Model):
+	production = models.ForeignKey(Production, related_name = 'screenshots')
+	original = models.ImageField(upload_to = 'screenshots/original', verbose_name = 'image file')
+
 class PartySeries(models.Model):
 	name = models.CharField(max_length = 255)
 	

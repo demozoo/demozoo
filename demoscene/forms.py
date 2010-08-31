@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick, Party, PartySeries
+from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick, Party, PartySeries, Screenshot
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
@@ -265,6 +265,11 @@ class ProductionAddCreditForm(forms.Form):
 	# nick_id can contain a nick ID, 'newscener' or 'newgroup' as per Nick.from_id_and_name
 	nick_id = forms.CharField(widget = forms.HiddenInput)
 	role = forms.CharField()
+
+class ProductionAddScreenshotForm(forms.ModelForm):
+	class Meta:
+		model = Screenshot
+		fields = ['original']
 
 class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):

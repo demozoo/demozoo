@@ -14,6 +14,23 @@
 			{% endif %}
 		</ul>
 		
+		{% with production.screenshots.all as screenshots %}
+			{% if screenshots or editing %}
+				<ul class="screenshots">
+					{% for pic in screenshots %}
+						<li>
+							<img src="{{ pic.original.url }}" width="{{ pic.original.width }}" height="{{ pic.original.height }}" alt="" />
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url production_add_screenshot production.id %}" class="open_in_lightbox">Add screenshot</a>
+						</li>
+					{% endif %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+		
 		<h2>{{ production.title }}</h2>
 		{% if production.author_nicks %}
 			<h3>
@@ -54,6 +71,7 @@
 				</ul>
 			</div>
 		{% endif %}
+		<div style="clear: both;"></div>
 	</div>
 	
 	{% if production.notes or editing_as_admin %}
