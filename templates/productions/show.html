@@ -19,7 +19,7 @@
 				<ul class="screenshots">
 					{% for pic in screenshots %}
 						<li>
-							<img src="{{ pic.original.url }}" width="{{ pic.original.width }}" height="{{ pic.original.height }}" alt="" />
+							<img src="{{ pic.original.url }}" width="{{ pic.original_width }}" height="{{ pic.original_height }}" alt="" />
 						</li>
 					{% endfor %}
 					{% if editing %}

@@ -59,8 +59,9 @@ class S3BotoStorage(Storage):
 			raise ImproperlyConfigured("Invalid CallingFormat subclass: %s\
 			\nValid choices: SubdomainCallingFormat, VHostCallingFormat, OrdinaryCallingFormat")
 		self.connection = connection.S3Connection(access_key, secret_key, calling_format=klass())
-		self.bucket = self._get_or_create_bucket(bucket)
-		self.bucket.set_acl(self.acl)
+		#self.bucket = self._get_or_create_bucket(bucket)
+		self.bucket = self.connection.get_bucket(bucket, validate = False)
+		# self.bucket.set_acl(self.acl)
 	
 	def _get_access_keys(self):
 		access_key = ACCESS_KEY_NAME
@@ -147,10 +148,15 @@ class S3BotoStorage(Storage):
 	
 	def url(self, name):
 		name = self._clean_name(name)
-		if self.bucket.get_key(name) is None:
-			return ''
-		return self.bucket.get_key(name).generate_url(QUERYSTRING_EXPIRE, method='GET',
-			query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
+		
+		# No, I don't want to do a HEAD request just to get a sodding URL thankyou.
+		#if self.bucket.get_key(name) is None:
+		#	return ''
+		#return self.bucket.get_key(name).generate_url(QUERYSTRING_EXPIRE, method='GET',
+		#	query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
+		
+		return self.connection.generate_url(QUERYSTRING_EXPIRE, method='GET',
+			bucket=self.bucket.name, key=name, query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
 
 	def get_available_name(self, name):
 		""" Overwrite existing file with the same name. """
