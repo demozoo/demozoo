@@ -294,6 +294,31 @@ function applyGlobalBehaviours(context) {
 		openUrlInLightbox(this.href);
 		return false;
 	})
+	$('a.open_image_in_lightbox', context).click(function(e) {
+		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+			/* probably means they want to open it in a new window, so let them... */
+			return true;
+		}
+		var img = $('<img />').attr({'src': this.href});
+		var wrapper = $('<div style="text-align: center;"></div>');
+		wrapper.append(img);
+		lightboxContent.html(wrapper);
+		lightbox.jqmShow();
+		return false;
+	})
+	$('a.replace_main_image', context).click(function(e) {
+		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+			/* probably means they want to open it in a new window, so let them... */
+			return true;
+		}
+		$('#main_image img').attr({
+			'src': $(this).attr('data-main-image'),
+			'width': $(this).attr('data-main-image-width'),
+			'height': $(this).attr('data-main-image-height')
+		});
+		$('#main_image').attr({'href': $(this).attr('data-original-image')});
+		return false;
+	})
 	$('form.open_in_lightbox', context).submit(function() {
 		/* only use this for forms with method="get"! */
 		openUrlInLightbox(this.action + '?' + $(this).serialize());

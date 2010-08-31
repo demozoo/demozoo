@@ -388,9 +388,28 @@ body.show_production h3 {
 	padding-left: 4px;
 	display: inline;
 }
-ul.screenshots {
+body.show_production .production_title {
+	margin-bottom: 16px;
+}
+body.show_production .screenshots {
+	clear: both;
 	float: left;
 	margin-right: 16px;
+	width: 400px;
+}
+body.show_production .screenshots ul.actions {
+	clear: both;
+	float: none;
+}
+body.show_production .production_details {
+	float: left;
+	width: 400px;
+}
+
+body.show_production .screenshots ul li {
+	float: left;
+	margin-right: 8px;
+	margin-top: 8px;
 }
 
 /* party series listing */

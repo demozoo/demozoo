@@ -425,18 +425,27 @@ class Screenshot(models.Model):
 		width_field = 'original_width', height_field = 'original_height')
 	original_width = models.IntegerField()
 	original_height = models.IntegerField()
-	thumbnail = models.ImageField(upload_to="screenshots/thumb/", editable=False,
+	
+	thumbnail = models.ImageField(upload_to="screenshots/thumb", editable=False,
 		width_field = 'thumbnail_width', height_field = 'thumbnail_height')
 	thumbnail_width = models.IntegerField()
 	thumbnail_height = models.IntegerField()
-	#standard = models.ImageField(upload_to="screenshots/standard", editable=False)
+	
+	standard = models.ImageField(upload_to="screenshots/standard", editable=False,
+		width_field = 'standard_width', height_field = 'standard_height')
+	standard_width = models.IntegerField()
+	standard_height = models.IntegerField()
 	
 	def save(self, *args, **kwargs):
 		from model_thumbnail import generate_thumbnail
 		generate_thumbnail(self.original, self.thumbnail, (150, 90), crop = True)
+		generate_thumbnail(self.original, self.standard, (400, 400), crop = False)
 		
 		# Save this photo instance
 		super(Screenshot, self).save(*args, **kwargs)
+	
+	def __unicode__(self):
+		return "%s - %s" % (self.production.title, self.original)
 
 class PartySeries(models.Model):
 	name = models.CharField(max_length = 255)
