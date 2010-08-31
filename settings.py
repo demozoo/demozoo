@@ -119,6 +119,12 @@ HAYSTACK_SITECONF = 'search.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
 HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index')
 
+DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
+AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
+AWS_QUERYSTRING_AUTH = False
+AWS_BOTO_FORCE_HTTP = True
+AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
+
 # Get local settings
 try:
 	from local_settings import *
