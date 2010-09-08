@@ -120,7 +120,8 @@ form.entry_form .field .field_input input.numeric[type=text] {
 	width: 100px;
 }
 form.entry_form .field .field_input textarea {
-	width: 400px;
+	width: 420px;
+	height: 300px;
 }
 form.entry_form .field .field_input .help_text {
 	font-size: 0.66em;
