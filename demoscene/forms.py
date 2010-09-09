@@ -271,6 +271,8 @@ class ProductionAddScreenshotForm(forms.ModelForm):
 		model = Screenshot
 		fields = ['original']
 
+ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
+
 class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):
 		super(ReleaserAddCreditForm, self).__init__(*args, **kwargs)

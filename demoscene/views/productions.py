@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot
-from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm, ProductionAddScreenshotForm
+from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm, ProductionAddScreenshotFormset
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -142,18 +142,20 @@ def delete_download_link(request, production_id, download_link_id):
 @login_required
 def add_screenshot(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
-	screenshot = Screenshot(production = production)
 	if request.method == 'POST':
-		form = ProductionAddScreenshotForm(request.POST, request.FILES, instance = screenshot)
-		if form.is_valid():
-			form.save()
+		formset = ProductionAddScreenshotFormset(request.POST, request.FILES)
+		if formset.is_valid():
+			for form in formset.forms:
+				screenshot = form.save(commit = False)
+				if screenshot.original:
+					screenshot.production = production
+					screenshot.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionAddScreenshotForm(instance = screenshot)
-	return ajaxable_render(request, 'shared/simple_form.html', {
-		'form': form,
-		'title': "Adding screenshot for %s:" % production.title,
-		'action_url': reverse('production_add_screenshot', args=[production.id]),
+		formset = ProductionAddScreenshotFormset()
+	return ajaxable_render(request, 'productions/add_screenshot.html', {
+		'production': production,
+		'formset': formset,
 	})
 
 @login_required
