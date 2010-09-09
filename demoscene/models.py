@@ -1,5 +1,5 @@
 from django.db import models
-import re
+import re, uuid, os
 from fuzzy_date import FuzzyDate
 
 # Create your models here.
@@ -420,19 +420,30 @@ class Credit(models.Model):
 		return "%s - %s (%s)" % (self.production.title, self.nick.name, self.role)
 
 class Screenshot(models.Model):
+	
+	@staticmethod
+	def random_path(prefix, filepath):
+		hex = uuid.uuid4().hex;
+		filename = os.path.basename(filepath)
+		filename_root, filename_ext = os.path.splitext(filename)
+		return prefix + '/' + hex[0] + '/' + hex[1] + '/' + hex[2:] + filename_ext
+	
 	production = models.ForeignKey(Production, related_name = 'screenshots')
-	original = models.ImageField(upload_to = 'screenshots/original', verbose_name = 'image file',
-		width_field = 'original_width', height_field = 'original_height')
+	original = models.ImageField(
+		upload_to = (lambda i, f: Screenshot.random_path('screenshots/original', f) ),
+		verbose_name = 'image file', width_field = 'original_width', height_field = 'original_height')
 	original_width = models.IntegerField()
 	original_height = models.IntegerField()
 	
-	thumbnail = models.ImageField(upload_to="screenshots/thumb", editable=False,
-		width_field = 'thumbnail_width', height_field = 'thumbnail_height')
+	thumbnail = models.ImageField(
+		upload_to = (lambda i, f: Screenshot.random_path('screenshots/thumb', f) ),
+		editable=False, width_field = 'thumbnail_width', height_field = 'thumbnail_height')
 	thumbnail_width = models.IntegerField()
 	thumbnail_height = models.IntegerField()
 	
-	standard = models.ImageField(upload_to="screenshots/standard", editable=False,
-		width_field = 'standard_width', height_field = 'standard_height')
+	standard = models.ImageField(
+		upload_to = (lambda i, f: Screenshot.random_path('screenshots/standard', f) ),
+		editable=False, width_field = 'standard_width', height_field = 'standard_height')
 	standard_width = models.IntegerField()
 	standard_height = models.IntegerField()
 	
