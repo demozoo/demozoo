@@ -9,7 +9,11 @@ def generate_thumbnail(original_field, thumbnail_field, size, crop = False):
 	aspect_ratio = float(thumb_width) / float(thumb_height)
 	
 	original_field.seek(0)
-	image = Image.open(original_field)
+	# create in-memory file object because Image.open will
+	# merrily do a read() once for every format handler it has,
+	# which definitely isn't what we want if the underlying file is on S3...
+	original_file = StringIO(original_field.read())
+	image = Image.open(original_file)
 	
 	original_format = image.format
 	original_filename = os.path.basename(original_field.name)

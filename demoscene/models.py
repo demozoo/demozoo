@@ -448,9 +448,10 @@ class Screenshot(models.Model):
 	standard_height = models.IntegerField()
 	
 	def save(self, *args, **kwargs):
-		from model_thumbnail import generate_thumbnail
-		generate_thumbnail(self.original, self.thumbnail, (150, 90), crop = True)
-		generate_thumbnail(self.original, self.standard, (400, 400), crop = False)
+		if not self.id:
+			from model_thumbnail import generate_thumbnail
+			generate_thumbnail(self.original, self.thumbnail, (135, 90), crop = True)
+			generate_thumbnail(self.original, self.standard, (400, 400), crop = False)
 		
 		# Save this photo instance
 		super(Screenshot, self).save(*args, **kwargs)
