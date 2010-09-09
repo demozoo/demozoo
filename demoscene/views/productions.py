@@ -21,6 +21,7 @@ def show(request, production_id):
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
+		'screenshots': production.screenshots.order_by('id'),
 	})
 
 @login_required
@@ -28,9 +29,8 @@ def edit(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'author_nicks': production.author_nicks.all(),
-		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
 		'credits': production.credits.order_by('nick__name'),
+		'screenshots': production.screenshots.order_by('id'),
 		'editing': True,
 		'editing_as_admin': request.user.is_staff,
 	})
