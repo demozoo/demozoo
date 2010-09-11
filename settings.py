@@ -121,6 +121,8 @@ HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
+AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
+
 # Get local settings
 try:
 	from local_settings import *

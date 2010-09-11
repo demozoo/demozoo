@@ -8,7 +8,7 @@
 	<div class="panel">
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url production production.id %}" class="done">Done</a></li>
+				<li><a href="{% url edit_production_done production.id %}" class="done">Done</a></li>
 			{% else %}
 				<li><a href="{% url edit_production production.id %}" class="edit">Edit</a></li>
 			{% endif %}

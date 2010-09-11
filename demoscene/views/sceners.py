@@ -16,24 +16,28 @@ def index(request):
 		'nick_page': nick_page,
 	})
 
-def show(request, scener_id):
+def show(request, scener_id, edit_mode = False):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	
+	edit_mode = edit_mode or sticky_editing_active(request.user)
+	
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'productions': scener.productions().order_by('-release_date_date'),
 		'credits': scener.credits().order_by('-production__release_date_date'),
+		'editing': edit_mode,
+		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
 
 @login_required
 def edit(request, scener_id):
+	set_edit_mode_active(True, request.user)
+	return show(request, scener_id, edit_mode = True)
+
+def edit_done(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
-	return render(request, 'sceners/show.html', {
-		'scener': scener,
-		'productions': scener.productions().order_by('-release_date_date'),
-		'credits': scener.credits().order_by('-production__release_date_date'),
-		'editing': True,
-		'editing_as_admin': request.user.is_staff,
-	})
+	set_edit_mode_active(False, request.user)
+	return HttpResponseRedirect(scener.get_absolute_url())
 
 @login_required
 def edit_external_links(request, scener_id):

@@ -1,6 +1,7 @@
 from django.db import models
 import re, uuid, os
 from fuzzy_date import FuzzyDate
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Platform(models.Model):
@@ -512,4 +513,8 @@ class CompetitionPlacing(models.Model):
 	
 	def __unicode__(self):
 		return self.production.__unicode__()
-	
+
+class AccountProfile(models.Model):
+	user = models.ForeignKey(User, unique = True)
+	sticky_edit_mode = models.BooleanField(help_text = "Stays in edit mode when browsing around, until you explicitly hit 'done'")
+	edit_mode_active = models.BooleanField(editable = False)

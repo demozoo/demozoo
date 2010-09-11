@@ -7,7 +7,7 @@
 		
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url group group.id %}" class="done">Done</a></li>
+				<li><a href="{% url edit_group_done group.id %}" class="done">Done</a></li>
 			{% else %}
 				<li><a href="{% url edit_group group.id %}" class="edit">Edit</a></li>
 			{% endif %}

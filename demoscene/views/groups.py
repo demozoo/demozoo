@@ -15,26 +15,29 @@ def index(request):
 		'nick_page': nick_page,
 	})
 
-def show(request, group_id):
+def show(request, group_id, edit_mode = False):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	
+	edit_mode = edit_mode or sticky_editing_active(request.user)
+	
 	return render(request, 'groups/show.html', {
 		'group': group,
 		'members': group.members.order_by('name'),
 		'productions': group.productions().order_by('-release_date_date'),
 		'member_productions': group.member_productions().order_by('-release_date_date'),
+		'editing': edit_mode,
+		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
 
 @login_required
 def edit(request, group_id):
+	set_edit_mode_active(True, request.user)
+	return show(request, group_id, edit_mode = True)
+
+def edit_done(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
-	return render(request, 'groups/show.html', {
-		'group': group,
-		'members': group.members.order_by('name'),
-		'productions': group.productions().order_by('-release_date_date'),
-		'member_productions': group.member_productions().order_by('-release_date_date'),
-		'editing': True,
-		'editing_as_admin': request.user.is_staff,
-	})
+	set_edit_mode_active(False, request.user)
+	return HttpResponseRedirect(group.get_absolute_url())
 
 @login_required
 def create(request):

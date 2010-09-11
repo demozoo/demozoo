@@ -7,7 +7,7 @@
 	
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url scener scener.id %}" class="done">Done</a></li>
+				<li><a href="{% url edit_scener_done scener.id %}" class="done">Done</a></li>
 			{% else %}
 				<li><a href="{% url edit_scener scener.id %}" class="edit">Edit</a></li>
 			{% endif %}

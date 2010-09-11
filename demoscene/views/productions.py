@@ -16,24 +16,28 @@ def index(request):
 		'production_page': production_page,
 	})
 
-def show(request, production_id):
+def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)
+	
+	edit_mode = edit_mode or sticky_editing_active(request.user)
+	
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
+		'editing': edit_mode,
+		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
 
 @login_required
 def edit(request, production_id):
+	set_edit_mode_active(True, request.user)
+	return show(request, production_id, edit_mode = True)
+
+def edit_done(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
-	return render(request, 'productions/show.html', {
-		'production': production,
-		'credits': production.credits.order_by('nick__name'),
-		'screenshots': production.screenshots.order_by('id'),
-		'editing': True,
-		'editing_as_admin': request.user.is_staff,
-	})
+	set_edit_mode_active(False, request.user)
+	return HttpResponseRedirect(production.get_absolute_url())
 	
 @login_required
 def edit_core_details(request, production_id):
