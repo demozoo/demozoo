@@ -1,7 +1,11 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
-from demoscene.shortcuts import *
+from django.contrib.auth.decorators import login_required
+
 from django.contrib import messages
+from demoscene.shortcuts import *
+from demoscene.forms import AccountPreferencesForm
+from demoscene.models import AccountProfile
 
 def signup(request):
 	if request.method == 'POST':
@@ -19,4 +23,25 @@ def signup(request):
 		form = UserCreationForm()
 	return render(request, 'accounts/signup.html', {
 		'form': form,
+	})
+
+@login_required
+def preferences(request):
+	try:
+		profile = request.user.get_profile()
+	except AccountProfile.DoesNotExist:
+		profile = AccountProfile(user = request.user)
+	if request.method == 'POST':
+		form = AccountPreferencesForm(request.POST, instance = profile)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Preferences updated')
+			return redirect('home')
+	else:
+		form = AccountPreferencesForm(instance = profile)
+	
+	return ajaxable_render(request, 'shared/simple_form.html', {
+		'form': form,
+		'title': "Preferences",
+		'action_url': reverse('account_preferences'),
 	})

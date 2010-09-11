@@ -19,6 +19,7 @@ urlpatterns = patterns('',
 	(r'^accounts/login/$', 'django.contrib.auth.views.login', {}, 'log_in'),
 	(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, 'log_out'),
 	(r'^accounts/signup/$', 'demoscene.views.accounts.signup', {}, 'user_signup'),
+	(r'^accounts/preferences/$', 'demoscene.views.accounts.preferences', {}, 'account_preferences'),
 )
 
 urlpatterns += patterns('demoscene.views',

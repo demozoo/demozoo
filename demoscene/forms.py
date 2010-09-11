@@ -1,5 +1,6 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Releaser, DownloadLink, Nick, Party, PartySeries, Screenshot
+from demoscene.models import Production, ProductionType, Platform, Releaser, \
+	DownloadLink, Nick, Party, PartySeries, Screenshot, AccountProfile
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
@@ -301,3 +302,8 @@ class EditPartyForm(forms.ModelForm):
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date')
+
+class AccountPreferencesForm(forms.ModelForm):
+	class Meta:
+		model = AccountProfile
+		fields = ('sticky_edit_mode',)
