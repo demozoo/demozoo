@@ -47,7 +47,7 @@ class FuzzyDateField(forms.Field):
 			raise ValidationError(self.error_messages['invalid'])
 	
 class ProductionEditCoreDetailsForm(forms.ModelForm):
-	release_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	def __init__(self, *args, **kwargs):
 		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		if kwargs.has_key('instance'):
@@ -66,7 +66,7 @@ class ProductionEditCoreDetailsForm(forms.ModelForm):
 		fields = ('title', 'release_date')
 
 class CreateProductionForm(forms.ModelForm):
-	release_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	def __init__(self, *args, **kwargs):
 		super(CreateProductionForm, self).__init__(*args, **kwargs)
 		if kwargs.has_key('instance'):
