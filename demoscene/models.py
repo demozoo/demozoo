@@ -1,5 +1,6 @@
 from django.db import models
 import re, uuid, os
+from urlparse import urlparse
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 
@@ -411,6 +412,20 @@ class Production(models.Model):
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
 	url = models.CharField(max_length = 2048, verbose_name = 'download URL')
+	
+	def hostname(self):
+		return urlparse(self.url).hostname
+	
+	def host_identifier(self):
+		host = self.hostname()
+		if host == 'ftp.amigascne.org':
+			return 'amigascne'
+		elif host == 'www.scene.org':
+			return 'sceneorg'
+		elif host == 'ftp.untergrund.net':
+			return 'untergrund'
+		else:
+			return None
 
 class Credit(models.Model):
 	production = models.ForeignKey(Production, related_name = 'credits')

@@ -211,13 +211,24 @@ li.party {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
-li.download_link {
+
+ul.download_links li.download_link {
 	line-height: 24px;
 	padding-left: 24px;
 	background-image: url(/static/images/icons/disk.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
+ul.download_links li.sceneorg {
+	background-image: url(/static/images/icons/external_sites/sceneorg.png);
+}
+ul.download_links li.amigascne {
+	background-image: url(/static/images/icons/external_sites/amigascne.png);
+}
+ul.download_links li.untergrund {
+	background-image: url(/static/images/icons/external_sites/untergrund.png);
+}
+
 li.add {
 	line-height: 24px;
 	padding-left: 24px;

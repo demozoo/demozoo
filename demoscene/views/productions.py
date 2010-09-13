@@ -21,10 +21,16 @@ def show(request, production_id, edit_mode = False):
 	
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 	
+	download_links = production.download_links.all()
+	# reorder to put scene.org links first
+	download_links = [d for d in download_links if d.host_identifier() == 'sceneorg'] + \
+		[d for d in download_links if d.host_identifier() != 'sceneorg']
+	
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
+		'download_links': download_links,
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
