@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<div class="panel">
+		<ul class="actions">
+			<li><a href="{% url production production.id %}" class="done">Back to production</a></li>
+		</ul>
+		
+		<h2>Editing screenshots for {{ production.title }}</h2>
+		
+		<ul>
+			{% for pic in screenshots %}
+				<li>
+					<a href="{{ pic.original.url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original.url }}" data-main-image="{{ pic.standard.url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
+						<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+					</a>
+					<a href="{% url production_delete_screenshot production.id pic.id %}" class="open_in_lightbox">
+						<img src="/static/images/icons/delete.png" width="16" height="16" />
+					</a>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+{% endblock %}

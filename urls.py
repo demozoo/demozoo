@@ -42,6 +42,8 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/(\d+)/delete_download_link/(\d+)/$', 'productions.delete_download_link', {}, 'production_delete_download_link'),
 	(r'^productions/(\d+)/edit_external_links/$', 'productions.edit_external_links', {}, 'production_edit_external_links'),
 	(r'^productions/(\d+)/add_screenshot/$', 'productions.add_screenshot', {}, 'production_add_screenshot'),
+	(r'^productions/(\d+)/screenshots/$', 'productions.screenshots', {}, 'production_screenshots'),
+	(r'^productions/(\d+)/delete_screenshot/(\d+)/$', 'productions.delete_screenshot', {}, 'production_delete_screenshot'),
 	
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),

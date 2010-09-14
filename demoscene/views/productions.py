@@ -150,6 +150,14 @@ def delete_download_link(request, production_id, download_link_id):
 			"Are you sure you want to delete this download link for %s?" % production.title )
 
 @login_required
+def screenshots(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	return render(request, 'productions/screenshots.html', {
+		'production': production,
+		'screenshots': production.screenshots.order_by('id'),
+	})
+
+@login_required
 def add_screenshot(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
@@ -167,6 +175,19 @@ def add_screenshot(request, production_id):
 		'production': production,
 		'formset': formset,
 	})
+
+@login_required
+def delete_screenshot(request, production_id, screenshot_id):
+	production = get_object_or_404(Production, id = production_id)
+	screenshot = get_object_or_404(Screenshot, id = screenshot_id, production = production)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			screenshot.delete()
+		return HttpResponseRedirect(reverse('production_screenshots', args=[production.id]))
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('production_delete_screenshot', args = [production_id, screenshot_id]),
+			"Are you sure you want to delete this screenshot for %s?" % production.title )
 
 @login_required
 def create(request):
