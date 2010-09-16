@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot
-from demoscene.forms import CreateProductionForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, AttachedNickFormSet, ProductionAddCreditForm, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, ProductionEditExternalLinksForm, ProductionAddScreenshotFormset
+from demoscene.forms import AttachedNickFormSet, ProductionAddCreditForm, ProductionAddScreenshotFormset
+from demoscene.new_forms.production import CreateProductionForm, ProductionEditCoreDetailsForm, ProductionTypeFormSet, ProductionPlatformFormSet, DownloadLinkFormSet, ProductionEditNotesForm, ProductionDownloadLinkForm, ProductionEditExternalLinksForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required

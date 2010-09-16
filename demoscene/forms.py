@@ -5,116 +5,11 @@ from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, modelformset_factory
 
 from geocode import geocode
-from fuzzy_date import FuzzyDate
 from django.core.exceptions import ValidationError
 
-import timelib # for any-format date parsing
+from any_format_date_field import AnyFormatDateField
+
 import datetime
-from django.core import validators
-
-class AnyFormatDateField(forms.DateField):
-	widget = forms.DateInput(format = '%e %b %Y', attrs={'class':'date'})
-	def to_python(self, value):
-		"""
-		Validates that the input can be converted to a date. Returns a Python
-		datetime.date object.
-		"""
-		if value in validators.EMPTY_VALUES:
-			return None
-		if isinstance(value, datetime.datetime):
-			return value.date()
-		if isinstance(value, datetime.date):
-			return value
-		try:
-			return timelib.strtodatetime(value).date()
-		except ValueError:
-			raise ValidationError(self.error_messages['invalid'])
-		
-class FuzzyDateField(forms.Field):
-	widget = forms.DateInput(format = '%e %b %Y', attrs={'class':'date'})
-	def to_python(self, value):
-		"""
-		Validates that the input can be converted to a date. Returns a
-		FuzzyDate object.
-		"""
-		if value in validators.EMPTY_VALUES:
-			return None
-		if isinstance(value, FuzzyDate):
-			return value
-		try:
-			return FuzzyDate.parse(value)
-		except ValueError:
-			raise ValidationError(self.error_messages['invalid'])
-	
-class ProductionEditCoreDetailsForm(forms.ModelForm):
-	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
-	def __init__(self, *args, **kwargs):
-		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
-		if kwargs.has_key('instance'):
-			instance = kwargs['instance']
-			self.initial['release_date'] = instance.release_date
-	
-	def save(self, commit = True):
-		instance = super(ProductionEditCoreDetailsForm, self).save(commit=False)
-		instance.release_date = self.cleaned_data['release_date']
-		if commit:
-			instance.save()
-		return instance
-		
-	class Meta:
-		model = Production
-		fields = ('title', 'release_date')
-
-class CreateProductionForm(forms.ModelForm):
-	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
-	def __init__(self, *args, **kwargs):
-		super(CreateProductionForm, self).__init__(*args, **kwargs)
-		if kwargs.has_key('instance'):
-			instance = kwargs['instance']
-			self.initial['release_date'] = instance.release_date
-	
-	def save(self, commit = True):
-		instance = super(CreateProductionForm, self).save(commit=False)
-		instance.release_date = self.cleaned_data['release_date']
-		if commit:
-			instance.save()
-		return instance
-	
-	class Meta:
-		model = Production
-		fields = ('title', )
-
-class ProductionTypeForm(forms.Form):
-	production_type = forms.ModelChoiceField(queryset = ProductionType.objects.order_by('name'))
-
-ProductionTypeFormSet = formset_factory(ProductionTypeForm, can_delete = True)
-
-class ProductionPlatformForm(forms.Form):
-	platform = forms.ModelChoiceField(queryset = Platform.objects.order_by('name'))
-
-ProductionPlatformFormSet = formset_factory(ProductionPlatformForm, can_delete = True)
-
-DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
-
-class ProductionEditNotesForm(forms.ModelForm):
-	class Meta:
-		model = Production
-		fields = ['notes']
-
-class ProductionDownloadLinkForm(forms.ModelForm):
-	class Meta:
-		model = DownloadLink
-		fields = ['url']
-
-class ProductionEditExternalLinksForm(forms.ModelForm):
-	class Meta:
-		model = Production
-		fields = Production.external_site_ref_field_names
-		widgets = {
-			'pouet_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'csdb_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
-		}
 
 class CreateGroupForm(forms.ModelForm):
 	class Meta:
