@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.new_forms.releaser import CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm, ScenerEditExternalLinksForm, ScenerAddGroupForm
+from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
 

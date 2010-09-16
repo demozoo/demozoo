@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib import messages
 from demoscene.shortcuts import *
-from demoscene.new_forms.account import AccountPreferencesForm
+from demoscene.forms.account import *
 from demoscene.models import AccountProfile
 
 def signup(request):
