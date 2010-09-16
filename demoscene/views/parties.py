@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Party, PartySeries
-from demoscene.forms import PartyForm, EditPartyForm
+from demoscene.new_forms.party import PartyForm, EditPartyForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required

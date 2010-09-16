@@ -179,6 +179,13 @@
 						</tr>
 					{% endfor %}
 				</table>
+				{% if editing %}
+					<ul>
+						<li class="add">
+							<a href="{% url releaser_add_credit scener.id %}" class="open_in_lightbox">Add credit</a>
+						</li>
+					</ul>
+				{% endif %}
 			</div>
 		{% endif %}
 	</div>

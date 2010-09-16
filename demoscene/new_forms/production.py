@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, DownloadLink
+from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
@@ -73,3 +73,39 @@ class ProductionEditExternalLinksForm(forms.ModelForm):
 			'csdb_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
+
+class AttachedNickForm(forms.Form):
+	nick_id = forms.CharField(widget = forms.HiddenInput)
+	name = forms.CharField(widget = forms.HiddenInput)
+	
+	def clean(self):
+		cleaned_data = self.cleaned_data
+		nick_id = cleaned_data.get("nick_id")
+		
+		if nick_id == 'error':
+			raise forms.ValidationError("Name has not been matched to a scener/group")
+		
+		# Always return the full collection of cleaned data.
+		return cleaned_data
+	
+	def matched_nick(self):
+		cleaned_data = self.cleaned_data
+		nick_id = cleaned_data.get("nick_id")
+		name = cleaned_data.get("name")
+		return Nick.from_id_and_name(nick_id, name)
+
+AttachedNickFormSet = formset_factory(AttachedNickForm, extra=0)
+
+class ProductionAddCreditForm(forms.Form):
+	nick_name = forms.CharField(label = 'Name', widget = forms.TextInput(attrs = {'class': 'nick_autocomplete'}))
+	# nick_id can contain a nick ID, 'newscener' or 'newgroup' as per Nick.from_id_and_name
+	nick_id = forms.CharField(widget = forms.HiddenInput)
+	role = forms.CharField()
+
+class ProductionAddScreenshotForm(forms.ModelForm):
+	class Meta:
+		model = Screenshot
+		fields = ['original']
+
+ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
+

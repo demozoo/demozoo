@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Nick, NickVariant
-from demoscene.forms import GroupAddMemberForm, CreateGroupForm
+from demoscene.new_forms.releaser import CreateGroupForm, GroupAddMemberForm
 
 from django.contrib.auth.decorators import login_required
 

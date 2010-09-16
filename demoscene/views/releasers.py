@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, NickVariant, Production, Nick, Credit
-from demoscene.forms import ReleaserAddCreditForm, ReleaserEditNotesForm, ScenerNickForm, GroupNickForm
+from demoscene.new_forms.releaser import ReleaserEditNotesForm, ScenerNickForm, GroupNickForm, ReleaserAddCreditForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
