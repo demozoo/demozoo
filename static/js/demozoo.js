@@ -322,6 +322,55 @@ function applyGlobalBehaviours(context) {
 		return false;
 	})
 	
+	function decorateNickMatch(context) {
+		var searchTerm = $('input[type=hidden]', context).val();
+		
+		var selectedResult = $('<a href="javascript:void(0)" class="selected_result"></a>');
+		var selectedResultInner = $('<span></span>');
+		selectedResult.append(selectedResultInner);
+		selectedResultInner.text(searchTerm);
+		$(context).prepend(selectedResult);
+		
+		var suggestionsUl = $('ul', context);
+		
+		function copyIconFromSelectedLi() {
+			/* inherit icon for selectedResult from the li with the selected radio button,
+			or 'error' icon if there is none */
+			var selectedLi = $('li:has(input[checked])', context);
+			if (selectedLi.length) {
+				selectedResult.attr('class', 'selected_result ' + selectedLi.attr('class'));
+				/* also copy label text from the data-name attribute */
+				selectedResultInner.text(selectedLi.attr('data-name'));
+			} else {
+				selectedResult.attr('class', 'selected_result error');
+			}
+		}
+		copyIconFromSelectedLi();
+		
+		suggestionsUl.hide();
+		selectedResult.click(function() {
+			if (selectedResult.is('.active')) {
+				selectedResult.blur();
+			} else {
+				selectedResult.focus();
+			}
+			return false;
+		}).focus(function() {
+			selectedResult.addClass('active');
+			suggestionsUl.show();
+		}).blur(function() {
+			setTimeout(function() {
+				selectedResult.removeClass('active');
+				suggestionsUl.hide();
+				copyIconFromSelectedLi();
+			}, 100);
+		})
+	}
+	
+	$('form .nick_match').each(function() {
+		decorateNickMatch(this);
+	})
+	
 	$('form .nick_field', context).each(function() {
 		var nickFieldElement = this;
 		var nickField = $(this);
@@ -361,6 +410,7 @@ function applyGlobalBehaviours(context) {
 					autocomplete: autocomplete
 				}, searchParams), function(data) {
 					$('.nick_match', nickFieldElement).html(data.matches);
+					decorateNickMatch($('.nick_match', nickFieldElement));
 					if (autocomplete) {
 						searchField.val(data.query);
 						if (searchFieldElement.setSelectionRange) {
