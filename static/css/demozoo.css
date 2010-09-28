@@ -190,24 +190,10 @@ li.scener {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
-li.add_scener {
-	line-height: 24px;
-	padding-left: 24px;
-	background-image: url(/static/images/icons/add_scener.png);
-	background-position: left center;
-	background-repeat: no-repeat;
-}
 li.group {
 	line-height: 24px;
 	padding-left: 24px;
 	background-image: url(/static/images/icons/group.png);
-	background-position: left center;
-	background-repeat: no-repeat;
-}
-li.add_group {
-	line-height: 24px;
-	padding-left: 24px;
-	background-image: url(/static/images/icons/add_group.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
@@ -413,107 +399,6 @@ form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[typ
 .matched_names ul li.matched_name ul.suggestions li a:hover {
 	background-color: #ddd;
 }
-
-/* NickField matched names */
-.nick_match {
-	font-size: 0.9em;
-}
-.nick_match {
-	position: relative;
-}
-.nick_match a.selected_result {
-	line-height: 24px;
-	display: block;
-	padding-left: 24px;
-	padding-right: 4px;
-	cursor: pointer;
-	border: 2px solid #eee;
-	padding-left: 20px;
-	background-position: 4px center;
-	background-repeat: no-repeat;
-	color: black;
-	text-decoration: none;
-}
-
-.nick_match a.selected_result span {
-	padding-right: 20px;
-	padding-left: 4px;
-}
-
-.nick_match a.error {
-	background-image: url(/static/images/icons/error.png);
-	color: red;
-}
-.nick_match a.scener {
-	background-image: url(/static/images/icons/scener.png);
-}
-.nick_match a.group {
-	background-image: url(/static/images/icons/group.png);
-}
-.nick_match a.add_scener {
-	background-image: url(/static/images/icons/add_scener.png);
-}
-.nick_match a.add_group {
-	background-image: url(/static/images/icons/add_group.png);
-}
-
-.nick_match {
-	float: left;
-	margin-right: 4px;
-}
-.nick_match a:hover.selected_result {
-	border-top: 2px solid #ccc;
-	border-left: 2px solid #ccc;
-	border-bottom: 2px solid #888;
-	border-right: 2px solid #888;
-}
-.nick_match a:hover.selected_result span,
-.nick_match a.active.selected_result span {
-	background-image: url(/static/images/icons/arrow_down.png);
-	background-position: right center;
-	background-repeat: no-repeat;
-}
-.nick_match a.active.selected_result {
-	border-bottom: 2px solid #ccc;
-	border-right: 2px solid #ccc;
-	border-top: 2px solid #888;
-	border-left: 2px solid #888;
-	background-color: #ddd;
-}
-
-.nick_match ul {
-	position: absolute;
-	z-index: 100;
-	white-space: nowrap;
-	top: 28px;
-	border: 1px solid #888;
-	background-color: white;
-}
-
-.nick_match ul li {
-	display: block;
-	color: black;
-	text-decoration: none;
-	padding-left: 28px;
-	padding-right: 4px;
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-.nick_match ul li label {
-	line-height: 24px;
-}
-.nick_match ul li:hover {
-	background-color: #ddd;
-}
-.nick_match ul li:hover label {
-	cursor: pointer;
-}
-.nick_field.ajaxified .nick_match ul li input[type=radio] {
-	display: none;
-}
-
-
-
 
 /* production view */
 body.show_production h2 {
