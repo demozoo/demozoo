@@ -230,19 +230,14 @@ def create(request):
 @login_required
 def add_credit(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
+	credit = Credit(production = production)
 	if request.method == 'POST':
-		form = ProductionAddCreditForm(request.POST)
+		form = ProductionCreditForm(request.POST, instance = credit)
 		if form.is_valid():
-			nick = Nick.from_id_and_name(form.cleaned_data['nick_id'], form.cleaned_data['nick_name'])
-			credit = Credit(
-				production = production,
-				nick = nick,
-				role = form.cleaned_data['role']
-			)
-			credit.save()
+			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionAddCreditForm()
+		form = ProductionCreditForm(instance = credit)
 	return ajaxable_render(request, 'productions/add_credit.html', {
 		'production': production,
 		'form': form,
@@ -253,19 +248,12 @@ def edit_credit(request, production_id, credit_id):
 	production = get_object_or_404(Production, id = production_id)
 	credit = get_object_or_404(Credit, production = production, id = credit_id)
 	if request.method == 'POST':
-		form = ProductionAddCreditForm(request.POST)
+		form = ProductionCreditForm(request.POST, instance = credit)
 		if form.is_valid():
-			nick = Nick.from_id_and_name(form.cleaned_data['nick_id'], form.cleaned_data['nick_name'])
-			credit.nick = nick
-			credit.role = form.cleaned_data['role']
-			credit.save()
+			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionAddCreditForm({
-			'nick_name': credit.nick.name,
-			'nick_id': credit.nick_id,
-			'role': credit.role
-		})
+		form = ProductionCreditForm(instance = credit)
 	return ajaxable_render(request, 'productions/edit_credit.html', {
 		'production': production,
 		'credit': credit,

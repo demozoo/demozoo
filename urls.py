@@ -87,4 +87,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
 	
 	(r'^search/', include('search.urls')),
+
+	(r'^nicks/match/$', 'nicks.match', {}),
 )

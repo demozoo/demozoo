@@ -130,9 +130,16 @@ class Releaser(models.Model):
 			return None
 	
 	def name_with_affiliations(self):
-		groups = [group.name for group in self.groups.all()]
+		groups = self.groups.all()
+		
 		if groups:
-			return "%s / %s" % (self.name, ' ^ '.join(groups))
+			if sum([len(group.name) for group in groups]) >= 20:
+				# abbreviate where possible
+				group_names = [(group.abbreviation or group.name) for group in groups]
+			else:
+				# use full group names - not too long
+				group_names = [group.name for group in groups]
+			return "%s / %s" % (self.name, ' ^ '.join(group_names))
 		else:
 			return self.name
 	
@@ -243,9 +250,16 @@ class Nick(models.Model):
 			self._has_written_nick_variant_list = False
 	
 	def name_with_affiliations(self):
-		groups = [group.name for group in self.releaser.groups.all()]
+		groups = self.releaser.groups.all()
+		
 		if groups:
-			return "%s / %s" % (self.name, ' ^ '.join(groups))
+			if sum([len(group.name) for group in groups]) >= 20:
+				# abbreviate where possible
+				group_names = [(group.abbreviation or group.name) for group in groups]
+			else:
+				# use full group names - not too long
+				group_names = [group.name for group in groups]
+			return "%s / %s" % (self.name, ' ^ '.join(group_names))
 		else:
 			return self.name
 	
@@ -299,10 +313,11 @@ class NickVariant(models.Model):
 							INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
 							WHERE demoscene_releaser_groups.from_releaser_id = demoscene_releaser.id
 							AND LOWER(group_nickvariant.name) IN %s
-						'''
+						''',
+						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
 					},
 					select_params = (tuple(groups), ),
-					order_by = ('-score','name')
+					order_by = ('-score','-is_primary_nickvariant','name')
 				)
 			elif members:
 				nick_variants = nick_variants.extra(
@@ -314,15 +329,19 @@ class NickVariant(models.Model):
 							INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
 							WHERE demoscene_releaser_groups.to_releaser_id = demoscene_releaser.id
 							AND LOWER(member_nickvariant.name) IN %s
-						'''
+						''',
+						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
 					},
 					select_params = (tuple(members), ),
-					order_by = ('-score','name')
+					order_by = ('-score','-is_primary_nickvariant','name')
 				)
 			else:
 				nick_variants = nick_variants.extra(
-					select = {'score': '0'},
-					order_by = ('name',)
+					select = {
+						'score': '0',
+						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
+					},
+					order_by = ('-is_primary_nickvariant','name')
 				)
 			if limit:
 				nick_variants = nick_variants[:limit]
@@ -433,7 +452,10 @@ class Credit(models.Model):
 	role = models.CharField(max_length = 255, blank = True)
 	
 	def __unicode__(self):
-		return "%s - %s (%s)" % (self.production.title, self.nick.name, self.role)
+		return "%s - %s (%s)" % (
+			self.production_id and self.production.title,
+			self.nick_id and self.nick.name,
+			self.role)
 
 class Screenshot(models.Model):
 	

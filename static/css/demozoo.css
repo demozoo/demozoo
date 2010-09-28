@@ -302,6 +302,14 @@ ul.maintenance_actions li {
 	display: inline;
 }
 
+/* nick fields */
+form.entry_form .field .field_input .nick_field .nick_search input[type=text] {
+	width: 300px;
+}
+form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[type=text] {
+	width: 400px;
+}
+
 /* byline matches */
 .matched_names {
 	font-size: 0.9em;

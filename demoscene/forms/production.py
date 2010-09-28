@@ -1,8 +1,9 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot
+from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot, Credit
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
+from nick_field import NickField
 
 class ProductionEditCoreDetailsForm(forms.ModelForm):
 	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
@@ -96,11 +97,23 @@ class AttachedNickForm(forms.Form):
 
 AttachedNickFormSet = formset_factory(AttachedNickForm, extra=0)
 
-class ProductionAddCreditForm(forms.Form):
-	nick_name = forms.CharField(label = 'Name', widget = forms.TextInput(attrs = {'class': 'nick_autocomplete'}))
-	# nick_id can contain a nick ID, 'newscener' or 'newgroup' as per Nick.from_id_and_name
-	nick_id = forms.CharField(widget = forms.HiddenInput)
-	role = forms.CharField()
+class ProductionCreditForm(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.instance = kwargs.pop('instance', Credit())
+		super(ProductionCreditForm, self).__init__(*args, **kwargs)
+		try:
+			nick = self.instance.nick
+			self.fields['nick'] = NickField(initial = nick)
+		except Nick.DoesNotExist:
+			self.fields['nick'] = NickField()
+		self.fields['role'] = forms.CharField(initial = self.instance.role)
+	
+	def save(self, commit = True):
+		self.instance.role = self.cleaned_data['role']
+		self.instance.nick = self.cleaned_data['nick'].commit()
+		if commit:
+			self.instance.save()
+		return self.instance
 
 class ProductionAddScreenshotForm(forms.ModelForm):
 	class Meta:
