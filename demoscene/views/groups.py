@@ -62,13 +62,7 @@ def add_member(request, group_id):
 	if request.method == 'POST':
 		form = GroupAddMemberForm(request.POST)
 		if form.is_valid():
-			if form.cleaned_data['scener_id'] == 'newscener':
-				scener = Releaser(name = form.cleaned_data['scener_name'], is_group = False)
-				scener.save()
-			else:
-				# TODO: test for blank scener_id (as sent by non-JS)
-				scener = Releaser.objects.get(id = form.cleaned_data['scener_id'], is_group = False)
-			group.members.add(scener)
+			group.members.add(form.cleaned_data['scener_nick'].commit().releaser)
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupAddMemberForm()

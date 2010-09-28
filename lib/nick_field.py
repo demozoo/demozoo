@@ -42,19 +42,22 @@ class NickLookup():
 		self.favoured_selection = favoured_selection # a NickSelection that we should choose from the candidates if available
 
 class MatchedNickWidget(forms.Widget):
-	def __init__(self, search_term, attrs = None):
+	def __init__(self, search_term, attrs = None, sceners_only = False, groups_only = False):
 		self.search_term = search_term
 		
 		choices = []
-		self.nick_variants = NickVariant.autocompletion_search(search_term, exact = True)
+		self.nick_variants = NickVariant.autocompletion_search(
+			search_term, exact = True, sceners_only = sceners_only, groups_only = groups_only)
 		for nv in self.nick_variants:
 			if nv.nick.name == nv.name:
 				choices.append((nv.nick_id, nv.nick.name_with_affiliations()))
 			else:
 				label = "%s (%s)" % (nv.nick.name_with_affiliations(), nv.name)
 				choices.append((nv.nick_id, label))
-		choices.append( ('newscener', "Add a new scener named '%s'" % search_term) )
-		choices.append( ('newgroup', "Add a new group named '%s'" % search_term) )
+		if not groups_only:
+			choices.append( ('newscener', "Add a new scener named '%s'" % search_term) )
+		if not sceners_only:
+			choices.append( ('newgroup', "Add a new group named '%s'" % search_term) )
 		
 		self.select_widget = forms.Select(choices = choices, attrs = attrs)
 		self.name_widget = forms.HiddenInput()
@@ -83,8 +86,9 @@ class MatchedNickWidget(forms.Widget):
 		return mark_safe(u''.join(output))
 
 class MatchedNickField(forms.Field):
-	def __init__(self, search_term, *args, **kwargs):
-		self.widget = MatchedNickWidget(search_term)
+	def __init__(self, search_term, sceners_only = False, groups_only = False, *args, **kwargs):
+		self.widget = MatchedNickWidget(
+			search_term, sceners_only = sceners_only, groups_only = groups_only)
 		
 		self.search_term = search_term
 		
@@ -121,7 +125,9 @@ class MatchedNickField(forms.Field):
 			raise Exception("Don't know how to clean %s" % repr(value))
 
 class NickWidget(forms.Widget):
-	def __init__(self, attrs = None):
+	def __init__(self, attrs = None, sceners_only = False, groups_only = False):
+		self.sceners_only = sceners_only
+		self.groups_only = groups_only
 		self.search_widget = forms.TextInput(attrs = attrs)
 		self.lookup_widget = SubmitButtonInput(button_text = 'Find name')
 		self.matched_nick_widget = None
@@ -169,20 +175,34 @@ class NickWidget(forms.Widget):
 		else:
 		    matched_nick_html = ''
 		
+		if self.sceners_only:
+			root_classname = u'nick_field sceners_only'
+		elif self.groups_only:
+			root_classname = u'nick_field groups_only'
+		else:
+			root_classname = u'nick_field'
+		
 		output = [
 			u'<div class="nick_search">' + u''.join(search_html_output) + u'</div>',
 			u'<div class="nick_match">' + matched_nick_html + u'</div>'
 		]
-		return mark_safe(u'<div class="nick_field">' + u''.join(output) + u'</div>')
+		return mark_safe(u'<div class="' + root_classname + u'">' + u''.join(output) + u'</div>')
 
 class NickField(forms.Field):
-	widget = NickWidget()
+	def __init__(self, sceners_only = False, groups_only = False, *args, **kwargs):
+		self.widget = NickWidget(sceners_only = sceners_only, groups_only = groups_only)
+		self.matched_nick_field_params = {
+			'sceners_only': sceners_only,
+			'groups_only': groups_only,
+		}
+		super(NickField, self).__init__(*args, **kwargs)
 	
 	def clean(self, value):
 		if not value:
 			return super(NickField, self).clean(value)
 		elif isinstance(value, NickLookup):
-			matched_nick_field = MatchedNickField(value.search_term, required = False)
+			matched_nick_field = MatchedNickField(
+				value.search_term, required = False, **self.matched_nick_field_params)
 			clean_nick_selection = matched_nick_field.clean(value.favoured_selection)
 			if clean_nick_selection and value.autoaccept:
 				return clean_nick_selection
@@ -190,25 +210,25 @@ class NickField(forms.Field):
 				self.widget.matched_nick_widget = matched_nick_field.widget
 				raise ValidationError("Please select the appropriate nick from the list.")
 		elif isinstance(value, Nick):
-			matched_nick_field = MatchedNickField(value.name, required = False)
+			matched_nick_field = MatchedNickField(value.name, required = False, **self.matched_nick_field_params)
 			clean_nick_selection = matched_nick_field.clean(value)
 			self.widget.matched_nick_widget = matched_nick_field.widget
 			return clean_nick_selection
 
 # test stuff
-
-class RaForm(forms.Form):
-	matched_nick = MatchedNickField('ra')
-
-raww_arse = Nick.objects.get(id = 7)
-
-lookup_ra_form = RaForm()
-edit_ra_form = RaForm(initial = {'matched_nick': raww_arse})
-posted_ra_form = RaForm({'matched_nick_id': '7', 'matched_nick_name': 'ra'})
-unresolved_ra_form = RaForm({'matched_nick_id': '', 'matched_nick_name': 'ra'})
-mischosen_ra_form = RaForm({'matched_nick_id': '1', 'matched_nick_name': 'ra'})
-
-class NewCreditForm(forms.Form):
-	nick = NickField()
-
-f = NewCreditForm(initial = {'nick': raww_arse})
+#
+#class RaForm(forms.Form):
+#	matched_nick = MatchedNickField('ra')
+#
+#raww_arse = Nick.objects.get(id = 7)
+#
+#lookup_ra_form = RaForm()
+#edit_ra_form = RaForm(initial = {'matched_nick': raww_arse})
+#posted_ra_form = RaForm({'matched_nick_id': '7', 'matched_nick_name': 'ra'})
+#unresolved_ra_form = RaForm({'matched_nick_id': '', 'matched_nick_name': 'ra'})
+#mischosen_ra_form = RaForm({'matched_nick_id': '1', 'matched_nick_name': 'ra'})
+#
+#class NewCreditForm(forms.Form):
+#	nick = NickField()
+#
+#f = NewCreditForm(initial = {'nick': raww_arse})

@@ -98,13 +98,7 @@ def add_group(request, scener_id):
 	if request.method == 'POST':
 		form = ScenerAddGroupForm(request.POST)
 		if form.is_valid():
-			if form.cleaned_data['group_id'] == 'newgroup':
-				group = Releaser(name = form.cleaned_data['group_name'], is_group = True)
-				group.save()
-			else:
-				# TODO: test for blank group_id (as sent by non-JS)
-				group = Releaser.objects.get(id = form.cleaned_data['group_id'], is_group = True)
-			scener.groups.add(group)
+			scener.groups.add(form.cleaned_data['group_nick'].commit().releaser)
 			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		form = ScenerAddGroupForm()

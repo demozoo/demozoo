@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from demoscene.models import Releaser, Nick
 from geocode import geocode
+from nick_field import NickField
 
 class CreateGroupForm(forms.ModelForm):
 	class Meta:
@@ -116,16 +117,10 @@ class GroupNickForm(NickForm):
 		fields = ['name', 'abbreviation']
 
 class ScenerAddGroupForm(forms.Form):
-	group_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'group_autocomplete'}))
-	# group_id can contain a releaser ID, or 'newgroup' to indicate that a new group
-	# should be created with the above name
-	group_id = forms.CharField(widget = forms.HiddenInput)
+	group_nick = NickField(groups_only = True, label = 'Group name')
 
 class GroupAddMemberForm(forms.Form):
-	scener_name = forms.CharField(widget = forms.TextInput(attrs = {'class': 'scener_autocomplete'}))
-	# scener_id can contain a releaser ID, or 'newscener' to indicate that a new scener
-	# should be created with the above name
-	scener_id = forms.CharField(widget = forms.HiddenInput)
+	scener_nick = NickField(sceners_only = True, label = 'Scener name')
 
 class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):

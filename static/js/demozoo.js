@@ -72,9 +72,6 @@ function applyGlobalBehaviours(context) {
 		});
 	}
 	/* TODO: instead of hard-coding hidden field IDs, derive them from the text field ID (thus supporting prefixes -> multiple forms per page) */
-	addAutocompleteRule('input.group_autocomplete', '/groups/autocomplete/', 'input#id_group_id', false, context);
-	addAutocompleteRule('input.scener_autocomplete', '/sceners/autocomplete/', 'input#id_scener_id', false, context);
-	addAutocompleteRule('input.nick_autocomplete', '/releasers/autocomplete/', 'input#id_nick_id', true, context);
 	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', 'input#id_production_id', false, context);
 	
 	function parseAutocompleteResults(data) {
@@ -326,12 +323,17 @@ function applyGlobalBehaviours(context) {
 	})
 	
 	$('form .nick_field', context).each(function() {
-		var nickField = this;
-		$('.nick_search input:submit', nickField).hide();
-		var searchField = $('.nick_search input:text', nickField);
+		var nickFieldElement = this;
+		var nickField = $(this);
+		
+		var searchParams = {};
+		if (nickField.hasClass('sceners_only')) searchParams['sceners_only'] = true;
+		if (nickField.hasClass('groups_only')) searchParams['groups_only'] = true;
+		
+		$('.nick_search input:submit', nickFieldElement).hide();
+		var searchField = $('.nick_search input:text', nickFieldElement);
 		var searchFieldElement = searchField.get(0);
 		searchField.attr('autocomplete', 'off');
-		var lastLookup = searchField.val();
 		
 		var lookupRunning = false;
 		var lastSearchTerm = searchField.val();
@@ -353,12 +355,12 @@ function applyGlobalBehaviours(context) {
 			if (value.match(/\S/)) {
 				lookupRunning = true;
 				/* TODO: consider caching results in a JS variable */
-				$.getJSON('/nicks/match/', {
+				$.getJSON('/nicks/match/', $.extend({
 					q: value,
 					field_name: searchField.attr('name').replace(/_search$/, '_match'),
 					autocomplete: autocomplete
-				}, function(data) {
-					$('.nick_match', nickField).html(data.matches);
+				}, searchParams), function(data) {
+					$('.nick_match', nickFieldElement).html(data.matches);
 					if (autocomplete) {
 						searchField.val(data.query);
 						if (searchFieldElement.setSelectionRange) {
@@ -375,7 +377,7 @@ function applyGlobalBehaviours(context) {
 				})
 			} else {
 				/* blank */
-				$('.nick_match', nickField).html('');
+				$('.nick_match', nickFieldElement).html('');
 			}
 		}
 		
