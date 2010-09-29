@@ -18,7 +18,9 @@ class ProductionType(models.Model):
 		return self.name
 
 class Releaser(models.Model):
-	external_site_ref_field_names = ['sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id','bitjam_author_id','artcity_author_id','mobygames_author_id']
+	external_site_ref_field_names = [
+		'sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id',
+		'bitjam_author_id','artcity_author_id','mobygames_author_id', 'asciiarena_author_id']
 	
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
@@ -34,6 +36,7 @@ class Releaser(models.Model):
 	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
 	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
 	mobygames_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'MobyGames author ID')
+	asciiarena_author_id = models.CharField(blank = True, max_length = 32, verbose_name = 'AsciiArena author ID')
 	
 	location = models.CharField(max_length = 255, blank = True)
 	country_code = models.CharField(max_length = 5, blank = True)
@@ -126,6 +129,12 @@ class Releaser(models.Model):
 	def mobygames_author_url(self):
 		if self.mobygames_author_id:
 			return "http://www.mobygames.com/developer/sheet/view/developerId,%s/" % self.mobygames_author_id
+		else:
+			return None
+	
+	def asciiarena_author_url(self):
+		if self.asciiarena_author_id:
+			return "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename" % self.asciiarena_author_id
 		else:
 			return None
 	

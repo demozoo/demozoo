@@ -85,6 +85,7 @@
 					{% if scener.bitjam_author_url %}<li><a href="{{ scener.bitjam_author_url }}" class="bitjam" title="{{ scener.name }} on BitJam">BitJam</a></li>{% endif %}
 					{% if scener.artcity_author_url %}<li><a href="{{ scener.artcity_author_url }}" class="artcity" title="{{ scener.name }} on ArtCity">ArtCity</a></li>{% endif %}
 					{% if scener.mobygames_author_url %}<li><a href="{{ scener.mobygames_author_url }}" class="mobygames" title="{{ scener.name }} on MobyGames">MobyGames</a></li>{% endif %}
+					{% if scener.asciiarena_author_url %}<li><a href="{{ scener.asciiarena_author_url }}" class="asciiarena" title="{{ scener.name }} on AsciiArena">AsciiArena</a></li>{% endif %}
 					{% if editing_as_admin %}<li><a href="{% url scener_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>

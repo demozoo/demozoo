@@ -73,6 +73,7 @@ class ScenerEditExternalLinksForm(forms.ModelForm):
 			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'artcity_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'mobygames_author_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'asciiarena_author_id': forms.TextInput(attrs={'class': 'numeric'}), # not actually numeric, but input box is the same size
 		}
 
 class ReleaserEditNotesForm(forms.ModelForm):

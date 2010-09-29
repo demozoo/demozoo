@@ -517,6 +517,9 @@ ul.parties_in_series li.current {
 .external_links a.mobygames {
 	background-image: url('/static/images/icons/external_sites/mobygames.png');
 }
+.external_links a.asciiarena {
+	background-image: url('/static/images/icons/external_sites/asciiarena.png');
+}
 .external_links a.edit {
 	background-image: url('/static/images/icons/edit.png');
 	font-weight: bold;
