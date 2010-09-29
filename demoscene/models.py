@@ -82,7 +82,7 @@ class Releaser(models.Model):
 		return Credit.objects.filter(nick__releaser = self)
 	
 	def has_any_external_links(self):
-		return [True for field in self.external_site_ref_field_names if self.__dict__[field] != None]
+		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
 	
 	def pouet_user_url(self):
 		if self.sceneid_user_id:
@@ -417,7 +417,7 @@ class Production(models.Model):
 	release_date = property(_get_release_date,_set_release_date)
 	
 	def has_any_external_links(self):
-		return [True for field in self.external_site_ref_field_names if self.__dict__[field] != None]
+		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
 		
 	def pouet_url(self):
 		if self.pouet_id:
