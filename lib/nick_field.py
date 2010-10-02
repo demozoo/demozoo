@@ -41,6 +41,19 @@ class NickLookup():
 			# as opposed to re-showing the form
 		self.favoured_selection = favoured_selection # a NickSelection that we should choose from the candidates if available
 
+# A variant of RadioFieldRenderer which accepts 4-tuples as choices, using the third element
+# as a classname for the <li> and fourth element as a data-name attribute
+class RadioFieldWithClassnameRenderer(forms.widgets.RadioFieldRenderer):
+	def render(self):
+		from django.utils.encoding import force_unicode
+		list_items = []
+		for i, choice in enumerate(self.choices):
+			widget = forms.widgets.RadioInput(self.name, self.value, self.attrs.copy(), choice, i);
+			list_items.append(
+				u'<li class="%s" data-name="%s">%s</li>' % (choice[2], choice[3], force_unicode(widget))
+			)
+		return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join(list_items))
+
 class MatchedNickWidget(forms.Widget):
 	def __init__(self, search_term, attrs = None, sceners_only = False, groups_only = False):
 		self.search_term = search_term
@@ -49,17 +62,32 @@ class MatchedNickWidget(forms.Widget):
 		self.nick_variants = NickVariant.autocompletion_search(
 			search_term, exact = True, sceners_only = sceners_only, groups_only = groups_only)
 		for nv in self.nick_variants:
+			icon = 'group' if nv.nick.releaser.is_group else 'scener'
 			if nv.nick.name == nv.name:
-				choices.append((nv.nick_id, nv.nick.name_with_affiliations()))
+				choices.append((nv.nick_id, nv.nick.name_with_affiliations(), icon, nv.nick.name))
 			else:
 				label = "%s (%s)" % (nv.nick.name_with_affiliations(), nv.name)
-				choices.append((nv.nick_id, label))
-		if not groups_only:
-			choices.append( ('newscener', "Add a new scener named '%s'" % search_term) )
-		if not sceners_only:
-			choices.append( ('newgroup', "Add a new group named '%s'" % search_term) )
+				choices.append((nv.nick_id, label, icon, nv.nick.name))
 		
-		self.select_widget = forms.Select(choices = choices, attrs = attrs)
+		# see if there's a unique top choice in self.nick_variants;
+		# if so, store that in self.top_choice for possible use later
+		# if we render this widget with no initial value specified
+		if self.nick_variants.count() == 0:
+			self.top_choice = None
+		elif self.nick_variants.count() == 1:
+			self.top_choice = self.nick_variants[0]
+		elif self.nick_variants[0].score > self.nick_variants[1].score:
+			self.top_choice = self.nick_variants[0]
+		else:
+			self.top_choice = None
+		
+		if not groups_only:
+			choices.append( ('newscener', "Add a new scener named '%s'" % search_term, "add_scener", search_term) )
+		if not sceners_only:
+			choices.append( ('newgroup', "Add a new group named '%s'" % search_term, "add_group", search_term) )
+		
+		self.select_widget = forms.RadioSelect(renderer = RadioFieldWithClassnameRenderer,
+			choices = choices, attrs = attrs)
 		self.name_widget = forms.HiddenInput()
 		
 		super(MatchedNickWidget, self).__init__(attrs = attrs)
@@ -79,8 +107,13 @@ class MatchedNickWidget(forms.Widget):
 	id_for_label = classmethod(id_for_label)
 	
 	def render(self, name, value, attrs=None):
+		selected_id = (value and value.id) or (self.top_choice and self.top_choice.nick_id)
+		print "top choice: %s" % selected_id
 		output = [
-			self.select_widget.render(name + '_id', value and value.id, attrs = attrs),
+			self.select_widget.render(
+				name + '_id',
+				selected_id,
+				attrs = attrs),
 			self.name_widget.render(name + '_name', self.search_term, attrs = attrs)
 		]
 		return mark_safe(u''.join(output))
