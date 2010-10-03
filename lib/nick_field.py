@@ -108,7 +108,6 @@ class MatchedNickWidget(forms.Widget):
 	
 	def render(self, name, value, attrs=None):
 		selected_id = (value and value.id) or (self.top_choice and self.top_choice.nick_id)
-		print "top choice: %s" % selected_id
 		output = [
 			self.select_widget.render(
 				name + '_id',
