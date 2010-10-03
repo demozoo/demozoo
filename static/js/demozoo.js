@@ -1,62 +1,11 @@
 function htmlEncode(str) {
 	return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 }
-	
+
 function applyGlobalBehaviours(context) {
 	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 	
-	$('.spawning_formset', context).each(function() {
-		var formset = this;
-		var totalFormsInput = $("input[type='hidden'][name$='TOTAL_FORMS']", this);
-		var fieldPrefix = totalFormsInput.attr('name').replace(/TOTAL_FORMS$/, '');
-		
-		function deleteForm(li) {
-			$('.delete input:checkbox', li).attr('checked', true);
-			$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
-		}
-		
-		$('> ul > li', this).each(function() {
-			var li = this;
-			var deleteButton = $('<a href="javascript:void(0);" class="delete_button" title="delete">delete</a>');
-			deleteButton.click(function() {
-				deleteForm(li);
-			});
-			$('.delete', li).hide().after(deleteButton);
-		});
-		var lastElement = $('> ul > li:last', this);
-		var newFormTemplate = lastElement.clone();
-		var newFormInitialIndex = totalFormsInput.val() - 1;
-		
-		if (totalFormsInput.val() > 1 || $(this).hasClass('initially_hidden')) {
-			lastElement.remove();
-			totalFormsInput.val(totalFormsInput.val() - 1);
-		}
-		
-		var addButton = $('<a href="javascript:void(0);" class="add_button">add</a>');
-		var addLi = $('<li></li>');
-		addLi.append(addButton);
-		addButton.click(function() {
-			var newForm = newFormTemplate.clone();
-			addLi.before(newForm);
-			var newIndex = parseInt(totalFormsInput.val());
-			totalFormsInput.val(newIndex + 1);
-			$(":input[name^='" + fieldPrefix + "']", newForm).each(function() {
-				this.name = this.name.replace(fieldPrefix + newFormInitialIndex, fieldPrefix + newIndex);
-			})
-			$(":input[id^='id_" + fieldPrefix + "']", newForm).each(function() {
-				this.id = this.id.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
-			})
-			$("label[for^='id_" + fieldPrefix + "']", newForm).each(function() {
-				this.htmlFor = this.htmlFor.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
-			})
-			$('a.delete_button', newForm).click(function() {
-				deleteForm(newForm);
-			});
-			newForm.hide().slideDown('fast');
-			$(":input", newForm).focus();
-		})
-		$('> ul', this).append(addLi);
-	})
+	$('.spawning_formset', context).spawningFormset();
 	
 	function addAutocompleteRule(selector, url, idField, useNickId, context) {
 		$(selector, context).autocomplete(url, {
@@ -271,7 +220,7 @@ function applyGlobalBehaviours(context) {
 	})
 	
 	$('input.date', context).each(function() {
-		var opts = {dateFormat: 'd M yy', constrainInput: false};
+		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', dateParser: parseFuzzyDate};
 		$(this).datepicker(opts);
 	});
 	
@@ -322,57 +271,7 @@ function applyGlobalBehaviours(context) {
 		return false;
 	})
 	
-	function decorateNickMatch(context) {
-		var searchTermField = $('input[type=hidden]', context);
-		if (!searchTermField.length) return; /* no input field; this div is an empty placeholder */
-		var searchTerm = searchTermField.val();
-		
-		var selectedResult = $('<a href="javascript:void(0)" tabindex="0" class="selected_result"></a>');
-		/* tabindex ensures that a click causes it to be focused on Chrome */
-		var selectedResultInner = $('<span></span>');
-		selectedResult.append(selectedResultInner);
-		selectedResultInner.text(searchTerm);
-		$(context).prepend(selectedResult);
-		
-		var suggestionsUl = $('ul', context);
-		
-		function copyIconFromSelectedLi() {
-			/* inherit icon for selectedResult from the li with the selected radio button,
-			or 'error' icon if there is none */
-			var selectedLi = $('li:has(input[checked])', context);
-			if (selectedLi.length) {
-				selectedResult.attr('class', 'selected_result ' + selectedLi.attr('class'));
-				/* also copy label text from the data-name attribute */
-				selectedResultInner.text(selectedLi.attr('data-name'));
-			} else {
-				selectedResult.attr('class', 'selected_result error');
-			}
-		}
-		copyIconFromSelectedLi();
-		
-		suggestionsUl.hide();
-		var wasFocusedOnLastMousedown = false;
-		selectedResult.focus(function() {
-			selectedResult.addClass('active');
-			suggestionsUl.show();
-		}).blur(function() {
-			setTimeout(function() {
-				selectedResult.removeClass('active');
-				suggestionsUl.hide();
-				copyIconFromSelectedLi();
-			}, 100);
-		}).click(function() {
-			if (selectedResult.hasClass('active') && wasFocusedOnLastMousedown) {
-				selectedResult.blur();
-			}
-		}).mousedown(function() {
-			wasFocusedOnLastMousedown = selectedResult.hasClass('active');
-		})
-	}
-	
-	$('form .nick_match').each(function() {
-		decorateNickMatch(this);
-	})
+	$('form .nick_match').nickMatchWidget();
 	
 	$('form .nick_field', context).each(function() {
 		var nickFieldElement = this;
@@ -413,7 +312,7 @@ function applyGlobalBehaviours(context) {
 					autocomplete: autocomplete
 				}, searchParams), function(data) {
 					$('.nick_match', nickFieldElement).html(data.matches);
-					decorateNickMatch($('.nick_match', nickFieldElement));
+					$('.nick_match', nickFieldElement).nickMatchWidget();
 					if (autocomplete) {
 						searchField.val(data.query);
 						if (searchFieldElement.setSelectionRange) {

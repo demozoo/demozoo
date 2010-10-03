@@ -106,7 +106,8 @@ function Datepicker() {
 		altFormat: '', // The date format to use for the alternate field
 		constrainInput: true, // The input is constrained by the current date format
 		showButtonPanel: false, // True to show button panel, false to not show it
-		autoSize: false // True to size the input for the date format, false to leave as is
+		autoSize: false, // True to size the input for the date format, false to leave as is
+		dateParser: null // Date parsing function to use in preference to $.datepicker.parseDate; accepts the date string as the only argument, and returns a date object
 	};
 	$.extend(this._defaults, this.regional['']);
 	this.dpDiv = $('<div id="' + this._mainDivId + '" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div>');
@@ -575,9 +576,14 @@ $.extend(Datepicker.prototype, {
 		var inst = $.datepicker._getInst(event.target);
 		if (inst.input.val() != inst.lastVal) {
 			try {
-				var date = $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
-					(inst.input ? inst.input.val() : null),
-					$.datepicker._getFormatConfig(inst));
+				var dateParser = $.datepicker._get(inst, 'dateParser')
+				if (dateParser) {
+					var date = dateParser(inst.input ? inst.input.val() : null)
+				} else {
+					var date = $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
+						(inst.input ? inst.input.val() : null),
+						$.datepicker._getFormatConfig(inst));
+				}
 				if (date) { // only if valid
 					$.datepicker._setDateFromField(inst);
 					$.datepicker._updateAlternate(inst);
@@ -1233,8 +1239,13 @@ $.extend(Datepicker.prototype, {
 		var date, defaultDate;
 		date = defaultDate = this._getDefaultDate(inst);
 		var settings = this._getFormatConfig(inst);
+		var dateParser = $.datepicker._get(inst, 'dateParser')
 		try {
-			date = this.parseDate(dateFormat, dates, settings) || defaultDate;
+			if (dateParser) {
+				date = dateParser(dates) || defaultDate;
+			} else {
+				date = this.parseDate(dateFormat, dates, settings) || defaultDate;
+			}
 		} catch (event) {
 			this.log(event);
 			dates = (noDefault ? '' : dates);
@@ -1262,9 +1273,14 @@ $.extend(Datepicker.prototype, {
 			return date;
 		};
 		var offsetString = function(offset) {
+			var dateParser = $.datepicker._get(inst, 'dateParser')
 			try {
-				return $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
-					offset, $.datepicker._getFormatConfig(inst));
+				if (dateParser) {
+					return dateParser(offset);
+				} else {
+					return $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
+						offset, $.datepicker._getFormatConfig(inst));
+				}
 			}
 			catch (e) {
 				// Ignore

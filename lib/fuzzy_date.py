@@ -1,4 +1,5 @@
 import dateutil.parser
+import datetime
 import re
 
 MONTHS = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)"
@@ -29,7 +30,11 @@ class FuzzyDate():
 	
 	@staticmethod
 	def parse(str):
-		date = dateutil.parser.parse(str, dayfirst = True).date()
+		this_year = datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+		# using this as the default ensures that it doesn't try to fill in day/month with the current one,
+		# leading to much hilarity when entering 'February 1996' on the 30th of the month - while still
+		# allowing 'February' as a valid synonym for February of this year
+		date = dateutil.parser.parse(str, dayfirst = True, default = this_year).date()
 		if YEAR_REGEX.match(str):
 			return FuzzyDate(date, 'y')
 		elif MONTH_REGEX.match(str):

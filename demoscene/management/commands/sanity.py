@@ -1,6 +1,7 @@
 from demoscene.models import Releaser, Nick, NickVariant
 
 from django.core.management.base import NoArgsCommand
+from django.db import connection, transaction
 
 class Command(NoArgsCommand):
 	def handle_noargs(self, **options):
@@ -39,5 +40,19 @@ class Command(NoArgsCommand):
 			print "creating nick_variant for %s" % nick
 			nick_variant = NickVariant(nick = nick, name = nick.name)
 			nick_variant.save()
+		
+		print "Truncating fuzzy dates to first of the month / first of January"
+		cursor = connection.cursor()
+		cursor.execute('''
+			UPDATE demoscene_production
+			SET release_date_date = date_trunc('month', release_date_date)
+			WHERE release_date_precision = 'm'
+		''')
+		cursor.execute('''
+			UPDATE demoscene_production
+			SET release_date_date = date_trunc('year', release_date_date)
+			WHERE release_date_precision = 'y'
+		''')
+		transaction.commit_unless_managed()
 		
 		print "done."

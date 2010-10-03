@@ -655,3 +655,13 @@ a.lightbox_close {
 	text-indent: -5000px;
 	background-image: url('/static/images/icons/cross.png');
 }
+
+.ui-datepicker-trigger {
+	background-image: url('/static/images/icons/calendar.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	margin-left: 4px;
+	text-indent: -5000px;
+	width: 20px;
+	height: 20px;
+}
