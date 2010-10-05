@@ -3,6 +3,7 @@ from demoscene.models import Releaser, Nick, NickVariant
 from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
+import datetime
 
 def index(request):
 	
@@ -45,26 +46,18 @@ def edit_external_links(request, scener_id):
 	if not request.user.is_staff:
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 		
-	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm, {
-		'html_form_class': 'external_links_form',
-	})
-
-@login_required
-def edit_external_links(request, scener_id):
-	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
-	if not request.user.is_staff:
-		return HttpResponseRedirect(scener.get_absolute_edit_url())
-		
 	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm,
 		title = 'Editing external links for %s:' % scener.name,
-		html_form_class = 'external_links_form')
+		html_form_class = 'external_links_form',
+		update_datestamp = True)
 		
 @login_required
 def edit_location(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	
 	return simple_ajax_form(request, 'scener_edit_location', scener, ScenerEditLocationForm,
-		title = 'Editing location for %s:' % scener.name)
+		title = 'Editing location for %s:' % scener.name,
+		update_datestamp = True)
 
 @login_required
 def edit_real_name(request, scener_id):
@@ -73,12 +66,13 @@ def edit_real_name(request, scener_id):
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 		
 	return simple_ajax_form(request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
-		title = "Editing %s's real name:" % scener.name)
+		title = "Editing %s's real name:" % scener.name,
+		update_datestamp = True)
 
 @login_required
 def create(request):
 	if request.method == 'POST':
-		scener = Releaser(is_group = False)
+		scener = Releaser(is_group = False, updated_at = datetime.datetime.now())
 		form = CreateScenerForm(request.POST, instance = scener)
 		if form.is_valid():
 			form.save()
@@ -99,6 +93,8 @@ def add_group(request, scener_id):
 		form = ScenerAddGroupForm(request.POST)
 		if form.is_valid():
 			scener.groups.add(form.cleaned_data['group_nick'].commit().releaser)
+			scener.updated_at = datetime.datetime.now()
+			scener.save()
 			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		form = ScenerAddGroupForm()
@@ -115,6 +111,8 @@ def remove_group(request, scener_id, group_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			scener.groups.remove(group)
+			scener.updated_at = datetime.datetime.now()
+			scener.save()
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

@@ -47,6 +47,9 @@ class Releaser(models.Model):
 	first_name = models.CharField(max_length = 255, blank = True)
 	surname = models.CharField(max_length = 255, blank = True)
 	
+	created_at = models.DateTimeField(auto_now_add = True)
+	updated_at = models.DateTimeField()
+	
 	def save(self, *args, **kwargs):
 		# ensure that a Nick with matching name exists for this releaser
 		super(Releaser, self).save(*args, **kwargs) # Call the "real" save() method
@@ -373,6 +376,9 @@ class Production(models.Model):
 	pouet_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet ID')
 	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
 	bitworld_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld ID')
+	
+	created_at = models.DateTimeField(auto_now_add = True)
+	updated_at = models.DateTimeField()
 	
 	search_result_template = 'search/results/production.html'
 	

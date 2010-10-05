@@ -3,6 +3,7 @@ from demoscene.models import Releaser, NickVariant, Production, Nick, Credit
 from demoscene.forms.releaser import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import datetime
 
 def autocomplete(request):
 	query = request.GET.get('q')
@@ -31,6 +32,8 @@ def add_credit(request, releaser_id):
 				role = form.cleaned_data['role']
 			)
 			credit.save()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserAddCreditForm(releaser)
@@ -52,6 +55,8 @@ def edit_credit(request, releaser_id, credit_id):
 			credit.nick = form.cleaned_data['nick_id']
 			credit.role = form.cleaned_data['role']
 			credit.save()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserAddCreditForm(releaser, {
@@ -73,6 +78,8 @@ def delete_credit(request, releaser_id, credit_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			credit.delete()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
@@ -85,7 +92,8 @@ def edit_notes(request, releaser_id):
 	if not request.user.is_staff:
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	return simple_ajax_form(request, 'releaser_edit_notes', releaser, ReleaserEditNotesForm,
-		title = 'Editing notes for %s' % releaser.name)
+		title = 'Editing notes for %s' % releaser.name,
+		update_datestamp = True)
 
 @login_required
 def edit_nick(request, releaser_id, nick_id):
@@ -102,6 +110,8 @@ def edit_nick(request, releaser_id, nick_id):
 			if form.cleaned_data.get('override_primary_nick'):
 				releaser.name = nick.name
 				releaser.save()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = nick_form_class(releaser, instance = nick)
@@ -129,6 +139,8 @@ def add_nick(request, releaser_id):
 			if form.cleaned_data.get('override_primary_nick'):
 				releaser.name = nick.name
 				releaser.save()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = nick_form_class(releaser)
@@ -152,6 +164,7 @@ def change_primary_nick(request, releaser_id):
 	if request.method == 'POST':
 		nick = get_object_or_404(Nick, releaser = releaser, id = request.POST['nick_id'])
 		releaser.name = nick.name
+		releaser.updated_at = datetime.datetime.now()
 		releaser.save()
 	return HttpResponseRedirect(releaser.get_absolute_edit_url())
 
@@ -165,6 +178,8 @@ def delete_nick(request, releaser_id, nick_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			nick.delete()
+			releaser.updated_at = datetime.datetime.now()
+			releaser.save()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

@@ -3,6 +3,7 @@ from demoscene.models import Releaser, Nick, NickVariant
 from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
+import datetime
 
 def index(request):
 	nick_page = get_page(
@@ -42,7 +43,7 @@ def edit_done(request, group_id):
 @login_required
 def create(request):
 	if request.method == 'POST':
-		group = Releaser(is_group = True)
+		group = Releaser(is_group = True, updated_at = datetime.datetime.now())
 		form = CreateGroupForm(request.POST, instance = group)
 		if form.is_valid():
 			form.save()
@@ -63,6 +64,8 @@ def add_member(request, group_id):
 		form = GroupAddMemberForm(request.POST)
 		if form.is_valid():
 			group.members.add(form.cleaned_data['scener_nick'].commit().releaser)
+			group.updated_at = datetime.datetime.now()
+			group.save()
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupAddMemberForm()
@@ -78,6 +81,8 @@ def remove_member(request, group_id, scener_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			group.members.remove(scener)
+			group.updated_at = datetime.datetime.now()
+			group.save()
 		return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from demoscene.models import AccountProfile
+import datetime
 
 def render(request, template, context={}, **kwargs):
 	return render_to_response(template, context, context_instance=RequestContext(request), **kwargs)
@@ -40,6 +41,8 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 	if request.method == 'POST':
 		form = form_class(request.POST, instance = instance)
 		if form.is_valid():
+			if kwargs.get('update_datestamp', False):
+				instance.updated_at = datetime.datetime.now()
 			form.save()
 		return HttpResponseRedirect(instance.get_absolute_edit_url())
 	else:

@@ -4,6 +4,7 @@ from demoscene.forms.production import *
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+import datetime
 
 def index(request):
 	production_page = get_page(
@@ -60,6 +61,7 @@ def edit_core_details(request, production_id):
 			and production_platform_formset.is_valid()
 			and author_formset.is_valid() and affiliation_formset.is_valid()
 			):
+			production.updated_at = datetime.datetime.now()
 			form.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
@@ -92,7 +94,8 @@ def edit_notes(request, production_id):
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
-		title = 'Editing notes for %s:' % production.title)
+		title = 'Editing notes for %s:' % production.title,
+		update_datestamp = True)
 
 @login_required
 def edit_external_links(request, production_id):
@@ -100,7 +103,8 @@ def edit_external_links(request, production_id):
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_external_links', production, ProductionEditExternalLinksForm,
-		title = 'Editing external links for %s:' % production.title)
+		title = 'Editing external links for %s:' % production.title,
+		update_datestamp = True)
 
 @login_required
 def add_download_link(request, production_id):
@@ -109,6 +113,8 @@ def add_download_link(request, production_id):
 	if request.method == 'POST':
 		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
 		if form.is_valid():
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -126,6 +132,8 @@ def edit_download_link(request, production_id, download_link_id):
 	if request.method == 'POST':
 		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
 		if form.is_valid():
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -143,6 +151,8 @@ def delete_download_link(request, production_id, download_link_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			download_link.delete()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
@@ -168,6 +178,8 @@ def add_screenshot(request, production_id):
 				if screenshot.original:
 					screenshot.production = production
 					screenshot.save()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		formset = ProductionAddScreenshotFormset()
@@ -183,6 +195,8 @@ def delete_screenshot(request, production_id, screenshot_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			screenshot.delete()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 		return HttpResponseRedirect(reverse('production_screenshots', args=[production.id]))
 	else:
 		return simple_ajax_confirmation(request,
@@ -192,7 +206,7 @@ def delete_screenshot(request, production_id, screenshot_id):
 @login_required
 def create(request):
 	if request.method == 'POST':
-		production = Production()
+		production = Production(updated_at = datetime.datetime.now())
 		form = CreateProductionForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
@@ -235,6 +249,8 @@ def add_credit(request, production_id):
 		form = ProductionCreditForm(request.POST, instance = credit)
 		if form.is_valid():
 			form.save()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionCreditForm(instance = credit)
@@ -251,6 +267,8 @@ def edit_credit(request, production_id, credit_id):
 		form = ProductionCreditForm(request.POST, instance = credit)
 		if form.is_valid():
 			form.save()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionCreditForm(instance = credit)
@@ -267,6 +285,8 @@ def delete_credit(request, production_id, credit_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			credit.delete()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

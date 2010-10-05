@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from demoscene.models import Nick, NickVariant, Releaser
 from submit_button_field import SubmitButtonInput
+import datetime
 
 # A placeholder for a Nick object, used as the cleaned value of a MatchedNickField
 # and the value MatchedNickWidget returns from value_from_datadict.
@@ -17,12 +18,12 @@ class NickSelection():
 	
 	def commit(self):
 		if self.id == 'newscener':
-			releaser = Releaser(name = self.name, is_group = False)
+			releaser = Releaser(name = self.name, is_group = False, updated_at = datetime.datetime.now())
 			releaser.save()
 			self.id = releaser.primary_nick.id
 			return releaser.primary_nick
 		elif self.id == 'newgroup':
-			releaser = Releaser(name = self.name, is_group = True)
+			releaser = Releaser(name = self.name, is_group = True, updated_at = datetime.datetime.now())
 			releaser.save()
 			self.id = releaser.primary_nick.id
 			return releaser.primary_nick
