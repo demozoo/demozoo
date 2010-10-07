@@ -1,5 +1,5 @@
 from django.db import models
-import re, uuid, os
+import re, uuid, os, datetime
 from urlparse import urlparse
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
@@ -202,11 +202,11 @@ class Nick(models.Model):
 	@staticmethod
 	def from_id_and_name(id, name):
 		if id == 'newgroup':
-			releaser = Releaser(name = name, is_group = True)
+			releaser = Releaser(name = name, is_group = True, updated_at = datetime.datetime.now())
 			releaser.save()
 			return releaser.primary_nick
 		elif id == 'newscener':
-			releaser = Releaser(name = name, is_group = False)
+			releaser = Releaser(name = name, is_group = False, updated_at = datetime.datetime.now())
 			releaser.save()
 			return releaser.primary_nick
 		else:
