@@ -1,11 +1,51 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
+{% load demoscene_tags %}
 
 {% block base_main %}
 	<div class="panel">
+		{% if platform.photo %}
+			<img src="{{ platform.photo.url }}" width="{{ platform.photo_width }}" height="{{ platform.photo_height }}" alt="" style="float: left;" />
+		{% endif %}
 		<h2>
 			{{ platform.name }}
 		</h2>
-		{{ platform.notes|safe_markdown }}
+		{{ platform.intro_text|safe_markdown }}
+		<div style="clear: both;"></div>
+	</div>
+	
+	<div id="side_column">
+		{% if active_groups %}
+			<div class="panel">
+				<h3>Groups active on {{ platform.name }}...</h3>
+				<ul>
+					{% for group in active_groups %}
+						<li class="group">
+							<a href="{% url group group.id %}">{{ group.name }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+	</div>
+	
+	<div id="main_column">
+		{% if productions %}
+			<div class="panel">
+				<h3 class="productions_header">Recent releases:</h3>
+				<table width="100%">
+					<col width="50%" />
+					<col width="10%" />
+					<col width="40%" />
+					{% for prod in productions %}
+						<tr>
+							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+							<td>{{ prod.release_date.short_format }}</td>
+							<td>{% byline prod %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		{% endif %}
 	</div>
 {% endblock %}
