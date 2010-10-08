@@ -75,7 +75,7 @@
 			
 			<ul>
 				{% for platform in production.platforms.all %}
-					<li>{{ platform.name }}</li>
+					<li><a href="{% url platform platform.id %}">{{ platform.name }}</a></li>
 				{% endfor %}
 			</ul>
 			

@@ -89,4 +89,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^search/', include('search.urls')),
 
 	(r'^nicks/match/$', 'nicks.match', {}),
+
+	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
+	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
 )

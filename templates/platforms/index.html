@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Platforms</h2>
+	
+	<ul>
+		{% for platform in platforms %}
+			<li>
+				<a href="{% url platform platform.id %}">{{ platform.name }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

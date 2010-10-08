@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load safe_markdown %}
+
+{% block base_main %}
+	<div class="panel">
+		<h2>
+			{{ platform.name }}
+		</h2>
+		{{ platform.notes|safe_markdown }}
+	</div>
+{% endblock %}
