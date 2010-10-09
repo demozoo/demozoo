@@ -311,16 +311,19 @@ function applyGlobalBehaviours(context) {
 					field_name: searchField.attr('name').replace(/_search$/, '_match'),
 					autocomplete: autocomplete
 				}, searchParams), function(data) {
-					$('.nick_match', nickFieldElement).html(data.matches);
-					$('.nick_match', nickFieldElement).nickMatchWidget();
-					if (autocomplete) {
-						searchField.val(data.query);
-						if (searchFieldElement.setSelectionRange) {
-							searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
-							/* TODO: IE compatibility */
+					if (searchField.val() == data['initial_query']) {
+						/* only update fields if search box contents have not changed since making this query */
+						$('.nick_match', nickFieldElement).html(data.matches);
+						$('.nick_match', nickFieldElement).nickMatchWidget();
+						if (autocomplete) {
+							searchField.val(data.query);
+							if (searchFieldElement.setSelectionRange) {
+								searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
+								/* TODO: IE compatibility */
+							}
 						}
+						lastSearchTerm = data.query;
 					}
-					lastSearchTerm = data.query;
 					lookupRunning = false;
 					if (nextSearchTerm) {
 						lookup(nextSearchTerm, autocompleteNextSearchTerm);

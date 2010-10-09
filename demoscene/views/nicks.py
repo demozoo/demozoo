@@ -24,7 +24,7 @@ def match(request):
 		filters['groups_only'] = True
 	
 	if autocomplete:
-		if NickVariant.autocompletion_search(initial_query, exact = True, limit = 1, **filters).count():
+		if NickVariant.autocompletion_search(initial_query.rstrip(), exact = True, limit = 1, **filters).count():
 			# search term is already a complete recognised nick, so don't autocomplete further
 			query = initial_query
 		else:
@@ -40,11 +40,14 @@ def match(request):
 	else:
 		query = initial_query
 	
-	mnf = MatchedNickField(query, **filters)
+	mnf = MatchedNickField(query.rstrip(), **filters)
 	
 	data = {
 		'query': query,
 		'initial_query': initial_query,
 		'matches': mnf.widget.render(field_name, None),
 	}
+	# to simulate network lag:
+	#import time
+	#time.sleep(2)
 	return HttpResponse(json.dumps(data), mimetype="text/javascript")
