@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
-{% load demoscene_tags %}
 
 {% block base_main %}
 	<div class="panel">
@@ -33,18 +32,7 @@
 		{% if productions %}
 			<div class="panel">
 				<h3 class="productions_header">Recent releases:</h3>
-				<table width="100%">
-					<col width="50%" />
-					<col width="10%" />
-					<col width="40%" />
-					{% for prod in productions %}
-						<tr>
-							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
-							<td>{{ prod.release_date.short_format }}</td>
-							<td>{% byline prod %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/production_listing.html" %}
 			</div>
 		{% endif %}
 	</div>

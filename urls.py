@@ -92,4 +92,7 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
 	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
+
+	(r'^maintenance/$', 'maintenance.index', {}, 'maintenance_index'),
+	(r'^maintenance/prods_without_screenshots$', 'maintenance.prods_without_screenshots', {}, 'maintenance_prods_without_screenshots'),
 )

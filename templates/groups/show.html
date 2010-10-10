@@ -87,36 +87,16 @@
 		{% if productions %}
 			<div class="panel">
 				<h3 class="productions_header">Productions:</h3>
-				<table width="100%">
-					<col width="50%" />
-					<col width="10%" />
-					<col width="40%" />
-					{% for prod in productions %}
-						<tr>
-							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
-							<td>{{ prod.release_date.short_format }}</td>
-							<td>{% byline prod %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/production_listing.html" %}
 			</div>
 		{% endif %}
 		
 		{% if member_productions %}
 			<div class="panel">
 				<h3 class="member_productions_header">Member productions:</h3>
-				<table width="100%">
-					<col width="50%" />
-					<col width="10%" />
-					<col width="40%" />
-					{% for prod in member_productions %}
-						<tr>
-							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
-							<td>{{ prod.release_date.short_format }}</td>
-							<td>{% byline prod %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% with member_productions as productions %}
+					{% include "shared/production_listing.html" %}
+				{% endwith %}
 			</div>
 		{% endif %}
 	</div>
