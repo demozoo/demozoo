@@ -4,6 +4,7 @@ from urlparse import urlparse
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
+from django.utils.encoding import StrAndUnicode
 
 # Create your models here.
 class Platform(ModelWithThumbnails):
@@ -476,15 +477,7 @@ class Production(models.Model):
 		return ('demoscene.views.productions.show', [str(self.id)])
 		
 	def byline(self):
-		author_nicks = self.author_nicks.all()
-		affiliation_nicks = self.author_affiliation_nicks.all()
-		
-		authors_string = ' + '.join([nick.name for nick in author_nicks])
-		if affiliation_nicks:
-			affiliations_string = ' ^ '.join([nick.name for nick in affiliation_nicks])
-			return "%s / %s" % (authors_string, affiliations_string)
-		else:
-			return authors_string
+		return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
 	
 	@models.permalink
 	def get_absolute_url(self):
@@ -528,6 +521,20 @@ class Production(models.Model):
 			return "http://bitworld.bitfellas.org/demo.php?id=%s" % self.bitworld_id
 		else:
 			return None
+
+# encapsulates list of authors and affiliations
+class Byline(StrAndUnicode):
+	def __init__(self, authors, affiliations):
+		self.author_nicks = authors
+		self.affiliation_nicks = affiliations
+	
+	def __unicode__(self):
+		authors_string = ' + '.join([nick.name for nick in self.author_nicks])
+		if self.affiliation_nicks:
+			affiliations_string = ' ^ '.join([nick.name for nick in self.affiliation_nicks])
+			return "%s / %s" % (authors_string, affiliations_string)
+		else:
+			return authors_string
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

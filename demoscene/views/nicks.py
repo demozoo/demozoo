@@ -1,4 +1,4 @@
-from nick_field import MatchedNickField
+from matched_nick_field import MatchedNickField
 from demoscene.models import NickVariant
 from django.http import HttpResponse
 try:
