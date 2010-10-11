@@ -200,34 +200,25 @@ def create(request):
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
-		author_formset = AttachedNickFormSet(request.POST, prefix = 'authors')
-		affiliation_formset = AttachedNickFormSet(request.POST, prefix = 'affiliations')
 		if (
 			form.is_valid() and production_type_formset.is_valid()
 			and production_platform_formset.is_valid() and download_link_formset.is_valid()
-			and author_formset.is_valid() and affiliation_formset.is_valid()
 			):
 			form.save()
 			download_link_formset.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
-			production.author_nicks = [form.matched_nick() for form in author_formset.forms]
-			production.author_affiliation_nicks = [form.matched_nick() for form in affiliation_formset.forms]
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = CreateProductionForm()
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet()
-		author_formset = AttachedNickFormSet(prefix = 'authors')
-		affiliation_formset = AttachedNickFormSet(prefix = 'affiliations')
 	return ajaxable_render(request, 'productions/create.html', {
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
 		'download_link_formset': download_link_formset,
-		'author_formset': author_formset,
-		'affiliation_formset': affiliation_formset,
 	})
 
 @login_required

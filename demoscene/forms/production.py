@@ -26,24 +26,24 @@ class ProductionEditCoreDetailsForm(forms.Form):
 			self.instance.save()
 		return self.instance
 
-class CreateProductionForm(forms.ModelForm):
-	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+class CreateProductionForm(forms.Form):
 	def __init__(self, *args, **kwargs):
+		self.instance = kwargs.pop('instance', Production())
 		super(CreateProductionForm, self).__init__(*args, **kwargs)
-		if kwargs.has_key('instance'):
-			instance = kwargs['instance']
-			self.initial['release_date'] = instance.release_date
-	
+		self.fields['title'] = forms.CharField()
+		self.fields['byline'] = BylineField(label = 'By')
+		self.fields['release_date'] = FuzzyDateField(required = False,
+			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+		
 	def save(self, commit = True):
-		instance = super(CreateProductionForm, self).save(commit=False)
-		instance.release_date = self.cleaned_data['release_date']
-		if commit:
-			instance.save()
-		return instance
-	
-	class Meta:
-		model = Production
-		fields = ('title', )
+		if not commit:
+			raise Exception("we don't support saving CreateProductionForm with commit = False. Sorry!")
+		
+		self.instance.title = self.cleaned_data['title']
+		self.instance.save()
+		self.instance.release_date = self.cleaned_data['release_date']
+		self.cleaned_data['byline'].commit(self.instance)
+		return self.instance
 
 class ProductionTypeForm(forms.Form):
 	production_type = forms.ModelChoiceField(queryset = ProductionType.objects.order_by('name'))
