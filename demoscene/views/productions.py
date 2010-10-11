@@ -53,20 +53,15 @@ def edit_core_details(request, production_id):
 		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
 		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
-		author_formset = AttachedNickFormSet(request.POST, prefix = 'authors')
-		affiliation_formset = AttachedNickFormSet(request.POST, prefix = 'affiliations')
 		
 		if (
 			form.is_valid() and production_type_formset.is_valid()
 			and production_platform_formset.is_valid()
-			and author_formset.is_valid() and affiliation_formset.is_valid()
 			):
 			production.updated_at = datetime.datetime.now()
 			form.save()
 			production.types = get_production_types(production_type_formset)
 			production.platforms = get_production_platforms(production_platform_formset)
-			production.author_nicks = [form.matched_nick() for form in author_formset.forms]
-			production.author_affiliation_nicks = [form.matched_nick() for form in affiliation_formset.forms]
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionEditCoreDetailsForm(instance = production)
@@ -74,18 +69,12 @@ def edit_core_details(request, production_id):
 			initial = [{'production_type': typ.id} for typ in production.types.all()])
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
 			initial = [{'platform': platform.id} for platform in production.platforms.all()])
-		author_formset = AttachedNickFormSet(prefix = 'authors',
-			initial = [{'nick_id': nick.id, 'name': nick.name} for nick in production.author_nicks.all()])
-		affiliation_formset = AttachedNickFormSet(prefix = 'affiliations',
-			initial = [{'nick_id': nick.id, 'name': nick.name} for nick in production.author_affiliation_nicks.all()])
 	
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'production': production,
 		'form': form,
 		'production_type_formset': production_type_formset,
 		'production_platform_formset': production_platform_formset,
-		'author_formset': author_formset,
-		'affiliation_formset': affiliation_formset,
 	})
 
 @login_required

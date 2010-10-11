@@ -535,6 +535,26 @@ class Byline(StrAndUnicode):
 			return "%s / %s" % (authors_string, affiliations_string)
 		else:
 			return authors_string
+	
+	def commit(self, production):
+		from matched_nick_field import NickSelection
+		
+		author_nicks = []
+		for nick in self.author_nicks:
+			if isinstance(nick, NickSelection):
+				author_nicks.append(nick.commit())
+			else:
+				author_nicks.append(nick)
+		
+		affiliation_nicks = []
+		for nick in self.affiliation_nicks:
+			if isinstance(nick, NickSelection):
+				affiliation_nicks.append(nick.commit())
+			else:
+				affiliation_nicks.append(nick)
+		
+		production.author_nicks = author_nicks
+		production.author_affiliation_nicks = affiliation_nicks
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

@@ -1,4 +1,5 @@
-from matched_nick_field import MatchedNickField
+from nick_field import NickLookup
+from byline_field import BylineLookup
 from demoscene.models import NickVariant
 from django.http import HttpResponse
 try:
@@ -40,14 +41,29 @@ def match(request):
 	else:
 		query = initial_query
 	
-	mnf = MatchedNickField(query.rstrip(), **filters)
+	nick_lookup = NickLookup(search_term = query.rstrip(), matched_nick_options = filters)
 	
 	data = {
 		'query': query,
 		'initial_query': initial_query,
-		'matches': mnf.widget.render(field_name, None),
+		'matches': nick_lookup.matched_nick_field.widget.render(field_name, None),
 	}
 	# to simulate network lag:
 	#import time
 	#time.sleep(2)
+	return HttpResponse(json.dumps(data), mimetype="text/javascript")
+
+def byline_match(request):
+	initial_query = request.GET.get('q')
+	field_name = request.GET.get('field_name')
+	
+	query = initial_query
+	
+	byline_lookup = BylineLookup(search_term = query)
+	
+	data = {
+		'query': query,
+		'initial_query': initial_query,
+		'matches': byline_lookup.render_match_fields(field_name),
+	}
 	return HttpResponse(json.dumps(data), mimetype="text/javascript")

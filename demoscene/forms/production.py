@@ -4,25 +4,27 @@ from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
 from nick_field import NickField
+from byline_field import BylineField
 
-class ProductionEditCoreDetailsForm(forms.ModelForm):
-	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+class ProductionEditCoreDetailsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
+		self.instance = kwargs.pop('instance', Production())
 		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
-		if kwargs.has_key('instance'):
-			instance = kwargs['instance']
-			self.initial['release_date'] = instance.release_date
-	
-	def save(self, commit = True):
-		instance = super(ProductionEditCoreDetailsForm, self).save(commit=False)
-		instance.release_date = self.cleaned_data['release_date']
-		if commit:
-			instance.save()
-		return instance
+		self.fields['title'] = forms.CharField(initial = self.instance.title)
+		self.fields['byline'] = BylineField(initial = self.instance.byline(), label = 'By')
+		self.fields['release_date'] = FuzzyDateField(required = False, initial = self.instance.release_date,
+			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 		
-	class Meta:
-		model = Production
-		fields = ('title', 'release_date')
+	def save(self, commit = True):
+		self.instance.title = self.cleaned_data['title']
+		
+		# will probably fail if commit = False...
+		self.cleaned_data['byline'].commit(self.instance)
+		
+		self.instance.release_date = self.cleaned_data['release_date']
+		if commit:
+			self.instance.save()
+		return self.instance
 
 class CreateProductionForm(forms.ModelForm):
 	release_date = FuzzyDateField(required = False, help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')

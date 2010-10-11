@@ -48,5 +48,6 @@
 				wasFocusedOnLastMousedown = selectedResult.hasClass('active');
 			})
 		});
+		$(this).addClass('ajaxified');
 	}
 })(jQuery);

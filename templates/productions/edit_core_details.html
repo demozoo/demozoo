@@ -7,16 +7,9 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	<div class="field">
-		<label for="byline" class="field_label">By</label>
-		<div class="field_input">
-			<input type="text" id="byline" class="byline_autocomplete" value="{{ production.byline }}" />
-			<div class="matched_names" id="byline_matched_names">
-				{{ author_formset }}
-				{{ affiliation_formset }}
-			</div>
-		</div>
-	</div>
+	{% with form.byline as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
 	
 	{% with form.release_date as field %}
 		{% include "shared/form_field.html" %}

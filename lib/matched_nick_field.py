@@ -109,7 +109,7 @@ class MatchedNickWidget(forms.Widget):
 				attrs = attrs),
 			self.name_widget.render(name + '_name', self.search_term, attrs = attrs)
 		]
-		return mark_safe(u''.join(output))
+		return mark_safe(u'<div class="nick_match">' + u''.join(output) + u'</div>')
 
 class MatchedNickField(forms.Field):
 	def __init__(self, search_term, *args, **kwargs):

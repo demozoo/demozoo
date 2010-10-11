@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from demoscene.models import Nick
 from submit_button_field import SubmitButtonInput
-from matched_nick_field import MatchedNickWidget, MatchedNickField, NickSelection
+from matched_nick_field import MatchedNickField, NickSelection
 
 # An object which encapsulates the state of a NickWidget as derived from its posted data;
 # this is what NickWidget returns from value_from_datadict
@@ -57,7 +57,8 @@ class NickWidget(forms.Widget):
 		
 		explicit_lookup_requested = self.lookup_widget.value_from_datadict(data, files, name + '_lookup')
 		
-		nick_lookup = NickLookup(search_term,
+		nick_lookup = NickLookup(
+			search_term = search_term,
 			autoaccept = not explicit_lookup_requested,
 			matched_nick_options = self.matched_nick_options)
 		
@@ -94,7 +95,7 @@ class NickWidget(forms.Widget):
 		
 		output = [
 			u'<div class="nick_search">' + u''.join(search_html_output) + u'</div>',
-			u'<div class="nick_match">' + matched_nick_html + u'</div>'
+			u'<div class="nick_match_container">' + matched_nick_html + u'</div>'
 		]
 		return mark_safe(u'<div class="' + root_classname + u'">' + u''.join(output) + u'</div>')
 
@@ -114,7 +115,7 @@ class NickField(forms.Field):
 			nick_lookup = NickLookup.from_value(value, matched_nick_options = self.matched_nick_options)
 			
 			clean_nick_selection = nick_lookup.matched_nick_field.clean(nick_lookup.nick_selection)
-			if clean_nick_selection and value.autoaccept:
+			if clean_nick_selection and nick_lookup.autoaccept:
 				return clean_nick_selection
 			else:
 				raise ValidationError("Please select the appropriate nick from the list.")

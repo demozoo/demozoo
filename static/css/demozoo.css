@@ -324,6 +324,13 @@ form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[typ
 	width: 400px;
 }
 
+form.entry_form .field .field_input .byline_field .byline_search input[type=text] {
+	width: 300px;
+}
+form.entry_form .field .field_input .byline_field.ajaxified .byline_search input[type=text] {
+	width: 400px;
+}
+
 /* byline matches */
 .matched_names {
 	font-size: 0.9em;
@@ -487,7 +494,7 @@ form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[typ
 	border: 1px solid #888;
 	background-color: white;
 }
-.nick_field.ajaxified .nick_match ul {
+.nick_match.ajaxified ul {
 	position: absolute;
 	z-index: 100;
 }
@@ -510,7 +517,7 @@ form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[typ
 .nick_match ul li:hover label {
 	cursor: pointer;
 }
-.nick_field.ajaxified .nick_match ul li input[type=radio] {
+.nick_match.ajaxified ul li input[type=radio] {
 	display: none;
 }
 
