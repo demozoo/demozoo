@@ -36,7 +36,7 @@ class BylineLookup():
 				autocompletion = NickVariant.autocomplete(
 					self.affiliation_names[-1],
 					significant_whitespace = False,
-					groups_only = True, members = self.author_names)
+					groups_only = True, members = [name.strip() for name in self.author_names])
 				self.affiliation_names[-1] += autocompletion
 				self.search_term += autocompletion
 			elif self.author_names:
