@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Nick, NickVariant
+from demoscene.models import Releaser, Nick
 from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
@@ -118,19 +118,3 @@ def remove_group(request, scener_id, group_id):
 		return simple_ajax_confirmation(request,
 			reverse('scener_remove_group', args = [scener_id, group_id]),
 			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
-
-def autocomplete(request):
-	query = request.GET.get('q')
-	new_option = request.GET.get('new_option', False)
-	
-	nick_variants = NickVariant.autocompletion_search(query,
-		limit = request.GET.get('limit', 10),
-		exact = request.GET.get('exact', False),
-		sceners_only = True,
-		groups = request.GET.getlist('group[]')
-	)
-	return render(request, 'sceners/autocomplete.txt', {
-		'query': query,
-		'nick_variants': nick_variants,
-		'new_option': new_option,
-	}, mimetype = 'text/plain')

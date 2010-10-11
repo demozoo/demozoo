@@ -77,28 +77,6 @@ class ProductionEditExternalLinksForm(forms.ModelForm):
 			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 
-class AttachedNickForm(forms.Form):
-	nick_id = forms.CharField(widget = forms.HiddenInput)
-	name = forms.CharField(widget = forms.HiddenInput)
-	
-	def clean(self):
-		cleaned_data = self.cleaned_data
-		nick_id = cleaned_data.get("nick_id")
-		
-		if nick_id == 'error':
-			raise forms.ValidationError("Name has not been matched to a scener/group")
-		
-		# Always return the full collection of cleaned data.
-		return cleaned_data
-	
-	def matched_nick(self):
-		cleaned_data = self.cleaned_data
-		nick_id = cleaned_data.get("nick_id")
-		name = cleaned_data.get("name")
-		return Nick.from_id_and_name(nick_id, name)
-
-AttachedNickFormSet = formset_factory(AttachedNickForm, extra=0)
-
 class ProductionCreditForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.instance = kwargs.pop('instance', Credit())
