@@ -11,7 +11,8 @@ import re
 class BylineLookup():
 	def __init__(self,
 		search_term = '', autoaccept = False,
-		author_nick_selections = [], affiliation_nick_selections = []):
+		author_nick_selections = [], affiliation_nick_selections = [],
+		autocomplete = False):
 		
 		self.search_term = search_term # the byline string
 		self.autoaccept = autoaccept # whether we should continue upon successfully resolving
@@ -24,9 +25,29 @@ class BylineLookup():
 		authors_string = parts[0] # everything before first slash is an author
 		affiliations_string = '^'.join(parts[1:]) # everything after first slash is an affiliation
 		author_names = re.split(r"[\,\+\^\&]", authors_string)
-		self.author_names = [name.strip() for name in author_names]
+		self.author_names = [name.lstrip() for name in author_names if name.strip()]
 		affiliation_names = re.split(r"[\,\+\^\&]", affiliations_string)
-		self.affiliation_names = [name.strip() for name in affiliation_names if name.strip()]
+		self.affiliation_names = [name.lstrip() for name in affiliation_names if name.strip()]
+		
+		# attempt to autocomplete the last element of the name,
+		# if autocomplete flag is True and search term has no trailing ,+^/& separator
+		if autocomplete and not re.search(r"[\,\+\^\/\&]\s*$", self.search_term):
+			if self.affiliation_names:
+				autocompletion = NickVariant.autocomplete(
+					self.affiliation_names[-1],
+					significant_whitespace = False,
+					groups_only = True, members = self.author_names)
+				self.affiliation_names[-1] += autocompletion
+				self.search_term += autocompletion
+			elif self.author_names:
+				autocompletion = NickVariant.autocomplete(
+					self.author_names[-1],
+					significant_whitespace = False)
+				self.author_names[-1] += autocompletion
+				self.search_term += autocompletion
+		
+		self.author_names = [name.strip() for name in self.author_names]
+		self.affiliation_names = [name.strip() for name in self.affiliation_names]
 		
 		# create MatchedNickFields from the components
 		self.author_matched_nick_fields = [

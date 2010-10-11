@@ -444,10 +444,10 @@ function applyGlobalBehaviours(context) {
 					&& newValue.indexOf(unselectedPortion) == 0 /* old unselected portion is a prefix of new value */
 				) {
 					/* autocomplete */
-					//cueLookup(true);
+					cueLookup(true);
 				} else {
 					/* have made some other change (e.g. deletion, pasting text); do not autocomplete */
-					//cueLookup(false);
+					cueLookup(false);
 				}
 			}, 1);
 		});

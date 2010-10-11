@@ -5,6 +5,7 @@ from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
 from django.utils.encoding import StrAndUnicode
+from django.utils.datastructures import SortedDict
 
 # Create your models here.
 class Platform(ModelWithThumbnails):
@@ -379,6 +380,26 @@ class NickVariant(models.Model):
 		return self.name
 	
 	@staticmethod
+	def autocomplete(initial_query, significant_whitespace = True, **kwargs):
+		if significant_whitespace:
+			# treat trailing whitespace as a required part of the name
+			# (e.g. "Andromeda " will only match "Andromeda Software Development", not "Andromeda"
+			query = initial_query
+		else:
+			query = initial_query.strip()
+		
+		# look for possible autocompletions; choose the top-ranked one and use that as the query
+		autocompletions = NickVariant.autocompletion_search(query, limit = 1, **kwargs)
+		try:
+			result = autocompletions[0].name
+			# return just the suffix to add; the caller will append this to the original query,
+			# thus preserving capitalisation in exactly the way that iTunes doesn't.
+			# (Ha, I rule.)
+			return result[len(initial_query):]
+		except IndexError: # no autocompletions available
+			return ''
+	
+	@staticmethod
 	def autocompletion_search(query, **kwargs):
 		limit = kwargs.get('limit')
 		exact = kwargs.get('exact', False)
@@ -404,43 +425,59 @@ class NickVariant(models.Model):
 			
 			if groups:
 				nick_variants = nick_variants.extra(
-					select = {
-						'score': '''
+					select = SortedDict([
+						('score', '''
 							SELECT COUNT(*) FROM demoscene_releaser_groups
 							INNER JOIN demoscene_releaser AS demogroup ON (demoscene_releaser_groups.to_releaser_id = demogroup.id)
 							INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
 							INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
 							WHERE demoscene_releaser_groups.from_releaser_id = demoscene_releaser.id
 							AND LOWER(group_nickvariant.name) IN %s
-						''',
-						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
-					},
-					select_params = (tuple(groups), ),
-					order_by = ('-score','-is_primary_nickvariant','name')
+						'''),
+						('is_exact_match', '''
+							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
+						'''),
+						('is_primary_nickvariant', '''
+							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
+						'''),
+					]),
+					select_params = (tuple(groups), query),
+					order_by = ('-score','-is_exact_match','-is_primary_nickvariant','name')
 				)
 			elif members:
 				nick_variants = nick_variants.extra(
-					select = {
-						'score': '''
+					select = SortedDict([
+						('score', '''
 							SELECT COUNT(*) FROM demoscene_releaser_groups
 							INNER JOIN demoscene_releaser AS member ON (demoscene_releaser_groups.from_releaser_id = member.id)
 							INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
 							INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
 							WHERE demoscene_releaser_groups.to_releaser_id = demoscene_releaser.id
 							AND LOWER(member_nickvariant.name) IN %s
-						''',
-						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
-					},
-					select_params = (tuple(members), ),
-					order_by = ('-score','-is_primary_nickvariant','name')
+						'''),
+						('is_exact_match', '''
+							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
+						'''),
+						('is_primary_nickvariant', '''
+							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
+						'''),
+					]),
+					select_params = (tuple(members), query),
+					order_by = ('-score','-is_exact_match','-is_primary_nickvariant','name')
 				)
 			else:
 				nick_variants = nick_variants.extra(
-					select = {
-						'score': '0',
-						'is_primary_nickvariant': 'CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END',
-					},
-					order_by = ('-is_primary_nickvariant','name')
+					select = SortedDict([
+						('score', '0'),
+						('is_exact_match', '''
+							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
+						'''),
+						('is_primary_nickvariant', '''
+							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
+						'''),
+					]),
+					select_params = (query,),
+					order_by = ('-is_exact_match','-is_primary_nickvariant','name')
 				)
 			if limit:
 				nick_variants = nick_variants[:limit]

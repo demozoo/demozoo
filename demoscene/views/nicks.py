@@ -25,19 +25,7 @@ def match(request):
 		filters['groups_only'] = True
 	
 	if autocomplete:
-		if NickVariant.autocompletion_search(initial_query.rstrip(), exact = True, limit = 1, **filters).count():
-			# search term is already a complete recognised nick, so don't autocomplete further
-			query = initial_query
-		else:
-			# look for possible autocompletions; choose the top-ranked one and use that as the query
-			autocompletions = NickVariant.autocompletion_search(initial_query, limit = 1, **filters)
-			try:
-				query = autocompletions[0].name
-				# substitute in the initial query as the prefix, so that capitalisation is preserved.
-				# (iTunes fails to do this. Ha, I rule.)
-				query = initial_query + query[len(initial_query):]
-			except IndexError:
-				query = initial_query
+		query = initial_query + NickVariant.autocomplete(initial_query, **filters)
 	else:
 		query = initial_query
 	
@@ -56,13 +44,16 @@ def match(request):
 def byline_match(request):
 	initial_query = request.GET.get('q')
 	field_name = request.GET.get('field_name')
+	autocomplete = request.GET.get('autocomplete', False)
 	
-	query = initial_query
+	# irritating workaround for not being able to pass an "omit this parameter" value to jquery
+	if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
+		autocomplete = False
 	
-	byline_lookup = BylineLookup(search_term = query)
+	byline_lookup = BylineLookup(search_term = initial_query, autocomplete = autocomplete)
 	
 	data = {
-		'query': query,
+		'query': byline_lookup.search_term,
 		'initial_query': initial_query,
 		'matches': byline_lookup.render_match_fields(field_name),
 	}
