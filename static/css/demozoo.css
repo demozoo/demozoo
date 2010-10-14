@@ -556,6 +556,30 @@ body.show_production .screenshots ul li {
 	margin-top: 8px;
 }
 
+.screenshot_wrapper {
+	position: absolute;
+	padding: 8px;
+	border: 1px solid #444;
+	background-color: #eee;
+	background-image: url('/static/images/screenshot_loading.gif');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.screenshot_wrapper .lightbox_close {
+	margin-top: -4px;
+	margin-bottom: 4px;
+}
+.screenshot_wrapper img {
+	float: left;
+	clear: both;
+}
+.screenshot_overlay {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	background-color: #000;
+}
+
 /* party series listing */
 ul.party_series_index li a.party_series_link {
 	font-weight: bold;
