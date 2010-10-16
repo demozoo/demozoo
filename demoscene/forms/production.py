@@ -40,8 +40,8 @@ class CreateProductionForm(forms.Form):
 			raise Exception("we don't support saving CreateProductionForm with commit = False. Sorry!")
 		
 		self.instance.title = self.cleaned_data['title']
-		self.instance.save()
 		self.instance.release_date = self.cleaned_data['release_date']
+		self.instance.save()
 		self.cleaned_data['byline'].commit(self.instance)
 		return self.instance
 
