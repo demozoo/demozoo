@@ -184,51 +184,58 @@ form.external_links_form .field .field_input {
 
 /* listings */
 li.scener {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/scener.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 li.add_scener {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/add_scener.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 li.group {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/group.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 li.add_group {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/add_group.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 li.production {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/disk.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 li.party {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/party.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }
 
 ul.download_links li.download_link {
-	line-height: 24px;
 	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
 	background-image: url(/static/images/icons/disk.png);
 	background-position: left center;
 	background-repeat: no-repeat;
