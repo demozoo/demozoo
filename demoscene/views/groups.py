@@ -24,8 +24,8 @@ def show(request, group_id, edit_mode = False):
 	return render(request, 'groups/show.html', {
 		'group': group,
 		'members': group.members.order_by('name'),
-		'productions': group.productions().order_by('-release_date_date'),
-		'member_productions': group.member_productions().order_by('-release_date_date'),
+		'productions': group.productions().order_by('-release_date_date', '-title'),
+		'member_productions': group.member_productions().order_by('-release_date_date', '-title'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
