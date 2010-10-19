@@ -11,7 +11,7 @@ class ProductionEditCoreDetailsForm(forms.Form):
 		self.instance = kwargs.pop('instance', Production())
 		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		self.fields['title'] = forms.CharField(initial = self.instance.title)
-		self.fields['byline'] = BylineField(initial = self.instance.byline(), label = 'By')
+		self.fields['byline'] = BylineField(required = False, initial = self.instance.byline(), label = 'By')
 		self.fields['release_date'] = FuzzyDateField(required = False, initial = self.instance.release_date,
 			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 		
@@ -19,7 +19,11 @@ class ProductionEditCoreDetailsForm(forms.Form):
 		self.instance.title = self.cleaned_data['title']
 		
 		# will probably fail if commit = False...
-		self.cleaned_data['byline'].commit(self.instance)
+		if self.cleaned_data['byline']:
+			self.cleaned_data['byline'].commit(self.instance)
+		else:
+			self.instance.author_nicks = []
+			self.instance.author_affiliation_nicks = []
 		
 		self.instance.release_date = self.cleaned_data['release_date']
 		if commit:
@@ -31,7 +35,7 @@ class CreateProductionForm(forms.Form):
 		self.instance = kwargs.pop('instance', Production())
 		super(CreateProductionForm, self).__init__(*args, **kwargs)
 		self.fields['title'] = forms.CharField()
-		self.fields['byline'] = BylineField(label = 'By')
+		self.fields['byline'] = BylineField(required = False, label = 'By')
 		self.fields['release_date'] = FuzzyDateField(required = False,
 			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 		
@@ -42,7 +46,8 @@ class CreateProductionForm(forms.Form):
 		self.instance.title = self.cleaned_data['title']
 		self.instance.release_date = self.cleaned_data['release_date']
 		self.instance.save()
-		self.cleaned_data['byline'].commit(self.instance)
+		if self.cleaned_data['byline']:
+			self.cleaned_data['byline'].commit(self.instance)
 		return self.instance
 
 class ProductionTypeForm(forms.Form):
