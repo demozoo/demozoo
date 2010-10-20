@@ -101,6 +101,8 @@ class Platform(ModelWithThumbnails):
 
 class ProductionType(models.Model):
 	name = models.CharField(max_length=255)
+	is_demo = models.BooleanField(help_text = "Should productions of this type appear in the Demos listing?")
+	is_music = models.BooleanField(help_text = "Should productions of this type appear in the Music listing?")
 	
 	def __unicode__(self):
 		return self.name

@@ -16,6 +16,7 @@ ul, ol {
 #site_header {
 	border-bottom: 1px solid #444;
 	margin-bottom: 24px;
+	height: 60px;
 }
 
 #site_header h1 {
@@ -28,8 +29,17 @@ ul, ol {
 	padding-right: 20px;
 }
 
+#site_header #login_status_panel {
+	margin-left: 32px;
+	width: 300px;
+	float: left;
+}
+
 #site_header form.search {
 	float: right;
+}
+#site_header form.search label {
+	display: block;
 }
 
 #side_column {

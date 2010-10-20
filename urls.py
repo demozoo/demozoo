@@ -26,6 +26,8 @@ urlpatterns += patterns('demoscene.views',
 	(r'^$', 'home.home', {}, 'home'),
 	
 	(r'^productions/$', 'productions.index', {}, 'productions'),
+	(r'^productions/demos/$', 'productions.demos_index', {}, 'demos'),
+	(r'^productions/music/$', 'productions.music_index', {}, 'music'),
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/edit/$', 'productions.edit', {}, 'edit_production'),
 	(r'^productions/(\d+)/done/$', 'productions.edit_done', {}, 'edit_production_done'),

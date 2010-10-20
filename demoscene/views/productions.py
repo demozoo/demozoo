@@ -17,6 +17,30 @@ def index(request):
 		'production_page': production_page,
 	})
 
+def demos_index(request):
+	production_page = get_page(
+		Production.objects.filter(types__is_demo = True).extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
+	return render(request, 'productions/index.html', {
+		'title': 'Demos',
+		'production_page': production_page,
+	})
+
+def music_index(request):
+	production_page = get_page(
+		Production.objects.filter(types__is_music = True).extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
+	return render(request, 'productions/index.html', {
+		'title': 'Music',
+		'production_page': production_page,
+	})
+
 def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)
 	

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block base_main %}
-	<h2>Productions</h2>
+	<h2>{% filter force_escape %}{% firstof title "Productions" %}{% endfilter %}</h2>
 	
 	<ul class="actions">
 		<li><a href="{% url new_production %}" class="add open_in_lightbox">New production</a></li>
