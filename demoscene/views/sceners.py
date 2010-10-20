@@ -25,7 +25,7 @@ def show(request, scener_id, edit_mode = False):
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'productions': scener.productions().order_by('-release_date_date', '-title'),
-		'credits': scener.credits().order_by('-production__release_date_date', '-title'),
+		'credits': scener.credits().order_by('-production__release_date_date', '-production__title'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
