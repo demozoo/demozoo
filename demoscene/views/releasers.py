@@ -84,6 +84,7 @@ def edit_notes(request, releaser_id):
 @login_required
 def edit_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
+	primary_nick = releaser.primary_nick
 	if releaser.is_group:
 		nick_form_class = GroupNickForm
 	else:
@@ -93,9 +94,8 @@ def edit_nick(request, releaser_id, nick_id):
 		form = nick_form_class(releaser, request.POST, instance = nick)
 		if form.is_valid():
 			form.save()
-			if form.cleaned_data.get('override_primary_nick'):
+			if form.cleaned_data.get('override_primary_nick') or nick == primary_nick:
 				releaser.name = nick.name
-				releaser.save()
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
