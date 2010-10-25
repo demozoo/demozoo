@@ -135,51 +135,16 @@
 		{% if productions %}
 			<div class="panel">
 				<h3 class="productions_header">Productions:</h3>
-				<table width="100%">
-					<col width="50%" />
-					<col width="10%" />
-					<col width="40%" />
-					{% for prod in productions %}
-						<tr>
-							<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
-							<td>{{ prod.release_date.short_format }}</td>
-							<td>{% byline prod %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/production_listing.html" %}
 			</div>
 		{% endif %}
 		
 		{% if credits or editing %}
 			<div class="panel">
 				<h3 class="credits_header">Credited on:</h3>
-				<table width="100%">
-					<col width="50%" />
-					<col width="10%" />
-					<col width="40%" />
-					{% for credit in credits %}
-						<tr>
-							<td>
-								<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
-								{% if credit.role %}
-									- {{ credit.role }}
-								{% endif %}
-								{% if credit.nick.name != scener.name %}
-									<i>(as {{ credit.nick.name }})</i>
-								{% endif %}
-							</td>
-							<td>{{ credit.production.release_date.short_format }}</td>
-							<td>{% byline credit.production %}</td>
-							{% if editing %}
-								<td>
-									<a href="{% url releaser_edit_credit scener.id credit.id %}" class="open_in_lightbox">
-										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-									</a>
-								</td>
-							{% endif %}
-						</tr>
-					{% endfor %}
-				</table>
+				{% with scener as releaser %}
+					{% include "shared/credited_production_listing.html" %}
+				{% endwith %}
 				{% if editing %}
 					<ul>
 						<li class="add">

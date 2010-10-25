@@ -1,0 +1,29 @@
+{% load demoscene_tags %}
+
+<table width="100%">
+	<col width="50%" />
+	<col width="10%" />
+	<col width="40%" />
+	{% for credit in credits %}
+		<tr>
+			<td>
+				<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
+				{% if credit.role %}
+					- {{ credit.role }}
+				{% endif %}
+				{% if credit.nick.name != releaser.name %}
+					<i>(as {{ credit.nick.name }})</i>
+				{% endif %}
+			</td>
+			<td>{{ credit.production.release_date.short_format }}</td>
+			<td>{% byline credit.production %}</td>
+			{% if editing %}
+				<td>
+					<a href="{% url releaser_edit_credit releaser.id credit.id %}" class="open_in_lightbox">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+					</a>
+				</td>
+			{% endif %}
+		</tr>
+	{% endfor %}
+</table>

@@ -26,6 +26,7 @@ def show(request, group_id, edit_mode = False):
 		'members': group.members.order_by('name'),
 		'productions': group.productions().order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().order_by('-release_date_date', '-title'),
+		'credits': group.credits().order_by('-production__release_date_date', '-production__title'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
