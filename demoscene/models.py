@@ -135,7 +135,10 @@ class Releaser(models.Model):
 	woe_id = models.BigIntegerField(null = True, blank = True)
 	
 	first_name = models.CharField(max_length = 255, blank = True)
+	show_first_name = models.BooleanField(default = True)
 	surname = models.CharField(max_length = 255, blank = True)
+	show_surname = models.BooleanField(default = True)
+	real_name_note = models.TextField(default = '', blank = True, verbose_name = 'Permission note', help_text = "Details of any correspondence / decision about whether this name should be public")
 	
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
@@ -266,6 +269,12 @@ class Releaser(models.Model):
 			return "%s %s" % (self.first_name, self.surname)
 		else:
 			return None
+	
+	def real_name_available_to_show(self):
+		return (self.first_name and self.show_first_name) or (self.surname and self.show_surname)
+	
+	def can_reveal_full_real_name(self):
+		return (self.show_first_name and self.show_surname)
 	
 	# Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
 	# that should prevent its deletion

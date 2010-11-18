@@ -57,6 +57,11 @@ ul, ol {
 	color: #666;
 }
 
+.redacted {
+	color: #666;
+	text-decoration: line-through;
+}
+
 .notes {
 	border: 1px solid #eee;
 	margin-top: 8px;
@@ -133,6 +138,10 @@ form.entry_form .field .field_input textarea {
 	width: 420px;
 	height: 300px;
 }
+form.entry_form .field .field_input textarea.short_notes {
+	height: 50px;
+}
+
 form.entry_form .field .field_input .help_text {
 	font-size: 0.66em;
 }

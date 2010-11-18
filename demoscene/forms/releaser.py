@@ -58,7 +58,10 @@ class ScenerEditLocationForm(forms.ModelForm):
 class ScenerEditRealNameForm(forms.ModelForm):
 	class Meta:
 		model = Releaser
-		fields = ['first_name', 'surname']
+		fields = ['first_name', 'show_first_name', 'surname', 'show_surname', 'real_name_note']
+		widgets = {
+		    'real_name_note': forms.Textarea(attrs={'class': 'short_notes'}),
+		}
 
 class ScenerEditExternalLinksForm(forms.ModelForm):
 	class Meta:
