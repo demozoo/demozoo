@@ -20,7 +20,7 @@ ul, ol {
 }
 
 #site_header h1 {
-	width: 200px;
+	width: 180px;
 	float: left;
 }
 
@@ -30,8 +30,8 @@ ul, ol {
 }
 
 #site_header #login_status_panel {
-	margin-left: 32px;
-	width: 300px;
+	margin-left: 20px;
+	width: 250px;
 	float: left;
 }
 
