@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
 from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
+from treebeard.mp_tree import MP_Node
 
 # Create your models here.
 class Platform(ModelWithThumbnails):
@@ -99,13 +100,44 @@ class Platform(ModelWithThumbnails):
 			LIMIT 10;
 		''', (self.id, self.id))
 
-class ProductionType(models.Model):
+class ProductionType(MP_Node):
 	name = models.CharField(max_length=255)
-	is_demo = models.BooleanField(help_text = "Should productions of this type appear in the Demos listing?")
-	is_music = models.BooleanField(help_text = "Should productions of this type appear in the Music listing?")
+	position = models.IntegerField(default = 0, help_text = "Position in which this should be ordered underneath its parent type (if not alphabetical)")
+	internal_name = models.CharField(blank = True, max_length = 32, help_text = "Used to identify this prod type for special treatment in code - leave this alone!")
+	
+	node_order_by = ['position', 'name']
 	
 	def __unicode__(self):
 		return self.name
+	
+	@staticmethod
+	def music_types():
+		try:
+			music = ProductionType.objects.get(internal_name = 'music')
+			return ProductionType.get_tree(music)
+		except ProductionType.DoesNotExist:
+			return ProductionType.objects.none()
+	
+	@staticmethod
+	def graphic_types():
+		try:
+			graphics = ProductionType.objects.get(internal_name = 'graphics')
+			return ProductionType.get_tree(graphics)
+		except ProductionType.DoesNotExist:
+			return ProductionType.objects.none()
+	
+	@staticmethod
+	def featured_types():
+		tree = ProductionType.get_tree()
+		music_types = ProductionType.music_types()
+		graphic_types = ProductionType.graphic_types()
+		
+		if music_types:
+			tree = tree.exclude(id__in = music_types.values('pk'))
+		if graphic_types:
+			tree = tree.exclude(id__in = graphic_types.values('pk'))
+		
+		return tree
 
 class Releaser(models.Model):
 	external_site_ref_field_names = [
@@ -520,20 +552,48 @@ class Production(models.Model):
 	def __unicode__(self):
 		return self.title
 	
-	@models.permalink
-	def get_absolute_url(self):
-		return ('demoscene.views.productions.show', [str(self.id)])
-		
 	def byline(self):
 		return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
 	
+	# FIXME: Horribly inefficient. Memoize this in the productions table on save instead.
+	def is_music(self):
+		try:
+			return (self.types.all()[0] in ProductionType.music_types())
+		except IndexError:
+			return False
+	
+	def is_graphics(self):
+		try:
+			return (self.types.all()[0] in ProductionType.graphic_types())
+		except IndexError:
+			return False
+	
+	@property
+	def supertype(self):
+		if self.is_music():
+			return 'music'
+		elif self.is_graphics():
+			return 'graphics'
+		else:
+			return 'production'
+	
 	@models.permalink
 	def get_absolute_url(self):
-		return ('demoscene.views.productions.show', [str(self.id)])
+		if self.supertype == 'music':
+			return ('demoscene.views.music.show', [str(self.id)])
+		elif self.supertype == 'graphics':
+			return ('demoscene.views.graphics.show', [str(self.id)])
+		else:
+			return ('demoscene.views.productions.show', [str(self.id)])
 
 	@models.permalink
 	def get_absolute_edit_url(self):
-		return ('demoscene.views.productions.edit', [str(self.id)])
+		if self.supertype == 'music':
+			return ('demoscene.views.music.edit', [str(self.id)])
+		elif self.supertype == 'graphics':
+			return ('demoscene.views.graphics.edit', [str(self.id)])
+		else:
+			return ('demoscene.views.productions.edit', [str(self.id)])
 	
 	def _get_release_date(self):
 		if self.release_date_date and self.release_date_precision:
@@ -569,6 +629,12 @@ class Production(models.Model):
 			return "http://bitworld.bitfellas.org/demo.php?id=%s" % self.bitworld_id
 		else:
 			return None
+	
+	def ordered_download_links(self):
+		download_links = self.download_links.all()
+		# reorder to put scene.org links first
+		return [d for d in download_links if d.host_identifier() == 'sceneorg'] + \
+			[d for d in download_links if d.host_identifier() != 'sceneorg']
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):

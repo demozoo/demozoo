@@ -1,6 +1,6 @@
-<h2>New production</h2>
+<h2>Editing graphics: {{ production.title }}</h2>
 
-<form action="{% url new_production %}" method="post" class="entry_form">
+<form action="{% url graphics_edit_core_details production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% with form.title as field %}
@@ -14,10 +14,12 @@
 	{% with form.release_date as field %}
 		{% include "shared/form_field.html" %}
 	{% endwith %}
+
+	{% with form.type as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
 	
-	{% include "shared/production_type_formset.html" %}
 	{% include "shared/production_platform_formset.html" %}
-	{% include "shared/production_download_formset.html" %}
 	<div class="field">
 		<input type="submit" />
 	</div>

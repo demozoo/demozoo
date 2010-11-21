@@ -1,10 +1,15 @@
 from django.contrib import admin
+from treebeard.admin import TreeAdmin
+
 from demoscene.models import *
 
 class CompetitionPlacingInline(admin.TabularInline):
 	model = CompetitionPlacing
 
-admin.site.register(ProductionType)
+class ProductionTypeAdmin(TreeAdmin):
+	pass
+
+admin.site.register(ProductionType, ProductionTypeAdmin)
 admin.site.register(Platform)
 admin.site.register(Production)
 admin.site.register(Releaser)

@@ -1,64 +1,40 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot
+from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot, ProductionType
 from demoscene.forms.production import *
 
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import datetime
 
-def index(request):
+def productions_index(request):
+	queryset = Production.objects.exclude(types__in = ProductionType.music_types()).\
+		exclude(types__in = ProductionType.graphic_types())
+	
 	production_page = get_page(
-		Production.objects.extra(
+		queryset.extra(
 			select={'lower_title': 'lower(demoscene_production.title)'}
 		).order_by('lower_title'),
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
-		'production_page': production_page,
-	})
-
-def demos_index(request):
-	production_page = get_page(
-		Production.objects.filter(types__is_demo = True).extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title'),
-		request.GET.get('page', '1') )
-	
-	return render(request, 'productions/index.html', {
-		'title': 'Demos',
-		'production_page': production_page,
-	})
-
-def music_index(request):
-	production_page = get_page(
-		Production.objects.filter(types__is_music = True).extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title'),
-		request.GET.get('page', '1') )
-	
-	return render(request, 'productions/index.html', {
-		'title': 'Music',
 		'production_page': production_page,
 	})
 
 def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)
+	if production.supertype != 'production':
+		return HttpResponseRedirect(production.get_absolute_url())
 	
 	edit_mode = edit_mode or sticky_editing_active(request.user)
-	
-	download_links = production.download_links.all()
-	# reorder to put scene.org links first
-	download_links = [d for d in download_links if d.host_identifier() == 'sceneorg'] + \
-		[d for d in download_links if d.host_identifier() != 'sceneorg']
 	
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
-		'download_links': download_links,
+		'download_links': production.ordered_download_links(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
+	
 
 @login_required
 def edit(request, production_id):
@@ -84,8 +60,8 @@ def edit_core_details(request, production_id):
 			):
 			production.updated_at = datetime.datetime.now()
 			form.save()
-			production.types = get_production_types(production_type_formset)
-			production.platforms = get_production_platforms(production_platform_formset)
+			production.types = production_type_formset.get_production_types()
+			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionEditCoreDetailsForm(instance = production)
@@ -230,8 +206,8 @@ def create(request):
 			):
 			form.save()
 			download_link_formset.save()
-			production.types = get_production_types(production_type_formset)
-			production.platforms = get_production_platforms(production_platform_formset)
+			production.types = production_type_formset.get_production_types()
+			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = CreateProductionForm()
@@ -304,24 +280,3 @@ def autocomplete(request):
 		'query': query,
 		'productions': productions,
 	}, mimetype = 'text/plain')
-
-# helper functions
-def get_production_types(production_type_formset):
-	prod_types = []
-	for prod_type_form in production_type_formset.forms:
-		if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type'):
-			prod_types.append(prod_type_form.cleaned_data['production_type'])
-	for prod_type_form in production_type_formset.deleted_forms:
-		if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type') and prod_type_form.cleaned_data['production_type'] in prod_types:
-			prod_types.remove(prod_type_form.cleaned_data['production_type'])
-	return prod_types
-
-def get_production_platforms(production_platform_formset):
-	platforms = []
-	for prod_platform_form in production_platform_formset.forms:
-		if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform'):
-			platforms.append(prod_platform_form.cleaned_data['platform'])
-	for prod_platform_form in production_platform_formset.deleted_forms:
-		if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform') and prod_platform_form.cleaned_data['platform'] in platforms:
-			platforms.remove(prod_platform_form.cleaned_data['platform'])
-	return platforms

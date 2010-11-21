@@ -1,0 +1,25 @@
+{% if credits or editing %}
+	<div class="panel">
+		<h3>Credits</h3>
+		<ul>
+			{% for credit in credits %}
+				<li>
+					<a href="{{ credit.nick.releaser.get_absolute_url }}">{{ credit.nick }}</a>
+					{% if credit.role %}
+						- {{ credit.role }}
+					{% endif %}
+					{% if editing %}
+						<a href="{% url production_edit_credit production.id credit.id %}" class="open_in_lightbox">
+							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+						</a>
+					{% endif %}
+				</li>
+			{% endfor %}
+			{% if editing %}
+				<li class="add">
+					<a href="{% url production_add_credit production.id %}" class="open_in_lightbox">Add credit</a>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
+{% endif %}

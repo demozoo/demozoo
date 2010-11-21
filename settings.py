@@ -101,6 +101,7 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'south',
 	'haystack',
+	'treebeard',
 	
 	'demoscene',
 	'search',

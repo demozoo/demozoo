@@ -7,7 +7,7 @@
 	<div class="panel">
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url edit_production_done production.id %}" class="done">Done</a></li>
+				<li><a href="{% url edit_music_done production.id %}" class="done">Done</a></li>
 			{% else %}
 				<li><a href="{{ production.get_absolute_edit_url }}" class="edit">Edit</a></li>
 			{% endif %}
@@ -22,13 +22,11 @@
 			{% endif %}
 			
 			{% if editing %}
-				<a href="{% url production_edit_core_details production.id %}" class="open_in_lightbox">
+				<a href="{% url music_edit_core_details production.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 				</a>
 			{% endif %}
 		</div>
-		
-		{% include "shared/production_screenshots.html" %}
 		
 		<div class="production_details">
 			{% if production.release_date or editing %}

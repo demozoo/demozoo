@@ -15,35 +15,8 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	<div class="field">
-		<label for="id_prod_type-0-production_type" class="field_label">Type</label>
-		<div class="field_input spawning_formset">
-			{{ production_type_formset.management_form }}
-			<ul>
-				{% for prod_type_form in production_type_formset.forms %}
-					<li>
-						<div class="formset_item">{{ prod_type_form.production_type }}</div>
-						<span class="delete">{{ prod_type_form.DELETE }} {{ prod_type_form.DELETE.label_tag }}</span>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-	
-	<div class="field">
-		<label for="id_prod_platform-0-platform" class="field_label">Platform</label>
-		<div class="field_input spawning_formset">
-			{{ production_platform_formset.management_form }}
-			<ul>
-				{% for prod_platform_form in production_platform_formset.forms %}
-					<li>
-						<div class="formset_item">{{ prod_platform_form.platform }}</div>
-						<span class="delete">{{ prod_platform_form.DELETE }} {{ prod_platform_form.DELETE.label_tag }}</span>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+	{% include "shared/production_type_formset.html" %}
+	{% include "shared/production_platform_formset.html" %}
 	<div class="field">
 		<input type="submit" />
 	</div>

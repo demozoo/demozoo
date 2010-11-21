@@ -1,0 +1,13 @@
+{% load safe_markdown %}
+
+{% if production.notes or editing_as_admin %}
+	<div class="notes">
+		{% if editing_as_admin %}
+			<ul class="actions">
+				<li><a class="edit open_in_lightbox" href="{% url production_edit_notes production.id %}">Edit notes</a></li>
+			</ul>
+		{% endif %}
+		{{ production.notes|safe_markdown }}
+		<div style="clear: both;"></div>
+	</div>
+{% endif %}
