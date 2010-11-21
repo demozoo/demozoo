@@ -83,6 +83,8 @@ class CreateProductionForm(forms.Form):
 		if not commit:
 			raise Exception("we don't support saving CreateProductionForm with commit = False. Sorry!")
 		
+		if not self.instance.supertype:
+			self.instance.supertype = 'production'
 		self.instance.title = self.cleaned_data['title']
 		self.instance.release_date = self.cleaned_data['release_date']
 		self.instance.save()
@@ -100,6 +102,7 @@ class CreateMusicForm(CreateProductionForm):
 		self.fields['platform'] = forms.ModelChoiceField(required = False, queryset = Platform.objects.all(), empty_label = 'Any')
 		
 	def save(self, *args, **kwargs):
+		self.instance.supertype = 'music'
 		super(CreateMusicForm, self).save(*args, **kwargs)
 		
 		if self.cleaned_data['type']:
@@ -118,6 +121,7 @@ class CreateGraphicsForm(CreateProductionForm):
 		self.fields['platform'] = forms.ModelChoiceField(required = False, queryset = Platform.objects.all(), empty_label = 'Any')
 		
 	def save(self, *args, **kwargs):
+		self.instance.supertype = 'graphics'
 		super(CreateGraphicsForm, self).save(*args, **kwargs)
 		
 		if self.cleaned_data['type']:

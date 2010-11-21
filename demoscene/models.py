@@ -99,6 +99,8 @@ class Platform(ModelWithThumbnails):
 			ORDER BY RANDOM()
 			LIMIT 10;
 		''', (self.id, self.id))
+	class Meta:
+		ordering = ['name']
 
 class ProductionType(MP_Node):
 	name = models.CharField(max_length=255)
@@ -532,6 +534,7 @@ class NickVariant(models.Model):
 class Production(models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')
+	supertype = models.CharField(max_length = 32)
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
@@ -549,30 +552,27 @@ class Production(models.Model):
 	
 	search_result_template = 'search/results/production.html'
 	
+	def save(self, *args, **kwargs):
+		if self.id:
+			self.supertype = self.inferred_supertype
+		return super(Production, self).save(*args, **kwargs)
+	
 	def __unicode__(self):
 		return self.title
 	
 	def byline(self):
 		return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
 	
-	# FIXME: Horribly inefficient. Memoize this in the productions table on save instead.
-	def is_music(self):
-		try:
-			return (self.types.all()[0] in ProductionType.music_types())
-		except IndexError:
-			return False
-	
-	def is_graphics(self):
-		try:
-			return (self.types.all()[0] in ProductionType.graphic_types())
-		except IndexError:
-			return False
-	
 	@property
-	def supertype(self):
-		if self.is_music():
+	def inferred_supertype(self):
+		try:
+			prod_type = self.types.all()[0]
+		except IndexError:
+			return 'production'
+		
+		if prod_type in ProductionType.music_types():
 			return 'music'
-		elif self.is_graphics():
+		elif prod_type in ProductionType.graphic_types():
 			return 'graphics'
 		else:
 			return 'production'
