@@ -28,7 +28,6 @@ def show(request, production_id, edit_mode = False):
 	
 	return render(request, 'music/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name'),
 		'download_links': production.ordered_download_links(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
