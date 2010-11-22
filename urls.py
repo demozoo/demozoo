@@ -107,4 +107,6 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^maintenance/$', 'maintenance.index', {}, 'maintenance_index'),
 	(r'^maintenance/prods_without_screenshots$', 'maintenance.prods_without_screenshots', {}, 'maintenance_prods_without_screenshots'),
+	
+	(r'^api/v1/', include('api.urls'))
 )
