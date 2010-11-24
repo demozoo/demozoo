@@ -31,6 +31,10 @@ def show(request, production_id, edit_mode = False):
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.ordered_download_links(),
+		'soundtracks': [
+			link.soundtrack for link in
+			production.soundtrack_links.order_by('position').select_related('soundtrack')
+		],
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})

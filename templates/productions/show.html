@@ -56,4 +56,12 @@
 	{% include "shared/production_notes.html" %}
 	{% include "shared/production_credits.html" %}
 	{% include "shared/production_downloads.html" %}
+	{% if soundtracks %}
+		<div class="panel">
+			<h3 class="soundtracks_header">Soundtrack</h3>
+			{% with soundtracks as productions %}
+				{% include "shared/production_listing.html" %}
+			{% endwith %}
+		</div>
+	{% endif %}
 {% endblock %}

@@ -556,10 +556,10 @@ form.entry_form .field .field_input .byline_field.ajaxified .byline_search input
 
 
 /* production view */
-body.show_production h2 {
+.production_title h2 {
 	display: inline;
 }
-body.show_production h3 {
+.production_title h3 {
 	padding-left: 4px;
 	display: inline;
 }
@@ -650,6 +650,13 @@ ul.parties_in_series li.current {
 .credits_header {
 	padding-left: 24px;
 	background-image: url('/static/images/icons/wrench.png');
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+.soundtracks_header {
+	padding-left: 24px;
+	background-image: url('/static/images/icons/music.png');
 	background-position: left center;
 	background-repeat: no-repeat;
 }

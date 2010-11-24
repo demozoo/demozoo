@@ -788,3 +788,11 @@ class AccountProfile(models.Model):
 	user = models.ForeignKey(User, unique = True)
 	sticky_edit_mode = models.BooleanField(help_text = "Stays in edit mode when browsing around, until you explicitly hit 'done'")
 	edit_mode_active = models.BooleanField(editable = False)
+
+class SoundtrackLink(models.Model):
+	production = models.ForeignKey(Production, related_name = 'soundtrack_links')
+	soundtrack = models.ForeignKey(Production, limit_choices_to = {'supertype': 'music'}, related_name = 'appearances_as_soundtrack')
+	position = models.IntegerField()
+	
+	def __unicode__(self):
+		return "%s on %s" % (self.soundtrack, self.production)
