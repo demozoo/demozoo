@@ -796,3 +796,6 @@ class SoundtrackLink(models.Model):
 	
 	def __unicode__(self):
 		return "%s on %s" % (self.soundtrack, self.production)
+	
+	class Meta:
+		ordering = ['position']

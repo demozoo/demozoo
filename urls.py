@@ -58,6 +58,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/(\d+)/add_screenshot/$', 'productions.add_screenshot', {}, 'production_add_screenshot'),
 	(r'^productions/(\d+)/screenshots/$', 'productions.screenshots', {}, 'production_screenshots'),
 	(r'^productions/(\d+)/delete_screenshot/(\d+)/$', 'productions.delete_screenshot', {}, 'production_delete_screenshot'),
+	(r'^productions/(\d+)/edit_soundtracks/$', 'productions.edit_soundtracks', {}, 'production_edit_soundtracks'),
 	
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),

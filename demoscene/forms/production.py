@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot, Credit
+from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot, Credit, SoundtrackLink
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.forms.models import inlineformset_factory
@@ -213,3 +213,5 @@ class ProductionAddScreenshotForm(forms.ModelForm):
 
 ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
 
+ProductionSoundtrackLinkFormset = inlineformset_factory(Production, SoundtrackLink,
+	fk_name="production", fields=('soundtrack',), can_order = True, extra=1 )

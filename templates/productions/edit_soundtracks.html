@@ -1,0 +1,21 @@
+<h2>Editing soundtrack details for {{ production.title }}:</h2>
+
+<form action="{% url production_edit_soundtracks production.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	
+	<div class="field_input spawning_formset">
+		{{ formset.management_form }}
+		<ul>
+			{% for form in formset.forms %}
+				<li>
+					<div class="formset_item">{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}</div>
+					<span class="delete">{{ form.DELETE }} {{ form.DELETE.label_tag }}</span>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+	
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>

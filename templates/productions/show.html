@@ -56,12 +56,20 @@
 	{% include "shared/production_notes.html" %}
 	{% include "shared/production_credits.html" %}
 	{% include "shared/production_downloads.html" %}
-	{% if soundtracks %}
+	{% if soundtracks or editing %}
 		<div class="panel">
 			<h3 class="soundtracks_header">Soundtrack</h3>
 			{% with soundtracks as productions %}
 				{% include "shared/production_listing.html" %}
 			{% endwith %}
+			
+			{% if editing %}
+				<ul>
+					<li class="edit">
+						<a href="{% url production_edit_soundtracks production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
+					</li>
+				</ul>
+			{% endif %}
 		</div>
 	{% endif %}
 {% endblock %}

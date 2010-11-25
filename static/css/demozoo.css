@@ -281,6 +281,13 @@ li.add {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
+li.edit {
+	line-height: 24px;
+	padding-left: 24px;
+	background-image: url(/static/images/icons/edit.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
 
 ul.actions {
 	float: right;

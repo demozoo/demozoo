@@ -277,6 +277,23 @@ def delete_credit(request, production_id, credit_id):
 			reverse('production_delete_credit', args = [production_id, credit_id]),
 			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, production.title) )
 
+@login_required
+def edit_soundtracks(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if request.method == 'POST':
+		formset = ProductionSoundtrackLinkFormset(request.POST, instance = production)
+		if formset.is_valid():
+			for (i, form) in enumerate(formset.forms):
+				form.instance.position = i
+			formset.save()
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		formset = ProductionSoundtrackLinkFormset(instance = production)
+	return ajaxable_render(request, 'productions/edit_soundtracks.html', {
+		'production': production,
+		'formset': formset,
+	})
+
 def autocomplete(request):
 	query = request.GET.get('q')
 	productions = Production.objects.filter(title__istartswith = query)[:10]
