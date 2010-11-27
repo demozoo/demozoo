@@ -7,6 +7,15 @@ function applyGlobalBehaviours(context) {
 	
 	$('.spawning_formset', context).spawningFormset();
 	
+	$('.sortable_formset', context).sortable({
+		'items': 'li.sortable_item',
+		'update': function(event, ui) {
+			$('input[name$="-ORDER"]', this).each(function(i) {
+				$(this).val(i+1);
+			})
+		}
+	}).disableSelection();
+	
 	function addAutocompleteRule(selector, url, idField, useNickId, context) {
 		$(selector, context).autocomplete(url, {
 			autoFill: true,

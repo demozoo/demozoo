@@ -213,5 +213,13 @@ class ProductionAddScreenshotForm(forms.ModelForm):
 
 ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
 
+# for use in ProductionSoundtrackLinkFormset
+class SoundtrackLinkForm(forms.ModelForm):
+	def has_changed(self):
+		return True # force all objects to be saved so that ordering (done out of form) takes effect
+	class Meta:
+		model = SoundtrackLink
+		fields = ('soundtrack',)
+
 ProductionSoundtrackLinkFormset = inlineformset_factory(Production, SoundtrackLink,
-	fk_name="production", fields=('soundtrack',), can_order = True, extra=1 )
+	fk_name="production", form=SoundtrackLinkForm, can_order = True, extra=1 )

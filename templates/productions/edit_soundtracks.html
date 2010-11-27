@@ -5,9 +5,9 @@
 	
 	<div class="field_input spawning_formset">
 		{{ formset.management_form }}
-		<ul>
+		<ul class="sortable_formset">
 			{% for form in formset.forms %}
-				<li>
+				<li class="sortable_item">
 					<div class="formset_item">{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}</div>
 					<span class="delete">{{ form.DELETE }} {{ form.DELETE.label_tag }}</span>
 				</li>

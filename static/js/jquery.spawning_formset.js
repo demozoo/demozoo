@@ -7,7 +7,8 @@
 			
 			function deleteForm(li) {
 				$('.delete input:checkbox', li).attr('checked', true);
-				$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
+				//$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
+				$(li).fadeOut();
 			}
 			
 			$('> ul > li', this).each(function() {
@@ -16,8 +17,10 @@
 				deleteButton.click(function() {
 					deleteForm(li);
 				});
-				$('.delete', li).hide().after(deleteButton);
+				/* using display: none screws with fading / ordering in unexplainable ways on Webkit */
+				$('.delete', li).css({'visibility':'hidden'}).after(deleteButton);
 			});
+			
 			var lastElement = $('> ul > li:last', this);
 			var newFormTemplate = lastElement.clone();
 			var newFormInitialIndex = totalFormsInput.val() - 1;

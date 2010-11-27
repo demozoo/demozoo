@@ -283,8 +283,10 @@ def edit_soundtracks(request, production_id):
 	if request.method == 'POST':
 		formset = ProductionSoundtrackLinkFormset(request.POST, instance = production)
 		if formset.is_valid():
-			for (i, form) in enumerate(formset.forms):
-				form.instance.position = i
+			sorted_forms = sorted(formset.forms, key = lambda form: (form.cleaned_data['ORDER'] or 9999))
+			for (i, form) in enumerate(sorted_forms):
+				form.instance.position = i+1
+				form.instance.save()
 			formset.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
