@@ -206,6 +206,22 @@ form.external_links_form .field .field_input {
 	background-color: #888;
 }
 
+ul.sortable_formset li.sortable_item {
+	border: 1px solid #888;
+	background-color: #ddd;
+	line-height: 28px;
+	margin-bottom: 2px;
+}
+
+ul.sortable_formset li.sortable_item .ui-icon {
+	float: left;
+	margin-top: 5px;
+	margin-left: 3px;
+}
+ul.sortable_formset li.sortable_item a.delete_button {
+	height: 28px;
+}
+
 /* listings */
 li.scener {
 	padding-left: 24px;

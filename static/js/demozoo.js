@@ -5,9 +5,14 @@ function htmlEncode(str) {
 function applyGlobalBehaviours(context) {
 	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 	
+	var sortableFormsets = $('ul.sortable_formset', context);
+	/* need to apply styling adjustments before spawningFormset to ensure the 'detached' LI gets styled too */
+	$('li.sortable_item', sortableFormsets).prepend('<div class="ui-icon ui-icon-arrowthick-2-n-s" title="drag to reorder"></div>');
+	$('li.sortable_item input[name$="-ORDER"]', sortableFormsets).hide();
+
 	$('.spawning_formset', context).spawningFormset();
 	
-	$('.sortable_formset', context).sortable({
+	sortableFormsets.sortable({
 		'items': 'li.sortable_item',
 		'update': function(event, ui) {
 			$('input[name$="-ORDER"]', this).each(function(i) {
