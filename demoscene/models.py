@@ -669,6 +669,15 @@ class Byline(StrAndUnicode):
 		
 		production.author_nicks = author_nicks
 		production.author_affiliation_nicks = affiliation_nicks
+	
+	@staticmethod
+	def from_releaser_id(releaser_id):
+		if releaser_id:
+			try:
+				return Byline([Releaser.objects.get(id = releaser_id).primary_nick])
+			except Releaser.DoesNotExist:
+				pass
+		return Byline()
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

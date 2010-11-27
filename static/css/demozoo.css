@@ -115,6 +115,14 @@ ul.messages li.success {
 
 
 /* data entry forms */
+.form_title h2 {
+	display: inline;
+}
+.form_title p {
+	padding-left: 16px;
+	display: inline;
+}
+
 form.entry_form .field {
 	clear: both;
 	padding-top: 12px;

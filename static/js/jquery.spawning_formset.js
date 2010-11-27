@@ -18,7 +18,7 @@
 					deleteForm(li);
 				});
 				/* using display: none screws with fading / ordering in unexplainable ways on Webkit */
-				$('.delete', li).css({'visibility':'hidden'}).after(deleteButton);
+				$('.delete', li).css({'font-size': '1px', 'visibility':'hidden'}).after(deleteButton);
 			});
 			
 			var lastElement = $('> ul > li:last', this);

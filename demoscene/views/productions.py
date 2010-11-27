@@ -214,16 +214,8 @@ def create(request):
 			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		nicks = []
-		releaser_id = request.GET.get('releaser_id')
-		if releaser_id:
-			try:
-				nicks = [Releaser.objects.get(id = releaser_id).primary_nick]
-			except Releaser.DoesNotExist:
-				pass
-		
 		form = CreateProductionForm(initial = {
-			'byline': Byline(nicks)
+			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
 		})
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')

@@ -162,7 +162,7 @@ function applyGlobalBehaviours(context) {
 		return false;
 	})
 	
-	$('form .nick_match').nickMatchWidget();
+	$('form .nick_match', context).nickMatchWidget();
 	
 	$('form .nick_field', context).each(function() {
 		var nickFieldElement = this;

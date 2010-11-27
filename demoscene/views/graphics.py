@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot, ProductionType
+from demoscene.models import Production, ProductionType, Byline
 from demoscene.forms.production import *
 
 from django.contrib.auth.decorators import login_required
@@ -71,7 +71,9 @@ def create(request):
 			download_link_formset.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = CreateGraphicsForm()
+		form = CreateGraphicsForm(initial = {
+			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
+		})
 		download_link_formset = DownloadLinkFormSet()
 	return ajaxable_render(request, 'graphics/create.html', {
 		'form': form,

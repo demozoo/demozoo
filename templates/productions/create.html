@@ -1,4 +1,11 @@
-<h2>New production</h2>
+{% load query_string %}
+
+<div class="form_title">
+	<h2>New production</h2>
+	<p>(see also:
+		<a href="{% url new_music %}{% query_string "" "" %}" class="open_in_lightbox">New music</a>
+		| <a href="{% url new_graphics %}{% query_string "" "" %}" class="open_in_lightbox">New graphics</a>)</p>
+</div>
 
 <form action="{% url new_production %}" method="post" class="entry_form">
 	{% csrf_token %}
