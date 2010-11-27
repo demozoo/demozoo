@@ -638,7 +638,7 @@ class Production(models.Model):
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):
-	def __init__(self, authors, affiliations):
+	def __init__(self, authors = [], affiliations = []):
 		self.author_nicks = authors
 		self.affiliation_nicks = affiliations
 	

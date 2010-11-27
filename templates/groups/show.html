@@ -84,10 +84,18 @@
 	</div>
 
 	<div id="main_column">
-		{% if productions %}
+		{% if productions or editing %}
 			<div class="panel">
 				<h3 class="productions_header">Productions:</h3>
 				{% include "shared/production_listing.html" %}
+				
+				{% if editing %}
+					<ul>
+						<li class="add">
+							<a href="{% url new_production %}?releaser_id={{ group.id }}" class="open_in_lightbox">Add production</a>
+						</li>
+					</ul>
+				{% endif %}
 			</div>
 		{% endif %}
 		

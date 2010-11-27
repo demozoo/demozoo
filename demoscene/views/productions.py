@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit, DownloadLink, Screenshot, ProductionType
+from demoscene.models import Production, Byline, Releaser, Credit, DownloadLink, Screenshot, ProductionType
 from demoscene.forms.production import *
 
 from django.contrib.auth.decorators import login_required
@@ -214,7 +214,17 @@ def create(request):
 			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = CreateProductionForm()
+		nicks = []
+		releaser_id = request.GET.get('releaser_id')
+		if releaser_id:
+			try:
+				nicks = [Releaser.objects.get(id = releaser_id).primary_nick]
+			except Releaser.DoesNotExist:
+				pass
+		
+		form = CreateProductionForm(initial = {
+			'byline': Byline(nicks)
+		})
 		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
 		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet()
