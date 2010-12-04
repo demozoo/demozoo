@@ -227,7 +227,9 @@ ul.sortable_formset li.sortable_item .ui-icon {
 	margin-left: 3px;
 }
 ul.sortable_formset li.sortable_item a.delete_button {
-	height: 28px;
+	height: 30px;
+	float: right;
+	margin-right: 8px;
 }
 
 /* listings */
@@ -268,6 +270,22 @@ li.production {
 	padding-top: 2px;
 	padding-bottom: 3px;
 	background-image: url(/static/images/icons/disk.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+li.music {
+	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	background-image: url(/static/images/icons/music.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+li.graphics {
+	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	background-image: url(/static/images/icons/palette.png);
 	background-position: left center;
 	background-repeat: no-repeat;
 }

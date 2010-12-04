@@ -7,7 +7,7 @@
 			<h2>Latest added productions</h2>
 			<ul>
 				{% for production in latest_added_productions %}
-					<li class="production"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
+					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -15,7 +15,7 @@
 			<h2>Latest updated productions</h2>
 			<ul>
 				{% for production in latest_updated_productions %}
-					<li class="production"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
+					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
