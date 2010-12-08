@@ -295,6 +295,8 @@ def edit_soundtracks(request, production_id):
 			for (i, form) in enumerate(sorted_forms):
 				form.instance.position = i+1
 			formset.save()
+			production.updated_at = datetime.datetime.now()
+			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance = production)
