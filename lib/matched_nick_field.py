@@ -149,7 +149,7 @@ class MatchedNickField(forms.Field):
 					value = self.best_match # ...so start a fresh match
 		elif isinstance(value, Nick):
 			# convert to a NickSelection
-			value = NickSelection(nick.id, nick.name)
+			value = NickSelection(value.id, value.name)
 		
 		if isinstance(value, NickSelection) or value == None:
 			return super(MatchedNickField, self).clean(value)
