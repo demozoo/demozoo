@@ -52,5 +52,15 @@
 	</div>
 	
 	{% include "shared/production_notes.html" %}
+	
+	{% if featured_in_productions %}
+		<div class="panel">
+			<h3 class="productions_header">Featured in:</h3>
+			{% with featured_in_productions as productions %}
+				{% include "shared/production_listing.html" %}
+			{% endwith %}
+		</div>
+	{% endif %}
+	
 	{% include "shared/production_downloads.html" %}
 {% endblock %}

@@ -29,6 +29,10 @@ def show(request, production_id, edit_mode = False):
 	return render(request, 'music/show.html', {
 		'production': production,
 		'download_links': production.ordered_download_links(),
+		'featured_in_productions': [
+			appearance.production for appearance in
+			production.appearances_as_soundtrack.select_related('production').order_by('production__release_date_date')
+		],
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
