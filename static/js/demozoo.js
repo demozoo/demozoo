@@ -47,7 +47,7 @@ function applyGlobalBehaviours(context) {
 		lightboxContent.load(url, function() {
 			applyGlobalBehaviours(lightbox);
 			$('body').removeClass('loading');
-			lightbox.jqmShow();
+			showLightbox();
 		});
 	}
 	$('a.open_in_lightbox', context).click(function(e) {
@@ -347,14 +347,41 @@ function applyGlobalBehaviours(context) {
 	});
 }
 
-var lightbox, lightboxContent;
+var lightboxOuter, lightbox, lightboxContent, lightboxClose;
+function setLightboxSize() {
+	var browserHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	lightbox.css({'max-height': browserHeight - 48 + 'px'});
+}
+function lightboxCheckForEscape(evt) {
+	if (evt.keyCode == 27) closeLightbox();
+}
+function closeLightbox() {
+	$(window).unbind('resize', setLightboxSize);
+	$(window).unbind('keydown', lightboxCheckForEscape);
+	lightboxOuter.hide();
+}
+function showLightbox() {
+	lightboxOuter.show();
+	
+	setLightboxSize();
+	$(window).keydown(lightboxCheckForEscape);
+	$(window).resize(setLightboxSize);
+}
 $(function() {
-	lightbox = $('<div class="jqmWindow"></div>');
-	var lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
+	lightboxOuter = $('<div id="lightbox_outer"></div>');
+	var lightboxMiddle = $('<div id="lightbox_middle"></div>');
+	lightbox = $('<div id="lightbox"></div>');
+	lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
 	lightboxContent = $('<div></div>');
 	lightbox.append(lightboxClose, lightboxContent);
-	$('body').append(lightbox);
-	lightbox.jqm();
-	lightbox.jqmAddClose(lightboxClose);
+	lightboxMiddle.append(lightbox);
+	lightboxOuter.append(lightboxMiddle);
+	$('body').append(lightboxOuter);
+	lightboxOuter.click(closeLightbox);
+	lightbox.click(function(e) {
+		e.stopPropagation();
+	});
+	lightboxClose.click(closeLightbox);
+	lightboxOuter.hide();
 	applyGlobalBehaviours();
 });

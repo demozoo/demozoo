@@ -159,10 +159,6 @@ form.entry_form .field .field_input .help_text {
 	font-size: 0.66em;
 }
 
-#ui-datepicker-div {
-	z-index: 3010; /* jqmodal uses 3000 - need to be ahead of that */
-}
-
 /* external links form needs bigger labels */
 form.external_links_form .field label.field_label {
 	width: 200px;
@@ -658,6 +654,30 @@ body.show_production .screenshots ul li {
 	left: 0px;
 	top: 0px;
 	background-color: #000;
+}
+
+#lightbox_outer {
+	display: table;
+	position: fixed;
+	top: 0;
+	height: 100%;
+	padding-bottom: 16px;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+#lightbox_middle {
+	display: table-cell;
+	vertical-align: middle;
+	padding-top: 8px;
+}
+#lightbox {
+	margin: auto;
+	width: 620px;
+	overflow: auto;
+	border: 1px solid #444;
+	background-color: #EEE;
+	color: #333;
+	padding: 12px;
 }
 
 /* party series listing */

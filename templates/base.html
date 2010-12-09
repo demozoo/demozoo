@@ -5,7 +5,6 @@
 		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 		<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
 		<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
-		<link rel="stylesheet" href="/static/css/jqmodal.css" type="text/css" />
 		{% if use_local_jquery %}
 			<script type="text/javascript" src="/static/js/jquery-1.4.2.min.js"></script>
 		{% else %}
@@ -18,7 +17,6 @@
 		<script type="text/javascript" src="/static/js/jquery.ui.widget.js"></script>{# TODO: minify #}
 		<script type="text/javascript" src="/static/js/jquery.ui.mouse.js"></script>{# TODO: minify #}
 		<script type="text/javascript" src="/static/js/jquery.ui.sortable.js"></script>{# TODO: minify #}
-		<script type="text/javascript" src="/static/js/jqmodal.js"></script>{# TODO: minify, and consider folding into widget resources to reduce up-front load times #}
 		<script type="text/javascript" src="/static/js/jquery.spawning_formset.js"></script>
 		<script type="text/javascript" src="/static/js/nick_match_widget.js"></script>
 		<script type="text/javascript" src="/static/js/fuzzy_date_parser.js"></script>
@@ -65,6 +63,5 @@
 		{% endif %}
 		
 		{% block base_main %}{% endblock %}
-		<div id="lightbox"></div>
 	</body>
 </html>
