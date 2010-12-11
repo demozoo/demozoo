@@ -120,11 +120,16 @@ class GroupNickForm(NickForm):
 	class Meta(NickForm.Meta):
 		fields = ['name', 'abbreviation']
 
-class ScenerAddGroupForm(forms.Form):
+class ScenerMembershipForm(forms.Form):
 	group_nick = NickField(groups_only = True, label = 'Group name')
+	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
 
-class GroupAddMemberForm(forms.Form):
+class GroupMembershipForm(forms.Form):
 	scener_nick = NickField(sceners_only = True, label = 'Scener name')
+	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
+
+class EditMembershipForm(forms.Form):
+	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
 
 class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):

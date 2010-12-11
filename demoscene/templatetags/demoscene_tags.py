@@ -16,7 +16,7 @@ def scener_with_affiliations(releaser_or_nick):
 	else: # assume a Releaser
 		releaser = releaser_or_nick
 		name = releaser_or_nick.name
-	groups = releaser.groups.all()
+	groups = releaser.current_groups()
 	
 	return {
 		'name': releaser_or_nick.name,

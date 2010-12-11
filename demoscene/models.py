@@ -148,8 +148,6 @@ class Releaser(models.Model):
 	
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
-	groups = models.ManyToManyField('Releaser',
-		limit_choices_to = {'is_group': True}, related_name = 'members')
 	notes = models.TextField(blank = True)
 	
 	sceneid_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'SceneID / Pouet user ID')
@@ -268,8 +266,11 @@ class Releaser(models.Model):
 		else:
 			return None
 	
+	def current_groups(self):
+		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group')]
+	
 	def name_with_affiliations(self):
-		groups = self.groups.all()
+		groups = self.current_groups()
 		
 		if groups:
 			if sum([len(group.name) for group in groups]) >= 20:
@@ -315,7 +316,7 @@ class Releaser(models.Model):
 	def is_referenced(self):
 		return (
 			self.credits().count()
-			or self.members.count() # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
+			or self.member_memberships.count() # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
 			or self.productions().count()
 			or self.member_productions().count() )
 
@@ -395,7 +396,7 @@ class Nick(models.Model):
 			self._has_written_nick_variant_list = False
 	
 	def name_with_affiliations(self):
-		groups = self.releaser.groups.all()
+		groups = self.releaser.current_groups()
 		
 		if groups:
 			if sum([len(group.name) for group in groups]) >= 20:
@@ -472,11 +473,11 @@ class NickVariant(models.Model):
 				nick_variants = nick_variants.extra(
 					select = SortedDict([
 						('score', '''
-							SELECT COUNT(*) FROM demoscene_releaser_groups
-							INNER JOIN demoscene_releaser AS demogroup ON (demoscene_releaser_groups.to_releaser_id = demogroup.id)
+							SELECT COUNT(*) FROM demoscene_membership
+							INNER JOIN demoscene_releaser AS demogroup ON (demoscene_membership.group_id = demogroup.id)
 							INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
 							INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
-							WHERE demoscene_releaser_groups.from_releaser_id = demoscene_releaser.id
+							WHERE demoscene_membership.member_id = demoscene_releaser.id
 							AND LOWER(group_nickvariant.name) IN %s
 						'''),
 						('is_exact_match', '''
@@ -493,11 +494,11 @@ class NickVariant(models.Model):
 				nick_variants = nick_variants.extra(
 					select = SortedDict([
 						('score', '''
-							SELECT COUNT(*) FROM demoscene_releaser_groups
-							INNER JOIN demoscene_releaser AS member ON (demoscene_releaser_groups.from_releaser_id = member.id)
+							SELECT COUNT(*) FROM demoscene_membership
+							INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
 							INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
 							INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
-							WHERE demoscene_releaser_groups.to_releaser_id = demoscene_releaser.id
+							WHERE demoscene_membership.group_id = demoscene_releaser.id
 							AND LOWER(member_nickvariant.name) IN %s
 						'''),
 						('is_exact_match', '''
@@ -530,6 +531,14 @@ class NickVariant(models.Model):
 			nick_variants = NickVariant.objects.none()
 			
 		return nick_variants
+
+class Membership(models.Model):
+	member = models.ForeignKey(Releaser, related_name = 'group_memberships')
+	group = models.ForeignKey(Releaser, limit_choices_to = {'is_group': True}, related_name = 'member_memberships')
+	is_current = models.BooleanField(default = True)
+	
+	def __unicode__(self):
+		return "%s / %s" % (self.member.name, self.group.name)
 
 class Production(models.Model):
 	title = models.CharField(max_length=255)

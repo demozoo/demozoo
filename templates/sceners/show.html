@@ -120,30 +120,28 @@
 	{% endif %}
 	
 	<div id="side_column">
-		{% with scener.groups.all as groups %}
-			{% if groups or editing %}
-				<div class="panel">
-					<h3>Member of:</h3>
-					<ul>
-						{% for group in groups %}
-							<li class="group">
-								<a href="{% url group group.id %}">{{ group.name }}</a>
-								{% if editing %}
-									<a href="{% url scener_remove_group scener.id group.id %}" class="open_in_lightbox">
-										<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove group" title="Remove group" />
-									</a>
-								{% endif %}
-							</li>
-						{% endfor %}
-						{% if editing %}
-							<li class="add">
-								<a href="{% url scener_add_group scener.id %}" class="open_in_lightbox">Add group</a>
-							</li>
-						{% endif %}
-					</ul>
-				</div>
-			{% endif %}
-		{% endwith %}
+		{% if memberships or editing %}
+			<div class="panel">
+				<h3>Member of:</h3>
+				<ul>
+					{% for membership in memberships %}
+						<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+							<a href="{% url group membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
+							{% if editing %}
+								<a href="{% url scener_edit_membership scener.id membership.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
+								</a>
+							{% endif %}
+						</li>
+					{% endfor %}
+					{% if editing %}
+						<li class="add">
+							<a href="{% url scener_add_group scener.id %}" class="open_in_lightbox">Add group</a>
+						</li>
+					{% endif %}
+				</ul>
+			</div>
+		{% endif %}
 	</div>
 	
 	<div id="main_column">

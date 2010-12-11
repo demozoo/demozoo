@@ -58,17 +58,17 @@
 	{% endif %}
 	
 	<div id="side_column">
-		{% if members or editing %}
+		{% if memberships or editing %}
 			<div class="panel">
 				<h3>Members:</h3>
 				<ul>
-					{% for scener in members %}
-						<li class="scener">
-							<a href="{% url scener scener.id %}">{{ scener.name }}</a>
-							{% releaser_flag scener %}
+					{% for membership in memberships %}
+						<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
+							<a href="{% url scener membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+							{% releaser_flag membership.member %}
 							{% if editing %}
-								<a href="{% url group_remove_member group.id scener.id %}" class="open_in_lightbox">
-									<img src="/static/images/icons/delete.png" width="16" height="16" alt="Remove from group" title="Remove from group" />
+								<a href="{% url group_edit_membership group.id membership.id %}" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 								</a>
 							{% endif %}
 						</li>

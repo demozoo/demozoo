@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, Membership
 from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
@@ -23,7 +23,7 @@ def show(request, group_id, edit_mode = False):
 	
 	return render(request, 'groups/show.html', {
 		'group': group,
-		'members': group.members.order_by('name'),
+		'memberships': group.member_memberships.all().select_related('member').order_by('-is_current', 'member__name'),
 		'productions': group.productions().order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().order_by('-release_date_date', '-title'),
 		'credits': group.credits().order_by('-production__release_date_date', '-production__title'),
@@ -62,14 +62,20 @@ def create(request):
 def add_member(request, group_id):
 	group = get_object_or_404(Releaser, is_group = True, id = group_id)
 	if request.method == 'POST':
-		form = GroupAddMemberForm(request.POST)
+		form = GroupMembershipForm(request.POST)
 		if form.is_valid():
-			group.members.add(form.cleaned_data['scener_nick'].commit().releaser)
-			group.updated_at = datetime.datetime.now()
-			group.save()
+			member = form.cleaned_data['scener_nick'].commit().releaser
+			if not group.member_memberships.filter(member = member).count():
+				membership = Membership(
+					member = member,
+					group = group,
+					is_current = form.cleaned_data['is_current'])
+				membership.save()
+				group.updated_at = datetime.datetime.now()
+				group.save()
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
-		form = GroupAddMemberForm()
+		form = GroupMembershipForm()
 	return ajaxable_render(request, 'groups/add_member.html', {
 		'group': group,
 		'form': form,
@@ -81,7 +87,7 @@ def remove_member(request, group_id, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
-			group.members.remove(scener)
+			group.member_memberships.filter(member = scener).delete()
 			group.updated_at = datetime.datetime.now()
 			group.save()
 		return HttpResponseRedirect(group.get_absolute_edit_url())
@@ -89,3 +95,29 @@ def remove_member(request, group_id, scener_id):
 		return simple_ajax_confirmation(request,
 			reverse('group_remove_member', args = [group_id, scener_id]),
 			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
+
+@login_required
+def edit_membership(request, group_id, membership_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	membership = get_object_or_404(Membership, group = group, id = membership_id)
+	if request.method == 'POST':
+		form = GroupMembershipForm(request.POST)
+		if form.is_valid():
+			member = form.cleaned_data['scener_nick'].commit().releaser
+			if not group.member_memberships.exclude(id = membership_id).filter(member = member).count():
+				membership.member = member
+				membership.is_current = form.cleaned_data['is_current']
+				membership.save()
+				group.updated_at = datetime.datetime.now()
+				group.save()
+			return HttpResponseRedirect(group.get_absolute_edit_url())
+	else:
+		form = GroupMembershipForm(initial = {
+			'scener_nick': membership.member.primary_nick,
+			'is_current': membership.is_current,
+		})
+	return ajaxable_render(request, 'groups/edit_membership.html', {
+		'group': group,
+		'membership': membership,
+		'form': form,
+	})

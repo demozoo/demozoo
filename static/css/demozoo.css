@@ -253,6 +253,18 @@ li.group {
 	background-position: left center;
 	background-repeat: no-repeat;
 }
+li.group a, li.scener a {
+	color: #008;
+}
+li.group.previous_membership {
+	background-image: url(/static/images/icons/group_grey.png);
+}
+li.scener.previous_membership {
+	background-image: url(/static/images/icons/scener_grey.png);
+}
+li.previous_membership a {
+	color: #bbe;
+}
 li.add_group {
 	padding-left: 24px;
 	padding-top: 2px;
