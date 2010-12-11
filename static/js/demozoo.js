@@ -362,6 +362,7 @@ function closeLightbox() {
 }
 function showLightbox() {
 	lightboxOuter.show();
+	try {$(':input:visible', lightboxContent)[0].focus();}catch(_){}
 	
 	setLightboxSize();
 	$(window).keydown(lightboxCheckForEscape);
