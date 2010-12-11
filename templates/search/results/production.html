@@ -1,5 +1,5 @@
 {% load demoscene_tags %}
-<li class="production">
+<li class="{{ result.object.supertype }}">
 	<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
 	{% if result.object.author_nicks.all %}
 		<span class="annotation">by {% byline result.object %}</span>
