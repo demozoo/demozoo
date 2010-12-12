@@ -14,6 +14,6 @@ def home(request):
 			'graphics_count': Production.objects.filter(supertype = 'graphics').count(),
 			'music_count': Production.objects.filter(supertype = 'music').count(),
 			'scener_count': Releaser.objects.filter(is_group = False).count(),
-			'group_count': Releaser.objects.filter(is_group = False).count(),
+			'group_count': Releaser.objects.filter(is_group = True).count(),
 		}
 	})
