@@ -2,6 +2,13 @@
 {% load demoscene_tags %}
 
 {% block base_main %}
+	<p>
+		<b>Now serving...</b>
+		{{ stats.production_count }} production{{ stats.production_count|pluralize }} -
+		{{ stats.graphics_count }} graphics -
+		{{ stats.music_count }} music track{{ stats.music_count|pluralize }} -
+		{{ stats.group_count }} group{{ stats.group_count|pluralize }} -
+		{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}
 	<div class="chart_set">
 		<div class="chart">
 			<h2>Latest added productions</h2>
