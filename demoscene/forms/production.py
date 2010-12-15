@@ -6,14 +6,24 @@ from django.forms.models import inlineformset_factory
 from nick_field import NickField
 from byline_field import BylineField
 
-class ProductionEditCoreDetailsForm(forms.Form):
+class ProductionTypeChoiceField(forms.ModelChoiceField):
+	def label_from_instance(self, obj):
+		return "%s %s" % (u'\u2192' * (obj.depth - 1), obj.name)
+
+class ProductionTypeMultipleChoiceField(forms.ModelMultipleChoiceField):
+	def label_from_instance(self, obj):
+		return "%s %s" % (u'\u2192' * (obj.depth - 1), obj.name)
+
+class BaseProductionEditCoreDetailsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.instance = kwargs.pop('instance', Production())
-		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
+		super(BaseProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		self.fields['title'] = forms.CharField(initial = self.instance.title)
 		self.fields['byline'] = BylineField(required = False, initial = self.instance.byline(), label = 'By')
 		self.fields['release_date'] = FuzzyDateField(required = False, initial = self.instance.release_date,
 			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+		self.fields['platforms'] = forms.ModelMultipleChoiceField(required = False, label = 'Platform',
+			initial = [platform.id for platform in self.instance.platforms.all()], queryset = Platform.objects.all())
 		
 	def save(self, commit = True):
 		self.instance.title = self.cleaned_data['title']
@@ -25,12 +35,23 @@ class ProductionEditCoreDetailsForm(forms.Form):
 			self.instance.author_nicks = []
 			self.instance.author_affiliation_nicks = []
 		
+		self.instance.platforms = self.cleaned_data['platforms']
 		self.instance.release_date = self.cleaned_data['release_date']
 		if commit:
 			self.instance.save()
 		return self.instance
 
-class MusicEditCoreDetailsForm(ProductionEditCoreDetailsForm):
+class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
+	# has multiple types
+	def __init__(self, *args, **kwargs):
+		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
+		self.fields['types'] = ProductionTypeMultipleChoiceField(required = False, label = 'Type',
+			initial = [typ.id for typ in self.instance.types.all()], queryset = ProductionType.featured_types())
+	def save(self, *args, **kwargs):
+		super(ProductionEditCoreDetailsForm, self).save(*args, **kwargs)
+		self.instance.types = self.cleaned_data['types']
+
+class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 	def __init__(self, *args, **kwargs):
 		super(MusicEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		
@@ -50,7 +71,7 @@ class MusicEditCoreDetailsForm(ProductionEditCoreDetailsForm):
 			self.instance.types = [ self.cleaned_data['type'] ]
 		return self.instance
 
-class GraphicsEditCoreDetailsForm(ProductionEditCoreDetailsForm):
+class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 	def __init__(self, *args, **kwargs):
 		super(GraphicsEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		
@@ -78,6 +99,10 @@ class CreateProductionForm(forms.Form):
 		self.fields['byline'] = BylineField(required = False, label = 'By')
 		self.fields['release_date'] = FuzzyDateField(required = False,
 			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+		self.fields['types'] = ProductionTypeMultipleChoiceField(required = False, label = 'Type',
+			queryset = ProductionType.featured_types())
+		self.fields['platforms'] = forms.ModelMultipleChoiceField(required = False, label = 'Platform',
+			queryset = Platform.objects.all())
 		
 	def save(self, commit = True):
 		if not commit:
@@ -90,6 +115,8 @@ class CreateProductionForm(forms.Form):
 		self.instance.save()
 		if self.cleaned_data['byline']:
 			self.cleaned_data['byline'].commit(self.instance)
+		self.instance.types = self.cleaned_data['types']
+		self.instance.platforms = self.cleaned_data['platforms']
 		return self.instance
 
 class CreateMusicForm(CreateProductionForm):
@@ -129,42 +156,6 @@ class CreateGraphicsForm(CreateProductionForm):
 		if self.cleaned_data['platform']:
 			self.instance.platforms = [ self.cleaned_data['platform'] ]
 		return self.instance
-
-class ProductionTypeChoiceField(forms.ModelChoiceField):
-	def label_from_instance(self, obj):
-		return "%s %s" % (u'\u2192' * (obj.depth - 1), obj.name)
-
-class ProductionTypeForm(forms.Form):
-	production_type = ProductionTypeChoiceField(queryset = ProductionType.featured_types())
-
-class BaseProductionTypeFormset(BaseFormSet):
-	def get_production_types(self):
-		prod_types = []
-		for prod_type_form in self.forms:
-			if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type'):
-				prod_types.append(prod_type_form.cleaned_data['production_type'])
-		for prod_type_form in self.deleted_forms:
-			if hasattr(prod_type_form, 'cleaned_data') and prod_type_form.cleaned_data.get('production_type') and prod_type_form.cleaned_data['production_type'] in prod_types:
-				prod_types.remove(prod_type_form.cleaned_data['production_type'])
-		return prod_types
-
-ProductionTypeFormSet = formset_factory(ProductionTypeForm, can_delete = True, formset = BaseProductionTypeFormset)
-
-class ProductionPlatformForm(forms.Form):
-	platform = forms.ModelChoiceField(queryset = Platform.objects.order_by('name'))
-
-class BaseProductionPlatformFormSet(BaseFormSet):
-	def get_production_platforms(self):
-		platforms = []
-		for prod_platform_form in self.forms:
-			if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform'):
-				platforms.append(prod_platform_form.cleaned_data['platform'])
-		for prod_platform_form in self.deleted_forms:
-			if hasattr(prod_platform_form, 'cleaned_data') and prod_platform_form.cleaned_data.get('platform') and prod_platform_form.cleaned_data['platform'] in platforms:
-				platforms.remove(prod_platform_form.cleaned_data['platform'])
-		return platforms
-
-ProductionPlatformFormSet = formset_factory(ProductionPlatformForm, can_delete = True, formset = BaseProductionPlatformFormSet)
 
 DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 

@@ -55,30 +55,16 @@ def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
 		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
-		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
-		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
-		
-		if (
-			form.is_valid() and production_type_formset.is_valid()
-			and production_platform_formset.is_valid()
-			):
+		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
 			form.save()
-			production.types = production_type_formset.get_production_types()
-			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionEditCoreDetailsForm(instance = production)
-		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type',
-			initial = [{'production_type': typ.id} for typ in production.types.all()])
-		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
-			initial = [{'platform': platform.id} for platform in production.platforms.all()])
 	
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'production': production,
 		'form': form,
-		'production_type_formset': production_type_formset,
-		'production_platform_formset': production_platform_formset,
 	})
 
 @login_required
@@ -201,29 +187,18 @@ def create(request):
 	if request.method == 'POST':
 		production = Production(updated_at = datetime.datetime.now())
 		form = CreateProductionForm(request.POST, instance = production)
-		production_type_formset = ProductionTypeFormSet(request.POST, prefix = 'prod_type')
-		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
-		if (
-			form.is_valid() and production_type_formset.is_valid()
-			and production_platform_formset.is_valid() and download_link_formset.is_valid()
-			):
+		if form.is_valid() and download_link_formset.is_valid():
 			form.save()
 			download_link_formset.save()
-			production.types = production_type_formset.get_production_types()
-			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = CreateProductionForm(initial = {
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
 		})
-		production_type_formset = ProductionTypeFormSet(prefix = 'prod_type')
-		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform')
 		download_link_formset = DownloadLinkFormSet()
 	return ajaxable_render(request, 'productions/create.html', {
 		'form': form,
-		'production_type_formset': production_type_formset,
-		'production_platform_formset': production_platform_formset,
 		'download_link_formset': download_link_formset,
 	})
 

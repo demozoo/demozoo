@@ -15,8 +15,14 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	{% include "shared/production_type_formset.html" %}
-	{% include "shared/production_platform_formset.html" %}
+	{% with form.types as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
+	
+	{% with form.platforms as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
+	
 	<div class="field">
 		<input type="submit" />
 	</div>

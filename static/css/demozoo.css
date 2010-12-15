@@ -1,4 +1,7 @@
 /* reset */
+body {
+	margin: 0;
+}
 h1, h2, h3, h4, h5, h6 {
 	padding: 0;
 	margin: 0;
@@ -17,6 +20,9 @@ ul, ol {
 	border-bottom: 1px solid #444;
 	margin-bottom: 24px;
 	height: 60px;
+	margin-left: 8px;
+	margin-right: 8px;
+	margin-top: 8px;
 }
 
 #site_header h1 {
@@ -45,6 +51,13 @@ ul, ol {
 }
 #site_header form.search label {
 	display: block;
+}
+
+#site_main {
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 8px;
+	overflow: hidden;
 }
 
 #side_column {
@@ -816,6 +829,24 @@ a.lightbox_close {
 	text-indent: -5000px;
 	width: 20px;
 	height: 20px;
+}
+
+.asmContainer select {
+	width: 200px;
+}
+.asmContainer ol.asmList {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+	width: 200px;
+}
+.asmContainer a.asmListItemRemove {
+	text-indent: -5000px;
+	background-image: url('/static/images/icons/delete.png');
+	width: 16px;
+	height: 16px;
+	padding: 3px;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 /* homepage */

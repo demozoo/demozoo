@@ -42,22 +42,17 @@ def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
 		form = GraphicsEditCoreDetailsForm(request.POST, instance = production)
-		production_platform_formset = ProductionPlatformFormSet(request.POST, prefix = 'prod_platform')
 		
-		if form.is_valid() and production_platform_formset.is_valid():
+		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
 			form.save()
-			production.platforms = production_platform_formset.get_production_platforms()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = GraphicsEditCoreDetailsForm(instance = production)
-		production_platform_formset = ProductionPlatformFormSet(prefix = 'prod_platform',
-			initial = [{'platform': platform.id} for platform in production.platforms.all()])
 	
 	return ajaxable_render(request, 'graphics/edit_core_details.html', {
 		'production': production,
 		'form': form,
-		'production_platform_formset': production_platform_formset,
 	})
 
 @login_required

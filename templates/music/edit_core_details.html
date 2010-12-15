@@ -19,7 +19,9 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	{% include "shared/production_platform_formset.html" %}
+	{% with form.platforms as field %}
+		{% include "shared/form_field.html" %}
+	{% endwith %}
 	<div class="field">
 		<input type="submit" />
 	</div>
