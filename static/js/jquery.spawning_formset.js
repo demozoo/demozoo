@@ -21,13 +21,16 @@
 				$('.delete', li).css({'font-size': '1px', 'visibility':'hidden'}).after(deleteButton);
 			});
 			
-			var lastElement = $('> ul > li:last', this);
-			var newFormTemplate = lastElement.clone();
-			var newFormInitialIndex = totalFormsInput.val() - 1;
+			var placeholderElement = $('> ul > li.placeholder_form', this);
+			var newFormTemplate = placeholderElement.clone();
+			placeholderElement.remove();
 			
 			if (totalFormsInput.val() > 1 || $(this).hasClass('initially_hidden')) {
-				lastElement.remove();
-				totalFormsInput.val(totalFormsInput.val() - 1);
+				var unboundForm = $('> ul > li:last.unbound', this);
+				if (unboundForm.length) {
+					unboundForm.remove();
+					totalFormsInput.val(totalFormsInput.val() - 1);
+				}
 			}
 			
 			var addButton = $('<a href="javascript:void(0);" class="add_button">add</a>');
@@ -39,13 +42,13 @@
 				var newIndex = parseInt(totalFormsInput.val());
 				totalFormsInput.val(newIndex + 1);
 				$(":input[name^='" + fieldPrefix + "']", newForm).each(function() {
-					this.name = this.name.replace(fieldPrefix + newFormInitialIndex, fieldPrefix + newIndex);
+					this.name = this.name.replace(fieldPrefix + '__prefix__', fieldPrefix + newIndex);
 				})
 				$(":input[id^='id_" + fieldPrefix + "']", newForm).each(function() {
-					this.id = this.id.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
+					this.id = this.id.replace('id_' + fieldPrefix + '__prefix__', 'id_' + fieldPrefix + newIndex);
 				})
 				$("label[for^='id_" + fieldPrefix + "']", newForm).each(function() {
-					this.htmlFor = this.htmlFor.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
+					this.htmlFor = this.htmlFor.replace('id_' + fieldPrefix + '__prefix__', 'id_' + fieldPrefix + newIndex);
 				})
 				$('a.delete_button', newForm).click(function() {
 					deleteForm(newForm);

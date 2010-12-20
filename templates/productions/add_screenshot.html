@@ -1,3 +1,5 @@
+{% load spawning_formset %}
+
 <h2>Adding screenshots for {{ production.title }}:</h2>
 
 <form action="{% url production_add_screenshot production.id %}" method="post" enctype="multipart/form-data" class="entry_form">
@@ -5,16 +7,9 @@
 	
 	<div class="field">
 		<label for="id_form-0-original" class="field_label">Image files</label>
-		<div class="field_input spawning_formset">
-			{{ formset.management_form }}
-			<ul>
-				{% for form in formset.forms %}
-					<li>
-						<div class="formset_item">{{ form.original }}</div>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
+		{% spawningformset for form in formset %}
+			{{ form.original }}
+		{% endspawningformset %}
 	</div>
 	
 	<div class="field">

@@ -183,6 +183,11 @@ form.external_links_form .field .field_input {
 	clear: both;
 	line-height: 24px;
 }
+
+.spawning_formset li.placeholder_form {
+	display: none;
+}
+
 .spawning_formset li .formset_item {
 	float: left;
 }
