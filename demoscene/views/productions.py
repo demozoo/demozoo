@@ -282,7 +282,11 @@ def edit_soundtracks(request, production_id):
 
 def autocomplete(request):
 	query = request.GET.get('q')
-	productions = Production.objects.filter(title__istartswith = query)[:10]
+	productions = Production.objects.filter(title__istartswith = query)
+	supertype = request.GET.get('supertype')
+	if supertype:
+		productions = productions.filter(supertype = supertype)
+	productions = productions[:10]
 	return render(request, 'productions/autocomplete.txt', {
 		'query': query,
 		'productions': productions,
