@@ -10,7 +10,7 @@ function applyGlobalBehaviours(context) {
 	$('li.sortable_item', sortableFormsets).prepend('<div class="ui-icon ui-icon-arrowthick-2-n-s" title="drag to reorder"></div>');
 	$('li.sortable_item input[name$="-ORDER"]', sortableFormsets).hide();
 
-	$('.spawning_formset', context).spawningFormset();
+	$('.spawning_formset', context).spawningFormset({onShow: applyGlobalBehaviours});
 	$('select[multiple]').asmSelect();
 	
 	sortableFormsets.sortable({

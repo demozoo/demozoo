@@ -1,5 +1,6 @@
 (function($) {
-	$.fn.spawningFormset = function() {
+	$.fn.spawningFormset = function(opts) {
+		if (!opts) opts = {};
 		this.each(function() {
 			var formset = this;
 			var totalFormsInput = $("input[type='hidden'][name$='TOTAL_FORMS']", this);
@@ -23,6 +24,7 @@
 			
 			var placeholderElement = $('> ul > li.placeholder_form', this);
 			var newFormTemplate = placeholderElement.clone();
+			newFormTemplate.removeClass('placeholder_form');
 			placeholderElement.remove();
 			
 			if (totalFormsInput.val() > 1 || $(this).hasClass('initially_hidden')) {
@@ -54,7 +56,8 @@
 					deleteForm(newForm);
 				});
 				newForm.hide().slideDown('fast');
-				$(":input", newForm).focus();
+				if (opts.onShow) opts.onShow(newForm);
+				try {$(':input:visible', newForm)[0].focus();}catch(_){}
 			})
 			$('> ul', this).append(addLi);
 		});
