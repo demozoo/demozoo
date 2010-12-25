@@ -37,3 +37,7 @@ def byline(production):
 		'author_nicks': production.author_nicks.all(),
 		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
 	}
+
+@register.simple_tag
+def field_label(field):
+	return field.label_tag(attrs = {'class': 'field_label'})

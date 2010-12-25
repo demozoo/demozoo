@@ -1,5 +1,6 @@
+{% load demoscene_tags %}
 <div class="field">
-	<label for="id_{{ field.html_name }}" class="field_label">{{ field.label }}</label>
+	{% field_label field %}
 	<div class="field_input">
 		{{ field.errors }}
 		{{ field }}

@@ -141,9 +141,14 @@ class BylineWidget(forms.Widget):
 	def render(self, name, value, attrs=None):
 		byline_lookup = BylineLookup.from_value(value)
 		
+		search_attrs = self.build_attrs(attrs)
+		search_attrs['id'] += '_search'
+		lookup_attrs = self.build_attrs(attrs)
+		lookup_attrs['id'] += '_lookup'
+		
 		search_html_output = [
-			self.search_widget.render(name + '_search', byline_lookup.search_term, attrs = attrs),
-			self.lookup_widget.render(name + '_lookup', None, attrs = attrs)
+			self.search_widget.render(name + '_search', byline_lookup.search_term, attrs = search_attrs),
+			self.lookup_widget.render(name + '_lookup', None, attrs = lookup_attrs)
 		]
 		
 		if byline_lookup.search_term:
