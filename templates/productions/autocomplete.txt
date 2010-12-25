@@ -1,2 +1,2 @@
-{% for prod in productions %}{{prod.id}}||{{ prod.title|urlencode }}|{{ prod.title|urlencode}}
+{% for prod in productions %}{{prod.id}}||{{ prod.title|urlencode }} - {{ prod.byline|urlencode }}|{{ prod.title|urlencode}}
 {% endfor %}
