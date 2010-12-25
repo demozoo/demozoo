@@ -66,6 +66,7 @@ class SpawningFormsetNode(template.Node):
 				self.nodelist.render(context),
 				u'</div>',
 				delete_field,
+				u'<div style="clear: both;"></div>',
 				u'</li>'
 			]
 		
@@ -84,6 +85,7 @@ class SpawningFormsetNode(template.Node):
 			self.nodelist.render(context),
 			u'</div>',
 			delete_field,
+                        u'<div style="clear: both;"></div>',
 			u'</li>',
 			u'</ul>',
 			u'</div>',
