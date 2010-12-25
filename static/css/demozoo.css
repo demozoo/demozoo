@@ -423,17 +423,17 @@ ul.maintenance_actions li {
 }
 
 /* nick fields */
-form.entry_form .field .field_input .nick_field .nick_search input[type=text] {
+.nick_field .nick_search input[type=text] {
 	width: 300px;
 }
-form.entry_form .field .field_input .nick_field.ajaxified .nick_search input[type=text] {
+.nick_field.ajaxified .nick_search input[type=text] {
 	width: 400px;
 }
 
-form.entry_form .field .field_input .byline_field .byline_search input[type=text] {
+.byline_field .byline_search input[type=text] {
 	width: 300px;
 }
-form.entry_form .field .field_input .byline_field.ajaxified .byline_search input[type=text] {
+.byline_field.ajaxified .byline_search input[type=text] {
 	width: 400px;
 }
 
