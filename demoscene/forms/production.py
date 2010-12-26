@@ -2,9 +2,10 @@ from django import forms
 from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot, Credit, SoundtrackLink
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory, BaseFormSet
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, BaseModelFormSet
 from nick_field import NickField
 from byline_field import BylineField
+from production_field import ProductionField
 
 class ProductionTypeChoiceField(forms.ModelChoiceField):
 	def label_from_instance(self, obj):
@@ -157,7 +158,7 @@ class CreateGraphicsForm(CreateProductionForm):
 			self.instance.platforms = [ self.cleaned_data['platform'] ]
 		return self.instance
 
-DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
+DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=0)
 
 class ProductionEditNotesForm(forms.ModelForm):
 	class Meta:
@@ -204,13 +205,61 @@ class ProductionAddScreenshotForm(forms.ModelForm):
 
 ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
 
-# for use in ProductionSoundtrackLinkFormset
-class SoundtrackLinkForm(forms.ModelForm):
+# An individual form row in the 'edit soundtrack details' form.
+# Even though this corresponds to a SoundtrackLink object, this can't be a ModelForm
+# because ModelForm internals would attempt to create an instance of SoundtrackLink
+# immediately upon validation;
+# - which we can't do because self.cleaned_data['soundtrack'] is a ProductionSelection,
+# not a Production;
+# - we can't use Production because that would require us to commit the production to
+# the database immediately, which we may not want to do (e.g. if validation elsewhere fails)
+# - and we can't use an unsaved Production object there because it has dependent relations.
+class SoundtrackLinkForm(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.instance = kwargs.pop('instance', SoundtrackLink())
+		super(SoundtrackLinkForm, self).__init__(*args, **kwargs)
+		self.fields['soundtrack'] = ProductionField(
+			initial = self.instance.soundtrack_id,
+			supertype = 'music',
+			types_to_set = [ProductionType.objects.get(internal_name = 'music')],
+		)
+		
+	def save(self, commit = True):
+		if not commit:
+			raise Exception("we don't support saving SoundtrackLinkForm with commit = False. Sorry!")
+		
+		self.instance.soundtrack = self.cleaned_data['soundtrack'].commit()
+		self.instance.save()
+		return self.instance
+
 	def has_changed(self):
 		return True # force all objects to be saved so that ordering (done out of form) takes effect
-	class Meta:
-		model = SoundtrackLink
-		fields = ('soundtrack',)
 
-ProductionSoundtrackLinkFormset = inlineformset_factory(Production, SoundtrackLink,
-	fk_name="production", form=SoundtrackLinkForm, can_order = True, extra=1 )
+# A base formset class dedicated to the 'edit soundtrack details' formset, which
+# behaves mostly like a ModelFormSet but needs several methods of BaseModelFormSet
+# to be monkeypatched to cope with SoundtrackLinkForm not being a true ModelForm
+class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
+	def __init__(self, data=None, files=None, instance=None, prefix=None):
+		self.model = Production
+		if instance is None:
+			self.instance = Production()
+		else:
+			self.instance = instance
+		qs = self.instance.soundtrack_links.all()
+		super(BaseProductionSoundtrackLinkFormSet, self).__init__(data, files, prefix=prefix, queryset=qs)
+	
+	def validate_unique(self):
+		# SoundtrackLinkForm has no unique constraints,
+		# so don't try to rummage around in its non-existent metaclass to find some
+		return
+		
+	def _construct_form(self, i, **kwargs):
+		# ensure foreign key to production is set
+		form = super(BaseProductionSoundtrackLinkFormSet, self)._construct_form(i, **kwargs)
+		form.instance.production = self.instance
+		return form
+
+ProductionSoundtrackLinkFormset = formset_factory(SoundtrackLinkForm,
+	formset = BaseProductionSoundtrackLinkFormSet,
+	can_delete = True, can_order = True, extra=1 )
+ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == 'production'][0]
