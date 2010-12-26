@@ -22,7 +22,7 @@ function applyGlobalBehaviours(context) {
 		}
 	}).disableSelection();
 	
-	function addAutocompleteRule(selector, url, idField, useNickId, context) {
+	function addAutocompleteRule(selector, url, context, resultCallback) {
 		$(selector, context).autocomplete(url, {
 			autoFill: true,
 			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
@@ -31,12 +31,12 @@ function applyGlobalBehaviours(context) {
 			matchSubset: false,
 			matchCase: true,
 			extraParams: {'new_option': true}
-		}).result(function(evt, result) {
-			$(idField).val(result[useNickId ? 1 : 0]);
-		});
+		}).result(resultCallback);
 	}
 	/* TODO: instead of hard-coding hidden field IDs, derive them from the text field ID (thus supporting prefixes -> multiple forms per page) */
-	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', 'input#id_production_id', false, context);
+	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', context, function(evt, result) {
+		$('input#id_production_id').val(result[0]);
+	});
 	
 	$('input.date', context).each(function() {
 		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', dateParser: parseFuzzyDate};
@@ -258,7 +258,7 @@ function applyGlobalBehaviours(context) {
 		$(this).addClass('ajaxified');
 	});
 	
-	$('form .byline_field', context).each(function() {
+	$('.byline_field', context).each(function() {
 		var bylineFieldElement = this;
 		var bylineField = $(this);
 		
@@ -346,6 +346,45 @@ function applyGlobalBehaviours(context) {
 		
 		$(this).addClass('ajaxified');
 	});
+	$('.production_field', context).each(function() {
+		var staticView = $("> .static_view", this);
+		var formView = $("> .form_view", this);
+		var idField = $("> .form_view > input[type='hidden'][name$='_id']", this);
+		if (idField.val() != '') {
+			formView.hide();
+			staticView.show();
+		} else {
+			formView.show();
+			staticView.hide();
+		}
+		var clearButton = $('<a href="javascript:void(0);" class="clear_button">clear</a>');
+		clearButton.click(function() {
+			staticView.hide();
+			$(':input', formView).val('');
+			$('.byline_search input:text', formView).blur(); /* force refresh */
+			formView.show();
+			try {$(':input:visible', formView)[0].focus();}catch(_){}
+		})
+		staticView.append(clearButton);
+		
+		var titleField = $('input.title_field', this);
+		titleField.autocomplete('/productions/autocomplete/', {
+			autoFill: false,
+			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
+			formatResult: function(row) {return decodeURIComponent(row[3])},
+			selectFirst: true,
+			matchSubset: false,
+			matchCase: true,
+			extraParams: {'supertype': titleField.attr('data-supertype')}
+		}).result(function(evt, result) {
+			var title = $('<b></b>');
+			title.text(decodeURIComponent(result[2]));
+			$('.static_view_text', staticView).html(title);
+			idField.val(result[0]);
+			formView.hide();
+			staticView.show();
+		});
+	})
 }
 
 var lightboxOuter, lightbox, lightboxContent, lightboxClose;

@@ -437,6 +437,40 @@ ul.maintenance_actions li {
 	width: 400px;
 }
 
+.production_field {
+	line-height: 28px;
+	width: 480px;
+	float: left;
+	
+}
+.production_field .form_view .title_field {
+	float: left;
+	width: 200px;
+}
+.production_field .form_view > label {
+	padding-left: 10px;
+	padding-right: 10px;
+	float: left;
+}
+.production_field .byline_field {
+	float: left;
+}
+.production_field .byline_field.ajaxified .byline_search input[type=text] {
+	width: 200px;
+}
+
+.production_field .static_view_text {
+	float: left;
+}
+
+.production_field .clear_button {
+	float: left;
+	width: 16px;
+	height: 16px;
+	text-indent: -5000px;
+	background-image: url('/static/images/icons/cross.png');
+}
+
 /* byline matches */
 .matched_names {
 	font-size: 0.9em;
