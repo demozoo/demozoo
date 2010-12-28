@@ -98,7 +98,9 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),
 	(r'^parties/series/(\d+)/$', 'parties.show_series', {}, 'party_series'),
 	(r'^parties/new/$', 'parties.create', {}, 'new_party'),
+	(r'^parties/(\d+)/add_competition/$', 'parties.add_competition', {}, 'party_add_competition'),
 	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
+	(r'^parties/(\d+)/edit_competition/(\d+)/$', 'parties.edit_competition', {}, 'party_edit_competition'),
 	
 	(r'^search/', include('search.urls')),
 

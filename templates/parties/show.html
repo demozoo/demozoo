@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
 
 {% block base_main %}
 	<h2>{{ party.name }}</h2>
@@ -25,20 +26,33 @@
 	{% endwith %}
 	
 	{% for compo in party.competitions.all %}
-		<h3>{{ compo.name }}</h3>
-		{% with compo.results as results %}
-			{% if results %}
-				<table>
-					{% for result in results %}
-						<tr>
-							<td>{{ result.ranking }}</td>
-							<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
-							<td>{# TODO: byline #}</td>
-							<td>{{ result.score }}</td>
-						</tr>
-					{% endfor %}
-				</table>
-			{% endif %}
-		{% endwith %}
+		<div class="competition">
+			<h3>
+				{{ compo.name }}
+				<a href="{% url party_edit_competition party.id compo.id %}">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
+				</a>
+			</h3>
+			{% with compo.results as results %}
+				{% if results %}
+					<table>
+						{% for result in results %}
+							<tr>
+								<td>{{ result.ranking }}</td>
+								<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
+								<td>{% byline result.production %}</td>
+								<td>{{ result.score }}</td>
+							</tr>
+						{% endfor %}
+					</table>
+				{% endif %}
+			{% endwith %}
+		</div>
 	{% endfor %}
+	
+	<ul class="actions">
+		<li>
+			<a class="add open_in_lightbox" href="{% url party_add_competition party.id %}">Add competition</a>
+		</li>
+	</ul>
 {% endblock %}

@@ -1,0 +1,16 @@
+<h2>New competition for {{ party.name }}:</h2>
+
+<form action="{% url party_add_competition party.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	
+	{% for field in form.visible_fields %}
+		{% include "shared/form_field.html" %}
+	{% endfor %}
+	
+	<div class="field">
+		<input type="submit" value="Create" />
+	</div>
+	<div class="field">
+		<input type="submit" name="enter_results" value="Create + enter results" />
+	</div>
+</form>

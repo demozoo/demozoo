@@ -172,6 +172,23 @@ form.entry_form .field .field_input .help_text {
 	font-size: 0.66em;
 }
 
+form.entry_form .formset_header {
+	padding-left: 32px;
+}
+form.entry_form ul.subfields > li {
+	float: left;
+}
+form.entry_form ul.subfields > li.subfield_competition_rank {
+	width: 150px;
+}
+form.entry_form ul.subfields > li.subfield_competition_entry {
+	width: 500px;
+}
+form.entry_form ul.subfields > li.subfield_competition_score {
+	width: 150px;
+}
+
+
 /* external links form needs bigger labels */
 form.external_links_form .field label.field_label {
 	width: 200px;
@@ -179,8 +196,10 @@ form.external_links_form .field label.field_label {
 form.external_links_form .field .field_input {
 	width: 400px;
 }
-.spawning_formset li {
+.spawning_formset {
 	clear: both;
+}
+.spawning_formset li {
 	line-height: 24px;
 }
 
@@ -765,6 +784,10 @@ ul.parties_in_series li.current {
 	font-weight: bold;
 }
 
+
+.competition {
+	margin-top: 20px;
+}
 
 .productions_header {
 	padding-left: 24px;

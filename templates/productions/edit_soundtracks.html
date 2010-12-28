@@ -5,8 +5,10 @@
 <form action="{% url production_edit_soundtracks production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
-	{% spawningformset sortable for form in formset %}
-		{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
+	{% spawningformset sortable formset %}
+		{% spawningform as form %}
+			{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
+		{% endspawningform %}
 	{% endspawningformset %}
 	
 	<div class="field">

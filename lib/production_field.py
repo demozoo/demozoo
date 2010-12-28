@@ -1,10 +1,11 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from demoscene.models import Production
+from demoscene.models import Production, ProductionType
 from submit_button_field import SubmitButtonInput
 from django.core.exceptions import ValidationError
 import datetime
 from byline_field import BylineField, BylineWidget
+from production_type_field import ProductionTypeChoiceField
 
 # A value encapsulating the state of the ProductionWidget.
 # Used as the cleaned value of a ProductionField
@@ -52,7 +53,7 @@ class ProductionSelection():
 		if not value:
 			return ProductionSelection()
 		elif isinstance(value, ProductionSelection):
-			return ProductionSelection(id = value.id, title = value.title, byline_lookup = value.byline_lookup, types_to_set = types_to_set)
+			return ProductionSelection(id = value.id, title = value.title, byline_lookup = value.byline_lookup, types_to_set = value.types_to_set)
 		elif isinstance(value, int):
 			return ProductionSelection(id = value)
 		elif isinstance(value, Production):
@@ -61,24 +62,35 @@ class ProductionSelection():
 			raise Exception("Don't know how to convert %s to a ProductionSelection!" % repr(value))
 		
 class ProductionWidget(forms.Widget):
-	def __init__(self, attrs = None, types_to_set = [], supertype = None):
+	def __init__(self, attrs = None, types_to_set = [], supertype = None, show_production_type_field = False):
 		self.id_widget = forms.HiddenInput()
 		self.title_widget = forms.TextInput()
 		self.byline_widget = BylineWidget()
 		self.types_to_set = types_to_set
 		self.supertype = supertype
+		self.production_type_widget = ProductionTypeChoiceField(queryset = ProductionType.objects.all()).widget
+		self.show_production_type_field = show_production_type_field
 		super(ProductionWidget, self).__init__(attrs = attrs)
 	
 	def value_from_datadict(self, data, files, name):
 		id = self.id_widget.value_from_datadict(data, files, name + '_id')
 		title = self.title_widget.value_from_datadict(data, files, name + '_title')
 		byline_lookup = self.byline_widget.value_from_datadict(data, files, name + '_byline')
+		if self.show_production_type_field:
+			type_to_set = self.production_type_widget.value_from_datadict(data, files, name + '_type')
+			if type_to_set:
+				types_to_set = [ProductionType.objects.get(id = type_to_set)]
+			else:
+				types_to_set = []
+		else:
+			types_to_set = self.types_to_set
+		
 		if id or title:
 			return ProductionSelection(
 				id = id,
 				title = title,
 				byline_lookup = byline_lookup,
-				types_to_set = self.types_to_set,
+				types_to_set = types_to_set,
 			)
 		else:
 			return None
@@ -107,6 +119,21 @@ class ProductionWidget(forms.Widget):
 			title_attrs['data-supertype'] = self.supertype
 		byline_attrs = self.build_attrs(attrs)
 		byline_attrs['id'] += '_byline'
+
+		prodtype_attrs = self.build_attrs(attrs)
+		prodtype_attrs['id'] += '_type'
+		
+		form_view = [
+			self.id_widget.render(name + '_id', production_id),
+			self.title_widget.render(name + '_title', '', attrs = title_attrs),
+			' <label for="%s">by</label> ' % self.byline_widget.id_for_label('id_' + name + '_byline'),
+			self.byline_widget.render(name + '_byline', '', attrs = byline_attrs),
+		]
+		if self.show_production_type_field:
+			form_view += [
+				'<label for="%s">Type:</label> ' % self.production_type_widget.id_for_label('id_' + name + '_type'),
+				self.production_type_widget.render(name + '_type', '', attrs = prodtype_attrs)
+			]
 		
 		output = [
 			'<div class="production_field">',
@@ -116,10 +143,7 @@ class ProductionWidget(forms.Widget):
 			'</div>',
 			'</div>',
 			'<div class="form_view">',
-			self.id_widget.render(name + '_id', production_id),
-			self.title_widget.render(name + '_title', '', attrs = title_attrs),
-			' <label for="%s">by</label> ' % self.byline_widget.id_for_label('id_' + name + '_byline'),
-			self.byline_widget.render(name + '_byline', '', attrs = byline_attrs),
+			u''.join(form_view),
 			'</div>',
 			'</div>',
 		]
@@ -128,9 +152,14 @@ class ProductionWidget(forms.Widget):
 class ProductionField(forms.Field):
 	def __init__(self, *args, **kwargs):
 		self.types_to_set = kwargs.pop('types_to_set', [])
+		self.show_production_type_field = kwargs.pop('show_production_type_field', False)
 		self.byline_field = BylineField(required = False)
 		supertype = kwargs.pop('supertype', None)
-		self.widget = ProductionWidget(types_to_set = self.types_to_set, supertype = supertype)
+		self.widget = ProductionWidget(
+			types_to_set = self.types_to_set,
+			supertype = supertype,
+			show_production_type_field = self.show_production_type_field,
+		)
 		
 		super(ProductionField, self).__init__(*args, **kwargs)
 	

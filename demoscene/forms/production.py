@@ -6,14 +6,7 @@ from django.forms.models import inlineformset_factory, BaseModelFormSet
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
-
-class ProductionTypeChoiceField(forms.ModelChoiceField):
-	def label_from_instance(self, obj):
-		return "%s %s" % (u'\u2192' * (obj.depth - 1), obj.name)
-
-class ProductionTypeMultipleChoiceField(forms.ModelMultipleChoiceField):
-	def label_from_instance(self, obj):
-		return "%s %s" % (u'\u2192' * (obj.depth - 1), obj.name)
+from production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
 
 class BaseProductionEditCoreDetailsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
@@ -158,7 +151,7 @@ class CreateGraphicsForm(CreateProductionForm):
 			self.instance.platforms = [ self.cleaned_data['platform'] ]
 		return self.instance
 
-DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=0)
+DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
 
 class ProductionEditNotesForm(forms.ModelForm):
 	class Meta:
@@ -240,12 +233,12 @@ class SoundtrackLinkForm(forms.Form):
 # to be monkeypatched to cope with SoundtrackLinkForm not being a true ModelForm
 class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
 	def __init__(self, data=None, files=None, instance=None, prefix=None):
-		self.model = Production
+		self.model = SoundtrackLink
 		if instance is None:
 			self.instance = Production()
 		else:
 			self.instance = instance
-		qs = self.instance.soundtrack_links.all()
+		qs = self.instance.soundtrack_links.order_by('position')
 		super(BaseProductionSoundtrackLinkFormSet, self).__init__(data, files, prefix=prefix, queryset=qs)
 	
 	def validate_unique(self):

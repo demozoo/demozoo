@@ -2,10 +2,12 @@
 
 <div class="field">
 	<label for="id_download_links-0-url" class="field_label">Download URL</label>
-	{% spawningformset for dl_form in download_link_formset %}
-		{{ dl_form.url }}
-		{% for hidden in dl_form.hidden_fields %}
-			{{ hidden }}
-		{% endfor %}
+	{% spawningformset download_link_formset %}
+		{% spawningform as dl_form %}
+			{{ dl_form.url }}
+			{% for hidden in dl_form.hidden_fields %}
+				{{ hidden }}
+			{% endfor %}
+		{% endspawningform %}
 	{% endspawningformset %}
 </div>

@@ -11,7 +11,7 @@ function applyGlobalBehaviours(context) {
 	$('li.sortable_item input[name$="-ORDER"]', sortableFormsets).hide();
 
 	$('.spawning_formset', context).spawningFormset({onShow: applyGlobalBehaviours});
-	$('select[multiple]').asmSelect();
+	$('select[multiple]', context).asmSelect();
 	
 	sortableFormsets.sortable({
 		'items': 'li.sortable_item',

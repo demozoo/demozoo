@@ -1,0 +1,39 @@
+{% load spawning_formset %}
+
+<h2>Editing {{ party.name }} {{ competition.name }} competition:</h2>
+
+<p><a href="{{ party.get_absolute_url }}">&larr; Back to {{ party.name }}</a></p>
+
+<form action="{% url party_edit_competition party.id competition.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	
+	{% for field in competition_form.visible_fields %}
+		{% include "shared/form_field.html" %}
+	{% endfor %}
+	
+	{% spawningformset sortable formset %}
+		<li class="formset_header">
+			<ul class="subfields">
+				<li class="subfield_competition_rank">Rank</li>
+				<li class="subfield_competition_entry">Entry</li>
+				<li class="subfield_competition_score">Score</li>
+			</ul>
+			<div style="clear: both;"></div>
+		</li>
+		{% spawningform as form %}
+			{{ form.errors }}
+			{{ form.ORDER }}
+			<ul class="subfields">
+				<li class="subfield_competition_rank">{{ form.ranking }}</li>
+				<li class="subfield_competition_entry">{{ form.production }}</li>
+				<li class="subfield_competition_score">{{ form.score }}</li>
+			</ul>
+			{{ form.id }}{{ form.competition }}
+		{% endspawningform %}
+	{% endspawningformset %}
+	
+	
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>

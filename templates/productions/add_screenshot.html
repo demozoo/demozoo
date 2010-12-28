@@ -7,8 +7,10 @@
 	
 	<div class="field">
 		<label for="id_form-0-original" class="field_label">Image files</label>
-		{% spawningformset for form in formset %}
-			{{ form.original }}
+		{% spawningformset formset %}
+			{% spawningform as form %}
+				{{ form.original }}
+			{% endspawningform %}
 		{% endspawningformset %}
 	</div>
 	
