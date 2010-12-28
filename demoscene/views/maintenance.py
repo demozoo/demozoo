@@ -8,7 +8,9 @@ def index(request):
 	return render(request, 'maintenance/index.html')
 
 def prods_without_screenshots(request):
-	productions = Production.objects.filter(screenshots__id__isnull = True).order_by('title')
+	productions = Production.objects \
+		.filter(screenshots__id__isnull = True) \
+		.exclude(supertype = 'music').order_by('title')
 	return render(request, 'maintenance/prods_without_screenshots.html', {
 		'productions': productions
 	})
