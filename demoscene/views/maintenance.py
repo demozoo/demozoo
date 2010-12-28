@@ -14,3 +14,15 @@ def prods_without_screenshots(request):
 	return render(request, 'maintenance/prods_without_screenshots.html', {
 		'productions': productions
 	})
+
+def prods_without_external_links(request):
+	filters = {}
+	for field in Production.external_site_ref_field_names:
+		filters["%s__isnull" % field] = True
+	
+	productions = Production.objects \
+		.filter(supertype = 'production', **filters) \
+		.order_by('title')
+	return render(request, 'maintenance/prods_without_external_links.html', {
+		'productions': productions
+	})

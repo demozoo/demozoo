@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Productions without external links:</h2>
+	<div id="main_column">
+		<div class="panel">
+			{% include "shared/production_listing.html" %}
+		</div>
+	</div>
+{% endblock %}

@@ -112,4 +112,5 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^maintenance/$', 'maintenance.index', {}, 'maintenance_index'),
 	(r'^maintenance/prods_without_screenshots$', 'maintenance.prods_without_screenshots', {}, 'maintenance_prods_without_screenshots'),
+	(r'^maintenance/prods_without_external_links$', 'maintenance.prods_without_external_links', {}, 'maintenance_prods_without_external_links'),
 )
