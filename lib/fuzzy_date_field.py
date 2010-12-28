@@ -15,6 +15,12 @@ class FuzzyDateField(forms.Field):
 		if isinstance(value, FuzzyDate):
 			return value
 		try:
-			return FuzzyDate.parse(value)
+			result = FuzzyDate.parse(value)
 		except ValueError:
 			raise ValidationError(self.error_messages['invalid'])
+		
+		if result.date.year < 1900:
+			raise ValidationError(self.error_messages['invalid'])
+		
+		return result
+		
