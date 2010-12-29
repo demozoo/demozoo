@@ -9,9 +9,11 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 	
-	{% with form.abbreviation as field %}
-		{% include "shared/form_field.html" %}
-	{% endwith %}
+	{% if form.abbreviation %}
+		{% with form.abbreviation as field %}
+			{% include "shared/form_field.html" %}
+		{% endwith %}
+	{% endif %}
 	
 	{% with form.nick_variant_list as field %}
 		{% include "shared/form_field.html" %}
