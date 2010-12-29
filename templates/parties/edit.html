@@ -1,15 +1,11 @@
-{% extends "base.html" %}
+<h2>Editing party: {{ party.name }}</h2>
 
-{% block base_main %}
-	<h2>Editing party: {{ party.name }}</h2>
-	
-	<form action="." method="post" class="entry_form">
-		{% csrf_token %}
-		{% for field in form %}
-			{% include "shared/form_field.html" %}
-		{% endfor %}
-		<div class="field">
-			<input type="submit" />
-		</div>
-	</form>
-{% endblock %}
+<form action="{% url edit_party party.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	{% for field in form %}
+		{% include "shared/form_field.html" %}
+	{% endfor %}
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>

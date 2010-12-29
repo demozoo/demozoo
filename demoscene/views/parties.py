@@ -56,7 +56,7 @@ def edit(request, party_id):
 	else:
 		form = EditPartyForm(instance = party)
 	
-	return render(request, 'parties/edit.html', {
+	return ajaxable_render(request, 'parties/edit.html', {
 		'party': party,
 		'form': form,
 	})

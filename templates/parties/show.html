@@ -4,7 +4,7 @@
 {% block base_main %}
 	<h2>{{ party.name }}</h2>
 	{{ party.start_date }} - {{ party.end_date }}
-	<a href="{% url edit_party party.id %}">edit</a>
+	<a href="{% url edit_party party.id %}" class="open_in_lightbox">edit</a>
 	
 	{% with party.party_series.parties_by_date as parties_in_series %}
 		{% if parties_in_series.count > 1 %}
