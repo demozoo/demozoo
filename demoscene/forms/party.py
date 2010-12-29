@@ -3,6 +3,7 @@ from django.forms.models import formset_factory, BaseModelFormSet
 from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing
 from any_format_date_field import AnyFormatDateField
 from production_field import ProductionField
+from form_with_location import ModelFormWithLocation
 
 class PartyForm(forms.ModelForm):
 	existing_party_series = forms.ModelChoiceField(label = 'Party series', queryset = PartySeries.objects.order_by('name'), required = False)
@@ -14,12 +15,12 @@ class PartyForm(forms.ModelForm):
 		model = Party
 		fields = ('existing_party_series', 'new_party_series_name', 'start_date', 'end_date', 'name')
 
-class EditPartyForm(forms.ModelForm):
+class EditPartyForm(ModelFormWithLocation):
 	start_date = AnyFormatDateField()
 	end_date = AnyFormatDateField()
 	class Meta:
 		model = Party
-		fields = ('name', 'start_date', 'end_date')
+		fields = ('name', 'start_date', 'end_date', 'location')
 
 class CompetitionForm(forms.ModelForm):
 	class Meta:

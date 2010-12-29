@@ -770,6 +770,12 @@ class Party(models.Model):
 	start_date = models.DateField()
 	end_date = models.DateField()
 	
+	location = models.CharField(max_length = 255, blank = True)
+	country_code = models.CharField(max_length = 5, blank = True)
+	latitude = models.FloatField(null = True, blank = True)
+	longitude = models.FloatField(null = True, blank = True)
+	woe_id = models.BigIntegerField(null = True, blank = True)
+	
 	search_result_template = 'search/results/party.html'
 	
 	def __unicode__(self):
