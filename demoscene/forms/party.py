@@ -22,6 +22,11 @@ class EditPartyForm(ModelFormWithLocation):
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'location')
 
+class PartyEditNotesForm(forms.ModelForm):
+	class Meta:
+		model = Party
+		fields = ['notes']
+
 class CompetitionForm(forms.ModelForm):
 	class Meta:
 		model = Competition

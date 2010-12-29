@@ -776,6 +776,8 @@ class Party(models.Model):
 	longitude = models.FloatField(null = True, blank = True)
 	woe_id = models.BigIntegerField(null = True, blank = True)
 	
+	notes = models.TextField(blank = True)
+	
 	search_result_template = 'search/results/party.html'
 	
 	def __unicode__(self):
@@ -783,6 +785,10 @@ class Party(models.Model):
 	
 	@models.permalink
 	def get_absolute_url(self):
+		return ('demoscene.views.parties.show', [str(self.id)])
+	
+	@models.permalink
+	def get_absolute_edit_url(self):
 		return ('demoscene.views.parties.show', [str(self.id)])
 	
 	class Meta:

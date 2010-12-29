@@ -62,6 +62,16 @@ def edit(request, party_id):
 	})
 
 @login_required
+def edit_notes(request, party_id):
+	party = get_object_or_404(Party, id = party_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(party.get_absolute_edit_url())
+	return simple_ajax_form(request, 'party_edit_notes', party, PartyEditNotesForm,
+		title = 'Editing notes for %s' % party.name,
+		#update_datestamp = True
+		)
+
+@login_required
 def add_competition(request, party_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = Competition(party = party)

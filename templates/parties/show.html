@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
+{% load safe_markdown %}
 
 {% block base_main %}
 	<h2>
@@ -38,6 +39,18 @@
 			</div>
 		{% endif %}
 	{% endwith %}
+	
+	{% if party.notes or request.user.is_staff %}
+		<div class="notes">
+			{% if request.user.is_staff %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url party_edit_notes party.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			{{ party.notes|safe_markdown }}
+			<div style="clear: both;"></div>
+		</div>
+	{% endif %}
 	
 	{% for compo in party.competitions.all %}
 		<div class="competition">
