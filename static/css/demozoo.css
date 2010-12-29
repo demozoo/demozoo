@@ -709,6 +709,22 @@ body.show_production .production_details {
 	width: 400px;
 }
 
+body.show_production .production_details .production_types {
+	margin-bottom: 0.5em;
+	list-style-type: disc;
+	padding-left: 1em;
+}
+body.show_production .production_details .platforms {
+	margin-bottom: 0.5em;
+	list-style-type: disc;
+	padding-left: 1em;
+}
+body.show_production .production_details .competition_placings {
+	margin-bottom: 0.5em;
+	list-style-type: disc;
+	padding-left: 1em;
+}
+
 body.show_production .screenshots ul li {
 	float: left;
 	margin-right: 8px;

@@ -35,17 +35,19 @@
 				<p>Release date: {% if production.release_date %}{{ production.release_date }}{% else %}<em>not set</em>{% endif %}</p>
 			{% endif %}
 			
-			<ul>
+			<ul class="production_types">
 				{% for production_type in production.types.all %}
 					<li>{{ production_type.name }}</li>
 				{% endfor %}
 			</ul>
 			
-			<ul>
+			<ul class="platforms">
 				{% for platform in production.platforms.all %}
 					<li><a href="{% url platform platform.id %}">{{ platform.name }}</a></li>
 				{% endfor %}
 			</ul>
+			
+			{% include "shared/production_competition_placings.html" %}
 			
 			{% include "shared/production_external_links.html" %}
 		</div>

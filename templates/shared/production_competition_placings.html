@@ -1,0 +1,9 @@
+{% load humanize %}
+
+{% if competition_placings %}
+	<ul class="competition_placings">
+		{% for placing in competition_placings %}
+			<li>{{ placing.ranking|ordinal }} at <a href="{{ placing.competition.party.get_absolute_url }}">{{ placing.competition.party.name }}</a> {{ placing.competition.name }} compo</li>
+		{% endfor %}
+	</ul>
+{% endif %}

@@ -28,6 +28,7 @@ def show(request, production_id, edit_mode = False):
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.ordered_download_links(),
+		'competition_placings': production.competition_placings.order_by('competition__party__start_date'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})

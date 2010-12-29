@@ -33,6 +33,7 @@ def show(request, production_id, edit_mode = False):
 			appearance.production for appearance in
 			production.appearances_as_soundtrack.select_related('production').order_by('production__release_date_date')
 		],
+		'competition_placings': production.competition_placings.order_by('competition__party__start_date'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
