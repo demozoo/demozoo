@@ -37,7 +37,8 @@ class ProductionSelection():
 			self.production.save()
 			self.production.types = self.types_to_set
 			self.production.save()
-			self.byline.commit(self.production)
+			if self.byline:
+				self.byline.commit(self.production)
 		return self.production
 	
 	def __str__(self):
