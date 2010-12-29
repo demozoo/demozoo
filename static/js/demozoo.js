@@ -19,7 +19,8 @@ function applyGlobalBehaviours(context) {
 			$('input[name$="-ORDER"]', this).each(function(i) {
 				$(this).val(i+1);
 			})
-		}
+		},
+		'cancel': ':input,option,a,label'
 	}).disableSelection();
 	
 	function addAutocompleteRule(selector, url, context, resultCallback) {
