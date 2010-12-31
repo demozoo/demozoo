@@ -58,6 +58,7 @@
 	
 	{% for compo in party.competitions.all %}
 		<div class="competition">
+			<a id="competition_{{ compo.id }}"></a>
 			<h3>
 				{{ compo.name }}
 				<a href="{% url party_edit_competition party.id compo.id %}">
