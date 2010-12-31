@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load safe_markdown %}
 
 {% block base_main %}
 	<h2>{{ party_series.name }}</h2>
@@ -14,4 +15,16 @@
 			</ul>
 		{% endif %}
 	{% endwith %}
+	
+	{% if party_series.notes or request.user.is_staff %}
+		<div class="notes">
+			{% if request.user.is_staff %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url party_edit_series_notes party_series.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			{{ party_series.notes|safe_markdown }}
+			<div style="clear: both;"></div>
+		</div>
+	{% endif %}
 {% endblock %}

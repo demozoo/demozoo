@@ -27,6 +27,11 @@ class PartyEditNotesForm(forms.ModelForm):
 		model = Party
 		fields = ['notes']
 
+class PartySeriesEditNotesForm(forms.ModelForm):
+	class Meta:
+		model = PartySeries
+		fields = ['notes']
+
 class CompetitionForm(forms.ModelForm):
 	class Meta:
 		model = Competition
