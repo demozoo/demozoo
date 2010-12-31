@@ -13,14 +13,14 @@ class PartyForm(forms.ModelForm):
 	end_date = AnyFormatDateField()
 	class Meta:
 		model = Party
-		fields = ('existing_party_series', 'new_party_series_name', 'start_date', 'end_date', 'name')
+		fields = ('existing_party_series', 'new_party_series_name', 'start_date', 'end_date', 'name', 'tagline')
 
 class EditPartyForm(ModelFormWithLocation):
 	start_date = AnyFormatDateField()
 	end_date = AnyFormatDateField()
 	class Meta:
 		model = Party
-		fields = ('name', 'start_date', 'end_date', 'location')
+		fields = ('name', 'start_date', 'end_date', 'tagline', 'location')
 
 class PartyEditNotesForm(forms.ModelForm):
 	class Meta:

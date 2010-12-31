@@ -767,6 +767,7 @@ class PartySeries(models.Model):
 class Party(models.Model):
 	party_series = models.ForeignKey(PartySeries, related_name = 'parties')
 	name = models.CharField(max_length = 255)
+	tagline = models.CharField(max_length = 255, blank = True)
 	start_date = models.DateField()
 	end_date = models.DateField()
 	

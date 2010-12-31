@@ -3,42 +3,46 @@
 {% load safe_markdown %}
 
 {% block base_main %}
-	<h2>
-		{{ party.name }}
-		<a href="{% url edit_party party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
-	</h2>
-	{{ party.start_date }} - {{ party.end_date }}
-	
-	<p>
-		Location:
-		{% if party.location %}
-			{{ party.location }}
-			{% if party.country_code %}
-				<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
-			{% endif %}
-		{% else %}
-			<em>Not set</em>
-		{% endif %}
-	</p>
-
-	{% with party.party_series.parties_by_date as parties_in_series %}
-		{% if parties_in_series.count > 1 %}
-			<div>
-				Other {{ party.party_series.name }} parties:
-				<ul class="parties_in_series">
-					{% for party_in_series in parties_in_series %}
-						{% if party_in_series == party %}
-							<li class="current">{{ party_in_series.name }}</li>
-						{% else %}
-							<li>
-								<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.name }}</a>
-							</li>
-						{% endif %}
-					{% endfor %}
-				</ul>
-			</div>
-		{% endif %}
-	{% endwith %}
+	<div class="panel">
+		<div class="party_details">
+			<h2>
+				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
+				<a href="{% url edit_party party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+			</h2>
+			{{ party.start_date }} - {{ party.end_date }}
+			
+			<p>
+				Location:
+				{% if party.location %}
+					{{ party.location }}
+					{% if party.country_code %}
+						<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+					{% endif %}
+				{% else %}
+					<em>Not set</em>
+				{% endif %}
+			</p>
+		
+			{% with party.party_series.parties_by_date as parties_in_series %}
+				{% if parties_in_series.count > 1 %}
+					<div>
+						Other {{ party.party_series.name }} parties:
+						<ul class="parties_in_series">
+							{% for party_in_series in parties_in_series %}
+								{% if party_in_series == party %}
+									<li class="current">{{ party_in_series.name }}</li>
+								{% else %}
+									<li>
+										<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.name }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+			{% endwith %}
+		</div>
+	</div>
 	
 	{% if party.notes or request.user.is_staff %}
 		<div class="notes">

@@ -800,6 +800,9 @@ ul.parties_in_series li.current {
 	font-weight: bold;
 }
 
+.party_details .tagline {
+	font-size: 0.8em;
+}
 
 .competition {
 	margin-top: 20px;
