@@ -64,7 +64,9 @@ def add_member(request, group_id):
 	if request.method == 'POST':
 		form = GroupMembershipForm(request.POST)
 		if form.is_valid():
-			member = form.cleaned_data['scener_nick'].commit().releaser
+			member_nick = form.cleaned_data['scener_nick']
+			member_nick.save_if_new()
+			member = member_nick.releaser
 			if not group.member_memberships.filter(member = member).count():
 				membership = Membership(
 					member = member,
@@ -103,7 +105,9 @@ def edit_membership(request, group_id, membership_id):
 	if request.method == 'POST':
 		form = GroupMembershipForm(request.POST)
 		if form.is_valid():
-			member = form.cleaned_data['scener_nick'].commit().releaser
+			member_nick = form.cleaned_data['scener_nick']
+			member_nick.save_if_new()
+			member = member_nick.releaser
 			if not group.member_memberships.exclude(id = membership_id).filter(member = member).count():
 				membership.member = member
 				membership.is_current = form.cleaned_data['is_current']

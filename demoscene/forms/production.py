@@ -173,23 +173,17 @@ class ProductionEditExternalLinksForm(forms.ModelForm):
 			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 
-class ProductionCreditForm(forms.Form):
-	def __init__(self, *args, **kwargs):
-		self.instance = kwargs.pop('instance', Credit())
-		super(ProductionCreditForm, self).__init__(*args, **kwargs)
-		try:
-			nick = self.instance.nick
-			self.fields['nick'] = NickField(initial = nick)
-		except Nick.DoesNotExist:
-			self.fields['nick'] = NickField()
-		self.fields['role'] = forms.CharField(initial = self.instance.role)
+class ProductionCreditForm(forms.ModelForm):
+	nick = NickField()
+	role = forms.CharField()
 	
-	def save(self, commit = True):
-		self.instance.role = self.cleaned_data['role']
-		self.instance.nick = self.cleaned_data['nick'].commit()
-		if commit:
-			self.instance.save()
-		return self.instance
+	def save(self, *args, **kwargs):
+		self.cleaned_data['nick'].save_if_new()
+		return super(ProductionCreditForm, self).save(*args, **kwargs)
+	
+	class Meta:
+		model = Credit
+		fields = ('nick', 'role')
 
 class ProductionAddScreenshotForm(forms.ModelForm):
 	class Meta:

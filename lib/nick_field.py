@@ -3,21 +3,21 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from demoscene.models import Nick
 from submit_button_field import SubmitButtonInput
-from matched_nick_field import MatchedNickField, NickSelection
+from matched_nick_field import MatchedNickField
 
 # An object which encapsulates the state of a NickWidget as derived from its posted data;
 # this is what NickWidget returns from value_from_datadict
 class NickLookup():
 	def __init__(self,
 		search_term = None, autoaccept = False,
-		nick_selection = None,
+		nick = None,
 		matched_nick_options = {}):
 		# valid matched_nick_options include sceners_only, groups_only
 		
 		self.search_term = search_term # the search term being looked up
 		self.autoaccept = autoaccept # whether we should continue upon successfully resolving a nick,
 			# as opposed to re-showing the form
-		self.nick_selection = nick_selection
+		self.nick = nick
 		self.matched_nick_field = MatchedNickField(search_term, None,
 			**matched_nick_options)
 	
@@ -25,6 +25,7 @@ class NickLookup():
 	def from_value(value, matched_nick_options = {}):
 		# value can be:
 		# a Nick
+		# a nick ID
 		# None
 		# an existing NickLookup
 		if not value:
@@ -33,12 +34,18 @@ class NickLookup():
 			return NickLookup(
 				search_term = value.search_term,
 				autoaccept = value.autoaccept,
-				nick_selection = value.nick_selection,
+				nick = value.nick,
 				matched_nick_options = matched_nick_options)
 		elif isinstance(value, Nick):
 			return NickLookup(
 				search_term = value.name,
-				nick_selection = NickSelection(value.id, value.name),
+				nick = value,
+				matched_nick_options = matched_nick_options)
+		elif isinstance(value, int):
+			nick = Nick.objects.get(id = value)
+			return NickLookup(
+				search_term = nick.name,
+				nick = nick,
 				matched_nick_options = matched_nick_options)
 		else:
 			raise Exception("Don't know how to handle %s as a nick lookup" % repr(value))
@@ -63,7 +70,7 @@ class NickWidget(forms.Widget):
 			matched_nick_options = self.matched_nick_options)
 		
 		if not explicit_lookup_requested:
-			nick_lookup.nick_selection = nick_lookup.matched_nick_field.widget.value_from_datadict(data, files, name + '_match')
+			nick_lookup.nick = nick_lookup.matched_nick_field.widget.value_from_datadict(data, files, name + '_match')
 		
 		return nick_lookup
 	
@@ -82,7 +89,7 @@ class NickWidget(forms.Widget):
 		]
 		
 		if nick_lookup.search_term:
-			matched_nick_html = nick_lookup.matched_nick_field.widget.render(name + '_match', nick_lookup.nick_selection, attrs = attrs)
+			matched_nick_html = nick_lookup.matched_nick_field.widget.render(name + '_match', nick_lookup.nick, attrs = attrs)
 		else:
 		    matched_nick_html = ''
 		
@@ -114,9 +121,9 @@ class NickField(forms.Field):
 		else:
 			nick_lookup = NickLookup.from_value(value, matched_nick_options = self.matched_nick_options)
 			
-			clean_nick_selection = nick_lookup.matched_nick_field.clean(nick_lookup.nick_selection)
-			if clean_nick_selection and nick_lookup.autoaccept:
-				return clean_nick_selection
+			clean_nick = nick_lookup.matched_nick_field.clean(nick_lookup.nick)
+			if clean_nick and nick_lookup.autoaccept:
+				return clean_nick
 			else:
 				raise ValidationError("Please select the appropriate nick from the list.")
 

@@ -9,7 +9,7 @@ import datetime
 def add_credit(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
 	if request.method == 'POST':
-		form = ReleaserAddCreditForm(releaser, request.POST)
+		form = ReleaserCreditForm(releaser, request.POST)
 		if form.is_valid():
 			production = Production.objects.get(id = form.cleaned_data['production_id'])
 			credit = Credit(
@@ -22,7 +22,7 @@ def add_credit(request, releaser_id):
 			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = ReleaserAddCreditForm(releaser)
+		form = ReleaserCreditForm(releaser)
 	
 	return ajaxable_render(request, 'releasers/add_credit.html', {
 		'releaser': releaser,
@@ -34,7 +34,7 @@ def edit_credit(request, releaser_id, credit_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
 	credit = get_object_or_404(Credit, nick__releaser = releaser, id = credit_id)
 	if request.method == 'POST':
-		form = ReleaserAddCreditForm(releaser, request.POST)
+		form = ReleaserCreditForm(releaser, request.POST)
 		if form.is_valid():
 			production = Production.objects.get(id = form.cleaned_data['production_id'])
 			credit.production = production
@@ -45,7 +45,7 @@ def edit_credit(request, releaser_id, credit_id):
 			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = ReleaserAddCreditForm(releaser, {
+		form = ReleaserCreditForm(releaser, {
 			'nick_id': credit.nick_id,
 			'production_id': credit.production_id,
 			'production_name': credit.production.title,

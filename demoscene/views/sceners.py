@@ -93,11 +93,13 @@ def add_group(request, scener_id):
 	if request.method == 'POST':
 		form = ScenerMembershipForm(request.POST)
 		if form.is_valid():
-			group = form.cleaned_data['group_nick'].commit().releaser
+			group_nick = form.cleaned_data['group_nick']
+			group_nick.save_if_new()
+			group = group_nick.releaser
 			if not scener.group_memberships.filter(group = group).count():
 				membership = Membership(
 					member = scener,
-					group = form.cleaned_data['group_nick'].commit().releaser,
+					group = group,
 					is_current = form.cleaned_data['is_current'])
 				membership.save()
 				scener.updated_at = datetime.datetime.now()
@@ -133,7 +135,9 @@ def edit_membership(request, scener_id, membership_id):
 	if request.method == 'POST':
 		form = ScenerMembershipForm(request.POST)
 		if form.is_valid():
-			group = form.cleaned_data['group_nick'].commit().releaser
+			group_nick = form.cleaned_data['group_nick']
+			group_nick.save_if_new()
+			group = group_nick.releaser
 			if not scener.group_memberships.exclude(id = membership_id).filter(group = group).count():
 				membership.group = group
 				membership.is_current = form.cleaned_data['is_current']
