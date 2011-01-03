@@ -82,6 +82,14 @@ def edit_series_notes(request, party_series_id):
 		)
 
 @login_required
+def edit_series(request, party_series_id):
+	party_series = get_object_or_404(PartySeries, id = party_series_id)
+	return simple_ajax_form(request, 'party_edit_series', party_series, EditPartySeriesForm,
+		title = 'Editing party: %s' % party_series.name,
+		#update_datestamp = True
+	)
+
+@login_required
 def add_competition(request, party_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = Competition(party = party)
