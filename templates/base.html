@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+{% if not request.is_ajax %}<!DOCTYPE HTML>
 <html>
 	<head>
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
@@ -64,8 +64,10 @@
 				{% endfor %}
 			</ul>
 			{% endif %}
-			
+{% endif %}
 			{% block base_main %}{% endblock %}
+{% if not request.is_ajax %}
 		<div>
 	</body>
 </html>
+{% endif %}
