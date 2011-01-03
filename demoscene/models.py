@@ -751,6 +751,7 @@ class Screenshot(ModelWithThumbnails):
 class PartySeries(models.Model):
 	name = models.CharField(max_length = 255)
 	notes = models.TextField(blank = True)
+	website = models.URLField(blank = True)
 	
 	def __unicode__(self):
 		return self.name

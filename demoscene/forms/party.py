@@ -30,7 +30,7 @@ class PartyEditNotesForm(forms.ModelForm):
 class EditPartySeriesForm(forms.ModelForm):
 	class Meta:
 		model = PartySeries
-		fields = ['name']
+		fields = ('name', 'website')
 
 class PartySeriesEditNotesForm(forms.ModelForm):
 	class Meta:

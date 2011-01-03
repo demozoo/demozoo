@@ -6,6 +6,9 @@
 		{{ party_series.name }}
 		<a href="{% url party_edit_series party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
 	</h2>
+	{% if party_series.website %}
+		<p><a href="{{ party_series.website }}">{{ party_series.website }}</a></p>
+	{% endif %}
 	{% with party_series.parties_by_date as parties %}
 		{% if parties %}
 			<ul class="parties">

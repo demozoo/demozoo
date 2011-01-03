@@ -11,6 +11,10 @@
 			</h2>
 			{{ party.start_date }} - {{ party.end_date }}
 			
+			{% if party.party_series.website %}
+				<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
+			{% endif %}
+			
 			<p>
 				Location:
 				{% if party.location %}
