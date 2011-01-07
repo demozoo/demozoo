@@ -96,9 +96,9 @@ class GroupMembershipForm(forms.Form):
 class EditMembershipForm(forms.Form):
 	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
 
-class ReleaserCreditForm(forms.Form):
+class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):
-		super(ReleaserCreditForm, self).__init__(*args, **kwargs)
+		super(ReleaserAddCreditForm, self).__init__(*args, **kwargs)
 		self.fields['nick_id'] = forms.ModelChoiceField(
 			label = 'Credited as',
 			queryset = releaser.nicks.order_by('name'),

@@ -176,11 +176,9 @@ class Releaser(models.Model):
 	updated_at = models.DateTimeField()
 	
 	def save(self, *args, **kwargs):
-		ensure_nick_exists = kwargs.pop('ensure_nick_exists', True)
+		# ensure that a Nick with matching name exists for this releaser
 		super(Releaser, self).save(*args, **kwargs) # Call the "real" save() method
-		if ensure_nick_exists:
-			# ensure that a Nick with matching name exists for this releaser
-			nick, created = Nick.objects.get_or_create(releaser = self, name = self.name)
+		nick, created = Nick.objects.get_or_create(releaser = self, name = self.name)
 	
 	def __unicode__(self):
 		return self.name
@@ -328,13 +326,25 @@ class Nick(models.Model):
 	abbreviation = models.CharField(max_length = 255, blank = True, help_text = "(optional - only if there's one that's actively being used. Don't just make one up!)")
 	
 	def __init__(self, *args, **kwargs):
-		self._releaser_is_group = kwargs.pop('releaser__is_group', None)
 		super(Nick, self).__init__(*args, **kwargs)
 		self._has_written_nick_variant_list = False
 		self._nick_variant_list = None
 	
 	def __unicode__(self):
 		return self.name
+	
+	@staticmethod
+	def from_id_and_name(id, name):
+		if id == 'newgroup':
+			releaser = Releaser(name = name, is_group = True, updated_at = datetime.datetime.now())
+			releaser.save()
+			return releaser.primary_nick
+		elif id == 'newscener':
+			releaser = Releaser(name = name, is_group = False, updated_at = datetime.datetime.now())
+			releaser.save()
+			return releaser.primary_nick
+		else:
+			return Nick.objects.get(id = id)
 	
 	def get_nick_variant_list(self):
 		if self._has_written_nick_variant_list:
@@ -352,22 +362,7 @@ class Nick(models.Model):
 		variant_names = [variant.name for variant in self.variants.exclude(name = self.name)]
 		return ", ".join(variant_names)
 	
-	def save_if_new(self):
-		if self.id is None:
-			self.save()
-	
 	def save(self, *args, **kwargs):
-		# if releaser does not exist yet but we've been passed an explicit
-		# releaser__is_group flag, create releaser as either group or scener
-		if self._releaser_is_group is not None:
-			try:
-				releaser = self.releaser
-			except Releaser.DoesNotExist:
-				releaser = Releaser(
-					name = self.name, is_group = self._releaser_is_group,
-					updated_at = datetime.datetime.now())
-				releaser.save(ensure_nick_exists = False)
-				self.releaser = releaser
 		# update releaser's name if it matches this nick's previous name
 		if self.id is not None:
 			old_name = Nick.objects.get(id=self.id).name
@@ -665,16 +660,21 @@ class Byline(StrAndUnicode):
 			return authors_string
 	
 	def commit(self, production):
+		from matched_nick_field import NickSelection
 		
 		author_nicks = []
 		for nick in self.author_nicks:
-			nick.save_if_new()
-			author_nicks.append(nick)
+			if isinstance(nick, NickSelection):
+				author_nicks.append(nick.commit())
+			else:
+				author_nicks.append(nick)
 		
 		affiliation_nicks = []
 		for nick in self.affiliation_nicks:
-			nick.save_if_new()
-			affiliation_nicks.append(nick)
+			if isinstance(nick, NickSelection):
+				affiliation_nicks.append(nick.commit())
+			else:
+				affiliation_nicks.append(nick)
 		
 		production.author_nicks = author_nicks
 		production.author_affiliation_nicks = affiliation_nicks

@@ -3,6 +3,34 @@ from django.utils.safestring import mark_safe
 from demoscene.models import Nick, NickVariant, Releaser
 import datetime
 
+# A placeholder for a Nick object, used as the cleaned value of a MatchedNickField
+# and the value MatchedNickWidget returns from value_from_datadict.
+# We can't use a Nick because we may not want to save it to the database yet (because
+# the form might be failing validation elsewhere), and using an unsaved Nick object
+# isn't an option either because we need to create a Releaser as a side effect, and
+# Django won't let us build multi-object structures of unsaved models.
+class NickSelection():
+	def __init__(self, id, name):
+		self.id = id
+		self.name = name
+	
+	def commit(self):
+		if self.id == 'newscener':
+			releaser = Releaser(name = self.name, is_group = False, updated_at = datetime.datetime.now())
+			releaser.save()
+			self.id = releaser.primary_nick.id
+			return releaser.primary_nick
+		elif self.id == 'newgroup':
+			releaser = Releaser(name = self.name, is_group = True, updated_at = datetime.datetime.now())
+			releaser.save()
+			self.id = releaser.primary_nick.id
+			return releaser.primary_nick
+		else:
+			return Nick.objects.get(id = self.id)
+	
+	def __str__(self):
+		return "NickSelection: %s, %s" % (self.id, self.name)
+
 # A variant of RadioFieldRenderer which accepts 4-tuples as choices, using the third element
 # as a classname for the <li> and fourth element as a data-name attribute
 class RadioFieldWithClassnameRenderer(forms.widgets.RadioFieldRenderer):
@@ -62,12 +90,7 @@ class MatchedNickWidget(forms.Widget):
 		nick_id = self.select_widget.value_from_datadict(data, files, name + '_id')
 		nick_name = self.name_widget.value_from_datadict(data, files, name + '_name')
 		if nick_id:
-			if nick_id == 'newscener':
-				return Nick(name = nick_name, releaser__is_group = False)
-			elif nick_id == 'newgroup':
-				return Nick(name = nick_name, releaser__is_group = True)
-			else:
-				return Nick.objects.get(id = nick_id)
+			return NickSelection(nick_id, nick_name)
 		else:
 			return None
 	
@@ -105,9 +128,9 @@ class MatchedNickField(forms.Field):
 		if nick_variants.count() == 0:
 			self.best_match = None
 		elif nick_variants.count() == 1:
-			self.best_match = nick_variants[0].nick
+			self.best_match = NickSelection(nick_variants[0].nick_id, nick_variants[0].name)
 		elif nick_variants[0].score > nick_variants[1].score:
-			self.best_match = nick_variants[0].nick
+			self.best_match = NickSelection(nick_variants[0].nick_id, nick_variants[0].name)
 		else:
 			self.best_match = None
 		
@@ -116,16 +139,19 @@ class MatchedNickField(forms.Field):
 	def clean(self, value):
 		if not value:
 			value = self.best_match
-		elif isinstance(value, Nick):
+		elif isinstance(value, NickSelection):
 			# check that it's a valid selection given the available choices
-			if value.id: # nick is an existing database entry
-				if value not in [nv.nick for nv in self.widget.nick_variants]: # invalid...
-					value = self.best_match # ...so start a fresh match
-			else:
+			if value.id == 'newscener' or value.id == 'newgroup':
 				if value.name.lower() != self.search_term.lower(): # invalid...
 					value = self.best_match # ...so start a fresh match
+			else:
+				if int(value.id) not in [nv.nick_id for nv in self.widget.nick_variants]: # invalid...
+					value = self.best_match # ...so start a fresh match
+		elif isinstance(value, Nick):
+			# convert to a NickSelection
+			value = NickSelection(value.id, value.name)
 		
-		if isinstance(value, Nick) or value == None:
+		if isinstance(value, NickSelection) or value == None:
 			return super(MatchedNickField, self).clean(value)
 		else:
 			raise Exception("Don't know how to clean %s" % repr(value))

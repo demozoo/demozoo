@@ -3,7 +3,7 @@ from demoscene.models import Byline
 from submit_button_field import SubmitButtonInput
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from matched_nick_field import MatchedNickField
+from matched_nick_field import MatchedNickField, NickSelection
 import re
 
 # An object which encapsulates the state of a BylineWidget as derived from its posted data;
@@ -11,14 +11,14 @@ import re
 class BylineLookup():
 	def __init__(self,
 		search_term = '', autoaccept = False,
-		author_nicks = [], affiliation_nicks = [],
+		author_nick_selections = [], affiliation_nick_selections = [],
 		autocomplete = False):
 		
 		self.search_term = search_term # the byline string
 		self.autoaccept = autoaccept # whether we should continue upon successfully resolving
 			# all byline components, as opposed to re-showing the form
-		self.author_nicks = author_nicks
-		self.affiliation_nicks = affiliation_nicks
+		self.author_nick_selections = author_nick_selections
+		self.affiliation_nick_selections = affiliation_nick_selections
 		
 		# parse the byline
 		parts = self.search_term.split('/')
@@ -64,7 +64,7 @@ class BylineLookup():
 		
 		for i, field in enumerate(self.author_matched_nick_fields):
 			try:
-				value = self.author_nicks[i]
+				value = self.author_nick_selections[i]
 			except IndexError:
 				value = None
 			field_name = name + ('_author_match_%s' % i)
@@ -73,7 +73,7 @@ class BylineLookup():
 		
 		for i, field in enumerate(self.affiliation_matched_nick_fields):
 			try:
-				value = self.affiliation_nicks[i]
+				value = self.affiliation_nick_selections[i]
 			except IndexError:
 				value = None
 			field_name = name + ('_affiliation_match_%s' % i)
@@ -94,13 +94,13 @@ class BylineLookup():
 			return BylineLookup(
 				search_term = value.search_term,
 				autoaccept = value.autoaccept,
-				author_nicks = value.author_nicks,
-				affiliation_nicks = value.affiliation_nicks)
+				author_nick_selections = value.author_nick_selections,
+				affiliation_nick_selections = value.affiliation_nick_selections)
 		elif isinstance(value, Byline):
 			return BylineLookup(
 				search_term = value.__unicode__(),
-				author_nicks = value.author_nicks,
-				affiliation_nicks = value.affiliation_nicks)
+				author_nick_selections = [NickSelection(nick.id, nick.name) for nick in value.author_nicks],
+				affiliation_nick_selections = [NickSelection(nick.id, nick.name) for nick in value.affiliation_nicks])
 		else:
 			raise Exception("Don't know how to handle %s as a byline lookup" % repr(value))
 
@@ -122,11 +122,11 @@ class BylineWidget(forms.Widget):
 			autoaccept = not explicit_lookup_requested)
 		
 		if not explicit_lookup_requested:
-			byline_lookup.author_nicks = [
+			byline_lookup.author_nick_selections = [
 				field.widget.value_from_datadict(data, files, name + ('_author_match_%s' % i))
 				for i, field in enumerate(byline_lookup.author_matched_nick_fields)
 			]
-			byline_lookup.affiliation_nicks = [
+			byline_lookup.affiliation_nick_selections = [
 				field.widget.value_from_datadict(data, files, name + ('_affiliation_match_%s' % i))
 				for i, field in enumerate(byline_lookup.affiliation_matched_nick_fields)
 			]
@@ -176,8 +176,8 @@ class BylineField(forms.Field):
 		else:
 			byline_lookup = BylineLookup.from_value(value)
 			
-			clean_author_nicks = []
-			clean_affiliation_nicks = []
+			clean_author_nick_selections = []
+			clean_affiliation_nick_selections = []
 			if byline_lookup.autoaccept:
 				validation_message = "Not all names could be matched to a scener or group; please select the appropriate ones from the lists."
 			else:
@@ -185,26 +185,26 @@ class BylineField(forms.Field):
 			
 			for i, field in enumerate(byline_lookup.author_matched_nick_fields):
 				try:
-					value = byline_lookup.author_nicks[i]
+					value = byline_lookup.author_nick_selections[i]
 				except IndexError:
 					raise ValidationError(validation_message)
 				clean_value = field.clean(value)
 				if not clean_value:
 					raise ValidationError(validation_message)
-				clean_author_nicks.append(clean_value)
+				clean_author_nick_selections.append(clean_value)
 			
 			for i, field in enumerate(byline_lookup.affiliation_matched_nick_fields):
 				try:
-					value = byline_lookup.affiliation_nicks[i]
+					value = byline_lookup.affiliation_nick_selections[i]
 				except IndexError:
 					raise ValidationError(validation_message)
 				clean_value = field.clean(value)
 				if not clean_value:
 					raise ValidationError(validation_message)
-				clean_affiliation_nicks.append(clean_value)
+				clean_affiliation_nick_selections.append(clean_value)
 			
 			return Byline(
-				clean_author_nicks, clean_affiliation_nicks)
+				clean_author_nick_selections, clean_affiliation_nick_selections)
 
 # test stuff
 
