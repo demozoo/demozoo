@@ -664,16 +664,21 @@ ul.maintenance_actions li {
 	text-decoration: none;
 	padding-left: 28px;
 	padding-right: 4px;
+	padding-bottom: 0;
 	background-position: 4px center;
 	background-repeat: no-repeat;
 }
 .nick_match ul li label {
+	display: block;
 	line-height: 24px;
 }
 .nick_match ul li:hover {
+	background-color: #eee;
+}
+.nick_match ul li.selected, .nick_match ul li.selected {
 	background-color: #ddd;
 }
-.nick_match ul li:hover label {
+.nick_match ul li label {
 	cursor: pointer;
 }
 .nick_match.ajaxified ul li input[type=radio] {

@@ -18,9 +18,11 @@
 			function copyIconFromSelectedLi() {
 				/* inherit icon for selectedResult from the li with the selected radio button,
 				or 'error' icon if there is none */
-				var selectedLi = $('li:has(input[checked])', context);
+				var selectedLi = $('li:has(input[checked])', suggestionsUl);
 				if (selectedLi.length) {
-					selectedResult.attr('class', 'selected_result ' + selectedLi.attr('class'));
+					var classNames = 'selected_result ' + selectedLi.attr('class');
+					if (selectedResult.hasClass('active')) classNames += ' active';
+					selectedResult.attr('class', classNames);
 					/* also copy label text from the data-name attribute */
 					selectedResultInner.text(selectedLi.attr('data-name'));
 				} else {
@@ -29,16 +31,65 @@
 			}
 			copyIconFromSelectedLi();
 			
+			function highlightSelectedLi() {
+				$('li', suggestionsUl).removeClass('selected');
+				$('li:has(input[checked])', suggestionsUl).addClass('selected');
+			}
+			
+			function keypress(e) {
+				if (e.which == 40) { /* cursor down */
+					if (suggestionsUl.is(':visible')) {
+						var nextElem = $('li:has(input[checked])', suggestionsUl).next();
+						if (nextElem.length) {
+							$('input', nextElem).attr('checked', 'checked');
+						} else {
+							$('li:first input', suggestionsUl).attr('checked', 'checked')
+						}
+						highlightSelectedLi();
+						copyIconFromSelectedLi();
+					} else {
+						suggestionsUl.show();
+					}
+					return false;
+				} else if (e.which == 38) { /* cursor up */
+					if (suggestionsUl.is(':visible')) {
+						suggestionsUl.show();
+						var prevElem = $('li:has(input[checked])', suggestionsUl).prev();
+						if (prevElem.length) {
+							$('input', prevElem).attr('checked', 'checked');
+						} else {
+							$('li:last input', suggestionsUl).attr('checked', 'checked')
+						}
+						highlightSelectedLi();
+						copyIconFromSelectedLi();
+					} else {
+						suggestionsUl.show();
+					}
+					return false;
+				} else if (e.which == 13) { /* enter */
+					/* show/hide the dropdown.
+						Serves no purpose, but seems to be psychologically important. UI design, eh? */
+					if (suggestionsUl.is(':visible')) {
+						suggestionsUl.hide();
+					} else {
+						suggestionsUl.show();
+					}
+				}
+			}
+			
 			suggestionsUl.hide();
 			var wasFocusedOnLastMousedown = false;
 			selectedResult.focus(function() {
 				selectedResult.addClass('active');
 				suggestionsUl.show();
+				highlightSelectedLi();
+				$(document).bind('keydown', keypress);
 			}).blur(function() {
 				setTimeout(function() {
 					selectedResult.removeClass('active');
 					suggestionsUl.hide();
 					copyIconFromSelectedLi();
+					$(document).unbind('keydown', keypress);
 				}, 100);
 			}).click(function() {
 				if (selectedResult.hasClass('active') && wasFocusedOnLastMousedown) {
