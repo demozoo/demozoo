@@ -36,10 +36,33 @@
 			'score_field': textField
 		};
 		
-		var cells = [];
-		var rows = $('> li.results_row', resultsTable);
-		var rowCount = rows.length;
+		var cells, rows, rowCount;
 		var columnCount = 6;
+		
+		function constructCellLookups() {
+			cells = [];
+			rows = $('> li.results_row', resultsTable);
+			rowCount = rows.length;
+			rows.each(function(y) {
+				cells[y] = [];
+				$('ul.fields > li', this).each(function(x) {
+					cells[y][x] = this;
+				})
+			})
+		}
+		constructCellLookups();
+		
+		resultsTable.sortable({
+			'axis': 'y',
+			'distance': 1,
+			'items': 'li.results_row',
+			'update': function(event, ui) {
+				//var originalIndex = rows.index(ui.item[0]);
+				constructCellLookups();
+				var newIndex = rows.index(ui.item[0]);
+				cursorY = newIndex;
+			}
+		})
 		
 		function prependInsertLink(li) {
 			var insertLink = $('<a class="insert" tabindex="-1" title="Insert row here" href="javascript:void(0)">insert &rarr;</a>');
@@ -57,11 +80,7 @@
 		}
 		
 		rows.each(function(y) {
-			cells[y] = [];
-			$('ul.fields > li', this).each(function(x) {
-				cells[y][x] = this;
-				$('> .edit', this).hide();
-			})
+			$('ul.fields > li > .edit', this).hide();
 			prependInsertLink(this);
 		})
 		/* add button for appending to the list */
@@ -242,6 +261,7 @@
 		$(document).mousedown(function(event) {
 			c = getElementCoordinates(event.target);
 			if (c) {
+				$(resultsTable).focus();
 				if (c[0] == cursorY && c[1] == cursorX) return; /* continue editing if cursor is already here */
 				finishEdit();
 				setCursor(c[0], c[1]);
