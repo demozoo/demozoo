@@ -80,7 +80,30 @@
 		function addRow(position, animate) {
 			if (position == null || position < 0) position = rowCount;
 			var fields = $('<ul class="fields"></ul>');
-			fields.append('<li class="placing_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
+			var placingField = $('<li class="placing_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
+			var match;
+			var newPlacing;
+			if (position > 0) {
+				var lastPlacing = rows.eq(position - 1).find(':input').val();
+				var lastPlacingNum = parseInt(lastPlacing, 10);
+				if (!isNaN(lastPlacingNum)) {
+					newPlacing = lastPlacingNum + 1;
+				} else if (match = lastPlacing.match(/^\s*\=(\d+)/)) {
+					lastPlacingNum = parseInt(match[1], 10);
+					/* re-use this string, unless there's one above it and it also matches,
+						in which case increment */
+					newPlacing = lastPlacing;
+					if (position > 1) {
+						var lastLastPlacing = rows.eq(position - 2).find(':input').val();
+						if (match = lastLastPlacing.match(/^\s*\=(\d+)/)) {
+							if (match[1] == lastPlacingNum) newPlacing = lastPlacingNum + 1;
+						}
+					}
+				}
+				placingField.find(':input').val(newPlacing);
+				placingField.find('.show').text(newPlacing);
+			}
+			fields.append(placingField);
 			fields.append('<li class="title_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
 			fields.append('<li class="by_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
 			fields.append('<li class="platform_field"><div class="show"></div><div class="edit"><select><option selected="selected">Spectrum</option><option>Commodore 64</option></select></div></li>');
