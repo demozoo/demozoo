@@ -57,10 +57,21 @@
 			'distance': 1,
 			'items': 'li.results_row',
 			'update': function(event, ui) {
-				//var originalIndex = rows.index(ui.item[0]);
+				row = ui.item[0];
+				//var originalIndex = rows.index(row);
 				constructCellLookups();
-				var newIndex = rows.index(ui.item[0]);
+				var newIndex = rows.index(row);
 				cursorY = newIndex;
+				/* fill in placing of just-dragged element, if empty */
+				var placingField = $(row).find('> ul.fields > li.placing_field');
+				var oldPlacing = placingField.find('> .edit :input').val();
+				if (oldPlacing.match(/^\s*$/)) {
+					var placing = placingForPosition(newIndex, true);
+					if (placing) {
+						placingField.find('> .edit :input').val(placing);
+						placingField.find('> .show').text(placing);
+					}
+				}
 			}
 		})
 		
@@ -96,14 +107,13 @@
 			}, 10);
 		});
 		
-		function addRow(position, animate) {
-			if (position == null || position < 0) position = rowCount;
-			var fields = $('<ul class="fields"></ul>');
-			var placingField = $('<li class="placing_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
+		function placingForPosition(position, allowFirst) {
 			var match;
 			var newPlacing;
-			if (position > 0) {
-				var lastPlacing = rows.eq(position - 1).find(':input').val();
+			if (position == 0) {
+				return (allowFirst ? '1' : null);
+			} else {
+				var lastPlacing = rows.eq(position - 1).find('> ul.fields > li.placing_field > .edit :input').val();
 				var lastPlacingNum = parseInt(lastPlacing, 10);
 				if (!isNaN(lastPlacingNum)) {
 					newPlacing = lastPlacingNum + 1;
@@ -113,14 +123,24 @@
 						in which case increment */
 					newPlacing = lastPlacing;
 					if (position > 1) {
-						var lastLastPlacing = rows.eq(position - 2).find(':input').val();
+						var lastLastPlacing = rows.eq(position - 2).find('> ul.fields > li.placing_field > .edit :input').val();
 						if (match = lastLastPlacing.match(/^\s*\=(\d+)/)) {
 							if (match[1] == lastPlacingNum) newPlacing = lastPlacingNum + 1;
 						}
 					}
 				}
-				placingField.find(':input').val(newPlacing);
-				placingField.find('.show').text(newPlacing);
+				return newPlacing;
+			}
+		}
+		
+		function addRow(position, animate) {
+			if (position == null || position < 0) position = rowCount;
+			var fields = $('<ul class="fields"></ul>');
+			var placingField = $('<li class="placing_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
+			var placing = placingForPosition(position, false);
+			if (placing) {
+				placingField.find('> .edit :input').val(placing);
+				placingField.find('> .show').text(placing);
 			}
 			fields.append(placingField);
 			fields.append('<li class="title_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
