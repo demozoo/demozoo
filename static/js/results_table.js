@@ -83,6 +83,33 @@
 			})
 		}
 		
+		function appendDeleteLink(li) {
+			var deleteLink = $('<a href="javascript:void(0)" class="delete" title="Delete this row">Delete</a>');
+			$(li).find('> ul.fields').after(deleteLink);
+			deleteLink.click(function() {
+				/* TODO: what happens if we're in edit mode? */
+				$(li).fadeOut('fast', function() {
+					$(li).remove();
+					var position = rows.index(li);
+					
+					cells.splice(position, 1); /* remove row at position */
+					rowCount--;
+					rows = $('> li.results_row', resultsTable);
+					if (cursorY > position) {
+						cursorY--;
+					} else if (cursorY == position) {
+						if (rowCount == 0) {
+							/* TODO: establish sensible behaviour for empty table / no cursor position */
+						} else if (cursorY == rowCount) {
+							setCursor(cursorY - 1, cursorX);
+						} else {
+							setCursor(cursorY, cursorX, true);
+						}
+					}
+				});
+			})
+		}
+		
 		function insertAndFocusRow(position) {
 			if (position == null || position < 0) position = rowCount;
 			addRow(position, true);
@@ -93,6 +120,7 @@
 		rows.each(function(y) {
 			$('ul.fields > li > .edit', this).hide();
 			prependInsertLink(this);
+			appendDeleteLink(this);
 		})
 		/* add button for appending to the list */
 		var insertButton = $('<input type="button" class="add" value="Add row" />');
@@ -156,9 +184,17 @@
 			}
 			if (animate) {
 				/* can't use slideDown because it gets height wrong :-( */
-				fields.css({'height': '0'}).animate({'height': '20px'});
+				fields.css({'height': '0'}).animate({'height': '20px'}, {
+					'duration': 'fast',
+					'complete': function() {
+						fields.css({'height': 'auto'});
+						appendDeleteLink(row);
+					}
+				});
 			}
 			prependInsertLink(row);
+			if (!animate) appendDeleteLink(row);
+			
 			cells.splice(position, 0, []); /* insert [] at position */
 			$('ul.fields > li', row).each(function(x) {
 				cells[position][x] = this;
@@ -179,9 +215,9 @@
 			}
 		}
 		
-		function setCursor(y, x, finishEditIfMoving) {
-			if (y == cursorY && x == cursorX) return;
-			if (cursorY != null && cursorX != null) {
+		function setCursor(y, x, skipShortcut) {
+			if (!skipShortcut && y == cursorY && x == cursorX) return;
+			if (cursorY != null && cursorX != null && cursorY < rowCount) {
 				$(cells[cursorY][cursorX]).removeClass('cursor');
 			}
 			cursorY = y;
