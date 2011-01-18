@@ -350,6 +350,12 @@
 							setCursorIfInRange(cursorY + 1, cursorX);
 							resultsTable.focus();
 							return;
+						case 86: /* V (for cmd+V=paste) */
+							if (event.metaKey) {
+								/* TODO: check whether we need to test event.ctrlKey instead on Windows */
+								startEdit('uncapturedText');
+							}
+							return;
 					}
 					return;
 				case 'capturedText':
