@@ -714,14 +714,14 @@ body.show_production .screenshots .carousel_panel {
 }
 body.show_production .screenshots .carousel_panel button.prev {
 	position: absolute;
-	z-index: 100;
+	z-index: 10;
 	top: 30px;
 	left: -15px;
 }
 
 body.show_production .screenshots .carousel_panel button.next {
 	position: absolute;
-	z-index: 100;
+	z-index: 10;
 	top: 30px;
 	left: 405px;
 }
@@ -759,6 +759,7 @@ body.show_production .production_details .competition_placings {
 
 .screenshot_wrapper {
 	position: absolute;
+	z-index: 1001;
 	padding: 8px;
 	border: 1px solid #444;
 	background-color: #eee;
@@ -776,6 +777,7 @@ body.show_production .production_details .competition_placings {
 }
 .screenshot_overlay {
 	position: fixed;
+	z-index: 1000;
 	left: 0px;
 	top: 0px;
 	background-color: #000;
