@@ -705,10 +705,37 @@ body.show_production .screenshots {
 	margin-right: 16px;
 	width: 400px;
 }
+
+body.show_production .screenshots .carousel li {
+	margin-right: 8px;
+}
+body.show_production .screenshots .carousel_panel {
+	position: relative;
+}
+body.show_production .screenshots .carousel_panel button.prev {
+	position: absolute;
+	z-index: 100;
+	top: 30px;
+	left: -15px;
+}
+
+body.show_production .screenshots .carousel_panel button.next {
+	position: absolute;
+	z-index: 100;
+	top: 30px;
+	left: 405px;
+}
+
 body.show_production .screenshots ul.actions {
 	clear: both;
 	float: none;
 }
+body.show_production .screenshots ul.actions li {
+	float: left;
+	margin-right: 8px;
+	margin-top: 8px;
+}
+
 body.show_production .production_details {
 	float: left;
 	width: 400px;
@@ -728,12 +755,6 @@ body.show_production .production_details .competition_placings {
 	margin-bottom: 0.5em;
 	list-style-type: disc;
 	padding-left: 1em;
-}
-
-body.show_production .screenshots ul li {
-	float: left;
-	margin-right: 8px;
-	margin-top: 8px;
 }
 
 .screenshot_wrapper {

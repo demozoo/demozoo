@@ -13,6 +13,11 @@ function applyGlobalBehaviours(context) {
 	$('.spawning_formset', context).spawningFormset({onShow: applyGlobalBehaviours});
 	$('select[multiple]', context).asmSelect();
 	
+	$('.carousel_panel .carousel', context).jCarouselLite({
+		btnPrev: ".carousel_panel .prev",
+		btnNext: ".carousel_panel .next"
+	})
+	
 	sortableFormsets.sortable({
 		'items': 'li.sortable_item',
 		'update': function(event, ui) {
