@@ -142,3 +142,12 @@ def edit_competition(request, party_id, competition_id):
 		'formset': formset,
 		'competition_form': competition_form,
 	})
+
+@login_required
+def edit_competition_testing(request, party_id, competition_id):
+	party = get_object_or_404(Party, id = party_id)
+	competition = get_object_or_404(Competition, party = party, id = competition_id)
+	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
+		'party': party,
+		'competition': competition,
+	})

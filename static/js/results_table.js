@@ -1,5 +1,5 @@
 (function($) {
-	$.fn.resultsTable = function() {
+	$.fn.resultsTable = function() { this.each(function() {
 		var resultsTable = this;
 		
 		var textField = {
@@ -52,7 +52,7 @@
 		}
 		constructCellLookups();
 		
-		resultsTable.sortable({
+		$(resultsTable).sortable({
 			'axis': 'y',
 			'distance': 1,
 			'items': 'li.results_row',
@@ -477,5 +477,5 @@
 				$(document).bind('keypress', keypress);
 			}
 		})
-	}
+	}) }
 })(jQuery);
