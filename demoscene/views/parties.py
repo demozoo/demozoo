@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -156,4 +156,6 @@ def edit_competition_testing(request, party_id, competition_id):
 	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
 		'party': party,
 		'competition': competition,
+		'platforms': Platform.objects.all(),
+		'production_types': ProductionType.objects.all(),
 	})

@@ -16,62 +16,69 @@
 		<div style="clear: both;"></div>
 	</li>
 	
-	<li class="results_row">
-		<ul class="fields">
-			<li class="placing_field">
-				<div class="show">1</div>
-				<div class="edit"><input type="text" value="1" /></div>
-			</li>
-			<li class="title_field">
-				<div class="show">Pondlife</div>
-				<div class="edit"><input type="text" value="Pondlife" /></div>
-			</li>
-			<li class="by_field">
-				<div class="show"><strong>Hooy-Program</strong> + <strong>Raww Arse</strong></div>
-				<div class="edit"><input type="text" value="Hooy-Program + Raww Arse" /></div>
-			</li>
-			<li class="platform_field">
-				<div class="show">Spectrum</div>
-				<div class="edit"><select><option selected="selected">Spectrum</option><option>Commodore 64</option></select></div>
-			</li>
-			<li class="type_field">
-				<div class="show">Demo</div>
-				<div class="edit"><select><option selected="selected">Demo</option><option>Intro</option></select></div>
-			</li>
-			<li class="score_field">
-				<div class="show">100</div>
-				<div class="edit"><input type="text" value="100" /></div>
-			</li>
-		</ul>
-		<div style="clear: both;"></div>
-	</li>
-	<li class="results_row">
-		<ul class="fields">
-			<li class="placing_field">
-				<div class="show">2</div>
-				<div class="edit"><input type="text" value="2" /></div>
-			</li>
-			<li class="title_field">
-				<div class="show">Quattro Formaggio</div>
-				<div class="edit"><input type="text" value="Quattro Formaggio" /></div>
-			</li>
-			<li class="by_field">
-				<div class="show"><strong>Gasman</strong> / <strong>Raww Arse</strong></div>
-				<div class="edit"><input type="text" value="Gasman / Raww Arse" /></div>
-			</li>
-			<li class="platform_field">
-				<div class="show">Spectrum</div>
-				<div class="edit"><select><option selected="selected">Spectrum</option><option>Commodore 64</option></select></div>
-			<li class="type_field">
-				<div class="show">1K intro</div>
-				<div class="edit"><select><option>Demo</option><option selected="selected">Intro</option></select></div>
-			</li>
-			<li class="score_field">
-				<div class="show">90</div>
-				<div class="edit"><input type="text" value="90" /></div>
-			</li>
-		</ul>
-		<div style="clear: both;"></div>
-	</li>
+	{% for placing in competition.results %}
+		<li class="results_row">
+			<ul class="fields">
+				<li class="placing_field">
+					<div class="show">{{ placing.ranking }}</div>
+					<div class="edit"><input type="text" value="{{ placing.ranking }}" /></div>
+				</li>
+				<li class="title_field">
+					<div class="show">
+						<a href="{{ placing.production.get_absolute_url }}">{{ placing.production.title }}</a>
+					</div>
+					<div class="edit"><input type="text" value="{{ placing.production.title }}" /></div>
+				</li>
+				<li class="by_field">
+					<div class="show">{{ placing.production.byline }}</div>
+					<div class="edit"><input type="text" value="{{ placing.production.byline }}" /></div>
+				</li>
+				<li class="platform_field">
+					<div class="show">
+						{% with placing.production.platforms.count as platform_count %}
+							{% if platform_count > 1 %}
+								(multiple)
+							{% else %}
+								{% if platform_count %}{{ placing.production.platforms.all.0 }}{% endif %}
+							{% endif %}
+						{% endwith %}
+					</div>
+					<div class="edit">
+						<select>
+							{% for platform in platforms %}
+								<option value="{{ platform.id }}" {% if platform in placing.production.platforms.all %}selected="selected"{% endif %}>
+									{{ platform.name }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+				</li>
+				<li class="type_field">
+					<div class="show">
+						{% with placing.production.types.count as type_count %}
+							{% if type_count > 1 %}
+								(multiple)
+							{% else %}
+								{% if type_count %}{{ placing.production.types.all.0 }}{% endif %}
+							{% endif %}
+						{% endwith %}
+					</div>
+					<div class="edit">
+						<select>
+							{% for prodtype in production_types %}
+								<option value="{{ prodtype.id }}" {% if prodtype in placing.production.types.all %}selected="selected"{% endif %}>
+									{{ prodtype.name }}
+								</option>
+							{% endfor %}
+						</select>
+					</div>
+				</li>
+				<li class="score_field">
+					<div class="show">{{ placing.score }}</div>
+					<div class="edit"><input type="text" value="{{ placing.score }}" /></div>
+				</li>
+			</ul>
+			<div style="clear: both;"></div>
+		</li>
+	{% endfor %}
 </ul>
-<input type="button" value="Gratuitous extra button to test tab order" />
