@@ -11,6 +11,12 @@ def index(request):
 		'party_series': party_series,
 	})
 
+def by_date(request):
+	parties = Party.objects.order_by('start_date','end_date')
+	return render(request, 'parties/by_date.html', {
+		'parties': parties,
+	})
+
 def show(request, party_id):
 	party = Party.objects.get(id = party_id)
 	return render(request, 'parties/show.html', {

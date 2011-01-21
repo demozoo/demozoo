@@ -97,6 +97,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^releasers/(\d+)/delete/$', 'releasers.delete', {}, 'delete_releaser'),
 	
 	(r'^parties/$', 'parties.index', {}, 'parties'),
+	(r'^parties/by_date/$', 'parties.by_date', {}, 'parties_by_date'),
 	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),
 	(r'^parties/series/(\d+)/$', 'parties.show_series', {}, 'party_series'),
 	(r'^parties/series/(\d+)/edit/$', 'parties.edit_series', {}, 'party_edit_series'),
