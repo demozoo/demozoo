@@ -1,8 +1,24 @@
 (function($) {
-	$.fn.resultsTable = function() { this.each(function() {
+	$.fn.resultsTable = function(opts) { this.each(function() {
 		var resultsTable = this;
 		
+		var platformIds = [];
+		var platformsById = {};
+		for (var i = 0; i < opts['platforms'].length; i++) {
+			platformIds[i] = opts['platforms'][i][0];
+			platformsById[opts['platforms'][i][0]] = opts['platforms'][i][1];
+		}
+		var productionTypeIds = [];
+		var productionTypesById = {};
+		for (var i = 0; i < opts['production_types'].length; i++) {
+			productionTypeIds[i] = opts['production_types'][i][0];
+			productionTypesById[opts['production_types'][i][0]] = opts['production_types'][i][1];
+		}
+		
 		var textField = {
+			initField: function(field, position) {
+				field.find('> .edit').append('<input type="text" value="" />');
+			},
 			getData: function(container) {
 				return $(':input', container).val();
 			},
@@ -14,25 +30,47 @@
 			},
 			escapable: true
 		};
-		var selectField = {
-			getData: function(container) {
-				return $(':input', container).val();
-			},
-			setData: function(container, data) {
-				$(':input', container).val(data);
-			},
-			writeShowView: function(showContainer, data) {
-				$(showContainer).text(data);
-			},
-			escapable: false
-		};
+		var placingField = $.extend({}, textField, {
+			initField: function(field, position) {
+				field.find('> .edit').append('<input type="text" value="" />');
+				var placing = placingForPosition(position, false);
+				if (placing) {
+					field.find('> .edit :input').val(placing);
+					field.find('> .show').text(placing);
+				}
+			}
+		})
+		function selectField(mapping, optionIds) {
+			return {
+				initField: function(field, position) {
+					var select = $('<select><option value=""></option></select>');
+					for (var i = 0; i < optionIds.length; i++) {
+						var option = $('<option></option>');
+						option.attr('value', optionIds[i]).text(mapping[optionIds[i]]);
+						select.append(option);
+					}
+					field.find('> .edit').append(select);
+				},
+				getData: function(container) {
+					return $(':input', container).val();
+				},
+				setData: function(container, data) {
+					$(':input', container).val(data);
+				},
+				writeShowView: function(showContainer, data) {
+					$(showContainer).text(mapping[data]);
+				},
+				escapable: false
+			};
+		}
 		
+		var fieldClasses = ['placing_field','title_field','by_field','platform_field','type_field','score_field'];
 		var fieldsByContainerClass = {
-			'placing_field': textField,
+			'placing_field': placingField,
 			'title_field': textField,
 			'by_field': textField,
-			'platform_field': selectField,
-			'type_field': selectField,
+			'platform_field': selectField(platformsById, platformIds),
+			'type_field': selectField(productionTypesById, productionTypeIds),
 			'score_field': textField
 		};
 		
@@ -164,18 +202,14 @@
 		function addRow(position, animate) {
 			if (position == null || position < 0) position = rowCount;
 			var fields = $('<ul class="fields"></ul>');
-			var placingField = $('<li class="placing_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
-			var placing = placingForPosition(position, false);
-			if (placing) {
-				placingField.find('> .edit :input').val(placing);
-				placingField.find('> .show').text(placing);
+			
+			for (var i = 0; i < fieldClasses.length; i++) {
+				field = $('<li><div class="show"></div><div class="edit"></div></li>');
+				field.addClass(fieldClasses[i]);
+				fields.append(field);
+				fieldsByContainerClass[fieldClasses[i]].initField(field, position);
 			}
-			fields.append(placingField);
-			fields.append('<li class="title_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
-			fields.append('<li class="by_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
-			fields.append('<li class="platform_field"><div class="show"></div><div class="edit"><select><option selected="selected">Spectrum</option><option>Commodore 64</option></select></div></li>');
-			fields.append('<li class="type_field"><div class="show"></div><div class="edit"><select><option selected="selected">Demo</option><option>Intro</option></select></div></li>');
-			fields.append('<li class="score_field"><div class="show"></div><div class="edit"><input type="text" value="" /></div></li>');
+			
 			var row = $('<li class="results_row"></li>').append(fields, '<div style="clear: both;"></div>');
 			if (position == rowCount) {
 				$(resultsTable).append(row);

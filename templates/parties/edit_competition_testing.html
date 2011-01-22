@@ -1,3 +1,12 @@
+<script type="text/javascript">/* <![CDATA[ */
+	$(function() {
+		$('ul.results_table').resultsTable({
+			platforms: {{ platforms_json|safe }},
+			production_types: {{ production_types_json|safe }}
+		});
+	});
+/* ]]> */</script>
+
 <div class="field" style="margin-bottom: 20px;">
 	<label for="competition_name">Competition name:</label>
 	<input id="competition_name" type="text" value="Oldskool Demo" />

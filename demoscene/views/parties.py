@@ -5,6 +5,11 @@ from demoscene.forms.party import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+try:
+	import json
+except ImportError:
+	import simplejson as json
+
 def index(request):
 	party_series = PartySeries.objects.order_by('name')
 	return render(request, 'parties/index.html', {
@@ -153,9 +158,18 @@ def edit_competition(request, party_id, competition_id):
 def edit_competition_testing(request, party_id, competition_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = get_object_or_404(Competition, party = party, id = competition_id)
+	
+	platforms = Platform.objects.all()
+	platforms_json = json.dumps([ [p.id, p.name] for p in platforms ])
+	
+	production_types = ProductionType.objects.all()
+	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
+
 	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
 		'party': party,
 		'competition': competition,
-		'platforms': Platform.objects.all(),
-		'production_types': ProductionType.objects.all(),
+		'platforms': platforms,
+		'platforms_json': platforms_json,
+		'production_types': production_types,
+		'production_types_json': production_types_json,
 	})

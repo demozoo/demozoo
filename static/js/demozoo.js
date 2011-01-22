@@ -28,8 +28,6 @@ function applyGlobalBehaviours(context) {
 		'cancel': ':input,option,a,label'
 	}).disableSelection();
 	
-	$('ul.results_table').resultsTable();
-	
 	function addAutocompleteRule(selector, url, context, resultCallback) {
 		$(selector, context).autocomplete(url, {
 			autoFill: true,
