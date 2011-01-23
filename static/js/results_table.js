@@ -15,63 +15,83 @@
 			productionTypesById[opts['production_types'][i][0]] = opts['production_types'][i][1];
 		}
 		
-		var textField = {
-			initField: function(field, position) {
-				field.find('> .edit').append('<input type="text" value="" />');
-			},
-			getData: function(container) {
-				return $(':input', container).val();
-			},
-			setData: function(container, data) {
-				$(':input', container).val(data);
-			},
-			writeShowView: function(showContainer, data) {
-				$(showContainer).text(data);
-			},
-			escapable: true
-		};
-		var placingField = $.extend({}, textField, {
-			initField: function(field, position) {
-				field.find('> .edit').append('<input type="text" value="" />');
-				var placing = placingForPosition(position, false);
-				if (placing) {
-					field.find('> .edit :input').val(placing);
-					field.find('> .show').text(placing);
-				}
-			}
-		})
-		function selectField(mapping, optionIds) {
-			return {
-				initField: function(field, position) {
-					var select = $('<select><option value=""></option></select>');
-					for (var i = 0; i < optionIds.length; i++) {
-						var option = $('<option></option>');
-						option.attr('value', optionIds[i]).text(mapping[optionIds[i]]);
-						select.append(option);
-					}
-					field.find('> .edit').append(select);
-				},
-				getData: function(container) {
-					return $(':input', container).val();
-				},
-				setData: function(container, data) {
-					$(':input', container).val(data);
-				},
-				writeShowView: function(showContainer, data) {
-					$(showContainer).text(mapping[data]);
-				},
-				escapable: false
-			};
+		/* Field-type handlers */
+		TextField = function() {
 		}
+		TextField.prototype.initField = function(field, position) {
+			field.find('> .edit').append('<input type="text" value="" />');
+		}
+		TextField.prototype.getData = function(container) {
+			return $(':input', container).val();
+		}
+		TextField.prototype.setData = function(container) {
+			$(':input', container).val(data);
+		}
+		TextField.prototype.writeShowView = function(showContainer, data) {
+			$(showContainer).text(data);
+		}
+		TextField.prototype.keydown = function(e) {
+			//startEdit('capturedText');
+		}
+		TextField.prototype.keypress = function(e) {
+			startEdit('uncapturedText');
+		}
+		TextField.prototype.escapable = true;
+		
+		PlacingField = function() {
+		}
+		PlacingField.prototype = new TextField();
+		PlacingField.prototype.initField = function(field, position) {
+			TextField.prototype.initField.call(this, field, position);
+			var placing = placingForPosition(position, false);
+			if (placing) {
+				field.find('> .edit :input').val(placing);
+				field.find('> .show').text(placing);
+			}
+		}
+		
+		SelectField = function(mapping, optionIds) {
+			this.mapping = mapping;
+			this.optionIds = optionIds;
+		}
+		SelectField.prototype.initField = function(field, position) {
+			var select = $('<select><option value=""></option></select>');
+			for (var i = 0; i < this.optionIds.length; i++) {
+				var option = $('<option></option>');
+				option.attr('value', this.optionIds[i]).text(this.mapping[this.optionIds[i]]);
+				select.append(option);
+			}
+			field.find('> .edit').append(select);
+		}
+		SelectField.prototype.getData = function(container) {
+			return $(':input', container).val();
+		}
+		SelectField.prototype.setData = function(container, data) {
+			$(':input', container).val(data);
+		}
+		SelectField.prototype.writeShowView = function(showContainer, data) {
+			$(showContainer).text(this.mapping[data]);
+		}
+		SelectField.prototype.keypress = function(e) {
+			//startEdit('capturedText');
+		}
+		SelectField.prototype.keydown = function(e) {
+			// respond to alphanumeric keys by focusing the dropdown
+			// (all prod types and platforms start with alphanumerics)
+			if ( (e.which >= 48 && e.which <= 57) || (e.which >= 65 && e.which <= 90) ) {
+				startEdit('capturedText');
+			}
+		}
+		SelectField.prototype.escapable = false;
 		
 		var fieldClasses = ['placing_field','title_field','by_field','platform_field','type_field','score_field'];
 		var fieldsByContainerClass = {
-			'placing_field': placingField,
-			'title_field': textField,
-			'by_field': textField,
-			'platform_field': selectField(platformsById, platformIds),
-			'type_field': selectField(productionTypesById, productionTypeIds),
-			'score_field': textField
+			'placing_field': new PlacingField(),
+			'title_field': new TextField(),
+			'by_field': new TextField(),
+			'platform_field': new SelectField(platformsById, platformIds),
+			'type_field': new SelectField(productionTypesById, productionTypeIds),
+			'score_field': new TextField()
 		};
 		
 		var cells, rows, rowCount;
@@ -122,7 +142,7 @@
 		}
 		
 		function appendDeleteLink(li) {
-			var deleteLink = $('<a href="javascript:void(0)" class="delete" title="Delete this row">Delete</a>');
+			var deleteLink = $('<a href="javascript:void(0)" tabindex="-1" class="delete" title="Delete this row">Delete</a>');
 			$(li).find('> ul.fields').after(deleteLink);
 			deleteLink.click(function() {
 				/* TODO: what happens if we're in edit mode? */
@@ -426,6 +446,11 @@
 								startEdit('uncapturedText');
 							}
 							return;
+						default:
+							/* handle other keys according to field type */
+							var cell = cells[cursorY][cursorX];
+							field = fieldsByContainerClass[getCellType(cell)];
+							return field.keydown(event);
 					}
 					return;
 				case 'capturedText':
@@ -472,14 +497,10 @@
 			/* printable characters */
 			if (editMode == null) {
 				if (event.which == 13) return; /* enter is handled as a special case in keydown */
-				/* see if we can edit in 'uncapturedText' mode */
+				/* handle other keys according to field type */
 				var cell = cells[cursorY][cursorX];
 				field = fieldsByContainerClass[getCellType(cell)];
-				if (field.escapable) {
-					startEdit('uncapturedText');
-				} else {
-					startEdit('capturedText');
-				}
+				return field.keypress(event);
 			}
 		}
 		

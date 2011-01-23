@@ -1026,7 +1026,7 @@ ul.results_table ul.fields > li > .show {
 	margin-right: 2px;
 	padding-left: 2px;
 	padding-right: 2px;
-	min-height: 16px;
+	min-height: 17px;
 }
 ul.results_table.focused ul.fields > li.cursor > .show {
 	outline: 2px solid blue;
