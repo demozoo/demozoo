@@ -1062,11 +1062,20 @@ ul.results_table ul.fields > li.title_field {
 ul.results_table ul.fields > li.by_field {
 	width: 250px;
 }
+ul.results_table > li.stable > ul.fields > li.by_field {
+	color: #666;
+}
 ul.results_table ul.fields > li.platform_field {
 	width: 150px;
 }
+ul.results_table > li.stable > ul.fields > li.platform_field {
+	color: #666;
+}
 ul.results_table ul.fields > li.type_field {
 	width: 150px;
+}
+ul.results_table > li.stable > ul.fields > li.type_field {
+	color: #666;
 }
 ul.results_table ul.fields > li.score_field {
 	width: 60px;

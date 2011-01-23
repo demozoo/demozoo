@@ -54,6 +54,7 @@
 					</div>
 					<div class="edit">
 						<select>
+							<option></option>
 							{% for platform in platforms %}
 								<option value="{{ platform.id }}" {% if platform in placing.production.platforms.all %}selected="selected"{% endif %}>
 									{{ platform.name }}
@@ -74,6 +75,7 @@
 					</div>
 					<div class="edit">
 						<select>
+							<option></option>
 							{% for prodtype in production_types %}
 								<option value="{{ prodtype.id }}" {% if prodtype in placing.production.types.all %}selected="selected"{% endif %}>
 									{{ prodtype.name }}

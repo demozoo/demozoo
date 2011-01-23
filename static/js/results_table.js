@@ -24,19 +24,21 @@
 		TextField.prototype.getData = function(container) {
 			return $(':input', container).val();
 		}
-		TextField.prototype.setData = function(container) {
+		TextField.prototype.setData = function(container, data) {
 			$(':input', container).val(data);
 		}
 		TextField.prototype.writeShowView = function(showContainer, data) {
 			$(showContainer).text(data);
 		}
+		TextField.prototype.canEdit = function(row) {
+			return true; /* default text field behaviour = always editable */
+		}
 		TextField.prototype.keydown = function(e) {
-			//startEdit('capturedText');
+			if (e.which == 13) startEdit('capturedText');
 		}
 		TextField.prototype.keypress = function(e) {
 			startEdit('uncapturedText');
 		}
-		TextField.prototype.escapable = true;
 		
 		PlacingField = function() {
 		}
@@ -48,6 +50,14 @@
 				field.find('> .edit :input').val(placing);
 				field.find('> .show').text(placing);
 			}
+		}
+		
+		BylineField = function() {
+		}
+		BylineField.prototype = new TextField();
+		BylineField.prototype.canEdit = function(row) {
+			/* can only edit this field in non-stable rows */
+			return !($(row).hasClass('stable'))
 		}
 		
 		SelectField = function(mapping, optionIds) {
@@ -72,23 +82,26 @@
 		SelectField.prototype.writeShowView = function(showContainer, data) {
 			$(showContainer).text(this.mapping[data]);
 		}
+		SelectField.prototype.canEdit = function(row) {
+			/* can only edit this field in non-stable rows */
+			return !($(row).hasClass('stable'))
+		}
 		SelectField.prototype.keypress = function(e) {
 			//startEdit('capturedText');
 		}
 		SelectField.prototype.keydown = function(e) {
-			// respond to alphanumeric keys by focusing the dropdown
-			// (all prod types and platforms start with alphanumerics)
-			if ( (e.which >= 48 && e.which <= 57) || (e.which >= 65 && e.which <= 90) ) {
-				startEdit('capturedText');
+			if ( (e.which == 13) || (e.which >= 48 && e.which <= 57) || (e.which >= 65 && e.which <= 90) ) {
+				// respond to alphanumeric keys and enter by focusing the dropdown
+				// (all prod types and platforms start with alphanumerics)
+				startEdit('capturedText'); /* TODO: allow left/right cursors */
 			}
 		}
-		SelectField.prototype.escapable = false;
 		
 		var fieldClasses = ['placing_field','title_field','by_field','platform_field','type_field','score_field'];
 		var fieldsByContainerClass = {
 			'placing_field': new PlacingField(),
 			'title_field': new TextField(),
-			'by_field': new TextField(),
+			'by_field': new BylineField(),
 			'platform_field': new SelectField(platformsById, platformIds),
 			'type_field': new SelectField(productionTypesById, productionTypeIds),
 			'score_field': new TextField()
@@ -277,6 +290,7 @@
 			cursorY = y;
 			cursorX = x;
 			$(cells[cursorY][cursorX]).addClass('cursor');
+			/* TODO: possibly scroll page if cursor not in view */
 		}
 		
 		/* edit modes:
@@ -289,10 +303,11 @@
 		
 		function startEdit(mode) {
 			var cell = cells[cursorY][cursorX];
+			var field = fieldsByContainerClass[getCellType(cell)];
+			if (!field.canEdit(rows[cursorY])) return;
 			$('> .show', cell).hide();
 			$('> .edit', cell).show();
 			editMode = mode;
-			field = fieldsByContainerClass[getCellType(cell)];
 			initialFieldData = field.getData(cell);
 			var input = $(':input:visible', cell)[0];
 			if (input) {
@@ -302,8 +317,6 @@
 				} else {
 					input.value = input.value; /* set caret to end */
 				}
-				/* TODO: make select boxes respond to the initial keypress as if
-				they'd received it themselves */
 			}
 		}
 		
@@ -350,19 +363,27 @@
 			editMode = null;
 		}
 		
-		function getElementCoordinates(element) {
-			/* check that element is a field li */
-			if (!$(element).is('li.results_row ul.fields > li')) {
+		/* get the ancestor(-or-self) of element which is a table cell, or null if
+			element is not within a table cell */
+		function getCell(element) {
+			if ($(element).is('li.results_row ul.fields > li')) {
+				return element;
+			} else {
 				/* see if element is a child of a field li instead */
 				var fieldLiArray = $(element).parents('li.results_row ul.fields > li');
 				/* if so, work with that parent */
 				if (fieldLiArray[0]) {
-					element = fieldLiArray[0];
+					return fieldLiArray[0];
 				} else {
 					return null;
 				}
 			}
-			return [rows.index($(element).parent().parent()), $(element).index()];
+		}
+		
+		function getElementCoordinates(element) {
+			var cell = getCell(element);
+			if (!cell) return null;
+			return [rows.index($(cell).parent().parent()), $(cell).index()];
 		}
 		
 		/* TODO: add an initial row if cells[0] is undefined */
@@ -423,25 +444,22 @@
 								//setTimeout(function() {$(resultsTable.focus())}, 100);
 							}
 							return;
-						case 13: /* enter */
-							startEdit('capturedText');
-							return;
 						case 37: /* cursor left */
 							setCursorIfInRange(cursorY, cursorX - 1);
 							resultsTable.focus();
-							return;
+							return false;
 						case 38: /* cursor up */
 							setCursorIfInRange(cursorY - 1, cursorX);
 							resultsTable.focus();
-							return;
+							return false;
 						case 39: /* cursor right */
 							setCursorIfInRange(cursorY, cursorX + 1);
 							resultsTable.focus();
-							return;
+							return false;
 						case 40: /* cursor down */
 							setCursorIfInRange(cursorY + 1, cursorX);
 							resultsTable.focus();
-							return;
+							return false;
 						case 86: /* V (for cmd+V=paste) */
 							if (event.metaKey) {
 								/* TODO: check whether we need to test event.ctrlKey instead on Windows */
@@ -484,8 +502,7 @@
 						case 39: /* cursor right */
 						case 40: /* cursor down */
 							finishEdit();
-							keydown(event); /* rerun event in 'moving' mode */
-							return;
+							return keydown(event); /* rerun event in 'moving' mode */
 					}
 					return;
 				
