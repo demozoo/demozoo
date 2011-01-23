@@ -26,7 +26,7 @@
 	</li>
 	
 	{% for placing in competition.results %}
-		<li class="results_row">
+		<li class="results_row {% if placing.production.is_stable_for_competitions %}stable{% endif %}">
 			<ul class="fields">
 				<li class="placing_field">
 					<div class="show">{{ placing.ranking }}</div>

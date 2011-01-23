@@ -407,7 +407,8 @@
 								} else {
 									setCursorIfInRange(cursorY, cursorX - 1);
 								}
-								setTimeout(function() {$(resultsTable.focus())}, 100);
+								return false;
+								//setTimeout(function() {$(resultsTable.focus())}, 100);
 							} else {
 								if (cursorX == columnCount - 1 && cursorY == rowCount - 1) {
 									/* allow tab to escape the grid */
@@ -418,7 +419,8 @@
 								} else {
 									setCursorIfInRange(cursorY, cursorX + 1);
 								}
-								setTimeout(function() {$(resultsTable.focus())}, 100);
+								return false;
+								//setTimeout(function() {$(resultsTable.focus())}, 100);
 							}
 							return;
 						case 13: /* enter */
@@ -457,8 +459,7 @@
 					switch (event.which) {
 						case 9: /* tab */
 							finishEdit();
-							keydown(event); /* rerun event in 'moving' mode */
-							return;
+							return keydown(event); /* rerun event in 'moving' mode */
 						case 13: /* enter */
 							finishEditAndAdvance();
 							return;
@@ -471,8 +472,7 @@
 					switch (event.which) {
 						case 9: /* tab */
 							finishEdit();
-							keydown(event); /* rerun event in 'moving' mode */
-							return;
+							return keydown(event); /* rerun event in 'moving' mode */
 						case 13: /* enter */
 							finishEditAndAdvance();
 							return;
@@ -504,16 +504,8 @@
 			}
 		}
 		
-		/* dummy input fields to hide the flicker of focus on other elements after tabbing */
-		var tabBuffer1 = $('<input disabled="disabled" style="position: absolute; width: 1px; left: -5000px;">');
-		var tabBuffer2 = $('<input disabled="disabled" style="position: absolute; width: 1px; left: -5000px;">');
-		$(resultsTable).before(tabBuffer1);
-		$(resultsTable).after(tabBuffer2);
-		
 		function blur() {
 			$(resultsTable).removeClass('focused');
-			tabBuffer1.attr('disabled', 'disabled');
-			tabBuffer2.attr('disabled', 'disabled');
 			if (editMode) finishEdit(); /* TODO: also send to server */
 			$(document).unbind('keydown', keydown);
 			$(document).unbind('keypress', keypress);
@@ -526,8 +518,6 @@
 		$(resultsTable).focus(function() {
 			if (!$(this).hasClass('focused')) {
 				$(this).addClass('focused');
-				tabBuffer1.removeAttr('disabled');
-				tabBuffer2.removeAttr('disabled');
 				$(document).bind('keydown', keydown);
 				$(document).bind('keypress', keypress);
 			}

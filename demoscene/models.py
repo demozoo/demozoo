@@ -645,6 +645,12 @@ class Production(models.Model):
 		# reorder to put scene.org links first
 		return [d for d in download_links if d.host_identifier() == 'sceneorg'] + \
 			[d for d in download_links if d.host_identifier() != 'sceneorg']
+	
+	# whether this production is regarded as 'stable' in competition results editing;
+	# i.e. it will not be deleted or have its details edited in response to actions
+	# in the compo results editing interface
+	def is_stable_for_competitions(self):
+		return self.has_bonafide_edits or self.competition_placings.count() > 1
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):
