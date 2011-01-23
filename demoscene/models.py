@@ -556,6 +556,7 @@ class Production(models.Model):
 	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
 	bitworld_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld ID')
 	
+	has_bonafide_edits = models.BooleanField(default = True, help_text = "True if this production has been updated through its own forms, as opposed to just compo results tables")
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
 	

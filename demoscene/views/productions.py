@@ -58,6 +58,7 @@ def edit_core_details(request, production_id):
 		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -75,7 +76,7 @@ def edit_notes(request, production_id):
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
 		title = 'Editing notes for %s:' % production.title,
-		update_datestamp = True)
+		update_datestamp = True, update_bonafide_flag = True)
 
 @login_required
 def edit_external_links(request, production_id):
@@ -84,7 +85,7 @@ def edit_external_links(request, production_id):
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_external_links', production, ProductionEditExternalLinksForm,
 		title = 'Editing external links for %s:' % production.title,
-		update_datestamp = True)
+		update_datestamp = True, update_bonafide_flag = True)
 
 @login_required
 def add_download_link(request, production_id):
@@ -94,6 +95,7 @@ def add_download_link(request, production_id):
 		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
@@ -113,6 +115,7 @@ def edit_download_link(request, production_id, download_link_id):
 		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
@@ -132,6 +135,7 @@ def delete_download_link(request, production_id, download_link_id):
 		if request.POST.get('yes'):
 			download_link.delete()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -159,6 +163,7 @@ def add_screenshot(request, production_id):
 					screenshot.production = production
 					screenshot.save()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -176,6 +181,7 @@ def delete_screenshot(request, production_id, screenshot_id):
 		if request.POST.get('yes'):
 			screenshot.delete()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 		return HttpResponseRedirect(reverse('production_screenshots', args=[production.id]))
 	else:
@@ -212,6 +218,7 @@ def add_credit(request, production_id):
 		if form.is_valid():
 			form.save()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -230,6 +237,7 @@ def edit_credit(request, production_id, credit_id):
 		if form.is_valid():
 			form.save()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -248,6 +256,7 @@ def delete_credit(request, production_id, credit_id):
 		if request.POST.get('yes'):
 			credit.delete()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
@@ -272,7 +281,11 @@ def edit_soundtracks(request, production_id):
 				form.instance.position = i+1
 			formset.save()
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			production.save()
+			for stl in production.soundtrack_links.all():
+				stl.soundtrack.has_bonafide_edits = True
+				stl.soundtrack.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance = production)

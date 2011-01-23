@@ -43,6 +43,8 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 		if form.is_valid():
 			if kwargs.get('update_datestamp', False):
 				instance.updated_at = datetime.datetime.now()
+			if kwargs.get('update_bonafide_flag', False):
+				instance.has_bonafide_edits = True
 			form.save()
 		return HttpResponseRedirect(instance.get_absolute_edit_url())
 	else:

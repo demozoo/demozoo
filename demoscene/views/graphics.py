@@ -46,6 +46,7 @@ def edit_core_details(request, production_id):
 		
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:

@@ -20,6 +20,9 @@ def add_credit(request, releaser_id):
 			credit.save()
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+			production.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserAddCreditForm(releaser)
@@ -43,6 +46,9 @@ def edit_credit(request, releaser_id, credit_id):
 			credit.save()
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+			production.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserAddCreditForm(releaser, {
@@ -63,9 +69,13 @@ def delete_credit(request, releaser_id, credit_id):
 	credit = get_object_or_404(Credit, nick__releaser = releaser, id = credit_id)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
+			production = credit.production
 			credit.delete()
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+			production.save()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
