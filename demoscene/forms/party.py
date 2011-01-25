@@ -1,8 +1,10 @@
 from django import forms
-from django.forms.models import formset_factory, BaseModelFormSet
-from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing
+from django.forms.formsets import formset_factory
+from django.forms.models import BaseModelFormSet
+from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing, Platform, ProductionType
 from any_format_date_field import AnyFormatDateField
 from production_field import ProductionField
+from byline_field import BylineField
 from form_with_location import ModelFormWithLocation
 
 class PartyForm(ModelFormWithLocation):
@@ -41,6 +43,16 @@ class CompetitionForm(forms.ModelForm):
 	class Meta:
 		model = Competition
 		fields = ('name',)
+
+class CompetitionResultForm(forms.Form):
+	placing = forms.CharField(required = False)
+	title = forms.CharField()
+	byline = BylineField(required = False)
+	platform = forms.ModelChoiceField(required = False, queryset = Platform.objects.all())
+	production_type = forms.ModelChoiceField(required = False, queryset = ProductionType.objects.all())
+	score = forms.CharField(required = False)
+
+CompetitionResultFormSet = formset_factory(CompetitionResultForm)
 
 class CompetitionPlacingForm(forms.Form):
 	def __init__(self, *args, **kwargs):

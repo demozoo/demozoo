@@ -159,6 +159,25 @@ def edit_competition_testing(request, party_id, competition_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = get_object_or_404(Competition, party = party, id = competition_id)
 	
+	results_with_forms = [
+		(
+			result,
+			CompetitionResultForm(
+				auto_id=('result_%s' % result.id)+'_%s',
+				prefix='result_%s' % result.id,
+				initial = {
+					'placing': result.ranking,
+					'title': result.production.title,
+					'byline': result.production.byline(),
+					'platform': result.production.platforms.all()[0].id if result.production.platforms.all() else None,
+					'production_type': result.production.types.all()[0].id if result.production.types.all() else None,
+					'score': result.score,
+				},
+			)
+		)
+		for result in competition.results()
+	]
+	
 	platforms = Platform.objects.all()
 	platforms_json = json.dumps([ [p.id, p.name] for p in platforms ])
 	
@@ -168,6 +187,7 @@ def edit_competition_testing(request, party_id, competition_id):
 	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
 		'party': party,
 		'competition': competition,
+		'results_with_forms': results_with_forms,
 		'platforms': platforms,
 		'platforms_json': platforms_json,
 		'production_types': production_types,

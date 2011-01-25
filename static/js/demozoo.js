@@ -235,7 +235,6 @@ function applyGlobalBehaviours(context) {
 			}
 		}
 		
-		var keydownTimer;
 		searchField.blur(function() {
 			cueLookup(false);
 		}).keydown(function(e) {
@@ -324,7 +323,6 @@ function applyGlobalBehaviours(context) {
 			}
 		}
 		
-		var keydownTimer;
 		searchField.blur(function() {
 			cueLookup(false);
 		}).keydown(function(e) {

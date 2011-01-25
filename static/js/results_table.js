@@ -36,6 +36,12 @@
 		TextField.prototype.keydown = function(e) {
 			if (e.which == 13) startEdit('capturedText');
 		}
+		TextField.prototype.keydownDuringEdit = function(e) {
+			if (e.which == 9) {
+				finishEdit();
+				return keydown(event); /* rerun base keydown handler in 'moving' mode */
+			}
+		}
 		TextField.prototype.keypress = function(e) {
 			startEdit('uncapturedText');
 		}
@@ -58,6 +64,12 @@
 		BylineField.prototype.canEdit = function(row) {
 			/* can only edit this field in non-stable rows */
 			return !($(row).hasClass('stable'))
+		}
+		BylineField.prototype.keypress = function(e) {
+			startEdit('capturedText');
+		}
+		BylineField.prototype.keydownDuringEdit = function(e) {
+			/* override so that we don't suppress tab key */
 		}
 		
 		SelectField = function(mapping, optionIds) {
@@ -96,6 +108,12 @@
 				startEdit('capturedText'); /* TODO: allow left/right cursors */
 			}
 		}
+		SelectField.prototype.keydownDuringEdit = function(e) {
+			if (e.which == 9) {
+				finishEdit();
+				return keydown(event); /* rerun base keydown handler in 'moving' mode */
+			}
+		}
 		
 		var fieldClasses = ['placing_field','title_field','by_field','platform_field','type_field','score_field'];
 		var fieldsByContainerClass = {
@@ -127,6 +145,7 @@
 			'axis': 'y',
 			'distance': 1,
 			'items': 'li.results_row',
+			'cancel': ':input,option,.byline_match_container',
 			'update': function(event, ui) {
 				row = ui.item[0];
 				//var originalIndex = rows.index(row);
@@ -393,7 +412,9 @@
 			c = getElementCoordinates(event.target);
 			if (c) {
 				$(resultsTable).focus();
-				if (c[0] == cursorY && c[1] == cursorX) return; /* continue editing if cursor is already here */
+				if (c[0] == cursorY && c[1] == cursorX) {
+					return; /* continue editing if cursor is already here */
+				}
 				finishEdit();
 				setCursor(c[0], c[1]);
 			} else if (editMode) {
@@ -429,7 +450,6 @@
 									setCursorIfInRange(cursorY, cursorX - 1);
 								}
 								return false;
-								//setTimeout(function() {$(resultsTable.focus())}, 100);
 							} else {
 								if (cursorX == columnCount - 1 && cursorY == rowCount - 1) {
 									/* allow tab to escape the grid */
@@ -441,7 +461,6 @@
 									setCursorIfInRange(cursorY, cursorX + 1);
 								}
 								return false;
-								//setTimeout(function() {$(resultsTable.focus())}, 100);
 							}
 							return;
 						case 37: /* cursor left */
@@ -475,22 +494,21 @@
 					return;
 				case 'capturedText':
 					switch (event.which) {
-						case 9: /* tab */
-							finishEdit();
-							return keydown(event); /* rerun event in 'moving' mode */
 						case 13: /* enter */
 							finishEditAndAdvance();
 							return;
 						case 27: /* escape */
 							cancelEdit();
 							return;
+						default:
+							/* handle other keys according to field type */
+							var cell = cells[cursorY][cursorX];
+							field = fieldsByContainerClass[getCellType(cell)];
+							return field.keydownDuringEdit(event);
 					}
 					return;
 				case 'uncapturedText':
 					switch (event.which) {
-						case 9: /* tab */
-							finishEdit();
-							return keydown(event); /* rerun event in 'moving' mode */
 						case 13: /* enter */
 							finishEditAndAdvance();
 							return;
@@ -503,6 +521,11 @@
 						case 40: /* cursor down */
 							finishEdit();
 							return keydown(event); /* rerun event in 'moving' mode */
+						default:
+							/* handle other keys according to field type */
+							var cell = cells[cursorY][cursorX];
+							field = fieldsByContainerClass[getCellType(cell)];
+							return field.keydownDuringEdit(event);
 					}
 					return;
 				

@@ -64,8 +64,12 @@ html {
 #site_main {
 	padding-left: 8px;
 	padding-right: 8px;
+	/* overflow: hidden; */
+}
+
+#site_footer {
+	clear: both;
 	padding-bottom: 8px;
-	overflow: hidden;
 }
 
 #side_column {
@@ -1061,7 +1065,22 @@ ul.results_table ul.fields > li.title_field {
 }
 ul.results_table ul.fields > li.by_field {
 	width: 250px;
+	position: relative;
 }
+ul.results_table ul.fields > li.by_field .byline_field.ajaxified .byline_search input[type="text"] {
+	width: 100%;
+}
+
+ul.results_table ul.fields > li.by_field .byline_match_container {
+	position: absolute;
+	top: 20px;
+	z-index: 10;
+	border: 1px solid #222;
+	background-color: #eee;
+	padding: 4px;
+	width: 400px;
+}
+
 ul.results_table > li.stable > ul.fields > li.by_field {
 	color: #666;
 }
