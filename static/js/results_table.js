@@ -61,6 +61,18 @@
 		BylineField = function() {
 		}
 		BylineField.prototype = new TextField();
+		BylineField.prototype.initField = function(field, position, rowId) {
+			var fieldContent = $(
+				'<div class="byline_field">\
+					<div class="byline_search">\
+						<input type="text" name="row_'+rowId+'-byline_search" value="" id="id_row_'+rowId+'-byline_search" />\
+						<input type="submit" name="row_'+rowId+'-byline_lookup" value="Find names" id="id_row_'+rowId+'-byline_lookup" />\
+					</div>\
+					<div class="byline_match_container"></div>\
+				</div>');
+			field.find('> .edit').append(fieldContent);
+			fieldContent.bylineField();
+		}
 		BylineField.prototype.canEdit = function(row) {
 			/* can only edit this field in non-stable rows */
 			return !($(row).hasClass('stable'))
@@ -94,7 +106,7 @@
 			this.optionIds = optionIds;
 		}
 		SelectField.prototype.initField = function(field, position) {
-			var select = $('<select><option value=""></option></select>');
+			var select = $('<select><option value="">---------</option></select>');
 			for (var i = 0; i < this.optionIds.length; i++) {
 				var option = $('<option></option>');
 				option.attr('value', this.optionIds[i]).text(this.mapping[this.optionIds[i]]);
@@ -142,7 +154,7 @@
 			'score_field': new TextField()
 		};
 		
-		var cells, rows, rowCount;
+		var cells, rows, rowCount, rowIdCounter;
 		var columnCount = 6;
 		
 		function constructCellLookups() {
@@ -157,6 +169,7 @@
 			})
 		}
 		constructCellLookups();
+		rowIdCounter = rowCount;
 		
 		$(resultsTable).sortable({
 			'axis': 'y',
@@ -276,7 +289,7 @@
 				field = $('<li><div class="show"></div><div class="edit"></div></li>');
 				field.addClass(fieldClasses[i]);
 				fields.append(field);
-				fieldsByContainerClass[fieldClasses[i]].initField(field, position);
+				fieldsByContainerClass[fieldClasses[i]].initField(field, position, rowIdCounter);
 			}
 			
 			var row = $('<li class="results_row"></li>').append(fields, '<div style="clear: both;"></div>');
@@ -304,6 +317,7 @@
 				$('> .edit', this).hide();
 			})
 			rowCount++;
+			rowIdCounter++;
 			if (cursorY >= position) cursorY++;
 			rows = $('> li.results_row', resultsTable);
 		}

@@ -163,8 +163,7 @@ def edit_competition_testing(request, party_id, competition_id):
 		(
 			result,
 			CompetitionResultForm(
-				auto_id=('result_%s' % result.id)+'_%s',
-				prefix='result_%s' % result.id,
+				prefix='row_%s' % i,
 				initial = {
 					'placing': result.ranking,
 					'title': result.production.title,
@@ -175,7 +174,7 @@ def edit_competition_testing(request, party_id, competition_id):
 				},
 			)
 		)
-		for result in competition.results()
+		for (i, result) in enumerate(competition.results())
 	]
 	
 	platforms = Platform.objects.all()
