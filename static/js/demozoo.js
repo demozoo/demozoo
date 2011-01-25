@@ -272,6 +272,12 @@ function applyGlobalBehaviours(context) {
 		var searchFieldElement = searchField.get(0);
 		searchField.attr('autocomplete', 'off');
 		
+		searchField.focus(function() {
+			$(this).addClass('focused');
+		}).blur(function() {
+			$(this).removeClass('focused');
+		})
+		
 		var lookupRunning = false;
 		var lastSearchTerm = searchField.val();
 		var nextSearchTerm;

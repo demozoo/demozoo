@@ -36,7 +36,7 @@
 		TextField.prototype.keydown = function(e) {
 			if (e.which == 13) startEdit('capturedText');
 		}
-		TextField.prototype.keydownDuringEdit = function(e) {
+		TextField.prototype.keydownDuringEdit = function(e, cell) {
 			if (e.which == 9) {
 				finishEdit();
 				return keydown(event); /* rerun base keydown handler in 'moving' mode */
@@ -68,8 +68,25 @@
 		BylineField.prototype.keypress = function(e) {
 			startEdit('capturedText');
 		}
-		BylineField.prototype.keydownDuringEdit = function(e) {
-			/* override so that we don't suppress tab key */
+		BylineField.prototype.keydownDuringEdit = function(e, cell) {
+			if (e.which == 9) {
+				if (event.shiftKey) {
+					/* allow back-tabbling to exit cell if the text box is focused */
+					if ($('> .edit input:text', cell).hasClass('focused')) {
+						finishEdit();
+						return keydown(event); /* rerun base keydown handler in 'moving' mode */
+					}
+				} else {
+					/* only catch the tab as a signal to finish editing
+					IF we're focused on the last control in the field
+					(i.e. the last nick match dropdown, or the text box if no nick match dropdowns exist) */
+					var lastNickMatch = $('> .edit a.selected_result:last', cell)
+					if (lastNickMatch.length == 0 || lastNickMatch.hasClass('active')) {
+						finishEdit();
+						return keydown(event); /* rerun base keydown handler in 'moving' mode */
+					}
+				}
+			}
 		}
 		
 		SelectField = function(mapping, optionIds) {
@@ -108,7 +125,7 @@
 				startEdit('capturedText'); /* TODO: allow left/right cursors */
 			}
 		}
-		SelectField.prototype.keydownDuringEdit = function(e) {
+		SelectField.prototype.keydownDuringEdit = function(e, cell) {
 			if (e.which == 9) {
 				finishEdit();
 				return keydown(event); /* rerun base keydown handler in 'moving' mode */
@@ -504,7 +521,7 @@
 							/* handle other keys according to field type */
 							var cell = cells[cursorY][cursorX];
 							field = fieldsByContainerClass[getCellType(cell)];
-							return field.keydownDuringEdit(event);
+							return field.keydownDuringEdit(event, cell);
 					}
 					return;
 				case 'uncapturedText':
@@ -525,7 +542,7 @@
 							/* handle other keys according to field type */
 							var cell = cells[cursorY][cursorX];
 							field = fieldsByContainerClass[getCellType(cell)];
-							return field.keydownDuringEdit(event);
+							return field.keydownDuringEdit(event, cell);
 					}
 					return;
 				
