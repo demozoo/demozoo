@@ -411,10 +411,10 @@
 		$(document).mousedown(function(event) {
 			c = getElementCoordinates(event.target);
 			if (c) {
-				$(resultsTable).focus();
 				if (c[0] == cursorY && c[1] == cursorX) {
 					return; /* continue editing if cursor is already here */
 				}
+				$(resultsTable).focus();
 				finishEdit();
 				setCursor(c[0], c[1]);
 			} else if (editMode) {
