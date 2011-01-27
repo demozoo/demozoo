@@ -1131,3 +1131,6 @@ ul.results_table > li > a:hover.delete {
 	padding-bottom: 20px;
 }
 
+body.maintenance_report table td {
+	border-bottom: 1px solid #eee;
+}
