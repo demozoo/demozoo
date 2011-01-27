@@ -11,7 +11,8 @@ def prods_without_screenshots(request):
 	productions = Production.objects \
 		.filter(screenshots__id__isnull = True) \
 		.exclude(supertype = 'music').order_by('title')
-	return render(request, 'maintenance/prods_without_screenshots.html', {
+	return render(request, 'maintenance/report.html', {
+		'title': 'Productions without screenshots',
 		'productions': productions
 	})
 
@@ -23,6 +24,14 @@ def prods_without_external_links(request):
 	productions = Production.objects \
 		.filter(supertype = 'production', **filters) \
 		.order_by('title')
-	return render(request, 'maintenance/prods_without_external_links.html', {
-		'productions': productions
+	return render(request, 'maintenance/report.html', {
+		'title': 'Productions without external links',
+		'productions': productions,
+	})
+
+def prods_without_release_date(request):
+	productions = Production.objects.filter(release_date_date__isnull = True)
+	return render(request, 'maintenance/report.html', {
+		'title': 'Productions without a release date',
+		'productions': productions,
 	})
