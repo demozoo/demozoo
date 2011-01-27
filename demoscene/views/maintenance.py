@@ -35,3 +35,10 @@ def prods_without_release_date(request):
 		'title': 'Productions without a release date',
 		'productions': productions,
 	})
+
+def prods_without_release_date_with_placement(request):
+	productions = Production.objects.filter(release_date_date__isnull = True, competition_placings__isnull = False)
+	return render(request, 'maintenance/report.html', {
+		'title': 'Productions without a release date but with a party placement attached',
+		'productions': productions,
+	})
