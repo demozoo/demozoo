@@ -769,6 +769,39 @@ body.show_production .production_details .competition_placings {
 	padding-left: 1em;
 }
 
+body.show_production .production_details .tags li {
+	float: left;
+	margin-right: 8px;
+	font-size: 10pt;
+}
+body.show_production .production_details .tags li a.tag_name {
+	border: 1px solid #888;
+	background-color: #ddd;
+	text-decoration: none;
+	color: #444;
+	padding: 2px;
+}
+body.show_production .production_details .tags li a:hover.tag_name {
+	background-color: #ccc;
+	text-decoration: underline;
+}
+body.show_production .production_details .tags li form {
+	display: inline;
+}
+body.show_production .production_details .tags li button {
+	background-image: url('/static/images/icons/delete.png');
+	border: none;
+	background-color: transparent;
+	width: 16px;
+	height: 16px;
+	text-indent: -5000px;
+	cursor: pointer;
+}
+body.show_production .production_details .tags form.add_tag {
+	padding-top: 4px;
+	clear: both;
+}
+
 .screenshot_wrapper {
 	position: absolute;
 	z-index: 1001;
@@ -879,6 +912,7 @@ ul.parties_in_series li.current {
 
 .external_links {
 	margin-top: 16px;
+	margin-bottom: 8px;
 }
 .external_links h3 {
 	display: inline;

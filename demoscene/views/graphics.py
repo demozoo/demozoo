@@ -14,6 +14,23 @@ def index(request):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'graphics/index.html', {
+		'title': "Graphics",
+		'add_new_link': True,
+		'production_page': production_page,
+	})
+
+def tagged(request, tag_name):
+	queryset = Production.objects.filter(tags__name = tag_name, types__in = ProductionType.graphic_types())
+	
+	production_page = get_page(
+		queryset.extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
+	return render(request, 'graphics/index.html', {
+		'title': "Graphics tagged '%s'" % tag_name,
+		'add_new_link': False,
 		'production_page': production_page,
 	})
 
@@ -29,6 +46,7 @@ def show(request, production_id, edit_mode = False):
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.ordered_download_links(),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date'),
+		'tags': production.tags.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})

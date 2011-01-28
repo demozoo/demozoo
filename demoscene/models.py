@@ -7,6 +7,7 @@ from model_thumbnail import ModelWithThumbnails
 from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
 from treebeard.mp_tree import MP_Node
+from taggit.managers import TaggableManager
 
 # Create your models here.
 class Platform(ModelWithThumbnails):
@@ -545,7 +546,7 @@ class Production(models.Model):
 	platforms = models.ManyToManyField('Platform', related_name = 'productions')
 	supertype = models.CharField(max_length = 32)
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
-	author_nicks = models.ManyToManyField('Nick', related_name = 'productions')
+	author_nicks = models.ManyToManyField('Nick', related_name = 'productions', blank = True)
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
 	notes = models.TextField(blank = True)
 	release_date_date = models.DateField(null = True, blank = True)
@@ -559,6 +560,8 @@ class Production(models.Model):
 	has_bonafide_edits = models.BooleanField(default = True, help_text = "True if this production has been updated through its own forms, as opposed to just compo results tables")
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
+	
+	tags = TaggableManager()
 	
 	search_result_template = 'search/results/production.html'
 	

@@ -16,6 +16,25 @@ def productions_index(request):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
+		'title': "Productions",
+		'add_new_link': True,
+		'production_page': production_page,
+	})
+
+def tagged(request, tag_name):
+	queryset = Production.objects.filter(tags__name = tag_name).\
+		exclude(types__in = ProductionType.music_types()).\
+		exclude(types__in = ProductionType.graphic_types())
+	
+	production_page = get_page(
+		queryset.extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
+	return render(request, 'productions/index.html', {
+		'title': "Productions tagged '%s'" % tag_name,
+		'add_new_link': False,
 		'production_page': production_page,
 	})
 
@@ -36,6 +55,7 @@ def show(request, production_id, edit_mode = False):
 			production.soundtrack_links.order_by('position').select_related('soundtrack')
 		],
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date'),
+		'tags': production.tags.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
@@ -293,6 +313,20 @@ def edit_soundtracks(request, production_id):
 		'production': production,
 		'formset': formset,
 	})
+
+@login_required
+def add_tag(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if request.method == 'POST':
+		production.tags.add(request.POST.get('tag_name'))
+	return HttpResponseRedirect(production.get_absolute_edit_url())
+
+@login_required
+def remove_tag(request, production_id, tag_name):
+	production = get_object_or_404(Production, id = production_id)
+	if request.method == 'POST':
+		production.tags.remove(tag_name)
+	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 def autocomplete(request):
 	query = request.GET.get('q')

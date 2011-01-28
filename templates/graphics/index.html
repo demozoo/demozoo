@@ -1,16 +1,18 @@
 {% extends "base.html" %}
 
 {% block base_main %}
-	<h2>Graphics</h2>
+	<h2>{{ title }}</h2>
 	
-	<ul class="actions">
-		<li><a href="{% url new_graphics %}" class="add open_in_lightbox">New graphics</a></li>
-	</ul>
+	{% if add_new_link %}
+		<ul class="actions">
+			<li><a href="{% url new_graphics %}" class="add open_in_lightbox">New graphics</a></li>
+		</ul>
+	{% endif %}
 	
 	<ul>
-		{% for production in production_page.object_list %}
-			<li><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-		{% endfor %}
+		{% with production_page.object_list as productions %}
+			{% include "shared/production_listing.html" %}
+		{% endwith %}
 	</ul>
 	
 	{% with production_page as page %}

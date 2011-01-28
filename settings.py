@@ -103,6 +103,7 @@ INSTALLED_APPS = (
 	'south',
 	'haystack',
 	'treebeard',
+	'taggit',
 	
 	'demoscene',
 	'search',

@@ -14,10 +14,25 @@ def index(request):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'music/index.html', {
+		'title': 'Music',
+		'add_new_link': True,
 		'production_page': production_page,
 	})
-	return index_common(request, 'Music',
-	)
+
+def tagged(request, tag_name):
+	queryset = Production.objects.filter(tags__name = tag_name, types__in = ProductionType.music_types())
+	
+	production_page = get_page(
+		queryset.extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title'),
+		request.GET.get('page', '1') )
+	
+	return render(request, 'music/index.html', {
+		'title': "Music tagged '%s'" % tag_name,
+		'add_new_link': False,
+		'production_page': production_page,
+	})
 
 def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)
@@ -34,6 +49,7 @@ def show(request, production_id, edit_mode = False):
 			production.appearances_as_soundtrack.select_related('production').order_by('production__release_date_date')
 		],
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date'),
+		'tags': production.tags.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
