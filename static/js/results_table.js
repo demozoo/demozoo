@@ -78,7 +78,8 @@
 			return !($(row).hasClass('stable'))
 		}
 		BylineField.prototype.keypress = function(e) {
-			startEdit('capturedText');
+			startEdit('capturedText', true);
+			$(':input:visible', cells[cursorY][cursorX]).keydown();
 		}
 		BylineField.prototype.keydownDuringEdit = function(e, cell) {
 			if (e.which == 9) {
@@ -351,7 +352,7 @@
 		var editMode = null;
 		var initialFieldData = null;
 		
-		function startEdit(mode) {
+		function startEdit(mode, replace) {
 			var cell = cells[cursorY][cursorX];
 			var field = fieldsByContainerClass[getCellType(cell)];
 			if (!field.canEdit(rows[cursorY])) return;
@@ -362,7 +363,7 @@
 			var input = $(':input:visible', cell)[0];
 			if (input) {
 				input.focus();
-				if (mode == 'uncapturedText') {
+				if (mode == 'uncapturedText' || replace) {
 					if (input.select) input.select();
 				} else {
 					input.value = input.value; /* set caret to end */
