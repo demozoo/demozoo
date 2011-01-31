@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.utils.encoding import StrAndUnicode
 from demoscene.models import Production, ProductionType
 from submit_button_field import SubmitButtonInput
 from django.core.exceptions import ValidationError
@@ -11,7 +12,7 @@ from production_type_field import ProductionTypeChoiceField
 # Used as the cleaned value of a ProductionField
 # and the value ProductionWidget returns from value_from_datadict.
 
-class ProductionSelection():
+class ProductionSelection(StrAndUnicode):
 	def __init__(self, id = None, title = None, byline_lookup = None, types_to_set = []):
 		self.id = id
 		self.types_to_set = types_to_set
@@ -41,8 +42,8 @@ class ProductionSelection():
 				self.byline.commit(self.production)
 		return self.production
 	
-	def __str__(self):
-		return "ProductionSelection: %s - %s" % (self.id, self.title)
+	def __unicode__(self):
+		return u"ProductionSelection: %s - %s" % (self.id, self.title)
 	
 	@staticmethod
 	def from_value(value, types_to_set = []):
