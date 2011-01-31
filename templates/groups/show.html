@@ -58,27 +58,62 @@
 	{% endif %}
 	
 	<div id="side_column">
-		{% if memberships or editing %}
+		{% if supergroupships or memberships or subgroupships or editing %}
 			<div class="panel">
-				<h3>Members:</h3>
-				<ul>
-					{% for membership in memberships %}
-						<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-							<a href="{% url scener membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-							{% releaser_flag membership.member %}
-							{% if editing %}
-								<a href="{% url group_edit_membership group.id membership.id %}" class="open_in_lightbox">
-									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
-								</a>
-							{% endif %}
-						</li>
-					{% endfor %}
-					{% if editing %}
-						<li class="add">
-							<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
-						</li>
-					{% endif %}
-				</ul>
+				{% if supergroupships %}
+					<h3>Subgroup of:</h3>
+					<ul class="memberships">
+						{% for membership in supergroupships %}
+							<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+								<a href="{% url group membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
+								{% releaser_flag membership.group %}
+							</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+				{% if memberships or editing %}
+					<h3>Members:</h3>
+					<ul class="memberships">
+						{% for membership in memberships %}
+							<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
+								<a href="{% url scener membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+								{% releaser_flag membership.member %}
+								{% if editing %}
+									<a href="{% url group_edit_membership group.id membership.id %}" class="open_in_lightbox">
+										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+						{% if editing %}
+							<li class="add">
+								<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
+							</li>
+						{% endif %}
+					</ul>
+				{% endif %}
+				
+				{% if subgroupships or editing %}
+					<h3>Subgroups:</h3>
+					<ul class="memberships">
+						{% for membership in subgroupships %}
+							<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+								<a href="{% url group membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
+								{% releaser_flag membership.member %}
+								{% if editing %}
+									<a href="{% url group_edit_subgroup group.id membership.id %}" class="open_in_lightbox">
+										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
+									</a>
+								{% endif %}
+							</li>
+						{% endfor %}
+						{% if editing %}
+							<li class="add">
+								<a href="{% url group_add_subgroup group.id %}" class="open_in_lightbox">Add subgroup</a>
+							</li>
+						{% endif %}
+					</ul>
+				{% endif %}
 			</div>
 		{% endif %}
 	</div>

@@ -119,12 +119,6 @@ html {
 	margin-left: 16px;
 }
 
-.membership_panel {
-	width: 200px;
-	float: left;
-	margin-right: 16px;
-}
-
 body.loading {
 	cursor: progress;
 }
@@ -800,6 +794,10 @@ body.show_production .production_details .tags li button {
 body.show_production .production_details .tags form.add_tag {
 	padding-top: 4px;
 	clear: both;
+}
+
+ul.memberships {
+	margin-bottom: 8px;
 }
 
 .screenshot_wrapper {

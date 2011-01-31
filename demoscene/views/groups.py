@@ -23,7 +23,9 @@ def show(request, group_id, edit_mode = False):
 	
 	return render(request, 'groups/show.html', {
 		'group': group,
-		'memberships': group.member_memberships.all().select_related('member').order_by('-is_current', 'member__name'),
+		'supergroupships': group.group_memberships.all().select_related('group').order_by('-is_current', 'group__name'),
+		'memberships': group.member_memberships.filter(member__is_group = False).select_related('member').order_by('-is_current', 'member__name'),
+		'subgroupships': group.member_memberships.filter(member__is_group = True).select_related('member').order_by('-is_current', 'member__name'),
 		'productions': group.productions().order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().order_by('-release_date_date', '-title'),
 		'credits': group.credits().order_by('-production__release_date_date', '-production__title'),
@@ -117,6 +119,70 @@ def edit_membership(request, group_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return ajaxable_render(request, 'groups/edit_membership.html', {
+		'group': group,
+		'membership': membership,
+		'form': form,
+	})
+
+@login_required
+def add_subgroup(request, group_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	if request.method == 'POST':
+		form = GroupSubgroupForm(request.POST)
+		if form.is_valid():
+			member = form.cleaned_data['subgroup_nick'].commit().releaser
+			if not group.member_memberships.filter(member = member).count():
+				membership = Membership(
+					member = member,
+					group = group,
+					is_current = form.cleaned_data['is_current'])
+				membership.save()
+				group.updated_at = datetime.datetime.now()
+				group.save()
+			return HttpResponseRedirect(group.get_absolute_edit_url())
+	else:
+		form = GroupSubgroupForm()
+	return ajaxable_render(request, 'groups/add_subgroup.html', {
+		'group': group,
+		'form': form,
+	})
+
+@login_required
+def remove_subgroup(request, group_id, subgroup_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	subgroup = get_object_or_404(Releaser, is_group = True, id = subgroup_id)
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			group.member_memberships.filter(member = subgroup).delete()
+			group.updated_at = datetime.datetime.now()
+			group.save()
+		return HttpResponseRedirect(group.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('group_remove_subgroup', args = [group_id, subgroup_id]),
+			"Are you sure you want to remove %s as a subgroup of %s?" % (subgroup.name, group.name) )
+
+@login_required
+def edit_subgroup(request, group_id, membership_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	membership = get_object_or_404(Membership, group = group, id = membership_id)
+	if request.method == 'POST':
+		form = GroupSubgroupForm(request.POST)
+		if form.is_valid():
+			member = form.cleaned_data['subgroup_nick'].commit().releaser
+			if not group.member_memberships.exclude(id = membership_id).filter(member = member).count():
+				membership.member = member
+				membership.is_current = form.cleaned_data['is_current']
+				membership.save()
+				group.updated_at = datetime.datetime.now()
+				group.save()
+			return HttpResponseRedirect(group.get_absolute_edit_url())
+	else:
+		form = GroupSubgroupForm(initial = {
+			'subgroup_nick': membership.member.primary_nick,
+			'is_current': membership.is_current,
+		})
+	return ajaxable_render(request, 'groups/edit_subgroup.html', {
 		'group': group,
 		'membership': membership,
 		'form': form,

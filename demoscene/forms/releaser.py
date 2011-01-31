@@ -93,6 +93,10 @@ class GroupMembershipForm(forms.Form):
 	scener_nick = NickField(sceners_only = True, label = 'Scener name')
 	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
 
+class GroupSubgroupForm(forms.Form):
+	subgroup_nick = NickField(groups_only = True, label = 'Subgroup name')
+	is_current = forms.BooleanField(required = False, label = 'Current subgroup?', initial = True)
+
 class EditMembershipForm(forms.Form):
 	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
 
