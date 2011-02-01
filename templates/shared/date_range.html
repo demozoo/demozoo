@@ -1,0 +1,13 @@
+{% if start_date.year != end_date.year %}
+	{{ start_date|date:"jS F Y" }} - {{ end_date|date:"jS F Y" }}
+{% else %}
+	{% if start_date.month != end_date.month %}
+		{{ start_date|date:"jS F" }} - {{ end_date|date:"jS F Y" }}
+	{% else %}
+		{% if start_date.day != end_date.day %}
+			{{ start_date|date:"jS" }} - {{ end_date|date:"jS F Y" }}
+		{% else %}
+			{{ start_date|date:"jS F Y" }}
+		{% endif %}
+	{% endif %}
+{% endif %}

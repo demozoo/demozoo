@@ -41,3 +41,10 @@ def byline(production):
 @register.simple_tag
 def field_label(field):
 	return field.label_tag(attrs = {'class': 'field_label'})
+
+@register.inclusion_tag('shared/date_range.html')
+def date_range(start_date, end_date):
+	return {
+		'start_date': start_date,
+		'end_date': end_date,
+	}

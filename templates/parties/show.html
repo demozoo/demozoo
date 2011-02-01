@@ -9,7 +9,7 @@
 				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
 				<a href="{% url edit_party party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
 			</h2>
-			{{ party.start_date }} - {{ party.end_date }}
+			{% date_range party.start_date party.end_date %}
 			
 			{% if party.party_series.website %}
 				<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
