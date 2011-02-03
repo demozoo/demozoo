@@ -318,7 +318,8 @@ def edit_soundtracks(request, production_id):
 def add_tag(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
-		production.tags.add(request.POST.get('tag_name'))
+		if request.POST.get('tag_name', '').strip():
+			production.tags.add(request.POST.get('tag_name').strip())
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 @login_required
