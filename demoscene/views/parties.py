@@ -23,13 +23,13 @@ def by_date(request):
 	})
 
 def show(request, party_id):
-	party = Party.objects.get(id = party_id)
+	party = get_object_or_404(Party, id=party_id)
 	return render(request, 'parties/show.html', {
 		'party': party,
 	})
 
 def show_series(request, party_series_id):
-	party_series = PartySeries.objects.get(id = party_series_id)
+	party_series = get_object_or_404(PartySeries, id=party_series_id)
 	return render(request, 'parties/show_series.html', {
 		'party_series': party_series,
 	})
