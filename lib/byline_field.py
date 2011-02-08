@@ -206,13 +206,3 @@ class BylineField(forms.Field):
 			return Byline(
 				clean_author_nick_selections, clean_affiliation_nick_selections)
 
-# test stuff
-
-class ProdAuthorForm(forms.Form):
-	byline = BylineField(label = 'By')
-
-from demoscene.models import *
-bb = Production.objects.get(id = 30)
-
-initial_prod_form = ProdAuthorForm()
-edit_prod_form = ProdAuthorForm(initial = {'byline': bb.byline()})
