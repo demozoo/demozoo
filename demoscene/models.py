@@ -543,7 +543,7 @@ class Membership(models.Model):
 
 class Production(models.Model):
 	title = models.CharField(max_length=255)
-	platforms = models.ManyToManyField('Platform', related_name = 'productions')
+	platforms = models.ManyToManyField('Platform', related_name = 'productions', blank=True)
 	supertype = models.CharField(max_length = 32)
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions', blank = True)
@@ -561,7 +561,7 @@ class Production(models.Model):
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
 	
-	tags = TaggableManager()
+	tags = TaggableManager(blank=True)
 	
 	search_result_template = 'search/results/production.html'
 	
