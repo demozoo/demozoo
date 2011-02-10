@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
 from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
+
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
 
@@ -541,10 +543,16 @@ class Membership(models.Model):
 	def __unicode__(self):
 		return "%s / %s" % (self.member.name, self.group.name)
 
+SUPERTYPE_CHOICES = (
+	('production', _('Production')), 
+	('graphics', _('Graphics')),
+	('music', _('Music')),
+)
+
 class Production(models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name = 'productions', blank=True)
-	supertype = models.CharField(max_length = 32)
+	supertype = models.CharField(max_length = 32, choices=SUPERTYPE_CHOICES)
 	types = models.ManyToManyField('ProductionType', related_name = 'productions')
 	author_nicks = models.ManyToManyField('Nick', related_name = 'productions', blank = True)
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name = 'member_productions', blank=True, null=True)
@@ -566,7 +574,7 @@ class Production(models.Model):
 	search_result_template = 'search/results/production.html'
 	
 	def save(self, *args, **kwargs):
-		if self.id:
+		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
 		return super(Production, self).save(*args, **kwargs)
 	
