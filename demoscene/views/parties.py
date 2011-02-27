@@ -26,6 +26,7 @@ def show(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
 	return render(request, 'parties/show.html', {
 		'party': party,
+		'competitions': party.competitions.order_by('name'),
 	})
 
 def show_series(request, party_series_id):
