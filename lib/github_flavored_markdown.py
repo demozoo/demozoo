@@ -13,6 +13,7 @@ via:
 http://gregbrown.co.nz/code/githib-flavoured-markdown-python-implementation/
 https://gist.github.com/457617
 https://gist.github.com/710689
+https://gist.github.com/856894
 """
 
 import re
@@ -34,7 +35,7 @@ def gfm(text):
 		if list(s).count('_') >= 2:
 			return s.replace('_', '\_')
 		return s
-	pattern = re.compile(r'^(?! {4}|\t)\w+(?<!_)_\w+_\w[\w_]*', re.MULTILINE | re.UNICODE)
+	pattern = re.compile(r'^(?! {4}|\t).*\w+(?<!_)_\w+_\w[\w_]*', re.MULTILINE | re.UNICODE)
 	text = re.sub(pattern, italic_callback, text)
 
 	# In very clear cases, let newlines become <br /> tags.
@@ -96,6 +97,10 @@ def test_two_underscores():
 	assert_equal(
 		gfm('foo_bar_baz'),
 		'foo\\_bar\\_baz',
+	)
+	assert_equal(
+		gfm('something else then foo_bar_baz'),
+		'something else then foo\\_bar\\_baz',
 	)
 
 def test_newlines_simple():
