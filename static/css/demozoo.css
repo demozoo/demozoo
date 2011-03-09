@@ -132,6 +132,11 @@ ul.messages li.success {
 	margin-bottom: 4px;
 }
 
+ul.errorlist {
+	margin: 1em;
+	padding: 0.5em;
+	background-color: #fbb;
+}
 
 /* data entry forms */
 .form_title h2 {

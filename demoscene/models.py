@@ -420,6 +420,9 @@ class Nick(models.Model):
 			or self.credits.count()
 			or self.productions.count()
 			or self.member_productions.count() )
+	
+	class Meta:
+		unique_together = ("releaser","name")
 
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name = 'variants')

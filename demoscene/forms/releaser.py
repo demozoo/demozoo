@@ -67,6 +67,16 @@ class NickForm(forms.ModelForm):
 				label = "Use this as their preferred name, instead of '%s'" % releaser.name,
 				required = False)
 	
+	# override validate_unique so that we include the releaser test in unique_together validation;
+	# see http://stackoverflow.com/questions/2141030/djangos-modelform-unique-together-validation/3757871#3757871
+	def validate_unique(self):
+		exclude = self._get_validation_exclusions()
+		exclude.remove('releaser') # allow checking against the missing attribute
+		try:
+			self.instance.validate_unique(exclude=exclude)
+		except ValidationError, e:
+			self._update_errors({'__all__': [u'This nick cannot be added, as it duplicates an existing one.']})
+		
 	def save(self, commit = True):
 		instance = super(NickForm, self).save(commit=False)
 		instance.nick_variant_list = self.cleaned_data['nick_variant_list']

@@ -5,6 +5,7 @@
 <form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
 	{% csrf_token %}
 	
+	{{ form.non_field_errors }}
 	{% with form.name as field %}
 		{% include "shared/form_field.html" %}
 	{% endwith %}
