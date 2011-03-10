@@ -83,6 +83,7 @@ def create(request):
 	
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
+		'html_title': "New scener",
 		'title': "New scener",
 		'action_url': reverse('new_scener'),
 	})
@@ -107,6 +108,7 @@ def add_group(request, scener_id):
 		form = ScenerMembershipForm()
 	
 	return ajaxable_render(request, 'sceners/add_group.html', {
+		'html_title': "New group for %s" % scener.name,
 		'scener': scener,
 		'form': form,
 	})
@@ -124,7 +126,8 @@ def remove_group(request, scener_id, group_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('scener_remove_group', args = [scener_id, group_id]),
-			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
+			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name),
+			html_title = "Removing %s from %s" % (scener.name, group.name) )
 
 @login_required
 def edit_membership(request, scener_id, membership_id):
@@ -147,6 +150,7 @@ def edit_membership(request, scener_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return ajaxable_render(request, 'sceners/edit_membership.html', {
+		'html_title': "Editing %s's membership of %s" % (scener.name, membership.group.name),
 		'scener': scener,
 		'membership': membership,
 		'form': form,

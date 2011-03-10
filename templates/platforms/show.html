@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
 
+{% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
+
 {% block base_main %}
 	<div class="panel">
 		{% if platform.photo %}

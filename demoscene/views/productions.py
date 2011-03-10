@@ -85,6 +85,7 @@ def edit_core_details(request, production_id):
 		form = ProductionEditCoreDetailsForm(instance = production)
 	
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
+		'html_title': "Editing production: %s" % production.title,
 		'production': production,
 		'form': form,
 	})
@@ -124,6 +125,7 @@ def add_download_link(request, production_id):
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "Adding download link for %s:" % production.title,
+		'html_title': "Adding download link for %s" % production.title,
 		'action_url': reverse('production_add_download_link', args=[production.id]),
 	})
 
@@ -142,6 +144,7 @@ def edit_download_link(request, production_id, download_link_id):
 	else:
 		form = ProductionDownloadLinkForm(instance = download_link)
 	return ajaxable_render(request, 'productions/edit_download_link.html', {
+		'html_title': "Editing download link for %s" % production.title,
 		'form': form,
 		'production': production,
 		'download_link': download_link,
@@ -161,7 +164,8 @@ def delete_download_link(request, production_id, download_link_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_download_link', args = [production_id, download_link_id]),
-			"Are you sure you want to delete this download link for %s?" % production.title )
+			"Are you sure you want to delete this download link for %s?" % production.title,
+			html_title = "Deleting download link for %s" % production.title )
 
 @login_required
 def screenshots(request, production_id):
@@ -189,6 +193,7 @@ def add_screenshot(request, production_id):
 	else:
 		formset = ProductionAddScreenshotFormset()
 	return ajaxable_render(request, 'productions/add_screenshot.html', {
+		'html_title': "Adding screenshots for %s" % production.title,
 		'production': production,
 		'formset': formset,
 	})
@@ -207,7 +212,8 @@ def delete_screenshot(request, production_id, screenshot_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_screenshot', args = [production_id, screenshot_id]),
-			"Are you sure you want to delete this screenshot for %s?" % production.title )
+			"Are you sure you want to delete this screenshot for %s?" % production.title,
+			html_title = "Deleting screenshot for %s" % production.title )
 
 @login_required
 def create(request):
@@ -225,6 +231,7 @@ def create(request):
 		})
 		download_link_formset = DownloadLinkFormSet()
 	return ajaxable_render(request, 'productions/create.html', {
+		'html_title': "New production",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})
@@ -244,6 +251,7 @@ def add_credit(request, production_id):
 	else:
 		form = ProductionCreditForm(instance = credit)
 	return ajaxable_render(request, 'productions/add_credit.html', {
+		'html_title': "Adding credit for %s" % production.title,
 		'production': production,
 		'form': form,
 	})
@@ -263,6 +271,7 @@ def edit_credit(request, production_id, credit_id):
 	else:
 		form = ProductionCreditForm(instance = credit)
 	return ajaxable_render(request, 'productions/edit_credit.html', {
+		'html_title': "Editing credit for %s" % production.title,
 		'production': production,
 		'credit': credit,
 		'form': form,
@@ -282,7 +291,8 @@ def delete_credit(request, production_id, credit_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_credit', args = [production_id, credit_id]),
-			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, production.title) )
+			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, production.title),
+			html_title = "Deleting %s's credit from %s" % (credit.nick.name, production.title) )
 
 @login_required
 def edit_soundtracks(request, production_id):
@@ -310,6 +320,7 @@ def edit_soundtracks(request, production_id):
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance = production)
 	return ajaxable_render(request, 'productions/edit_soundtracks.html', {
+		'html_title': "Editing soundtrack details for %s" % production.title,
 		'production': production,
 		'formset': formset,
 	})

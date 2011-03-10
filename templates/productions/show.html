@@ -2,6 +2,8 @@
 {% load demoscene_tags %}
 {% load humanize %}
 
+{% block html_title %}{{ production.title }} {% if production.author_nicks.all %}by {{ production.byline }}{% endif %} - Demozoo{% endblock %}
+
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}

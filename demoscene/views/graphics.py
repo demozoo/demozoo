@@ -71,6 +71,7 @@ def edit_core_details(request, production_id):
 		form = GraphicsEditCoreDetailsForm(instance = production)
 	
 	return ajaxable_render(request, 'graphics/edit_core_details.html', {
+		'html_title': "Editing graphics: %s" % production.title,
 		'production': production,
 		'form': form,
 	})
@@ -91,6 +92,7 @@ def create(request):
 		})
 		download_link_formset = DownloadLinkFormSet()
 	return ajaxable_render(request, 'graphics/create.html', {
+		'html_title': "New graphics",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load safe_markdown %}
 
+{% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
+
 {% block base_main %}
 	<h2>
 		{{ party_series.name }}

@@ -69,6 +69,7 @@ def edit(request, party_id):
 		form = EditPartyForm(instance = party)
 	
 	return ajaxable_render(request, 'parties/edit.html', {
+		'html_title': "Editing party: %s" % party.name,
 		'party': party,
 		'form': form,
 	})
@@ -119,6 +120,7 @@ def add_competition(request, party_id):
 	else:
 		form = CompetitionForm(instance = competition)
 	return ajaxable_render(request, 'parties/add_competition.html', {
+		'html_title': "New competition for %s" % party.name,
 		'party': party,
 		'form': form,
 	})
@@ -149,6 +151,7 @@ def edit_competition(request, party_id, competition_id):
 		competition_form = CompetitionForm(instance = competition)
 		formset = CompetitionPlacingFormset(instance = competition)
 	return ajaxable_render(request, 'parties/edit_competition.html', {
+		'html_title': "Editing %s %s competition" % (party.name, competition.name),
 		'party': party,
 		'competition': competition,
 		'formset': formset,
@@ -185,6 +188,7 @@ def edit_competition_testing(request, party_id, competition_id):
 	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
 
 	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
+		'html_title': "Editing %s %s competition" % (party.name, competition.name),
 		'party': party,
 		'competition': competition,
 		'results_with_forms': results_with_forms,

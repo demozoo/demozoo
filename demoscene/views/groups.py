@@ -57,6 +57,7 @@ def create(request):
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "New group",
+		'html_title': "New group",
 		'action_url': reverse('new_group'),
 	})
 
@@ -79,6 +80,7 @@ def add_member(request, group_id):
 	else:
 		form = GroupMembershipForm()
 	return ajaxable_render(request, 'groups/add_member.html', {
+		'html_title': "New member for %s" % group.name,
 		'group': group,
 		'form': form,
 	})
@@ -96,7 +98,8 @@ def remove_member(request, group_id, scener_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('group_remove_member', args = [group_id, scener_id]),
-			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name) )
+			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name),
+			html_title = "Removing %s from %s" % (scener.name, group.name) )
 
 @login_required
 def edit_membership(request, group_id, membership_id):
@@ -119,6 +122,7 @@ def edit_membership(request, group_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return ajaxable_render(request, 'groups/edit_membership.html', {
+		'html_title': "Editing %s's membership of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,
 		'form': form,
@@ -143,6 +147,7 @@ def add_subgroup(request, group_id):
 	else:
 		form = GroupSubgroupForm()
 	return ajaxable_render(request, 'groups/add_subgroup.html', {
+		'html_title': "New subgroup for %s" % group.name,
 		'group': group,
 		'form': form,
 	})
@@ -160,7 +165,8 @@ def remove_subgroup(request, group_id, subgroup_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('group_remove_subgroup', args = [group_id, subgroup_id]),
-			"Are you sure you want to remove %s as a subgroup of %s?" % (subgroup.name, group.name) )
+			"Are you sure you want to remove %s as a subgroup of %s?" % (subgroup.name, group.name),
+			html_title = "Removing %s from %s" % (subgroup.name, group.name) )
 
 @login_required
 def edit_subgroup(request, group_id, membership_id):
@@ -183,6 +189,7 @@ def edit_subgroup(request, group_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return ajaxable_render(request, 'groups/edit_subgroup.html', {
+		'html_title': "Editing %s as a subgroup of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,
 		'form': form,

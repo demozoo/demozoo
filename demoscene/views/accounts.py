@@ -43,5 +43,6 @@ def preferences(request):
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "Preferences",
+		'html_title': "Preferences",
 		'action_url': reverse('account_preferences'),
 	})

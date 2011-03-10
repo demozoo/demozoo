@@ -74,6 +74,7 @@ def edit_core_details(request, production_id):
 		form = MusicEditCoreDetailsForm(instance = production)
 	
 	return ajaxable_render(request, 'music/edit_core_details.html', {
+		'html_title': "Editing music: %s" % production.title,
 		'production': production,
 		'form': form,
 	})
@@ -94,6 +95,7 @@ def create(request):
 		})
 		download_link_formset = DownloadLinkFormSet()
 	return ajaxable_render(request, 'music/create.html', {
+		'html_title': "New music",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})

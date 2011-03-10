@@ -50,15 +50,23 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 	else:
 		form = form_class(instance = instance)
 	
+	title = kwargs.get('title')
+	if title and title.endswith(':'):
+		clean_title = title[:-1]
+	else:
+		clean_title = title
+	
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'html_form_class': kwargs.get('html_form_class'),
-		'title': kwargs.get('title'),
+		'title': title,
+		'html_title': clean_title,
 		'action_url': reverse(url_name, args=[instance.id]),
 	})
 
-def simple_ajax_confirmation(request, action_url, message):
+def simple_ajax_confirmation(request, action_url, message, html_title = None):
 	return ajaxable_render(request, 'shared/simple_confirmation.html', {
+		'html_title': html_title,
 		'message': message,
 		'action_url': action_url,
 	})

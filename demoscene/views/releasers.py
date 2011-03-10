@@ -28,6 +28,7 @@ def add_credit(request, releaser_id):
 		form = ReleaserAddCreditForm(releaser)
 	
 	return ajaxable_render(request, 'releasers/add_credit.html', {
+		'html_title': "Add credit for %s" % releaser.name,
 		'releaser': releaser,
 		'form': form,
 	})
@@ -58,6 +59,7 @@ def edit_credit(request, releaser_id, credit_id):
 			'role': credit.role
 		})
 	return ajaxable_render(request, 'releasers/edit_credit.html', {
+		'html_title': "Editing credit for %s" % credit.production.title,
 		'releaser': releaser,
 		'credit': credit,
 		'form': form,
@@ -80,7 +82,8 @@ def delete_credit(request, releaser_id, credit_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('releaser_delete_credit', args = [releaser_id, credit_id]),
-			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, credit.production.title) )
+			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, credit.production.title),
+			html_title = "Deleting %s's credit from %s" % (credit.nick.name, credit.production.title) )
 
 @login_required
 def edit_notes(request, releaser_id):
@@ -115,6 +118,7 @@ def edit_nick(request, releaser_id, nick_id):
 	return ajaxable_render(request, 'releasers/edit_nick_form.html', {
 		'form': form,
 		'nick': nick,
+		'html_title': "Editing name: %s" % nick.name,
 		'title': "Editing name: %s" % nick.name,
 		'action_url': reverse('releaser_edit_nick', args = [releaser.id, nick.id]),
 	})
@@ -144,6 +148,7 @@ def add_nick(request, releaser_id):
 	return ajaxable_render(request, 'releasers/nick_form.html', {
 		'form': form,
 		'title': "Adding another nick for %s" % releaser.name,
+		'html_title': "Adding another nick for %s" % releaser.name,
 		'action_url': reverse('releaser_add_nick', args = [releaser.id]),
 	})
 
@@ -151,6 +156,7 @@ def add_nick(request, releaser_id):
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
 	return ajaxable_render(request, 'releasers/confirm_edit_nick.html', {
+		'html_title': "Editing %s's name" % releaser.name,
 		'releaser': releaser,
 	})
 
@@ -180,7 +186,8 @@ def delete_nick(request, releaser_id, nick_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('releaser_delete_nick', args = [releaser_id, nick_id]),
-			"Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name) )
+			"Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name),
+			html_title = "Deleting name: %s" % nick.name )
 
 @login_required
 def delete(request, releaser_id):
@@ -200,4 +207,5 @@ def delete(request, releaser_id):
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('delete_releaser', args = [releaser_id]),
-			"Are you sure you want to delete %s?" % releaser.name )
+			"Are you sure you want to delete %s?" % releaser.name,
+			html_title = "Deleting %s" % releaser.name )
