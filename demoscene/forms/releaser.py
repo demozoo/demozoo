@@ -24,6 +24,17 @@ class CreateGroupForm(forms.ModelForm):
 		fields = ('name',)
 
 class CreateScenerForm(forms.ModelForm):
+	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False,
+		help_text = "(as a comma-separated list)")
+	
+	def save(self, commit = True):
+		instance = super(CreateScenerForm, self).save(commit=commit)
+		if commit:
+			primary_nick = instance.primary_nick
+			primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
+			primary_nick.save()
+		return instance
+	
 	class Meta:
 		model = Releaser
 		fields = ('name',)
