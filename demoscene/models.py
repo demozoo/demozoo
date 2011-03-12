@@ -816,6 +816,10 @@ class Party(models.Model):
 	def get_absolute_edit_url(self):
 		return ('demoscene.views.parties.show', [str(self.id)])
 	
+	@property
+	def suffix(self):
+		return re.sub(r"^" + re.escape(self.party_series.name) + r"\s+", '', self.name)
+	
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("start_date",)

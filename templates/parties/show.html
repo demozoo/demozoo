@@ -36,10 +36,10 @@
 						<ul class="parties_in_series">
 							{% for party_in_series in parties_in_series %}
 								{% if party_in_series == party %}
-									<li class="current">{{ party_in_series.name }}</li>
+									<li class="current">{{ party_in_series.suffix }}</li>
 								{% else %}
 									<li>
-										<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.name }}</a>
+										<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
 									</li>
 								{% endif %}
 							{% endfor %}

@@ -20,7 +20,7 @@
 				<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
 				<ul class="parties">
 					{% for party in item.list %}
-						<li><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
+						<li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
 					{% endfor %}
 				</ul>
 			</li>
