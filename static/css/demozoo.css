@@ -880,6 +880,27 @@ ul.memberships {
 	display: inline;
 }
 
+/* party series page */
+.show_party_series ul.parties li {
+	float: left;
+	text-align: center;
+	width: 250px;
+	min-height: 180px;
+}
+.show_party_series ul.parties li a {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.show_party_series ul.parties li a:hover {
+	background-color: #eee;
+}
+.show_party_series ul.parties li a:link h3 {
+	text-decoration: underline;
+}
+
 ul.parties_in_series {
 	display: inline;
 }

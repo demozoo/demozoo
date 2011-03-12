@@ -3,6 +3,8 @@
 
 {% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
 
+{% block body_class %}show_party_series{% endblock %}
+
 {% block base_main %}
 	<h2>
 		{{ party_series.name }}
@@ -16,13 +18,30 @@
 			<ul class="parties">
 				{% for party in parties %}
 					<li>
-						<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
-						{{ party.start_date }} - {{ party.end_date }}
+						<a href="{{ party.get_absolute_url }}">
+							{% with party.random_screenshot as pic %}
+								{% if pic %}
+									<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+								{% endif %}
+							{% endwith %}
+							<h3>{{ party.name }}</h3>
+							<div>{{ party.start_date }} - {{ party.end_date }}</div>
+							{% if party.location %}
+								<div>
+									{% if party.country_code %}
+										<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+									{% endif %}
+									{{ party.location }}
+								</div>
+							{% endif %}
+						</a>
 					</li>
 				{% endfor %}
 			</ul>
 		{% endif %}
 	{% endwith %}
+	
+	<div style="clear: both;"></div>
 	
 	{% if party_series.notes or request.user.is_staff %}
 		<div class="notes">

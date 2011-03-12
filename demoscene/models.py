@@ -824,6 +824,13 @@ class Party(models.Model):
 		else:
 			return re.sub(r"^" + re.escape(series_name) + r"\s+", '', self.name)
 	
+	def random_screenshot(self):
+		screenshots = Screenshot.objects.filter(production__competition_placings__competition__party = self)
+		try:
+			return screenshots.order_by('?')[0]
+		except IndexError:
+			return None
+	
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("start_date",)
