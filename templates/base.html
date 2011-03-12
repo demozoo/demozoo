@@ -44,7 +44,11 @@
 						Logged in as <b>{{ user.username }}</b>
 					</div>
 					<div class="login_links">
-						<a href="{% url account_preferences %}">Preferences</a> | <a href="{% url log_out %}">Log out</a>
+						<a href="{% url account_preferences %}">Preferences</a>
+						{% if user.is_staff %}
+							| <a href="{% url maintenance_index %}">Maintenance</a>
+						{% endif %}
+						| <a href="{% url log_out %}">Log out</a>
 					</div>
 				{% else %}
 					<div class="login_links">
