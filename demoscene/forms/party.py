@@ -8,14 +8,13 @@ from byline_field import BylineField
 from form_with_location import ModelFormWithLocation
 
 class PartyForm(ModelFormWithLocation):
-	existing_party_series = forms.ModelChoiceField(label = 'Party series', queryset = PartySeries.objects.order_by('name'), required = False)
-	new_party_series_name = forms.CharField(label = '- or, add a new one', required = False)
-	name = forms.CharField(label = 'Party name')
+	name = forms.CharField(label = 'Party name', help_text = "e.g. Revision 2011")
 	start_date = AnyFormatDateField()
 	end_date = AnyFormatDateField()
+	party_series_name = forms.CharField(label = 'Party series', help_text = "e.g. Revision")
 	class Meta:
 		model = Party
-		fields = ('existing_party_series', 'new_party_series_name', 'start_date', 'end_date', 'name', 'tagline', 'location')
+		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'party_series_name')
 
 class EditPartyForm(ModelFormWithLocation):
 	start_date = AnyFormatDateField()

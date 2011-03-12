@@ -41,12 +41,12 @@ def create(request):
 		party = Party()
 		form = PartyForm(request.POST, instance = party)
 		if form.is_valid():
-			if form.cleaned_data['new_party_series_name']:
-				party_series = PartySeries(name = form.cleaned_data['new_party_series_name'])
-				party_series.save()
-			else:
-				party_series = form.cleaned_data['existing_party_series']
-			party.party_series = party_series
+			try:
+				party.party_series = PartySeries.objects.get(name = form.cleaned_data['party_series_name'])
+			except PartySeries.DoesNotExist:
+				ps = PartySeries(name = form.cleaned_data['party_series_name'])
+				ps.save()
+				party.party_series = ps
 			form.save()
 			messages.success(request, 'Party added')
 			return redirect('party', args = [party.id])
@@ -54,6 +54,7 @@ def create(request):
 		form = PartyForm()
 	return render(request, 'parties/create.html', {
 		'form': form,
+		'party_series_names': [ps.name for ps in PartySeries.objects.all()],
 	})
 
 @login_required

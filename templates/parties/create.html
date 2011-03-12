@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load json_filter %}
+
 {% block html_title %}New party - Demozoo{% endblock %}
 
 {% block base_main %}
@@ -14,4 +16,34 @@
 			<input type="submit" />
 		</div>
 	</form>
+	<script>/* <![CDATA[ */
+		var partySeriesNames = {{ party_series_names|json|safe }};
+		var partySeriesNameMatches = {};
+		for (var i = 0; i < partySeriesNames.length; i++) {
+			var name = partySeriesNames[i];
+			partySeriesNameMatches[name.toLowerCase()] = name;
+		}
+		
+		var partySeriesEdited = false;
+		$('#id_party_series_name').change(function() {
+			partySeriesEdited = true;
+		})
+		$('#id_name').change(function() {
+			if (!partySeriesEdited) {
+				var name = $(this).val();
+				var words = name.split(/\s+/);
+				for (var i = words.length; i > 0; i--) {
+					var candidate = words.slice(0, i).join(' ').toLowerCase();
+					var match = partySeriesNameMatches[candidate];
+					if (match) {
+						$('#id_party_series_name').val(match);
+						return;
+					}
+				}
+				/* no matches, so use base name without numeric prefix */
+				var baseName = name.replace(/\s+\d+$/, '');
+				$('#id_party_series_name').val(baseName);
+			}
+		})
+	/* ]]> */</script>
 {% endblock %}
