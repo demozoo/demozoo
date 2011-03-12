@@ -11,9 +11,9 @@ except ImportError:
 	import simplejson as json
 
 def index(request):
-	party_series = PartySeries.objects.order_by('name')
+	parties = Party.objects.order_by('party_series__name', 'start_date').select_related('party_series')
 	return render(request, 'parties/index.html', {
-		'party_series': party_series,
+		'parties': parties,
 	})
 
 def by_date(request):

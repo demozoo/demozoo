@@ -29,7 +29,7 @@
 				{% endif %}
 			</p>
 		
-			{% with party.party_series.parties_by_date as parties_in_series %}
+			{% with party.party_series.parties.all as parties_in_series %}
 				{% if parties_in_series.count > 1 %}
 					<div>
 						Other {{ party.party_series.name }} parties:

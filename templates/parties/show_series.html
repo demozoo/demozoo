@@ -11,7 +11,7 @@
 	{% if party_series.website %}
 		<p><a href="{{ party_series.website }}">{{ party_series.website }}</a></p>
 	{% endif %}
-	{% with party_series.parties_by_date as parties %}
+	{% with party_series.parties.all as parties %}
 		{% if parties %}
 			<ul class="parties">
 				{% for party in parties %}

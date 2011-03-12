@@ -777,9 +777,6 @@ class PartySeries(models.Model):
 	def __unicode__(self):
 		return self.name
 	
-	def parties_by_date(self):
-		return self.parties.order_by('start_date') # TODO: can this be done as a native ordering on the parties relation instead?
-	
 	@models.permalink
 	def get_absolute_url(self):
 		return ('demoscene.views.parties.show_series', [str(self.id)])
@@ -821,6 +818,7 @@ class Party(models.Model):
 	
 	class Meta:
 		verbose_name_plural = "Parties"
+		ordering = ("start_date",)
 
 class Competition(models.Model):
 	party = models.ForeignKey(Party, related_name = 'competitions')
