@@ -818,7 +818,11 @@ class Party(models.Model):
 	
 	@property
 	def suffix(self):
-		return re.sub(r"^" + re.escape(self.party_series.name) + r"\s+", '', self.name)
+		series_name = self.party_series.name
+		if series_name == self.name and self.start_date:
+			return self.start_date.year
+		else:
+			return re.sub(r"^" + re.escape(series_name) + r"\s+", '', self.name)
 	
 	class Meta:
 		verbose_name_plural = "Parties"
