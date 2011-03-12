@@ -79,6 +79,7 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
+	'debug_toolbar.middleware.DebugToolbarMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -104,6 +105,7 @@ INSTALLED_APPS = (
 	'haystack',
 	'treebeard',
 	'taggit',
+	'debug_toolbar',
 	
 	'demoscene',
 	'search',
@@ -125,6 +127,8 @@ HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
 AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
+
+INTERNAL_IPS = ('127.0.0.1',)
 
 # Get local settings
 try:
