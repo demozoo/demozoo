@@ -14,16 +14,20 @@
 	</ul>
 	
 	{% regroup parties by party_series as party_series_list %}
-	<ul class="party_series_index">
+	<table class="party_series_index">
 		{% for item in party_series_list %}
-			<li>
-				<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
-				<ul class="parties">
-					{% for party in item.list %}
-						<li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
-					{% endfor %}
-				</ul>
-			</li>
+			<tr>
+				<th>
+					<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
+				</th>
+				<td>
+					<ul class="parties">
+						{% for party in item.list %}
+							<li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
+						{% endfor %}
+					</ul>
+				</td>
+			</tr>
 		{% endfor %}
-	</ul>
+	</table>
 {% endblock %}

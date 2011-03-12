@@ -857,13 +857,13 @@ ul.memberships {
 }
 
 /* party series listing */
-ul.party_series_index li a.party_series_link {
-	font-weight: bold;
+.party_series_index th {
+	padding-right: 20px;
 }
-ul.party_series_index li ul.parties {
+.party_series_index ul.parties {
 	display: inline;
 }
-ul.party_series_index li ul.parties li {
+.party_series_index ul.parties li {
 	display: inline;
 }
 
