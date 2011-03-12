@@ -770,7 +770,7 @@ class Screenshot(ModelWithThumbnails):
 		return "%s - %s" % (self.production.title, self.original)
 
 class PartySeries(models.Model):
-	name = models.CharField(max_length = 255)
+	name = models.CharField(max_length = 255, unique = True)
 	notes = models.TextField(blank = True)
 	website = models.URLField(blank = True)
 	
@@ -793,7 +793,7 @@ class PartySeries(models.Model):
 
 class Party(models.Model):
 	party_series = models.ForeignKey(PartySeries, related_name = 'parties')
-	name = models.CharField(max_length = 255)
+	name = models.CharField(max_length = 255, unique = True)
 	tagline = models.CharField(max_length = 255, blank = True)
 	start_date = models.DateField()
 	end_date = models.DateField()
