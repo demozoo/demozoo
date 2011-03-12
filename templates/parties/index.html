@@ -16,7 +16,7 @@
 	{% regroup parties by party_series as party_series_list %}
 	<table class="party_series_index">
 		{% for item in party_series_list %}
-			<tr>
+			<tr class="{% cycle 'odd' 'even' %}">
 				<th>
 					<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
 				</th>
