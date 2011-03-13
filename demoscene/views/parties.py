@@ -47,6 +47,17 @@ def create(request):
 				ps = PartySeries(name = form.cleaned_data['party_series_name'])
 				ps.save()
 				party.party_series = ps
+			
+			# copy over usable fields from party_series
+			if party.start_date:
+				party.pouet_party_when = party.start_date.year
+			if party.party_series.website:
+				party.homepage = party.party_series.website
+			if party.party_series.pouet_party_id:
+				party.pouet_party_id = party.party_series.pouet_party_id
+			if party.party_series.twitter_username:
+				party.twitter_username = party.party_series.twitter_username
+			
 			form.save()
 			messages.success(request, 'Party added')
 			return redirect('party', args = [party.id])
