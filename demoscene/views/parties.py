@@ -95,7 +95,7 @@ def edit_external_links(request, party_id):
 		form = PartyEditExternalLinksForm(request.POST, instance = party)
 		if form.is_valid():
 			form.save()
-		return HttpResponseRedirect(party.get_absolute_edit_url())
+			return HttpResponseRedirect(party.get_absolute_edit_url())
 	else:
 		form = PartyEditExternalLinksForm(instance = party)
 	
