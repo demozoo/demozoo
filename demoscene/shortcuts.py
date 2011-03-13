@@ -46,7 +46,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 			if kwargs.get('update_bonafide_flag', False):
 				instance.has_bonafide_edits = True
 			form.save()
-		return HttpResponseRedirect(instance.get_absolute_edit_url())
+			return HttpResponseRedirect(instance.get_absolute_edit_url())
 	else:
 		form = form_class(instance = instance)
 	
