@@ -5,6 +5,8 @@ from demoscene.forms.party import *
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+import re
+
 try:
 	import json
 except ImportError:
@@ -106,6 +108,23 @@ def edit_external_links(request, party_id):
 		form = PartyEditExternalLinksForm(request.POST, instance = party)
 		if form.is_valid():
 			form.save()
+			# copy attributes to party_series if appropriate
+			party_series_updated = False
+			if party.party_series.pouet_party_id == None and party.pouet_party_id != None:
+				party.party_series.pouet_party_id = party.pouet_party_id
+				party_series_updated = True
+			if party.homepage and not party.party_series.website:
+				party.party_series.website = party.homepage
+				party_series_updated = True
+			if party.twitter_username and not party.party_series.twitter_username:
+				if re.search(r'\d$', party.twitter_username):
+					# twitter username ends in a number, so assume it's year-specific
+					pass
+				else:
+					party.party_series.twitter_username = party.twitter_username
+					party_series_updated = True
+			if party_series_updated:
+				party.party_series.save()
 			return HttpResponseRedirect(party.get_absolute_edit_url())
 	else:
 		form = PartyEditExternalLinksForm(instance = party)
