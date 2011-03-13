@@ -749,6 +749,8 @@ class PartySeries(models.Model):
 	name = models.CharField(max_length = 255, unique = True)
 	notes = models.TextField(blank = True)
 	website = models.URLField(blank = True, verify_exists = False)
+	twitter_username = models.CharField(max_length = 30, blank = True)
+	pouet_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet party ID')
 	
 	def __unicode__(self):
 		return self.name
@@ -760,6 +762,16 @@ class PartySeries(models.Model):
 	@models.permalink
 	def get_absolute_edit_url(self):
 		return ('demoscene.views.parties.show_series', [str(self.id)])
+	
+	def has_any_external_links(self):
+		return self.website or self.twitter_url or self.pouet_url
+	
+	def twitter_url(self):
+		if self.twitter_username:
+			return "http://twitter.com/%s" % self.twitter_username
+	def pouet_url(self):
+		if self.pouet_party_id:
+			return "http://www.pouet.net/party.php?which=%s" % self.pouet_party_id
 	
 	class Meta:
 		verbose_name_plural = "Party series"

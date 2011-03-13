@@ -47,7 +47,11 @@ class PartyEditExternalLinksForm(forms.ModelForm):
 class EditPartySeriesForm(forms.ModelForm):
 	class Meta:
 		model = PartySeries
-		fields = ('name', 'website')
+		fields = ('name', 'website', 'twitter_username', 'pouet_party_id')
+		widgets = {
+			'twitter_username': forms.TextInput(attrs={'class': 'numeric'}), # not really numeric, but box is the same size
+			'pouet_party_id': forms.TextInput(attrs={'class': 'numeric'}),
+		}
 
 class PartySeriesEditNotesForm(forms.ModelForm):
 	class Meta:

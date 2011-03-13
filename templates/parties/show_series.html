@@ -10,8 +10,14 @@
 		{{ party_series.name }}
 		<a href="{% url party_edit_series party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
 	</h2>
-	{% if party_series.website %}
-		<p><a href="{{ party_series.website }}">{{ party_series.website }}</a></p>
+	{% if party_series.has_any_external_links %}
+		<div class="external_links">
+			<ul>
+				{% if party_series.website %}<li><a href="{{ party_series.website }}" class="homepage" title="{{ party_series.name }} website">WWW</a></li>{% endif %}
+				{% if party_series.twitter_url %}<li><a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a></li>{% endif %}
+				{% if party_series.pouet_url %}<li><a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a></li>{% endif %}
+			</ul>
+		</div>
 	{% endif %}
 	{% with party_series.parties.all as parties %}
 		{% if parties %}
