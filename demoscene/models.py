@@ -748,7 +748,7 @@ class Screenshot(ModelWithThumbnails):
 class PartySeries(models.Model):
 	name = models.CharField(max_length = 255, unique = True)
 	notes = models.TextField(blank = True)
-	website = models.URLField(blank = True)
+	website = models.URLField(blank = True, verify_exists = False)
 	
 	def __unicode__(self):
 		return self.name
@@ -783,7 +783,7 @@ class Party(models.Model):
 		'homepage', 'twitter_username', 'demoparty_net_url_fragment', 'slengpung_party_id',
 		'pouet_party_id', 'bitworld_party_id', 'csdb_party_id', 'breaks_amiga_party_id',
 		'scene_org_directory']
-	homepage = models.CharField(max_length = 255, blank = True)
+	homepage = models.URLField(blank = True, verify_exists = False)
 	twitter_username = models.CharField(max_length = 30, blank = True)
 	demoparty_net_url_fragment = models.CharField(max_length = 100, blank = True, verbose_name = 'demoparty.net URL fragment', help_text = 'e.g. evoke-2010')
 	slengpung_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung party ID')
