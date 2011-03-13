@@ -116,6 +116,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/edit_competition/(\d+)/$', 'parties.edit_competition', {}, 'party_edit_competition'),
 	(r'^parties/(\d+)/edit_competition_testing/(\d+)/$', 'parties.edit_competition_testing', {}, 'party_edit_competition_testing'),
 	(r'^parties/(\d+)/edit_notes/$', 'parties.edit_notes', {}, 'party_edit_notes'),
+	(r'^parties/(\d+)/edit_external_links/$', 'parties.edit_external_links', {}, 'party_edit_external_links'),
 	
 	(r'^search/', include('search.urls')),
 

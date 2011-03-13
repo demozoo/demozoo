@@ -86,6 +86,26 @@ def edit_notes(request, party_id):
 		)
 
 @login_required
+def edit_external_links(request, party_id):
+	party = get_object_or_404(Party, id = party_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(party.get_absolute_edit_url())
+		
+	if request.method == 'POST':
+		form = PartyEditExternalLinksForm(request.POST, instance = party)
+		if form.is_valid():
+			form.save()
+		return HttpResponseRedirect(party.get_absolute_edit_url())
+	else:
+		form = PartyEditExternalLinksForm(instance = party)
+	
+	return ajaxable_render(request, 'parties/edit_external_links.html', {
+		'party': party,
+		'form': form,
+		'html_title': "Editing external links for %s" % party.name,
+	})
+
+@login_required
 def edit_series_notes(request, party_series_id):
 	party_series = get_object_or_404(PartySeries, id = party_series_id)
 	if not request.user.is_staff:

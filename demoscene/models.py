@@ -218,56 +218,38 @@ class Releaser(models.Model):
 	def pouet_user_url(self):
 		if self.sceneid_user_id:
 			return "http://pouet.net/user.php?who=%s" % self.sceneid_user_id
-		else:
-			return None
 	
 	def slengpung_user_url(self):
 		if self.slengpung_user_id:
 			return "http://www.slengpung.com/v3/show_user.php?id=%s" % self.slengpung_user_id
-		else:
-			return None
 	
 	def amp_author_url(self):
 		if self.amp_author_id:
 			return "http://amp.dascene.net/detail.php?view=%s" % self.amp_author_id
-		else:
-			return None
 	
 	def csdb_author_url(self):
 		if self.csdb_author_id:
 			return "http://noname.c64.org/csdb/scener/?id=%s" % self.csdb_author_id
-		else:
-			return None
 	
 	def nectarine_author_url(self):
 		if self.nectarine_author_id:
 			return "http://www.scenemusic.net/demovibes/artist/%s/" % self.nectarine_author_id
-		else:
-			return None
 	
 	def bitjam_author_url(self):
 		if self.bitjam_author_id:
 			return "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1" % self.bitjam_author_id
-		else:
-			return None
 	
 	def artcity_author_url(self):
 		if self.artcity_author_id:
 			return "http://artcity.bitfellas.org/index.php?a=artist&id=%s" % self.artcity_author_id
-		else:
-			return None
 	
 	def mobygames_author_url(self):
 		if self.mobygames_author_id:
 			return "http://www.mobygames.com/developer/sheet/view/developerId,%s/" % self.mobygames_author_id
-		else:
-			return None
 	
 	def asciiarena_author_url(self):
 		if self.asciiarena_author_id:
 			return "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename" % self.asciiarena_author_id
-		else:
-			return None
 	
 	def current_groups(self):
 		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group')]
@@ -639,20 +621,14 @@ class Production(models.Model):
 	def pouet_url(self):
 		if self.pouet_id:
 			return "http://pouet.net/prod.php?which=%s" % self.pouet_id
-		else:
-			return None
 			
 	def csdb_url(self):
 		if self.csdb_id:
 			return "http://noname.c64.org/csdb/release/?id=%s" % self.csdb_id
-		else:
-			return None
 	
 	def bitworld_url(self):
 		if self.bitworld_id:
 			return "http://bitworld.bitfellas.org/demo.php?id=%s" % self.bitworld_id
-		else:
-			return None
 	
 	def ordered_download_links(self):
 		download_links = self.download_links.all()
@@ -803,6 +779,21 @@ class Party(models.Model):
 	
 	notes = models.TextField(blank = True)
 	
+	external_site_ref_field_names = [
+		'homepage', 'twitter_username', 'demoparty_net_url_fragment', 'slengpung_party_id',
+		'pouet_party_id', 'bitworld_party_id', 'csdb_party_id', 'breaks_amiga_party_id',
+		'scene_org_directory']
+	homepage = models.CharField(max_length = 255, blank = True)
+	twitter_username = models.CharField(max_length = 30, blank = True)
+	demoparty_net_url_fragment = models.CharField(max_length = 100, blank = True, verbose_name = 'demoparty.net URL fragment', help_text = 'e.g. evoke-2010')
+	slengpung_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung party ID')
+	pouet_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet party ID')
+	pouet_party_when = models.IntegerField(null = True, blank = True)
+	bitworld_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld party ID')
+	csdb_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB party ID')
+	breaks_amiga_party_id = models.IntegerField(null = True, blank = True, verbose_name = "Break's Amiga party ID")
+	scene_org_directory = models.CharField(max_length = 255, blank = True, verbose_name = 'scene.org directory', help_text = 'e.g. /parties/1991/theparty91/')
+	
 	search_result_template = 'search/results/party.html'
 	
 	def __unicode__(self):
@@ -830,6 +821,34 @@ class Party(models.Model):
 			return screenshots.order_by('?')[0]
 		except IndexError:
 			return None
+	
+	def has_any_external_links(self):
+		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
+	
+	def twitter_url(self):
+		if self.twitter_username:
+			return "http://twitter.com/%s" % self.twitter_username
+	def demoparty_net_url(self):
+		if self.demoparty_net_url_fragment:
+			return "http://www.demoparty.net/%s/" % self.demoparty_net_url_fragment
+	def slengpung_url(self):
+		if self.slengpung_party_id:
+			return "http://www.slengpung.com/v3/parties.php?id=%s&order=name" % self.slengpung_party_id
+	def pouet_url(self):
+		if self.pouet_party_id and self.pouet_party_when:
+			return "http://www.pouet.net/party.php?which=%s&when=%s" % (self.pouet_party_id, self.pouet_party_when)
+	def bitworld_url(self):
+		if self.bitworld_party_id:
+			return "http://bitworld.bitfellas.org/party.php?id=%s" % self.bitworld_party_id
+	def csdb_url(self):
+		if self.csdb_party_id:
+			return "http://www.csdb.dk/event/?id=%s" % self.csdb_party_id
+	def breaks_amiga_url(self):
+		if self.breaks_amiga_party_id:
+			return "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s" % self.breaks_amiga_party_id
+	def scene_org_url(self):
+		if self.scene_org_directory:
+			return "http://www.scene.org/dir.php?dir=%s" % self.scene_org_directory
 	
 	class Meta:
 		verbose_name_plural = "Parties"

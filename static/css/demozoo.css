@@ -950,6 +950,7 @@ ul.parties_in_series li.current {
 .external_links {
 	margin-top: 16px;
 	margin-bottom: 8px;
+	line-height: 16px;
 }
 .external_links h3 {
 	display: inline;
@@ -965,6 +966,8 @@ ul.parties_in_series li.current {
 	background-position: left center;
 	background-repeat: no-repeat;
 	margin-left: 16px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 .external_links a.pouet {
 	background-image: url('/static/images/icons/external_sites/pouet.png');
@@ -992,6 +995,24 @@ ul.parties_in_series li.current {
 }
 .external_links a.asciiarena {
 	background-image: url('/static/images/icons/external_sites/asciiarena.png');
+}
+.external_links a.sceneorg {
+	background-image: url('/static/images/icons/external_sites/sceneorg.png');
+}
+.external_links a.demoparty_net {
+	background-image: url('/static/images/icons/external_sites/demopartynet.png');
+}
+.external_links a.slengpung {
+	background-image: url('/static/images/icons/external_sites/slengpung.png');
+}
+.external_links a.breaks_amiga {
+	background-image: url('/static/images/icons/external_sites/breaks_amiga.png');
+}
+.external_links a.twitter {
+	background-image: url('/static/images/icons/external_sites/twitter.png');
+}
+.external_links a.homepage {
+	background-image: url('/static/images/icons/world.png');
 }
 .external_links a.edit {
 	background-image: url('/static/images/icons/edit.png');
