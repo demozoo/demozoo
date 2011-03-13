@@ -50,7 +50,7 @@
 			{% with party.party_series.parties.all as parties_in_series %}
 				{% if parties_in_series.count > 1 %}
 					<div>
-						Other {{ party.party_series.name }} parties:
+						Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:
 						<ul class="parties_in_series">
 							{% for party_in_series in parties_in_series %}
 								{% if party_in_series == party %}
