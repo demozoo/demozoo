@@ -33,7 +33,7 @@
 			<h2>Latest added sceners</h2>
 			<ul>
 				{% for scener in latest_added_sceners %}
-					<li class="scener">{% scener_with_affiliations scener.primary_nick %}</li>
+					<li class="scener">{% scener_with_affiliations scener %}</li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -41,7 +41,7 @@
 			<h2>Latest updated sceners</h2>
 			<ul>
 				{% for scener in latest_updated_sceners %}
-					<li class="scener">{% scener_with_affiliations scener.primary_nick %}</li>
+					<li class="scener">{% scener_with_affiliations scener %}</li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -52,9 +52,7 @@
 			<h2>Latest added groups</h2>
 			<ul>
 				{% for group in latest_added_groups %}
-					{% with group.primary_nick as nick %}
-						<li class="group"><a href="{% url group nick.releaser_id %}">{{ nick.name }}</a></li>
-					{% endwith %}
+					<li class="group"><a href="{% url group group.id %}">{{ group.name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -62,9 +60,7 @@
 			<h2>Latest updated groups</h2>
 			<ul>
 				{% for group in latest_updated_groups %}
-					{% with group.primary_nick as nick %}
-						<li class="group"><a href="{% url group nick.releaser_id %}">{{ nick.name }}</a></li>
-					{% endwith %}
+					<li class="group"><a href="{% url group group.id %}">{{ group.name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
