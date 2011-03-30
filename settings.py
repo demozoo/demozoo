@@ -102,7 +102,7 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'south',
-	'haystack',
+	'djapian',
 	'treebeard',
 	'taggit',
 	'debug_toolbar',
@@ -120,9 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 LOGIN_REDIRECT_URL = '/'
 
-HAYSTACK_SITECONF = 'search.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index')
+DJAPIAN_DATABASE_PATH = './data/djapian'
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 

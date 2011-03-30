@@ -290,11 +290,27 @@ class Releaser(models.Model):
 		else:
 			return None
 	
+	@property
+	def public_real_name(self):
+		if self.first_name and self.show_first_name and self.surname and self.show_surname:
+			return "%s %s" % (self.first_name, self.surname)
+		elif self.first_name and self.show_first_name:
+			return self.first_name
+		elif self.surname and self.show_surname:
+			return self.surname
+		else:
+			return None
+	
 	def real_name_available_to_show(self):
 		return (self.first_name and self.show_first_name) or (self.surname and self.show_surname)
 	
 	def can_reveal_full_real_name(self):
 		return (self.show_first_name and self.show_surname)
+	
+	@property
+	def all_names_string(self):
+		all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser = self)]
+		return ', '.join(all_names)
 	
 	# Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
 	# that should prevent its deletion

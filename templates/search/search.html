@@ -22,11 +22,11 @@
 			{% if page.object_list %}
 				<ul>
 					{% for result in page.object_list %}
-						{% if result.object.search_result_template %}
-							{% include result.object.search_result_template %}
+						{% if result.instance.search_result_template %}
+							{% include result.instance.search_result_template %}
 						{% else %}
 							<li>
-								<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+								<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 							</li>
 						{% endif %}
 					{% endfor %}

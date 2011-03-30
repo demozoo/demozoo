@@ -1,15 +1,23 @@
-from haystack.views import SearchView
+from search.forms import SearchForm
 from django.http import HttpResponseRedirect
+from demoscene.shortcuts import render, get_page
+from django.contrib import messages
 
-class AutofollowingSearchView(SearchView):
-	def __name__(self):
-		return "AutofollowingSearchView"
-
-	def create_response(self):
-		"""
-		Generates the actual HttpResponse to send back to the user.
-		"""
-		if self.results and len(self.results) == 1:
-			return HttpResponseRedirect(self.results[0].object.get_absolute_url())
-		else:
-			return super(AutofollowingSearchView, self).create_response()
+def search(request):
+	form = SearchForm(request.GET)
+	if form.is_valid():
+		query = form.cleaned_data['q']
+		results = form.search()
+		
+		if len(results) == 1:
+			messages.success(request, "One match found for '%s'" % query)
+			return HttpResponseRedirect(results[0].instance.get_absolute_url())
+		page = get_page(results, request.GET.get('page', '1'))
+	else:
+		query = None
+		page = None
+	return render(request, 'search/search.html', {
+		'form': form,
+		'query': query,
+		'page': page,
+	})

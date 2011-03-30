@@ -1,5 +1,5 @@
 from django.conf import settings
-from haystack.forms import SearchForm
+from search.forms import SearchForm
 
 def jquery_include_context_processor(request):
 	try:
