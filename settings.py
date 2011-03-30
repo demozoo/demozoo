@@ -120,7 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 LOGIN_REDIRECT_URL = '/'
 
-DJAPIAN_DATABASE_PATH = './data/djapian'
+DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT,'data','djapian')
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
