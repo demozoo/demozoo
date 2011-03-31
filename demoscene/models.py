@@ -312,6 +312,11 @@ class Releaser(models.Model):
 		all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser = self)]
 		return ', '.join(all_names)
 	
+	@property
+	def all_affiliation_names_string(self):
+		all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser__member_memberships__member = self)]
+		return ', '.join(all_names)
+	
 	# Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
 	# that should prevent its deletion
 	def is_referenced(self):
@@ -584,6 +589,10 @@ class Production(models.Model):
 	
 	def byline(self):
 		return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
+	
+	@property
+	def byline_string(self):
+		return unicode(self.byline())
 	
 	@property
 	def inferred_supertype(self):
