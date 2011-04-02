@@ -7,6 +7,7 @@ from model_thumbnail import ModelWithThumbnails
 from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
+from strip_markup import strip_markup
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
@@ -325,6 +326,10 @@ class Releaser(models.Model):
 			or self.member_memberships.count() # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
 			or self.productions().count()
 			or self.member_productions().count() )
+	
+	@property
+	def plaintext_notes(self):
+		return strip_markup(self.notes)
 
 class Nick(models.Model):
 	releaser = models.ForeignKey(Releaser, related_name = 'nicks')
@@ -666,6 +671,10 @@ class Production(models.Model):
 	# in the compo results editing interface
 	def is_stable_for_competitions(self):
 		return self.has_bonafide_edits or self.competition_placings.count() > 1
+	
+	@property
+	def plaintext_notes(self):
+		return strip_markup(self.notes)
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):
@@ -798,6 +807,10 @@ class PartySeries(models.Model):
 		if self.pouet_party_id:
 			return "http://www.pouet.net/party.php?which=%s" % self.pouet_party_id
 	
+	@property
+	def plaintext_notes(self):
+		return strip_markup(self.notes)
+	
 	class Meta:
 		verbose_name_plural = "Party series"
 
@@ -886,6 +899,10 @@ class Party(models.Model):
 	def scene_org_url(self):
 		if self.scene_org_directory:
 			return "http://www.scene.org/dir.php?dir=%s" % self.scene_org_directory
+	
+	@property
+	def plaintext_notes(self):
+		return strip_markup(self.notes)
 	
 	class Meta:
 		verbose_name_plural = "Parties"

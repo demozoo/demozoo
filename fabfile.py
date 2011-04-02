@@ -13,3 +13,7 @@ def deploy():
 def sanity():
 	with cd('/var/www/demozoo2'):
 		run('./manage.py sanity')
+
+def reindex():
+	with cd('/var/www/demozoo2'):
+		run('./manage.py index --rebuild')

@@ -1,7 +1,9 @@
 {% load demoscene_tags %}
+{% load search_snippet %}
 <li class="{{ result.instance.supertype }}">
 	<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 	{% if result.instance.author_nicks.all %}
 		<span class="annotation">by {% byline result.instance %}</span>
 	{% endif %}
+	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
 </li>

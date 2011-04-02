@@ -17,23 +17,45 @@
 		</table>
 
 		{% if query %}
-			<h3>Results</h3>
-
-			{% if page.object_list %}
-				<ul>
-					{% for result in page.object_list %}
-						{% if result.instance.search_result_template %}
-							{% include result.instance.search_result_template %}
-						{% else %}
-							<li>
-								<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-							</li>
-						{% endif %}
-					{% endfor %}
-				</ul>
-			{% else %}
-				<p>No results found.</p>
-			{% endif %}
+			<div class="search_results">
+				<h3>Exact name matches</h3>
+				{% if name_results %}
+					<ul>
+						{% for result in name_results %}
+							{% if result.instance.search_result_template %}
+								{% include result.instance.search_result_template %}
+							{% else %}
+								<li>
+									<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p>No exact matches found.</p>
+				{% endif %}
+			</div>
+			
+			<div class="search_results">
+				<h3>Other matches</h3>
+				{% if page.object_list %}
+					<ul>
+						{% with 1 as show_snippet %}
+							{% for result in page.object_list %}
+								{% if result.instance.search_result_template %}
+									{% include result.instance.search_result_template %}
+								{% else %}
+									<li>
+										<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+						{% endwith %}
+					</ul>
+				{% else %}
+					<p>No results found.</p>
+				{% endif %}
+			</div>
 
 			{% if page.has_previous or page.has_next %}
 				<div>

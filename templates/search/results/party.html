@@ -1,3 +1,5 @@
+{% load search_snippet %}
 <li class="party">
 	<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
+	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
 </li>

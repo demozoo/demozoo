@@ -1,5 +1,7 @@
 {% load demoscene_tags %}
+{% load search_snippet %}
 <li class="scener">
 	{% scener_with_affiliations result.instance %}
 	{% releaser_flag result.instance %}
+	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
 </li>

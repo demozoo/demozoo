@@ -23,7 +23,7 @@ def gfm(text):
 	# Extract pre blocks.
 	extractions = {}
 	def pre_extraction_callback(matchobj):
-		digest = md5(matchobj.group(0)).hexdigest()
+		digest = md5(matchobj.group(0).encode('utf-8')).hexdigest()
 		extractions[digest] = matchobj.group(0)
 		return "{gfm-extraction-%s}" % digest
 	pattern = re.compile(r'<pre>.*?</pre>', re.MULTILINE | re.DOTALL)

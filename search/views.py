@@ -7,11 +7,11 @@ def search(request):
 	form = SearchForm(request.GET)
 	if form.is_valid():
 		query = form.cleaned_data['q']
-		results = form.search()
+		(name_results, results, resultset) = form.search()
 		
-		if len(results) == 1:
+		if len(name_results) == 1 and len(results) == 0:
 			messages.success(request, "One match found for '%s'" % query)
-			return HttpResponseRedirect(results[0].instance.get_absolute_url())
+			return HttpResponseRedirect(name_results[0].instance.get_absolute_url())
 		page = get_page(results, request.GET.get('page', '1'))
 	else:
 		query = None
@@ -19,5 +19,7 @@ def search(request):
 	return render(request, 'search/search.html', {
 		'form': form,
 		'query': query,
+		'name_results': name_results,
 		'page': page,
+		'resultset': resultset,
 	})
