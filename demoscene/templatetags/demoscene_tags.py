@@ -34,8 +34,8 @@ def releaser_flag(releaser):
 def byline(production):
 	return {
 		'production': production,
-		'author_nicks': production.author_nicks.all(),
-		'author_affiliation_nicks': production.author_affiliation_nicks.all(),
+		'author_nicks': production.author_nicks.select_related('releaser'),
+		'author_affiliation_nicks': production.author_affiliation_nicks.select_related('releaser'),
 	}
 
 @register.simple_tag
