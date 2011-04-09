@@ -7,8 +7,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 
 def productions_index(request):
-	queryset = Production.objects.exclude(types__in = ProductionType.music_types()).\
-		exclude(types__in = ProductionType.graphic_types())
+	queryset = Production.objects.filter(supertype = 'production')
 	
 	production_page = get_page(
 		queryset.extra(
@@ -27,9 +26,7 @@ def tagged(request, tag_slug):
 		tag = Tag.objects.get(slug = tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name = tag_slug)
-	queryset = Production.objects.filter(tags__slug = tag_slug).\
-		exclude(types__in = ProductionType.music_types()).\
-		exclude(types__in = ProductionType.graphic_types())
+	queryset = Production.objects.filter(supertype = 'production', tags__slug = tag_slug)
 	
 	production_page = get_page(
 		queryset.extra(
