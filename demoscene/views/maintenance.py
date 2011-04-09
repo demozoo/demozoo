@@ -42,3 +42,10 @@ def prods_without_release_date_with_placement(request):
 		'title': 'Productions without a release date but with a party placement attached',
 		'productions': productions,
 	})
+
+def prod_soundtracks_without_release_date(request):
+	productions = Production.objects.filter(appearances_as_soundtrack__isnull = False, release_date_date__isnull = True)
+	return render(request, 'maintenance/report.html', {
+		'title': 'Music with productions attached but no release date',
+		'productions': productions,
+	})

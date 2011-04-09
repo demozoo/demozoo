@@ -134,4 +134,5 @@ urlpatterns += patterns('demoscene.views',
 	(r'^maintenance/prods_without_external_links$', 'maintenance.prods_without_external_links', {}, 'maintenance_prods_without_external_links'),
 	(r'^maintenance/prods_without_release_date$', 'maintenance.prods_without_release_date', {}, 'maintenance_prods_without_release_date'),
 	(r'^maintenance/prods_without_release_date_with_placement$', 'maintenance.prods_without_release_date_with_placement', {}, 'maintenance_prods_without_release_date_with_placement'),
+	(r'^maintenance/prod_soundtracks_without_release_date$', 'maintenance.prod_soundtracks_without_release_date', {}, 'maintenance_prod_soundtracks_without_release_date'),
 )
