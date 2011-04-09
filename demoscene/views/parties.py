@@ -1,11 +1,13 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production
 from demoscene.forms.party import *
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 import re
+
+from unjoinify import unjoinify
 
 try:
 	import json
@@ -26,9 +28,62 @@ def by_date(request):
 
 def show(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
+	
+	columns = [
+		'id',
+		'name',
+		'placings__id',
+		'placings__ranking',
+		'placings__score',
+		'placings__production__id',
+		'placings__production__title',
+		'placings__production__supertype',
+		'placings__production__author_nicks__id',
+		'placings__production__author_nicks__name',
+		'placings__production__author_nicks__releaser__id',
+		'placings__production__author_nicks__releaser__is_group',
+		'placings__production__author_affiliation_nicks__id',
+		'placings__production__author_affiliation_nicks__name',
+		'placings__production__author_affiliation_nicks__releaser__id',
+		'placings__production__author_affiliation_nicks__releaser__is_group',
+	]
+	query ='''
+		SELECT
+			demoscene_competition.id AS id,
+			demoscene_competition.name AS name,
+			demoscene_competitionplacing.id AS placings__id,
+			demoscene_competitionplacing.ranking AS placings__ranking,
+			demoscene_competitionplacing.score AS placings__score,
+			demoscene_production.id AS placings__production__id,
+			demoscene_production.title AS placings__production__title,
+			demoscene_production.supertype AS placings__production__supertype,
+			author_nick.id AS placings__production__author_nicks__id,
+			author_nick.name AS placings__production__author_nicks__name,
+			author.id AS placings__production__author_nicks__releaser__id,
+			author.is_group AS placings__production__author_nicks__releaser__is_group,
+			affiliation_nick.id AS placings__production__author_affiliation_nicks__id,
+			affiliation_nick.name AS placings__production__author_affiliation_nicks__name,
+			affiliation.id AS placings__production__author_affiliation_nicks__releaser__id,
+			affiliation.is_group AS placings__production__author_affiliation_nicks__releaser__is_group
+		FROM demoscene_competition
+		LEFT JOIN demoscene_competitionplacing ON (demoscene_competition.id = demoscene_competitionplacing.competition_id)
+		LEFT JOIN demoscene_production ON (demoscene_competitionplacing.production_id = demoscene_production.id)
+		LEFT JOIN demoscene_production_author_nicks ON (demoscene_production_author_nicks.production_id = demoscene_production.id)
+		LEFT JOIN demoscene_nick AS author_nick ON (demoscene_production_author_nicks.nick_id = author_nick.id)
+		LEFT JOIN demoscene_releaser AS author ON (author_nick.releaser_id = author.id)
+		LEFT JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production_author_affiliation_nicks.production_id = demoscene_production.id)
+		LEFT JOIN demoscene_nick AS affiliation_nick ON (demoscene_production_author_affiliation_nicks.nick_id = affiliation_nick.id)
+		LEFT JOIN demoscene_releaser AS affiliation ON (affiliation_nick.releaser_id = affiliation.id)
+		WHERE demoscene_competition.party_id = %s
+		ORDER BY
+			demoscene_competition.name, demoscene_competitionplacing.position,
+			demoscene_production.id, author_nick.id, affiliation_nick.id
+	'''
+	competitions = unjoinify(Competition, query, (party.id,), columns)
+
 	return render(request, 'parties/show.html', {
 		'party': party,
-		'competitions': party.competitions.order_by('name'),
+		'competitions': competitions,
 	})
 
 def show_series(request, party_series_id):

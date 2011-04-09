@@ -916,7 +916,10 @@ class Competition(models.Model):
 		return self.placings.order_by('position')
 	
 	def __unicode__(self):
-		return "%s %s" % (self.party.name, self.name)
+		try:
+			return "%s %s" % (self.party.name, self.name)
+		except Party.DoesNotExist:
+			return "(unknown party) %s" % self.name
 
 class CompetitionPlacing(models.Model):
 	competition = models.ForeignKey(Competition, related_name = 'placings')
@@ -926,7 +929,10 @@ class CompetitionPlacing(models.Model):
 	score = models.CharField(max_length = 32, blank = True)
 	
 	def __unicode__(self):
-		return self.production.__unicode__()
+		try:
+			return self.production.__unicode__()
+		except Production.DoesNotExist:
+			return "(CompetitionPlacing)"
 
 class AccountProfile(models.Model):
 	user = models.ForeignKey(User, unique = True)

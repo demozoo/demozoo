@@ -80,7 +80,7 @@
 		</div>
 	{% endif %}
 	
-	{% for compo in competitions %}
+	{% for compo, placings in competitions %}
 		<div class="competition">
 			<a id="competition_{{ compo.id }}"></a>
 			<h3>
@@ -89,20 +89,18 @@
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
 				</a>
 			</h3>
-			{% with compo.results as results %}
-				{% if results %}
-					<table>
-						{% for result in results %}
-							<tr>
-								<td>{{ result.ranking }}</td>
-								<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
-								<td>{% byline result.production %}</td>
-								<td>{{ result.score }}</td>
-							</tr>
-						{% endfor %}
-					</table>
-				{% endif %}
-			{% endwith %}
+			{% if placings %}
+				<table>
+					{% for result, production, authors, affiliations in placings %}
+						<tr>
+							<td>{{ result.ranking }}</td>
+							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
+							<td>{% component_byline authors affiliations %}</td>
+							<td>{{ result.score }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			{% endif %}
 		</div>
 	{% endfor %}
 	
