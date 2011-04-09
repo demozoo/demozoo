@@ -6,7 +6,7 @@
 	<col width="40%" />
 	{% for prod in productions %}
 		<tr>
-			<td><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+			<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
 			<td>{{ prod.release_date.short_format }}</td>
 			<td>{% byline prod %}</td>
 		</tr>

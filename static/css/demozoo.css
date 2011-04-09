@@ -321,7 +321,7 @@ li.add_group {
 	background-position: left 2px;
 	background-repeat: no-repeat;
 }
-li.production {
+li.production, td.production {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
@@ -329,7 +329,7 @@ li.production {
 	background-position: left 2px;
 	background-repeat: no-repeat;
 }
-li.music {
+li.music, td.music {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
@@ -337,7 +337,7 @@ li.music {
 	background-position: left 2px;
 	background-repeat: no-repeat;
 }
-li.graphics {
+li.graphics, td.graphics {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
