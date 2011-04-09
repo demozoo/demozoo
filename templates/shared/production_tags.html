@@ -4,9 +4,9 @@
 		<ul>
 			{% for tag in tags %}
 				<li>
-					<a class="tag_name" href="{% if production.supertype == 'music' %}{% url music_tagged tag %}{% else %}{% if production.supertype == 'graphics' %}{% url graphics_tagged tag %}{% else %}{% url productions_tagged tag %}{% endif %}{% endif %}">{{ tag }}</a>
+					<a class="tag_name" href="{% if production.supertype == 'music' %}{% url music_tagged tag.slug %}{% else %}{% if production.supertype == 'graphics' %}{% url graphics_tagged tag.slug %}{% else %}{% url productions_tagged tag.slug %}{% endif %}{% endif %}">{{ tag }}</a>
 					{% if editing %}
-						<form action="{% url production_remove_tag production.id tag.name %}" method="post">
+						<form action="{% url production_remove_tag production.id tag.slug %}" method="post">
 							{% csrf_token %}
 							<button type="submit">x</button>
 						</form>

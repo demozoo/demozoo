@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Production, ProductionType, Byline
 from demoscene.forms.production import *
+from taggit.models import Tag
 
 from django.contrib.auth.decorators import login_required
 import datetime
@@ -19,8 +20,12 @@ def index(request):
 		'production_page': production_page,
 	})
 
-def tagged(request, tag_name):
-	queryset = Production.objects.filter(tags__name = tag_name, types__in = ProductionType.graphic_types())
+def tagged(request, tag_slug):
+	try:
+		tag = Tag.objects.get(slug = tag_slug)
+	except Tag.DoesNotExist:
+		tag = Tag(name = tag_slug)
+	queryset = Production.objects.filter(tags__slug = tag_slug, types__in = ProductionType.graphic_types())
 	
 	production_page = get_page(
 		queryset.extra(
@@ -29,7 +34,7 @@ def tagged(request, tag_name):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'graphics/index.html', {
-		'title': "Graphics tagged '%s'" % tag_name,
+		'title': "Graphics tagged '%s'" % tag.name,
 		'add_new_link': False,
 		'production_page': production_page,
 	})
