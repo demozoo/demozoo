@@ -2,6 +2,8 @@
 	$.fn.resultsTable = function(opts) { this.each(function() {
 		var resultsTable = this;
 		
+		var competitionId = opts['competition_id'];
+		
 		var platformIds = [];
 		var platformsById = {};
 		for (var i = 0; i < opts['platforms'].length; i++) {
@@ -384,11 +386,80 @@
 			$('> .show', cell).show();
 			$('> .edit', cell).hide();
 			if (input) {
-				/* quick + dirty method to set show text to form field */
+				/* set show text to form field */
 				field = fieldsByContainerClass[getCellType(cell)];
 				field.writeShowView($('> .show', cell), field.getData(cell));
 			}
 			editMode = null;
+			saveRow(cursorY);
+		}
+		
+		function saveRow(rowIndex, productionId) {
+			/* we pass productionId when an existing production is selected from the autocomplete dropdown;
+				this will override the current production details */
+			var rowElement = rows.eq(rowIndex);
+			var rowId = null;
+			var rowData = {
+				ranking: $('ul > li.placing_field > div.edit > input', rowElement).val(),
+				score: $('ul > li.score_field > div.edit > input', rowElement).val(),
+				position: rowIndex + 1
+			};
+			if (productionId != null) {
+				rowData.production_id = productionId;
+			} else {
+				var title = $('ul > li.title_field > div.edit > input', rowElement).val();
+				if (!title) return; /* can't save without a production title */
+				rowData.production = {
+					title: title,
+					authors: [],
+					affiliations: [],
+					platform: $('ul > li.platform_field > div.edit > select', rowElement).val(),
+					production_type: $('ul > li.type_field > div.edit > select', rowElement).val()
+				}
+				var nickMatches = $('ul > li.by_field > div.edit > div.byline_field > div.byline_match_container > div.nick_match', rowElement);
+				nickMatches.each(function() {
+					var nameField = $('> input[type=hidden]', this);
+					nickData = {
+						name: nameField.val(),
+						id: $('> ul input:radio:checked', this).val()
+					}
+					if (nameField.attr('name').match(/byline_author_match/)) {
+						rowData.production.authors.push(nickData);
+					} else if (nameField.attr('name').match(/byline_affiliation_match/)) {
+						rowData.production.affiliations.push(nickData);
+					}
+				})
+			}
+			var rowClasses = rowElement.attr('class').split(/\s+/);
+			for (var i = 0; i < rowClasses.length; i++) {
+				var className = rowClasses[i];
+				var match;
+				if (match = className.match(/^row_id_(\d+)$/)) {
+					rowId = match[1];
+				} else if (productionId == null && (match = className.match(/^production_id_(\d+)$/))) {
+					rowData['production_id'] = match[1];
+				}
+			}
+			var url = '/competition_api/' + competitionId + '/row/';
+			if (rowId != null) url += rowId + '/';
+			$.ajax({
+				'url': url,
+				'dataType': 'json',
+				type: 'POST',
+				processData: false,
+				data: JSON.stringify(rowData),
+				contentType: 'application/json',
+				success: function(data) {
+					rowElement.addClass('row_id_' + data.id).addClass('production_id_' + data.production_id);
+					var titleLink = $('<a tabindex="-1"></a>').attr({'href': data.production.page_url}).text(data.production.title);
+					$('ul > li.title_field > div.show', rowElement).html(titleLink);
+					$('ul > li.by_field > div.show', rowElement).text(data.production.byline_string);
+					$('ul > li.by_field > div.edit > div.byline_field > div.byline_match_container', rowElement).html(data.production.byline_matches);
+					$('ul > li.by_field > div.edit > div.byline_field', rowElement).bylineField();
+					
+					//console.log(data);
+				}
+			})
 		}
 		
 		function finishEditAndAdvance() {
@@ -447,7 +518,7 @@
 					return; /* continue editing if cursor is already here */
 				}
 				$(resultsTable).focus();
-				finishEdit();
+				if (editMode) finishEdit();
 				setCursor(c[0], c[1]);
 			} else if (editMode) {
 				finishEdit();
@@ -455,12 +526,14 @@
 		}).click(function(event) {
 			if ($(event.target).parents('ul.results_table').length) {
 				/* clicking within table */
+				$(resultsTable).focus();
 			} else {
 				blur();
 			}
 		}).dblclick(function(event) {
 			c = getElementCoordinates(event.target);
 			if (c) {
+				$(resultsTable).focus();
 				setCursor(c[0], c[1]);
 				startEdit('capturedText');
 			}

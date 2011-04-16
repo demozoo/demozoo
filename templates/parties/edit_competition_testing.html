@@ -1,6 +1,7 @@
 <script type="text/javascript">/* <![CDATA[ */
 	$(function() {
 		$('ul.results_table').resultsTable({
+			competition_id: {{ competition.id }},
 			platforms: {{ platforms_json|safe }},
 			production_types: {{ production_types_json|safe }}
 		});
@@ -27,7 +28,7 @@
 		</li>
 		
 		{% for placing, form in results_with_forms %}
-			<li class="results_row {% if placing.production.is_stable_for_competitions %}stabble{% endif %}">
+			<li class="results_row row_id_{{ placing.id }} production_id_{{ placing.production_id }} {% if placing.production.is_stable_for_competitions %}stable{% endif %}">
 				<ul class="fields">
 					<li class="placing_field">
 						<div class="show">{{ placing.ranking }}</div>

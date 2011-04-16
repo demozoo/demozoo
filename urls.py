@@ -121,6 +121,9 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/edit_notes/$', 'parties.edit_notes', {}, 'party_edit_notes'),
 	(r'^parties/(\d+)/edit_external_links/$', 'parties.edit_external_links', {}, 'party_edit_external_links'),
 	
+	(r'^competition_api/(\d+)/row/$', 'competition_api.process_row', {}),
+	(r'^competition_api/(\d+)/row/(\d+)/$', 'competition_api.process_row', {}),
+	
 	(r'^search/', include('search.urls')),
 
 	(r'^nicks/match/$', 'nicks.match', {}),
