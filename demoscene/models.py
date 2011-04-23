@@ -541,6 +541,8 @@ class NickVariant(models.Model):
 				)
 			if limit:
 				nick_variants = nick_variants[:limit]
+			
+			nick_variants = nick_variants.select_related('nick', 'nick__releaser')
 		else:
 			nick_variants = NickVariant.objects.none()
 			

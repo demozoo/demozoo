@@ -58,3 +58,6 @@ def byline_match(request):
 		'matches': byline_lookup.render_match_fields(field_name),
 	}
 	return HttpResponse(json.dumps(data), mimetype="text/javascript")
+	
+	# alternative (non-functional) response to get django debug toolbar to show up
+	#return HttpResponse("<body>%s</body>" % json.dumps(data))

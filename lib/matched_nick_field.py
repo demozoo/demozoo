@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.utils.html import conditional_escape
 from demoscene.models import Nick, NickVariant, Releaser
 import datetime
 
@@ -57,11 +58,26 @@ class MatchedNickWidget(forms.Widget):
 			groups = group_names, members = member_names)
 		for nv in self.nick_variants:
 			icon = 'group' if nv.nick.releaser.is_group else 'scener'
-			if nv.nick.name == nv.name:
-				choices.append((nv.nick_id, nv.nick.name_with_affiliations(), icon, nv.nick.name))
+			if nv.nick.releaser.country_code:
+				flag = '<img src="/static/images/icons/flags/%s.png" alt="(%s)" /> ' % (
+					conditional_escape(nv.nick.releaser.country_code.lower()),
+					conditional_escape(nv.nick.releaser.country_code)
+				)
 			else:
-				label = "%s (%s)" % (nv.nick.name_with_affiliations(), nv.name)
-				choices.append((nv.nick_id, label, icon, nv.nick.name))
+				flag = ''
+			
+			if nv.nick.name == nv.name:
+				alias = ''
+			else:
+				alias = " <em>(%s)</em>" % conditional_escape(nv.name)
+			
+			label = mark_safe(
+				"%s%s%s" % (
+					flag,
+					conditional_escape(nv.nick.name_with_affiliations()),
+					alias
+				))
+			choices.append((nv.nick_id, label, icon, nv.nick.name))
 		
 		# see if there's a unique top choice in self.nick_variants;
 		# if so, store that in self.top_choice for possible use later
