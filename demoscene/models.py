@@ -163,6 +163,7 @@ class Releaser(models.Model):
 	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
 	mobygames_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'MobyGames author ID')
 	asciiarena_author_id = models.CharField(blank = True, max_length = 32, verbose_name = 'AsciiArena author ID')
+	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
 	
 	location = models.CharField(max_length = 255, blank = True)
 	country_code = models.CharField(max_length = 5, blank = True)
@@ -815,6 +816,10 @@ class PartySeries(models.Model):
 	
 	class Meta:
 		verbose_name_plural = "Party series"
+
+class PartySeriesDemozoo0Reference(models.Model):
+	party_series = models.ForeignKey(PartySeries, related_name = 'demozoo0_ids')
+	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
 
 class Party(models.Model):
 	party_series = models.ForeignKey(PartySeries, related_name = 'parties')
