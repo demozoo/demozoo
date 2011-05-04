@@ -10,15 +10,15 @@ from form_with_location import ModelFormWithLocation
 class PartyForm(ModelFormWithLocation):
 	name = forms.CharField(label = 'Party name', help_text = "e.g. Revision 2011")
 	party_series_name = forms.CharField(label = 'Party series', help_text = "e.g. Revision")
-	start_date = FuzzyDateField()
-	end_date = FuzzyDateField()
+	start_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'party_series_name')
 
 class EditPartyForm(ModelFormWithLocation):
-	start_date = FuzzyDateField()
-	end_date = FuzzyDateField()
+	start_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'tagline', 'location')
