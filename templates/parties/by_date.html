@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
 
 {% block html_title %}Parties - Demozoo{% endblock %}
 
@@ -13,14 +14,14 @@
 		<li><a href="{% url new_party %}">New party</a></li>
 	</ul>
 	
-	{% regroup parties by start_date.year as year_list %}
+	{% regroup parties by start_date.date.year as year_list %}
 	{% for year in year_list %}
 		<h3>{{ year.grouper }}</h3>
 		<ul>
 			{% for party in year.list %}
 				<li>
 					<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
-					- {{ party.start_date }} - {{ party.end_date }}
+					- {% date_range party.start_date party.end_date %}
 					{% if party.location %}
 						- 
 						{{ party.location }}

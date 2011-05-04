@@ -825,8 +825,10 @@ class Party(models.Model):
 	party_series = models.ForeignKey(PartySeries, related_name = 'parties')
 	name = models.CharField(max_length = 255, unique = True)
 	tagline = models.CharField(max_length = 255, blank = True)
-	start_date = models.DateField()
-	end_date = models.DateField()
+	start_date_date = models.DateField()
+	start_date_precision = models.CharField(max_length = 1)
+	end_date_date = models.DateField()
+	end_date_precision = models.CharField(max_length = 1)
 	
 	location = models.CharField(max_length = 255, blank = True)
 	country_code = models.CharField(max_length = 5, blank = True)
@@ -868,9 +870,23 @@ class Party(models.Model):
 	def suffix(self):
 		series_name = self.party_series.name
 		if series_name == self.name and self.start_date:
-			return self.start_date.year
+			return self.start_date.date.year
 		else:
 			return re.sub(r"^" + re.escape(series_name) + r"\s+", '', self.name)
+	
+	def _get_start_date(self):
+		return FuzzyDate(self.start_date_date, self.start_date_precision)
+	def _set_start_date(self, fuzzy_date):
+		self.start_date_date = fuzzy_date.date
+		self.start_date_precision = fuzzy_date.precision
+	start_date = property(_get_start_date,_set_start_date)
+	
+	def _get_end_date(self):
+		return FuzzyDate(self.end_date_date, self.end_date_precision)
+	def _set_end_date(self, fuzzy_date):
+		self.end_date_date = fuzzy_date.date
+		self.end_date_precision = fuzzy_date.precision
+	end_date = property(_get_end_date,_set_end_date)
 	
 	def random_screenshot(self):
 		screenshots = Screenshot.objects.filter(production__competition_placings__competition__party = self)
@@ -913,7 +929,7 @@ class Party(models.Model):
 	
 	class Meta:
 		verbose_name_plural = "Parties"
-		ordering = ("start_date",)
+		ordering = ("start_date_date",)
 
 class Competition(models.Model):
 	party = models.ForeignKey(Party, related_name = 'competitions')

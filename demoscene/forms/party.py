@@ -2,23 +2,23 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import BaseModelFormSet
 from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing, Platform, ProductionType
-from any_format_date_field import AnyFormatDateField
+from fuzzy_date_field import FuzzyDateField
 from production_field import ProductionField
 from byline_field import BylineField
 from form_with_location import ModelFormWithLocation
 
 class PartyForm(ModelFormWithLocation):
 	name = forms.CharField(label = 'Party name', help_text = "e.g. Revision 2011")
-	start_date = AnyFormatDateField()
-	end_date = AnyFormatDateField()
 	party_series_name = forms.CharField(label = 'Party series', help_text = "e.g. Revision")
+	start_date = FuzzyDateField()
+	end_date = FuzzyDateField()
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'party_series_name')
 
 class EditPartyForm(ModelFormWithLocation):
-	start_date = AnyFormatDateField()
-	end_date = AnyFormatDateField()
+	start_date = FuzzyDateField()
+	end_date = FuzzyDateField()
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'tagline', 'location')

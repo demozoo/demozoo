@@ -28,6 +28,14 @@ class FuzzyDate():
 		else:
 			return self.date.strftime("%b %Y")
 	
+	def explicit_format(self):
+		if self.precision == 'y':
+			return self.date.strftime("? %Y")
+		elif self.precision == 'm':
+			return self.date.strftime("? %B %Y")
+		else:
+			return self.date.strftime("%e %B %Y")
+	
 	@staticmethod
 	def parse(str):
 		this_year = datetime.datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)

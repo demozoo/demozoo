@@ -15,13 +15,13 @@ except ImportError:
 	import simplejson as json
 
 def index(request):
-	parties = Party.objects.order_by('party_series__name', 'start_date').select_related('party_series')
+	parties = Party.objects.order_by('party_series__name', 'start_date_date').select_related('party_series')
 	return render(request, 'parties/index.html', {
 		'parties': parties,
 	})
 
 def by_date(request):
-	parties = Party.objects.order_by('start_date','end_date')
+	parties = Party.objects.order_by('start_date_date','end_date_date')
 	return render(request, 'parties/by_date.html', {
 		'parties': parties,
 	})
@@ -105,9 +105,12 @@ def create(request):
 				ps.save()
 				party.party_series = ps
 			
+			party.start_date = form.cleaned_data['start_date']
+			party.end_date = form.cleaned_data['end_date']
+			
 			# copy over usable fields from party_series
 			if party.start_date:
-				party.pouet_party_when = party.start_date.year
+				party.pouet_party_when = party.start_date.date.year
 			if party.party_series.website:
 				party.homepage = party.party_series.website
 			if party.party_series.pouet_party_id:
@@ -131,11 +134,16 @@ def edit(request, party_id):
 	if request.method == 'POST':
 		form = EditPartyForm(request.POST, instance = party)
 		if form.is_valid():
+			party.start_date = form.cleaned_data['start_date']
+			party.end_date = form.cleaned_data['end_date']
 			form.save()
 			messages.success(request, 'Party updated')
 			return redirect('party', args = [party.id])
 	else:
-		form = EditPartyForm(instance = party)
+		form = EditPartyForm(instance = party, initial = {
+			'start_date': party.start_date,
+			'end_date': party.end_date
+		})
 	
 	return ajaxable_render(request, 'parties/edit.html', {
 		'html_title': "Editing party: %s" % party.name,

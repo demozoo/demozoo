@@ -22,7 +22,8 @@ def process_row(request, competition_id, row_id = None):
 		if new_production_id == None:
 			# creating a new production
 			new_production = Production(
-				release_date_date = (competition.party.end_date or competition.party.start_date),
+				release_date_date = (competition.party.end_date_date or competition.party.start_date_date),
+				release_date_precision = (competition.party.end_date_precision or competition.party.start_date_precision),
 				has_bonafide_edits = False,
 				updated_at = datetime.datetime.now()
 			)
