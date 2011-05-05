@@ -138,4 +138,5 @@ urlpatterns += patterns('demoscene.views',
 	(r'^maintenance/prods_without_release_date$', 'maintenance.prods_without_release_date', {}, 'maintenance_prods_without_release_date'),
 	(r'^maintenance/prods_without_release_date_with_placement$', 'maintenance.prods_without_release_date_with_placement', {}, 'maintenance_prods_without_release_date_with_placement'),
 	(r'^maintenance/prod_soundtracks_without_release_date$', 'maintenance.prod_soundtracks_without_release_date', {}, 'maintenance_prod_soundtracks_without_release_date'),
+	(r'^maintenance/group_nicks_with_brackets$', 'maintenance.group_nicks_with_brackets', {}, 'maintenance_group_nicks_with_brackets'),
 )
