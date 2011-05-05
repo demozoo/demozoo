@@ -20,6 +20,12 @@
 		{% include "shared/form_field.html" %}
 	{% endwith %}
 
+	{% if form.differentiator %}
+		{% with form.differentiator as field %}
+			{% include "shared/form_field.html" %}
+		{% endwith %}
+	{% endif %}
+
 	{% with form.override_primary_nick as field %}
 		<div class="field">
 			<div class="field_input unlabelled_field_input">

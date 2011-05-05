@@ -336,6 +336,7 @@ class Nick(models.Model):
 	releaser = models.ForeignKey(Releaser, related_name = 'nicks')
 	name = models.CharField(max_length=255)
 	abbreviation = models.CharField(max_length = 255, blank = True, help_text = "(optional - only if there's one that's actively being used. Don't just make one up!)")
+	differentiator = models.CharField(max_length = 32, blank = True, help_text = "hint text to distinguish from other groups/sceners with the same name - e.g. platform or country")
 	
 	def __init__(self, *args, **kwargs):
 		super(Nick, self).__init__(*args, **kwargs)

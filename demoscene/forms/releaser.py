@@ -78,7 +78,10 @@ class NickForm(forms.ModelForm):
 		help_text = "(as a comma-separated list)")
 	
 	def __init__(self, releaser, *args, **kwargs):
+		for_admin = kwargs.pop('for_admin', False)
+		
 		super(NickForm, self).__init__(*args, **kwargs)
+		
 		if kwargs.has_key('instance'):
 			instance = kwargs['instance']
 			self.initial['nick_variant_list'] = instance.nick_variant_list
@@ -90,6 +93,12 @@ class NickForm(forms.ModelForm):
 			self.fields['override_primary_nick'] = forms.BooleanField(
 				label = "Use this as their preferred name, instead of '%s'" % releaser.name,
 				required = False)
+		
+		if not for_admin:
+			try:
+				del self.fields['differentiator']
+			except KeyError:
+				pass
 	
 	# override validate_unique so that we include the releaser test in unique_together validation;
 	# see http://stackoverflow.com/questions/2141030/djangos-modelform-unique-together-validation/3757871#3757871
@@ -117,7 +126,7 @@ class ScenerNickForm(NickForm):
 
 class GroupNickForm(NickForm):
 	class Meta(NickForm.Meta):
-		fields = ['name', 'abbreviation']
+		fields = ['name', 'abbreviation', 'differentiator']
 
 class ScenerMembershipForm(forms.Form):
 	group_nick = NickField(groups_only = True, label = 'Group name')

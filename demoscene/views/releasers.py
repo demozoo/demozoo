@@ -104,7 +104,7 @@ def edit_nick(request, releaser_id, nick_id):
 		nick_form_class = ScenerNickForm
 	nick = get_object_or_404(Nick, releaser = releaser, id = nick_id)
 	if request.method == 'POST':
-		form = nick_form_class(releaser, request.POST, instance = nick)
+		form = nick_form_class(releaser, request.POST, instance = nick, for_admin = request.user.is_staff)
 		if form.is_valid():
 			form.save()
 			if form.cleaned_data.get('override_primary_nick') or nick == primary_nick:
@@ -113,7 +113,7 @@ def edit_nick(request, releaser_id, nick_id):
 			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = nick_form_class(releaser, instance = nick)
+		form = nick_form_class(releaser, instance = nick, for_admin = request.user.is_staff)
 	
 	return ajaxable_render(request, 'releasers/edit_nick_form.html', {
 		'form': form,
@@ -133,7 +133,7 @@ def add_nick(request, releaser_id):
 	
 	if request.method == 'POST':
 		nick = Nick(releaser = releaser)
-		form = nick_form_class(releaser, request.POST, instance = nick)
+		form = nick_form_class(releaser, request.POST, instance = nick, for_admin = request.user.is_staff)
 		if form.is_valid():
 			form.save()
 			if form.cleaned_data.get('override_primary_nick'):
@@ -143,7 +143,7 @@ def add_nick(request, releaser_id):
 			releaser.save()
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = nick_form_class(releaser)
+		form = nick_form_class(releaser, for_admin = request.user.is_staff)
 	
 	return ajaxable_render(request, 'releasers/nick_form.html', {
 		'form': form,

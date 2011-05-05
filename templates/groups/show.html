@@ -15,7 +15,9 @@
 			{% endif %}
 		</ul>
 		<h2>
-			{{ group.name }} {% nick_variants group.primary_nick %}
+			{{ group.name }}
+			{% if group.primary_nick.differentiator %}<span class="annotation">({{ group.primary_nick.differentiator }})</span>{% endif %}
+			{% nick_variants group.primary_nick %}
 			{% if editing %}
 				<a href="{% url releaser_edit_primary_nick group.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />

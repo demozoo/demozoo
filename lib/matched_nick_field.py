@@ -41,7 +41,7 @@ class RadioFieldWithClassnameRenderer(forms.widgets.RadioFieldRenderer):
 		for i, choice in enumerate(self.choices):
 			widget = forms.widgets.RadioInput(self.name, self.value, self.attrs.copy(), choice, i);
 			list_items.append(
-				u'<li class="%s" data-name="%s">%s</li>' % (choice[2], choice[3], force_unicode(widget))
+				u'<li class="%s" data-name="%s">%s</li>' % (choice[2], conditional_escape(choice[3]), force_unicode(widget))
 			)
 		return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join(list_items))
 
@@ -66,18 +66,31 @@ class MatchedNickWidget(forms.Widget):
 			else:
 				flag = ''
 			
+			if nv.nick.differentiator:
+				differentiator = " <em>(%s)</em>" % conditional_escape(nv.nick.differentiator)
+			else:
+				differentiator = ''
+			
 			if nv.nick.name == nv.name:
 				alias = ''
 			else:
 				alias = " <em>(%s)</em>" % conditional_escape(nv.name)
 			
 			label = mark_safe(
-				"%s%s%s" % (
+				"%s%s%s%s" % (
 					flag,
 					conditional_escape(nv.nick.name_with_affiliations()),
+					differentiator,
 					alias
 				))
-			choices.append((nv.nick_id, label, icon, nv.nick.name))
+			
+			# label is used in the dropdown list (e.g. "Add a new scener named 'Bob'");
+			# display_name is used as the content of the collapsed box (where the above should just appear as "Bob")
+			display_name = nv.nick.name
+			if nv.nick.differentiator:
+				display_name += " (%s)" % nv.nick.differentiator
+			
+			choices.append((nv.nick_id, label, icon, display_name))
 		
 		# see if there's a unique top choice in self.nick_variants;
 		# if so, store that in self.top_choice for possible use later

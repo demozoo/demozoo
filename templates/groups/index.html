@@ -13,7 +13,7 @@
 	<ul>
 		{% for nick in nick_page.object_list %}
 			<li class="group">
-				<a href="{% url group nick.releaser_id %}">{{ nick.name }}</a>
+				<a href="{% url group nick.releaser_id %}">{{ nick.name }}{% if nick.differentiator %} ({{ nick.differentiator }}){% endif %}</a>
 				{% nick_variants nick %}
 			</li>
 		{% endfor %}
