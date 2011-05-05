@@ -16,4 +16,4 @@ def sanity():
 
 def reindex():
 	with cd('/var/www/demozoo2'):
-		run('./manage.py index --rebuild')
+		run('./manage.py force_rebuild_index')
