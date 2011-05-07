@@ -13,81 +13,72 @@ PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 class Command(NoArgsCommand):
 	def import_all_users(self):
 		print "importing users"
-		cur = self.dz0_db.cursor()
-		cur.execute("SELECT id, email, created_at, nick FROM users")
-		for (id, email, created_at, nick) in cur:
+		for row in demozoo0.all_users():
 			try:
-				profile = AccountProfile.objects.get(demozoo0_id = id)
+				profile = AccountProfile.objects.get(demozoo0_id = row['id'])
 			except AccountProfile.DoesNotExist:
 				user = User(
-					username = "%s [dz0]" % nick,
-					email = (email or ''),
+					username = "%s [dz0]" % row['nick'],
+					email = (row['email'] or ''),
 					is_staff = False,
 					is_active = False,
 					is_superuser = False,
-					date_joined = created_at
+					date_joined = row['created_at']
 				)
 				user.save()
 				profile = AccountProfile(
 					user = user,
 					edit_mode_active = False,
 					sticky_edit_mode = False,
-					demozoo0_id = id
+					demozoo0_id = row['id']
 				)
 				profile.save()
 	
 	def import_all_party_series(self):
 		print "importing party series"
-		cur = self.dz0_db.cursor()
-		cur.execute("SELECT id, name, website, pouet_id FROM party_series WHERE name IS NOT NULL")
-		for (id, name, website, pouet_id) in cur:
+		for row in demozoo0.all_party_series():
 			try:
-				party_series = PartySeries.objects.get(demozoo0_ids = id)
+				party_series = PartySeries.objects.get(demozoo0_ids = row['id'])
 			except PartySeries.DoesNotExist:
 				try:
 					# search by pouet ID
-					party_series = PartySeries.objects.get(pouet_party_id = pouet_id)
+					party_series = PartySeries.objects.get(pouet_party_id = row['pouet_id'])
 				except PartySeries.DoesNotExist:
 					try:
 						# search by name - needed because we don't allow duplicate names
-						party_series = PartySeries.objects.get(name = name)
+						party_series = PartySeries.objects.get(name = row['name'])
 					except PartySeries.DoesNotExist:
 						# create new
 						party_series = PartySeries(
-							name = name,
-							website = (website or ''),
-							pouet_party_id = pouet_id,
+							name = row['name'],
+							website = (row['website'] or ''),
+							pouet_party_id = row['pouet_id'],
 						)
 						
 				if website and not party_series.website:
-					party_series.website = website
+					party_series.website = row['website']
 				party_series.save()
 				dz0_id = PartySeriesDemozoo0Reference(
-					demozoo0_id = id,
+					demozoo0_id = row['id'],
 					party_series = party_series
 				)
 				dz0_id.save()
 	
 	def import_all_releasers(self): # INCOMPLETE
-		cur = self.dz0_db.cursor()
 		print "importing releasers"
-		cur.execute('''
-			SELECT id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id
-			FROM releasers
-		''')
-		for (id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id) in cur:
+		for (id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id) in demozoo0.all_releasers():
 			try:
-				releaser = Releaser.objects.get(demozoo0_id = id)
-				#print "%s - %s; found by demozoo0_id" % (id, name)
+				releaser = Releaser.objects.get(demozoo0_id = row['id'])
+				#print "%s - %s; found by demozoo0_id" % (row['id'], row['name'])
 			except Releaser.DoesNotExist:
-				if type == 'Scener' and slengpung_id:
+				if row['type'] == 'Scener' and row['slengpung_id']:
 					try:
-						releaser = Releaser.objects.get(slengpung_user_id = slengpung_id)
-						print "%s found by slengpung ID" % name
+						releaser = Releaser.objects.get(slengpung_user_id = row['slengpung_id'])
+						print "%s found by slengpung ID" % row['name']
 					except Releaser.DoesNotExist:
 						pass
-				#print "Looking for %s - %s (%s)" % (id, name, type)
-				#name_match_count = Releaser.objects.filter(nicks__variants__name = name, is_group = (type == 'Group')).count()
+				#print "Looking for %s - %s (%s)" % (row['id'], row['name'], row['type'])
+				#name_match_count = Releaser.objects.filter(nicks__variants__name = row['name'], is_group = (row['type'] == 'Group')).count()
 				#print "%s matches by name" % name_match_count
 	
 	# strip punctuation and whitespace that's likely going to obscure string-to-string matches
@@ -172,7 +163,6 @@ class Command(NoArgsCommand):
 		import sys
 		import codecs
 		sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-		self.dz0_db = pymysql.connect(user="root", db="demozoo_production", charset="latin1")
 		
 		# pending approval from Pouet:
 		# self.import_all_users()
@@ -181,5 +171,3 @@ class Command(NoArgsCommand):
 		
 		for info in demozoo0.all_productions():
 			self.find_matching_production_in_dz2(info)
-		
-		self.dz0_db.close()

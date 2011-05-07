@@ -29,6 +29,33 @@ def productions_with_credits():
 		ORDER BY productions.id
 	''')
 
+def all_party_series():
+	cur = connection.cursor()
+	cur.execute("SELECT id, name, website, pouet_id FROM party_series WHERE name IS NOT NULL")
+	columns = ['id','name','website','pouet_id']
+	for row in cur:
+		info = dict(zip(columns, row))
+		yield info
+
+def all_users():
+	cur = connection.cursor()
+	cur.execute("SELECT id, email, created_at, nick FROM users")
+	columns = ['id','email','created_at','nick']
+	for row in cur:
+		info = dict(zip(columns, row))
+		yield info
+
+def all_releasers():
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id
+		FROM releasers
+	''')
+	columns = ['id','type','pouet_id','zxdemo_id','name','abbreviation','website','csdb_id','country_id','slengpung_id']
+	for row in cur:
+		info = dict(zip(columns, row))
+		yield info
+
 def author_and_affiliation_names(production_id):
 	cur = connection.cursor()
 	cur.execute('''
