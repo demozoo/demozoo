@@ -82,3 +82,11 @@ def production_type_ids_for_production(production_id):
 		WHERE production_id = %s
 	''', (production_id,) )
 	return [row[0] for row in cur]
+
+def platform_ids_for_production(production_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT platform_id FROM production_platforms
+		WHERE production_id = %s AND platform_id != 74 -- platform_id 74 is 'null'
+	''', (production_id,) )
+	return [row[0] for row in cur]

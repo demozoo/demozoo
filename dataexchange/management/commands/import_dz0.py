@@ -54,6 +54,97 @@ PRODUCTION_TYPE_SUGGESTIONS = {
 	38: [25], # ascii collection
 }
 
+PLATFORM_SUGGESTIONS = {
+	 2: [8], # BeOS
+	 3: [7], # Linux
+	 4: [4], # MS-Dos
+	 5: [1], # Windows
+	 6: [4], # MS-Dos/gus
+	 7: [9,17], # Atari ST
+	 8: [5,6,26], # Amiga AGA
+	 9: [9,17], # Atari STe
+	10: [5,6,26], # Amiga ECS
+	11: [12,18], # Java
+	12: [13,28,29], # Playstation
+	13: [3], # Commodore 64
+	14: [12,13,14,15,18,20,22,23,24,25,27,28,29,30,32], # Wild
+	15: [-1], # Amstrad CPC
+	16: [5,6,26], # Amiga PPC/RTG
+	17: [9,17], # Atari Falcon 030
+	18: [14,30], # Gameboy
+	19: [2], # ZX Spectrum
+	20: [10], # MacOS X
+	21: [10], # MacOS
+	22: [14,30], # Gameboy Advance
+	23: [14,30], # Gameboy Color
+	24: [23,14], # Dreamcast
+	25: [-1], # SNES/Super Famicom
+	26: [22], # SEGA Genesis/Mega Drive
+	27: [12], # Flash
+	28: [-1], # Oric
+	29: [18], # Mobile Phone
+	30: [21], # VIC 20
+	31: [28], # Playstation 2
+	32: [27], # TI-8x
+	33: [5,6,26], # Atari TT 030
+	34: [-1], # Acorn
+	35: [12], # JavaScript
+	36: [12], # Alambik
+	37: [-1], # NEC TurboGrafx/PC Engine
+	38: [15], # XBOX
+	39: [14,18,27], # PalmOS
+	40: [24], # Nintendo 64
+	41: [-1], # C16/116/plus4
+	42: [14,18], # PocketPC
+	43: [12], # PHP
+	44: [31], # MSX
+	45: [14], # GamePark GP32
+	46: [16], # Atari XL/XE
+	47: [-1], # Intellivision
+	48: [-1], # Thomson
+	49: [-1], # Apple II GS
+	50: [-1], # SEGA Master System
+	51: [25], # NES/Famicom
+	52: [24], # Gamecube
+	53: [14], # GamePark GP2X
+	54: [16], # Atari VCS
+	55: [14], # Virtual Boy
+	56: [-1], # BK-0010/11M
+	57: [14], # Pokemon Mini
+	58: [14], # SEGA Game Gear
+	59: [-1], # Vectrex
+	60: [14,18], # iPod
+	61: [29], # Playstation Portable
+	62: [32], # Nintendo DS
+	63: [9,17], # Atari Jaguar
+	64: [-1], # Wonderswan
+	65: [14], # NeoGeo Pocket
+	66: [15], # XBOX 360
+	67: [14], # Atari Lynx
+	68: [3,14], # C64 DTV
+	69: [-1], # Amstrad Plus
+	70: [7], # FreeBSD
+	71: [7], # Solaris
+	72: [5,6,26], # Amiga OCS
+	73: [2], # Sam Coupe
+#	74: [], # NULL
+	75: [-1], # Spectravideo 3x8
+	76: [-1], # Apple IIe
+	77: [10], # MacOSX Intel
+	78: [-1], # Playstation 3
+	79: [24], # Nintendo Wii
+	80: [7], # SGI/IRIX
+	81: [-1], # BBC Micro
+	82: [31], # MSX2/2+/Turbo-R
+	83: [2], # Sam Coupe
+	84: [-1], # TRS-80/CoCo
+	85: [31], # MSX Turbo-R
+	86: [-1], # Enterprise
+	87: [31], # MSX 2 plus
+	88: [2], # ZX-81
+	89: [12], # Processing
+}
+
 class Command(NoArgsCommand):
 	def import_all_users(self):
 		print "importing users"
@@ -169,8 +260,13 @@ class Command(NoArgsCommand):
 		dz2_type_ids = []
 		for dz0_type_id in demozoo0.production_type_ids_for_production(production_info['id']):
 			dz2_type_ids += PRODUCTION_TYPE_SUGGESTIONS[dz0_type_id]
-		
 		dz2_type_ids = tuple(set(dz2_type_ids))
+		
+		# ditto for platform IDs
+		dz2_platform_ids = []
+		for dz0_platform_id in demozoo0.platform_ids_for_production(production_info['id']):
+			dz2_platform_ids += PLATFORM_SUGGESTIONS[dz0_platform_id]
+		dz2_platform_ids = tuple(set(dz2_platform_ids))
 		
 		return list(
 			Production.objects.raw('''
@@ -179,15 +275,17 @@ class Command(NoArgsCommand):
 					demoscene_production.id = demoscene_production_types.production_id
 					AND demoscene_production_types.productiontype_id IN %s
 				)
+				LEFT JOIN demoscene_production_platforms ON demoscene_production.id = demoscene_production_platforms.production_id
 				INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
 				INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
 				WHERE
 					regexp_replace(LOWER(title), %s, '', 'g') = %s
+					AND (demoscene_production_platforms.platform_id IN %s OR demoscene_production_platforms.platform_id IS NULL)
 					AND (
 						demoscene_production_author_nicks.nick_id IN %s
 						OR demoscene_production_author_affiliation_nicks.nick_id IN %s
 					)
-			''', (dz2_type_ids, PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
+			''', (dz2_type_ids, PUNCTUATION_REGEX, self.depunctuate(production_info['name']), dz2_platform_ids, tuple(nick_ids), tuple(nick_ids)) )
 		)
 	
 	def find_matching_production_in_dz2(self, production_info):
@@ -210,8 +308,8 @@ class Command(NoArgsCommand):
 				return results[0]
 			else:
 				raise Exception(
-					'Multiple matches found for [%s] %s using strategy %s' %
-					(production_info['id'], production_info['name'], strategy)
+					'Multiple matches found for [%s] %s using strategy %s: %s' %
+					(production_info['id'], production_info['name'], strategy, [prod.id for prod in results])
 				)
 		
 	def handle_noargs(self, **options):
