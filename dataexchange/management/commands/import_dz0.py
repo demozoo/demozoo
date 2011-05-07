@@ -10,6 +10,50 @@ from dataexchange import demozoo0
 
 PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 
+# mapping of DZ0 to DZ2 prod types:
+# "a production of type X might actually be listed under any of the following types in DZ2"
+
+PRODUCTION_TYPE_SUGGESTIONS = {
+	1: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 32b intro => 32b-4K intro
+	2: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 64b intro => 32b-4K intro
+	3: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 128b intro => 32b-4K intro
+	4: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 256b intro => 32b-4K intro
+	5: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 512b intro => 32b-4K intro
+	6: [15, 16, 18, 19, 20, 21, 37, 3, 27, 28], # 1k intro => 32b-4K intro
+	7: [15, 16, 18, 19, 20, 21, 37, 3, 35, 27, 28], # 4k intro => 32b-16K intro
+	8: [3, 35, 22, 10, 2, 4, 13, 1, 27, 28], # 8k intro => 4k-64k intro, intro, cracktro, demo
+	9: [3, 35, 22, 10, 2, 4, 13, 1, 27, 28], # 16k intro
+	10: [3, 35, 22, 10, 2, 4, 13, 1, 27, 28], # 32k intro
+	11: [3, 35, 22, 10, 2, 4, 13, 1, 27, 28], # 40k intro
+	12: [3, 35, 22, 10, 2, 4, 13, 1, 27, 28], # 64k intro
+	13: [3, 35, 22, 10, 2, 4, 13, 1], # 80k intro
+	14: [3, 35, 22, 10, 2, 4, 13, 1], # 96k intro
+	15: [3, 35, 22, 10, 2, 4, 13, 1], # 100k intro
+	16: [3, 35, 22, 10, 2, 4, 13, 1], # 128k intro
+	17: [3, 35, 22, 10, 2, 4, 13, 1], # 256k intro
+	18: [1, 8, 9], # artpack => demo, slideshow, pack
+	19: [3, 35, 22, 10, 2, 4, 13, 1], # bbstro => general intros
+	20: [3, 35, 22, 10, 2, 4, 13, 1], # cracktro
+	21: [1, 2, 3, 4, 7, 8, 9, 10, 11, 13, 15, 16, 18, 19, 20, 21, 22, 27, 28, 35, 37], # demo
+	22: [1, 9], # demopack
+	23: [6], # demotool
+	24: [1, 2, 3, 4, 10, 11, 13, 22, 35], # dentro
+	25: [5], # diskmag
+	26: [1], # fastdemo
+	27: [33], # game
+	28: [2, 3, 10, 11, 13, 15, 16, 18, 19, 20, 21, 22, 27, 28, 35, 37], # intro
+	29: [1, 2, 3, 10, 11, 22, 35], # invitation
+	30: [34], # liveact
+	31: [1, 7, 12], # musicdisk
+	32: [1], # report
+	33: [1, 8], # slideshow
+	34: [1, 7, 8, 9], # votedisk
+	35: [34], # video
+	36: [14, 29, 30, 31, 32, 38], # music
+	37: [23, 24, 25, 26, 27, 28, 36], # graphics
+	38: [25], # ascii collection
+}
+
 class Command(NoArgsCommand):
 	def import_all_users(self):
 		print "importing users"
@@ -121,9 +165,20 @@ class Command(NoArgsCommand):
 		if not nick_ids:
 			return
 		
+		# get all dz2 prodtype IDs that might conceivably match against any of the prodtypes for this prod
+		dz2_type_ids = []
+		for dz0_type_id in demozoo0.production_type_ids_for_production(production_info['id']):
+			dz2_type_ids += PRODUCTION_TYPE_SUGGESTIONS[dz0_type_id]
+		
+		dz2_type_ids = tuple(set(dz2_type_ids))
+		
 		return list(
 			Production.objects.raw('''
 				SELECT DISTINCT demoscene_production.* FROM demoscene_production
+				INNER JOIN demoscene_production_types ON (
+					demoscene_production.id = demoscene_production_types.production_id
+					AND demoscene_production_types.productiontype_id IN %s
+				)
 				INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
 				INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
 				WHERE
@@ -132,7 +187,7 @@ class Command(NoArgsCommand):
 						demoscene_production_author_nicks.nick_id IN %s
 						OR demoscene_production_author_affiliation_nicks.nick_id IN %s
 					)
-			''', (PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
+			''', (dz2_type_ids, PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
 		)
 	
 	def find_matching_production_in_dz2(self, production_info):
@@ -146,6 +201,12 @@ class Command(NoArgsCommand):
 			if not results:
 				continue
 			if len(results) == 1:
+				print "(%s) %s => %s (by %s)" % (
+					production_info['id'],
+					production_info['name'],
+					results[0],
+					strategy
+				)
 				return results[0]
 			else:
 				raise Exception(
@@ -164,8 +225,4 @@ class Command(NoArgsCommand):
 		# self.import_all_releasers()
 		
 		for info in demozoo0.all_productions():
-			print "(%s) %s => %s" % (
-				info['id'],
-				info['name'],
-				self.find_matching_production_in_dz2(info)
-			)
+			match = self.find_matching_production_in_dz2(info)

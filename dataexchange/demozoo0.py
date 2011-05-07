@@ -74,3 +74,11 @@ def author_and_affiliation_names(production_id):
 	''', (production_id,production_id) )
 	for row in cur:
 		yield row[0]
+
+def production_type_ids_for_production(production_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT production_type_id FROM production_types_productions
+		WHERE production_id = %s
+	''', (production_id,) )
+	return [row[0] for row in cur]
