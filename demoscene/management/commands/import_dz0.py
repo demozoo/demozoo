@@ -3,15 +3,16 @@
 from django.core.management.base import NoArgsCommand
 
 import pymysql
+import re
 from django.contrib.auth.models import User
-from demoscene.models import AccountProfile, Releaser, PartySeries, PartySeriesDemozoo0Reference
+from demoscene.models import *
+
+PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 
 class Command(NoArgsCommand):
-	def handle_noargs(self, **options):
-		dz0 = pymysql.connect(user="root", db="demozoo_production")
-		
+	def import_all_users(self):
 		print "importing users"
-		cur = dz0.cursor()
+		cur = self.dz0_db.cursor()
 		cur.execute("SELECT id, email, created_at, nick FROM users")
 		for (id, email, created_at, nick) in cur:
 			try:
@@ -33,9 +34,10 @@ class Command(NoArgsCommand):
 					demozoo0_id = id
 				)
 				profile.save()
-		
+	
+	def import_all_party_series(self):
 		print "importing party series"
-		cur = dz0.cursor()
+		cur = self.dz0_db.cursor()
 		cur.execute("SELECT id, name, website, pouet_id FROM party_series WHERE name IS NOT NULL")
 		for (id, name, website, pouet_id) in cur:
 			try:
@@ -64,7 +66,9 @@ class Command(NoArgsCommand):
 					party_series = party_series
 				)
 				dz0_id.save()
-		
+	
+	def import_all_releasers(self): # INCOMPLETE
+		cur = self.dz0_db.cursor()
 		print "importing releasers"
 		cur.execute('''
 			SELECT id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id
@@ -84,6 +88,122 @@ class Command(NoArgsCommand):
 				#print "Looking for %s - %s (%s)" % (id, name, type)
 				#name_match_count = Releaser.objects.filter(nicks__variants__name = name, is_group = (type == 'Group')).count()
 				#print "%s matches by name" % name_match_count
+	
+	# strip punctuation and whitespace that's likely going to obscure string-to-string matches
+	def depunctuate(self, str):
+		return re.sub(PUNCTUATION_REGEX, '', str.lower())
+	
+	def find_matching_releasers_in_dz2_by_names(self, names):
+		return Nick.objects.extra(
+			tables = ['demoscene_nickvariant'],
+			where = [
+				"demoscene_nick.id = demoscene_nickvariant.nick_id",
+				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') IN %s"
+			],
+			params = (PUNCTUATION_REGEX, tuple(names))
+		)
+	
+	def find_matching_production_in_dz2(self, production_info):
+		#id_matches = Production.objects.filter(demozoo0_id = production_info['id'])
+		#if len(id_matches) == 1:
+		#	print "[%s] %s - already found by ID" % (production_info['id'], production_info['name'])
+		#	return
+		#elif len(id_matches) > 1:
+		#	print "[%s] %s - multiple matches by ID!" % (production_info['id'], production_info['name'])
+		#	return
 		
-		cur.close()
-		dz0.close()
+		if production_info['pouet_id'] != None:
+			pouet_id_matches = Production.objects.filter(pouet_id = production_info['pouet_id'])
+			if len(pouet_id_matches) == 1:
+				#print "[%s] %s - found by Pouet ID" % (production_info['id'], production_info['name'])
+				#if self.depunctuate(pouet_id_matches[0].title) != self.depunctuate(production_info['name']):
+				#	print "[%s] - %s vs %s" % (production_info['id'], production_info['name'], pouet_id_matches[0].title)
+				return
+			elif len(pouet_id_matches) > 1:
+				print "[%s] %s - multiple matches by Pouet ID!" % (production_info['id'], production_info['name'])
+				return
+		
+		if production_info['csdb_id'] != None:
+			csdb_id_matches = Production.objects.filter(csdb_id = production_info['csdb_id'])
+			if len(csdb_id_matches) == 1:
+				#print "[%s] %s - found by csdb ID" % (production_info['id'], production_info['name'])
+				#if self.depunctuate(csdb_id_matches[0].title) != self.depunctuate(production_info['name']):
+				#	print "[%s] - %s vs %s" % (production_info['id'], production_info['name'], csdb_id_matches[0].title)
+				return
+			elif len(csdb_id_matches) > 1:
+				print "[%s] %s - multiple matches by csdb ID!" % (production_info['id'], production_info['name'])
+				return
+		
+		# get all names of all releasers of this production
+		names_cur = self.dz0_db.cursor()
+		names_cur.execute('''
+			(
+				SELECT nick_variants.name
+				FROM authorships
+				INNER JOIN nick_variants ON (authorships.nick_id = nick_variants.nick_id)
+				WHERE authorships.production_id = %s
+			) UNION (
+				SELECT nick_variants.name
+				FROM authorships
+				INNER JOIN authorship_affiliations ON (authorships.id = authorship_affiliations.authorship_id)
+				INNER JOIN nick_variants ON (authorship_affiliations.group_nick_id = nick_variants.nick_id)
+				WHERE authorships.production_id = %s
+			)
+		''', (production_info['id'],production_info['id']))
+		author_names = [self.depunctuate(row[0]) for row in names_cur.fetchall()]
+		
+		if author_names:
+			# find IDs of all nicks that match those names in any variant
+			nick_ids = self.find_matching_releasers_in_dz2_by_names(author_names).values_list('id', flat=True)
+			
+			if nick_ids:
+				title_matches = list(
+					Production.objects.raw('''
+						SELECT DISTINCT demoscene_production.* FROM demoscene_production
+						INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
+						INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
+						WHERE
+							regexp_replace(LOWER(title), %s, '', 'g') = %s
+							AND (
+								demoscene_production_author_nicks.nick_id IN %s
+								OR demoscene_production_author_affiliation_nicks.nick_id IN %s
+							)
+					''', (PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
+				)
+				if len(title_matches) == 1:
+					print "[%s] %s - found by title" % (production_info['id'], production_info['name'])
+					return
+				elif len(title_matches) > 1:
+					print "[%s] %s - multiple matches by title!" % (production_info['id'], production_info['name'])
+					return
+		
+		
+		#print "[%s] %s - no match" % (production_info['id'], production_info['name'])
+		
+	def handle_noargs(self, **options):
+		import sys
+		import codecs
+		sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+		self.dz0_db = pymysql.connect(user="root", db="demozoo_production", charset="latin1")
+		
+		# pending approval from Pouet:
+		# self.import_all_users()
+		# self.import_all_party_series()
+		# self.import_all_releasers()
+		
+		cur = self.dz0_db.cursor()
+		cur.execute('''
+			SELECT DISTINCT
+				productions.id, productions.name, productions.pouet_id, productions.csdb_id
+			FROM
+				productions
+				-- INNER JOIN credits ON (productions.id = credits.production_id)
+			ORDER BY productions.id
+		''')
+		columns = ['id', 'name', 'pouet_id', 'csdb_id']
+		for row in cur:
+			info = dict(zip(columns, row))
+			info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+			self.find_matching_production_in_dz2(info)
+		
+		self.dz0_db.close()
