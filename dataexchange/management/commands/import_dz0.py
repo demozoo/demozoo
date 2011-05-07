@@ -95,69 +95,63 @@ class Command(NoArgsCommand):
 			params = (PUNCTUATION_REGEX, tuple(names))
 		)
 	
-	def find_matching_production_in_dz2(self, production_info):
-		#id_matches = Production.objects.filter(demozoo0_id = production_info['id'])
-		#if len(id_matches) == 1:
-		#	print "[%s] %s - already found by ID" % (production_info['id'], production_info['name'])
-		#	return
-		#elif len(id_matches) > 1:
-		#	print "[%s] %s - multiple matches by ID!" % (production_info['id'], production_info['name'])
-		#	return
-		
+	# not usable yet, because we don't have a demozoo0_id field in productions yet...
+	def find_matching_production_in_dz2_by_dz0_id(self, production_info):
+		return Production.objects.filter(demozoo0_id = production_info['id'])
+	
+	def find_matching_production_in_dz2_by_pouet_id(self, production_info):
 		if production_info['pouet_id'] != None:
-			pouet_id_matches = Production.objects.filter(pouet_id = production_info['pouet_id'])
-			if len(pouet_id_matches) == 1:
-				print "[%s] %s - found by Pouet ID" % (production_info['id'], production_info['name'])
-				#if self.depunctuate(pouet_id_matches[0].title) != self.depunctuate(production_info['name']):
-				#	print "[%s] - %s vs %s" % (production_info['id'], production_info['name'], pouet_id_matches[0].title)
-				return
-			elif len(pouet_id_matches) > 1:
-				print "[%s] %s - multiple matches by Pouet ID!" % (production_info['id'], production_info['name'])
-				return
-		
+			return Production.objects.filter(pouet_id = production_info['pouet_id'])
+	
+	def find_matching_production_in_dz2_by_csdb_id(self, production_info):
 		if production_info['csdb_id'] != None:
-			csdb_id_matches = Production.objects.filter(csdb_id = production_info['csdb_id'])
-			if len(csdb_id_matches) == 1:
-				print "[%s] %s - found by csdb ID" % (production_info['id'], production_info['name'])
-				#if self.depunctuate(csdb_id_matches[0].title) != self.depunctuate(production_info['name']):
-				#	print "[%s] - %s vs %s" % (production_info['id'], production_info['name'], csdb_id_matches[0].title)
-				return
-			elif len(csdb_id_matches) > 1:
-				print "[%s] %s - multiple matches by csdb ID!" % (production_info['id'], production_info['name'])
-				return
-		
+			return Production.objects.filter(csdb_id = production_info['csdb_id'])
+	
+	def find_matching_production_in_dz2_by_title_and_author_names(self, production_info):
 		# get all names of all releasers of this production
 		author_names = [
 			self.depunctuate(name)
 			for name in demozoo0.author_and_affiliation_names(production_info['id'])
 		]
+		if not author_names:
+			return
 		
-		if author_names:
-			# find IDs of all nicks that match those names in any variant
-			nick_ids = self.find_matching_releasers_in_dz2_by_names(author_names).values_list('id', flat=True)
-			
-			if nick_ids:
-				title_matches = list(
-					Production.objects.raw('''
-						SELECT DISTINCT demoscene_production.* FROM demoscene_production
-						INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
-						INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
-						WHERE
-							regexp_replace(LOWER(title), %s, '', 'g') = %s
-							AND (
-								demoscene_production_author_nicks.nick_id IN %s
-								OR demoscene_production_author_affiliation_nicks.nick_id IN %s
-							)
-					''', (PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
+		# find IDs of all nicks that match those names in any variant
+		nick_ids = self.find_matching_releasers_in_dz2_by_names(author_names).values_list('id', flat=True)
+		if not nick_ids:
+			return
+		
+		return list(
+			Production.objects.raw('''
+				SELECT DISTINCT demoscene_production.* FROM demoscene_production
+				INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
+				INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
+				WHERE
+					regexp_replace(LOWER(title), %s, '', 'g') = %s
+					AND (
+						demoscene_production_author_nicks.nick_id IN %s
+						OR demoscene_production_author_affiliation_nicks.nick_id IN %s
+					)
+			''', (PUNCTUATION_REGEX, self.depunctuate(production_info['name']), tuple(nick_ids), tuple(nick_ids)) )
+		)
+	
+	def find_matching_production_in_dz2(self, production_info):
+		
+		for strategy in (
+			'find_matching_production_in_dz2_by_pouet_id',
+			'find_matching_production_in_dz2_by_csdb_id',
+			'find_matching_production_in_dz2_by_title_and_author_names',
+		):
+			results = getattr(self, strategy)(production_info)
+			if not results:
+				continue
+			if len(results) == 1:
+				return results[0]
+			else:
+				raise Exception(
+					'Multiple matches found for [%s] %s using strategy %s' %
+					(production_info['id'], production_info['name'], strategy)
 				)
-				if len(title_matches) == 1:
-					print "[%s] %s - found by title" % (production_info['id'], production_info['name'])
-					return
-				elif len(title_matches) > 1:
-					print "[%s] %s - multiple matches by title!" % (production_info['id'], production_info['name'])
-					return
-		
-		#print "[%s] %s - no match" % (production_info['id'], production_info['name'])
 		
 	def handle_noargs(self, **options):
 		import sys
@@ -170,4 +164,8 @@ class Command(NoArgsCommand):
 		# self.import_all_releasers()
 		
 		for info in demozoo0.all_productions():
-			self.find_matching_production_in_dz2(info)
+			print "(%s) %s => %s" % (
+				info['id'],
+				info['name'],
+				self.find_matching_production_in_dz2(info)
+			)
