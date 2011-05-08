@@ -29,6 +29,20 @@ def productions_with_credits():
 		ORDER BY productions.id
 	''')
 
+def productions_by_releaser(releaser_id):
+	return run_productions_query('''
+		SELECT DISTINCT
+			productions.id, productions.name, productions.pouet_id, productions.csdb_id
+		FROM
+			productions
+			LEFT JOIN authorships ON (productions.id = authorships.production_id)
+			LEFT JOIN nicks ON (authorships.nick_id = nicks.id)
+			LEFT JOIN authorship_affiliations ON (authorships.id = authorship_affiliations.authorship_id)
+			LEFT JOIN nicks AS affil_nicks ON (authorship_affiliations.group_nick_id = affil_nicks.id)
+		WHERE
+			nicks.releaser_id = %s OR affil_nicks.releaser_id = %s
+	''', (releaser_id, releaser_id))
+
 def all_party_series():
 	cur = connection.cursor()
 	cur.execute("SELECT id, name, website, pouet_id FROM party_series WHERE name IS NOT NULL")
@@ -54,6 +68,7 @@ def all_releasers():
 	columns = ['id','type','pouet_id','zxdemo_id','name','abbreviation','website','csdb_id','country_id','slengpung_id']
 	for row in cur:
 		info = dict(zip(columns, row))
+		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
 		yield info
 
 def author_and_affiliation_names(production_id):

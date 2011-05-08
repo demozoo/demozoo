@@ -220,7 +220,7 @@ class Command(NoArgsCommand):
 	def depunctuate(self, str):
 		return re.sub(PUNCTUATION_REGEX, '', str.lower())
 	
-	def find_matching_releasers_in_dz2_by_names(self, names):
+	def find_matching_nicks_in_dz2_by_names(self, names):
 		return Nick.objects.extra(
 			tables = ['demoscene_nickvariant'],
 			where = [
@@ -252,7 +252,7 @@ class Command(NoArgsCommand):
 			return
 		
 		# find IDs of all nicks that match those names in any variant
-		nick_ids = self.find_matching_releasers_in_dz2_by_names(author_names).values_list('id', flat=True)
+		nick_ids = self.find_matching_nicks_in_dz2_by_names(author_names).values_list('id', flat=True)
 		if not nick_ids:
 			return
 		
@@ -288,20 +288,114 @@ class Command(NoArgsCommand):
 			''', (dz2_type_ids, PUNCTUATION_REGEX, self.depunctuate(production_info['name']), dz2_platform_ids, tuple(nick_ids), tuple(nick_ids)) )
 		)
 	
-	def find_matching_production_in_dz2(self, production_info):
+	# Only to be used as secondary confirmation! (e.g. inferring that two same-named releasers are the same, on the basis that they've released a same-named production)
+	def find_matching_production_in_dz2_by_title(self, production_info):
+		# get all dz2 prodtype IDs that might conceivably match against any of the prodtypes for this prod
+		dz2_type_ids = []
+		for dz0_type_id in demozoo0.production_type_ids_for_production(production_info['id']):
+			dz2_type_ids += PRODUCTION_TYPE_SUGGESTIONS[dz0_type_id]
+		dz2_type_ids = tuple(set(dz2_type_ids))
 		
-		for strategy in (
-			'find_matching_production_in_dz2_by_pouet_id',
-			'find_matching_production_in_dz2_by_csdb_id',
-			'find_matching_production_in_dz2_by_title_and_author_names',
-		):
+		# ditto for platform IDs
+		dz2_platform_ids = []
+		for dz0_platform_id in demozoo0.platform_ids_for_production(production_info['id']):
+			dz2_platform_ids += PLATFORM_SUGGESTIONS[dz0_platform_id]
+		dz2_platform_ids = tuple(set(dz2_platform_ids))
+		
+		return list(
+			Production.objects.raw('''
+				SELECT DISTINCT demoscene_production.* FROM demoscene_production
+				INNER JOIN demoscene_production_types ON (
+					demoscene_production.id = demoscene_production_types.production_id
+					AND demoscene_production_types.productiontype_id IN %s
+				)
+				LEFT JOIN demoscene_production_platforms ON demoscene_production.id = demoscene_production_platforms.production_id
+				WHERE
+					regexp_replace(LOWER(title), %s, '', 'g') = %s
+					AND (demoscene_production_platforms.platform_id IN %s OR demoscene_production_platforms.platform_id IS NULL)
+			''', (dz2_type_ids, PUNCTUATION_REGEX, self.depunctuate(production_info['name']), dz2_platform_ids) )
+		)
+	
+	def find_matching_production_in_dz2(self, production_info, loose = False):
+		
+		if loose:
+			strategies = (
+				'find_matching_production_in_dz2_by_pouet_id',
+				'find_matching_production_in_dz2_by_csdb_id',
+				'find_matching_production_in_dz2_by_title',
+			)
+		else:
+			strategies = (
+				'find_matching_production_in_dz2_by_pouet_id',
+				'find_matching_production_in_dz2_by_csdb_id',
+				'find_matching_production_in_dz2_by_title_and_author_names',
+			)
+		
+		for strategy in strategies:
 			results = getattr(self, strategy)(production_info)
+			if not results:
+				continue
+			if len(results) > 1 and not loose:
+				raise Exception(
+					'Multiple matches found for [%s] %s using strategy %s: %s' %
+					(production_info['id'], production_info['name'], strategy, [prod.id for prod in results])
+				)
+			for result in results:
+				print "(%s) %s => (%s) %s (by %s)" % (
+					production_info['id'],
+					production_info['name'],
+					result.id, result.title,
+					strategy
+				)
+			return results
+		
+		return []
+	
+	def find_matching_releaser_in_dz2_by_demozoo0_id(self, releaser_info):
+		return Releaser.objects.filter(demozoo0_id = releaser_info['id'])
+	
+	def find_matching_releaser_in_dz2_by_slengpung_id(self, releaser_info):
+		if releaser_info['slengpung_id'] != None:
+			return Releaser.objects.filter(slengpung_user_id = releaser_info['slengpung_id'])
+	
+	def find_matching_releaser_in_dz2_by_name_and_releases(self, releaser_info):
+		dz0_prods_by_releaser = demozoo0.productions_by_releaser(releaser_info['id'])
+		
+		dz2_prods_by_releaser = []
+		for dz0_prod in dz0_prods_by_releaser:
+			dz2_prods_by_releaser += self.find_matching_production_in_dz2(dz0_prod, loose = True)
+		
+		candidates = Releaser.objects.extra(
+			tables = ['demoscene_nick','demoscene_nickvariant'],
+			where = [
+				"demoscene_releaser.id = demoscene_nick.releaser_id",
+				"demoscene_nick.id = demoscene_nickvariant.nick_id",
+				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') = %s"
+			],
+			params = (PUNCTUATION_REGEX, self.depunctuate(releaser_info['name']) )
+		)
+		matches = []
+		for releaser in candidates:
+			for prod in dz2_prods_by_releaser:
+				if prod and prod in releaser.productions():
+					matches.append(releaser)
+					break
+		
+		return matches
+
+	def find_matching_releaser_in_dz2(self, releaser_info):
+		for strategy in (
+			'find_matching_releaser_in_dz2_by_demozoo0_id',
+			'find_matching_releaser_in_dz2_by_slengpung_id',
+			'find_matching_releaser_in_dz2_by_name_and_releases',
+		):
+			results = getattr(self, strategy)(releaser_info)
 			if not results:
 				continue
 			if len(results) == 1:
 				print "(%s) %s => %s (by %s)" % (
-					production_info['id'],
-					production_info['name'],
+					releaser_info['id'],
+					releaser_info['name'],
 					results[0],
 					strategy
 				)
@@ -309,9 +403,9 @@ class Command(NoArgsCommand):
 			else:
 				raise Exception(
 					'Multiple matches found for [%s] %s using strategy %s: %s' %
-					(production_info['id'], production_info['name'], strategy, [prod.id for prod in results])
+					(releaser_info['id'], releaser_info['name'], strategy, [releaser.id for releaser in results])
 				)
-		
+	
 	def handle_noargs(self, **options):
 		import sys
 		import codecs
@@ -322,5 +416,7 @@ class Command(NoArgsCommand):
 		# self.import_all_party_series()
 		# self.import_all_releasers()
 		
-		for info in demozoo0.all_productions():
-			match = self.find_matching_production_in_dz2(info)
+		#for info in demozoo0.all_productions():
+		#	match = self.find_matching_production_in_dz2(info)
+		for info in demozoo0.all_releasers():
+			match = self.find_matching_releaser_in_dz2(info)
