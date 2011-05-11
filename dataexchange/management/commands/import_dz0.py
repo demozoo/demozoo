@@ -366,9 +366,10 @@ class Command(NoArgsCommand):
 			where = [
 				"demoscene_releaser.id = demoscene_nick.releaser_id",
 				"demoscene_nick.id = demoscene_nickvariant.nick_id",
-				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') IN %s"
+				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') IN %s",
+				"demoscene_releaser.is_group = %s",
 			],
-			params = (PUNCTUATION_REGEX, tuple(names) )
+			params = (PUNCTUATION_REGEX, tuple(names), (releaser_info['type'] == 'Group') )
 		)
 	
 	def find_matching_releaser_in_dz2_by_name_and_releases(self, releaser_info):
