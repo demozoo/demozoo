@@ -71,6 +71,23 @@ def all_releasers():
 		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
 		yield info
 
+def releasers_with_credits():
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT DISTINCT
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM releasers
+			INNER JOIN nicks ON (releasers.id = nicks.releaser_id)
+			INNER JOIN credits ON (nicks.id = credits.nick_id)
+	''')
+	columns = ['id','type','pouet_id','zxdemo_id','name','abbreviation','website','csdb_id','country_id','slengpung_id']
+	for row in cur:
+		info = dict(zip(columns, row))
+		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		yield info
+
 def author_and_affiliation_names(production_id):
 	cur = connection.cursor()
 	cur.execute('''

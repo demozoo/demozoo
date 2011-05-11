@@ -418,5 +418,5 @@ class Command(NoArgsCommand):
 		
 		#for info in demozoo0.all_productions():
 		#	match = self.find_matching_production_in_dz2(info)
-		for info in demozoo0.all_releasers():
+		for info in demozoo0.releasers_with_credits():
 			match = self.find_matching_releaser_in_dz2(info)
