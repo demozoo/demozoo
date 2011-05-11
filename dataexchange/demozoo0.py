@@ -122,3 +122,12 @@ def platform_ids_for_production(production_id):
 		WHERE production_id = %s AND platform_id != 74 -- platform_id 74 is 'null'
 	''', (production_id,) )
 	return [row[0] for row in cur]
+
+def names_for_releaser(releaser_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT nick_variants.name FROM nicks
+		INNER JOIN nick_variants ON (nicks.id = nick_variants.nick_id)
+		WHERE nicks.releaser_id = %s
+	''', (releaser_id,) )
+	return [row[0] for row in cur]

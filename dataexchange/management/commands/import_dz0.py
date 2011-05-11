@@ -358,6 +358,19 @@ class Command(NoArgsCommand):
 		if releaser_info['slengpung_id'] != None:
 			return Releaser.objects.filter(slengpung_user_id = releaser_info['slengpung_id'])
 	
+	# Only to be used as secondary confirmation!
+	def find_matching_releaser_in_dz2_by_name(self, releaser_info):
+		names = [self.depunctuate(name) for name in demozoo0.names_for_releaser(releaser_info['id'])]
+		return Releaser.objects.extra(
+			tables = ['demoscene_nick','demoscene_nickvariant'],
+			where = [
+				"demoscene_releaser.id = demoscene_nick.releaser_id",
+				"demoscene_nick.id = demoscene_nickvariant.nick_id",
+				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') IN %s"
+			],
+			params = (PUNCTUATION_REGEX, tuple(names) )
+		)
+	
 	def find_matching_releaser_in_dz2_by_name_and_releases(self, releaser_info):
 		dz0_prods_by_releaser = demozoo0.productions_by_releaser(releaser_info['id'])
 		
@@ -365,15 +378,7 @@ class Command(NoArgsCommand):
 		for dz0_prod in dz0_prods_by_releaser:
 			dz2_prods_by_releaser += self.find_matching_production_in_dz2(dz0_prod, loose = True)
 		
-		candidates = Releaser.objects.extra(
-			tables = ['demoscene_nick','demoscene_nickvariant'],
-			where = [
-				"demoscene_releaser.id = demoscene_nick.releaser_id",
-				"demoscene_nick.id = demoscene_nickvariant.nick_id",
-				"regexp_replace(LOWER(demoscene_nickvariant.name) , %s, '', 'g') = %s"
-			],
-			params = (PUNCTUATION_REGEX, self.depunctuate(releaser_info['name']) )
-		)
+		candidates = self.find_matching_releaser_in_dz2_by_name(releaser_info)
 		matches = []
 		for releaser in candidates:
 			for prod in dz2_prods_by_releaser:
