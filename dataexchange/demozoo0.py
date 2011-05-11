@@ -59,21 +59,22 @@ def all_users():
 		info = dict(zip(columns, row))
 		yield info
 
-def all_releasers():
+def run_releasers_query(sql, params = (), columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')):
 	cur = connection.cursor()
-	cur.execute('''
-		SELECT id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id
-		FROM releasers
-	''')
-	columns = ['id','type','pouet_id','zxdemo_id','name','abbreviation','website','csdb_id','country_id','slengpung_id']
+	cur.execute(sql, params)
 	for row in cur:
 		info = dict(zip(columns, row))
 		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
 		yield info
 
+def all_releasers():
+	return run_releasers_query('''
+		SELECT id, type, pouet_id, zxdemo_id, name, abbreviation, website, csdb_id, country_id, slengpung_id
+		FROM releasers
+	''')
+
 def releasers_with_credits():
-	cur = connection.cursor()
-	cur.execute('''
+	return run_releasers_query('''
 		SELECT DISTINCT
 			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
 			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
@@ -82,11 +83,6 @@ def releasers_with_credits():
 			INNER JOIN nicks ON (releasers.id = nicks.releaser_id)
 			INNER JOIN credits ON (nicks.id = credits.nick_id)
 	''')
-	columns = ['id','type','pouet_id','zxdemo_id','name','abbreviation','website','csdb_id','country_id','slengpung_id']
-	for row in cur:
-		info = dict(zip(columns, row))
-		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
-		yield info
 
 def author_and_affiliation_names(production_id):
 	cur = connection.cursor()
@@ -131,3 +127,25 @@ def names_for_releaser(releaser_id):
 		WHERE nicks.releaser_id = %s
 	''', (releaser_id,) )
 	return [row[0] for row in cur]
+
+def groups_for_releaser(releaser_id):
+	return run_releasers_query('''
+		SELECT DISTINCT
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM memberships
+			INNER JOIN releasers ON (memberships.group_id = releasers.id)
+		WHERE memberships.member_id = %s
+	''', (releaser_id,))
+
+def members_for_releaser(releaser_id):
+	return run_releasers_query('''
+		SELECT DISTINCT
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM memberships
+			INNER JOIN releasers ON (memberships.member_id = releasers.id)
+		WHERE memberships.group_id = %s
+	''', (releaser_id,))

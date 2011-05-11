@@ -388,28 +388,56 @@ class Command(NoArgsCommand):
 		
 		return matches
 
-	def find_matching_releaser_in_dz2(self, releaser_info):
-		for strategy in (
-			'find_matching_releaser_in_dz2_by_demozoo0_id',
-			'find_matching_releaser_in_dz2_by_slengpung_id',
-			'find_matching_releaser_in_dz2_by_name_and_releases',
-		):
+	def find_matching_releaser_in_dz2_by_name_and_groups(self, releaser_info):
+		dz0_groups_for_releaser = demozoo0.groups_for_releaser(releaser_info['id'])
+		
+		dz2_groups_for_releaser = []
+		for dz0_group in dz0_groups_for_releaser:
+			dz2_groups_for_releaser += self.find_matching_releaser_in_dz2(dz0_group, loose = True)
+		
+		candidates = self.find_matching_releaser_in_dz2_by_name(releaser_info)
+		matches = []
+		for releaser in candidates:
+			for group in dz2_groups_for_releaser:
+				if group and group in releaser.groups():
+					matches.append(releaser)
+					break
+		
+		return matches
+	
+	def find_matching_releaser_in_dz2(self, releaser_info, loose = False):
+		if loose:
+			strategies = (
+				'find_matching_releaser_in_dz2_by_demozoo0_id',
+				'find_matching_releaser_in_dz2_by_slengpung_id',
+				'find_matching_releaser_in_dz2_by_name',
+			)
+		else:
+			strategies = (
+				'find_matching_releaser_in_dz2_by_demozoo0_id',
+				'find_matching_releaser_in_dz2_by_slengpung_id',
+				'find_matching_releaser_in_dz2_by_name_and_releases',
+				'find_matching_releaser_in_dz2_by_name_and_groups',
+			)
+		for strategy in strategies:
 			results = getattr(self, strategy)(releaser_info)
 			if not results:
 				continue
-			if len(results) == 1:
+			if len(results) > 1 and not loose:
+				raise Exception(
+					'Multiple matches found for [%s] %s using strategy %s: %s' %
+					(releaser_info['id'], releaser_info['name'], strategy, [releaser.id for releaser in results])
+				)
+			for result in results:
 				print "(%s) %s => %s (by %s)" % (
 					releaser_info['id'],
 					releaser_info['name'],
 					results[0],
 					strategy
 				)
-				return results[0]
-			else:
-				raise Exception(
-					'Multiple matches found for [%s] %s using strategy %s: %s' %
-					(releaser_info['id'], releaser_info['name'], strategy, [releaser.id for releaser in results])
-				)
+			return results
+		
+		return []
 	
 	def handle_noargs(self, **options):
 		import sys

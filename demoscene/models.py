@@ -253,6 +253,9 @@ class Releaser(models.Model):
 		if self.asciiarena_author_id:
 			return "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename" % self.asciiarena_author_id
 	
+	def groups(self):
+		return [membership.group for membership in self.group_memberships.select_related('group')]
+	
 	def current_groups(self):
 		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group')]
 	
