@@ -259,6 +259,9 @@ class Releaser(models.Model):
 	def current_groups(self):
 		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group')]
 	
+	def members(self):
+		return [membership.member for membership in self.member_memberships.select_related('member')]
+	
 	def name_with_affiliations(self):
 		groups = self.current_groups()
 		

@@ -84,6 +84,26 @@ def releasers_with_credits():
 			INNER JOIN credits ON (nicks.id = credits.nick_id)
 	''')
 
+def releasers_with_members():
+	return run_releasers_query('''
+		SELECT DISTINCT
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM releasers
+			INNER JOIN memberships ON (releasers.id = memberships.group_id)
+	''')
+
+def releasers_with_groups():
+	return run_releasers_query('''
+		SELECT DISTINCT
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM releasers
+			INNER JOIN memberships ON (releasers.id = memberships.member_id)
+	''')
+
 def author_and_affiliation_names(production_id):
 	cur = connection.cursor()
 	cur.execute('''

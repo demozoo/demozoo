@@ -406,6 +406,23 @@ class Command(NoArgsCommand):
 		
 		return matches
 	
+	def find_matching_releaser_in_dz2_by_name_and_members(self, releaser_info):
+		dz0_members_for_releaser = demozoo0.members_for_releaser(releaser_info['id'])
+		
+		dz2_members_for_releaser = []
+		for dz0_member in dz0_members_for_releaser:
+			dz2_members_for_releaser += self.find_matching_releaser_in_dz2(dz0_member, loose = True)
+		
+		candidates = self.find_matching_releaser_in_dz2_by_name(releaser_info)
+		matches = []
+		for releaser in candidates:
+			for member in dz2_members_for_releaser:
+				if member and member in releaser.members():
+					matches.append(releaser)
+					break
+		
+		return matches
+	
 	def find_matching_releaser_in_dz2(self, releaser_info, loose = False):
 		if loose:
 			strategies = (
@@ -419,6 +436,7 @@ class Command(NoArgsCommand):
 				'find_matching_releaser_in_dz2_by_slengpung_id',
 				'find_matching_releaser_in_dz2_by_name_and_releases',
 				'find_matching_releaser_in_dz2_by_name_and_groups',
+				'find_matching_releaser_in_dz2_by_name_and_members',
 			)
 		for strategy in strategies:
 			results = getattr(self, strategy)(releaser_info)
@@ -452,5 +470,5 @@ class Command(NoArgsCommand):
 		
 		#for info in demozoo0.all_productions():
 		#	match = self.find_matching_production_in_dz2(info)
-		for info in demozoo0.releasers_with_credits():
+		for info in demozoo0.releasers_with_members():
 			match = self.find_matching_releaser_in_dz2(info)
