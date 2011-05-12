@@ -170,9 +170,23 @@ def members_for_releaser(releaser_id):
 		WHERE memberships.group_id = %s
 	''', (releaser_id,))
 
-def memberships_with_log_events():
+def run_memberships_query(sql, params = ()):
 	cur = connection.cursor()
-	cur.execute('''
+	cur.execute(sql, params)
+	releaser_columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')
+	for row in cur:
+		member_info = dict(zip(releaser_columns, row[0:10]))
+		member_info['name'] = member_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		group_info = dict(zip(releaser_columns, row[10:20]))
+		group_info['name'] = group_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		yield {
+			'member': member_info,
+			'group': group_info,
+			'is_current': row[20]
+		}
+
+def memberships_with_log_events():
+	return run_memberships_query('''
 		SELECT DISTINCT
 			members.id, members.type, members.pouet_id, members.zxdemo_id, members.name,
 			members.abbreviation, members.website, members.csdb_id, members.country_id,
@@ -192,14 +206,20 @@ def memberships_with_log_events():
 			INNER JOIN releasers AS members ON (memberships.member_id = members.id)
 			INNER JOIN releasers AS groups ON (memberships.group_id = groups.id)
 	''')
-	releaser_columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')
-	for row in cur:
-		member_info = dict(zip(releaser_columns, row[0:10]))
-		member_info['name'] = member_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
-		group_info = dict(zip(releaser_columns, row[10:20]))
-		group_info['name'] = group_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
-		yield {
-			'member': member_info,
-			'group': group_info,
-			'is_current': row[20]
-		}
+
+def memberships_from_zxdemo():
+	return run_memberships_query('''
+		SELECT DISTINCT
+			members.id, members.type, members.pouet_id, members.zxdemo_id, members.name,
+			members.abbreviation, members.website, members.csdb_id, members.country_id,
+			members.slengpung_id,
+			
+			groups.id, groups.type, groups.pouet_id, groups.zxdemo_id, groups.name,
+			groups.abbreviation, groups.website, groups.csdb_id, groups.country_id,
+			groups.slengpung_id,
+			
+			memberships.is_current
+		FROM memberships
+			INNER JOIN releasers AS members ON (memberships.member_id = members.id AND members.zxdemo_id IS NOT NULL)
+			INNER JOIN releasers AS groups ON (memberships.group_id = groups.id AND groups.zxdemo_id IS NOT NULL)
+	''')
