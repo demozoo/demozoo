@@ -7,6 +7,7 @@ import re
 from django.contrib.auth.models import User
 from demoscene.models import *
 from dataexchange import demozoo0
+import datetime
 
 PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 
@@ -209,7 +210,7 @@ class Command(NoArgsCommand):
 				if row['type'] == 'Scener' and row['slengpung_id']:
 					try:
 						releaser = Releaser.objects.get(slengpung_user_id = row['slengpung_id'])
-						print "%s found by slengpung ID" % row['name']
+						# print "%s found by slengpung ID" % row['name']
 					except Releaser.DoesNotExist:
 						pass
 				#print "Looking for %s - %s (%s)" % (row['id'], row['name'], row['type'])
@@ -297,7 +298,7 @@ class Command(NoArgsCommand):
 		dz2_type_ids = tuple(set(dz2_type_ids))
 		
 		# ditto for platform IDs
-		dz2_platform_ids = []
+		dz2_platform_ids = [-1]
 		for dz0_platform_id in demozoo0.platform_ids_for_production(production_info['id']):
 			dz2_platform_ids += PLATFORM_SUGGESTIONS[dz0_platform_id]
 		dz2_platform_ids = tuple(set(dz2_platform_ids))
@@ -340,13 +341,13 @@ class Command(NoArgsCommand):
 					'Multiple matches found for [%s] %s using strategy %s: %s' %
 					(production_info['id'], production_info['name'], strategy, [prod.id for prod in results])
 				)
-			for result in results:
-				print "(%s) %s => (%s) %s (by %s)" % (
-					production_info['id'],
-					production_info['name'],
-					result.id, result.title,
-					strategy
-				)
+			#for result in results:
+			#	print "(%s) %s => (%s) %s (by %s)" % (
+			#		production_info['id'],
+			#		production_info['name'],
+			#		result.id, result.title,
+			#		strategy
+			#	)
 			return results
 		
 		return []
@@ -370,7 +371,7 @@ class Command(NoArgsCommand):
 				"demoscene_releaser.is_group = %s",
 			],
 			params = (PUNCTUATION_REGEX, tuple(names), (releaser_info['type'] == 'Group') )
-		)
+		).distinct()
 	
 	def find_matching_releaser_in_dz2_by_name_and_releases(self, releaser_info):
 		dz0_prods_by_releaser = demozoo0.productions_by_releaser(releaser_info['id'])
@@ -447,16 +448,62 @@ class Command(NoArgsCommand):
 					'Multiple matches found for [%s] %s using strategy %s: %s' %
 					(releaser_info['id'], releaser_info['name'], strategy, [releaser.id for releaser in results])
 				)
-			for result in results:
-				print "(%s) %s => %s (by %s)" % (
-					releaser_info['id'],
-					releaser_info['name'],
-					results[0],
-					strategy
-				)
+			#for result in results:
+			#	print "(%s) %s => %s (by %s)" % (
+			#		releaser_info['id'],
+			#		releaser_info['name'],
+			#		results[0],
+			#		strategy
+			#	)
 			return results
 		
 		return []
+	
+	def find_or_create_releaser(self, releaser_info):
+		matches = self.find_matching_releaser_in_dz2(releaser_info)
+		if matches:
+			releaser = matches[0]
+			if not releaser.demozoo0_id:
+				releaser.demozoo0_id = releaser_info['id']
+			if not releaser.slengpung_user_id:
+				releaser.slengpung_user_id = releaser_info['slengpung_id']
+			releaser.save()
+		else:
+			releaser = Releaser(
+				name = releaser_info['name'],
+				is_group = (releaser_info['type'] == 'Group'),
+				slengpung_user_id = releaser_info['slengpung_id'],
+				demozoo0_id = releaser_info['id'],
+				updated_at = datetime.datetime.now()
+			)
+			releaser.save()
+		
+		return releaser
+	
+	def import_memberships_with_log_events(self):
+		for membership in demozoo0.memberships_with_log_events():
+			print "(%s) %s in (%s) %s" % (
+				membership['member']['id'], membership['member']['name'],
+				membership['group']['id'], membership['group']['name']
+			)
+			member = self.find_or_create_releaser(membership['member'])
+			group = self.find_or_create_releaser(membership['group'])
+			membership_matches = Membership.objects.filter(member__id = member.id, group__id = group.id)
+			if membership_matches:
+				for match in membership_matches:
+					print "- already exists"
+					if (not membership['is_current']) and match.is_current:
+						match.is_current = False
+						print "UPDATED: is_current = %s on dz0, vs %s on dz2" % (membership['is_current'], match.is_current)
+						match.save()
+			else:
+				print "- adding"
+				new_membership = Membership(
+					member = member,
+					group = group,
+					is_current = membership['is_current']
+				)
+				new_membership.save()
 	
 	def handle_noargs(self, **options):
 		import sys
@@ -468,7 +515,9 @@ class Command(NoArgsCommand):
 		# self.import_all_party_series()
 		# self.import_all_releasers()
 		
+		self.import_memberships_with_log_events()
+		
 		#for info in demozoo0.all_productions():
 		#	match = self.find_matching_production_in_dz2(info)
-		for info in demozoo0.releasers_with_members():
-			match = self.find_matching_releaser_in_dz2(info)
+		#for info in demozoo0.releasers_with_members():
+		#	match = self.find_matching_releaser_in_dz2(info)
