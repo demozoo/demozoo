@@ -486,6 +486,9 @@ class Command(NoArgsCommand):
 	def import_memberships_from_zxdemo(self):
 		self.import_memberships_from_queryset(demozoo0.memberships_from_zxdemo())
 	
+	def import_subgroupages(self):
+		self.import_memberships_from_queryset(demozoo0.subgroupages())
+	
 	def import_memberships_from_queryset(self, queryset):
 		for membership in queryset:
 			print "(%s) %s in (%s) %s" % (
@@ -521,6 +524,7 @@ class Command(NoArgsCommand):
 		# self.import_all_party_series()
 		# self.import_all_releasers()
 		
+		self.import_subgroupages()
 		self.import_memberships_from_zxdemo()
 		self.import_memberships_with_log_events()
 		

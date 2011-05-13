@@ -223,3 +223,20 @@ def memberships_from_zxdemo():
 			INNER JOIN releasers AS members ON (memberships.member_id = members.id AND members.zxdemo_id IS NOT NULL)
 			INNER JOIN releasers AS groups ON (memberships.group_id = groups.id AND groups.zxdemo_id IS NOT NULL)
 	''')
+
+def subgroupages():
+	return run_memberships_query('''
+		SELECT DISTINCT
+			members.id, members.type, members.pouet_id, members.zxdemo_id, members.name,
+			members.abbreviation, members.website, members.csdb_id, members.country_id,
+			members.slengpung_id,
+			
+			groups.id, groups.type, groups.pouet_id, groups.zxdemo_id, groups.name,
+			groups.abbreviation, groups.website, groups.csdb_id, groups.country_id,
+			groups.slengpung_id,
+			
+			subgroupages.is_current
+		FROM subgroupages
+			INNER JOIN releasers AS members ON (subgroupages.subgroup_id = members.id)
+			INNER JOIN releasers AS groups ON (subgroupages.group_id = groups.id)
+	''')
