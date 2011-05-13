@@ -177,6 +177,8 @@ class Releaser(models.Model):
 	show_surname = models.BooleanField(default = True)
 	real_name_note = models.TextField(default = '', blank = True, verbose_name = 'Permission note', help_text = "Details of any correspondence / decision about whether this name should be public")
 	
+	data_source = models.CharField(max_length = 32, blank = True, null = True)
+	
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
 	
@@ -560,6 +562,7 @@ class Membership(models.Model):
 	member = models.ForeignKey(Releaser, related_name = 'group_memberships')
 	group = models.ForeignKey(Releaser, limit_choices_to = {'is_group': True}, related_name = 'member_memberships')
 	is_current = models.BooleanField(default = True)
+	data_source = models.CharField(max_length = 32, blank = True, null = True)
 	
 	def __unicode__(self):
 		return "%s / %s" % (self.member.name, self.group.name)

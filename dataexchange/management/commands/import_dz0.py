@@ -474,7 +474,8 @@ class Command(NoArgsCommand):
 				is_group = (releaser_info['type'] == 'Group'),
 				slengpung_user_id = releaser_info['slengpung_id'],
 				demozoo0_id = releaser_info['id'],
-				updated_at = datetime.datetime.now()
+				updated_at = datetime.datetime.now(),
+				data_source = 'dz0'
 			)
 			releaser.save()
 		
@@ -510,7 +511,8 @@ class Command(NoArgsCommand):
 				new_membership = Membership(
 					member = member,
 					group = group,
-					is_current = membership['is_current']
+					is_current = membership['is_current'],
+					data_source = 'dz0'
 				)
 				new_membership.save()
 	
