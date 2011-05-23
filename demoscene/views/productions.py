@@ -76,8 +76,16 @@ def edit_done(request, production_id):
 @login_required
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
+	
+	if production.supertype == 'production':
+		form_class = ProductionEditCoreDetailsForm
+	elif production.supertype == 'graphics':
+		form_class = GraphicsEditCoreDetailsForm
+	else: # production.supertype == 'music':
+		form_class = MusicEditCoreDetailsForm
+	
 	if request.method == 'POST':
-		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
+		form = form_class(request.POST, instance = production)
 		
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
@@ -85,10 +93,10 @@ def edit_core_details(request, production_id):
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionEditCoreDetailsForm(instance = production)
+		form = form_class(instance = production)
 	
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
-		'html_title': "Editing production: %s" % production.title,
+		'html_title': "Editing %s: %s" % (production.supertype, production.title),
 		'production': production,
 		'form': form,
 	})

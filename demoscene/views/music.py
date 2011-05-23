@@ -65,26 +65,6 @@ def edit(request, production_id):
 	return show(request, production_id, edit_mode = True)
 
 @login_required
-def edit_core_details(request, production_id):
-	production = get_object_or_404(Production, id = production_id)
-	if request.method == 'POST':
-		form = MusicEditCoreDetailsForm(request.POST, instance = production)
-		
-		if form.is_valid():
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			form.save()
-			return HttpResponseRedirect(production.get_absolute_edit_url())
-	else:
-		form = MusicEditCoreDetailsForm(instance = production)
-	
-	return ajaxable_render(request, 'productions/edit_core_details.html', {
-		'html_title': "Editing music: %s" % production.title,
-		'production': production,
-		'form': form,
-	})
-
-@login_required
 def create(request):
 	if request.method == 'POST':
 		production = Production(updated_at = datetime.datetime.now())
