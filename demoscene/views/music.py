@@ -78,7 +78,7 @@ def edit_core_details(request, production_id):
 	else:
 		form = MusicEditCoreDetailsForm(instance = production)
 	
-	return ajaxable_render(request, 'music/edit_core_details.html', {
+	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'html_title': "Editing music: %s" % production.title,
 		'production': production,
 		'form': form,

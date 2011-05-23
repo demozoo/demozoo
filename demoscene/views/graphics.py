@@ -75,7 +75,7 @@ def edit_core_details(request, production_id):
 	else:
 		form = GraphicsEditCoreDetailsForm(instance = production)
 	
-	return ajaxable_render(request, 'graphics/edit_core_details.html', {
+	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'html_title': "Editing graphics: %s" % production.title,
 		'production': production,
 		'form': form,
