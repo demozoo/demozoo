@@ -106,6 +106,7 @@ INSTALLED_APPS = (
 	'treebeard',
 	'taggit',
 	'debug_toolbar',
+	'unjoinify',
 	
 	'demoscene',
 	'search',
