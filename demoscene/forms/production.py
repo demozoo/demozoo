@@ -41,6 +41,9 @@ class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 		super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		self.fields['types'] = ProductionTypeMultipleChoiceField(required = False, label = 'Type',
 			initial = [typ.id for typ in self.instance.types.all()], queryset = ProductionType.featured_types())
+		
+		self.has_multiple_types = True
+		
 	def save(self, *args, **kwargs):
 		super(ProductionEditCoreDetailsForm, self).save(*args, **kwargs)
 		self.instance.types = self.cleaned_data['types']
@@ -48,6 +51,8 @@ class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 	def __init__(self, *args, **kwargs):
 		super(MusicEditCoreDetailsForm, self).__init__(*args, **kwargs)
+		
+		self.has_multiple_types = False
 		
 		try:
 			initial_type = self.instance.types.all()[0].id
@@ -68,6 +73,8 @@ class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 	def __init__(self, *args, **kwargs):
 		super(GraphicsEditCoreDetailsForm, self).__init__(*args, **kwargs)
+		
+		self.has_multiple_types = False
 		
 		try:
 			initial_type = self.instance.types.all()[0].id
