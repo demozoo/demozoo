@@ -53,14 +53,52 @@
 			
 			{% include "shared/production_competition_placings.html" %}
 			
-			{% include "shared/production_tags.html" %}
-			
 			{% include "shared/production_external_links.html" %}
+			
+			{% include "shared/production_tags.html" %}
 		</div>
 		
 		<div style="clear: both;"></div>
 	</div>
 	
 	{% include "shared/production_notes.html" %}
-	{% include "shared/production_downloads.html" %}
+	
+	<div id="side_column">
+		{% if production.can_have_credits %}
+			{% include "shared/production_credits.html" %}
+		{% endif %}
+	</div>
+	
+	<div id="main_column">
+		
+		{% if featured_in_productions %}
+			<div class="panel">
+				<h3 class="productions_header">Featured in:</h3>
+				{% with featured_in_productions as productions %}
+					{% include "shared/production_listing.html" %}
+				{% endwith %}
+			</div>
+		{% endif %}
+		
+		{% include "shared/production_downloads.html" %}
+		
+		{% if production.can_have_soundtracks %}
+			{% if soundtracks or editing %}
+				<div class="panel">
+					<h3 class="soundtracks_header">Soundtrack</h3>
+					{% with soundtracks as productions %}
+						{% include "shared/production_listing.html" %}
+					{% endwith %}
+					
+					{% if editing %}
+						<ul>
+							<li class="edit">
+								<a href="{% url production_edit_soundtracks production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
+							</li>
+						</ul>
+					{% endif %}
+				</div>
+			{% endif %}
+		{% endif %}
+	</div>
 {% endblock %}

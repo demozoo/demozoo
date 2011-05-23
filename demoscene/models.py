@@ -665,6 +665,12 @@ class Production(models.Model):
 	def can_have_screenshots(self):
 		return (self.supertype != 'music')
 	
+	def can_have_credits(self):
+		return (self.supertype == 'production')
+	
+	def can_have_soundtracks(self):
+		return (self.supertype == 'production')
+	
 	def _get_release_date(self):
 		if self.release_date_date and self.release_date_precision:
 			return FuzzyDate(self.release_date_date, self.release_date_precision)
