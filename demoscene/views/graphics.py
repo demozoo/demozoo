@@ -46,7 +46,7 @@ def show(request, production_id, edit_mode = False):
 	
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 	
-	return render(request, 'graphics/show.html', {
+	return render(request, 'productions/show.html', {
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.ordered_download_links(),
