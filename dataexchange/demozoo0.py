@@ -240,3 +240,41 @@ def subgroupages():
 			INNER JOIN releasers AS members ON (subgroupages.subgroup_id = members.id)
 			INNER JOIN releasers AS groups ON (subgroupages.group_id = groups.id)
 	''')
+
+def credits():
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT
+			credits.id, credits.role,
+			
+			productions.id, productions.name, productions.pouet_id, productions.csdb_id,
+			
+			nicks.id, nicks.name, nicks.abbreviation,
+			
+			releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+			releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+			releasers.slengpung_id
+		FROM credits
+			INNER JOIN productions ON (credits.production_id = productions.id)
+			INNER JOIN nicks ON (credits.nick_id = nicks.id)
+			INNER JOIN releasers ON (nicks.releaser_id = releasers.id)
+	''')
+	production_columns = ('id', 'name', 'pouet_id', 'csdb_id')
+	releaser_columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')
+	nick_columns = ('id', 'name', 'abbreviation')
+	
+	for row in cur:
+		prod_info = dict(zip(production_columns, row[2:6]))
+		nick_info  = dict(zip(nick_columns, row[6:9]))
+		releaser_info = dict(zip(releaser_columns, row[9:19]))
+		
+		prod_info['name'] = prod_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		nick_info['name'] = nick_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		releaser_info['name'] = releaser_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		yield {
+			'id': row[0],
+			'role': row[1],
+			'production': prod_info,
+			'nick': nick_info,
+			'releaser': releaser_info,
+		}
