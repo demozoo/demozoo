@@ -653,6 +653,18 @@ class Production(models.Model):
 		else:
 			return ('edit_production_done', [str(self.id)])
 	
+	@models.permalink
+	def get_edit_core_details_url(self):
+		if self.supertype == 'music':
+			return ('music_edit_core_details', [str(self.id)])
+		elif self.supertype == 'graphics':
+			return ('graphics_edit_core_details', [str(self.id)])
+		else:
+			return ('production_edit_core_details', [str(self.id)])
+	
+	def can_have_screenshots(self):
+		return (self.supertype != 'music')
+	
 	def _get_release_date(self):
 		if self.release_date_date and self.release_date_precision:
 			return FuzzyDate(self.release_date_date, self.release_date_precision)

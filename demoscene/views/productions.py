@@ -78,6 +78,7 @@ def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
 		form = ProductionEditCoreDetailsForm(request.POST, instance = production)
+		
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True

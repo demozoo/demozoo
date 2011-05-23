@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
-{% load humanize %}
 
 {% block html_title %}{{ production.title }} {% if production.author_nicks.all %}by {{ production.byline }}{% endif %} - Demozoo{% endblock %}
 
@@ -25,13 +24,15 @@
 			{% endif %}
 			
 			{% if editing %}
-				<a href="{% url production_edit_core_details production.id %}" class="open_in_lightbox">
+				<a href="{{ production.get_edit_core_details_url }}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 				</a>
 			{% endif %}
 		</div>
 		
-		{% include "shared/production_screenshots.html" %}
+		{% if production.can_have_screenshots %}
+			{% include "shared/production_screenshots.html" %}
+		{% endif %}
 		
 		<div class="production_details">
 			{% if production.release_date or editing %}
