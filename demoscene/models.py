@@ -644,6 +644,15 @@ class Production(models.Model):
 		else:
 			return ('demoscene.views.productions.edit', [str(self.id)])
 	
+	@models.permalink
+	def get_edit_done_url(self):
+		if self.supertype == 'music':
+			return ('edit_music_done', [str(self.id)])
+		elif self.supertype == 'graphics':
+			return ('edit_graphics_done', [str(self.id)])
+		else:
+			return ('edit_production_done', [str(self.id)])
+	
 	def _get_release_date(self):
 		if self.release_date_date and self.release_date_precision:
 			return FuzzyDate(self.release_date_date, self.release_date_precision)
