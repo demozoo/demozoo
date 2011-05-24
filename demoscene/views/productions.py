@@ -6,8 +6,22 @@ from taggit.models import Tag
 from django.contrib.auth.decorators import login_required
 import datetime
 
-def productions_index(request):
-	queryset = Production.objects.filter(supertype = 'production')
+def index(request, supertype):
+	queryset = Production.objects.filter(supertype = supertype)
+	
+	if supertype == 'production':
+		title = "Productions"
+		add_item_url = reverse('new_production')
+		add_item_text = "New production"
+	elif supertype == 'graphics':
+		title = "Graphics"
+		add_item_url = reverse('new_graphics')
+		add_item_text = "New graphics"
+	else: # supertype == 'music'
+		title = "Music"
+		add_item_url = reverse('new_music')
+		add_item_text = "New music"
+	
 	production_page = get_page(
 		queryset.extra(
 			select={'lower_title': 'lower(demoscene_production.title)'}
@@ -15,9 +29,9 @@ def productions_index(request):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
-		'title': "Productions",
-		'add_item_url': reverse('new_production'),
-		'add_item_text': "New production",
+		'title': title,
+		'add_item_url': add_item_url,
+		'add_item_text': add_item_text,
 		'production_page': production_page,
 	})
 
