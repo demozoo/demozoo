@@ -6,25 +6,6 @@ from taggit.models import Tag
 from django.contrib.auth.decorators import login_required
 import datetime
 
-def tagged(request, tag_slug):
-	try:
-		tag = Tag.objects.get(slug = tag_slug)
-	except Tag.DoesNotExist:
-		tag = Tag(name = tag_slug)
-	queryset = Production.objects.filter(supertype = 'graphics', tags__slug = tag_slug)
-	
-	production_page = get_page(
-		queryset.extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title'),
-		request.GET.get('page', '1') )
-	
-	return render(request, 'productions/index.html', {
-		'title': "Graphics tagged '%s'" % tag.name,
-		'add_new_link': False,
-		'production_page': production_page,
-	})
-
 def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)
 	if production.supertype != 'graphics':

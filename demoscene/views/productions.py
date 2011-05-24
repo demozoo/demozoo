@@ -35,12 +35,19 @@ def index(request, supertype):
 		'production_page': production_page,
 	})
 
-def tagged(request, tag_slug):
+def tagged(request, tag_slug, supertype):
 	try:
 		tag = Tag.objects.get(slug = tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name = tag_slug)
-	queryset = Production.objects.filter(supertype = 'production', tags__slug = tag_slug)
+	queryset = Production.objects.filter(supertype = supertype, tags__slug = tag_slug)
+	
+	if supertype == 'production':
+		title = "Productions tagged '%s'" % tag.name
+	elif supertype == 'graphics':
+		title = "Graphics tagged '%s'" % tag.name
+	else: # supertype == 'music'
+		title = "Music tagged '%s'" % tag.name
 	
 	production_page = get_page(
 		queryset.extra(
@@ -49,8 +56,7 @@ def tagged(request, tag_slug):
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
-		'title': "Productions tagged '%s'" % tag.name,
-		'add_new_link': False,
+		'title': title,
 		'production_page': production_page,
 	})
 
