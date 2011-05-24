@@ -14,9 +14,10 @@ def index(request):
 		).order_by('lower_title'),
 		request.GET.get('page', '1') )
 	
-	return render(request, 'music/index.html', {
+	return render(request, 'productions/index.html', {
 		'title': 'Music',
-		'add_new_link': True,
+		'add_item_url': reverse('new_music'),
+		'add_item_text': "New music",
 		'production_page': production_page,
 	})
 
@@ -33,9 +34,8 @@ def tagged(request, tag_slug):
 		).order_by('lower_title'),
 		request.GET.get('page', '1') )
 	
-	return render(request, 'music/index.html', {
+	return render(request, 'productions/index.html', {
 		'title': "Music tagged '%s'" % tag.name,
-		'add_new_link': False,
 		'production_page': production_page,
 	})
 

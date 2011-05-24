@@ -14,9 +14,10 @@ def index(request):
 		).order_by('lower_title'),
 		request.GET.get('page', '1') )
 	
-	return render(request, 'graphics/index.html', {
+	return render(request, 'productions/index.html', {
 		'title': "Graphics",
-		'add_new_link': True,
+		'add_item_url': reverse('new_graphics'),
+		'add_item_text': "New graphics",
 		'production_page': production_page,
 	})
 
@@ -33,7 +34,7 @@ def tagged(request, tag_slug):
 		).order_by('lower_title'),
 		request.GET.get('page', '1') )
 	
-	return render(request, 'graphics/index.html', {
+	return render(request, 'productions/index.html', {
 		'title': "Graphics tagged '%s'" % tag.name,
 		'add_new_link': False,
 		'production_page': production_page,

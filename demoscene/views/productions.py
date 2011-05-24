@@ -8,7 +8,6 @@ import datetime
 
 def productions_index(request):
 	queryset = Production.objects.filter(supertype = 'production')
-	
 	production_page = get_page(
 		queryset.extra(
 			select={'lower_title': 'lower(demoscene_production.title)'}
@@ -17,7 +16,8 @@ def productions_index(request):
 	
 	return render(request, 'productions/index.html', {
 		'title': "Productions",
-		'add_new_link': True,
+		'add_item_url': reverse('new_production'),
+		'add_item_text': "New production",
 		'production_page': production_page,
 	})
 

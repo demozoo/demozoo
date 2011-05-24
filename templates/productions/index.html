@@ -5,9 +5,9 @@
 {% block base_main %}
 	<h2>{{ title }}</h2>
 	
-	{% if add_new_link %}
+	{% if add_item_url %}
 		<ul class="actions">
-			<li><a href="{% url new_production %}" class="add open_in_lightbox">New production</a></li>
+			<li><a href="{{ add_item_url }}" class="add open_in_lightbox">{{ add_item_text }}</a></li>
 		</ul>
 	{% endif %}
 	
