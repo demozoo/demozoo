@@ -133,8 +133,6 @@ def edit_notes(request, production_id):
 @login_required
 def edit_external_links(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
-	if not request.user.is_staff:
-		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return simple_ajax_form(request, 'production_edit_external_links', production, ProductionEditExternalLinksForm,
 		title = 'Editing external links for %s:' % production.title,
 		update_datestamp = True, update_bonafide_flag = True)

@@ -88,7 +88,7 @@
 			</p>
 		{% endif %}
 		
-		{% if scener.has_any_external_links or editing_as_admin %}
+		{% if scener.has_any_external_links or editing %}
 			<div class="external_links">
 				<h3>External links:</h3>
 				<ul>
@@ -103,7 +103,7 @@
 						{% if scener.mobygames_author_url %}<li><a href="{{ scener.mobygames_author_url }}" class="mobygames" title="{{ scener.name }} on MobyGames">MobyGames</a></li>{% endif %}
 					{% endif %}
 					{% if scener.asciiarena_author_url %}<li><a href="{{ scener.asciiarena_author_url }}" class="asciiarena" title="{{ scener.name }} on AsciiArena">AsciiArena</a></li>{% endif %}
-					{% if editing_as_admin %}<li><a href="{% url scener_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+					{% if editing %}<li><a href="{% url scener_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}

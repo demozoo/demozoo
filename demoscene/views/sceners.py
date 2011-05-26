@@ -44,8 +44,6 @@ def edit_done(request, scener_id):
 @login_required
 def edit_external_links(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
-	if not request.user.is_staff:
-		return HttpResponseRedirect(scener.get_absolute_edit_url())
 		
 	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm,
 		title = 'Editing external links for %s:' % scener.name,

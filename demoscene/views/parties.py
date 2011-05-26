@@ -164,8 +164,6 @@ def edit_notes(request, party_id):
 @login_required
 def edit_external_links(request, party_id):
 	party = get_object_or_404(Party, id = party_id)
-	if not request.user.is_staff:
-		return HttpResponseRedirect(party.get_absolute_edit_url())
 		
 	if request.method == 'POST':
 		form = PartyEditExternalLinksForm(request.POST, instance = party)
