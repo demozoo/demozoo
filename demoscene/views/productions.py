@@ -8,7 +8,9 @@ import datetime
 
 def index(request, supertype):
 	queryset = Production.objects.filter(supertype = supertype)
-	
+
+	order = request.GET.get('order', 'title')
+
 	if supertype == 'production':
 		title = "Productions"
 		add_item_url = reverse('new_production')
@@ -21,15 +23,16 @@ def index(request, supertype):
 		title = "Music"
 		add_item_url = reverse('new_music')
 		add_item_text = "New music"
-	
+
+	queryset = apply_order(queryset, order)
+
 	production_page = get_page(
-		queryset.extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title'),
+		queryset,
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
 		'title': title,
+		'order': order,
 		'add_item_url': add_item_url,
 		'add_item_text': add_item_text,
 		'production_page': production_page,
@@ -42,6 +45,8 @@ def tagged(request, tag_slug, supertype):
 		tag = Tag(name = tag_slug)
 	queryset = Production.objects.filter(supertype = supertype, tags__slug = tag_slug)
 	
+	order = request.GET.get('order', 'title')
+
 	if supertype == 'production':
 		title = "Productions tagged '%s'" % tag.name
 	elif supertype == 'graphics':
@@ -49,16 +54,25 @@ def tagged(request, tag_slug, supertype):
 	else: # supertype == 'music'
 		title = "Music tagged '%s'" % tag.name
 	
+	queryset = apply_order(queryset, order)
+
 	production_page = get_page(
-		queryset.extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title'),
+		queryset,
 		request.GET.get('page', '1') )
 	
 	return render(request, 'productions/index.html', {
 		'title': title,
 		'production_page': production_page,
+		'order': order,
 	})
+
+def apply_order(queryset, order):
+	if order == 'date':
+		return queryset.order_by('release_date_date')
+	else: # title
+		return queryset.extra(
+			select={'lower_title': 'lower(demoscene_production.title)'}
+		).order_by('lower_title')
 
 def show(request, production_id, edit_mode = False):
 	production = get_object_or_404(Production, id = production_id)

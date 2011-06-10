@@ -4,16 +4,16 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
+	<ul class="actions">
+		<li><a href="{% url new_party %}" class="add">New party</a></li>
+	</ul>
+
 	<h2>Parties</h2>
 	
 	<p>
 		<a href="{% url parties %}">By name</a> | <strong>By date</strong>
 	</p>
-	
-	<ul class="actions">
-		<li><a href="{% url new_party %}">New party</a></li>
-	</ul>
-	
+
 	{% regroup parties by start_date.date.year as year_list %}
 	{% for year in year_list %}
 		<h3>{{ year.grouper }}</h3>

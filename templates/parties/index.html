@@ -3,15 +3,15 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
+	<ul class="actions">
+		<li><a href="{% url new_party %}" class="add">New party</a></li>
+	</ul>
+
 	<h2>Parties</h2>
 	
 	<p>
 		<strong>By name</strong> | <a href="{% url parties_by_date %}">By date</a>
 	</p>
-	
-	<ul class="actions">
-		<li><a href="{% url new_party %}">New party</a></li>
-	</ul>
 	
 	{% regroup parties by party_series as party_series_list %}
 	<table class="party_series_index">
