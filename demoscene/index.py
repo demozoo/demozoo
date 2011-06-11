@@ -3,7 +3,7 @@ from djapian import space, Indexer, CompositeIndexer
 from demoscene.models import *
 
 class ProductionIndexer(Indexer):
-	fields = [('title', 1000), ('byline_string', 50), 'plaintext_notes']
+	fields = [('title', 1000), ('tags_string', 200), ('byline_string', 50), 'plaintext_notes']
 space.add_index(Production, ProductionIndexer, attach_as='indexer')
 
 class ReleaserIndexer(Indexer):

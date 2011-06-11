@@ -715,6 +715,10 @@ class Production(models.Model):
 	@property
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
+	
+	@property
+	def tags_string(self):
+		return ', '.join([tag.name for tag in self.tags.all()])
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):
