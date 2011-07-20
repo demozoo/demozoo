@@ -598,6 +598,27 @@ class Command(NoArgsCommand):
 			if tags:
 				production.tags.add(*tags)
 		
+		downloads = demozoo0.download_links_for_production(production_info['id'])
+		for download in downloads:
+			if production.download_links.filter(url = download['url']).count():
+				continue
+			
+			if len(downloads) == 1 or re.search(r'zxdemo\.org', download['url']) or production_info['pouet_id'] == None:
+				pass
+			elif download['description'] == None:
+				pass
+			elif (re.search(r'(fix|version|patched)', download['description']) or re.match(r'disk', download['description']) or download['description'] == 'final') and not re.search(r'(video|youtube)', download['description']):
+				pass
+			else:
+				continue
+			
+			DownloadLink.objects.create(
+				production_id = production.id,
+				demozoo0_id = download['id'],
+				url = download['url'],
+				description = (download['description'] or '')
+			)
+		
 		return production
 	
 	def find_matching_releaser_in_dz2_by_demozoo0_id(self, releaser_info):

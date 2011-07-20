@@ -150,6 +150,16 @@ def platform_ids_for_production(production_id):
 	''', (production_id,) )
 	return [row[0] for row in cur]
 
+def download_links_for_production(production_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT id, url, description
+		FROM downloads
+		WHERE production_id = %s
+	''', (production_id,) )
+	columns = ['id','url','description']
+	return [dict(zip(columns, row)) for row in cur]
+
 def names_for_releaser(releaser_id):
 	cur = connection.cursor()
 	cur.execute('''

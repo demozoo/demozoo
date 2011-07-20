@@ -780,6 +780,8 @@ class ProductionDemozoo0Platform(models.Model):
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')
 	url = models.CharField(max_length = 2048, verbose_name = 'download URL')
+	description = models.CharField(max_length = 255, blank = True)
+	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
 	
 	def hostname(self):
 		return urlparse(self.url).hostname
