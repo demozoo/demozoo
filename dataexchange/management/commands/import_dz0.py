@@ -185,8 +185,8 @@ PRODUCTION_TYPE_DZ0_TO_DZ2 = {
 	34: (1, 'votedisk'), # votedisk
 	35: (34, None), # video
 	36: (14, None), # music
-	37: 23, # graphics
-	38: 25, # ascii collection
+	37: (23, None), # graphics
+	38: (25, None), # ascii collection
 }
 
 PLATFORM_DZ0_TO_DZ2 = {
@@ -402,6 +402,8 @@ class Command(NoArgsCommand):
 		for dz0_platform_id in demozoo0.platform_ids_for_production(production_info['id']):
 			dz2_platform_ids += PLATFORM_SUGGESTIONS[dz0_platform_id]
 		dz2_platform_ids = tuple(set(dz2_platform_ids))
+		if not dz2_platform_ids:
+			return
 		
 		return list(
 			Production.objects.raw('''
@@ -839,6 +841,14 @@ class Command(NoArgsCommand):
 					role = credit['role'])
 				credit.save()
 	
+	def import_zxdemo_productions(self):
+		for production_info in demozoo0.productions_from_zxdemo():
+			self.find_or_create_production(production_info)
+	
+	def import_productions_introduced_on_demozoo0(self):
+		for production_info in demozoo0.productions_introduced_on_demozoo0():
+			self.find_or_create_production(production_info)
+	
 	def handle_noargs(self, **options):
 		import sys
 		import codecs
@@ -852,7 +862,9 @@ class Command(NoArgsCommand):
 		#self.import_subgroupages()
 		#self.import_memberships_from_zxdemo()
 		#self.import_memberships_with_log_events()
-		self.import_credits()
+		#self.import_credits()
+		#self.import_productions_introduced_on_demozoo0()
+		self.import_zxdemo_productions()
 		
 		#for info in demozoo0.all_productions():
 		#	match = self.find_matching_production_in_dz2(info)

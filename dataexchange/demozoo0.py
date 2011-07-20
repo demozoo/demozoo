@@ -21,6 +21,32 @@ def all_productions():
 		ORDER BY productions.id
 	''')
 
+def productions_from_zxdemo():
+	return run_productions_query('''
+		SELECT
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id
+		FROM
+			productions
+		WHERE
+			zxdemo_id IS NOT NULL
+		ORDER BY productions.id
+	''')
+
+def productions_introduced_on_demozoo0():
+	return run_productions_query('''
+		SELECT
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id
+		FROM
+			productions
+		WHERE
+			zxdemo_id IS NULL AND pouet_id IS NULL
+		ORDER BY productions.id
+	''')
+
 def productions_with_credits():
 	return run_productions_query('''
 		SELECT DISTINCT
