@@ -9,7 +9,14 @@ MONTH_REGEX = re.compile(r"^\s*(%s|%s\W+\d{4}|\d{4}\W+%s|\d{1,2}\W+\d{4}|\d{4}\W
 class FuzzyDate():
 	def __init__(self, date, precision):
 		self.date = date
-		self.precision = precision
+		if precision == 'd' or precision == 'day':
+			self.precision = 'd'
+		elif precision == 'm' or precision == 'month':
+			self.precision = 'm'
+		elif precision == 'y' or precision == 'year':
+			self.precision = 'y'
+		else:
+			raise KeyError('Unknown precision type: %s' % precision)
 	
 	def __str__(self):
 		if self.precision == 'y':
@@ -35,6 +42,25 @@ class FuzzyDate():
 			return self.date.strftime("? %B %Y")
 		else:
 			return self.date.strftime("%e %B %Y")
+	
+	# Returns true if the 'other' date matches this one
+	# as far as the precision of the two dates go. Always
+	# returns true for None, because None denotes a date which
+	# is not known to any precision whatsoever
+	def agrees_with(self, other):
+		if other == None:
+			return True
+		elif self.precision == 'd' and other.precision == 'd':
+			return (
+				self.date.year == other.date.year
+				and self.date.month == other.date.month
+				and self.date.day == other.date.day)
+		elif self.precision in ['d','m'] and other.precision in ['d','m']:
+			return (
+				self.date.year == other.date.year
+				and self.date.month == other.date.month)
+		else:
+			return self.date.year == other.date.year
 	
 	@staticmethod
 	def parse(str):

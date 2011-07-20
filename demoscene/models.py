@@ -144,6 +144,15 @@ class ProductionType(MP_Node):
 			tree = tree.exclude(id__in = graphic_types.values('pk'))
 		
 		return tree
+	
+	@property
+	def supertype(self):
+		if self in ProductionType.music_types():
+			return 'music'
+		elif self in ProductionType.graphic_types():
+			return 'graphics'
+		else:
+			return 'production'
 
 class Releaser(models.Model):
 	external_site_ref_field_names = [
@@ -164,6 +173,7 @@ class Releaser(models.Model):
 	mobygames_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'MobyGames author ID')
 	asciiarena_author_id = models.CharField(blank = True, max_length = 32, verbose_name = 'AsciiArena author ID')
 	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
+	zxdemo_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo ID')
 	
 	location = models.CharField(max_length = 255, blank = True)
 	country_code = models.CharField(max_length = 5, blank = True)
@@ -588,6 +598,11 @@ class Production(models.Model):
 	pouet_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet ID')
 	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
 	bitworld_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld ID')
+	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
+	scene_org_id = models.IntegerField(null = True, blank = True, verbose_name = 'scene.org ID')
+	zxdemo_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo ID')
+	
+	data_source = models.CharField(max_length = 32, blank = True, null = True)
 	
 	has_bonafide_edits = models.BooleanField(default = True, help_text = "True if this production has been updated through its own forms, as opposed to just compo results tables")
 	created_at = models.DateTimeField(auto_now_add = True)
@@ -619,12 +634,7 @@ class Production(models.Model):
 		except IndexError:
 			return 'production'
 		
-		if prod_type in ProductionType.music_types():
-			return 'music'
-		elif prod_type in ProductionType.graphic_types():
-			return 'graphics'
-		else:
-			return 'production'
+		return prod_type.supertype
 	
 	@models.permalink
 	def get_absolute_url(self):
@@ -762,6 +772,10 @@ class Byline(StrAndUnicode):
 			except Releaser.DoesNotExist:
 				pass
 		return Byline()
+
+class ProductionDemozoo0Platform(models.Model):
+	production = models.ForeignKey(Production, related_name = 'demozoo0_platforms')
+	platform = models.CharField(max_length = 64)
 
 class DownloadLink(models.Model):
 	production = models.ForeignKey(Production, related_name = 'download_links')

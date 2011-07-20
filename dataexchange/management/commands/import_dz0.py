@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from demoscene.models import *
 from dataexchange import demozoo0
 import datetime
+import fuzzy_date
 
 PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 
@@ -146,6 +147,140 @@ PLATFORM_SUGGESTIONS = {
 	89: [12], # Processing
 }
 
+# Map dz0 ID to (dz2 ID, tag to add)
+PRODUCTION_TYPE_DZ0_TO_DZ2 = {
+	1: (15, None), # 32b intro
+	2: (16, None), # 64b intro
+	3: (18, None), # 128b intro
+	4: (19, None), # 256b intro
+	5: (20, None), # 512b intro
+	6: (21, None), # 1k intro
+	7: (3, None), # 4k intro
+	8: (35, '8k'), # 8k intro
+	9: (35, None), # 16k intro
+	10: (22, None), # 32k intro
+	11: (10, None), # 40k intro
+	12: (2, None), # 64k intro
+	13: (4, '80k'), # 80k intro
+	14: (4, '96k'), # 96k intro
+	15: (4, '100k'), # 100k intro
+	16: (4, '128k'), # 128k intro
+	17: (4, '256k'), # 256k intro
+	18: (8, None), # artpack
+	19: (41, None), # bbstro
+	20: (13, None), # cracktro
+	21: (1, None), # demo
+	22: (9, None), # demopack
+	23: (6, None), # demotool
+	24: (1, 'dentro'), # dentro
+	25: (5, None), # diskmag
+	26: (1, 'fastdemo'), # fastdemo
+	27: (33, None), # game
+	28: (4, None), # intro
+	29: (None, 'invitation'), # invitation
+	30: (42, None), # liveact
+	31: (7, None), # musicdisk
+	32: (None, 'report'), # report
+	33: (8, None), # slideshow
+	34: (1, 'votedisk'), # votedisk
+	35: (34, None), # video
+	36: (14, None), # music
+	37: 23, # graphics
+	38: 25, # ascii collection
+}
+
+PLATFORM_DZ0_TO_DZ2 = {
+	2: None, # BeOS
+	3: 7, # Linux
+	4: 4, # MS-Dos
+	5: 1, # Windows
+	6: 4, # MS-Dos/gus
+	7: 9, # Atari ST
+	8: 6, # Amiga AGA
+	9: 9, # Atari STe
+	10: 5, # Amiga ECS
+	11: 33, # Java
+	12: 13, # Playstation
+	13: 3, # Commodore 64
+	14: None, # Wild
+	15: 33, # Amstrad CPC
+	16: 26, # Amiga PPC/RTG
+	17: 17, # Atari Falcon 030
+	18: 14, # Gameboy
+	19: 2, # ZX Spectrum
+	20: 10, # MacOS X
+	21: 33, # MacOS
+	22: 30, # Gameboy Advance
+	23: 14, # Gameboy Color
+	24: 23, # Dreamcast
+	25: 33, # SNES/Super Famicom
+	26: 22, # Sega Genesis/Mega Drive
+	27: 12, # Flash
+	28: 33, # Oric
+	29: 18, # Mobile Phone
+	30: 21, # VIC 20
+	31: 28, # Playstation 2
+	32: 27, # TI-8x
+	33: 33, # Atari TT 030
+	34: 33, # Acorn
+	35: 12, # JavaScript
+	36: 12, # Alambik
+	37: 33, # NEC TurboGrafx/PC Engine
+	38: 33, # XBOX
+	39: 18, # PalmOS
+	40: 33, # Nintendo 64
+	41: 33, # C16/116/plus4
+	42: 18, # PocketPC
+	43: 12, # PHP
+	44: 31, # MSX
+	45: 14, # Gamepark GP32
+	46: 16, # Atari XL/XE
+	47: 33, # Intellivision
+	48: 33, # Thomson
+	49: 33, # Apple II GS
+	50: 33, # Sega Master System
+	51: 25, # NES/Famicom
+	52: 33, # Gamecube
+	53: 14, # GamePark GP2X
+	54: 16, # Atari VCS
+	55: 33, # Virtual Boy
+	56: 33, # BK-0010/11M
+	57: 18, # Pokemon Mini
+	58: 18, # SEGA Game Gear
+	59: 33, # Vectrex
+	60: 18, # iPod
+	61: 29, # Playstation Portable
+	62: 32, # Nintendo DS
+	63: 33, # Atari Jaguar
+	64: 18, # Wonderswan
+	65: 18, # NeoGeo Pocket
+	66: 15, # XBOX 360
+	67: 18, # Atari Lynx
+	68: 33, # C64 DTV
+	69: 33, # Amstrad Plus
+	70: None, # FreeBSD
+	71: None, # Solaris
+	72: 5, # Amiga OCS
+	73: 33, # Sam Coupe
+	74: None, # NULL
+	75: 31, # Spectravideo 3x8
+	76: 33, # Apple IIe
+	77: 10, # MacOSX Intel
+	78: 33, # Playstation 3
+	79: 24, # Nintendo Wii
+	80: None, # SGI/IRIX
+	81: 33, # BBC Micro
+	82: 31, # MSX2/2+/Turbo-R
+	83: 33, # Sam Coupe
+	84: 33, # TRS-80/CoCo
+	85: 31, # MSX Turbo-R
+	86: 33, # Enterprise
+	87: 31, # MSX 2 Plus
+	88: 33, # ZX-81
+	89: 33, # Processing
+}
+
+
 class Command(NoArgsCommand):
 	def import_all_users(self):
 		print "importing users"
@@ -231,7 +366,6 @@ class Command(NoArgsCommand):
 			params = (PUNCTUATION_REGEX, tuple(names))
 		)
 	
-	# not usable yet, because we don't have a demozoo0_id field in productions yet...
 	def find_matching_production_in_dz2_by_dz0_id(self, production_info):
 		return Production.objects.filter(demozoo0_id = production_info['id'])
 	
@@ -321,12 +455,14 @@ class Command(NoArgsCommand):
 		
 		if loose:
 			strategies = (
+				'find_matching_production_in_dz2_by_dz0_id',
 				'find_matching_production_in_dz2_by_pouet_id',
 				'find_matching_production_in_dz2_by_csdb_id',
 				'find_matching_production_in_dz2_by_title',
 			)
 		else:
 			strategies = (
+				'find_matching_production_in_dz2_by_dz0_id',
 				'find_matching_production_in_dz2_by_pouet_id',
 				'find_matching_production_in_dz2_by_csdb_id',
 				'find_matching_production_in_dz2_by_title_and_author_names',
@@ -351,6 +487,118 @@ class Command(NoArgsCommand):
 			return results
 		
 		return []
+	
+	def find_or_create_production(self, production_info):
+		print "finding %s" % production_info['name']
+		matches = self.find_matching_production_in_dz2(production_info)
+		if matches:
+			production = matches[0]
+			print u'- found %s' % production
+			is_new = False
+			if not production.demozoo0_id:
+				production.demozoo0_id = production_info['id']
+			if not production.pouet_id:
+				production.pouet_id = production_info['pouet_id']
+			if not production.csdb_id:
+				production.csdb_id = production_info['csdb_id']
+			if not production.zxdemo_id:
+				production.zxdemo_id = production_info['zxdemo_id']
+			if not production.scene_org_id:
+				production.scene_org_id = production_info['scene_org_id']
+		else:
+			print "- not found"
+			is_new = True
+			
+			dz0_platforms = demozoo0.platform_ids_for_production(production_info['id'])
+			dz2_platforms = []
+			for dz0_platform in dz0_platforms:
+				dz2_platform = PLATFORM_DZ0_TO_DZ2.get(dz0_platform)
+				if dz2_platform:
+					dz2_platforms.append(dz2_platform)
+			
+			dz0_prod_types = demozoo0.production_type_ids_for_production(production_info['id'])
+			dz2_prod_types = []
+			tags = []
+			for dz0_prod_type in dz0_prod_types:
+				(dz2_prod_type, tag) = PRODUCTION_TYPE_DZ0_TO_DZ2.get(dz0_prod_type)
+				if dz0_prod_type == 19:
+					# special case: set dz2 prod type to bbstro if it's on DOS/Windows, intro otherwise
+					if 1 in dz2_platforms or 4 in dz2_platforms:
+						dz2_prod_types.append(41)
+					else:
+						dz2_prod_types.append(4)
+				elif dz2_prod_type:
+					dz2_prod_types.append(dz2_prod_type)
+				if tag:
+					tags.append(tag)
+			
+			if dz2_prod_types == [42] and not demozoo0.production_has_competition_placings(production_info['id']):
+				print "live act, not in a competition - does not belong in dz2"
+				return None
+			
+			if dz2_prod_types == [] and 32 in dz0_prod_types: # report
+				if dz2_platforms == [34]: # platform = video
+					if demozoo0.production_has_competition_placings(production_info['id']):
+						# appeared in a competition
+						dz2_prod_types.append(34)
+						tags.append('report')
+					else:
+						print "video report not in a competition - does not belong in dz2"
+						return None
+				else:
+					# some non-video platform - add as a demo
+					dz2_prod_types.append(1)
+					tags.append('report')
+			
+			if dz2_prod_types == [] and 29 in dz0_prod_types: # invitation
+				dz2_prod_types.append(1) # demo
+			
+			production = Production(
+				title = production_info['name'],
+				demozoo0_id = production_info['id'],
+				pouet_id = production_info['pouet_id'],
+				csdb_id = production_info['csdb_id'],
+				zxdemo_id = production_info['zxdemo_id'],
+				scene_org_id = production_info['scene_org_id'],
+				updated_at = datetime.datetime.now(),
+				data_source = 'dz0'
+			)
+			if dz2_prod_types:
+				production.supertype = ProductionType.objects.get(id = dz2_prod_types[0]).supertype
+			else:
+				production.supertype = 'production'
+			
+		# check that release dates agree as far as they go
+		if production_info['release_date_precision']:
+			dz0_date = FuzzyDate(
+				production_info['release_date_datestamp'],
+				production_info['release_date_precision'])
+		else:
+			dz0_date = None
+		
+		dz2_date = production.release_date
+		
+		if dz0_date:
+			if not dz0_date.agrees_with(dz2_date):
+				print "WARNING: dates do not agree. dz0 = %s, dz2 = %s" % (dz0_date, dz2_date)
+			elif dz0_date.precision == 'd' and (dz2_date == None or dz2_date.precision in ['m','y']):
+				production.release_date_date = datetime.date(dz0_date.date.year, dz0_date.date.month, dz0_date.date.day)
+				production.release_date_precision = 'd'
+			elif dz0_date.precision == 'm' and (dz2_date == None or dz2_date.precision == 'y'):
+				production.release_date_date = datetime.date(dz0_date.date.year, dz0_date.date.month, 1)
+				production.release_date_precision = 'm'
+			elif dz0_date.precision == 'y' and dz2_date == None:
+				production.release_date_date = datetime.date(dz0_date.date.year, 1, 1)
+				production.release_date_precision = 'y'
+		
+		production.save()
+		if is_new:
+			production.types = ProductionType.objects.filter(id__in = dz2_prod_types)
+			production.platforms = Platform.objects.filter(id__in = dz2_platforms)
+			if tags:
+				production.tags.add(*tags)
+		
+		return production
 	
 	def find_matching_releaser_in_dz2_by_demozoo0_id(self, releaser_info):
 		return Releaser.objects.filter(demozoo0_id = releaser_info['id'])
@@ -467,6 +715,8 @@ class Command(NoArgsCommand):
 				releaser.demozoo0_id = releaser_info['id']
 			if not releaser.slengpung_user_id:
 				releaser.slengpung_user_id = releaser_info['slengpung_id']
+			if not releaser.zxdemo_id:
+				releaser.zxdemo_id = releaser_info['zxdemo_id']
 			releaser.save()
 		else:
 			releaser = Releaser(
@@ -474,12 +724,43 @@ class Command(NoArgsCommand):
 				is_group = (releaser_info['type'] == 'Group'),
 				slengpung_user_id = releaser_info['slengpung_id'],
 				demozoo0_id = releaser_info['id'],
+				zxdemo_id = releaser_info['zxdemo_id'],
 				updated_at = datetime.datetime.now(),
 				data_source = 'dz0'
 			)
 			releaser.save()
 		
+		for nick_info in demozoo0.nicks_for_releaser(releaser_info['id']):
+			nick = self.find_or_create_nick_for_releaser(releaser, nick_info)
+			for name in demozoo0.names_for_nick(nick_info['id']):
+				self.add_variant_for_nick(nick, name)
+		
 		return releaser
+	
+	def find_or_create_nick_for_releaser(self, releaser, nick_info):
+		nicks = releaser.nicks.filter(variants__name__iexact = nick_info['name'])
+		if len(nicks) > 1:
+			raise Exception("Releaser %d has more than one nick with name %s" % releaser.id, name)
+		elif len(nicks) == 1:
+			nick = nicks[0]
+		else:
+			nick = Nick(
+				releaser = releaser,
+				name = nick_info['name'],
+				abbreviation = nick_info['abbreviation'] or ''
+			)
+			nick.save()
+		
+		if nick_info['abbreviation'] and not nick.abbreviation:
+			nick.abbreviation = nick_info['abbreviation']
+			nick.save()
+		
+		return nick
+	
+	def add_variant_for_nick(self, nick, name):
+		if not nick.variants.filter(name__iexact = name):
+			variant = NickVariant(nick = nick, name = name)
+			variant.save()
 	
 	def import_memberships_with_log_events(self):
 		self.import_memberships_from_queryset(demozoo0.memberships_with_log_events())
@@ -516,6 +797,27 @@ class Command(NoArgsCommand):
 				)
 				new_membership.save()
 	
+	def import_credits(self):
+		for credit in demozoo0.credits():
+			production = self.find_or_create_production(credit['production'])
+			if not production:
+				continue
+			releaser = self.find_or_create_releaser(credit['releaser'])
+			nick = self.find_or_create_nick_for_releaser(releaser, credit['nick'])
+			
+			existing_credits = production.credits.filter(nick = nick)
+			if existing_credits and existing_credits[0].role == credit['role']:
+				pass
+			elif existing_credits:
+				print u"WARNING: existing credit for %s on %s - skipping" % (nick, production)
+			else:
+				print u"adding credit for %s on %s - %s" % (nick, production, credit['role'])
+				credit = Credit(
+					production = production,
+					nick = nick,
+					role = credit['role'])
+				credit.save()
+	
 	def handle_noargs(self, **options):
 		import sys
 		import codecs
@@ -526,9 +828,10 @@ class Command(NoArgsCommand):
 		# self.import_all_party_series()
 		# self.import_all_releasers()
 		
-		self.import_subgroupages()
-		self.import_memberships_from_zxdemo()
-		self.import_memberships_with_log_events()
+		#self.import_subgroupages()
+		#self.import_memberships_from_zxdemo()
+		#self.import_memberships_with_log_events()
+		self.import_credits()
 		
 		#for info in demozoo0.all_productions():
 		#	match = self.find_matching_production_in_dz2(info)

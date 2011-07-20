@@ -2,7 +2,7 @@ import pymysql
 
 connection = pymysql.connect(user="root", db="demozoo_production", charset="latin1")
 
-def run_productions_query(sql, params = (), columns = ('id', 'name', 'pouet_id', 'csdb_id')):
+def run_productions_query(sql, params = (), columns = ('id', 'name', 'pouet_id', 'zxdemo_id', 'release_date_datestamp', 'release_date_precision', 'scene_org_id', 'csdb_id')):
 	cur = connection.cursor()
 	cur.execute(sql, params)
 	for row in cur:
@@ -13,7 +13,9 @@ def run_productions_query(sql, params = (), columns = ('id', 'name', 'pouet_id',
 def all_productions():
 	return run_productions_query('''
 		SELECT
-			productions.id, productions.name, productions.pouet_id, productions.csdb_id
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id
 		FROM
 			productions
 		ORDER BY productions.id
@@ -22,7 +24,9 @@ def all_productions():
 def productions_with_credits():
 	return run_productions_query('''
 		SELECT DISTINCT
-			productions.id, productions.name, productions.pouet_id, productions.csdb_id
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id
 		FROM
 			productions
 			INNER JOIN credits ON (productions.id = credits.production_id)
@@ -32,7 +36,9 @@ def productions_with_credits():
 def productions_by_releaser(releaser_id):
 	return run_productions_query('''
 		SELECT DISTINCT
-			productions.id, productions.name, productions.pouet_id, productions.csdb_id
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id
 		FROM
 			productions
 			LEFT JOIN authorships ON (productions.id = authorships.production_id)
@@ -42,6 +48,11 @@ def productions_by_releaser(releaser_id):
 		WHERE
 			nicks.releaser_id = %s OR affil_nicks.releaser_id = %s
 	''', (releaser_id, releaser_id))
+
+def production_has_competition_placings(production_id):
+	cur = connection.cursor()
+	cur.execute("SELECT COUNT(*) FROM competition_placings WHERE production_id = %s", (production_id,))
+	return cur.fetchone()[0]
 
 def all_party_series():
 	cur = connection.cursor()
@@ -148,6 +159,27 @@ def names_for_releaser(releaser_id):
 	''', (releaser_id,) )
 	return [row[0] for row in cur]
 
+def nicks_for_releaser(releaser_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT nicks.id, nicks.name, nicks.abbreviation FROM nicks
+		WHERE releaser_id = %s
+	''', (releaser_id,) )
+	for row in cur:
+		info = dict(zip(['id', 'name', 'abbreviation'], row))
+		info['name'] = info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		if info['abbreviation']:
+			info['abbreviation'] = info['abbreviation'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		yield info
+
+def names_for_nick(nick_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT name FROM nick_variants
+		WHERE nick_id = %s
+	''', (nick_id,) )
+	return [row[0] for row in cur]
+
 def groups_for_releaser(releaser_id):
 	return run_releasers_query('''
 		SELECT DISTINCT
@@ -247,7 +279,9 @@ def credits():
 		SELECT
 			credits.id, credits.role,
 			
-			productions.id, productions.name, productions.pouet_id, productions.csdb_id,
+			productions.id, productions.name, productions.pouet_id, productions.zxdemo_id,
+			productions.release_date_datestamp, productions.release_date_precision,
+			productions.scene_org_id, productions.csdb_id,
 			
 			nicks.id, nicks.name, nicks.abbreviation,
 			
@@ -259,14 +293,14 @@ def credits():
 			INNER JOIN nicks ON (credits.nick_id = nicks.id)
 			INNER JOIN releasers ON (nicks.releaser_id = releasers.id)
 	''')
-	production_columns = ('id', 'name', 'pouet_id', 'csdb_id')
+	production_columns = ('id', 'name', 'pouet_id', 'zxdemo_id', 'release_date_datestamp', 'release_date_precision', 'scene_org_id', 'csdb_id')
 	releaser_columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')
 	nick_columns = ('id', 'name', 'abbreviation')
 	
 	for row in cur:
-		prod_info = dict(zip(production_columns, row[2:6]))
-		nick_info  = dict(zip(nick_columns, row[6:9]))
-		releaser_info = dict(zip(releaser_columns, row[9:19]))
+		prod_info = dict(zip(production_columns, row[2:10]))
+		nick_info  = dict(zip(nick_columns, row[10:13]))
+		releaser_info = dict(zip(releaser_columns, row[13:23]))
 		
 		prod_info['name'] = prod_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
 		nick_info['name'] = nick_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
