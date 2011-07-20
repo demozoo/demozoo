@@ -599,6 +599,11 @@ class Command(NoArgsCommand):
 			production.platforms = Platform.objects.filter(id__in = dz2_platforms)
 			if tags:
 				production.tags.add(*tags)
+			
+			for authorship in demozoo0.authorships_for_production(production_info['id']):
+				releaser = self.find_or_create_releaser(authorship['releaser'])
+				nick = self.find_or_create_nick_for_releaser(releaser, authorship['nick'])
+				production.author_nicks.add(nick)
 		
 		downloads = demozoo0.download_links_for_production(production_info['id'])
 		for download in downloads:
