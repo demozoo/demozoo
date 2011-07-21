@@ -782,7 +782,7 @@ class Command(NoArgsCommand):
 	def find_or_create_nick_for_releaser(self, releaser, nick_info):
 		nicks = releaser.nicks.filter(variants__name__iexact = nick_info['name'])
 		if len(nicks) > 1:
-			raise Exception("Releaser %d has more than one nick with name %s" % (releaser.id, name))
+			raise Exception("Releaser %d has more than one nick with name %s" % (releaser.id, nick_info['name']))
 		elif len(nicks) == 1:
 			nick = nicks[0]
 		else:
