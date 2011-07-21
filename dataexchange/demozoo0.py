@@ -270,6 +270,38 @@ def authorships_for_production(production_id):
 			'releaser': releaser_info,
 		}
 
+def affiliations_for_authorship(authorship_id):
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT authorship_affiliations.id,
+		
+		nicks.id, nicks.name, nicks.abbreviation,
+		
+		releasers.id, releasers.type, releasers.pouet_id, releasers.zxdemo_id, releasers.name,
+		releasers.abbreviation, releasers.website, releasers.csdb_id, releasers.country_id,
+		releasers.slengpung_id
+		
+		FROM authorship_affiliations
+		INNER JOIN nicks ON authorship_affiliations.group_nick_id = nicks.id
+		INNER JOIN releasers ON nicks.releaser_id = releasers.id
+		WHERE authorship_affiliations.authorship_id = %s
+		ORDER BY position
+	''', (authorship_id,) )
+	releaser_columns = ('id', 'type', 'pouet_id', 'zxdemo_id', 'name', 'abbreviation', 'website', 'csdb_id', 'country_id', 'slengpung_id')
+	nick_columns = ('id', 'name', 'abbreviation')
+	
+	for row in cur:
+		nick_info  = dict(zip(nick_columns, row[1:4]))
+		releaser_info = dict(zip(releaser_columns, row[4:14]))
+		
+		nick_info['name'] = nick_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		releaser_info['name'] = releaser_info['name'].encode('latin-1').decode('utf-8') # hack to fix encoding
+		yield {
+			'id': row[0],
+			'nick': nick_info,
+			'releaser': releaser_info,
+		}
+
 def run_memberships_query(sql, params = ()):
 	cur = connection.cursor()
 	cur.execute(sql, params)

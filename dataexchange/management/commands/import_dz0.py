@@ -600,10 +600,23 @@ class Command(NoArgsCommand):
 			if tags:
 				production.tags.add(*tags)
 			
+			last_affiliation_list = None
 			for authorship in demozoo0.authorships_for_production(production_info['id']):
 				releaser = self.find_or_create_releaser(authorship['releaser'])
 				nick = self.find_or_create_nick_for_releaser(releaser, authorship['nick'])
 				production.author_nicks.add(nick)
+				
+				affiliations = [affil for affil in demozoo0.affiliations_for_authorship(authorship['id'])]
+				affiliation_list = [affil['nick']['id'] for affil in affiliations]
+				if last_affiliation_list == None:
+					last_affiliation_list = affiliation_list
+					for affiliation in affiliations:
+						affil_releaser = self.find_or_create_releaser(affiliation['releaser'])
+						affil_nick = self.find_or_create_nick_for_releaser(affil_releaser, affiliation['nick'])
+						production.author_affiliation_nicks.add(affil_nick)
+				else:
+					if last_affiliation_list != affiliation_list:
+						print "WARNING: Different authors have different affiliations. Ignoring all but the first"
 		
 		downloads = demozoo0.download_links_for_production(production_info['id'])
 		for download in downloads:
