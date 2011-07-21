@@ -782,7 +782,7 @@ class Command(NoArgsCommand):
 	def find_or_create_nick_for_releaser(self, releaser, nick_info):
 		nicks = releaser.nicks.filter(variants__name__iexact = nick_info['name'])
 		if len(nicks) > 1:
-			raise Exception("Releaser %d has more than one nick with name %s" % releaser.id, name)
+			raise Exception("Releaser %d has more than one nick with name %s" % (releaser.id, name))
 		elif len(nicks) == 1:
 			nick = nicks[0]
 		else:
@@ -826,8 +826,8 @@ class Command(NoArgsCommand):
 				for match in membership_matches:
 					print "- already exists"
 					if (not membership['is_current']) and match.is_current:
-						match.is_current = False
 						print "UPDATED: is_current = %s on dz0, vs %s on dz2" % (membership['is_current'], match.is_current)
+						match.is_current = False
 						match.save()
 			else:
 				print "- adding"
