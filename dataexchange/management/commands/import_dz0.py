@@ -877,11 +877,11 @@ class Command(NoArgsCommand):
 		# self.import_all_party_series()
 		# self.import_all_releasers()
 		
-		#self.import_subgroupages()
-		#self.import_memberships_from_zxdemo()
-		#self.import_memberships_with_log_events()
-		#self.import_credits()
-		#self.import_productions_introduced_on_demozoo0()
+		self.import_subgroupages()
+		self.import_memberships_from_zxdemo()
+		self.import_memberships_with_log_events()
+		self.import_credits()
+		self.import_productions_introduced_on_demozoo0()
 		self.import_zxdemo_productions()
 		
 		#for info in demozoo0.all_productions():
