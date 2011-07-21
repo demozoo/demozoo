@@ -413,7 +413,7 @@ class Nick(models.Model):
 			old_variant_names = [variant.name for variant in self.variants.all()]
 			new_variant_names = re.split(r"\s*\,\s*", self._nick_variant_list)
 			new_variant_names.append(self.name)
-			if self.abbreviation:
+			if self.abbreviation and self.abbreviation.lower() != self.name.lower():
 				new_variant_names.append(self.abbreviation)
 			
 			for variant in self.variants.all():
