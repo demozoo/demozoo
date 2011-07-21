@@ -3,6 +3,7 @@
 from django.core.management.base import NoArgsCommand
 
 import pymysql
+import sys
 import re
 from django.contrib.auth.models import User
 from demoscene.models import *
@@ -837,6 +838,7 @@ class Command(NoArgsCommand):
 					data_source = 'dz0'
 				)
 				new_membership.save()
+			sys.stdout.flush()
 	
 	def import_credits(self):
 		for credit in demozoo0.credits():
@@ -858,14 +860,17 @@ class Command(NoArgsCommand):
 					nick = nick,
 					role = credit['role'])
 				credit.save()
+			sys.stdout.flush()
 	
 	def import_zxdemo_productions(self):
 		for production_info in demozoo0.productions_from_zxdemo():
 			self.find_or_create_production(production_info)
+			sys.stdout.flush()
 	
 	def import_productions_introduced_on_demozoo0(self):
 		for production_info in demozoo0.productions_introduced_on_demozoo0():
 			self.find_or_create_production(production_info)
+			sys.stdout.flush()
 	
 	def handle_noargs(self, **options):
 		import sys
