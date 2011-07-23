@@ -142,4 +142,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^maintenance/prod_soundtracks_without_release_date$', 'maintenance.prod_soundtracks_without_release_date', {}, 'maintenance_prod_soundtracks_without_release_date'),
 	(r'^maintenance/group_nicks_with_brackets$', 'maintenance.group_nicks_with_brackets', {}, 'maintenance_group_nicks_with_brackets'),
 	(r'^maintenance/ambiguous_groups_with_no_differentiators$', 'maintenance.ambiguous_groups_with_no_differentiators', {}, 'maintenance_ambiguous_groups_with_no_differentiators'),
+	(r'^maintenance/non_standard_credits$', 'maintenance.non_standard_credits', {}, 'maintenance_non_standard_credits'),
+	(r'^maintenance/replace_credit_role$', 'maintenance.replace_credit_role', {}, 'maintenance_replace_credit_role'),
 )
