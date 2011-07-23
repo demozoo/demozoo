@@ -346,6 +346,15 @@ class Releaser(models.Model):
 			or self.productions().count()
 			or self.member_productions().count() )
 	
+	def can_be_converted_to_group(self):
+		return True
+		# might come up with some restrictions later - e.g. must not have full name.
+		# No pressing need for this right now though - it doesn't screw up data integrity or anything...
+	
+	def can_be_converted_to_scener(self):
+		# don't allow converting a group to scener if it has members or member productions
+		return (not self.members() and not self.member_productions())
+	
 	@property
 	def plaintext_notes(self):
 		return strip_markup(self.notes)

@@ -179,9 +179,14 @@
 		{% endif %}
 	</div>
 	
-	{% if editing_as_admin and not scener.is_referenced %}
+	{% if editing_as_admin %}
 		<ul class="maintenance_actions">
-			<li><a href="{% url delete_releaser scener.id %}" class="delete open_in_lightbox">Delete scener</a></li>
+			{% if not scener.is_referenced %}
+				<li><a href="{% url delete_releaser scener.id %}" class="delete open_in_lightbox">Delete scener</a></li>
+			{% endif %}
+			{% if scener.can_be_converted_to_group %}
+				<li><a href="{% url scener_convert_to_group scener.id %}" class="switch open_in_lightbox">Convert to group</a></li>
+			{% endif %}
 		</ul>
 	{% endif %}
 {% endblock %}

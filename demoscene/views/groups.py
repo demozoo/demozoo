@@ -194,3 +194,20 @@ def edit_subgroup(request, group_id, membership_id):
 		'membership': membership,
 		'form': form,
 	})
+
+@login_required
+def convert_to_scener(request, group_id):
+	group = get_object_or_404(Releaser, is_group = True, id = group_id)
+	if not request.user.is_staff or not group.can_be_converted_to_scener():
+		return HttpResponseRedirect(group.get_absolute_edit_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			group.is_group = False
+			group.updated_at = datetime.datetime.now()
+			group.save()
+		return HttpResponseRedirect(group.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('group_convert_to_scener', args = [group_id]),
+			"Are you sure you want to convert %s into a scener?" % (group.name),
+			html_title = "Converting %s to a scener" % (group.name) )

@@ -447,6 +447,12 @@ ul.maintenance_actions li a.delete {
 	background-position: 4px center;
 	background-repeat: no-repeat;
 }
+ul.maintenance_actions li a.switch {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/arrow_refresh.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
 
 ul.maintenance_actions li {
 	display: inline;

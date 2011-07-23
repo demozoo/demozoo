@@ -153,3 +153,20 @@ def edit_membership(request, scener_id, membership_id):
 		'membership': membership,
 		'form': form,
 	})
+
+@login_required
+def convert_to_group(request, scener_id):
+	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
+	if not request.user.is_staff or not scener.can_be_converted_to_group():
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			scener.is_group = True
+			scener.updated_at = datetime.datetime.now()
+			scener.save()
+		return HttpResponseRedirect(scener.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('scener_convert_to_group', args = [scener_id]),
+			"Are you sure you want to convert %s into a group?" % (scener.name),
+			html_title = "Converting %s to a group" % (scener.name) )
