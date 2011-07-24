@@ -103,3 +103,27 @@ def replace_credit_role(request):
 	cursor.execute("UPDATE demoscene_credit SET role = %s WHERE role = %s", [new_role, old_role])
 	transaction.commit_unless_managed()
 	return redirect('maintenance_non_standard_credits')
+
+def prods_with_release_date_outside_party(request):
+	productions = Production.objects.raw('''
+		SELECT
+			demoscene_production.id, demoscene_production.title,
+			demoscene_production.release_date_date, demoscene_production.release_date_precision
+		FROM demoscene_production
+			INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
+			INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id AND demoscene_competition.name <> 'Invitation')
+			INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+		WHERE
+			demoscene_production.release_date_precision = 'd'
+		GROUP BY
+			demoscene_production.id, demoscene_production.title,
+			demoscene_production.release_date_date, demoscene_production.release_date_precision
+		HAVING (
+			demoscene_production.release_date_date < MIN(demoscene_party.start_date_date) - INTERVAL '14 days'
+			OR demoscene_production.release_date_date > MIN(demoscene_party.end_date_date) + INTERVAL '14 days'
+		)
+	''')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions with a release date more than 14 days away from their release party',
+		'productions': productions,
+	})

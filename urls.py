@@ -144,4 +144,5 @@ urlpatterns += patterns('demoscene.views',
 	(r'^maintenance/ambiguous_groups_with_no_differentiators$', 'maintenance.ambiguous_groups_with_no_differentiators', {}, 'maintenance_ambiguous_groups_with_no_differentiators'),
 	(r'^maintenance/non_standard_credits$', 'maintenance.non_standard_credits', {}, 'maintenance_non_standard_credits'),
 	(r'^maintenance/replace_credit_role$', 'maintenance.replace_credit_role', {}, 'maintenance_replace_credit_role'),
+	(r'^maintenance/prods_with_release_date_outside_party$', 'maintenance.prods_with_release_date_outside_party', {}, 'maintenance_prods_with_release_date_outside_party'),
 )
