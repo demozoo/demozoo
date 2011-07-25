@@ -1,18 +1,18 @@
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str, force_unicode
-import markdown2
+import markdown
 from scrubber import Scrubber
-from github_flavored_markdown import gfm
 
 register = template.Library()
 
-scrubber = Scrubber()
+scrubber = Scrubber(autolink=False, nofollow=False) # Scrubber's autolink doesn't handle ftp://
+md = markdown.Markdown(extensions=['nl2br', 'autolink'])
 
 def safe_markdown(value, arg=''):
 	return mark_safe(
 		scrubber.scrub(
-			markdown2.markdown(gfm(smart_str(value)))
+			md.convert(value)
 		)
 	)
 safe_markdown.is_safe = True
