@@ -2,6 +2,8 @@ from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit
 from django.db import connection, transaction
+from fuzzy_date import FuzzyDate
+from django.http import HttpResponseRedirect
 
 def index(request):
 	if not request.user.is_staff:
@@ -106,24 +108,49 @@ def replace_credit_role(request):
 
 def prods_with_release_date_outside_party(request):
 	productions = Production.objects.raw('''
-		SELECT
-			demoscene_production.id, demoscene_production.title,
-			demoscene_production.release_date_date, demoscene_production.release_date_precision
-		FROM demoscene_production
-			INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
-			INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id AND demoscene_competition.name <> 'Invitation')
-			INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+		SELECT * FROM (
+			SELECT DISTINCT ON (demoscene_production.id)
+				demoscene_production.*,
+				demoscene_party.start_date_date AS party_start_date,
+				demoscene_party.end_date_date AS party_end_date,
+				demoscene_party.end_date_date AS suggested_release_date_date,
+				demoscene_party.end_date_precision AS suggested_release_date_precision,
+				demoscene_party.name AS release_detail,
+				demoscene_party.end_date_precision AS party_end_date_precision
+			FROM
+				demoscene_production
+				INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
+				INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id  AND demoscene_competition.name <> 'Invitation')
+				INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+			WHERE
+				demoscene_production.release_date_date IS NOT NULL
+				AND demoscene_production.release_date_precision = 'd'
+			ORDER BY demoscene_production.id, demoscene_party.end_date_date
+		) AS releases
 		WHERE
-			demoscene_production.release_date_precision = 'd'
-		GROUP BY
-			demoscene_production.id, demoscene_production.title,
-			demoscene_production.release_date_date, demoscene_production.release_date_precision
-		HAVING (
-			demoscene_production.release_date_date < MIN(demoscene_party.start_date_date) - INTERVAL '14 days'
-			OR demoscene_production.release_date_date > MIN(demoscene_party.end_date_date) + INTERVAL '14 days'
-		)
+			releases.party_end_date_precision = 'd'
+			AND (
+				releases.release_date_date < releases.party_start_date - INTERVAL '14 days'
+				OR releases.release_date_date > releases.party_end_date + INTERVAL '14 days'
+			)
 	''')
-	return render(request, 'maintenance/production_report.html', {
+	productions = list(productions)
+	for production in productions:
+		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+	
+	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Productions with a release date more than 14 days away from their release party',
 		'productions': productions,
+		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
 	})
+
+def fix_release_dates(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	for prod_id in request.POST.getlist('production_id'):
+		prod = Production.objects.get(id = prod_id)
+		prod.release_date_date = request.POST['production_%s_release_date_date' % prod_id]
+		prod.release_date_precision = request.POST['production_%s_release_date_precision' % prod_id]
+		prod.save()
+	return HttpResponseRedirect(request.POST['return_to'])
+	

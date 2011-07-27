@@ -145,4 +145,5 @@ urlpatterns += patterns('demoscene.views',
 	(r'^maintenance/non_standard_credits$', 'maintenance.non_standard_credits', {}, 'maintenance_non_standard_credits'),
 	(r'^maintenance/replace_credit_role$', 'maintenance.replace_credit_role', {}, 'maintenance_replace_credit_role'),
 	(r'^maintenance/prods_with_release_date_outside_party$', 'maintenance.prods_with_release_date_outside_party', {}, 'maintenance_prods_with_release_date_outside_party'),
+	(r'^maintenance/fix_release_dates$', 'maintenance.fix_release_dates', {}, 'maintenance_fix_release_dates'),
 )

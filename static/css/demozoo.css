@@ -1242,6 +1242,9 @@ ul.results_table > li > a:hover.delete {
 	margin-bottom: 0.2em;
 }
 
+body.maintenance_report #main_column {
+	width: 100%;
+}
 body.maintenance_report table td {
 	border-bottom: 1px solid #eee;
 }
