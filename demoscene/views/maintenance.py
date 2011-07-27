@@ -47,10 +47,29 @@ def prods_without_release_date_with_placement(request):
 	})
 
 def prod_soundtracks_without_release_date(request):
-	productions = Production.objects.filter(appearances_as_soundtrack__isnull = False, release_date_date__isnull = True)
-	return render(request, 'maintenance/production_report.html', {
+	productions = Production.objects.raw('''
+		SELECT DISTINCT ON (soundtrack.id)
+			soundtrack.*,
+			production.release_date_date AS suggested_release_date_date,
+			production.release_date_precision AS suggested_release_date_precision,
+			production.title AS release_detail
+		FROM
+			demoscene_production AS soundtrack
+			INNER JOIN demoscene_soundtracklink ON (soundtrack.id = demoscene_soundtracklink.soundtrack_id)
+			INNER JOIN demoscene_production AS production ON (demoscene_soundtracklink.production_id = production.id)
+		WHERE
+			soundtrack.release_date_date IS NULL
+		ORDER BY
+			soundtrack.id, production.release_date_date
+	''')
+	productions = list(productions)
+	for production in productions:
+		if production.suggested_release_date_date != None:
+			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Music with productions attached but no release date',
 		'productions': productions,
+		'return_to': reverse('maintenance_prod_soundtracks_without_release_date'),
 	})
 
 def group_nicks_with_brackets(request):

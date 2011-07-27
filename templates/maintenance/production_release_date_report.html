@@ -29,9 +29,11 @@
 							<td>{{ prod.release_date }}</td>
 							<td>{% byline prod %}</td>
 							<td>
-								<input type="checkbox" name="production_id" id="production_id_{{ prod.id }}" value="{{ prod.id }}" />
-								<input type="hidden" name="production_{{ prod.id }}_release_date_date" value="{{ prod.suggested_release_date.date|date:"Y-m-d" }}" />
-								<input type="hidden" name="production_{{ prod.id }}_release_date_precision" value="{{ prod.suggested_release_date.precision }}" />
+								{% if prod.suggested_release_date %}
+									<input type="checkbox" name="production_id" id="production_id_{{ prod.id }}" value="{{ prod.id }}" />
+									<input type="hidden" name="production_{{ prod.id }}_release_date_date" value="{{ prod.suggested_release_date.date|date:"Y-m-d" }}" />
+									<input type="hidden" name="production_{{ prod.id }}_release_date_precision" value="{{ prod.suggested_release_date.precision }}" />
+								{% endif %}
 								<label for="production_id_{{ prod.id }}">{{ prod.suggested_release_date }}</label>
 								<em>({{ prod.release_detail }})</em>
 							</td>
