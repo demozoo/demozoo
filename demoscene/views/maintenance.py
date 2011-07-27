@@ -40,10 +40,29 @@ def prods_without_release_date(request):
 	})
 
 def prods_without_release_date_with_placement(request):
-	productions = Production.objects.filter(release_date_date__isnull = True, competition_placings__isnull = False)
-	return render(request, 'maintenance/production_report.html', {
+	productions = Production.objects.raw('''
+		SELECT DISTINCT ON (demoscene_production.id)
+			demoscene_production.*,
+			demoscene_party.end_date_date AS suggested_release_date_date,
+			demoscene_party.end_date_precision AS suggested_release_date_precision,
+			demoscene_party.name AS release_detail
+		FROM
+			demoscene_production
+			INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
+			INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id  AND demoscene_competition.name <> 'Invitation')
+			INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+		WHERE
+			demoscene_production.release_date_date IS NULL
+		ORDER BY demoscene_production.id, demoscene_party.end_date_date
+	''')
+	
+	productions = list(productions)
+	for production in productions:
+		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Productions without a release date but with a party placement attached',
 		'productions': productions,
+		'return_to': reverse('maintenance_prods_without_release_date_with_placement'),
 	})
 
 def prod_soundtracks_without_release_date(request):
