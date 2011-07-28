@@ -111,6 +111,7 @@ INSTALLED_APPS = (
 	'demoscene',
 	'search',
 	'dataexchange',
+	'maintenance',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
