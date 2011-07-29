@@ -1,9 +1,10 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit
+from maintenance.models import Exclusion
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 def index(request):
 	if not request.user.is_staff:
@@ -11,35 +12,60 @@ def index(request):
 	return render(request, 'maintenance/index.html')
 
 def prods_without_screenshots(request):
+	report_name = 'prods_without_screenshots'
+	
 	productions = Production.objects \
 		.filter(screenshots__id__isnull = True) \
-		.exclude(supertype = 'music').order_by('title')
+		.exclude(supertype = 'music') \
+		.extra(
+			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params = [report_name]
+		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
-		'productions': productions
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
 	})
 
 def prods_without_external_links(request):
+	report_name = 'prods_without_external_links'
+	
 	filters = {}
 	for field in Production.external_site_ref_field_names:
 		filters["%s__isnull" % field] = True
 	
 	productions = Production.objects \
 		.filter(supertype = 'production', **filters) \
-		.order_by('title')
+		.extra(
+			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params = [report_name]
+		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without external links',
 		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
 	})
 
 def prods_without_release_date(request):
-	productions = Production.objects.filter(release_date_date__isnull = True)
+	report_name = 'prods_without_release_date'
+	
+	productions = Production.objects.filter(release_date_date__isnull = True) \
+		.extra(
+			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params = [report_name]
+		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without a release date',
 		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
 	})
 
 def prods_without_release_date_with_placement(request):
+	report_name = 'prods_without_release_date_with_placement'
+	
 	productions = Production.objects.raw('''
 		SELECT DISTINCT ON (demoscene_production.id)
 			demoscene_production.*,
@@ -53,8 +79,9 @@ def prods_without_release_date_with_placement(request):
 			INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
 		WHERE
 			demoscene_production.release_date_date IS NULL
+			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_production.id, demoscene_party.end_date_date
-	''')
+	''', [report_name])
 	
 	productions = list(productions)
 	for production in productions:
@@ -62,10 +89,13 @@ def prods_without_release_date_with_placement(request):
 	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Productions without a release date but with a party placement attached',
 		'productions': productions,
+		'report_name': report_name,
 		'return_to': reverse('maintenance_prods_without_release_date_with_placement'),
 	})
 
 def prod_soundtracks_without_release_date(request):
+	report_name = 'prod_soundtracks_without_release_date'
+	
 	productions = Production.objects.raw('''
 		SELECT DISTINCT ON (soundtrack.id)
 			soundtrack.*,
@@ -78,9 +108,10 @@ def prod_soundtracks_without_release_date(request):
 			INNER JOIN demoscene_production AS production ON (demoscene_soundtracklink.production_id = production.id)
 		WHERE
 			soundtrack.release_date_date IS NULL
+			AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY
 			soundtrack.id, production.release_date_date
-	''')
+	''', [report_name])
 	productions = list(productions)
 	for production in productions:
 		if production.suggested_release_date_date != None:
@@ -88,17 +119,27 @@ def prod_soundtracks_without_release_date(request):
 	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Music with productions attached but no release date',
 		'productions': productions,
+		'report_name': report_name,
 		'return_to': reverse('maintenance_prod_soundtracks_without_release_date'),
 	})
 
 def group_nicks_with_brackets(request):
-	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group = True).order_by('name')
+	report_name = 'group_nicks_with_brackets'
+	
+	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group = True) \
+		.extra(
+			where = ['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params = [report_name]
+		).order_by('name')
 	return render(request, 'maintenance/nick_report.html', {
 		'title': 'Group names with brackets',
 		'nicks': nicks,
+		'report_name': report_name,
 	})
 
 def ambiguous_groups_with_no_differentiators(request):
+	report_name = 'ambiguous_groups_with_no_differentiators'
+	
 	nicks = Nick.objects.raw('''
 		SELECT demoscene_nick.*
 		FROM
@@ -114,11 +155,13 @@ def ambiguous_groups_with_no_differentiators(request):
 		WHERE
 			demoscene_releaser.is_group = 't'
 			AND demoscene_nick.differentiator = ''
+			AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_nick.name
-	''')
+	''', [report_name])
 	return render(request, 'maintenance/nick_report.html', {
 		'title': 'Ambiguous group names with no differentiators',
 		'nicks': nicks,
+		'report_name': report_name,
 	})
 
 def non_standard_credits(request):
@@ -145,6 +188,8 @@ def replace_credit_role(request):
 	return redirect('maintenance_non_standard_credits')
 
 def prods_with_release_date_outside_party(request):
+	report_name = 'prods_with_release_date_outside_party'
+	
 	productions = Production.objects.raw('''
 		SELECT * FROM (
 			SELECT DISTINCT ON (demoscene_production.id)
@@ -171,7 +216,8 @@ def prods_with_release_date_outside_party(request):
 				releases.release_date_date < releases.party_start_date - INTERVAL '14 days'
 				OR releases.release_date_date > releases.party_end_date + INTERVAL '14 days'
 			)
-	''')
+			AND releases.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+	''', [report_name])
 	productions = list(productions)
 	for production in productions:
 		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
@@ -179,6 +225,7 @@ def prods_with_release_date_outside_party(request):
 	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Productions with a release date more than 14 days away from their release party',
 		'productions': productions,
+		'report_name': report_name,
 		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
 	})
 
@@ -191,4 +238,12 @@ def fix_release_dates(request):
 		prod.release_date_precision = request.POST['production_%s_release_date_precision' % prod_id]
 		prod.save()
 	return HttpResponseRedirect(request.POST['return_to'])
-	
+
+def exclude(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	Exclusion.objects.create(
+		report_name = request.POST['report_name'],
+		record_id = request.POST['record_id']
+	)
+	return HttpResponse('OK', mimetype='text/plain')

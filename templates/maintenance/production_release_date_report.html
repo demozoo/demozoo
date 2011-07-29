@@ -4,12 +4,16 @@
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
+{% block extra_head %}
+	<script src="/static/js/maintenance.js"></script>
+{% endblock %}
+
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
-		<div class="panel">
+		<div class="panel report" data-report-name="{{ report_name }}">
 			<form action="{% url maintenance_fix_release_dates %}" method="post">
 				{% csrf_token %}
 				<table width="100%">
@@ -24,7 +28,7 @@
 						<th>Suggested date</th>
 					</tr>
 					{% for prod in productions %}
-						<tr>
+						<tr class="excludable" data-record-id="{{ prod.id }}">
 							<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
 							<td>{{ prod.release_date }}</td>
 							<td>{% byline prod %}</td>

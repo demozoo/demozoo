@@ -13,4 +13,5 @@ urlpatterns = patterns('maintenance.views',
 	(r'^replace_credit_role$', 'replace_credit_role', {}, 'maintenance_replace_credit_role'),
 	(r'^prods_with_release_date_outside_party$', 'prods_with_release_date_outside_party', {}, 'maintenance_prods_with_release_date_outside_party'),
 	(r'^fix_release_dates$', 'fix_release_dates', {}, 'maintenance_fix_release_dates'),
+	(r'^exclude$', 'exclude', {}, 'maintenance_exclude'),
 )

@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+class Exclusion(models.Model):
+	record_id = models.IntegerField()
+	report_name = models.CharField(max_length = 255)

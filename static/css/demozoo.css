@@ -1248,3 +1248,6 @@ body.maintenance_report #main_column {
 body.maintenance_report table td {
 	border-bottom: 1px solid #eee;
 }
+body.maintenance_report .exclude_button {
+	margin-right: 8px;
+}
