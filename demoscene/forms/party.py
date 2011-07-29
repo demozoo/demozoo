@@ -40,8 +40,8 @@ class PartyEditExternalLinksForm(forms.ModelForm):
 			'pouet_party_when': forms.TextInput(attrs={'class': 'numeric'}),
 			'bitworld_party_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'csdb_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
 			'breaks_amiga_party_id': forms.TextInput(attrs={'class': 'numeric'}),
+			'zxdemo_party_id': forms.TextInput(attrs={'class': 'numeric'}),
 		}
 
 class EditPartySeriesForm(forms.ModelForm):

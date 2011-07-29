@@ -1014,6 +1014,9 @@ ul.parties_in_series li.current {
 .external_links a.breaks_amiga {
 	background-image: url('/static/images/icons/external_sites/breaks_amiga.png');
 }
+.external_links a.zxdemo {
+	background-image: url('/static/images/icons/external_sites/zxdemo.png');
+}
 .external_links a.twitter {
 	background-image: url('/static/images/icons/external_sites/twitter.png');
 }

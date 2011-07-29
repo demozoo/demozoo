@@ -907,7 +907,7 @@ class Party(models.Model):
 	external_site_ref_field_names = [
 		'homepage', 'twitter_username', 'demoparty_net_url_fragment', 'slengpung_party_id',
 		'pouet_party_id', 'bitworld_party_id', 'csdb_party_id', 'breaks_amiga_party_id',
-		'scene_org_directory']
+		'scene_org_directory', 'zxdemo_party_id']
 	homepage = models.URLField(blank = True, verify_exists = False)
 	twitter_username = models.CharField(max_length = 30, blank = True)
 	demoparty_net_url_fragment = models.CharField(max_length = 100, blank = True, verbose_name = 'demoparty.net URL fragment', help_text = 'e.g. evoke-2010')
@@ -918,6 +918,7 @@ class Party(models.Model):
 	csdb_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB party ID')
 	breaks_amiga_party_id = models.IntegerField(null = True, blank = True, verbose_name = "Break's Amiga party ID")
 	scene_org_directory = models.CharField(max_length = 255, blank = True, verbose_name = 'scene.org directory', help_text = 'e.g. /parties/1991/theparty91/')
+	zxdemo_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo party ID')
 	
 	search_result_template = 'search/results/party.html'
 	
@@ -985,6 +986,9 @@ class Party(models.Model):
 	def breaks_amiga_url(self):
 		if self.breaks_amiga_party_id:
 			return "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s" % self.breaks_amiga_party_id
+	def zxdemo_url(self):
+		if self.zxdemo_party_id:
+			return "http://www.zxdemo.org/party.php?id=%s" % self.zxdemo_party_id
 	def scene_org_url(self):
 		if self.scene_org_directory:
 			return "http://www.scene.org/dir.php?dir=%s" % self.scene_org_directory
