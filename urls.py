@@ -126,13 +126,16 @@ urlpatterns += patterns('demoscene.views',
 	(r'^competition_api/(\d+)/row/$', 'competition_api.process_row', {}),
 	(r'^competition_api/(\d+)/row/(\d+)/$', 'competition_api.process_row', {}),
 	
-	(r'^search/', include('search.urls')),
-
 	(r'^nicks/match/$', 'nicks.match', {}),
 	(r'^nicks/byline_match/$', 'nicks.byline_match', {}),
 
 	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
 	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
 
+)
+
+urlpatterns += patterns('',
+	(r'^search/', include('search.urls')),
 	(r'^maintenance/', include('maintenance.urls')),
+	(r'^pages/', include('pages.urls')),
 )

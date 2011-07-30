@@ -1254,3 +1254,7 @@ body.maintenance_report table td {
 body.maintenance_report .exclude_button {
 	margin-right: 8px;
 }
+
+body.editorial h1 {
+	margin-bottom: 1em;
+}

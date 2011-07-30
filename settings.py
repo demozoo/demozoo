@@ -112,6 +112,7 @@ INSTALLED_APPS = (
 	'search',
 	'dataexchange',
 	'maintenance',
+	'pages',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
