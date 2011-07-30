@@ -229,6 +229,26 @@ def prods_with_release_date_outside_party(request):
 		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
 	})
 
+def prods_with_same_named_credits(request):
+	report_name = 'prods_with_same_named_credits'
+	
+	productions = Production.objects.raw('''
+		SELECT DISTINCT demoscene_production.*
+		FROM demoscene_production
+		INNER JOIN demoscene_credit ON (demoscene_production.id = demoscene_credit.production_id)
+		INNER JOIN demoscene_nick ON (demoscene_credit.nick_id = demoscene_nick.id)
+		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
+		INNER JOIN demoscene_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = demoscene_production.id)
+		AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+	''', [report_name])
+	
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions with identically-named sceners in the credits',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
