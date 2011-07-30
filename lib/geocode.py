@@ -11,7 +11,7 @@ strip_nonalpha = re.compile(r'[^\w\-\ \,\.]', re.UNICODE)
 def geocode(location):
 	# strip out punctuation other than a minimal whitelisted set, because Yahoo doesn't give us
 	# an escaping mechanism for single quotes (or has crap documentation that doesn't tell us about it)
-	location = re.sub(strip_nonalpha, '', location)
+	location = re.sub(strip_nonalpha, '', location).encode('utf-8')
 	params = {
 		'format': 'json',
 		'appid': settings.YAHOO_API_KEY
