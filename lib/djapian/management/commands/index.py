@@ -34,7 +34,28 @@ def get_indexers(content_type):
             for space in IndexSpace.instances]
     )
 
+# Forcibly throw exceptions which would otherwise be swallowed up by transaction.commit_manually.
+# see http://metak4ml.blogspot.com/2011/05/django-transactioncommitmanually-mask.html
+def transact(func):
+    """
+    Usage:
+    @transaction.commit_manually
+    @transact
+    def some_function(a, b):
+        do_something()
+    """
+    def decorated(*args, **kwargs):
+        import traceback
+        try:
+            func(*args, **kwargs)
+        except Exception, e:
+            traceback.print_exc()
+            transaction.rollback()
+            sys.exit()
+    return decorated
+
 @transaction.commit_manually
+@transact
 def update_changes(verbose, timeout, once, per_page, commit_each, app_models=None):
     counter = [0]
 
@@ -102,7 +123,7 @@ def update_changes(verbose, timeout, once, per_page, commit_each, app_models=Non
             for change in Change.objects.filter(content_type=ct, action='delete'):
                 for indexer in indexers:
                     indexer.delete(change.object_id)
-                    change.delete()
+                change.delete()
 
         # If using transactions and running Djapian as a daemon, transactions
         # need to be committed on each iteration, otherwise Djapian will not
