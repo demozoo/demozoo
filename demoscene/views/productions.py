@@ -2,7 +2,7 @@ from demoscene.shortcuts import *
 from demoscene.models import Production, Byline, Releaser, Credit, DownloadLink, Screenshot, ProductionType
 from demoscene.forms.production import *
 from taggit.models import Tag
-
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import datetime
 
@@ -394,3 +394,21 @@ def autocomplete(request):
 		'query': query,
 		'productions': productions,
 	}, mimetype = 'text/plain')
+
+@login_required
+def delete(request, production_id):
+	production = get_object_or_404(Production, id = production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_edit_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			production.delete()
+			messages.success(request, "'%s' deleted" % production.title)
+			return HttpResponseRedirect(reverse('productions'))
+		else:
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('delete_production', args = [production_id]),
+			"Are you sure you want to delete %s?" % production.title,
+			html_title = "Deleting %s" % production.title )

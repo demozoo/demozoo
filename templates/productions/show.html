@@ -101,4 +101,10 @@
 			{% endif %}
 		{% endif %}
 	</div>
+	
+	{% if editing_as_admin %}
+		<ul class="maintenance_actions">
+			<li><a href="{% url delete_production production.id %}" class="delete open_in_lightbox">Delete production</a></li>
+		</ul>
+	{% endif %}
 {% endblock %}
