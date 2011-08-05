@@ -15,6 +15,7 @@ def show(request, production_id, edit_mode = False):
 	
 	return render(request, 'productions/show.html', {
 		'production': production,
+		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.ordered_download_links(),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),

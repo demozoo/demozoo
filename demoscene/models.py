@@ -685,7 +685,12 @@ class Production(models.Model):
 		return (self.supertype != 'music')
 	
 	def can_have_credits(self):
-		return (self.supertype == 'production')
+		if self.supertype == 'production':
+			return True
+		elif self.supertype == 'graphics' and self.types.filter(internal_name = 'ascii-collection'):
+			return True
+		else:
+			return False
 	
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
