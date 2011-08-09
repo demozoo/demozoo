@@ -458,6 +458,25 @@ class Nick(models.Model):
 			or self.productions.count()
 			or self.member_productions.count() )
 	
+	# Reassign credits/productions that reference this nick to use the releaser's primary nick instead,
+	# then delete this nick
+	def reassign_references_and_delete(self):
+		primary_nick = self.releaser.primary_nick
+		if primary_nick == self:
+			raise Exception("attempted to delete a releaser's primary nick through reassign_references_and_delete!")
+		
+		from django.db import connection, transaction
+		cursor = connection.cursor()
+		cursor.execute("UPDATE demoscene_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+		cursor.execute("UPDATE demoscene_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+		cursor.execute("UPDATE demoscene_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+		transaction.commit_unless_managed()
+		
+		self.delete()
+	
+	def is_primary_nick(self):
+		return (self.releaser.name == self.name)
+	
 	class Meta:
 		unique_together = ("releaser","name")
 

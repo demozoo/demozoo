@@ -174,12 +174,12 @@ def change_primary_nick(request, releaser_id):
 def delete_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id = releaser_id)
 	nick = get_object_or_404(Nick, releaser = releaser, id = nick_id)
-	if nick.is_referenced():
+	if nick.is_primary_nick(): # not allowed to delete primary nick
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	
 	if request.method == 'POST':
 		if request.POST.get('yes'):
-			nick.delete()
+			nick.reassign_references_and_delete()
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())

@@ -1,5 +1,5 @@
 {% include "releasers/nick_form.html" %}
 
-{% if not nick.is_referenced %}
+{% if not nick.is_primary_nick %}
 	<p><a href="{% url releaser_delete_nick nick.releaser.id nick.id %}" class="open_in_lightbox">Delete name</a></p>
 {% endif %}
