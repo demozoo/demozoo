@@ -76,7 +76,7 @@ def show(request, party_id):
 		LEFT JOIN demoscene_releaser AS affiliation ON (affiliation_nick.releaser_id = affiliation.id)
 		WHERE demoscene_competition.party_id = %s
 		ORDER BY
-			demoscene_competition.name, demoscene_competitionplacing.position,
+			demoscene_competition.name, demoscene_competition.id, demoscene_competitionplacing.position,
 			demoscene_production.id, author_nick.id, affiliation_nick.id
 	'''
 	competitions = unjoinify(Competition, query, (party.id,), columns)
