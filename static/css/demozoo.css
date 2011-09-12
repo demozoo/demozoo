@@ -138,6 +138,32 @@ ul.errorlist {
 	background-color: #fbb;
 }
 
+.help_text {
+	font-size: 0.66em;
+}
+.hover_help {
+	display: inline-block;
+	position: relative;
+	width: 16px;
+	height: 16px;
+	background-image: url('/static/images/icons/information.png');
+	cursor: help;
+}
+.hover_help .help_text {
+	position: absolute;
+	display: none;
+	bottom: 0px;
+	margin-bottom: 20px;
+	font-size: 0.8em;
+	width: 300px;
+	border: 1px solid #008;
+	padding: 4px;
+	background-color: #ddf;
+}
+.hover_help:hover .help_text, .hover_help:focus .help_text {
+	display: block;
+}
+
 /* data entry forms */
 .form_title h2 {
 	display: inline;
@@ -177,10 +203,6 @@ form.entry_form .field .field_input textarea {
 }
 form.entry_form .field .field_input textarea.short_notes {
 	height: 50px;
-}
-
-form.entry_form .field .field_input .help_text {
-	font-size: 0.66em;
 }
 
 form.entry_form .formset_header {

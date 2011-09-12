@@ -449,12 +449,10 @@ class Nick(models.Model):
 		else:
 			return self.name
 	
-	# Determine whether or not this nick is referenced in any external records (credits, authorships etc);
-	# if not, it's safe to delete
+	# Determine whether or not this nick is referenced in any external records (credits, authorships etc)
 	def is_referenced(self):
 		return (
-			self.releaser.name == self.name
-			or self.credits.count()
+			self.credits.count()
 			or self.productions.count()
 			or self.member_productions.count() )
 	

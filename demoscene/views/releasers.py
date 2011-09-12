@@ -184,9 +184,17 @@ def delete_nick(request, releaser_id, nick_id):
 			releaser.save()
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
+		if nick.is_referenced():
+			prompt = """
+				Are you sure you want to delete %s's alternative name '%s'?
+				This will cause all releases under the name '%s' to be reassigned back to '%s'.
+			""" % (releaser.name, nick.name, nick.name, releaser.name)
+		else:
+			prompt = "Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name)
+		
 		return simple_ajax_confirmation(request,
 			reverse('releaser_delete_nick', args = [releaser_id, nick_id]),
-			"Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name),
+			prompt,
 			html_title = "Deleting name: %s" % nick.name )
 
 @login_required
