@@ -27,6 +27,21 @@
 						<th>By</th>
 						<th>Suggested date</th>
 					</tr>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td><input type="checkbox" id="check_all" /><label for="check_all">Check all</label></td>
+					</tr>
+					<script>
+						$('#check_all').change(function() {
+							if ($(this).is(':checked')) {
+								$('input[name=production_id]').attr('checked', 'checked');
+							} else {
+								$('input[name=production_id]').removeAttr('checked');
+							}
+						})
+					</script>
 					{% for prod in productions %}
 						<tr class="excludable" data-record-id="{{ prod.id }}">
 							<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
