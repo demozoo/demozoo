@@ -1,8 +1,13 @@
+var nextBylineUid = 0;
+function getBylineUid() {
+	return 'byline'+(nextBylineUid++);
+}
 (function($) {
 	$.fn.bylineField = function() {
 		this.each(function() {
 			var bylineFieldElement = this;
 			var bylineField = $(this);
+			var bylineUid = getBylineUid();
 			
 			$('.byline_search input:submit', bylineFieldElement).hide();
 			var searchField = $('.byline_search input:text', bylineFieldElement);
@@ -15,49 +20,34 @@
 				$(this).removeClass('focused');
 			})
 			
-			var lookupRunning = false;
 			var lastSearchTerm = searchField.val();
-			var nextSearchTerm;
-			var autocompleteNextSearchTerm;
 			
-			function cueLookup(autocomplete) {
+			function lookup(autocomplete) {
 				var value = searchField.val();
-				if (lookupRunning) {
-					nextSearchTerm = value;
-					autocompleteNextSearchTerm = autocomplete
-				} else {
-					lookup(value, autocomplete);
-				}
-			}
-			
-			function lookup(value, autocomplete) {
 				if (value.match(/\S/)) {
 					if (value == lastSearchTerm) return;
-					lookupRunning = true;
-					/* TODO: consider caching results in a JS variable */
-					$.getJSON('/nicks/byline_match/', {
-						q: value,
-						field_name: searchField.attr('name').replace(/_search$/, ''),
-						autocomplete: autocomplete
-					}, function(data) {
-						if (searchField.val() == data['initial_query']) {
-							/* only update fields if search box contents have not changed since making this query */
-							$('.byline_match_container', bylineFieldElement).show().html(data.matches);
-							$('.nick_match', bylineFieldElement).nickMatchWidget();
-							if (autocomplete) {
-								searchField.val(data.query);
-								if (searchFieldElement.setSelectionRange) {
-									searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
-									/* TODO: IE compatibility */
+					$.ajaxQueue(bylineUid, function(release) {
+						/* TODO: consider caching results in a JS variable */
+						$.getJSON('/nicks/byline_match/', {
+							q: value,
+							field_name: searchField.attr('name').replace(/_search$/, ''),
+							autocomplete: autocomplete
+						}, function(data) {
+							if (searchField.val() == data['initial_query']) {
+								/* only update fields if search box contents have not changed since making this query */
+								$('.byline_match_container', bylineFieldElement).show().html(data.matches);
+								$('.nick_match', bylineFieldElement).nickMatchWidget();
+								if (autocomplete) {
+									searchField.val(data.query);
+									if (searchFieldElement.setSelectionRange) {
+										searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
+										/* TODO: IE compatibility */
+									}
 								}
+								lastSearchTerm = data.query;
 							}
-							lastSearchTerm = data.query;
-						}
-						lookupRunning = false;
-						if (nextSearchTerm) {
-							lookup(nextSearchTerm, autocompleteNextSearchTerm);
-							nextSearchTerm = null;
-						}
+							release();
+						})
 					})
 				} else {
 					/* blank */
@@ -67,7 +57,7 @@
 			}
 			
 			searchField.blur(function() {
-				cueLookup(false);
+				lookup(false);
 			}).keydown(function(e) {
 				/* compare current field contents to new field contents to decide what to do about autocompletion */
 				var oldValue = searchField.val();
@@ -83,10 +73,10 @@
 						&& newValue.indexOf(unselectedPortion) == 0 /* old unselected portion is a prefix of new value */
 					) {
 						/* autocomplete */
-						cueLookup(true);
+						lookup(true);
 					} else {
 						/* have made some other change (e.g. deletion, pasting text); do not autocomplete */
-						cueLookup(false);
+						lookup(false);
 					}
 				}, 1);
 			});
