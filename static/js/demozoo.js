@@ -185,12 +185,8 @@ function applyGlobalBehaviours(context) {
 		var searchFieldElement = searchField.get(0);
 		searchField.attr('autocomplete', 'off');
 		
-		var lastSearchTerm = searchField.val();
-		
-		function lookup(autocomplete) {
-			var value = searchField.val();
+		searchField.typeahead(function(value, autocomplete) {
 			if (value.match(/\S/)) {
-				if (value == lastSearchTerm) return;
 				$.ajaxQueue(uid, function(release) {
 					/* TODO: consider caching results in a JS variable */
 					$.getJSON('/nicks/match/', $.extend({
@@ -209,41 +205,14 @@ function applyGlobalBehaviours(context) {
 									/* TODO: IE compatibility */
 								}
 							}
-							lastSearchTerm = data.query;
 						}
 						release();
 					})
 				})
 			} else {
 				/* blank */
-				lastSearchTerm = '';
 				$('.nick_match_container', nickFieldElement).html('');
 			}
-		}
-		
-		searchField.blur(function() {
-			lookup(false);
-		}).keydown(function(e) {
-			/* compare current field contents to new field contents to decide what to do about autocompletion */
-			var oldValue = searchField.val();
-			var selectionWasAtEnd = (searchFieldElement.selectionEnd == oldValue.length);
-			var unselectedPortion = searchField.val().substring(0, searchFieldElement.selectionStart);
-			
-			setTimeout(function() {
-				var newValue = searchField.val();
-				if (oldValue == newValue) return;
-				if (selectionWasAtEnd
-					&& searchFieldElement.selectionStart == newValue.length /* no selection now */
-					&& newValue.length == unselectedPortion.length + 1 /* new value is one letter longer */
-					&& newValue.indexOf(unselectedPortion) == 0 /* old unselected portion is a prefix of new value */
-				) {
-					/* autocomplete */
-					lookup(true);
-				} else {
-					/* have made some other change (e.g. deletion, pasting text); do not autocomplete */
-					lookup(false);
-				}
-			}, 1);
 		});
 		
 		$(this).addClass('ajaxified');
