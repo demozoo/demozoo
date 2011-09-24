@@ -1,24 +1,14 @@
-var nextBylineUid = 0;
-function getBylineUid() {
-	return 'byline'+(nextBylineUid++);
-}
 (function($) {
 	$.fn.bylineField = function() {
 		this.each(function() {
 			var bylineFieldElement = this;
 			var bylineField = $(this);
-			var bylineUid = getBylineUid();
+			var uid = $.uid('byline');
 			
 			$('.byline_search input:submit', bylineFieldElement).hide();
 			var searchField = $('.byline_search input:text', bylineFieldElement);
 			var searchFieldElement = searchField.get(0);
 			searchField.attr('autocomplete', 'off');
-			
-			searchField.focus(function() {
-				$(this).addClass('focused');
-			}).blur(function() {
-				$(this).removeClass('focused');
-			})
 			
 			var lastSearchTerm = searchField.val();
 			
@@ -26,7 +16,7 @@ function getBylineUid() {
 				var value = searchField.val();
 				if (value.match(/\S/)) {
 					if (value == lastSearchTerm) return;
-					$.ajaxQueue(bylineUid, function(release) {
+					$.ajaxQueue(uid, function(release) {
 						/* TODO: consider caching results in a JS variable */
 						$.getJSON('/nicks/byline_match/', {
 							q: value,

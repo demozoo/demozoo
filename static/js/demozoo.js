@@ -174,6 +174,7 @@ function applyGlobalBehaviours(context) {
 	$('form .nick_field', context).each(function() {
 		var nickFieldElement = this;
 		var nickField = $(this);
+		var uid = $.uid('nickfield');
 		
 		var searchParams = {};
 		if (nickField.hasClass('sceners_only')) searchParams['sceners_only'] = true;
@@ -184,49 +185,34 @@ function applyGlobalBehaviours(context) {
 		var searchFieldElement = searchField.get(0);
 		searchField.attr('autocomplete', 'off');
 		
-		var lookupRunning = false;
 		var lastSearchTerm = searchField.val();
-		var nextSearchTerm;
-		var autocompleteNextSearchTerm;
 		
-		function cueLookup(autocomplete) {
+		function lookup(autocomplete) {
 			var value = searchField.val();
-			if (lookupRunning) {
-				nextSearchTerm = value;
-				autocompleteNextSearchTerm = autocomplete
-			} else {
-				lookup(value, autocomplete);
-			}
-		}
-		
-		function lookup(value, autocomplete) {
 			if (value.match(/\S/)) {
 				if (value == lastSearchTerm) return;
-				lookupRunning = true;
-				/* TODO: consider caching results in a JS variable */
-				$.getJSON('/nicks/match/', $.extend({
-					q: value,
-					field_name: searchField.attr('name').replace(/_search$/, '_match'),
-					autocomplete: autocomplete
-				}, searchParams), function(data) {
-					if (searchField.val() == data['initial_query']) {
-						/* only update fields if search box contents have not changed since making this query */
-						$('.nick_match_container', nickFieldElement).html(data.matches);
-						$('.nick_match', nickFieldElement).nickMatchWidget();
-						if (autocomplete) {
-							searchField.val(data.query);
-							if (searchFieldElement.setSelectionRange) {
-								searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
-								/* TODO: IE compatibility */
+				$.ajaxQueue(uid, function(release) {
+					/* TODO: consider caching results in a JS variable */
+					$.getJSON('/nicks/match/', $.extend({
+						q: value,
+						field_name: searchField.attr('name').replace(/_search$/, '_match'),
+						autocomplete: autocomplete
+					}, searchParams), function(data) {
+						if (searchField.val() == data['initial_query']) {
+							/* only update fields if search box contents have not changed since making this query */
+							$('.nick_match_container', nickFieldElement).html(data.matches);
+							$('.nick_match', nickFieldElement).nickMatchWidget();
+							if (autocomplete) {
+								searchField.val(data.query);
+								if (searchFieldElement.setSelectionRange) {
+									searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
+									/* TODO: IE compatibility */
+								}
 							}
+							lastSearchTerm = data.query;
 						}
-						lastSearchTerm = data.query;
-					}
-					lookupRunning = false;
-					if (nextSearchTerm) {
-						lookup(nextSearchTerm, autocompleteNextSearchTerm);
-						nextSearchTerm = null;
-					}
+						release();
+					})
 				})
 			} else {
 				/* blank */
@@ -236,7 +222,7 @@ function applyGlobalBehaviours(context) {
 		}
 		
 		searchField.blur(function() {
-			cueLookup(false);
+			lookup(false);
 		}).keydown(function(e) {
 			/* compare current field contents to new field contents to decide what to do about autocompletion */
 			var oldValue = searchField.val();
@@ -252,10 +238,10 @@ function applyGlobalBehaviours(context) {
 					&& newValue.indexOf(unselectedPortion) == 0 /* old unselected portion is a prefix of new value */
 				) {
 					/* autocomplete */
-					cueLookup(true);
+					lookup(true);
 				} else {
 					/* have made some other change (e.g. deletion, pasting text); do not autocomplete */
-					cueLookup(false);
+					lookup(false);
 				}
 			}, 1);
 		});
