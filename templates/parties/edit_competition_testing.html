@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+{% block extra_head %}
+	<script src="/static/js/results_table.js"></script>
+{% endblock %}
+{% block base_main %}
 <script type="text/javascript">/* <![CDATA[ */
 	$(function() {
 		$('ul.results_table').resultsTable({
@@ -82,3 +87,4 @@
 		{% endfor %}
 	</ul>
 </form>
+{% endblock %}

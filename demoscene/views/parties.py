@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production
 from demoscene.forms.party import *
+from byline_field import BylineLookup
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -299,7 +300,7 @@ def edit_competition_testing(request, party_id, competition_id):
 	production_types = ProductionType.objects.all()
 	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
 
-	return ajaxable_render(request, 'parties/edit_competition_testing.html', {
+	return render(request, 'parties/edit_competition_testing.html', {
 		'html_title': "Editing %s %s competition" % (party.name, competition.name),
 		'party': party,
 		'competition': competition,
@@ -307,5 +308,51 @@ def edit_competition_testing(request, party_id, competition_id):
 		'platforms': platforms,
 		'platforms_json': platforms_json,
 		'production_types': production_types,
+		'production_types_json': production_types_json,
+	})
+
+@login_required
+def edit_competition_testing_2(request, party_id, competition_id):
+	party = get_object_or_404(Party, id = party_id)
+	competition = get_object_or_404(Competition, party = party, id = competition_id)
+	
+	competition_placings = []
+	for placing in competition.results():
+		byline_lookup = BylineLookup.from_value(placing.production.byline())
+		
+		competition_placings.append({
+			'id': placing.id,
+			'ranking': placing.ranking,
+			'score': placing.score,
+			'production': {
+				'id': placing.production.id,
+				'title': placing.production.title,
+				'platform': placing.production.platforms.all()[0].id if placing.production.platforms.all() else None,
+				'production_type': placing.production.types.all()[0].id if placing.production.types.all() else None,
+				# it's OK to reduce platform / prodtype to a single value, because any productions
+				# that have been given multiple values must have had the bonafide_edits flag set in
+				# the process - which means they're immutable here, so we'll never write the mangled
+				# value back
+				'byline': {
+					'search_term': byline_lookup.search_term,
+					'matches': byline_lookup.render_match_fields('match'),
+				},
+			}
+		})
+	
+	competition_placings_json = json.dumps(competition_placings)
+	
+	platforms = Platform.objects.all()
+	platforms_json = json.dumps([ [p.id, p.name] for p in platforms ])
+	
+	production_types = ProductionType.objects.all()
+	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
+
+	return render(request, 'parties/edit_competition_testing_2.html', {
+		'html_title': "Editing %s %s competition" % (party.name, competition.name),
+		'party': party,
+		'competition': competition,
+		'competition_placings_json': competition_placings_json,
+		'platforms_json': platforms_json,
 		'production_types_json': production_types_json,
 	})

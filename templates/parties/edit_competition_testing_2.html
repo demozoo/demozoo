@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block base_main %}
+<script type="text/javascript">/* <![CDATA[ */
+	$(function() {
+		void({
+			platforms: {{ platforms_json|safe }},
+			productionTypes: {{ production_types_json|safe }},
+			competitionPlacings: {{ competition_placings_json|safe }}
+		})
+	});
+/* ]]> */</script>
+
+{% endblock %}

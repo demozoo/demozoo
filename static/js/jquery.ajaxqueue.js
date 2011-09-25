@@ -11,6 +11,10 @@ $.ajaxQueue(actionId, function(release) {
 		release();
 	})
 })
+
+TODO: Some kind of mechanism to prevent users from navigating away while
+there are still queued ajax events yet to complete
+	(just a wrapper for 'is ajaxQueueLocks nonempty?', really...?)
 */
 
 var ajaxQueueLocks = {}
