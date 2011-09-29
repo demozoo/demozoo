@@ -1,13 +1,28 @@
 {% extends "base.html" %}
+
+{% block extra_head %}
+	<script src="/static/js/results_table_2.js"></script>
+	<link rel="stylesheet" href="/static/css/results_table_2.css"></script>
+{% endblock %}
+
 {% block base_main %}
 <script type="text/javascript">/* <![CDATA[ */
 	$(function() {
-		void({
+		ResultsTable('#results_table', {
 			platforms: {{ platforms_json|safe }},
 			productionTypes: {{ production_types_json|safe }},
 			competitionPlacings: {{ competition_placings_json|safe }}
 		})
 	});
 /* ]]> */</script>
+
+<form>
+	<div class="field" style="margin-bottom: 20px;">
+		<label for="competition_name">Competition name:</label>
+		<input id="competition_name" type="text" value="Oldskool Demo" />
+	</div>
+	
+	<ul id="results_table"></ul>
+</form>
 
 {% endblock %}

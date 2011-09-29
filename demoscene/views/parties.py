@@ -337,6 +337,7 @@ def edit_competition_testing_2(request, party_id, competition_id):
 					'search_term': byline_lookup.search_term,
 					'matches': byline_lookup.render_match_fields('match'),
 				},
+				'stable': placing.production.is_stable_for_competitions(),
 			}
 		})
 	
