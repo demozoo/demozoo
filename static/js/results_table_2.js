@@ -1,17 +1,152 @@
+function Event() {
+	var self = {};
+	var listeners = [];
+	
+	self.bind = function(callback) {
+		listeners.push(callback);
+	}
+	self.unbind = function(callback) {
+		listeners = _.without(listeners, callback);
+	}
+	self.trigger = function() {
+		var args = arguments;
+		_.each(listeners, function(callback) {
+			callback.apply(null, args);
+		});
+	}
+	
+	return self;
+}
+
 function EditableGrid(elem) {
 	var self = {};
 	
-	elem = $(elem);
-	elem.addClass('editable_grid');
+	var $elem = $(elem);
+	var gridElem = $elem.get(0);
+	$elem.addClass('editable_grid');
+	
+	/* edit modes:
+		null = not editing
+		'capturedText' = do not select on focus; cursor keys move caret
+		'uncapturedText' = select on focus; cursor keys move cell
+	*/
+	var editMode = null;
+	var cursorX = 0, cursorY = 0;
+	var rows = [];
+	var isFocused = false;
+	
+	function elementIsInGrid(childElem) {
+		return $.contains(gridElem, childElem);
+	}
+	
+	/* return the index of the GridRow object whose DOM element is, or contains, childElem,
+		or null if childElement is not contained in a row of this grid
+	*/
+	function rowIndexForElement(childElem) {
+		/* walk up childElem's parent elements until we find an immediate child of
+			the grid element */
+		var elemToTest = childElem;
+		while (elemToTest.parentElement && elemToTest.parentElement != gridElem) {
+			elemToTest = elemToTest.parentElement;
+		}
+		if (elemToTest.parentElement) {
+			/* check each row in turn to see if its element is the one we've found */
+			for (var i = 0; i < rows.length; i++) {
+				if (rows[i].elem == elemToTest) return i;
+			}
+		}
+	}
+	/* return the coordinates of the grid cell whose DOM element is, or contains, childElem,
+		or null if childElem is not contained in a cell of this grid
+	*/
+	function coordsForElement(childElem) {
+		var y = rowIndexForElement(childElem);
+		if (y != null) {
+			var x = rows[y].cellIndexForElement(childElem);
+			if (x != null) return [x,y];
+		}
+	}
+	
+	function keydown(event) {
+		switch(editMode) {
+			case null:
+				switch (event.which) {
+					case 9: /* tab */
+						if (event.shiftKey) {
+							/* allow tab to escape the grid */
+							blur();
+							return;
+						} else {
+							/* allow tab to escape the grid */
+							blur();
+							return;
+						}
+				}
+		}
+	}
+	function keypress(event) {
+	}
+	
+	if ($elem.attr('tabindex') == null) {
+		$elem.attr('tabindex', 0);
+	}
+	$elem.focus(function() {
+		if (!isFocused) {
+			isFocused = true;
+			$(this).addClass('focused');
+			$(document).bind('keydown', keydown);
+			$(document).bind('keypress', keypress);
+			
+			var cell = getCell(cursorX, cursorY);
+			if (cell) cell.receiveCursor();
+		}
+	})
+	function blur() {
+		isFocused = false;
+		$elem.removeClass('focused');
+		/* TODO: also propagate blur event to the current GridRow */
+		$(document).unbind('keydown', keydown);
+		$(document).unbind('keypress', keypress);
+	}
+	
+	/* set cursor to position x,y */
+	function setCursor(x, y) {
+		var oldCell = getCell(cursorX, cursorY);
+		if (oldCell) oldCell.loseCursor();
+		
+		cursorX = x; cursorY = y;
+		getCell(cursorX, cursorY).receiveCursor();
+		/* TODO: possibly scroll page if cursor not in view */
+	}
+	
+	$(document).mousedown(function(event) {
+		var coords = coordsForElement(event.target);
+		if (coords) {
+			if (coords[0] == cursorX && coords[1] == cursorY) {
+				return; /* continue editing if cursor is already here */
+			}
+			$elem.focus();
+			//if (editMode) finishEdit();
+			setCursor(coords[0], coords[1]);
+		} else if (editMode) {
+			//finishEdit();
+		}
+	}).click(function(event) {
+		if (elementIsInGrid(event.target)) {
+			$elem.focus();
+		} else {
+			blur();
+		}
+	});
 	
 	var headerRowUl = $('<ul class="fields"></ul>')
 	var headerRow = $('<li class="header_row"></li>').append(headerRowUl, '<div style="clear: both;"></div>');
-	elem.prepend(headerRow);
+	$elem.prepend(headerRow);
 	
 	var insertButton = $('<input type="button" class="add" value="Add row" />');
 	var insertButtonDiv = $('<div class="editable_grid_insert"></div>');
 	insertButtonDiv.append(insertButton);
-	$(elem).after(insertButtonDiv);
+	$elem.after(insertButtonDiv);
 	
 	self.addHeader = function(title, className) {
 		var li = $('<li></li>').attr('class', className).append(
@@ -21,7 +156,15 @@ function EditableGrid(elem) {
 	}
 	
 	self.addRow = function(row) {
-		elem.append(row.elem);
+		rows.push(row);
+		$elem.append(row.elem);
+	}
+	getRow = function(index) {
+		return rows[index];
+	}
+	getCell = function(x,y) {
+		var row = getRow(y);
+		if (row) return row.getCell(x);
 	}
 	
 	return self;
@@ -30,12 +173,38 @@ function EditableGrid(elem) {
 function GridRow() {
 	var self = {};
 	
-	self.elem = $('<li class="data_row"></li>');
+	var cells = [];
+	
+	var $elem = $('<li class="data_row"></li>');
+	self.elem = $elem.get(0);
 	var fieldsUl = $('<ul class="fields"></ul>');
-	self.elem.append(fieldsUl, '<div style="clear: both;"></div>');
+	var fieldsUlElem = fieldsUl.get(0);
+	$elem.append(fieldsUl, '<div style="clear: both;"></div>');
 	
 	self.addCell = function(cell) {
+		cells.push(cell);
 		fieldsUl.append(cell.elem);
+	}
+	self.getCell = function(index) {
+		return cells[index];
+	}
+	
+	/* return the index of the GridCell object whose DOM element is, or contains, childElem,
+		or null if childElement is not contained in a cell of this row
+	*/
+	self.cellIndexForElement = function(childElem) {
+		/* walk up childElem's parent elements until we find an immediate child of
+			the fieldsUlElem element */
+		var elemToTest = childElem;
+		while (elemToTest.parentElement && elemToTest.parentElement != fieldsUlElem) {
+			elemToTest = elemToTest.parentElement;
+		}
+		if (elemToTest.parentElement) {
+			/* check each cell in turn to see if its element is the one we've found */
+			for (var i = 0; i < cells.length; i++) {
+				if (cells[i].elem == elemToTest) return i;
+			}
+		}
 	}
 	
 	return self;
@@ -45,12 +214,20 @@ function GridCell(opts) {
 	if (!opts) opts = {};
 	var self = {};
 	
-	self.elem = $('<li></li>')
-	if (opts['class']) self.elem.addClass(opts['class']);
+	var $elem = $('<li></li>')
+	self.elem = $elem.get(0);
+	if (opts['class']) $elem.addClass(opts['class']);
 	
 	var showElem = $('<div class="show"></div>');
-	self.elem.append(showElem);
+	$elem.append(showElem);
 	if (opts.value) showElem.text(opts.value);
+	
+	self.receiveCursor = function() {
+		$elem.addClass('cursor');
+	}
+	self.loseCursor = function() {
+		$elem.removeClass('cursor');
+	}
 	
 	return self;
 }
@@ -64,8 +241,14 @@ function ResultsTable(elem, opts) {
 	grid.addHeader('Type', 'type_field');
 	grid.addHeader('Score', 'score_field');
 	
-	for (var i = 0; i < opts.competitionPlacings.length; i++) {
-		var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i]);
+	if (opts.competitionPlacings.length) {
+		for (var i = 0; i < opts.competitionPlacings.length; i++) {
+			var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i]);
+			grid.addRow(competitionPlacing.row);
+		}
+	} else {
+		/* add an initial empty row */
+		var competitionPlacing = CompetitionPlacing();
 		grid.addRow(competitionPlacing.row);
 	}
 }
