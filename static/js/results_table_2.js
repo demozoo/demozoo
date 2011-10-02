@@ -6,13 +6,33 @@ function Event() {
 		listeners.push(callback);
 	}
 	self.unbind = function(callback) {
-		listeners = _.without(listeners, callback);
+		for (var i = listeners.length - 1; i >= 0; i--) {
+			if (listeners[i] == callback) listeners.splice(i, 1);
+		}
 	}
 	self.trigger = function() {
 		var args = arguments;
-		_.each(listeners, function(callback) {
-			callback.apply(null, args);
-		});
+		for (var i = 0; i < listeners.length; i++) {
+			listeners[i].apply(null, args);
+		};
+	}
+	
+	return self;
+}
+
+function Property(initialValue) {
+	var self = {};
+	
+	self._value = initialValue;
+	
+	self.change = Event();
+	self.get = function() {
+		return self._value;
+	}
+	self.set = function(newValue) {
+		if (newValue === self._value) return;
+		self._value = newValue;
+		self.change.trigger(self._value);
 	}
 	
 	return self;
@@ -74,14 +94,14 @@ function EditableGrid(elem) {
 					case 9: /* tab */
 						if (event.shiftKey) {
 							if (cursorX > 0) {
-								setCursor(cursorX - 1, cursorY);
+								self.setCursor(cursorX - 1, cursorY);
 								return false;
 							} else {
 								/* scan backwards to previous row with cells */
 								for (var newY = cursorY - 1; newY >= 0; newY--) {
 									var cellCount = rows[newY].getCellCount();
 									if (cellCount) {
-										setCursor(cellCount - 1, newY);
+										self.setCursor(cellCount - 1, newY);
 										return false;
 									}
 								}
@@ -91,14 +111,14 @@ function EditableGrid(elem) {
 							}
 						} else {
 							if (cursorX + 1 < rows[cursorY].getCellCount()) {
-								setCursor(cursorX + 1, cursorY);
+								self.setCursor(cursorX + 1, cursorY);
 								return false;
 							} else {
 								/* scan forwards to next row with cells */
 								for (var newY = cursorY + 1; newY < rows.length; newY++) {
 									var cellCount = rows[newY].getCellCount();
 									if (cellCount) {
-										setCursor(0, newY);
+										self.setCursor(0, newY);
 										return false;
 									}
 								}
@@ -132,6 +152,9 @@ function EditableGrid(elem) {
 	if ($elem.attr('tabindex') == null) {
 		$elem.attr('tabindex', 0);
 	}
+	self.focus = function() {
+		$elem.focus();
+	}
 	$elem.focus(function() {
 		if (!isFocused) {
 			isFocused = true;
@@ -139,6 +162,10 @@ function EditableGrid(elem) {
 			$(document).bind('keydown', keydown);
 			$(document).bind('keypress', keypress);
 			
+			/* It isn't guaranteed that the cell at cursor position has
+				been given the 'cursor' class (e.g. upon initial load,
+				when cell (0,0) is created *after* the cursor is already
+				set to 0,0) so do that now */
 			var cell = getCell(cursorX, cursorY);
 			if (cell) cell.receiveCursor();
 		}
@@ -154,11 +181,11 @@ function EditableGrid(elem) {
 	function setCursorIfInRange(x, y) {
 		var row = rows[y];
 		if (!row || !row.getCell(x)) return;
-		setCursor(x,y);
+		self.setCursor(x,y);
 	}
 	
 	/* set cursor to position x,y */
-	function setCursor(x, y) {
+	self.setCursor = function(x, y) {
 		var oldCell = getCell(cursorX, cursorY);
 		if (oldCell) oldCell.loseCursor();
 		
@@ -175,7 +202,7 @@ function EditableGrid(elem) {
 			}
 			$elem.focus();
 			//if (editMode) finishEdit();
-			setCursor(coords[0], coords[1]);
+			self.setCursor(coords[0], coords[1]);
 		} else if (editMode) {
 			//finishEdit();
 		}
@@ -191,10 +218,20 @@ function EditableGrid(elem) {
 	var headerRow = $('<li class="header_row"></li>').append(headerRowUl, '<div style="clear: both;"></div>');
 	$elem.prepend(headerRow);
 	
+	self.onAddRow = Event() /* Fired when adding a row via the insert / add buttons.
+		NOT fired when calling addRow from code */
+	
 	var insertButton = $('<input type="button" class="add" value="Add row" />');
 	var insertButtonDiv = $('<div class="editable_grid_insert"></div>');
 	insertButtonDiv.append(insertButton);
 	$elem.after(insertButtonDiv);
+	insertButton.click(function() {
+		/* set timeout so that button acquires focus before we revert focus to the table */
+		setTimeout(function() {
+			var row = self.addRow(null, true);
+			self.onAddRow.trigger(row);
+		}, 10);
+	})
 	
 	self.addHeader = function(title, className) {
 		var li = $('<li></li>').attr('class', className).append(
@@ -203,10 +240,57 @@ function EditableGrid(elem) {
 		headerRowUl.append(li);
 	}
 	
-	self.addRow = function(row) {
-		rows.push(row);
-		$elem.append(row.elem);
+	self.addRow = function(index, animate) {
+		if (index == null || index >= rows.length) {
+			index = rows.length;
+			var row = GridRow(index);
+			$elem.append(row.elem);
+			rows.push(row);
+		} else {
+			/* bump up all row indexes below this one */
+			for (var i = index; i < rows.length; i++) {
+				rows[i].index.set(i+1);
+			}
+			/* also bump up cursor position */
+			if (cursorY >= index) cursorY++;
+			
+			var row = GridRow(index);
+			$(row.elem).insertBefore(rows[index].elem);
+			rows.splice(index, 0, row);
+		}
+		
+		row.prependInsertLink(function() {
+			var newRow = self.addRow(row.index.get(), true);
+			self.onAddRow.trigger(newRow);
+		})
+		
+		row.onDelete.bind(function() {
+			var index = row.index.get();
+			for (var i = index + 1; i < rows.length; i++) {
+				rows[i].index.set(i-1);
+			}
+			rows.splice(index, 1);
+			
+			if (cursorY > index) {
+				cursorY--;
+			} else if (cursorY == index) {
+				if (rows.length == 0) {
+					/* cursorY remains at 0,0 even if there's no cell to highlight there */
+				} else if (cursorY == rows.length) {
+					self.setCursor(cursorX, cursorY - 1);
+				} else {
+					self.setCursor(cursorX, cursorY);
+				}
+			}
+		})
+		
+		if (animate) {
+			row.slideDown();
+		}
+		
+		return row;
 	}
+	
 	getRow = function(index) {
 		return rows[index];
 	}
@@ -218,8 +302,10 @@ function EditableGrid(elem) {
 	return self;
 }
 
-function GridRow() {
+function GridRow(index) {
 	var self = {};
+	
+	self.index = Property(index);
 	
 	var cells = [];
 	
@@ -227,7 +313,8 @@ function GridRow() {
 	self.elem = $elem.get(0);
 	var fieldsUl = $('<ul class="fields"></ul>');
 	var fieldsUlElem = fieldsUl.get(0);
-	$elem.append(fieldsUl, '<div style="clear: both;"></div>');
+	var deleteLink = $('<a href="javascript:void(0)" tabindex="-1" class="delete" title="Delete this row">Delete</a>');
+	$elem.append(fieldsUl, deleteLink, '<div style="clear: both;"></div>');
 	
 	self.addCell = function(cell) {
 		cells.push(cell);
@@ -257,6 +344,31 @@ function GridRow() {
 			}
 		}
 	}
+	
+	self.slideDown = function() {
+		$elem.css({'height': '0'}).animate({'height': '20px'}, {
+			'duration': 'fast',
+			'complete': function() {
+				$elem.css({'height': 'auto'});
+				//appendDeleteLink(row);
+			}
+		});
+	}
+	
+	self.prependInsertLink = function(clickAction) {
+		var insertLink = $('<a class="insert" tabindex="-1" title="Insert row here" href="javascript:void(0)">insert &rarr;</a>');
+		$elem.prepend(insertLink);
+		insertLink.click(clickAction);
+	}
+	
+	self.onDelete = Event();
+	deleteLink.click(function() {
+		self.onDelete.trigger();
+		/* TODO: what happens if we're in edit mode? */
+		$elem.fadeOut('fast', function() {
+			$elem.remove();
+		})
+	})
 	
 	return self;
 }
@@ -294,24 +406,29 @@ function ResultsTable(elem, opts) {
 	
 	if (opts.competitionPlacings.length) {
 		for (var i = 0; i < opts.competitionPlacings.length; i++) {
-			var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i]);
-			grid.addRow(competitionPlacing.row);
+			var row = grid.addRow();
+			var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i], row);
 		}
 	} else {
 		/* add an initial empty row */
-		var competitionPlacing = CompetitionPlacing();
-		grid.addRow(competitionPlacing.row);
+		var row = grid.addRow();
+		var competitionPlacing = CompetitionPlacing(null, row);
 	}
+	
+	grid.onAddRow.bind(function(row) {
+		var competitionPlacing = CompetitionPlacing(null, row);
+		grid.setCursor(1, row.index.get());
+		grid.focus();
+	})
 }
 
-function CompetitionPlacing(data) {
+function CompetitionPlacing(data, row) {
 	if (!data) data = {};
 	if (!data.production) data.production = {};
 	if (!data.production.byline) data.production.byline = {};
 	
 	var self = {};
-	
-	self.row = GridRow();
+	self.row = row;
 	
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
 	var cells = {
