@@ -73,14 +73,56 @@ function EditableGrid(elem) {
 				switch (event.which) {
 					case 9: /* tab */
 						if (event.shiftKey) {
-							/* allow tab to escape the grid */
-							blur();
-							return;
+							if (cursorX > 0) {
+								setCursor(cursorX - 1, cursorY);
+								return false;
+							} else {
+								/* scan backwards to previous row with cells */
+								for (var newY = cursorY - 1; newY >= 0; newY--) {
+									var cellCount = rows[newY].getCellCount();
+									if (cellCount) {
+										setCursor(cellCount - 1, newY);
+										return false;
+									}
+								}
+								/* no previous cell; allow tab to escape the grid */
+								blur();
+								return;
+							}
 						} else {
-							/* allow tab to escape the grid */
-							blur();
-							return;
+							if (cursorX + 1 < rows[cursorY].getCellCount()) {
+								setCursor(cursorX + 1, cursorY);
+								return false;
+							} else {
+								/* scan forwards to next row with cells */
+								for (var newY = cursorY + 1; newY < rows.length; newY++) {
+									var cellCount = rows[newY].getCellCount();
+									if (cellCount) {
+										setCursor(0, newY);
+										return false;
+									}
+								}
+								/* no next cell; allow tab to escape the grid */
+								blur();
+								return;
+							}
 						}
+					case 37: /* cursor left */
+						setCursorIfInRange(cursorX - 1, cursorY);
+						//resultsTable.focus();
+						return false;
+					case 38: /* cursor up */
+						setCursorIfInRange(cursorX, cursorY - 1);
+						//resultsTable.focus();
+						return false;
+					case 39: /* cursor right */
+						setCursorIfInRange(cursorX + 1, cursorY);
+						//resultsTable.focus();
+						return false;
+					case 40: /* cursor down */
+						setCursorIfInRange(cursorX, cursorY + 1);
+						//resultsTable.focus();
+						return false;
 				}
 		}
 	}
@@ -107,6 +149,12 @@ function EditableGrid(elem) {
 		/* TODO: also propagate blur event to the current GridRow */
 		$(document).unbind('keydown', keydown);
 		$(document).unbind('keypress', keypress);
+	}
+	
+	function setCursorIfInRange(x, y) {
+		var row = rows[y];
+		if (!row || !row.getCell(x)) return;
+		setCursor(x,y);
 	}
 	
 	/* set cursor to position x,y */
@@ -187,6 +235,9 @@ function GridRow() {
 	}
 	self.getCell = function(index) {
 		return cells[index];
+	}
+	self.getCellCount = function() {
+		return cells.length;
 	}
 	
 	/* return the index of the GridCell object whose DOM element is, or contains, childElem,
