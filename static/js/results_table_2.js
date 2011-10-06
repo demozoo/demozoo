@@ -505,6 +505,10 @@ function GridCell(opts) {
 		if (editMode) finishEdit();
 	}
 	
+	$elem.dblclick(function() {
+		startEdit('capturedText');
+	})
+	
 	return self;
 }
 
