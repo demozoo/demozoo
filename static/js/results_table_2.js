@@ -434,16 +434,23 @@ function GridCell(opts) {
 	self.elem = $elem.get(0);
 	if (opts['class']) $elem.addClass(opts['class']);
 	
-	var showElem = $('<div class="show"></div>');
+	self.value = Property(opts.value);
+	
+	var showElem = $('<div class="show"></div>')
+	showElem.text(opts.value);
 	$elem.append(showElem);
-	if (opts.value) showElem.text(opts.value);
 	
 	var input = $('<input type="text" />');
-	if (opts.value) input.val(opts.value);
+	input.val(opts.value);
 	var editElem = $('<div class="edit"></div>');
 	editElem.append(input);
 	$elem.append(editElem);
 	editElem.hide();
+	
+	self.value.change.bind(function(newValue) {
+		showElem.text(newValue);
+		input.val(newValue);
+	})
 	
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
@@ -459,6 +466,7 @@ function GridCell(opts) {
 	*/
 	var editMode = null;
 	function finishEdit() {
+		self.value.set(input.val());
 		editElem.hide();
 		showElem.show();
 		editMode = null;
