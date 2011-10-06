@@ -299,6 +299,55 @@ function EditableGrid(elem) {
 		if (row) return row.getCell(x);
 	}
 	
+	$elem.sortable({
+		'axis': 'y',
+		'distance': 1,
+		'items': 'li.data_row',
+		'cancel': ':input,option,.byline_match_container', /* TODO: make into a config option to pass to EditableGrid */
+		'update': function(event, ui) {
+			var rowElem = ui.item[0];
+			var row, oldIndex;
+			for (var i = 0; i < rows.length; i++) {
+				if (rows[i].elem == rowElem) {
+					oldIndex = i;
+					row = rows[i];
+					break;
+				}
+			}
+			var newIndex = $elem.find('> li.data_row').index(rowElem);
+			
+			rows.splice(oldIndex, 1);
+			rows.splice(newIndex, 0, row);
+			if (oldIndex < newIndex) {
+				/* moving down */
+				for (var i = oldIndex; i < newIndex; i++) {
+					rows[i].index.set(i);
+				}
+				rows[newIndex].index.set(newIndex);
+				
+				if (cursorY == oldIndex) {
+					cursorY = newIndex;
+				} else if (cursorY > oldIndex && cursorY <= newIndex) {
+					cursorY--;
+				}
+				
+			} else {
+				/* moving up */
+				for (var i = newIndex+1; i <= oldIndex; i++) {
+					rows[i].index.set(i);
+				}
+				rows[newIndex].index.set(newIndex);
+				
+				if (cursorY == oldIndex) {
+					cursorY = newIndex;
+				} else if (cursorY >= newIndex && cursorY < oldIndex) {
+					cursorY++;
+				}
+			}
+			
+		}
+	});
+	
 	return self;
 }
 
