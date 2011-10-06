@@ -205,9 +205,6 @@ function EditableGrid(elem) {
 				return; /* continue editing if cursor is already here */
 			}
 			$elem.focus();
-			/* notify existing cell, if any, of losing focus */
-			var cell = getCell(cursorX, cursorY);
-			if (cell) cell.blur();
 			self.setCursor(coords[0], coords[1]);
 		}
 	}).click(function(event) {
@@ -457,6 +454,7 @@ function GridCell(opts) {
 	}
 	self.loseCursor = function() {
 		$elem.removeClass('cursor');
+		if (editMode) finishEdit();
 	}
 	
 	/* edit modes:
@@ -500,9 +498,6 @@ function GridCell(opts) {
 				}
 				break;
 		}
-	}
-	self.blur = function() {
-		if (editMode) finishEdit();
 	}
 	
 	$elem.dblclick(function() {
