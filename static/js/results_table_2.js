@@ -148,10 +148,12 @@ function EditableGrid(elem) {
 				return false;
 		}
 	}
-	/*
+	
 	function keypress(event) {
+		/* pass event to current cell */
+		var cell = getCell(cursorX, cursorY);
+		if (cell) return cell.keypress(event);
 	}
-	*/
 	
 	if ($elem.attr('tabindex') == null) {
 		$elem.attr('tabindex', 0);
@@ -164,7 +166,7 @@ function EditableGrid(elem) {
 			isFocused = true;
 			$(this).addClass('focused');
 			$(document).bind('keydown', keydown);
-			// $(document).bind('keypress', keypress);
+			$(document).bind('keypress', keypress);
 			
 			/* It isn't guaranteed that the cell at cursor position has
 				been given the 'cursor' class (e.g. upon initial load,
@@ -179,7 +181,7 @@ function EditableGrid(elem) {
 		$elem.removeClass('focused');
 		/* TODO: also propagate blur event to the current GridRow */
 		$(document).unbind('keydown', keydown);
-		// $(document).unbind('keypress', keypress);
+		$(document).unbind('keypress', keypress);
 	}
 	
 	function setCursorIfInRange(x, y) {
@@ -473,6 +475,7 @@ function GridCell(opts) {
 		showElem.hide();
 		editElem.show();
 		input.focus();
+		if (newMode == 'uncapturedText' && input.select) input.select();
 		editMode = newMode;
 	}
 	
@@ -496,6 +499,26 @@ function GridCell(opts) {
 					case 40:
 						return true; /* override grid event handler, defer to browser's own */
 				}
+				break;
+			case 'uncapturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						finishEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						finishEdit();
+						return null; /* let grid event handler process the cursor movement */
+				}
+				break;
+		}
+	}
+	self.keypress = function(event) {
+		switch (editMode) {
+			case null:
+				startEdit('uncapturedText');
 				break;
 		}
 	}
