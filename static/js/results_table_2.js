@@ -45,12 +45,6 @@ function EditableGrid(elem) {
 	var gridElem = $elem.get(0);
 	$elem.addClass('editable_grid');
 	
-	/* edit modes:
-		null = not editing
-		'capturedText' = do not select on focus; cursor keys move caret
-		'uncapturedText' = select on focus; cursor keys move cell
-	*/
-	var editMode = null;
 	var cursorX = 0, cursorY = 0;
 	var rows = [];
 	var isFocused = false;
@@ -88,66 +82,76 @@ function EditableGrid(elem) {
 	}
 	
 	function keydown(event) {
-		switch(editMode) {
-			case null:
-				switch (event.which) {
-					case 9: /* tab */
-						if (event.shiftKey) {
-							if (cursorX > 0) {
-								self.setCursor(cursorX - 1, cursorY);
+		/* current cell, if any, gets first dibs on handling events */
+		var cell = getCell(cursorX, cursorY);
+		if (cell) {
+			var result = cell.keydown(event);
+			/* cell's keydown handler can return:
+				- null to let grid handle the event
+				- false to terminate event handling immediately
+				- true to pass control to the browser's default handlers */
+			if (result != null) return result;
+		}
+		
+		switch (event.which) {
+			case 9: /* tab */
+				if (event.shiftKey) {
+					if (cursorX > 0) {
+						self.setCursor(cursorX - 1, cursorY);
+						return false;
+					} else {
+						/* scan backwards to previous row with cells */
+						for (var newY = cursorY - 1; newY >= 0; newY--) {
+							var cellCount = rows[newY].getCellCount();
+							if (cellCount) {
+								self.setCursor(cellCount - 1, newY);
 								return false;
-							} else {
-								/* scan backwards to previous row with cells */
-								for (var newY = cursorY - 1; newY >= 0; newY--) {
-									var cellCount = rows[newY].getCellCount();
-									if (cellCount) {
-										self.setCursor(cellCount - 1, newY);
-										return false;
-									}
-								}
-								/* no previous cell; allow tab to escape the grid */
-								blur();
-								return;
-							}
-						} else {
-							if (cursorX + 1 < rows[cursorY].getCellCount()) {
-								self.setCursor(cursorX + 1, cursorY);
-								return false;
-							} else {
-								/* scan forwards to next row with cells */
-								for (var newY = cursorY + 1; newY < rows.length; newY++) {
-									var cellCount = rows[newY].getCellCount();
-									if (cellCount) {
-										self.setCursor(0, newY);
-										return false;
-									}
-								}
-								/* no next cell; allow tab to escape the grid */
-								blur();
-								return;
 							}
 						}
-					case 37: /* cursor left */
-						setCursorIfInRange(cursorX - 1, cursorY);
-						//resultsTable.focus();
+						/* no previous cell; allow tab to escape the grid */
+						blur();
+						return;
+					}
+				} else {
+					if (cursorX + 1 < rows[cursorY].getCellCount()) {
+						self.setCursor(cursorX + 1, cursorY);
 						return false;
-					case 38: /* cursor up */
-						setCursorIfInRange(cursorX, cursorY - 1);
-						//resultsTable.focus();
-						return false;
-					case 39: /* cursor right */
-						setCursorIfInRange(cursorX + 1, cursorY);
-						//resultsTable.focus();
-						return false;
-					case 40: /* cursor down */
-						setCursorIfInRange(cursorX, cursorY + 1);
-						//resultsTable.focus();
-						return false;
+					} else {
+						/* scan forwards to next row with cells */
+						for (var newY = cursorY + 1; newY < rows.length; newY++) {
+							var cellCount = rows[newY].getCellCount();
+							if (cellCount) {
+								self.setCursor(0, newY);
+								return false;
+							}
+						}
+						/* no next cell; allow tab to escape the grid */
+						blur();
+						return;
+					}
 				}
+			case 37: /* cursor left */
+				setCursorIfInRange(cursorX - 1, cursorY);
+				//resultsTable.focus();
+				return false;
+			case 38: /* cursor up */
+				setCursorIfInRange(cursorX, cursorY - 1);
+				//resultsTable.focus();
+				return false;
+			case 39: /* cursor right */
+				setCursorIfInRange(cursorX + 1, cursorY);
+				//resultsTable.focus();
+				return false;
+			case 40: /* cursor down */
+				setCursorIfInRange(cursorX, cursorY + 1);
+				//resultsTable.focus();
+				return false;
 		}
 	}
+	/*
 	function keypress(event) {
 	}
+	*/
 	
 	if ($elem.attr('tabindex') == null) {
 		$elem.attr('tabindex', 0);
@@ -160,7 +164,7 @@ function EditableGrid(elem) {
 			isFocused = true;
 			$(this).addClass('focused');
 			$(document).bind('keydown', keydown);
-			$(document).bind('keypress', keypress);
+			// $(document).bind('keypress', keypress);
 			
 			/* It isn't guaranteed that the cell at cursor position has
 				been given the 'cursor' class (e.g. upon initial load,
@@ -175,7 +179,7 @@ function EditableGrid(elem) {
 		$elem.removeClass('focused');
 		/* TODO: also propagate blur event to the current GridRow */
 		$(document).unbind('keydown', keydown);
-		$(document).unbind('keypress', keypress);
+		// $(document).unbind('keypress', keypress);
 	}
 	
 	function setCursorIfInRange(x, y) {
@@ -201,10 +205,10 @@ function EditableGrid(elem) {
 				return; /* continue editing if cursor is already here */
 			}
 			$elem.focus();
-			//if (editMode) finishEdit();
+			/* notify existing cell, if any, of losing focus */
+			var cell = getCell(cursorX, cursorY);
+			if (cell) cell.blur();
 			self.setCursor(coords[0], coords[1]);
-		} else if (editMode) {
-			//finishEdit();
 		}
 	}).click(function(event) {
 		if (elementIsInGrid(event.target)) {
@@ -434,11 +438,63 @@ function GridCell(opts) {
 	$elem.append(showElem);
 	if (opts.value) showElem.text(opts.value);
 	
+	var input = $('<input type="text" />');
+	if (opts.value) input.val(opts.value);
+	var editElem = $('<div class="edit"></div>');
+	editElem.append(input);
+	$elem.append(editElem);
+	editElem.hide();
+	
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
 	}
 	self.loseCursor = function() {
 		$elem.removeClass('cursor');
+	}
+	
+	/* edit modes:
+		null = not editing
+		'capturedText' = do not select on focus; cursor keys move caret
+		'uncapturedText' = select on focus; cursor keys move cell
+	*/
+	var editMode = null;
+	function finishEdit() {
+		editElem.hide();
+		showElem.show();
+		editMode = null;
+	}
+	function startEdit(newMode) {
+		showElem.hide();
+		editElem.show();
+		input.focus();
+		editMode = newMode;
+	}
+	
+	self.keydown = function(event) {
+		switch (editMode) {
+			case null:
+				switch (event.which) {
+					case 13:
+						startEdit('capturedText');
+						return false;
+				}
+				break;
+			case 'capturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						finishEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+		}
+	}
+	self.blur = function() {
+		if (editMode) finishEdit();
 	}
 	
 	return self;
