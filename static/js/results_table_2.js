@@ -432,27 +432,51 @@ function GridCell(opts) {
 	if (!opts) opts = {};
 	var self = {};
 	
-	var $elem = $('<li></li>')
-	self.elem = $elem.get(0);
-	if (opts['class']) $elem.addClass(opts['class']);
-	
 	self.value = Property(opts.value);
 	
-	var showElem = $('<div class="show"></div>')
-	showElem.text(opts.value);
-	$elem.append(showElem);
+	var $elem, showElem, editElem;
 	
-	var input = $('<input type="text" />');
-	input.val(opts.value);
-	var editElem = $('<div class="edit"></div>');
-	editElem.append(input);
-	$elem.append(editElem);
-	editElem.hide();
+	self.constructElem = function() {
+		$elem = $('<li></li>');
+		self.elem = $elem.get(0);
+		if (opts['class']) $elem.addClass(opts['class']);
+		
+		showElem = $('<div class="show"></div>');
+		$elem.append(showElem);
+		self._initShowElem(showElem);
+		self._refreshShowElem(showElem, opts.value);
+		
+		editElem = $('<div class="edit"></div>');
+		$elem.append(editElem);
+		self._initEditElem(editElem);
+		self._refreshEditElem(editElem, opts.value);
+		editElem.hide();
+		
+		self.value.change.bind(function(newValue) {
+			self._refreshShowElem(showElem, newValue);
+			self._refreshEditElem(editElem, newValue);
+		})
+		
+		$elem.dblclick(function() {
+			if (!editMode) startEdit('capturedText');
+		})
+		
+	}
 	
-	self.value.change.bind(function(newValue) {
-		showElem.text(newValue);
-		input.val(newValue);
-	})
+	self._initShowElem = function(showElem) {
+	}
+	self._initEditElem = function(editElem) {
+	}
+	self._refreshShowElem = function(showElem, value) {
+		showElem.text(value);
+	}
+	self._refreshEditElem = function(editElem, value) {
+	}
+	self._valueFromEditElem = function(editElem) {
+		return null;
+	}
+	self._prepareEditElem = function(editElem, newMode) {
+	}
 	
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
@@ -472,7 +496,7 @@ function GridCell(opts) {
 	*/
 	var editMode = null;
 	function finishEdit() {
-		self.value.set(input.val());
+		self.value.set(self._valueFromEditElem(editElem));
 		editElem.hide();
 		showElem.show();
 		editMode = null;
@@ -480,8 +504,7 @@ function GridCell(opts) {
 	function startEdit(newMode) {
 		showElem.hide();
 		editElem.show();
-		input.focus();
-		if (newMode == 'uncapturedText' && input.select) input.select();
+		self._prepareEditElem(editElem, newMode);
 		editMode = newMode;
 	}
 	
@@ -529,10 +552,29 @@ function GridCell(opts) {
 		}
 	}
 	
-	$elem.dblclick(function() {
-		if (!editMode) startEdit('capturedText');
-	})
+	return self;
+}
+
+function TextGridCell(opts) {
+	self = GridCell(opts);
 	
+	var input;
+	self._initEditElem = function(editElem) {
+		input = $('<input type="text" />');
+		editElem.append(input);
+	}
+	self._refreshEditElem = function(editElem, value) {
+		input.val(value);
+	}
+	self._valueFromEditElem = function(editElem) {
+		return input.val();
+	}
+	self._prepareEditElem = function(editElem, newMode) {
+		input.focus();
+		if (newMode == 'uncapturedText' && input.select) input.select();
+	}
+	
+	self.constructElem();
 	return self;
 }
 
@@ -545,25 +587,30 @@ function ResultsTable(elem, opts) {
 	grid.addHeader('Type', 'type_field');
 	grid.addHeader('Score', 'score_field');
 	
+	var rowOptions = {
+		'platforms': opts.platforms,
+		'productionTypes': opts.productionTypes
+	};
+	
 	if (opts.competitionPlacings.length) {
 		for (var i = 0; i < opts.competitionPlacings.length; i++) {
 			var row = grid.addRow();
-			var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i], row);
+			var competitionPlacing = CompetitionPlacing(opts.competitionPlacings[i], row, rowOptions);
 		}
 	} else {
 		/* add an initial empty row */
 		var row = grid.addRow();
-		var competitionPlacing = CompetitionPlacing(null, row);
+		var competitionPlacing = CompetitionPlacing(null, row, rowOptions);
 	}
 	
 	grid.onAddRow.bind(function(row) {
-		var competitionPlacing = CompetitionPlacing(null, row);
+		var competitionPlacing = CompetitionPlacing(null, row, rowOptions);
 		grid.setCursor(1, row.index.get());
 		grid.focus();
 	})
 }
 
-function CompetitionPlacing(data, row) {
+function CompetitionPlacing(data, row, opts) {
 	if (!data) data = {};
 	if (!data.production) data.production = {};
 	if (!data.production.byline) data.production.byline = {};
@@ -573,12 +620,12 @@ function CompetitionPlacing(data, row) {
 	
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
 	var cells = {
-		'placing': GridCell({'class': 'placing_field', 'value': data.ranking}),
-		'title': GridCell({'class': 'title_field', 'value': data.production.title}),
-		'by': GridCell({'class': 'by_field', 'value': data.production.byline.search_term}),
-		'platform': GridCell({'class': 'platform_field'}),
-		'type': GridCell({'class': 'type_field'}),
-		'score': GridCell({'class': 'score_field', 'value': data.score})
+		'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
+		'title': TextGridCell({'class': 'title_field', 'value': data.production.title}),
+		'by': TextGridCell({'class': 'by_field', 'value': data.production.byline.search_term}),
+		'platform': TextGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
+		'type': TextGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.productionTypes}),
+		'score': TextGridCell({'class': 'score_field', 'value': data.score})
 	}
 	for (var i = 0; i < cellOrder.length; i++) {
 		self.row.addCell(cells[cellOrder[i]]);
