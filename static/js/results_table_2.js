@@ -177,6 +177,9 @@ function EditableGrid(elem) {
 		}
 	})
 	function blur() {
+		var cell = getCell(cursorX, cursorY);
+		if (cell) cell.blur();
+		
 		isFocused = false;
 		$elem.removeClass('focused');
 		/* TODO: also propagate blur event to the current GridRow */
@@ -454,9 +457,12 @@ function GridCell(opts) {
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
 	}
+	self.blur = function() {
+		if (editMode) finishEdit();
+	}
 	self.loseCursor = function() {
 		$elem.removeClass('cursor');
-		if (editMode) finishEdit();
+		self.blur();
 	}
 	
 	/* edit modes:
@@ -524,7 +530,7 @@ function GridCell(opts) {
 	}
 	
 	$elem.dblclick(function() {
-		startEdit('capturedText');
+		if (!editMode) startEdit('capturedText');
 	})
 	
 	return self;
