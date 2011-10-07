@@ -501,7 +501,15 @@ function GridCell(opts) {
 		showElem.show();
 		editMode = null;
 	}
+	var originalValue;
+	function cancelEdit() {
+		self._refreshEditElem(editElem, originalValue);
+		editElem.hide();
+		showElem.show();
+		editMode = null;
+	}
 	function startEdit(newMode) {
+		originalValue = self.value.get();
 		showElem.hide();
 		editElem.show();
 		self._prepareEditElem(editElem, newMode);
@@ -522,6 +530,9 @@ function GridCell(opts) {
 					case 13: /* enter */
 						finishEdit();
 						return false;
+					case 27: /* escape */
+						cancelEdit();
+						return false;
 					case 37: /* cursors */
 					case 38:
 					case 39:
@@ -533,6 +544,10 @@ function GridCell(opts) {
 				switch(event.which) {
 					case 13: /* enter */
 						finishEdit();
+						/* TODO: advance to next cell */
+						return false;
+					case 27: /* escape */
+						cancelEdit();
 						return false;
 					case 37: /* cursors */
 					case 38:
