@@ -464,6 +464,13 @@ function GridCell(opts) {
 	
 	var $elem, showElem, editElem;
 	
+	/* edit modes:
+		null = not editing
+		'capturedText' = do not select on focus; cursor keys move caret
+		'uncapturedText' = select on focus; cursor keys move cell
+	*/
+	self._editMode = null;
+	
 	self.constructElem = function() {
 		$elem = $('<li></li>');
 		self.elem = $elem.get(0);
@@ -486,7 +493,7 @@ function GridCell(opts) {
 		})
 		
 		$elem.dblclick(function() {
-			if (!editMode) startEdit('capturedText');
+			if (!self._editMode) self._startEdit('capturedText');
 		})
 		
 	}
@@ -503,102 +510,51 @@ function GridCell(opts) {
 	self._valueFromEditElem = function(editElem) {
 		return null;
 	}
-	self._prepareEditElem = function(editElem, newMode) {
+	self._prepareEditElem = function(editElem) {
 	}
 	
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
 	}
 	self.blur = function() {
-		if (editMode) finishEdit();
+		if (self._editMode) self._finishEdit();
 	}
 	self.loseCursor = function() {
 		$elem.removeClass('cursor');
 		self.blur();
 	}
 	
-	/* edit modes:
-		null = not editing
-		'capturedText' = do not select on focus; cursor keys move caret
-		'uncapturedText' = select on focus; cursor keys move cell
-	*/
-	var editMode = null;
-	function finishEdit() {
+	self._finishEdit = function() {
 		self.value.set(self._valueFromEditElem(editElem));
 		editElem.hide();
 		showElem.show();
-		editMode = null;
+		self._editMode = null;
 	}
 	var originalValue;
-	function cancelEdit() {
+	self._cancelEdit = function() {
 		self._refreshEditElem(editElem, originalValue);
 		editElem.hide();
 		showElem.show();
-		editMode = null;
+		self._editMode = null;
 	}
-	function startEdit(newMode) {
+	self._startEdit = function(newMode) {
 		originalValue = self.value.get();
 		showElem.hide();
 		editElem.show();
-		self._prepareEditElem(editElem, newMode);
-		editMode = newMode;
+		self._editMode = newMode;
+		self._prepareEditElem(editElem);
 	}
 	
 	self.keydown = function(event) {
-		switch (editMode) {
-			case null:
-				switch (event.which) {
-					case 13:
-						startEdit('capturedText');
-						return false;
-				}
-				break;
-			case 'capturedText':
-				switch(event.which) {
-					case 13: /* enter */
-						finishEdit();
-						return false;
-					case 27: /* escape */
-						cancelEdit();
-						return false;
-					case 37: /* cursors */
-					case 38:
-					case 39:
-					case 40:
-						return true; /* override grid event handler, defer to browser's own */
-				}
-				break;
-			case 'uncapturedText':
-				switch(event.which) {
-					case 13: /* enter */
-						finishEdit();
-						return null; /* grid's event handler for the enter key will advance to next cell */
-					case 27: /* escape */
-						cancelEdit();
-						return false;
-					case 37: /* cursors */
-					case 38:
-					case 39:
-					case 40:
-						finishEdit();
-						return null; /* let grid event handler process the cursor movement */
-				}
-				break;
-		}
 	}
 	self.keypress = function(event) {
-		switch (editMode) {
-			case null:
-				startEdit('uncapturedText');
-				break;
-		}
 	}
 	
 	return self;
 }
 
 function TextGridCell(opts) {
-	self = GridCell(opts);
+	var self = GridCell(opts);
 	
 	var input;
 	self._initEditElem = function(editElem) {
@@ -611,9 +567,58 @@ function TextGridCell(opts) {
 	self._valueFromEditElem = function(editElem) {
 		return input.val();
 	}
-	self._prepareEditElem = function(editElem, newMode) {
+	self._prepareEditElem = function(editElem) {
 		input.focus();
-		if (newMode == 'uncapturedText' && input.select) input.select();
+		if (self._editMode == 'uncapturedText' && input.select) input.select();
+	}
+	self.keydown = function(event) {
+		switch (self._editMode) {
+			case null:
+				switch (event.which) {
+					case 13:
+						self._startEdit('capturedText');
+						return false;
+				}
+				break;
+			case 'capturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return false;
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+			case 'uncapturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return null; /* grid's event handler for the enter key will advance to next cell */
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						self._finishEdit();
+						return null; /* let grid event handler process the cursor movement */
+				}
+				break;
+		}
+	}
+	self.keypress = function(event) {
+		switch (self._editMode) {
+			case null:
+				self._startEdit('uncapturedText');
+				break;
+		}
 	}
 	
 	self.constructElem();
@@ -621,7 +626,7 @@ function TextGridCell(opts) {
 }
 
 function SelectGridCell(opts) {
-	self = GridCell(opts);
+	var self = GridCell(opts);
 	
 	var optionLabelsById = {};
 	for (var i = 0; i < opts.options.length; i++) {
@@ -650,8 +655,58 @@ function SelectGridCell(opts) {
 	self._valueFromEditElem = function(editElem) {
 		return input.val();
 	}
-	self._prepareEditElem = function(editElem, newMode) {
+	self._prepareEditElem = function(editElem) {
 		input.focus();
+	}
+	
+	self.keydown = function(event) {
+		switch (self._editMode) {
+			case null:
+				if ( (event.which == 13) || (event.which >= 48 && event.which <= 57) || (event.which >= 65 && event.which <= 90) ) {
+					// respond to alphanumeric keys and enter by focusing the dropdown
+					// (all prod types and platforms start with alphanumerics)
+					self._startEdit('uncapturedText'); /* TODO: left/right cursors should escape, up/down cursors should remain captured */
+					return true; /* allow select box to handle the keypress */
+				} else {
+					switch (event.which) {
+						case 13:
+							self._startEdit('capturedText');
+							return false;
+					}
+				}
+				break;
+			case 'capturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return false;
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+			case 'uncapturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return null; /* grid's event handler for the enter key will advance to next cell */
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						self._finishEdit();
+						return null; /* let grid event handler process the cursor movement */
+				}
+				break;
+		}
 	}
 	
 	self.constructElem();
