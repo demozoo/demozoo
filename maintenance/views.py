@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit
+from demoscene.models import Production, Nick, Credit, Releaser
 from maintenance.models import Exclusion
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
@@ -272,6 +272,54 @@ def same_named_prods_by_same_releaser(request):
 		'productions': productions,
 		'mark_excludable': True,
 		'report_name': report_name,
+	})
+
+def duplicate_external_links(request):
+	def prod_duplicates_by_column(column_name):
+		return Production.objects.raw('''
+			SELECT DISTINCT demoscene_production.*
+			FROM demoscene_production
+			INNER JOIN demoscene_production AS other_production ON (
+				demoscene_production.%s IS NOT NULL
+				AND demoscene_production.%s = other_production.%s
+				AND demoscene_production.id <> other_production.id)
+			ORDER BY demoscene_production.%s
+		''' % ((column_name,)*4) )
+	
+	def releaser_duplicates_by_column(column_name):
+		return Releaser.objects.raw('''
+			SELECT DISTINCT demoscene_releaser.*
+			FROM demoscene_releaser
+			INNER JOIN demoscene_releaser AS other_releaser ON (
+				demoscene_releaser.%s IS NOT NULL
+				AND demoscene_releaser.%s = other_releaser.%s
+				AND demoscene_releaser.id <> other_releaser.id)
+			ORDER BY demoscene_releaser.%s
+		''' % ((column_name,)*4) )
+	
+	prod_dupes = {}
+	for column in Production.external_site_ref_field_names:
+		prod_dupes[column] = prod_duplicates_by_column(column)
+	
+	releaser_dupes = {}
+	for column in Releaser.external_site_ref_field_names:
+		if column == 'asciiarena_author_id':
+			continue
+		releaser_dupes[column] = releaser_duplicates_by_column(column)
+	# specialcase asciiarena_author_id - blank entries are '', not null
+	releaser_dupes['asciiarena_author_id'] = Releaser.objects.raw('''
+		SELECT DISTINCT demoscene_releaser.*
+		FROM demoscene_releaser
+		INNER JOIN demoscene_releaser AS other_releaser ON (
+			demoscene_releaser.asciiarena_author_id <> ''
+			AND demoscene_releaser.asciiarena_author_id = other_releaser.asciiarena_author_id
+			AND demoscene_releaser.id <> other_releaser.id)
+		ORDER BY demoscene_releaser.asciiarena_author_id
+	''')
+	
+	return render(request, 'maintenance/duplicate_external_links.html', {
+		'prod_dupes': prod_dupes,
+		'releaser_dupes': releaser_dupes,
 	})
 
 def fix_release_dates(request):

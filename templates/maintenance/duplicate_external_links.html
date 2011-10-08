@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block html_title %}Duplicate external links - Demozoo{% endblock %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="/static/css/maintenance.css" />
+	<script src="/static/js/maintenance.js"></script>
+{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<div id="main_column">
+		{% for column, productions in prod_dupes.items %}
+			<h2>Productions matching by {{ column }}:</h2>
+			<div class="panel report">
+				{% include "shared/production_listing.html" %}
+			</div>
+		{% endfor %}
+		
+		{% for column, releasers in releaser_dupes.items %}
+			<h2>Releasers matching by {{ column }}:</h2>
+			<div class="panel report">
+				<ul>
+					{% for releaser in releasers %}
+						<li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
+							<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}
