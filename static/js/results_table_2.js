@@ -593,6 +593,44 @@ function TextGridCell(opts) {
 	return self;
 }
 
+function SelectGridCell(opts) {
+	self = GridCell(opts);
+	
+	var optionLabelsById = {};
+	for (var i = 0; i < opts.options.length; i++) {
+		var option = opts.options[i];
+		optionLabelsById[option[0]] = option[1];
+	}
+	
+	var input;
+	self._initEditElem = function(editElem) {
+		input = $('<select><option>--------</option></select>');
+		for (var i = 0; i < opts.options.length; i++) {
+			var option = opts.options[i];
+			optionElem = $('<option></option>').attr({'value': option[0]}).text(option[1]);
+			input.append(optionElem);
+		}
+		editElem.append(input);
+	}
+	self._refreshShowElem = function(showElem, value) {
+		var label = optionLabelsById[value];
+		if (label == null) label = '';
+		showElem.text(label);
+	}
+	self._refreshEditElem = function(editElem, value) {
+		input.val(value);
+	}
+	self._valueFromEditElem = function(editElem) {
+		return input.val();
+	}
+	self._prepareEditElem = function(editElem, newMode) {
+		input.focus();
+	}
+	
+	self.constructElem();
+	return self;
+}
+
 function ResultsTable(elem, opts) {
 	var grid = EditableGrid(elem);
 	grid.addHeader('Placing', 'placing_field');
@@ -638,8 +676,8 @@ function CompetitionPlacing(data, row, opts) {
 		'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
 		'title': TextGridCell({'class': 'title_field', 'value': data.production.title}),
 		'by': TextGridCell({'class': 'by_field', 'value': data.production.byline.search_term}),
-		'platform': TextGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
-		'type': TextGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.productionTypes}),
+		'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
+		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.productionTypes}),
 		'score': TextGridCell({'class': 'score_field', 'value': data.score})
 	}
 	for (var i = 0; i < cellOrder.length; i++) {
