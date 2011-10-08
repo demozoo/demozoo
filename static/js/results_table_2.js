@@ -81,6 +81,49 @@ function EditableGrid(elem) {
 		}
 	}
 	
+	/* move cursor to next cell; return true if successful, false if there's no next cell */
+	function moveCursorForward() {
+		if (cursorX + 1 < rows[cursorY].getCellCount()) {
+			self.setCursor(cursorX + 1, cursorY);
+			return true;
+		} else {
+			/* scan forwards to next row with cells */
+			for (var newY = cursorY + 1; newY < rows.length; newY++) {
+				var cellCount = rows[newY].getCellCount();
+				if (cellCount) {
+					self.setCursor(0, newY);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/* move cursor to previous cell; return true if successful, false if there's no previous cell */
+	function moveCursorBackward() {
+		if (cursorX > 0) {
+			self.setCursor(cursorX - 1, cursorY);
+			return true;
+		} else {
+			/* scan backwards to previous row with cells */
+			for (var newY = cursorY - 1; newY >= 0; newY--) {
+				var cellCount = rows[newY].getCellCount();
+				if (cellCount) {
+					self.setCursor(cellCount - 1, newY);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/* try to move cursor forward to next cell; if there isn't one, create a new row */
+	function advanceOrCreate() {
+		if (!moveCursorForward()) {
+			var row = self.addRow(null, false);
+			self.onAddRow.trigger(row);
+		}
+	}
+	
 	function keydown(event) {
 		/* current cell, if any, gets first dibs on handling events */
 		var cell = getCell(cursorX, cursorY);
@@ -96,40 +139,25 @@ function EditableGrid(elem) {
 		switch (event.which) {
 			case 9: /* tab */
 				if (event.shiftKey) {
-					if (cursorX > 0) {
-						self.setCursor(cursorX - 1, cursorY);
+					if (moveCursorBackward()) {
 						return false;
 					} else {
-						/* scan backwards to previous row with cells */
-						for (var newY = cursorY - 1; newY >= 0; newY--) {
-							var cellCount = rows[newY].getCellCount();
-							if (cellCount) {
-								self.setCursor(cellCount - 1, newY);
-								return false;
-							}
-						}
 						/* no previous cell; allow tab to escape the grid */
 						blur();
 						return;
 					}
 				} else {
-					if (cursorX + 1 < rows[cursorY].getCellCount()) {
-						self.setCursor(cursorX + 1, cursorY);
+					if (moveCursorForward()) {
 						return false;
 					} else {
-						/* scan forwards to next row with cells */
-						for (var newY = cursorY + 1; newY < rows.length; newY++) {
-							var cellCount = rows[newY].getCellCount();
-							if (cellCount) {
-								self.setCursor(0, newY);
-								return false;
-							}
-						}
 						/* no next cell; allow tab to escape the grid */
 						blur();
 						return;
 					}
 				}
+			case 13: /* enter */
+				advanceOrCreate();
+				return false;
 			case 37: /* cursor left */
 				setCursorIfInRange(cursorX - 1, cursorY);
 				//resultsTable.focus();
@@ -544,8 +572,7 @@ function GridCell(opts) {
 				switch(event.which) {
 					case 13: /* enter */
 						finishEdit();
-						/* TODO: advance to next cell */
-						return false;
+						return null; /* grid's event handler for the enter key will advance to next cell */
 					case 27: /* escape */
 						cancelEdit();
 						return false;
