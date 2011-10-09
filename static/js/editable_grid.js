@@ -381,6 +381,7 @@ function EditableGrid(elem) {
 			}
 			
 			self.onReorder.trigger(row, oldIndex, newIndex);
+			row.onReorder.trigger(oldIndex, newIndex);
 		}
 	});
 	
@@ -391,6 +392,7 @@ function GridRow(index) {
 	var self = {};
 	
 	self.index = Property(index);
+	self.onReorder = Event();
 	
 	var cells = [];
 	

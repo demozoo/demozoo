@@ -101,6 +101,12 @@ function CompetitionPlacing(data, table, row, opts) {
 		var placing = cells.placing.value.get();
 		return (placing == null ? '' : String(placing));
 	}
+	row.onReorder.bind(function(oldIndex, newIndex) {
+		if (self.getPlacing().match(/^\s*$/)) {
+			/* placing field not previously populated; auto-populate it now */
+			cells.placing.value.set(table.placingForPosition(newIndex, true));
+		}
+	})
 	
 	return self;
 }
