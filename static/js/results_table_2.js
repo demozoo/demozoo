@@ -76,6 +76,92 @@ function ResultsTable(elem, opts) {
 	return self;
 }
 
+function BylineGridCell(opts) {
+	var self = GridCell(opts);
+	
+	var input, bylineField, matchContainer;
+	self._initEditElem = function(editElem) {
+		bylineField = $('<div class="byline_field"><div class="byline_search"><input type="text" /></div><div class="byline_match_container"></div></div>')
+		editElem.append(bylineField);
+		input = bylineField.find('input');
+		matchContainer = bylineField.find('.byline_match_container');
+		bylineField.bylineField();
+	}
+	self._refreshShowElem = function(showElem, value) {
+		showElem.text(value.search_term);
+	}
+	var originalMatchHtml;
+	self._refreshEditElem = function(editElem, value) {
+		input.val(value.search_term);
+		originalMatchHtml = value.matches;
+		refreshBylineMatchFields(bylineField, value.matches);
+	}
+	self._valueFromEditElem = function(editElem) {
+		return {
+			'search_term': input.val(),
+			'matches': originalMatchHtml
+			/* TODO: either reduce this to the HTML fragment prior to applying nickMatchWidget decoration,
+				or make nickMatchWidget smart enough to not do it twice */
+		};
+	}
+	self._prepareEditElem = function(editElem) {
+		input.focus();
+		if (self._editMode == 'uncapturedText' && input.select) input.select();
+	}
+	self.keydown = function(event) {
+		switch (self._editMode) {
+			case null:
+				switch (event.which) {
+					case 13:
+						self._startEdit('capturedText');
+						return false;
+				}
+				break;
+			case 'capturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return false;
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+			case 'uncapturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return null; /* grid's event handler for the enter key will advance to next cell */
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						self._finishEdit();
+						return null; /* let grid event handler process the cursor movement */
+				}
+				break;
+		}
+	}
+	self.keypress = function(event) {
+		switch (self._editMode) {
+			case null:
+				self._startEdit('uncapturedText');
+				break;
+		}
+	}
+	
+	self.constructElem();
+	return self;
+}
+
 function CompetitionPlacing(data, table, row, opts) {
 	if (!data) data = {};
 	if (!data.production) data.production = {};
@@ -88,7 +174,7 @@ function CompetitionPlacing(data, table, row, opts) {
 	var cells = {
 		'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
 		'title': TextGridCell({'class': 'title_field', 'value': data.production.title}),
-		'by': TextGridCell({'class': 'by_field', 'value': data.production.byline.search_term}),
+		'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
 		'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
 		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.productionTypes}),
 		'score': TextGridCell({'class': 'score_field', 'value': data.score})

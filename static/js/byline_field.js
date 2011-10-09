@@ -21,8 +21,7 @@
 						}, function(data) {
 							if (searchField.val() == data['initial_query']) {
 								/* only update fields if search box contents have not changed since making this query */
-								$('.byline_match_container', bylineFieldElement).show().html(data.matches);
-								$('.nick_match', bylineFieldElement).nickMatchWidget();
+								refreshBylineMatchFields(bylineFieldElement, data.matches);
 								if (autocomplete) {
 									searchField.val(data.query);
 									if (searchFieldElement.setSelectionRange) {
@@ -47,3 +46,11 @@
 		});
 	}
 })(jQuery);
+
+function refreshBylineMatchFields(bylineFieldElement, matchHtml) {
+	$('.byline_match_container', bylineFieldElement).show().html(matchHtml);
+	$('.nick_match', bylineFieldElement).nickMatchWidget();
+	if ($('.byline_match_container .nick_match', bylineFieldElement).length == 0) {
+		$('.byline_match_container', bylineFieldElement).hide();
+	}
+}
