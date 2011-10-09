@@ -662,10 +662,10 @@ function SelectGridCell(opts) {
 	self.keydown = function(event) {
 		switch (self._editMode) {
 			case null:
-				if ( (event.which == 13) || (event.which >= 48 && event.which <= 57) || (event.which >= 65 && event.which <= 90) ) {
+				if ( (event.which >= 48 && event.which <= 57) || (event.which >= 65 && event.which <= 90) ) {
 					// respond to alphanumeric keys and enter by focusing the dropdown
 					// (all prod types and platforms start with alphanumerics)
-					self._startEdit('uncapturedText'); /* TODO: left/right cursors should escape, up/down cursors should remain captured */
+					self._startEdit('uncapturedText');
 					return true; /* allow select box to handle the keypress */
 				} else {
 					switch (event.which) {
@@ -698,10 +698,12 @@ function SelectGridCell(opts) {
 					case 27: /* escape */
 						self._cancelEdit();
 						return false;
-					case 37: /* cursors */
-					case 38:
+					/* left/right cursors should escape, up/down cursors should remain captured */
+					case 38: /* cursor up */
+					case 40: /* cursor down */
+						return true; 
+					case 37: /* cursors left/right */
 					case 39:
-					case 40:
 						self._finishEdit();
 						return null; /* let grid event handler process the cursor movement */
 				}
