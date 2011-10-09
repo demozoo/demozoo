@@ -333,6 +333,7 @@ function EditableGrid(elem) {
 		if (row) return row.getCell(x);
 	}
 	
+	self.onReorder = Event();
 	$elem.sortable({
 		'axis': 'y',
 		'distance': 1,
@@ -379,6 +380,7 @@ function EditableGrid(elem) {
 				}
 			}
 			
+			self.onReorder.trigger(row, oldIndex, newIndex);
 		}
 	});
 	
