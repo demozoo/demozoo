@@ -679,6 +679,7 @@ function SelectGridCell(opts) {
 				switch(event.which) {
 					case 13: /* enter */
 						self._finishEdit();
+						input.blur();
 						return false;
 					case 27: /* escape */
 						self._cancelEdit();
@@ -694,17 +695,18 @@ function SelectGridCell(opts) {
 				switch(event.which) {
 					case 13: /* enter */
 						self._finishEdit();
+						input.blur();
 						return null; /* grid's event handler for the enter key will advance to next cell */
 					case 27: /* escape */
 						self._cancelEdit();
+						input.blur();
 						return false;
-					/* left/right cursors should escape, up/down cursors should remain captured */
-					case 38: /* cursor up */
-					case 40: /* cursor down */
-						return true; 
-					case 37: /* cursors left/right */
+					case 38: /* cursors */
+					case 40:
+					case 37:
 					case 39:
 						self._finishEdit();
+						input.blur();
 						return null; /* let grid event handler process the cursor movement */
 				}
 				break;
