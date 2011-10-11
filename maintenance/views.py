@@ -322,6 +322,44 @@ def duplicate_external_links(request):
 		'releaser_dupes': releaser_dupes,
 	})
 
+def matching_real_names(request):
+	report_name = 'matching_real_names'
+	
+	releasers = Releaser.objects.raw('''
+		SELECT DISTINCT demoscene_releaser.*
+		FROM demoscene_releaser
+		INNER JOIN demoscene_releaser AS other_releaser ON (
+			demoscene_releaser.first_name <> ''
+			AND demoscene_releaser.surname <> ''
+			AND demoscene_releaser.first_name = other_releaser.first_name
+			AND demoscene_releaser.surname = other_releaser.surname
+			AND demoscene_releaser.id <> other_releaser.id)
+		ORDER BY demoscene_releaser.first_name, demoscene_releaser.surname, demoscene_releaser.name
+	''')
+	return render(request, 'maintenance/matching_real_names.html', {
+		'title': 'Sceners with matching real names',
+		'releasers': releasers,
+		'report_name': report_name,
+	})
+
+def matching_surnames(request):
+	report_name = 'matching_surnames'
+	
+	releasers = Releaser.objects.raw('''
+		SELECT DISTINCT demoscene_releaser.*
+		FROM demoscene_releaser
+		INNER JOIN demoscene_releaser AS other_releaser ON (
+			demoscene_releaser.surname <> ''
+			AND demoscene_releaser.surname = other_releaser.surname
+			AND demoscene_releaser.id <> other_releaser.id)
+		ORDER BY demoscene_releaser.surname, demoscene_releaser.first_name, demoscene_releaser.name
+	''')
+	return render(request, 'maintenance/matching_surnames.html', {
+		'title': 'Sceners with matching surnames',
+		'releasers': releasers,
+		'report_name': report_name,
+	})
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
