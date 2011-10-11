@@ -22,7 +22,7 @@ class ModelFormWithLocation(forms.ModelForm):
 		if self.cleaned_data['location']:
 			if self.location_has_changed:
 				model.location = self.geocoded_location['location']
-				model.country_code = self.geocoded_location['country_code']
+				model.country_code = self.geocoded_location['country_code'] or ''
 				model.latitude = self.geocoded_location['latitude']
 				model.longitude = self.geocoded_location['longitude']
 				model.woe_id = self.geocoded_location['woeid']
