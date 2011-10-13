@@ -32,16 +32,41 @@ class NickSelection():
 	def __str__(self):
 		return "NickSelection: %s, %s" % (self.id, self.name)
 
-# A variant of RadioFieldRenderer which accepts 4-tuples as choices, using the third element
-# as a classname for the <li> and fourth element as a data-name attribute
-class RadioFieldWithClassnameRenderer(forms.widgets.RadioFieldRenderer):
+# A variant of RadioFieldRenderer which accepts structs of:
+# className, nameWithDifferentiator, nameWithAffiliations, countryCode, differentiator, alias, id
+# and renders them as <li class="className" data-name="nameWithDifferentiator"> with a label containing
+# a country flag, differentiator and alias as appropriate (in addition to nameWithAffiliations)
+class NickChoicesRenderer(forms.widgets.RadioFieldRenderer):
 	def render(self):
 		from django.utils.encoding import force_unicode
 		list_items = []
 		for i, choice in enumerate(self.choices):
-			widget = forms.widgets.RadioInput(self.name, self.value, self.attrs.copy(), choice, i);
+			
+			if choice.get('countryCode'):
+				flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
+					conditional_escape(choice['countryCode']),
+					conditional_escape(choice['countryCode']),
+					conditional_escape(choice['countryCode'].upper())
+				)
+			else:
+				flag = ''
+			
+			if choice.get('differentiator'):
+				differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(choice['differentiator'])
+			else:
+				differentiator = ''
+			
+			if choice.get('alias'):
+				alias = ' <em class="alias">(%s)</em>' % conditional_escape(choice['alias'])
+			else:
+				alias = ''
+			
+			label = mark_safe(flag + choice['nameWithAffiliations'] + differentiator + alias)
+			widget = forms.widgets.RadioInput(
+				self.name, self.value, self.attrs.copy(), (choice['id'], label), i);
+			
 			list_items.append(
-				u'<li class="%s" data-name="%s">%s</li>' % (choice[2], conditional_escape(choice[3]), force_unicode(widget))
+				u'<li class="%s" data-name="%s">%s</li>' % (choice['className'], conditional_escape(choice['nameWithDifferentiator']), force_unicode(widget))
 			)
 		return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join(list_items))
 
@@ -51,47 +76,46 @@ class MatchedNickWidget(forms.Widget):
 		group_names = [], member_names = []):
 		self.search_term = search_term
 		
-		choices = []
+		self.choices = []
 		self.nick_variants = NickVariant.autocompletion_search(
 			search_term, exact = True,
 			sceners_only = sceners_only, groups_only = groups_only,
 			groups = group_names, members = member_names)
+		
 		for nv in self.nick_variants:
-			icon = 'group' if nv.nick.releaser.is_group else 'scener'
+			choice = {
+				'className': ('group' if nv.nick.releaser.is_group else 'scener'),
+				'nameWithAffiliations': nv.nick.name_with_affiliations(),
+				'id': nv.nick_id
+			}
 			if nv.nick.releaser.country_code:
-				flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
-					conditional_escape(nv.nick.releaser.country_code.lower()),
-					conditional_escape(nv.nick.releaser.country_code.lower()),
-					conditional_escape(nv.nick.releaser.country_code)
-				)
-			else:
-				flag = ''
+				choice['countryCode'] = nv.nick.releaser.country_code.lower()
 			
 			if nv.nick.differentiator:
-				differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(nv.nick.differentiator)
+				choice['differentiator'] = nv.nick.differentiator
+				choice['nameWithDifferentiator'] = "%s (%s)" % (nv.nick.name, nv.nick.differentiator)
 			else:
-				differentiator = ''
+				choice['nameWithDifferentiator'] = nv.nick.name
 			
-			if nv.nick.name == nv.name:
-				alias = ''
-			else:
-				alias = ' <em class="alias">(%s)</em>' % conditional_escape(nv.name)
+			if nv.nick.name != nv.name:
+				choice['alias'] = nv.name
 			
-			label = mark_safe(
-				"%s%s%s%s" % (
-					flag,
-					conditional_escape(nv.nick.name_with_affiliations()),
-					differentiator,
-					alias
-				))
-			
-			# label is used in the dropdown list (e.g. "Add a new scener named 'Bob'");
-			# display_name is used as the content of the collapsed box (where the above should just appear as "Bob")
-			display_name = nv.nick.name
-			if nv.nick.differentiator:
-				display_name += " (%s)" % nv.nick.differentiator
-			
-			choices.append((nv.nick_id, label, icon, display_name))
+			self.choices.append(choice)
+		
+		if not groups_only:
+			self.choices.append({
+				'className': 'add_scener',
+				'nameWithAffiliations': "Add a new scener named '%s'" % search_term,
+				'nameWithDifferentiator': search_term,
+				'id': 'newscener'
+			})
+		if not sceners_only:
+			self.choices.append({
+				'className': 'add_group',
+				'nameWithAffiliations': "Add a new group named '%s'" % search_term,
+				'nameWithDifferentiator': search_term,
+				'id': 'newgroup'
+			})
 		
 		# see if there's a unique top choice in self.nick_variants;
 		# if so, store that in self.top_choice for possible use later
@@ -105,13 +129,8 @@ class MatchedNickWidget(forms.Widget):
 		else:
 			self.top_choice = None
 		
-		if not groups_only:
-			choices.append( ('newscener', "Add a new scener named '%s'" % search_term, "add_scener", search_term) )
-		if not sceners_only:
-			choices.append( ('newgroup', "Add a new group named '%s'" % search_term, "add_group", search_term) )
-		
-		self.select_widget = forms.RadioSelect(renderer = RadioFieldWithClassnameRenderer,
-			choices = choices, attrs = attrs)
+		self.select_widget = forms.RadioSelect(renderer = NickChoicesRenderer,
+			choices = self.choices, attrs = attrs)
 		self.name_widget = forms.HiddenInput()
 		
 		super(MatchedNickWidget, self).__init__(attrs = attrs)
