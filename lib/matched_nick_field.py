@@ -59,7 +59,8 @@ class MatchedNickWidget(forms.Widget):
 		for nv in self.nick_variants:
 			icon = 'group' if nv.nick.releaser.is_group else 'scener'
 			if nv.nick.releaser.country_code:
-				flag = '<img src="/static/images/icons/flags/%s.png" alt="(%s)" /> ' % (
+				flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
+					conditional_escape(nv.nick.releaser.country_code.lower()),
 					conditional_escape(nv.nick.releaser.country_code.lower()),
 					conditional_escape(nv.nick.releaser.country_code)
 				)
@@ -67,14 +68,14 @@ class MatchedNickWidget(forms.Widget):
 				flag = ''
 			
 			if nv.nick.differentiator:
-				differentiator = " <em>(%s)</em>" % conditional_escape(nv.nick.differentiator)
+				differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(nv.nick.differentiator)
 			else:
 				differentiator = ''
 			
 			if nv.nick.name == nv.name:
 				alias = ''
 			else:
-				alias = " <em>(%s)</em>" % conditional_escape(nv.name)
+				alias = ' <em class="alias">(%s)</em>' % conditional_escape(nv.name)
 			
 			label = mark_safe(
 				"%s%s%s%s" % (
