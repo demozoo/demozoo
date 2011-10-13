@@ -9,7 +9,6 @@ except ImportError:
 
 def match(request):
 	initial_query = request.GET.get('q').lstrip() # only lstrip, because whitespace on right may be significant for autocompletion
-	field_name = request.GET.get('field_name')
 	autocomplete = request.GET.get('autocomplete', False)
 	sceners_only = request.GET.get('sceners_only', False)
 	groups_only = request.GET.get('groups_only', False)
@@ -30,11 +29,18 @@ def match(request):
 		query = initial_query
 	
 	nick_lookup = NickLookup(search_term = query.rstrip(), matched_nick_options = filters)
+	widget = nick_lookup.matched_nick_field.widget
 	
 	data = {
 		'query': query,
 		'initial_query': initial_query,
-		'matches': nick_lookup.matched_nick_field.widget.render(field_name, None),
+		'match': {
+			'choices': widget.choices,
+			'selection': {
+				'id': (widget.top_choice.nick_id if widget.top_choice else None),
+				'name': query,
+			}
+		}
 	}
 	# to simulate network lag:
 	#import time

@@ -184,6 +184,8 @@ function applyGlobalBehaviours(context) {
 		var searchField = $('.nick_search input:text', nickFieldElement);
 		var searchFieldElement = searchField.get(0);
 		searchField.attr('autocomplete', 'off');
+		var fieldPrefix = searchField.attr('name').replace(/_search$/, '_match_');
+		var nickMatchContainer = $('.nick_match_container', nickFieldElement);
 		
 		searchField.typeahead(function(value, autocomplete) {
 			if (value.match(/\S/)) {
@@ -191,13 +193,14 @@ function applyGlobalBehaviours(context) {
 					/* TODO: consider caching results in a JS variable */
 					$.getJSON('/nicks/match/', $.extend({
 						q: value,
-						field_name: searchField.attr('name').replace(/_search$/, '_match'),
 						autocomplete: autocomplete
 					}, searchParams), function(data) {
 						if (searchField.val() == data['initial_query']) {
 							/* only update fields if search box contents have not changed since making this query */
-							$('.nick_match_container', nickFieldElement).html(data.matches);
-							$('.nick_match', nickFieldElement).nickMatchWidget();
+							nickMatchContainer.html('<div class="nick_match"></div>');
+							NickMatchWidget(
+								nickMatchContainer.find('.nick_match'),
+								data.match.selection, data.match.choices, fieldPrefix);
 							if (autocomplete) {
 								searchField.val(data.query);
 								if (searchFieldElement.setSelectionRange) {
@@ -211,7 +214,7 @@ function applyGlobalBehaviours(context) {
 				})
 			} else {
 				/* blank */
-				$('.nick_match_container', nickFieldElement).html('');
+				nickMatchContainer.html('');
 			}
 		});
 		
