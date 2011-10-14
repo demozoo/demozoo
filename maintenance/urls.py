@@ -20,4 +20,5 @@ urlpatterns = patterns('maintenance.views',
 	(r'^matching_real_names$', 'matching_real_names', {}, 'maintenance_matching_real_names'),
 	(r'^matching_surnames$', 'matching_surnames', {}, 'maintenance_matching_surnames'),
 	(r'^multiple_credits$', 'multiple_credits', {}, 'maintenance_multiple_credits'),
+	(r'^implied_memberships$', 'implied_memberships', {}, 'maintenance_implied_memberships'),
 )

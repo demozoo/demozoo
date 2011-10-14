@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="/static/css/maintenance.css" />
+	<script src="/static/js/maintenance.js"></script>
+{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}:</h2>
+	<div id="main_column">
+		{% regroup records by membership as membership_list %}
+		<table>
+			<tr>
+				<th>Suggested membership</th>
+				<th>According to releases</th>
+			</tr>
+			{% for membership in membership_list %}
+				<tr>
+					{% with membership.list.0 as record %}
+						<td style="border-bottom: 1px solid #888; padding: 4px;">
+							<img src="{% if record.member_is_group %}/static/images/icons/group.png{% else %}/static/images/icons/scener.png{% endif %}" />
+							<a href="/{% if record.member_is_group %}groups{% else %}sceners{% endif %}/{{ record.member_id }}/">{{ record.member_name }}</a>
+							/ <a href="/groups/{{ record.group_id }}/">{{ record.group_name }}</a>
+						</td>
+					{% endwith %}
+					<td style="border-bottom: 1px solid #888; padding: 4px;">
+						<ul>
+							{% for record in membership.list %}
+								<li class="{{ record.production_supertype }}"><a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a></li>
+							{% endfor %}
+						</ul>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+{% endblock %}

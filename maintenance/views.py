@@ -386,6 +386,46 @@ def multiple_credits(request):
 		'report_name': report_name,
 	})
 	
+def implied_memberships(request):
+	report_name = 'implied_memberships'
+	
+	cursor = connection.cursor()
+	cursor.execute("""
+		SELECT
+			member.id, member.is_group, member.name,
+			grp.id, grp.name,
+			demoscene_production.id, demoscene_production.supertype, demoscene_production.title
+		FROM
+			demoscene_production
+			INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
+			INNER JOIN demoscene_nick AS author_nick ON (demoscene_production_author_nicks.nick_id = author_nick.id)
+			INNER JOIN demoscene_releaser AS member ON (author_nick.releaser_id = member.id)
+			INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
+			INNER JOIN demoscene_nick AS group_nick ON (demoscene_production_author_affiliation_nicks.nick_id = group_nick.id)
+			INNER JOIN demoscene_releaser AS grp ON (group_nick.releaser_id = grp.id)
+			LEFT JOIN demoscene_membership ON (
+				member.id = demoscene_membership.member_id
+				AND grp.id = demoscene_membership.group_id)
+		WHERE
+			demoscene_membership.id IS NULL
+		ORDER BY
+			grp.name, grp.id, member.name, member.id, demoscene_production.title
+	""")
+	records = [
+		{
+			'membership': (member_id, group_id),
+			'member_id': member_id, 'member_is_group': member_is_group, 'member_name': member_name,
+			'group_id': group_id, 'group_name': group_name,
+			'production_id': production_id, 'production_supertype': production_supertype, 'production_title': production_title
+		}
+		for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
+	]
+	return render(request, 'maintenance/implied_memberships.html', {
+		'title': 'Group memberships found in production bylines, but missing from the member list',
+		'records': records,
+		'report_name': report_name,
+	})
+	
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
