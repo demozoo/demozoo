@@ -360,6 +360,32 @@ def matching_surnames(request):
 		'report_name': report_name,
 	})
 
+def multiple_credits(request):
+	report_name = 'multiple_credits'
+	
+	productions = Production.objects.raw('''
+		SELECT DISTINCT demoscene_production.*, demoscene_nick.name AS nick_1, other_nick.name AS nick_2
+		FROM
+			demoscene_credit
+			INNER JOIN demoscene_nick ON (demoscene_credit.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_credit AS other_credit ON (
+				demoscene_credit.production_id = other_credit.production_id
+				AND demoscene_credit.id < other_credit.id
+			)
+			INNER JOIN demoscene_nick AS other_nick ON (
+				other_credit.nick_id = other_nick.id
+				AND demoscene_nick.releaser_id = other_nick.releaser_id
+			)
+			INNER JOIN demoscene_production ON (demoscene_credit.production_id = demoscene_production.id)
+		ORDER BY demoscene_production.title
+	''')
+	return render(request, 'maintenance/multiple_credits_report.html', {
+		'title': 'People with multiple credits on one production (including under different nicks)',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+	
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
