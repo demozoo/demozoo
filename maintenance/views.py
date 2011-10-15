@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser
+from demoscene.models import Production, Nick, Credit, Releaser, Membership
 from maintenance.models import Exclusion
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
@@ -425,6 +425,60 @@ def implied_memberships(request):
 		'records': records,
 		'report_name': report_name,
 	})
+
+def groups_with_same_named_members(request):
+	report_name = 'groups_with_same_named_members'
+	groups = Releaser.objects.raw('''
+		SELECT grp.id, grp.name,
+			demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id, scener.is_group AS member_1_is_group,
+			other_nickvariant.name AS member_2_name, other_scener.id AS member_2_id, other_scener.is_group AS member_2_is_group
+		FROM demoscene_nickvariant
+		INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
+		INNER JOIN demoscene_releaser AS scener ON (demoscene_nick.releaser_id = scener.id)
+		INNER JOIN demoscene_membership ON (scener.id = demoscene_membership.member_id)
+		INNER JOIN demoscene_releaser AS grp ON (demoscene_membership.group_id = grp.id)
+		INNER JOIN demoscene_membership AS other_membership ON (
+			other_membership.group_id = grp.id
+			AND demoscene_membership.id < other_membership.id
+		)
+		INNER JOIN demoscene_releaser AS other_scener ON (other_membership.member_id = other_scener.id)
+		INNER JOIN demoscene_nick AS other_nick ON (other_scener.id = other_nick.releaser_id)
+		INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
+			other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+		)
+	''')
+	return render(request, 'maintenance/groups_with_same_named_members.html', {
+		'title': 'Groups with same-named members',
+		'groups': groups,
+		'report_name': report_name,
+	})
+
+def releasers_with_same_named_groups(request):
+	report_name = 'releasers_with_same_named_groups'
+	releasers = Releaser.objects.raw('''
+		SELECT member.id, member.name, member.is_group,
+			demoscene_nickvariant.name AS group_1_name, grp.id AS group_1_id,
+			other_nickvariant.name AS group_2_name, other_grp.id AS group_2_id
+		FROM demoscene_nickvariant
+		INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
+		INNER JOIN demoscene_releaser AS grp ON (demoscene_nick.releaser_id = grp.id)
+		INNER JOIN demoscene_membership ON (grp.id = demoscene_membership.group_id)
+		INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
+		INNER JOIN demoscene_membership AS other_membership ON (
+			other_membership.member_id = member.id
+			AND demoscene_membership.id < other_membership.id
+		)
+		INNER JOIN demoscene_releaser AS other_grp ON (other_membership.group_id = other_grp.id)
+		INNER JOIN demoscene_nick AS other_nick ON (other_grp.id = other_nick.releaser_id)
+		INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
+			other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+		)
+	''')
+	return render(request, 'maintenance/releasers_with_same_named_groups.html', {
+		'title': 'Releasers with same-named groups',
+		'releasers': releasers,
+		'report_name': report_name,
+	})
 	
 def fix_release_dates(request):
 	if not request.user.is_staff:
@@ -443,4 +497,19 @@ def exclude(request):
 		report_name = request.POST['report_name'],
 		record_id = request.POST['record_id']
 	)
+	return HttpResponse('OK', mimetype='text/plain')
+
+def add_membership(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	try:
+		Membership.objects.get(
+			member__id = request.POST['member_id'],
+			group__id = request.POST['group_id']
+		)
+	except Membership.DoesNotExist:
+		Membership.objects.create(
+			member_id = request.POST['member_id'],
+			group_id = request.POST['group_id']
+		)
 	return HttpResponse('OK', mimetype='text/plain')

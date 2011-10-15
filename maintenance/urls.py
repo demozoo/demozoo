@@ -21,4 +21,7 @@ urlpatterns = patterns('maintenance.views',
 	(r'^matching_surnames$', 'matching_surnames', {}, 'maintenance_matching_surnames'),
 	(r'^multiple_credits$', 'multiple_credits', {}, 'maintenance_multiple_credits'),
 	(r'^implied_memberships$', 'implied_memberships', {}, 'maintenance_implied_memberships'),
+	(r'^add_membership$', 'add_membership', {}, 'maintenance_add_membership'),
+	(r'^groups_with_same_named_members$', 'groups_with_same_named_members', {}, 'maintenance_groups_with_same_named_members'),
+	(r'^releasers_with_same_named_groups$', 'releasers_with_same_named_groups', {}, 'maintenance_releasers_with_same_named_groups'),
 )
