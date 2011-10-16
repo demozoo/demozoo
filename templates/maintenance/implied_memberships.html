@@ -15,9 +15,11 @@
 		$(function() {
 			$('form.add_membership').submit(function() {
 				var row = $(this).parents('tr:first');
-				$.post(this.action, $(this).serialize(), function() {
-					row.fadeOut();
-				});
+				$.post(this.action,
+					$(this).serialize() + '&' + $.param({'csrfmiddlewaretoken': $.cookie('csrftoken')}),
+					function() {
+						row.fadeOut();
+					});
 				return false;
 			})
 		})

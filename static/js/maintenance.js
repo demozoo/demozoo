@@ -13,7 +13,8 @@ $(function() {
 		deleteButton.click(function() {
 			$.post('/maintenance/exclude', {
 				'report_name': reportName,
-				'record_id': recordId
+				'record_id': recordId,
+				'csrfmiddlewaretoken': $.cookie('csrftoken')
 			}, function() {
 				$(elem).fadeOut();
 			})
