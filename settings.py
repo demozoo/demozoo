@@ -133,7 +133,7 @@ AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
 
 INTERNAL_IPS = ('127.0.0.1',)
 
-COMPRESS = True # enable JS/CSS asset packaging/compression
+COMPRESS = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATICROOT
 
