@@ -107,6 +107,7 @@ INSTALLED_APPS = (
 	'taggit',
 	'debug_toolbar',
 	'unjoinify',
+	'compressor',
 	
 	'demoscene',
 	'search',
@@ -131,6 +132,10 @@ DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
 
 INTERNAL_IPS = ('127.0.0.1',)
+
+COMPRESS = True # enable JS/CSS asset packaging/compression
+COMPRESS_URL = '/static/'
+COMPRESS_ROOT = STATICROOT
 
 # Get local settings
 try:
