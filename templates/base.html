@@ -1,44 +1,35 @@
 {% if not request.is_ajax %}<!DOCTYPE HTML>
-{% load compress %}
 <html>
 	<head>
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
-		{% compress css %}
-			<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
-			<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
-			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
-			<link rel="stylesheet" href="/static/css/jquery.asmselect.css" type="text/css" />
-			{% block extra_css %}{% endblock %}
-		{% endcompress %}
-		
+		<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
+		<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
+		<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
+		<link rel="stylesheet" href="/static/css/jquery.asmselect.css" type="text/css" />
 		{% if use_local_jquery %}
 			<script src="/static/js/jquery-1.4.2.min.js"></script>
 		{% else %}
 			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		{% endif %}
-		{% compress js %}
-			{# TODO: consider folding things like datepicker into widget resources, and only loading them on edit pages, to reduce up-front load times for people who rarely edit #}
-			<script src="/static/js/jquery.color.js"></script>
-			<script src="/static/js/jquery.autocomplete.min.js"></script>
-			<script src="/static/js/jquery.ui.core.js"></script>
-			<script src="/static/js/jquery.ui.datepicker.js"></script>
-			<script src="/static/js/jquery.ui.widget.js"></script>
-			<script src="/static/js/jquery.ui.mouse.js"></script>
-			<script src="/static/js/jquery.ui.sortable.js"></script>
-			<script src="/static/js/jquery.cookie.js"></script>
-			<script src="/static/js/jquery.uid.js"></script>
-			<script src="/static/js/jquery.typeahead.js"></script>
-			<script src="/static/js/jquery.spawning_formset.js"></script>
-			<script src="/static/js/jquery.asmselect.js"></script>
-			<script src="/static/js/jquery.ajaxqueue.js"></script>
-			<script src="/static/js/jcarousellite-1.0.1.min.js"></script>
-			<script src="/static/js/nick_match_widget.js"></script>
-			<script src="/static/js/fuzzy_date_parser.js"></script>
-			<script src="/static/js/byline_field.js"></script>
-			<script src="/static/js/json2-min.js"></script>
-			<script type="text/javascript" src="/static/js/demozoo.js"></script>
-			{% block extra_js %}{% endblock %}
-		{% endcompress %}
+		<script src="/static/js/jquery.color.js"></script>{# TODO: minify #}
+		<script src="/static/js/jquery.autocomplete.min.js"></script>
+		<script src="/static/js/jquery.ui.core.js"></script>{# TODO: minify #}
+		<script src="/static/js/jquery.ui.datepicker.js"></script>{# TODO: minify, and consider folding into widget resources to reduce up-front load times #}
+		<script src="/static/js/jquery.ui.widget.js"></script>{# TODO: minify #}
+		<script src="/static/js/jquery.ui.mouse.js"></script>{# TODO: minify #}
+		<script src="/static/js/jquery.ui.sortable.js"></script>{# TODO: minify #}
+		<script src="/static/js/jquery.cookie.js"></script>
+		<script src="/static/js/jquery.uid.js"></script>
+		<script src="/static/js/jquery.typeahead.js"></script>
+		<script src="/static/js/jquery.spawning_formset.js"></script>
+		<script src="/static/js/jquery.asmselect.js"></script>
+		<script src="/static/js/jquery.ajaxqueue.js"></script>
+		<script src="/static/js/jcarousellite-1.0.1.min.js"></script>
+		<script src="/static/js/nick_match_widget.js"></script>
+		<script src="/static/js/fuzzy_date_parser.js"></script>
+		<script src="/static/js/byline_field.js"></script>
+		<script src="/static/js/json2-min.js"></script>
+		<script type="text/javascript" src="/static/js/demozoo.js"></script>
 		
 		{% block extra_head %}{% endblock %}
 	</head>
