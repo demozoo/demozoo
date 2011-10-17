@@ -17,28 +17,30 @@ there are still queued ajax events yet to complete
 	(just a wrapper for 'is ajaxQueueLocks nonempty?', really...?)
 */
 
-var ajaxQueueLocks = {}
-$.ajaxQueue = function(actionId, callback) {
-	function release() {
-		var nextCallback = ajaxQueueLocks[actionId].nextCallback;
-		delete ajaxQueueLocks[actionId].nextCallback;
-		if (nextCallback) {
-			/* there is a queued callback to run now; leave locked */
-			nextCallback(release);
+var ajaxQueueLocks = {};
+(function($) {
+	$.ajaxQueue = function(actionId, callback) {
+		function release() {
+			var nextCallback = ajaxQueueLocks[actionId].nextCallback;
+			delete ajaxQueueLocks[actionId].nextCallback;
+			if (nextCallback) {
+				/* there is a queued callback to run now; leave locked */
+				nextCallback(release);
+			} else {
+				/* no queued callback; unlock and exit */
+				delete ajaxQueueLocks[actionId];
+			}
+		}
+		
+		if (ajaxQueueLocks[actionId]) {
+			/* currently locked; need to queue up callback */
+			ajaxQueueLocks[actionId].nextCallback = callback;
 		} else {
-			/* no queued callback; unlock and exit */
-			delete ajaxQueueLocks[actionId];
+			/* not locked; can run callback immediately */
+			ajaxQueueLocks[actionId] = {
+				locked: true
+			}
+			callback(release);
 		}
 	}
-	
-	if (ajaxQueueLocks[actionId]) {
-		/* currently locked; need to queue up callback */
-		ajaxQueueLocks[actionId].nextCallback = callback;
-	} else {
-		/* not locked; can run callback immediately */
-		ajaxQueueLocks[actionId] = {
-			locked: true
-		}
-		callback(release);
-	}
-}
+})(jQuery);
