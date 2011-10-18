@@ -1,34 +1,43 @@
 (function($) {
+	$.fn.extractNickMatchData = function() {
+		var context = this.get(0);
+		var searchTermField = $('input[type=hidden]', context);
+		var fieldPrefix = searchTermField.attr('name').replace(/name$/, '')
+		
+		var name = searchTermField.val();
+		var choices = [];
+		var id;
+		$('> ul > li', this).each(function(i) {
+			/* nameWithAffiliations = content of the <label> element excluding child elements (i.e. only including text nodes, nodeType=3) */
+			var nameWithAffiliations = $('label', this).contents().filter(function() { return this.nodeType == 3 }).text();
+			
+			var input = $('input', this);
+			if (input.is(':checked')) {
+				id = input.attr('value');
+			}
+			choices[i] = {
+				className: $(this).attr('class'),
+				nameWithDifferentiator: $(this).attr('data-name'),
+				nameWithAffiliations: nameWithAffiliations.trim(),
+				countryCode: $('img[data-countrycode]', this).attr('data-countrycode'),
+				differentiator: $('.differentiator', this).text(),
+				alias: $('.alias', this).text(),
+				id: $('input', this).val()
+			}
+		})
+		return {
+			'selection': {'id': id, 'name': name},
+			'choices': choices,
+			'fieldPrefix': fieldPrefix
+		};
+	}
+	
 	$.fn.nickMatchWidget = function() {
 		this.each(function() {
 			var context = this;
-			var searchTermField = $('input[type=hidden]', context);
-			var fieldPrefix = searchTermField.attr('name').replace(/name$/, '')
 			
-			var name = searchTermField.val();
-			var choices = [];
-			var id;
-			$('> ul > li', this).each(function(i) {
-				/* nameWithAffiliations = content of the <label> element excluding child elements (i.e. only including text nodes, nodeType=3) */
-				var nameWithAffiliations = $('label', this).contents().filter(function() { return this.nodeType == 3 }).text();
-				
-				var input = $('input', this);
-				if (input.is(':checked')) {
-					id = input.attr('value');
-				}
-				choices[i] = {
-					className: $(this).attr('class'),
-					nameWithDifferentiator: $(this).attr('data-name'),
-					nameWithAffiliations: nameWithAffiliations.trim(),
-					countryCode: $('img[data-countrycode]', this).attr('data-countrycode'),
-					differentiator: $('.differentiator', this).text(),
-					alias: $('.alias', this).text(),
-					id: $('input', this).val()
-				}
-			})
-			
-			var nickSelection = {'id': id, 'name': name};
-			NickMatchWidget(context, nickSelection, choices, fieldPrefix);
+			var matchData = $(context).extractNickMatchData();
+			NickMatchWidget(context, matchData.selection, matchData.choices, matchData.fieldPrefix);
 		})
 	}
 })(jQuery);
@@ -70,12 +79,12 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 		label.prepend(input);
 		
 		if (choice.differentiator) {
-			var differentiator = $('<em class="differentiator"></em>').text(choice.differentiator);
+			var differentiator = $('<em class="differentiator"></em>').text('(' + choice.differentiator + ')');
 			label.append(' ', differentiator);
 		}
 		
 		if (choice.alias) {
-			var alias = $('<em class="alias"></em>').text(choice.alias);
+			var alias = $('<em class="alias"></em>').text('(' + choice.alias + ')');
 			label.append(' ', alias);
 		}
 		

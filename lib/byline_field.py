@@ -82,6 +82,14 @@ class BylineLookup():
 		
 		return u''.join(match_html_output)
 	
+	@property
+	def author_matches_data(self):
+		return [field.widget.match_data for field in self.author_matched_nick_fields]
+	
+	@property
+	def affiliation_matches_data(self):
+		return [field.widget.match_data for field in self.affiliation_matched_nick_fields]
+	
 	@staticmethod
 	def from_value(value):
 		# value can be:

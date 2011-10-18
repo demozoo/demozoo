@@ -135,6 +135,16 @@ class MatchedNickWidget(forms.Widget):
 		
 		super(MatchedNickWidget, self).__init__(attrs = attrs)
 	
+	@property
+	def match_data(self):
+		return {
+			'choices': self.choices,
+			'selection': {
+				'id': (self.top_choice.nick_id if self.top_choice else None),
+				'name': self.search_term,
+			}
+		}
+	
 	def value_from_datadict(self, data, files, name):
 		nick_id = self.select_widget.value_from_datadict(data, files, name + '_id')
 		nick_name = self.name_widget.value_from_datadict(data, files, name + '_name')

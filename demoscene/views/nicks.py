@@ -34,13 +34,7 @@ def match(request):
 	data = {
 		'query': query,
 		'initial_query': initial_query,
-		'match': {
-			'choices': widget.choices,
-			'selection': {
-				'id': (widget.top_choice.nick_id if widget.top_choice else None),
-				'name': query,
-			}
-		}
+		'match': widget.match_data,
 	}
 	# to simulate network lag:
 	#import time
@@ -49,7 +43,6 @@ def match(request):
 
 def byline_match(request):
 	initial_query = request.GET.get('q')
-	field_name = request.GET.get('field_name')
 	autocomplete = request.GET.get('autocomplete', False)
 	
 	# irritating workaround for not being able to pass an "omit this parameter" value to jquery
@@ -61,7 +54,8 @@ def byline_match(request):
 	data = {
 		'query': byline_lookup.search_term,
 		'initial_query': initial_query,
-		'matches': byline_lookup.render_match_fields(field_name),
+		'author_matches': byline_lookup.author_matches_data,
+		'affiliation_matches': byline_lookup.affiliation_matches_data,
 	}
 	return HttpResponse(json.dumps(data), mimetype="text/javascript")
 	
