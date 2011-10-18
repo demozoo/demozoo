@@ -185,5 +185,21 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 	
 	$elem.addClass('ajaxified');
 	
+	self.isValid = function() {
+		var id = suggestionsUl.find('input:checked').val();
+		return (id != null);
+	}
+	self.getSelection = function() {
+		var id = suggestionsUl.find('input:checked').val();
+		/* id=null indicates nothing selected (i.e. ambiguous name) */
+		return {'id': id, 'name': nickSelection.name};
+	}
+	self.getValue = function() {
+		return {
+			'selection': self.getSelection(),
+			'choices': choices
+		};
+	}
+	
 	return self;
 }

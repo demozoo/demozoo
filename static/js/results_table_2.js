@@ -79,35 +79,53 @@ function ResultsTable(elem, opts) {
 function BylineGridCell(opts) {
 	var self = GridCell(opts);
 	
-	var input, bylineField, matchContainer;
+	var bylineField;
+	
+	function valueIsValid(value) {
+		/* consider invalid if any of the authors/affiliations have unspecified (null) IDs */
+		for (var i = 0; i < value.author_matches.length; i++) {
+			if (value.author_matches[i].selection.id == null) {
+				return false;
+				break;
+			}
+		}
+		for (var i = 0; i < value.affiliation_matches.length; i++) {
+			if (value.affiliation_matches[i].selection.id == null) {
+				return false;
+				break;
+			}
+		}
+		return true;
+	}
+	
 	self._initEditElem = function(editElem) {
-		bylineField = $('<div class="byline_field"><div class="byline_search"><input type="text" /></div><div class="byline_match_container"></div></div>')
-		editElem.append(bylineField);
-		input = bylineField.find('input');
-		matchContainer = bylineField.find('.byline_match_container');
-		bylineField.bylineField();
+		var bylineFieldElem = $('<div class="byline_field"></div>');
+		editElem.append(bylineFieldElem);
+		bylineField = BylineField(bylineFieldElem, '', [], [], $.uid('bylineGridCell'));
 	}
 	self._refreshShowElem = function(showElem, value) {
-		showElem.text(value.search_term);
+		showElem.text(value.search_term); /* TODO: get properly capitalised / primary-nick-varianted text from bylineField */
+		if (valueIsValid(value)) {
+			showElem.removeClass('invalid');
+		} else {
+			showElem.addClass('invalid');
+		}
 	}
-	var originalMatchHtml;
 	self._refreshEditElem = function(editElem, value) {
-		input.val(value.search_term);
-		originalMatchHtml = value.matches;
-		refreshBylineMatchFields(bylineField, value.matches);
+		bylineField.setValue(value);
 	}
 	self._valueFromEditElem = function(editElem) {
-		return {
-			'search_term': input.val(),
-			'matches': originalMatchHtml
-			/* TODO: either reduce this to the HTML fragment prior to applying nickMatchWidget decoration,
-				or make nickMatchWidget smart enough to not do it twice */
-		};
+		return bylineField.getValue();
 	}
 	self._prepareEditElem = function(editElem) {
-		input.focus();
-		if (self._editMode == 'uncapturedText' && input.select) input.select();
+		var selectAll = (self._editMode == 'uncapturedText')
+		bylineField.focus(selectAll);
+		/* ensure that typeahead autocompletion captures the initial keypress even if
+		the real keydown event doesn't reach it */
+		bylineField.triggerFakeKeydown();
 	}
+	/* BylineField must capture cursors and tab in all cases,
+		but enter can have the standard 'finish edit' behaviour */
 	self.keydown = function(event) {
 		switch (self._editMode) {
 			case null:
@@ -118,6 +136,7 @@ function BylineGridCell(opts) {
 				}
 				break;
 			case 'capturedText':
+			case 'uncapturedText': /* no distinction between captured and uncaptured text here */
 				switch(event.which) {
 					case 13: /* enter */
 						self._finishEdit();
@@ -129,23 +148,19 @@ function BylineGridCell(opts) {
 					case 38:
 					case 39:
 					case 40:
-						return true; /* override grid event handler, defer to browser's own */
-				}
-				break;
-			case 'uncapturedText':
-				switch(event.which) {
-					case 13: /* enter */
-						self._finishEdit();
-						return null; /* grid's event handler for the enter key will advance to next cell */
-					case 27: /* escape */
-						self._cancelEdit();
-						return false;
-					case 37: /* cursors */
-					case 38:
-					case 39:
-					case 40:
-						self._finishEdit();
-						return null; /* let grid event handler process the cursor movement */
+						/* let bylineField handle cursor keys, unimpeded by EditableGrid behaviour */
+						return true;
+					case 9: /* tab */
+						if (
+							(bylineField.firstFieldIsFocused() && event.shiftKey)
+							|| (bylineField.lastFieldIsFocused() && !event.shiftKey)
+						) {
+							/* let default gridcell handler kick in and escape the cell */
+							return null;
+						} else {
+							/* fall back to default browser handler to allow tabbing between bylineField sub-fields */
+							return true;
+						}
 				}
 				break;
 		}
@@ -165,7 +180,11 @@ function BylineGridCell(opts) {
 function CompetitionPlacing(data, table, row, opts) {
 	if (!data) data = {};
 	if (!data.production) data.production = {};
-	if (!data.production.byline) data.production.byline = {};
+	if (!data.production.byline) {
+		data.production.byline = {
+			'search_term': '', 'author_matches': [], 'affiliation_matches': []
+		};
+	}
 	
 	var self = {};
 	self.row = row;
@@ -176,7 +195,7 @@ function CompetitionPlacing(data, table, row, opts) {
 		'title': TextGridCell({'class': 'title_field', 'value': data.production.title}),
 		'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
 		'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
-		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.productionTypes}),
+		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.production_type}),
 		'score': TextGridCell({'class': 'score_field', 'value': data.score})
 	}
 	for (var i = 0; i < cellOrder.length; i++) {

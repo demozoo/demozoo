@@ -48,6 +48,13 @@ ul.editable_grid ul.fields > li > .show {
 ul.editable_grid.focused ul.fields > li.cursor > .show {
 	outline: 2px solid blue;
 }
+ul.editable_grid ul.fields > li > .show.invalid {
+	color: red;
+	background-image: url(/static/images/icons/error.png);
+	background-repeat: no-repeat;
+	background-position: left middle;
+	padding-left: 20px;
+}
 ul.editable_grid ul.fields > li > .edit {
 	padding-left: 2px;
 	padding-right: 8px;

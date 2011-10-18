@@ -232,18 +232,19 @@ function EditableGrid(elem) {
 	}
 	
 	$(document).mousedown(function(event) {
-		var coords = coordsForElement(event.target);
-		if (coords) {
-			if (coords[0] == cursorX && coords[1] == cursorY) {
-				return; /* continue editing if cursor is already here */
+		if (elementIsInGrid(event.target)) {
+			var coords = coordsForElement(event.target);
+			if (coords && coords[0] == cursorX && coords[1] == cursorY && isFocused) {
+				/* cursor is already here and grid is active; do nothing, so that
+					widgets within the cell can respond sensibly */
+				return;
 			}
 			$elem.focus();
-			self.setCursor(coords[0], coords[1]);
-		}
-	}).click(function(event) {
-		if (elementIsInGrid(event.target)) {
-			$elem.focus();
-		} else {
+			if (coords) {
+				/* mousedown is on a data cell; move to it */
+				self.setCursor(coords[0], coords[1]);
+			}
+		} else { /* mousedown outside of grid */
 			blur();
 		}
 	});
