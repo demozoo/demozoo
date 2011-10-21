@@ -173,7 +173,6 @@ function BylineGridCell(opts) {
 		}
 	}
 	
-	self.constructElem();
 	return self;
 }
 

@@ -406,6 +406,7 @@ function GridRow(index) {
 	
 	self.addCell = function(cell) {
 		cells.push(cell);
+		cell.constructElem();
 		fieldsUl.append(cell.elem);
 	}
 	self.getCell = function(index) {
@@ -626,7 +627,6 @@ function TextGridCell(opts) {
 		}
 	}
 	
-	self.constructElem();
 	return self;
 }
 
@@ -718,6 +718,5 @@ function SelectGridCell(opts) {
 		}
 	}
 	
-	self.constructElem();
 	return self;
 }
