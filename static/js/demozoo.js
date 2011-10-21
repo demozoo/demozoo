@@ -28,21 +28,19 @@ function applyGlobalBehaviours(context) {
 		'cancel': ':input,option,a,label'
 	}).disableSelection();
 	
-	function addAutocompleteRule(selector, url, context, resultCallback) {
-		$(selector, context).autocomplete(url, {
-			autoFill: true,
-			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
-			formatResult: function(row) {return decodeURIComponent(row[3])},
-			selectFirst: true,
-			matchSubset: false,
-			matchCase: true,
-			extraParams: {'new_option': true}
-		}).result(resultCallback);
-	}
-	/* TODO: instead of hard-coding hidden field IDs, derive them from the text field ID (thus supporting prefixes -> multiple forms per page) */
-	addAutocompleteRule('input.production_autocomplete', '/productions/autocomplete/', context, function(evt, result) {
-		$('input#id_production_id').val(result[0]);
-	});
+	$('input.production_autocomplete', context).autocomplete('/productions/autocomplete/', {
+		autoFill: true,
+		formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
+		formatResult: function(row) {return decodeURIComponent(row[3])},
+		selectFirst: true,
+		matchSubset: false,
+		matchCase: true,
+		extraParams: {'new_option': true}
+	}).result(
+		function(evt, result) {
+			$('input#id_production_id').val(result[0]);
+		}
+	);
 	
 	$('input.date', context).each(function() {
 		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', dateParser: parseFuzzyDate};
