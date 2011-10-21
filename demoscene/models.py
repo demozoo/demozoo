@@ -654,6 +654,14 @@ class Production(models.Model):
 		return unicode(self.byline())
 	
 	@property
+	def title_with_byline(self):
+		byline = self.byline_string
+		if byline:
+			return "%s - %s" % (self.title, byline)
+		else:
+			return self.title
+	
+	@property
 	def inferred_supertype(self):
 		try:
 			prod_type = self.types.all()[0]

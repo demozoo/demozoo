@@ -28,19 +28,17 @@ function applyGlobalBehaviours(context) {
 		'cancel': ':input,option,a,label'
 	}).disableSelection();
 	
-	$('input.production_autocomplete', context).autocomplete('/productions/autocomplete/', {
-		autoFill: true,
-		formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
-		formatResult: function(row) {return decodeURIComponent(row[3])},
-		selectFirst: true,
-		matchSubset: false,
-		matchCase: true,
-		extraParams: {'new_option': true}
-	}).result(
-		function(evt, result) {
-			$('input#id_production_id').val(result[0]);
+	$('input.production_autocomplete', context).autocomplete({
+		'source': function(request, response) {
+			$.getJSON('/productions/autocomplete/', {'term': request.term}, function(data) {
+				response(data);
+			});
+		},
+		'autoFocus': true,
+		'select': function(event, ui) {
+			$('input#id_production_id').val(ui.item.id);
 		}
-	);
+	});
 	
 	$('input.date', context).each(function() {
 		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', dateParser: parseFuzzyDate};
@@ -243,21 +241,23 @@ function applyGlobalBehaviours(context) {
 		staticView.append(clearButton);
 		
 		var titleField = $('input.title_field', this);
-		titleField.autocomplete('/productions/autocomplete/', {
-			autoFill: false,
-			formatItem: function(row) {return htmlEncode(decodeURIComponent(row[2]))},
-			formatResult: function(row) {return decodeURIComponent(row[3])},
-			selectFirst: true,
-			matchSubset: false,
-			matchCase: true,
-			extraParams: {'supertype': titleField.attr('data-supertype')}
-		}).result(function(evt, result) {
-			var title = $('<b></b>');
-			title.text(decodeURIComponent(result[2]));
-			$('.static_view_text', staticView).html(title);
-			idField.val(result[0]);
-			formView.hide();
-			staticView.show();
+		titleField.autocomplete({
+			'source': function(request, response) {
+				$.getJSON('/productions/autocomplete/',
+					{'term': request.term, 'supertype': titleField.attr('data-supertype')},
+					function(data) {
+						response(data);
+					});
+			},
+			'autoFocus': true,
+			'select': function(event, ui) {
+				var title = $('<b></b>');
+				title.text(ui.item.value);
+				$('.static_view_text', staticView).html(title);
+				idField.val(ui.item.id);
+				formView.hide();
+				staticView.show();
+			}
 		});
 	})
 }

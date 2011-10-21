@@ -4,7 +4,12 @@ from demoscene.forms.production import *
 from taggit.models import Tag
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 import datetime
+try:
+	import json
+except ImportError:
+	import simplejson as json
 
 def index(request, supertype):
 	queryset = Production.objects.filter(supertype = supertype)
@@ -384,16 +389,21 @@ def remove_tag(request, production_id, tag_name):
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 def autocomplete(request):
-	query = request.GET.get('q')
+	query = request.GET.get('term')
 	productions = Production.objects.filter(title__istartswith = query)
 	supertype = request.GET.get('supertype')
 	if supertype:
 		productions = productions.filter(supertype = supertype)
 	productions = productions[:10]
-	return render(request, 'productions/autocomplete.txt', {
-		'query': query,
-		'productions': productions,
-	}, mimetype = 'text/plain')
+	production_data = [
+		{
+			'id': production.id,
+			'value': production.title,
+			'label': production.title_with_byline,
+		}
+		for production in productions
+	]
+	return HttpResponse(json.dumps(production_data), mimetype="text/javascript")
 
 @login_required
 def delete(request, production_id):

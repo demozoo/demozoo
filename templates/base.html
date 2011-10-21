@@ -5,7 +5,6 @@
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
 		{% compress css %}
 			<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
-			<link rel="stylesheet" href="/static/css/jquery.autocomplete.css" type="text/css" />
 			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
 			<link rel="stylesheet" href="/static/css/jquery.asmselect.css" type="text/css" />
 			{% block extra_css %}{% endblock %}
@@ -19,10 +18,11 @@
 		{% compress js %}
 			{# TODO: consider folding things like datepicker into widget resources, and only loading them on edit pages, to reduce up-front load times for people who rarely edit #}
 			<script src="/static/js/jquery.color.js"></script>
-			<script src="/static/js/jquery.autocomplete.min.js"></script>
 			<script src="/static/js/jquery.ui.core.js"></script>
-			<script src="/static/js/jquery.ui.datepicker.js"></script>
+			<script src="/static/js/jquery.ui.position.js"></script>
 			<script src="/static/js/jquery.ui.widget.js"></script>
+			<script src="/static/js/jquery.ui.autocomplete.js"></script>
+			<script src="/static/js/jquery.ui.datepicker.js"></script>
 			<script src="/static/js/jquery.ui.mouse.js"></script>
 			<script src="/static/js/jquery.ui.sortable.js"></script>
 			<script src="/static/js/jquery.cookie.js"></script>
