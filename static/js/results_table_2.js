@@ -194,15 +194,9 @@ function ProductionTitleGridCell(opts) {
 			'appendTo': editElem,
 			'autoFocus': false,
 			'select': function(event, ui) {
-				console.log('selected', ui.item);
+				//console.log('selected', ui.item);
 				setTimeout(function() {self._finishEdit();}, 1);
-			}/*,
-			'focus': function(event, ui) {
-				if ( /^key/.test(event.originalEvent.originalEvent.type) ) {
-					console.log('remembering focus');
-					lastAutocompleteChoice = ui.item;
-				}
-			}*/
+			}
 		})
 	}
 	
