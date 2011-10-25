@@ -193,6 +193,9 @@ function ProductionTitleGridCell(opts) {
 			},
 			'appendTo': editElem,
 			'autoFocus': false,
+			/* don't fill in text field on focus, as this makes it look like the item has been chosen
+				already, when actually they might leave the cell without selecting it */
+			'focus': function() {return false},
 			'select': function(event, ui) {
 				//console.log('selected', ui.item);
 				setTimeout(function() {self._finishEdit();}, 1);
