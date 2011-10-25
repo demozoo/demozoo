@@ -181,6 +181,8 @@ function ProductionTitleGridCell(opts) {
 	
 	var initEditElemWithoutAutocomplete = self._initEditElem;
 	
+	self.autocomplete = Event();
+	
 	self._initEditElem = function(editElem) {
 		initEditElemWithoutAutocomplete(editElem);
 		editElem.find('input').autocomplete({
@@ -197,8 +199,10 @@ function ProductionTitleGridCell(opts) {
 				already, when actually they might leave the cell without selecting it */
 			'focus': function() {return false},
 			'select': function(event, ui) {
-				//console.log('selected', ui.item);
-				setTimeout(function() {self._finishEdit();}, 1);
+				setTimeout(function() {
+					self._finishEdit();
+					self.autocomplete.trigger(ui.item);
+				}, 1);
 			}
 		})
 	}
@@ -284,6 +288,12 @@ function CompetitionPlacing(data, table, row, opts) {
 	for (var i = 0; i < cellOrder.length; i++) {
 		self.row.addCell(cells[cellOrder[i]]);
 	}
+	if (data.production.stable) {
+		cells.title.lock();
+		cells.by.lock();
+		cells.platform.lock();
+		cells.type.lock();
+	}
 	
 	self.getPlacing = function() {
 		var placing = cells.placing.value.get();
@@ -294,6 +304,13 @@ function CompetitionPlacing(data, table, row, opts) {
 			/* placing field not previously populated; auto-populate it now */
 			cells.placing.value.set(table.placingForPosition(newIndex, true));
 		}
+	})
+	
+	cells.title.autocomplete.bind(function(production) {
+		cells.title.lock(production.value);
+		cells.by.lock(production.byline);
+		cells.platform.lock(production.platform_name);
+		cells.type.lock(production.production_type_name);
 	})
 	
 	return self;

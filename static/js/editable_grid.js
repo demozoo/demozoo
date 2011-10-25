@@ -548,6 +548,7 @@ function GridCell(opts) {
 		self._editMode = null;
 	}
 	self._startEdit = function(newMode) {
+		if (self._isLocked) return;
 		originalValue = self.value.get();
 		showElem.hide();
 		editElem.show();
@@ -558,6 +559,18 @@ function GridCell(opts) {
 	self.keydown = function(event) {
 	}
 	self.keypress = function(event) {
+	}
+	
+	self._isLocked = false;
+	self.lock = function(text) {
+		if (text != null) showElem.text(text);
+		$elem.addClass('locked');
+		self._isLocked = true;
+	}
+	self.unlock = function() {
+		$elem.removeClass('locked');
+		self.value.set(null);
+		self._isLocked = false;
 	}
 	
 	return self;

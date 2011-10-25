@@ -65,6 +65,9 @@ ul.editable_grid li.data_row ul.fields > li {
 	background-color: #ddd;
 	cursor: default;
 }
+ul.editable_grid li.data_row ul.fields > li.locked {
+	color: #777;
+}
 
 ul.editable_grid li.header_row ul.fields > li {
 	border-left: 1px solid #bbb;
@@ -93,11 +96,6 @@ ul.editable_grid > li > a:hover.delete {
 }
 .editable_grid_insert {
 	padding-bottom: 20px;
-}
-ul.editable_grid li.data_row ul.fields > li {
-	border-left: 1px solid #eee;
-	background-color: #ddd;
-	cursor: default;
 }
 
 
