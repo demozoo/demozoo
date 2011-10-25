@@ -400,6 +400,7 @@ def autocomplete(request):
 		{
 			'id': production.id,
 			'value': production.title,
+			'title': production.title,
 			'label': production.title_with_byline,
 			'byline': production.byline_string,
 			'supertype': production.supertype,

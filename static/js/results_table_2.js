@@ -224,6 +224,8 @@ function ProductionTitleGridCell(opts) {
 		editElem.find('input').blur();
 	}
 	
+	self.cancelUnlock = Event();
+	
 	self.keydown = function(event) {
 		switch (self._editMode) {
 			case null:
@@ -234,12 +236,15 @@ function ProductionTitleGridCell(opts) {
 				}
 				break;
 			case 'capturedText':
+			case 'unlock':
 				switch(event.which) {
 					case 13: /* enter */
 						self._finishEdit();
 						return false;
 					case 27: /* escape */
+						var wasUnlocking = (self._editMode == 'unlock');
 						self._cancelEdit();
+						if (wasUnlocking) self.cancelUnlock.trigger();
 						return false;
 					case 37: /* cursors */
 					case 38:
@@ -295,6 +300,15 @@ function CompetitionPlacing(data, table, row, opts) {
 	var self = {};
 	self.row = row;
 	
+	var lastLockedData;
+	function populateAndLock(production) {
+		lastLockedData = production;
+		cells.title.lock(production.title, production.url);
+		cells.by.lock(production.byline);
+		cells.platform.lock(production.platform_name);
+		cells.type.lock(production.production_type_name);
+	}
+	
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
 	if (data.production.stable) {
 		var cells = {
@@ -308,10 +322,7 @@ function CompetitionPlacing(data, table, row, opts) {
 		for (var i = 0; i < cellOrder.length; i++) {
 			self.row.addCell(cells[cellOrder[i]]);
 		}
-		cells.title.lock(data.production.title, data.production.url);
-		cells.by.lock(data.production.byline);
-		cells.platform.lock(data.production.platform_name);
-		cells.type.lock(data.production.production_type_name);
+		populateAndLock(data.production);
 	} else {
 		var cells = {
 			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
@@ -338,10 +349,7 @@ function CompetitionPlacing(data, table, row, opts) {
 	})
 	
 	cells.title.autocomplete.bind(function(production) {
-		cells.title.lock(production.value, production.url);
-		cells.by.lock(production.byline);
-		cells.platform.lock(production.platform_name);
-		cells.type.lock(production.production_type_name);
+		populateAndLock(production);
 		table.grid.setCursor(5, self.row.index.get());
 	})
 	
@@ -350,7 +358,10 @@ function CompetitionPlacing(data, table, row, opts) {
 		cells.by.unlock();
 		cells.platform.unlock();
 		cells.type.unlock();
-		cells.title._startEdit('capturedEdit');
+		cells.title._startEdit('unlock');
+	})
+	cells.title.cancelUnlock.bind(function() {
+		populateAndLock(lastLockedData);
 	})
 	
 	return self;
