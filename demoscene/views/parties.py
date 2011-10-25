@@ -318,29 +318,43 @@ def edit_competition_testing_2(request, party_id, competition_id):
 	
 	competition_placings = []
 	for placing in competition.results():
-		byline_lookup = BylineLookup.from_value(placing.production.byline())
 		
-		competition_placings.append({
-			'id': placing.id,
-			'ranking': placing.ranking,
-			'score': placing.score,
-			'production': {
-				'id': placing.production.id,
-				'title': placing.production.title,
-				'platform': placing.production.platforms.all()[0].id if placing.production.platforms.all() else None,
-				'production_type': placing.production.types.all()[0].id if placing.production.types.all() else None,
-				# it's OK to reduce platform / prodtype to a single value, because any productions
-				# that have been given multiple values must have had the bonafide_edits flag set in
-				# the process - which means they're immutable here, so we'll never write the mangled
-				# value back
-				'byline': {
-					'search_term': byline_lookup.search_term,
-					'author_matches': byline_lookup.author_matches_data,
-					'affiliation_matches': byline_lookup.affiliation_matches_data,
-				},
-				'stable': placing.production.is_stable_for_competitions(),
-			}
-		})
+		if placing.production.is_stable_for_competitions():
+			competition_placings.append({
+				'id': placing.id,
+				'ranking': placing.ranking,
+				'score': placing.score,
+				'production': {
+					'id': placing.production.id,
+					'title': placing.production.title,
+					'byline': placing.production.byline_string,
+					'url': placing.production.get_absolute_url(),
+					'platform_name': placing.production.platform_name,
+					'production_type_name': placing.production.type_name,
+					'stable': True,
+				}
+			})
+		else:
+			byline_lookup = BylineLookup.from_value(placing.production.byline())
+			competition_placings.append({
+				'id': placing.id,
+				'ranking': placing.ranking,
+				'score': placing.score,
+				'production': {
+					'id': placing.production.id,
+					'title': placing.production.title,
+					'platform': placing.production.platforms.all()[0].id if placing.production.platforms.all() else None,
+					'production_type': placing.production.types.all()[0].id if placing.production.types.all() else None,
+					# it's OK to reduce platform / prodtype to a single value, because unstable productions
+					# can only ever have one (adding multiple on the production edit page would make them stable)
+					'byline': {
+						'search_term': byline_lookup.search_term,
+						'author_matches': byline_lookup.author_matches_data,
+						'affiliation_matches': byline_lookup.affiliation_matches_data,
+					},
+					'stable': False,
+				}
+			})
 	
 	competition_placings_json = json.dumps(competition_placings)
 	

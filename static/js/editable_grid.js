@@ -468,7 +468,7 @@ function GridCell(opts) {
 	
 	self.value = Property(opts.value);
 	
-	var $elem, showElem, editElem;
+	var $elem, editElem;
 	
 	/* edit modes:
 		null = not editing
@@ -482,10 +482,10 @@ function GridCell(opts) {
 		self.elem = $elem.get(0);
 		if (opts['class']) $elem.addClass(opts['class']);
 		
-		showElem = $('<div class="show"></div>');
-		$elem.append(showElem);
-		self._initShowElem(showElem);
-		self._refreshShowElem(showElem, opts.value);
+		self._showElem = $('<div class="show"></div>');
+		$elem.append(self._showElem);
+		self._initShowElem(self._showElem);
+		self._refreshShowElem(self._showElem, opts.value);
 		
 		editElem = $('<div class="edit"></div>');
 		$elem.append(editElem);
@@ -494,7 +494,7 @@ function GridCell(opts) {
 		editElem.hide();
 		
 		self.value.change.bind(function(newValue) {
-			self._refreshShowElem(showElem, newValue);
+			self._refreshShowElem(self._showElem, newValue);
 			self._refreshEditElem(editElem, newValue);
 		})
 		
@@ -536,7 +536,7 @@ function GridCell(opts) {
 		self.value.set(self._valueFromEditElem(editElem));
 		self._unprepareEditElem(editElem);
 		editElem.hide();
-		showElem.show();
+		self._showElem.show();
 		self._editMode = null;
 	}
 	var originalValue;
@@ -544,13 +544,13 @@ function GridCell(opts) {
 		self._refreshEditElem(editElem, originalValue);
 		self._unprepareEditElem(editElem);
 		editElem.hide();
-		showElem.show();
+		self._showElem.show();
 		self._editMode = null;
 	}
 	self._startEdit = function(newMode) {
 		if (self._isLocked) return;
 		originalValue = self.value.get();
-		showElem.hide();
+		self._showElem.hide();
 		editElem.show();
 		self._editMode = newMode;
 		self._prepareEditElem(editElem);
@@ -563,7 +563,7 @@ function GridCell(opts) {
 	
 	self._isLocked = false;
 	self.lock = function(text) {
-		if (text != null) showElem.text(text);
+		if (text != null) self._showElem.text(text);
 		$elem.addClass('locked');
 		self._isLocked = true;
 	}

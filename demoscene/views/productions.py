@@ -396,15 +396,6 @@ def autocomplete(request):
 		productions = productions.filter(supertype = supertype)
 	productions = productions[:10]
 	
-	# given a list of platforms or prod types, return blank if none, name if exactly one, or '(multiple)' otherwise
-	def list_to_name(platforms):
-		if len(platforms) == 0:
-			return ''
-		elif len(platforms) == 1:
-			return platforms[0].name
-		else:
-			return '(multiple)'
-	
 	production_data = [
 		{
 			'id': production.id,
@@ -412,8 +403,9 @@ def autocomplete(request):
 			'label': production.title_with_byline,
 			'byline': production.byline_string,
 			'supertype': production.supertype,
-			'platform_name': list_to_name(production.platforms.all()),
-			'production_type_name': list_to_name(production.types.all()),
+			'platform_name': production.platform_name,
+			'production_type_name': production.type_name,
+			'url': production.get_absolute_url(),
 		}
 		for production in productions
 	]

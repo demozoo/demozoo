@@ -136,11 +136,12 @@ function BylineGridCell(opts) {
 				}
 				break;
 			case 'capturedText':
-			case 'uncapturedText': /* no distinction between captured and uncaptured text here */
+			case 'uncapturedText': /* no distinction between captured and uncaptured text here (except for
+			whether to cancel default 'advance' event on enter) */
 				switch(event.which) {
 					case 13: /* enter */
 						self._finishEdit();
-						return false;
+						return (self._editMode == 'capturedText' ? false : null);
 					case 27: /* escape */
 						self._cancelEdit();
 						return false;
@@ -261,6 +262,12 @@ function ProductionTitleGridCell(opts) {
 		}
 	}
 	
+	var originalLock = self.lock;
+	self.lock = function(name, url) {
+		originalLock(name);
+		self._showElem.wrapInner($('<a></a>').attr({'href': url}));
+	}
+	
 	return self;
 }
 
@@ -277,22 +284,36 @@ function CompetitionPlacing(data, table, row, opts) {
 	self.row = row;
 	
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
-	var cells = {
-		'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
-		'title': ProductionTitleGridCell({'class': 'title_field', 'value': data.production.title}),
-		'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
-		'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
-		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.production_type}),
-		'score': TextGridCell({'class': 'score_field', 'value': data.score})
-	}
-	for (var i = 0; i < cellOrder.length; i++) {
-		self.row.addCell(cells[cellOrder[i]]);
-	}
 	if (data.production.stable) {
-		cells.title.lock();
-		cells.by.lock();
-		cells.platform.lock();
-		cells.type.lock();
+		var cells = {
+			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
+			'title': ProductionTitleGridCell({'class': 'title_field', 'value': null}),
+			'by': BylineGridCell({'class': 'by_field', 'value': {
+				'search_term': '', 'author_matches': [], 'affiliation_matches': []
+			}}),
+			'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': null}),
+			'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': null}),
+			'score': TextGridCell({'class': 'score_field', 'value': data.score})
+		}
+		for (var i = 0; i < cellOrder.length; i++) {
+			self.row.addCell(cells[cellOrder[i]]);
+		}
+		cells.title.lock(data.production.title, data.production.url);
+		cells.by.lock(data.production.byline);
+		cells.platform.lock(data.production.platform_name);
+		cells.type.lock(data.production.production_type_name);
+	} else {
+		var cells = {
+			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
+			'title': ProductionTitleGridCell({'class': 'title_field', 'value': data.production.title}),
+			'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
+			'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
+			'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.production_type}),
+			'score': TextGridCell({'class': 'score_field', 'value': data.score})
+		}
+		for (var i = 0; i < cellOrder.length; i++) {
+			self.row.addCell(cells[cellOrder[i]]);
+		}
 	}
 	
 	self.getPlacing = function() {
@@ -307,7 +328,7 @@ function CompetitionPlacing(data, table, row, opts) {
 	})
 	
 	cells.title.autocomplete.bind(function(production) {
-		cells.title.lock(production.value);
+		cells.title.lock(production.value, production.url);
 		cells.by.lock(production.byline);
 		cells.platform.lock(production.platform_name);
 		cells.type.lock(production.production_type_name);

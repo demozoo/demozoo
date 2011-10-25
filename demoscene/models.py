@@ -670,6 +670,23 @@ class Production(models.Model):
 		
 		return prod_type.supertype
 	
+	# given a list of platforms or prod types, return blank if none, name if exactly one, or '(multiple)' otherwise
+	@staticmethod
+	def list_to_name(platforms):
+		if len(platforms) == 0:
+			return ''
+		elif len(platforms) == 1:
+			return platforms[0].name
+		else:
+			return '(multiple)'
+	
+	@property
+	def platform_name(self):
+		return Production.list_to_name(self.platforms.all())
+	@property
+	def type_name(self):
+		return Production.list_to_name(self.types.all())
+	
 	@models.permalink
 	def get_absolute_url(self):
 		if self.supertype == 'music':
