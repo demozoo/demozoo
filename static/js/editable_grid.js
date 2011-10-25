@@ -518,6 +518,8 @@ function GridCell(opts) {
 	}
 	self._prepareEditElem = function(editElem) {
 	}
+	self._unprepareEditElem = function(editElem) {
+	}
 	
 	self.receiveCursor = function() {
 		$elem.addClass('cursor');
@@ -532,6 +534,7 @@ function GridCell(opts) {
 	
 	self._finishEdit = function() {
 		self.value.set(self._valueFromEditElem(editElem));
+		self._unprepareEditElem(editElem);
 		editElem.hide();
 		showElem.show();
 		self._editMode = null;
@@ -539,6 +542,7 @@ function GridCell(opts) {
 	var originalValue;
 	self._cancelEdit = function() {
 		self._refreshEditElem(editElem, originalValue);
+		self._unprepareEditElem(editElem);
 		editElem.hide();
 		showElem.show();
 		self._editMode = null;

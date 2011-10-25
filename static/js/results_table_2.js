@@ -176,6 +176,93 @@ function BylineGridCell(opts) {
 	return self;
 }
 
+function ProductionTitleGridCell(opts) {
+	var self = TextGridCell(opts);
+	
+	var initEditElemWithoutAutocomplete = self._initEditElem;
+	
+	self._initEditElem = function(editElem) {
+		initEditElemWithoutAutocomplete(editElem);
+		editElem.find('input').autocomplete({
+			'source': function(request, response) {
+				$.getJSON('/productions/autocomplete/',
+					{'term': request.term},
+					function(data) {
+						response(data);
+					});
+			},
+			'appendTo': editElem,
+			'autoFocus': false,
+			'select': function(event, ui) {
+				console.log('selected', ui.item);
+				setTimeout(function() {self._finishEdit();}, 1);
+			}/*,
+			'focus': function(event, ui) {
+				if ( /^key/.test(event.originalEvent.originalEvent.type) ) {
+					console.log('remembering focus');
+					lastAutocompleteChoice = ui.item;
+				}
+			}*/
+		})
+	}
+	
+	var prepareEditElemWithoutAutocomplete = self._prepareEditElem;
+	self._prepareEditElem = function(editElem) {
+		prepareEditElemWithoutAutocomplete(editElem);
+	}
+	
+	self._unprepareEditElem = function(editElem) {
+		editElem.find('input').autocomplete('close');
+		editElem.find('input').blur();
+	}
+	
+	self.keydown = function(event) {
+		switch (self._editMode) {
+			case null:
+				switch (event.which) {
+					case 13:
+						self._startEdit('capturedText');
+						return false;
+				}
+				break;
+			case 'capturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return false;
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors */
+					case 38:
+					case 39:
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+			case 'uncapturedText':
+				switch(event.which) {
+					case 13: /* enter */
+						self._finishEdit();
+						return null; /* grid's event handler for the enter key will advance to next cell */
+					case 27: /* escape */
+						self._cancelEdit();
+						return false;
+					case 37: /* cursors left/right */
+					case 39:
+						self._finishEdit();
+						return null; /* let grid event handler process the cursor movement */
+					case 38: /* cursors up/down */
+					case 40:
+						return true; /* override grid event handler, defer to browser's own */
+				}
+				break;
+		}
+	}
+	
+	return self;
+}
+
 function CompetitionPlacing(data, table, row, opts) {
 	if (!data) data = {};
 	if (!data.production) data.production = {};
@@ -191,7 +278,7 @@ function CompetitionPlacing(data, table, row, opts) {
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
 	var cells = {
 		'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
-		'title': TextGridCell({'class': 'title_field', 'value': data.production.title}),
+		'title': ProductionTitleGridCell({'class': 'title_field', 'value': data.production.title}),
 		'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
 		'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
 		'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.production_type}),
