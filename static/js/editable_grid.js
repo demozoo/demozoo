@@ -509,7 +509,11 @@ function GridCell(opts) {
 	self._initEditElem = function(editElem) {
 	}
 	self._refreshShowElem = function(showElem, value) {
-		showElem.text(value);
+		if (value == null) {
+			showElem.text('');
+		} else {
+			showElem.text(value);
+		}
 	}
 	self._refreshEditElem = function(editElem, value) {
 	}
@@ -570,6 +574,8 @@ function GridCell(opts) {
 	self.unlock = function() {
 		$elem.removeClass('locked');
 		self.value.set(null);
+		self._refreshShowElem(self._showElem, null);
+		self._refreshEditElem(editElem, null);
 		self._isLocked = false;
 	}
 	

@@ -2,6 +2,7 @@ function ResultsTable(elem, opts) {
 	var self = {};
 	
 	var grid = EditableGrid(elem);
+	self.grid = grid;
 	grid.addHeader('Placing', 'placing_field');
 	grid.addHeader('Title', 'title_field');
 	grid.addHeader('By', 'by_field');
@@ -82,6 +83,7 @@ function BylineGridCell(opts) {
 	var bylineField;
 	
 	function valueIsValid(value) {
+		if (value == null) return true; /* null value is equivalent to empty byline */
 		/* consider invalid if any of the authors/affiliations have unspecified (null) IDs */
 		for (var i = 0; i < value.author_matches.length; i++) {
 			if (value.author_matches[i].selection.id == null) {
@@ -104,7 +106,11 @@ function BylineGridCell(opts) {
 		bylineField = BylineField(bylineFieldElem, '', [], [], $.uid('bylineGridCell'));
 	}
 	self._refreshShowElem = function(showElem, value) {
-		showElem.text(value.search_term); /* TODO: get properly capitalised / primary-nick-varianted text from bylineField */
+		if (value) {
+			showElem.text(value.search_term || ''); /* TODO: get properly capitalised / primary-nick-varianted text from bylineField */
+		} else {
+			showElem.text('');
+		}
 		if (valueIsValid(value)) {
 			showElem.removeClass('invalid');
 		} else {
@@ -263,9 +269,15 @@ function ProductionTitleGridCell(opts) {
 	}
 	
 	var originalLock = self.lock;
+	self.requestUnlock = Event();
 	self.lock = function(name, url) {
 		originalLock(name);
 		self._showElem.wrapInner($('<a></a>').attr({'href': url}));
+		var clearButton = $('<a href="javascript:void(0)" class="clear_button">(clear)</a>');
+		self._showElem.prepend(clearButton);
+		clearButton.click(function() {
+			self.requestUnlock.trigger();
+		})
 	}
 	
 	return self;
@@ -288,9 +300,7 @@ function CompetitionPlacing(data, table, row, opts) {
 		var cells = {
 			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
 			'title': ProductionTitleGridCell({'class': 'title_field', 'value': null}),
-			'by': BylineGridCell({'class': 'by_field', 'value': {
-				'search_term': '', 'author_matches': [], 'affiliation_matches': []
-			}}),
+			'by': BylineGridCell({'class': 'by_field', 'value': null}),
 			'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': null}),
 			'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': null}),
 			'score': TextGridCell({'class': 'score_field', 'value': data.score})
@@ -332,6 +342,15 @@ function CompetitionPlacing(data, table, row, opts) {
 		cells.by.lock(production.byline);
 		cells.platform.lock(production.platform_name);
 		cells.type.lock(production.production_type_name);
+		table.grid.setCursor(5, self.row.index.get());
+	})
+	
+	cells.title.requestUnlock.bind(function() {
+		cells.title.unlock();
+		cells.by.unlock();
+		cells.platform.unlock();
+		cells.type.unlock();
+		cells.title._startEdit('capturedEdit');
 	})
 	
 	return self;

@@ -123,6 +123,7 @@ function BylineField(elem, searchTerm, authorMatches, affiliationMatches, fieldP
 	}
 	
 	self.setValue = function(value) {
+		if (!value) value = {'search_term': '', 'author_matches': [], 'affiliation_matches': []};
 		searchField.val(value.search_term);
 		populateMatches(value.author_matches, value.affiliation_matches);
 	}
