@@ -139,6 +139,10 @@ function BylineGridCell(opts) {
 					case 13:
 						self._startEdit('capturedText');
 						return false;
+					case 8: /* backspace */
+						self._startEdit('uncapturedText');
+						bylineField.setValue(null);
+						return false;
 				}
 				break;
 			case 'capturedText':
@@ -232,6 +236,14 @@ function ProductionTitleGridCell(opts) {
 				switch (event.which) {
 					case 13:
 						self._startEdit('capturedText');
+						return false;
+					case 8: /* backspace */
+						if (self._isLocked) {
+							self.requestUnlock.trigger();
+						} else {
+							self._startEdit('uncapturedText');
+							self._input.val('');
+						}
 						return false;
 				}
 				break;

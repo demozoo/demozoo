@@ -588,6 +588,7 @@ function TextGridCell(opts) {
 	var input;
 	self._initEditElem = function(editElem) {
 		input = $('<input type="text" />');
+		self._input = input;
 		editElem.append(input);
 	}
 	self._refreshEditElem = function(editElem, value) {
@@ -606,6 +607,10 @@ function TextGridCell(opts) {
 				switch (event.which) {
 					case 13:
 						self._startEdit('capturedText');
+						return false;
+					case 8: /* backspace */
+						self._startEdit('uncapturedText');
+						input.val('');
 						return false;
 				}
 				break;
@@ -699,6 +704,10 @@ function SelectGridCell(opts) {
 					switch (event.which) {
 						case 13:
 							self._startEdit('capturedText');
+							return false;
+						case 8: /* backspace */
+							self._startEdit('uncapturedText');
+							input.val('');
 							return false;
 					}
 				}
