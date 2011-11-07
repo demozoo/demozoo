@@ -1,4 +1,4 @@
-import re, urlparse
+import re, urlparse, urllib
 
 class BaseUrl():
 	def __init__(self, param):
@@ -53,11 +53,15 @@ class SceneidAccount(BaseUrl):
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I),
 	]
-
 class PouetGroup(BaseUrl):
 	canonical_format = "http://www.pouet.net/groups.php?which=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I),
+	]
+class PouetProduction(BaseUrl):
+	canonical_format = "http://www.pouet.net/prod.php?which=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I),
 	]
 
 class SlengpungUser(BaseUrl):
@@ -77,6 +81,18 @@ class CsdbScener(BaseUrl):
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/scener/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/scener/', 'id', re.I),
+	]
+class CsdbGroup(BaseUrl):
+	canonical_format = "http://noname.c64.org/csdb/group/?id=%s"
+	tests = [
+		querystring_match(r'https?://noname\.c64\.org/csdb/group/', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/group/', 'id', re.I),
+	]
+class CsdbRelease(BaseUrl):
+	canonical_format = "http://noname.c64.org/csdb/release/?id=%s"
+	tests = [
+		querystring_match(r'https?://noname\.c64\.org/csdb/release/', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/release/', 'id', re.I),
 	]
 
 class NectarineArtist(BaseUrl):
@@ -109,12 +125,59 @@ class AsciiarenaArtist(BaseUrl):
 		querystring_match(r'https?://(?:www\.)asciiarena\.com/info_artist\.php', 'artist', re.I),
 	]
 
+class ScenesatAct(BaseUrl):
+	canonical_format = "http://scenesat.com/act/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)scenesat\.com/act/(\d+)', re.I),
+	]
+
+class ZxdemoAuthor(BaseUrl):
+	canonical_format = "http://zxdemo.org/author.php?id=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)zxdemo\.org/author\.php', 'id', re.I),
+	]
+class ZxdemoItem(BaseUrl):
+	canonical_format = "http://zxdemo.org/item.php?id=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)zxdemo\.org/item\.php', 'id', re.I),
+	]
+
+class BitworldDemo(BaseUrl):
+	canonical_format = "http://bitworld.bitfellas.org/demo.php?id=%s"
+	tests = [
+		querystring_match(r'https?://bitworld\.bitfellas\.org/demo\.php', 'id', re.I),
+	]
+
+class SceneOrgFile(BaseUrl):
+	tests = [
+		querystring_match(r'https?://(?:www\.)scene\.org/file\.php', 'file', re.I),
+		regex_match(r'ftp://ftp\.scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
+		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
+		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
+		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
+		regex_match(r'http://http\.de\.scene\.org/pub(/.*)', re.I),
+	]
+	def __str__(self):
+		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param)
+
+class AmigascneFile(BaseUrl):
+	canonical_format = "http://ftp.amigascne.org/pub/amiga%s"
+	tests = [
+		regex_match(r'(?:http|ftp)://ftp\.amigascne\.org/pub/amiga(/.*)', re.I),
+		regex_match(r'ftp://ftp\.scene\.org/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'http://http\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+	]
+
 def grok_scener_link(urlstring):
 	url = urlparse.urlparse(urlstring)
 	link_types = [
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
-		MobygamesDeveloper, AsciiarenaArtist, PouetGroup,
+		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
+		ZxdemoAuthor,
 		BaseUrl,
 	]
 	for link_type in link_types:
@@ -125,7 +188,20 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	url = urlparse.urlparse(urlstring)
 	link_types = [
-		TwitterAccount, PouetGroup,
+		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup,
+		BaseUrl,
+	]
+	for link_type in link_types:
+		link = link_type.match(urlstring, url)
+		if link:
+			return link
+
+def grok_production_link(urlstring):
+	url = urlparse.urlparse(urlstring)
+	link_types = [
+		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
+		AmigascneFile, # must come before SceneOrgFile
+		SceneOrgFile,
 		BaseUrl,
 	]
 	for link_type in link_types:
