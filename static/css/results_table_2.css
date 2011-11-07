@@ -100,7 +100,7 @@ ul.editable_grid > li > .status_unsaved {
 	background-image: url(/static/images/icons/bullet_green.png);
 }
 ul.editable_grid > li > .status_saving {
-	background-image: url(/static/images/icons/arrow_refresh.png); /* TODO: get an animated spinny instead */
+	background-image: url(/static/images/icons/ticker.gif);
 }
 ul.editable_grid > li > .status_error {
 	background-image: url(/static/images/icons/exclamation.png);
