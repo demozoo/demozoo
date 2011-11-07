@@ -23,8 +23,6 @@ urlpatterns = patterns('',
 	(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, 'log_out'),
 	(r'^accounts/signup/$', 'demoscene.views.accounts.signup', {}, 'user_signup'),
 	(r'^accounts/preferences/$', 'demoscene.views.accounts.preferences', {}, 'account_preferences'),
-
-	(r'^compo_results_test/$', 'django.views.generic.simple.direct_to_template', {'template': 'parties/compo_results_test.html'}),
 )
 
 urlpatterns += patterns('demoscene.views',
@@ -120,14 +118,10 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/add_competition/$', 'parties.add_competition', {}, 'party_add_competition'),
 	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
 	(r'^parties/(\d+)/edit_competition/(\d+)/$', 'parties.edit_competition', {}, 'party_edit_competition'),
-	(r'^parties/(\d+)/edit_competition_testing/(\d+)/$', 'parties.edit_competition_testing', {}, 'party_edit_competition_testing'),
 	(r'^parties/(\d+)/edit_competition_testing_2/(\d+)/$', 'parties.edit_competition_testing_2', {}, 'party_edit_competition_testing_2'),
 	(r'^parties/(\d+)/edit_notes/$', 'parties.edit_notes', {}, 'party_edit_notes'),
 	(r'^parties/(\d+)/edit_external_links/$', 'parties.edit_external_links', {}, 'party_edit_external_links'),
 	
-	(r'^competition_api/(\d+)/row/$', 'competition_api.process_row', {}),
-	(r'^competition_api/(\d+)/row/(\d+)/$', 'competition_api.process_row', {}),
-
 	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
 	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),
 	(r'^competition_api/delete_placing/(\d+)/$', 'competition_api.delete_placing', {}),

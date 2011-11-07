@@ -272,46 +272,6 @@ def edit_competition(request, party_id, competition_id):
 	})
 
 @login_required
-def edit_competition_testing(request, party_id, competition_id):
-	party = get_object_or_404(Party, id = party_id)
-	competition = get_object_or_404(Competition, party = party, id = competition_id)
-	
-	results_with_forms = [
-		(
-			result,
-			CompetitionResultForm(
-				prefix='row_%s' % i,
-				initial = {
-					'placing': result.ranking,
-					'title': result.production.title,
-					'byline': result.production.byline(),
-					'platform': result.production.platforms.all()[0].id if result.production.platforms.all() else None,
-					'production_type': result.production.types.all()[0].id if result.production.types.all() else None,
-					'score': result.score,
-				},
-			)
-		)
-		for (i, result) in enumerate(competition.results())
-	]
-	
-	platforms = Platform.objects.all()
-	platforms_json = json.dumps([ [p.id, p.name] for p in platforms ])
-	
-	production_types = ProductionType.objects.all()
-	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
-
-	return render(request, 'parties/edit_competition_testing.html', {
-		'html_title': "Editing %s %s competition" % (party.name, competition.name),
-		'party': party,
-		'competition': competition,
-		'results_with_forms': results_with_forms,
-		'platforms': platforms,
-		'platforms_json': platforms_json,
-		'production_types': production_types,
-		'production_types_json': production_types_json,
-	})
-
-@login_required
 def edit_competition_testing_2(request, party_id, competition_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = get_object_or_404(Competition, party = party, id = competition_id)
