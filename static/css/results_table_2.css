@@ -88,6 +88,23 @@ ul.editable_grid > li > a.delete {
 	margin-left: 4px;
 	background-image: url(/static/images/icons/delete_cross.png);
 }
+ul.editable_grid > li > .status {
+	float: left;
+	width: 16px;
+	height: 16px;
+	text-indent: -5000px;
+	margin: 2px;
+	margin-left: 4px;
+}
+ul.editable_grid > li > .status_unsaved {
+	background-image: url(/static/images/icons/bullet_green.png);
+}
+ul.editable_grid > li > .status_saving {
+	background-image: url(/static/images/icons/arrow_refresh.png); /* TODO: get an animated spinny instead */
+}
+ul.editable_grid > li > .status_error {
+	background-image: url(/static/images/icons/exclamation.png);
+}
 ul.editable_grid > li > a:hover.delete {
 	background-position: 0 100%;
 }

@@ -12,7 +12,8 @@
 		ResultsTable('#results_table', {
 			platforms: {{ platforms_json|safe }},
 			productionTypes: {{ production_types_json|safe }},
-			competitionPlacings: {{ competition_placings_json|safe }}
+			competitionPlacings: {{ competition_placings_json|safe }},
+			competitionId: {{ competition.id }}
 		})
 	});
 /* ]]> */</script>

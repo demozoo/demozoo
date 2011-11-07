@@ -139,10 +139,14 @@ class MatchedNickWidget(forms.Widget):
 	def match_data(self):
 		return {
 			'choices': self.choices,
-			'selection': {
-				'id': (self.top_choice.nick_id if self.top_choice else None),
-				'name': self.search_term,
-			}
+			'selection': self.selection_data
+		}
+	
+	@property
+	def selection_data(self):
+		return {
+			'id': (self.top_choice.nick_id if self.top_choice else None),
+			'name': self.search_term,
 		}
 	
 	def value_from_datadict(self, data, files, name):

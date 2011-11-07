@@ -1068,6 +1068,47 @@ class CompetitionPlacing(models.Model):
 	position = models.IntegerField()
 	score = models.CharField(max_length = 32, blank = True)
 	
+	@property
+	def json_data(self):
+		from byline_field import BylineLookup
+		
+		if self.production.is_stable_for_competitions():
+			return {
+				'id': self.id,
+				'ranking': self.ranking,
+				'score': self.score,
+				'production': {
+					'id': self.production.id,
+					'title': self.production.title,
+					'byline': self.production.byline_string,
+					'url': self.production.get_absolute_url(),
+					'platform_name': self.production.platform_name,
+					'production_type_name': self.production.type_name,
+					'stable': True,
+				}
+			}
+		else:
+			byline_lookup = BylineLookup.from_value(self.production.byline())
+			return {
+				'id': self.id,
+				'ranking': self.ranking,
+				'score': self.score,
+				'production': {
+					'id': self.production.id,
+					'title': self.production.title,
+					'platform': self.production.platforms.all()[0].id if self.production.platforms.all() else None,
+					'production_type': self.production.types.all()[0].id if self.production.types.all() else None,
+					# it's OK to reduce platform / prodtype to a single value, because unstable productions
+					# can only ever have one (adding multiple on the production edit page would make them stable)
+					'byline': {
+						'search_term': byline_lookup.search_term,
+						'author_matches': byline_lookup.author_matches_data,
+						'affiliation_matches': byline_lookup.affiliation_matches_data,
+					},
+					'stable': False,
+				}
+			}
+	
 	def __unicode__(self):
 		try:
 			return self.production.__unicode__()

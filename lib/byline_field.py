@@ -84,11 +84,34 @@ class BylineLookup():
 	
 	@property
 	def author_matches_data(self):
-		return [field.widget.match_data for field in self.author_matched_nick_fields]
+		data = []
+		for (i, field) in enumerate(self.author_matched_nick_fields):
+			try:
+				selection = self.author_nick_selections[i]
+				# use the name/id from the existing selection object
+				data.append({
+					'choices': field.widget.choices,
+					'selection': {'id': selection.id, 'name': selection.name},
+				})
+			except IndexError:
+				# no selection object for this nick; use the widget's best suggestion
+				data.append(field.widget.match_data)
+		return data
 	
 	@property
 	def affiliation_matches_data(self):
-		return [field.widget.match_data for field in self.affiliation_matched_nick_fields]
+		data = []
+		for (i, field) in enumerate(self.affiliation_matched_nick_fields):
+			try:
+				selection = self.affiliation_nick_selections[i]
+				data.append({
+					'choices': field.widget.choices,
+					'selection': {'id': selection.id, 'name': selection.name},
+				})
+			except IndexError:
+				# no selection object for this nick; use the widget's best suggestion
+				data.append(field.widget.match_data)
+		return data
 	
 	@staticmethod
 	def from_value(value):

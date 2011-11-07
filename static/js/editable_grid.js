@@ -12,9 +12,14 @@ function Event() {
 	}
 	self.trigger = function() {
 		var args = arguments;
+		/* event is considered 'cancelled' if any handler returned a value of false
+			(specifically false, not just a falsy value). Exactly what this means is
+			up to the caller - we just return false */
+		var cancelled = false;
 		for (var i = 0; i < listeners.length; i++) {
-			listeners[i].apply(null, args);
+			cancelled = cancelled || (listeners[i].apply(null, args) === false);
 		};
+		return !cancelled;
 	}
 	
 	return self;
@@ -123,6 +128,7 @@ function EditableGrid(elem) {
 			self.onAddRow.trigger(row);
 		}
 	}
+	self.advanceOrCreate = advanceOrCreate;
 	
 	function keydown(event) {
 		/* current cell, if any, gets first dibs on handling events */
@@ -278,7 +284,7 @@ function EditableGrid(elem) {
 	self.addRow = function(index, animate) {
 		if (index == null || index >= rows.length) {
 			index = rows.length;
-			var row = GridRow(index);
+			var row = GridRow(index, self);
 			$elem.append(row.elem);
 			rows.push(row);
 		} else {
@@ -289,7 +295,7 @@ function EditableGrid(elem) {
 			/* also bump up cursor position */
 			if (cursorY >= index) cursorY++;
 			
-			var row = GridRow(index);
+			var row = GridRow(index, self);
 			$(row.elem).insertBefore(rows[index].elem);
 			rows.splice(index, 0, row);
 		}
@@ -389,9 +395,10 @@ function EditableGrid(elem) {
 	return self;
 }
 
-function GridRow(index) {
+function GridRow(index, grid) {
 	var self = {};
 	
+	self.grid = grid;
 	self.index = Property(index);
 	self.onReorder = Event();
 	
@@ -402,10 +409,13 @@ function GridRow(index) {
 	var fieldsUl = $('<ul class="fields"></ul>');
 	var fieldsUlElem = fieldsUl.get(0);
 	var deleteLink = $('<a href="javascript:void(0)" tabindex="-1" class="delete" title="Delete this row">Delete</a>');
-	$elem.append(fieldsUl, deleteLink, '<div style="clear: both;"></div>');
+	var statusIcon = $('<div class="status"></div>');
+	$elem.append(fieldsUl, deleteLink, statusIcon, '<div style="clear: both;"></div>');
 	
 	self.addCell = function(cell) {
 		cells.push(cell);
+		cell.row = self;
+		cell.grid = self.grid;
 		cell.constructElem();
 		fieldsUl.append(cell.elem);
 	}
@@ -414,6 +424,15 @@ function GridRow(index) {
 	}
 	self.getCellCount = function() {
 		return cells.length;
+	}
+	
+	self.setStatus = function(status, titleText) {
+		statusIcon.attr({'class': 'status status_' + status})
+		if (titleText) {
+			statusIcon.attr({'title': titleText});
+		} else {
+			statusIcon.removeAttr('title');
+		}
 	}
 	
 	/* return the index of the GridCell object whose DOM element is, or contains, childElem,
@@ -536,12 +555,17 @@ function GridCell(opts) {
 		self.blur();
 	}
 	
+	self.onStartEdit = Event();
+	self.onFinishEdit = Event();
+	self.onCancelEdit = Event();
+	
 	self._finishEdit = function() {
 		self.value.set(self._valueFromEditElem(editElem));
 		self._unprepareEditElem(editElem);
 		editElem.hide();
 		self._showElem.show();
 		self._editMode = null;
+		self.onFinishEdit.trigger();
 	}
 	var originalValue;
 	self._cancelEdit = function() {
@@ -550,6 +574,7 @@ function GridCell(opts) {
 		editElem.hide();
 		self._showElem.show();
 		self._editMode = null;
+		self.onCancelEdit.trigger();
 	}
 	self._startEdit = function(newMode) {
 		if (self._isLocked) return;
@@ -558,6 +583,7 @@ function GridCell(opts) {
 		editElem.show();
 		self._editMode = newMode;
 		self._prepareEditElem(editElem);
+		self.onStartEdit.trigger();
 	}
 	
 	self.keydown = function(event) {

@@ -15,6 +15,8 @@ function ResultsTable(elem, opts) {
 		'productionTypes': opts.productionTypes
 	};
 	
+	self.competitionId = opts.competitionId;
+	
 	/* Suggest a value for the 'placing' field of the row in position 'position', based on the
 		'placing' values of its neighbours. If allowFirst is true, suggest '1' as a placing at the
 		top of the table (which is appropriate when reordering, but not for inserting new rows) */
@@ -25,7 +27,7 @@ function ResultsTable(elem, opts) {
 		if (position == 0) {
 			return (allowFirst ? '1' : null);
 		} else {
-			var lastPlacing = placings[position - 1].getPlacing();
+			var lastPlacing = self.placings[position - 1].getPlacing();
 			var lastPlacingNum = parseInt(lastPlacing, 10);
 			if (!isNaN(lastPlacingNum)) {
 				newPlacing = lastPlacingNum + 1;
@@ -35,7 +37,7 @@ function ResultsTable(elem, opts) {
 					in which case increment */
 				newPlacing = lastPlacing;
 				if (position > 1) {
-					var lastLastPlacing = placings[position - 2].getPlacing();
+					var lastLastPlacing = self.placings[position - 2].getPlacing();
 					if (match = lastLastPlacing.match(/^\s*\=(\d+)/)) {
 						if (match[1] == lastPlacingNum) newPlacing = lastPlacingNum + 1;
 					}
@@ -45,17 +47,17 @@ function ResultsTable(elem, opts) {
 		}
 	}
 	
-	var placings = [];
+	self.placings = [];
 	
 	if (opts.competitionPlacings.length) {
 		for (var i = 0; i < opts.competitionPlacings.length; i++) {
 			var row = grid.addRow();
-			placings[i] = CompetitionPlacing(opts.competitionPlacings[i], self, row, rowOptions);
+			self.placings[i] = CompetitionPlacing(opts.competitionPlacings[i], self, row, rowOptions);
 		}
 	} else {
 		/* add an initial empty row */
 		var row = grid.addRow();
-		placings[0] = CompetitionPlacing(null, self, row, rowOptions);
+		self.placings[0] = CompetitionPlacing(null, self, row, rowOptions);
 	}
 	
 	grid.onAddRow.bind(function(row) {
@@ -63,15 +65,15 @@ function ResultsTable(elem, opts) {
 		var competitionPlacing = CompetitionPlacing({
 			'ranking': self.placingForPosition(rowIndex, false)
 		}, self, row, rowOptions);
-		placings.splice(rowIndex, 0, competitionPlacing);
+		self.placings.splice(rowIndex, 0, competitionPlacing);
 		grid.setCursor(1, rowIndex);
 		grid.focus();
 	})
 	
 	grid.onReorder.bind(function(row, oldIndex, newIndex) {
-		var placing = placings[oldIndex];
-		placings.splice(oldIndex, 1);
-		placings.splice(newIndex, 0, placing);
+		var placing = self.placings[oldIndex];
+		self.placings.splice(oldIndex, 1);
+		self.placings.splice(newIndex, 0, placing);
 	})
 	
 	return self;
@@ -98,6 +100,10 @@ function BylineGridCell(opts) {
 			}
 		}
 		return true;
+	}
+	
+	self.isValid = function() {
+		return valueIsValid(self.value.get());
 	}
 	
 	self._initEditElem = function(editElem) {
@@ -211,8 +217,8 @@ function ProductionTitleGridCell(opts) {
 			'focus': function() {return false},
 			'select': function(event, ui) {
 				setTimeout(function() {
-					self._finishEdit();
-					self.autocomplete.trigger(ui.item);
+					var proceed = self.autocomplete.trigger(ui.item);
+					if (proceed) self._finishEdit();
 				}, 1);
 			}
 		})
@@ -251,7 +257,15 @@ function ProductionTitleGridCell(opts) {
 			case 'unlock':
 				switch(event.which) {
 					case 13: /* enter */
-						self._finishEdit();
+						/* we want to finish edit UNLESS this keypress causes an autocomplete item to be
+						selected, in which case we want the autocomplete's select event to fire and trigger
+						the finishEdit call *after* having processed the autocomplete event handler which
+						populates the competitionplacing's productionId field */
+						setTimeout(function() {
+							/* if we're still in edit mode after autocomplete.select has had chance to fire,
+								assume we're finishing the edit in the regular way */
+							if (self._editMode) self._finishEdit();
+						}, 1);
 						return false;
 					case 27: /* escape */
 						var wasUnlocking = (self._editMode == 'unlock');
@@ -268,8 +282,15 @@ function ProductionTitleGridCell(opts) {
 			case 'uncapturedText':
 				switch(event.which) {
 					case 13: /* enter */
-						self._finishEdit();
-						return null; /* grid's event handler for the enter key will advance to next cell */
+						setTimeout(function() {
+							/* if we're still in edit mode after autocomplete.select has had chance to fire,
+								assume we're finishing the edit in the regular way */
+							if (self._editMode) {
+								self._finishEdit();
+								self.grid.advanceOrCreate();
+							}
+						}, 1);
+						return false;
 					case 27: /* escape */
 						self._cancelEdit();
 						return false;
@@ -301,6 +322,9 @@ function ProductionTitleGridCell(opts) {
 }
 
 function CompetitionPlacing(data, table, row, opts) {
+	var self = {};
+	self.row = row;
+	
 	if (!data) data = {};
 	if (!data.production) data.production = {};
 	if (!data.production.byline) {
@@ -309,16 +333,126 @@ function CompetitionPlacing(data, table, row, opts) {
 		};
 	}
 	
-	var self = {};
-	self.row = row;
+	var productionId = data.production.id;
+	var placingId = data.id;
 	
+	var isLocked = false;
 	var lastLockedData;
-	function populateAndLock(production) {
+	function populateProductionAndLock(production) {
 		lastLockedData = production;
+		productionId = production.id;
 		cells.title.lock(production.title, production.url);
 		cells.by.lock(production.byline);
 		cells.platform.lock(production.platform_name);
 		cells.type.lock(production.production_type_name);
+		isLocked = true;
+	}
+	
+	function isValid() {
+		/* Locked productions are always valid;
+			unlocked productions are valid if title is nonempty and byline is valid */
+		if (isLocked) return true;
+		var title = cells.title.value.get();
+		return (title != null && title.match(/\S/) && cells.by.isValid());
+	}
+	
+	self.existsOnServer = function() {
+		return (placingId != null);
+	}
+	
+	/* get the index number of this placing within the list, counting only
+		entries that exist on the server */
+	function serverPosition() {
+		var position = 1;
+		for (var i = 0; i < table.placings.length; i++) {
+			if (table.placings[i] == self) return position;
+			if (table.placings[i].existsOnServer()) position++;
+		}
+	}
+	
+	function dataForServer() {
+		var savedata = {
+			position: serverPosition(),
+			ranking: cells.placing.value.get(),
+			score: cells.score.value.get(),
+			production: {
+				id: productionId
+			}
+		};
+		if (savedata.ranking == null) savedata.ranking = '';
+		if (savedata.score == null) savedata.score = '';
+		
+		if (!isLocked) {
+			var byline = cells.by.value.get();
+			var authorSelections = [];
+			for (var i = 0; i < byline.author_matches.length; i++) {
+				authorSelections.push(byline.author_matches[i].selection);
+			}
+			var affiliationSelections = [];
+			for (var i = 0; i < byline.affiliation_matches.length; i++) {
+				affiliationSelections.push(byline.affiliation_matches[i].selection);
+			}
+				
+			savedata.production.title = cells.title.value.get();
+			savedata.production.byline = {
+				'authors': authorSelections,
+				'affiliations': affiliationSelections
+			}
+			savedata.production.platform_id = cells.platform.value.get();
+			savedata.production.production_type_id = cells.type.value.get();
+		}
+		return savedata;
+	}
+	
+	var uid = $.uid('competitionplacing');
+	function saveIfValid() {
+		if (isValid()) {
+			var savedata = dataForServer(); /* capture saved state at this point - it may no longer be
+				valid if we wait for ajaxQueue callback */
+			$.ajaxQueue(uid, function(release) {
+				self.row.setStatus('saving', 'Saving...');
+				
+				if (placingId == null) {
+					var submitUrl = '/competition_api/add_placing/' + table.competitionId + '/'
+				} else {
+					var submitUrl = '/competition_api/update_placing/' + placingId + '/'
+				}
+			
+				$.ajax({
+					type: 'POST',
+					url: submitUrl,
+					dataType: 'json',
+					data: JSON.stringify(savedata),
+					contentType: 'application/json',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+					},
+					error: function() {
+						self.row.setStatus('error', 'Error saving row');
+						release();
+					},
+					success: function(newData) {
+						cells.placing.value.set(newData.ranking);
+						if (newData.production.stable) {
+							populateProductionAndLock(newData.production);
+						} else {
+							cells.title.value.set(newData.production.title);
+							cells.by.value.set(newData.production.byline);
+							cells.platform.value.set(newData.production.platform);
+							cells.type.value.set(newData.production.production_type);
+						}
+						cells.score.value.set(newData.score);
+						productionId = newData.production.id;
+						placingId = newData.id;
+						self.row.setStatus('normal');
+						release();
+					}
+				})
+			})
+			
+		} else {
+			self.row.setStatus('unsaved', 'Unsaved changes');
+		}
 	}
 	
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
@@ -333,8 +467,9 @@ function CompetitionPlacing(data, table, row, opts) {
 		}
 		for (var i = 0; i < cellOrder.length; i++) {
 			self.row.addCell(cells[cellOrder[i]]);
+			cells[cellOrder[i]].onFinishEdit.bind(saveIfValid);
 		}
-		populateAndLock(data.production);
+		populateProductionAndLock(data.production);
 	} else {
 		var cells = {
 			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
@@ -346,7 +481,14 @@ function CompetitionPlacing(data, table, row, opts) {
 		}
 		for (var i = 0; i < cellOrder.length; i++) {
 			self.row.addCell(cells[cellOrder[i]]);
+			cells[cellOrder[i]].onFinishEdit.bind(saveIfValid);
 		}
+	}
+	
+	if (data.id) {
+		self.row.setStatus('normal');
+	} else {
+		self.row.setStatus('unsaved', 'Unsaved changes');
 	}
 	
 	self.getPlacing = function() {
@@ -358,11 +500,14 @@ function CompetitionPlacing(data, table, row, opts) {
 			/* placing field not previously populated; auto-populate it now */
 			cells.placing.value.set(table.placingForPosition(newIndex, true));
 		}
+		saveIfValid();
 	})
 	
 	cells.title.autocomplete.bind(function(production) {
-		populateAndLock(production);
+		populateProductionAndLock(production);
 		table.grid.setCursor(5, self.row.index.get());
+		return false; /* tell the autocomplete handler not to call finishEdit
+			(which prematurely submits the entry without an ID) */
 	})
 	
 	cells.title.requestUnlock.bind(function() {
@@ -370,10 +515,31 @@ function CompetitionPlacing(data, table, row, opts) {
 		cells.by.unlock();
 		cells.platform.unlock();
 		cells.type.unlock();
+		isLocked = false;
+		productionId = null;
 		cells.title._startEdit('unlock');
 	})
 	cells.title.cancelUnlock.bind(function() {
-		populateAndLock(lastLockedData);
+		populateProductionAndLock(lastLockedData);
+	})
+	
+	self.row.onDelete.bind(function() {
+		$.ajaxQueue(uid, function(release) {
+			if (placingId == null) {
+				release();
+			} else {
+				$.ajax({
+					type: 'POST',
+					url: '/competition_api/delete_placing/' + placingId + '/',
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+					},
+					complete: function() {
+						release();
+					}
+				})
+			}
+		})
 	})
 	
 	return self;

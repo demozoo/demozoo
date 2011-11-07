@@ -127,6 +127,10 @@ urlpatterns += patterns('demoscene.views',
 	
 	(r'^competition_api/(\d+)/row/$', 'competition_api.process_row', {}),
 	(r'^competition_api/(\d+)/row/(\d+)/$', 'competition_api.process_row', {}),
+
+	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
+	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),
+	(r'^competition_api/delete_placing/(\d+)/$', 'competition_api.delete_placing', {}),
 	
 	(r'^nicks/match/$', 'nicks.match', {}),
 	(r'^nicks/byline_match/$', 'nicks.byline_match', {}),
