@@ -63,16 +63,6 @@ class CompetitionForm(forms.ModelForm):
 		model = Competition
 		fields = ('name',)
 
-class CompetitionResultForm(forms.Form):
-	placing = forms.CharField(required = False)
-	title = forms.CharField()
-	byline = BylineField(required = False)
-	platform = forms.ModelChoiceField(required = False, queryset = Platform.objects.all())
-	production_type = forms.ModelChoiceField(required = False, queryset = ProductionType.objects.all())
-	score = forms.CharField(required = False)
-
-CompetitionResultFormSet = formset_factory(CompetitionResultForm)
-
 class CompetitionPlacingForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		self.instance = kwargs.pop('instance', CompetitionPlacing())
