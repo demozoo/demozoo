@@ -152,11 +152,16 @@ class SceneOrgFile(BaseUrl):
 	tests = [
 		querystring_match(r'https?://(?:www\.)scene\.org/file\.php', 'file', re.I),
 		regex_match(r'ftp://ftp\.scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://ftp\.scene\.org(/mirrors/.*)', re.I),
 		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
 		regex_match(r'http://http\.de\.scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
+		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
+		regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
 	]
 	def __str__(self):
 		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param)
@@ -169,6 +174,9 @@ class AmigascneFile(BaseUrl):
 		regex_match(r'ftp://ftp\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'http://http\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'http://http\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
 	]
 
 def grok_scener_link(urlstring):
