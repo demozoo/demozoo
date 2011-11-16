@@ -1127,3 +1127,15 @@ a.lightbox_close {
 body.editorial h1 {
 	margin-bottom: 1em;
 }
+
+body.edit_competition h2 {
+	margin-bottom: 1em;
+}
+body.edit_competition form.entry_form {
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+body.edit_competition form.entry_form input[type=submit] {
+	margin-left: 150px;
+}

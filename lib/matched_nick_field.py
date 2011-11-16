@@ -1,36 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
-from demoscene.models import Nick, NickVariant, Releaser
-import datetime
-
-# A placeholder for a Nick object, used as the cleaned value of a MatchedNickField
-# and the value MatchedNickWidget returns from value_from_datadict.
-# We can't use a Nick because we may not want to save it to the database yet (because
-# the form might be failing validation elsewhere), and using an unsaved Nick object
-# isn't an option either because we need to create a Releaser as a side effect, and
-# Django won't let us build multi-object structures of unsaved models.
-class NickSelection():
-	def __init__(self, id, name):
-		self.id = id
-		self.name = name
-	
-	def commit(self):
-		if self.id == 'newscener':
-			releaser = Releaser(name = self.name, is_group = False, updated_at = datetime.datetime.now())
-			releaser.save()
-			self.id = releaser.primary_nick.id
-			return releaser.primary_nick
-		elif self.id == 'newgroup':
-			releaser = Releaser(name = self.name, is_group = True, updated_at = datetime.datetime.now())
-			releaser.save()
-			self.id = releaser.primary_nick.id
-			return releaser.primary_nick
-		else:
-			return Nick.objects.get(id = self.id)
-	
-	def __str__(self):
-		return "NickSelection: %s, %s" % (self.id, self.name)
+from demoscene.models import Nick, Releaser
+from demoscene.utils.nick_search import NickSearch, NickSelection
 
 # A variant of RadioFieldRenderer which accepts structs of:
 # className, nameWithDifferentiator, nameWithAffiliations, countryCode, differentiator, alias, id
@@ -71,63 +43,12 @@ class NickChoicesRenderer(forms.widgets.RadioFieldRenderer):
 		return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join(list_items))
 
 class MatchedNickWidget(forms.Widget):
-	def __init__(self, search_term, attrs = None,
-		sceners_only = False, groups_only = False,
-		group_names = [], member_names = []):
-		self.search_term = search_term
+	def __init__(self, nick_search, attrs = None):
 		
-		self.choices = []
-		self.nick_variants = NickVariant.autocompletion_search(
-			search_term, exact = True,
-			sceners_only = sceners_only, groups_only = groups_only,
-			groups = group_names, members = member_names)
-		
-		for nv in self.nick_variants:
-			choice = {
-				'className': ('group' if nv.nick.releaser.is_group else 'scener'),
-				'nameWithAffiliations': nv.nick.name_with_affiliations(),
-				'id': nv.nick_id
-			}
-			if nv.nick.releaser.country_code:
-				choice['countryCode'] = nv.nick.releaser.country_code.lower()
-			
-			if nv.nick.differentiator:
-				choice['differentiator'] = nv.nick.differentiator
-				choice['nameWithDifferentiator'] = "%s (%s)" % (nv.nick.name, nv.nick.differentiator)
-			else:
-				choice['nameWithDifferentiator'] = nv.nick.name
-			
-			if nv.nick.name != nv.name:
-				choice['alias'] = nv.name
-			
-			self.choices.append(choice)
-		
-		if not groups_only:
-			self.choices.append({
-				'className': 'add_scener',
-				'nameWithAffiliations': "Add a new scener named '%s'" % search_term,
-				'nameWithDifferentiator': search_term,
-				'id': 'newscener'
-			})
-		if not sceners_only:
-			self.choices.append({
-				'className': 'add_group',
-				'nameWithAffiliations': "Add a new group named '%s'" % search_term,
-				'nameWithDifferentiator': search_term,
-				'id': 'newgroup'
-			})
-		
-		# see if there's a unique top choice in self.nick_variants;
-		# if so, store that in self.top_choice for possible use later
-		# if we render this widget with no initial value specified
-		if self.nick_variants.count() == 0:
-			self.top_choice = None
-		elif self.nick_variants.count() == 1:
-			self.top_choice = self.nick_variants[0]
-		elif self.nick_variants[0].score > self.nick_variants[1].score:
-			self.top_choice = self.nick_variants[0]
-		else:
-			self.top_choice = None
+		self.nick_search = nick_search
+
+		self.choices = self.nick_search.suggestions
+		self.selection = self.nick_search.selection
 		
 		self.select_widget = forms.RadioSelect(renderer = NickChoicesRenderer,
 			choices = self.choices, attrs = attrs)
@@ -137,17 +58,7 @@ class MatchedNickWidget(forms.Widget):
 	
 	@property
 	def match_data(self):
-		return {
-			'choices': self.choices,
-			'selection': self.selection_data
-		}
-	
-	@property
-	def selection_data(self):
-		return {
-			'id': (self.top_choice.nick_id if self.top_choice else None),
-			'name': self.search_term,
-		}
+		return self.nick_search.match_data
 	
 	def value_from_datadict(self, data, files, name):
 		nick_id = self.select_widget.value_from_datadict(data, files, name + '_id')
@@ -164,52 +75,36 @@ class MatchedNickWidget(forms.Widget):
 	id_for_label = classmethod(id_for_label)
 	
 	def render(self, name, value, attrs=None):
-		selected_id = (value and value.id) or (self.top_choice and self.top_choice.nick_id)
+		selected_id = (value and value.id) or (self.selection and self.selection.id)
 		output = [
 			self.select_widget.render(
 				name + '_id',
 				selected_id,
 				attrs = attrs),
-			self.name_widget.render(name + '_name', self.search_term, attrs = attrs)
+			self.name_widget.render(name + '_name', self.nick_search.search_term, attrs = attrs)
 		]
 		return mark_safe(u'<div class="nick_match">' + u''.join(output) + u'</div>')
 
 class MatchedNickField(forms.Field):
-	def __init__(self, search_term, *args, **kwargs):
+	def __init__(self, nick_search, *args, **kwargs):
 		
-		matched_nick_widget_opts = {
-			'sceners_only': kwargs.pop('sceners_only', False),
-			'groups_only': kwargs.pop('groups_only', False),
-			'group_names': kwargs.pop('group_names', []),
-			'member_names': kwargs.pop('member_names', [])
-		}
-		self.widget = MatchedNickWidget(search_term, **matched_nick_widget_opts)
+		self.nick_search = nick_search
 		
-		self.search_term = search_term
-		
-		nick_variants = self.widget.nick_variants
-		if nick_variants.count() == 0:
-			self.best_match = None
-		elif nick_variants.count() == 1:
-			self.best_match = NickSelection(nick_variants[0].nick_id, nick_variants[0].name)
-		elif nick_variants[0].score > nick_variants[1].score:
-			self.best_match = NickSelection(nick_variants[0].nick_id, nick_variants[0].name)
-		else:
-			self.best_match = None
+		self.widget = MatchedNickWidget(self.nick_search)
 		
 		super(MatchedNickField, self).__init__(*args, **kwargs)
 	
 	def clean(self, value):
 		if not value:
-			value = self.best_match
+			value = self.nick_search.selection
 		elif isinstance(value, NickSelection):
 			# check that it's a valid selection given the available choices
 			if value.id == 'newscener' or value.id == 'newgroup':
-				if value.name.lower() != self.search_term.lower(): # invalid...
-					value = self.best_match # ...so start a fresh match
+				if value.name.lower() != self.nick_search.search_term.lower(): # invalid...
+					value = self.nick_search.selection # ...so start a fresh match
 			else:
-				if int(value.id) not in [nv.nick_id for nv in self.widget.nick_variants]: # invalid...
-					value = self.best_match # ...so start a fresh match
+				if int(value.id) not in [choice['id'] for choice in self.widget.choices]: # invalid...
+					value = self.nick_search.selection # ...so start a fresh match
 		elif isinstance(value, Nick):
 			# convert to a NickSelection
 			value = NickSelection(value.id, value.name)

@@ -15,7 +15,7 @@ function ResultsTable(elem, opts) {
 		'productionTypes': opts.productionTypes
 	};
 	
-	self.competitionId = opts.competitionId;
+	self.competition = opts.competition;
 	
 	/* Suggest a value for the 'placing' field of the row in position 'position', based on the
 		'placing' values of its neighbours. If allowFirst is true, suggest '1' as a placing at the
@@ -149,6 +149,13 @@ function BylineGridCell(opts) {
 						self._startEdit('uncapturedText');
 						bylineField.setValue(null);
 						return false;
+					case 86: /* V */
+						if (event.metaKey) { /* cmd+V = paste */
+							self._startEdit('uncapturedText');
+							setTimeout(function() {bylineField.lookUpMatches()}, 10);
+							return true; /* override grid event handler, defer to browser's own */
+						}
+						break;
 				}
 				break;
 			case 'capturedText':
@@ -251,6 +258,15 @@ function ProductionTitleGridCell(opts) {
 							self._input.val('');
 						}
 						return false;
+					case 86: /* V */
+						if (event.metaKey) { /* cmd+V = paste */
+							self._startEdit('uncapturedText');
+							setTimeout(function() {
+								self._input.autocomplete('search');
+							}, 10);
+							return true; /* override grid event handler, defer to browser's own */
+						}
+						break;
 				}
 				break;
 			case 'capturedText':
@@ -326,7 +342,10 @@ function CompetitionPlacing(data, table, row, opts) {
 	self.row = row;
 	
 	if (!data) data = {};
-	if (!data.production) data.production = {};
+	if (!data.production) data.production = {
+		'platform': table.competition.platformId,
+		'production_type': table.competition.productionTypeId
+	};
 	if (!data.production.byline) {
 		data.production.byline = {
 			'search_term': '', 'author_matches': [], 'affiliation_matches': []
@@ -413,7 +432,7 @@ function CompetitionPlacing(data, table, row, opts) {
 				self.row.setStatus('saving', 'Saving...');
 				
 				if (placingId == null) {
-					var submitUrl = '/competition_api/add_placing/' + table.competitionId + '/'
+					var submitUrl = '/competition_api/add_placing/' + table.competition.id + '/'
 				} else {
 					var submitUrl = '/competition_api/update_placing/' + placingId + '/'
 				}

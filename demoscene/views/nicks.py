@@ -1,5 +1,4 @@
-from nick_field import NickLookup
-from byline_field import BylineLookup
+from demoscene.utils.nick_search import NickSearch, BylineSearch
 from demoscene.models import NickVariant
 from django.http import HttpResponse
 try:
@@ -17,7 +16,7 @@ def match(request):
 	if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
 		autocomplete = False
 	
-	filters = {} # also doubles up as options to pass to MatchedNickField
+	filters = {} # also doubles up as options to pass to NickSearch
 	if sceners_only:
 		filters['sceners_only'] = True
 	elif groups_only:
@@ -28,13 +27,12 @@ def match(request):
 	else:
 		query = initial_query
 	
-	nick_lookup = NickLookup(search_term = query.rstrip(), matched_nick_options = filters)
-	widget = nick_lookup.matched_nick_field.widget
+	nick_search = NickSearch(query.rstrip(), **filters)
 	
 	data = {
 		'query': query,
 		'initial_query': initial_query,
-		'match': widget.match_data,
+		'match': nick_search.match_data,
 	}
 	# to simulate network lag:
 	#import time
@@ -49,13 +47,13 @@ def byline_match(request):
 	if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
 		autocomplete = False
 	
-	byline_lookup = BylineLookup(search_term = initial_query, autocomplete = autocomplete)
+	byline_search = BylineSearch(search_term = initial_query, autocomplete = autocomplete)
 	
 	data = {
-		'query': byline_lookup.search_term,
+		'query': byline_search.search_term,
 		'initial_query': initial_query,
-		'author_matches': byline_lookup.author_matches_data,
-		'affiliation_matches': byline_lookup.affiliation_matches_data,
+		'author_matches': byline_search.author_matches_data,
+		'affiliation_matches': byline_search.affiliation_matches_data,
 	}
 	return HttpResponse(json.dumps(data), mimetype="text/javascript")
 	

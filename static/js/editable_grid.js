@@ -638,6 +638,12 @@ function TextGridCell(opts) {
 						self._startEdit('uncapturedText');
 						input.val('');
 						return false;
+					case 86: /* V */
+						if (event.metaKey) { /* cmd+V = paste */
+							self._startEdit('uncapturedText');
+							return true; /* override grid event handler, defer to browser's own */
+						}
+						break;
 				}
 				break;
 			case 'capturedText':

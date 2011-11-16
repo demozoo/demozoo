@@ -13,7 +13,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 		self.instance = kwargs.pop('instance', Production())
 		super(BaseProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
 		self.fields['title'] = forms.CharField(initial = self.instance.title)
-		self.fields['byline'] = BylineField(required = False, initial = self.instance.byline(), label = 'By')
+		self.fields['byline'] = BylineField(required = False, initial = self.instance.byline_search(), label = 'By')
 		self.fields['release_date'] = FuzzyDateField(required = False, initial = self.instance.release_date,
 			help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 		self.fields['platforms'] = forms.ModelMultipleChoiceField(required = False, label = 'Platform',
@@ -28,6 +28,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 		else:
 			self.instance.author_nicks = []
 			self.instance.author_affiliation_nicks = []
+		self.unparsed_byline = None
 		
 		self.instance.platforms = self.cleaned_data['platforms']
 		self.instance.release_date = self.cleaned_data['release_date']

@@ -3,7 +3,8 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from demoscene.models import Nick
 from submit_button_field import SubmitButtonInput
-from matched_nick_field import MatchedNickField, NickSelection
+from matched_nick_field import MatchedNickField
+from demoscene.utils.nick_search import NickSelection, NickSearch
 
 # An object which encapsulates the state of a NickWidget as derived from its posted data;
 # this is what NickWidget returns from value_from_datadict
@@ -18,8 +19,11 @@ class NickLookup():
 		self.autoaccept = autoaccept # whether we should continue upon successfully resolving a nick,
 			# as opposed to re-showing the form
 		self.nick_selection = nick_selection
-		self.matched_nick_field = MatchedNickField(search_term, None,
-			**matched_nick_options)
+		
+		nick_search = NickSearch(search_term,
+			sceners_only = matched_nick_options.pop('sceners_only', False),
+			groups_only = matched_nick_options.pop('groups_only', False))
+		self.matched_nick_field = MatchedNickField(nick_search, None)
 	
 	@staticmethod
 	def from_value(value, matched_nick_options = {}):

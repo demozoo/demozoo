@@ -118,7 +118,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^parties/(\d+)/add_competition/$', 'parties.add_competition', {}, 'party_add_competition'),
 	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
 	(r'^parties/(\d+)/edit_competition/(\d+)/$', 'parties.edit_competition', {}, 'party_edit_competition'),
-	(r'^parties/(\d+)/edit_competition_testing_2/(\d+)/$', 'parties.edit_competition_testing_2', {}, 'party_edit_competition_testing_2'),
 	(r'^parties/(\d+)/edit_notes/$', 'parties.edit_notes', {}, 'party_edit_notes'),
 	(r'^parties/(\d+)/edit_external_links/$', 'parties.edit_external_links', {}, 'party_edit_external_links'),
 	

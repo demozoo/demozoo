@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 
-{% block html_title %}{{ production.title }} {% if production.author_nicks.all %}by {{ production.byline }}{% endif %} - Demozoo{% endblock %}
+{% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block body_class %}show_production{% endblock %}
 
@@ -17,7 +17,7 @@
 		
 		<div class="production_title">
 			<h2>{{ production.title }}</h2>
-			{% if production.author_nicks.all %}
+			{% if production.byline_string %}
 				<h3>
 					by {% byline production %}
 				</h3>

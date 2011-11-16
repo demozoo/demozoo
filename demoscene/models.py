@@ -629,7 +629,7 @@ class Production(models.Model):
 	zxdemo_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo ID')
 	
 	data_source = models.CharField(max_length = 32, blank = True, null = True)
-	
+	unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
 	has_bonafide_edits = models.BooleanField(default = True, help_text = "True if this production has been updated through its own forms, as opposed to just compo results tables")
 	created_at = models.DateTimeField(auto_now_add = True)
 	updated_at = models.DateTimeField()
@@ -649,9 +649,30 @@ class Production(models.Model):
 	def byline(self):
 		return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
 	
-	@property
-	def byline_string(self):
-		return unicode(self.byline())
+	def byline_search(self):
+		from demoscene.utils.nick_search import BylineSearch
+		if self.unparsed_byline:
+			return BylineSearch(self.unparsed_byline)
+		else:
+			return BylineSearch.from_byline(self.byline())
+	
+	def _get_byline_string(self):
+		return self.unparsed_byline or unicode(self.byline())
+	def _set_byline_string(self, byline_string):
+		from demoscene.utils.nick_search import BylineSearch
+		byline_search = BylineSearch(byline_string)
+		
+		if all(byline_search.author_nick_selections) and all(byline_search.affiliation_nick_selections):
+			self.author_nicks = [selection.id for selection in byline_search.author_nick_selections]
+			self.author_affiliation_nicks = [selection.id for selection in byline_search.affiliation_nick_selections]
+			self.unparsed_byline = None
+			self.save()
+		else:
+			self.unparsed_byline = byline_string
+			self.author_nicks = []
+			self.author_affiliation_nicks = []
+			self.save()
+	byline_string = property(_get_byline_string, _set_byline_string)
 	
 	@property
 	def title_with_byline(self):
@@ -801,7 +822,7 @@ class Byline(StrAndUnicode):
 			return authors_string
 	
 	def commit(self, production):
-		from matched_nick_field import NickSelection
+		from demoscene.utils.nick_search import NickSelection
 		
 		author_nicks = []
 		for nick in self.author_nicks:
@@ -1040,6 +1061,23 @@ class Party(models.Model):
 		if self.scene_org_directory:
 			return "http://www.scene.org/dir.php?dir=%s" % self.scene_org_directory
 	
+	# return a FuzzyDate representing our best guess at when this party's competitions were held
+	def default_competition_date(self):
+		if self.end_date and self.end_date.precision == 'd':
+			# assume that competitions were held on the penultimate day of the party
+			competition_day = self.end_date.date - datetime.timedelta(days = 1)
+			# ...but if that's in the future, use today instead
+			if competition_day > datetime.date.today():
+				competition_day = datetime.date.today()
+			# ...and if that's before the (known exact) start date of the party, use that instead
+			if self.start_date and self.start_date.precision == 'd' and self.start_date.date > competition_day:
+				competition_day = self.start_date.date
+			return FuzzyDate(competition_day, 'd')
+		else:
+			# we don't know this party's exact end date, so just use whatever precision of end date
+			# we know (if indeed we have one at all)
+			return self.end_date
+	
 	@property
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
@@ -1051,6 +1089,10 @@ class Party(models.Model):
 class Competition(models.Model):
 	party = models.ForeignKey(Party, related_name = 'competitions')
 	name = models.CharField(max_length = 255)
+	shown_date_date = models.DateField(null = True, blank = True)
+	shown_date_precision = models.CharField(max_length = 1, blank = True)
+	platform = models.ForeignKey(Platform, null = True)
+	production_type = models.ForeignKey(ProductionType, null = True)
 	
 	def results(self):
 		return self.placings.order_by('position')
@@ -1060,6 +1102,20 @@ class Competition(models.Model):
 			return "%s %s" % (self.party.name, self.name)
 		except Party.DoesNotExist:
 			return "(unknown party) %s" % self.name
+	
+	def _get_shown_date(self):
+		if self.shown_date_date and self.shown_date_precision:
+			return FuzzyDate(self.shown_date_date, self.shown_date_precision)
+		else:
+			return None
+	def _set_shown_date(self, fuzzy_date):
+		if fuzzy_date:
+			self.shown_date_date = fuzzy_date.date
+			self.shown_date_precision = fuzzy_date.precision
+		else:
+			self.shown_date_date = None
+			self.shown_date_precision = ''
+	shown_date = property(_get_shown_date,_set_shown_date)
 
 class CompetitionPlacing(models.Model):
 	competition = models.ForeignKey(Competition, related_name = 'placings')
@@ -1070,7 +1126,7 @@ class CompetitionPlacing(models.Model):
 	
 	@property
 	def json_data(self):
-		from byline_field import BylineLookup
+		from demoscene.utils.nick_search import BylineSearch
 		
 		if self.production.is_stable_for_competitions():
 			return {
@@ -1088,7 +1144,7 @@ class CompetitionPlacing(models.Model):
 				}
 			}
 		else:
-			byline_lookup = BylineLookup.from_value(self.production.byline())
+			byline_search = self.production.byline_search()
 			return {
 				'id': self.id,
 				'ranking': self.ranking,
@@ -1101,9 +1157,9 @@ class CompetitionPlacing(models.Model):
 					# it's OK to reduce platform / prodtype to a single value, because unstable productions
 					# can only ever have one (adding multiple on the production edit page would make them stable)
 					'byline': {
-						'search_term': byline_lookup.search_term,
-						'author_matches': byline_lookup.author_matches_data,
-						'affiliation_matches': byline_lookup.affiliation_matches_data,
+						'search_term': byline_search.search_term,
+						'author_matches': byline_search.author_matches_data,
+						'affiliation_matches': byline_search.affiliation_matches_data,
 					},
 					'stable': False,
 				}

@@ -2,18 +2,20 @@ from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.http import HttpResponse
 from demoscene.models import Competition, CompetitionPlacing, Production, Nick, Platform, ProductionType
-from byline_field import BylineLookup
-from matched_nick_field import NickSelection
+from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 import datetime
 
 # helper function: create or update a production according to JSON data
-def handle_production(prod_data):
+def handle_production(prod_data, competition):
 	if prod_data.get('id'):
 		production = Production.objects.get(id = prod_data['id'])
 	else:
-		production = Production(updated_at = datetime.datetime.now(), has_bonafide_edits = False)
+		production = Production(
+			release_date = competition.shown_date,
+			updated_at = datetime.datetime.now(),
+			has_bonafide_edits = False)
 		# TODO: populate release date by competition
 		production.save() # assign an ID so that associations work
 	
@@ -41,6 +43,7 @@ def handle_production(prod_data):
 				NickSelection(affillation['id'], affillation['name']).commit()
 				for affillation in prod_data['byline']['affiliations']
 			]
+			production.unparsed_byline = None
 		production.updated_at = datetime.datetime.now()
 		production.supertype = production.inferred_supertype
 		production.save()
@@ -57,7 +60,7 @@ def add_placing(request, competition_id):
 		competition.placings.filter(position__gt = data['position']).update(position=F('position') + 1)
 		
 		placing = CompetitionPlacing(
-			production = handle_production(data['production']),
+			production = handle_production(data['production'], competition),
 			competition = competition,
 			ranking = data['ranking'],
 			position = data['position'],
@@ -80,7 +83,7 @@ def update_placing(request, placing_id):
 		elif int(data['position']) < placing.position: # decreasing position - move others up
 			competition.placings.filter(position__gte = data['position'], position__lt = placing.position).update(position=F('position') + 1)
 		
-		placing.production = handle_production(data['production'])
+		placing.production = handle_production(data['production'], competition)
 		placing.ranking = data['ranking']
 		placing.position = data['position']
 		placing.score = data['score']

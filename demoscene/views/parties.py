@@ -1,7 +1,6 @@
 from demoscene.shortcuts import *
 from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production
 from demoscene.forms.party import *
-from byline_field import BylineLookup
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -39,6 +38,7 @@ def show(request, party_id):
 		'placings__production__id',
 		'placings__production__title',
 		'placings__production__supertype',
+		'placings__production__unparsed_byline',
 		'placings__production__author_nicks__id',
 		'placings__production__author_nicks__name',
 		'placings__production__author_nicks__releaser__id',
@@ -58,6 +58,7 @@ def show(request, party_id):
 			demoscene_production.id AS placings__production__id,
 			demoscene_production.title AS placings__production__title,
 			demoscene_production.supertype AS placings__production__supertype,
+			demoscene_production.unparsed_byline AS placings__production__unparsed_byline,
 			author_nick.id AS placings__production__author_nicks__id,
 			author_nick.name AS placings__production__author_nicks__name,
 			author.id AS placings__production__author_nicks__releaser__id,
@@ -222,6 +223,7 @@ def add_competition(request, party_id):
 	if request.method == 'POST':
 		form = CompetitionForm(request.POST, instance = competition)
 		if form.is_valid():
+			competition.shown_date = form.cleaned_data['shown_date']
 			form.save()
 			# TODO: party updated_at datestamps
 			# party.updated_at = datetime.datetime.now()
@@ -231,7 +233,9 @@ def add_competition(request, party_id):
 			else:
 				return HttpResponseRedirect(party.get_absolute_url())
 	else:
-		form = CompetitionForm(instance = competition)
+		form = CompetitionForm(instance = competition, initial = {
+			'shown_date': party.default_competition_date(),
+		})
 	return ajaxable_render(request, 'parties/add_competition.html', {
 		'html_title': "New competition for %s" % party.name,
 		'party': party,
@@ -242,39 +246,17 @@ def add_competition(request, party_id):
 def edit_competition(request, party_id, competition_id):
 	party = get_object_or_404(Party, id = party_id)
 	competition = get_object_or_404(Competition, party = party, id = competition_id)
+	
 	if request.method == 'POST':
 		competition_form = CompetitionForm(request.POST, instance = competition)
-		formset = CompetitionPlacingFormset(request.POST, instance = competition)
-		if competition_form.is_valid() and formset.is_valid():
-			def form_order_key(form):
-				if form.is_valid():
-					return form.cleaned_data['ORDER'] or 9999
-				else:
-					return 9999
-			
-			sorted_forms = sorted(formset.forms, key = form_order_key)
-			for (i, form) in enumerate(sorted_forms):
-				form.instance.position = i+1
-			formset.save()
-			# TODO: competition/party updated_at datestamps
-			#competition.updated_at = datetime.datetime.now()
+		if competition_form.is_valid():
+			competition.shown_date = competition_form.cleaned_data['shown_date']
 			competition_form.save()
-			return redirect('party', args = [party.id])
+			return redirect('party_edit_competition', args = [party.id, competition.id])
 	else:
-		competition_form = CompetitionForm(instance = competition)
-		formset = CompetitionPlacingFormset(instance = competition)
-	return ajaxable_render(request, 'parties/edit_competition.html', {
-		'html_title': "Editing %s %s competition" % (party.name, competition.name),
-		'party': party,
-		'competition': competition,
-		'formset': formset,
-		'competition_form': competition_form,
-	})
-
-@login_required
-def edit_competition_testing_2(request, party_id, competition_id):
-	party = get_object_or_404(Party, id = party_id)
-	competition = get_object_or_404(Competition, party = party, id = competition_id)
+		competition_form = CompetitionForm(instance = competition, initial = {
+			'shown_date': competition.shown_date,
+		})
 	
 	competition_placings = [placing.json_data for placing in competition.results()]
 	
@@ -285,11 +267,19 @@ def edit_competition_testing_2(request, party_id, competition_id):
 	
 	production_types = ProductionType.objects.all()
 	production_types_json = json.dumps([ [p.id, p.name] for p in production_types ])
+	
+	competition_json = json.dumps({
+		'id': competition.id,
+		'platformId': competition.platform_id,
+		'productionTypeId': competition.production_type_id,
+	})
 
-	return render(request, 'parties/edit_competition_testing_2.html', {
+	return render(request, 'parties/edit_competition.html', {
 		'html_title': "Editing %s %s competition" % (party.name, competition.name),
+		'form': competition_form,
 		'party': party,
 		'competition': competition,
+		'competition_json': competition_json,
 		'competition_placings_json': competition_placings_json,
 		'platforms_json': platforms_json,
 		'production_types_json': production_types_json,

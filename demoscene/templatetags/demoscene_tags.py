@@ -33,6 +33,7 @@ def releaser_flag(releaser):
 @register.inclusion_tag('shared/byline.html')
 def byline(production):
 	return {
+		'unparsed_byline': production.unparsed_byline,
 		'authors': [(nick, nick.releaser) for nick in production.author_nicks.select_related('releaser')],
 		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks.select_related('releaser')],
 	}
@@ -40,6 +41,7 @@ def byline(production):
 @register.inclusion_tag('shared/byline.html')
 def component_byline(authors, affiliations):
 	return {
+		'unparsed_byline': None,
 		'authors': authors,
 		'affiliations': affiliations,
 	}

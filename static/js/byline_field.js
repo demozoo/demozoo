@@ -78,7 +78,8 @@ function BylineField(elem, searchTerm, authorMatches, affiliationMatches, fieldP
 	
 	var uid = $.uid('byline');
 	
-	searchField.typeahead(function(value, autocomplete) {
+	self.lookUpMatches = function(value, autocomplete) {
+		if (value == null) value = searchField.val();
 		if (value.match(/\S/)) {
 			$.ajaxQueue(uid, function(release) {
 				/* TODO: consider caching results in a JS variable */
@@ -104,7 +105,9 @@ function BylineField(elem, searchTerm, authorMatches, affiliationMatches, fieldP
 			/* blank */
 			populateMatches([], []);
 		}
-	});
+	}
+	
+	searchField.typeahead(self.lookUpMatches);
 	
 	self.getValue = function() {
 		var authorMatches = [];
