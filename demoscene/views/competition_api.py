@@ -57,7 +57,7 @@ def add_placing(request, competition_id):
 		data = simplejson.loads(request.raw_post_data)
 		
 		# move existing placings to accommodate new entry at the stated position
-		competition.placings.filter(position__gt = data['position']).update(position=F('position') + 1)
+		competition.placings.filter(position__gte = data['position']).update(position=F('position') + 1)
 		
 		placing = CompetitionPlacing(
 			production = handle_production(data['production'], competition),
