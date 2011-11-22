@@ -262,9 +262,10 @@ class DemopartyNetParty(BaseUrl):
 	html_title_format = "%s on demoparty.net"
 
 class SlengpungParty(BaseUrl):
-	canonical_format = "http://www.slengpung.com/v3/parties.php?id=%s&order=name"
+	canonical_format = "http://www.slengpung.com/?eventid=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)slengpung\.com/v3/parties\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)slengpung.com/', 'eventid', re.I),
 	]
 	html_link_class = "slengpung"
 	html_link_text = "Slengpung"
