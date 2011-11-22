@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production, PartyExternalLink
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -110,17 +110,32 @@ def create(request):
 			party.start_date = form.cleaned_data['start_date']
 			party.end_date = form.cleaned_data['end_date']
 			
-			# copy over usable fields from party_series
-			if party.start_date:
-				party.pouet_party_when = party.start_date.date.year
-			if party.party_series.website:
-				party.homepage = party.party_series.website
-			if party.party_series.pouet_party_id:
-				party.pouet_party_id = party.party_series.pouet_party_id
-			if party.party_series.twitter_username:
-				party.twitter_username = party.party_series.twitter_username
+			# populate website field from party_series if not already specified
+			if party.party_series.website and not party.website:
+				party.website = party.party_series.website
+			# conversely, fill in the website field on party_series if it's given here and we don't have one already
+			elif party.website and not party.party_series.website:
+				party.party_series.website = party.website
+				party.party_series.save()
 			
 			form.save()
+			
+			# create a Pouet link if we already know the Pouet party id from the party series record
+			if party.start_date and party.party_series.pouet_party_id:
+				PartyExternalLink.objects.create(
+					link_class = 'PouetParty',
+					parameter = "%s/%s" % (party.party_series.pouet_party_id, party.start_date.date.year),
+					party = party
+				)
+			
+			# create a Twitter link if we already know a Twitter username from the party series record
+			if party.party_series.twitter_username:
+				PartyExternalLink.objects.create(
+					link_class = 'TwitterAccount',
+					parameter = party.party_series.twitter_username,
+					party = party
+				)
+			
 			messages.success(request, 'Party added')
 			return redirect('party', args = [party.id])
 	else:
@@ -139,6 +154,12 @@ def edit(request, party_id):
 			party.start_date = form.cleaned_data['start_date']
 			party.end_date = form.cleaned_data['end_date']
 			form.save()
+			
+			# if we now have a website entry but the PartySeries record doesn't, copy it over
+			if party.website and not party.party_series.website:
+				party.party_series.website = party.website
+				party.party_series.save()
+			
 			messages.success(request, 'Party updated')
 			return redirect('party', args = [party.id])
 	else:
@@ -166,36 +187,44 @@ def edit_notes(request, party_id):
 @login_required
 def edit_external_links(request, party_id):
 	party = get_object_or_404(Party, id = party_id)
-		
+	
 	if request.method == 'POST':
-		form = PartyEditExternalLinksForm(request.POST, instance = party)
-		if form.is_valid():
-			form.save()
-			# copy attributes to party_series if appropriate
+		formset = PartyExternalLinkFormSet(request.POST, instance = party)
+		if formset.is_valid():
+			formset.save()
+			
+			# see if there's anything useful we can extract for the PartySeries record
 			party_series_updated = False
-			if party.party_series.pouet_party_id == None and party.pouet_party_id != None:
-				party.party_series.pouet_party_id = party.pouet_party_id
-				party_series_updated = True
-			if party.homepage and not party.party_series.website:
-				party.party_series.website = party.homepage
-				party_series_updated = True
-			if party.twitter_username and not party.party_series.twitter_username:
-				if re.search(r'\d$', party.twitter_username):
-					# twitter username ends in a number, so assume it's year-specific
-					pass
-				else:
-					party.party_series.twitter_username = party.twitter_username
+			if not party.party_series.pouet_party_id:
+				try:
+					pouet_party_link = party.external_links.get(link_class = 'PouetParty')
+					party.party_series.pouet_party_id = pouet_party_link.parameter.split('/')[0]
 					party_series_updated = True
+				except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
+					pass
+			
+			if not party.party_series.twitter_username:
+				# look for a Twitter username which *does not* end in a number -
+				# assume that ones with a number are year-specific
+				twitter_usernames = []
+				for link in party.external_links.filter(link_class = 'TwitterAccount'):
+					if not re.search(r'\d$', link.parameter):
+						twitter_usernames.append(link.parameter)
+				
+				if len(twitter_usernames) == 1:
+					party.party_series.twitter_username = twitter_usernames[0]
+					party_series_updated = True
+			
 			if party_series_updated:
 				party.party_series.save()
+			
 			return HttpResponseRedirect(party.get_absolute_edit_url())
 	else:
-		form = PartyEditExternalLinksForm(instance = party)
-	
+		formset = PartyExternalLinkFormSet(instance = party)
 	return ajaxable_render(request, 'parties/edit_external_links.html', {
-		'party': party,
-		'form': form,
 		'html_title': "Editing external links for %s" % party.name,
+		'party': party,
+		'formset': formset,
 	})
 
 @login_required

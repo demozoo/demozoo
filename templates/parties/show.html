@@ -14,7 +14,11 @@
 			{% date_range party.start_date party.end_date %}
 			
 			{% if party.party_series.website %}
-				<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
+					<p><a href="{{ party.website }}">{{ party.website }}</a></p>
+			{% else %}
+				{% if party.party_series.website %}
+					<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
+				{% endif %}
 			{% endif %}
 			
 			<p>
@@ -32,16 +36,9 @@
 			<div class="external_links">
 				<h3>External links:</h3>
 				<ul>
-					{% if party.homepage %}<li><a href="{{ party.homepage }}" class="homepage" title="{{ party.name }} homepage">WWW</a></li>{% endif %}
-					{% if party.twitter_url %}<li><a href="{{ party.twitter_url }}" class="twitter" title="{{ party.name }} on Twitter">Twitter</a></li>{% endif %}
-					{% if party.demoparty_net_url %}<li><a href="{{ party.demoparty_net_url }}" class="demoparty_net" title="{{ party.name }} on demoparty.net">demoparty.net</a></li>{% endif %}
-					{% if party.slengpung_url %}<li><a href="{{ party.slengpung_user_url }}" class="slengpung" title="{{ party.name }} on Slengpung">Slengpung</a></li>{% endif %}
-					{% if party.pouet_url %}<li><a href="{{ party.pouet_url }}" class="pouet" title="{{ party.name }} on Pouët">Pouët</a></li>{% endif %}
-					{% if party.bitworld_url %}<li><a href="{{ party.bitworld_url }}" class="bitworld" title="{{ party.name }} on BitWorld">BitWorld</a></li>{% endif %}
-					{% if party.csdb_url %}<li><a href="{{ party.csdb_url }}" class="csdb" title="{{ party.name }} on CSDb">CSDb</a></li>{% endif %}
-					{% if party.breaks_amiga_url %}<li><a href="{{ party.breaks_amiga_url }}" class="breaks_amiga" title="{{ party.name }} on Break's Amiga Collection">Break's Amiga Collection</a></li>{% endif %}
-					{% if party.zxdemo_url %}<li><a href="{{ party.zxdemo_url }}" class="zxdemo" title="{{ party.name }} on zxdemo.org">ZXdemo</a></li>{% endif %}
-					{% if party.scene_org_url %}<li><a href="{{ party.scene_org_url }}" class="sceneorg" title="{{ scener.name }} on scene.org">scene.org</a></li>{% endif %}
+					{% for link in party.external_links.all %}
+						<li>{{ link.html_link|safe }}</li>
+					{% endfor %}
 					<li><a href="{% url party_edit_external_links party.id %}" class="edit open_in_lightbox">Edit</a></li>
 				</ul>
 			</div>

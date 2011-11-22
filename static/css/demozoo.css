@@ -1042,7 +1042,28 @@ ul.parties_in_series li.current {
 .external_links a.twitter {
 	background-image: url('/static/images/icons/external_sites/twitter.png');
 }
-.external_links a.homepage {
+.external_links a.amigascne {
+	background-image: url('/static/images/icons/external_sites/amigascne.png');
+}
+.external_links a.untergrund {
+	background-image: url('/static/images/icons/external_sites/untergrund.png');
+}
+.external_links a.scenesat {
+	background-image: url('/static/images/icons/external_sites/scenesat.png');
+}
+.external_links a.youtube {
+	background-image: url('/static/images/icons/external_sites/youtube.png');
+}
+.external_links a.vimeo {
+	background-image: url('/static/images/icons/external_sites/vimeo.png');
+}
+.external_links a.demoscene_tv {
+	background-image: url('/static/images/icons/external_sites/demoscene_tv.png');
+}
+.external_links a.capped {
+	background-image: url('/static/images/icons/external_sites/capped.png');
+}
+.external_links a.website {
 	background-image: url('/static/images/icons/world.png');
 }
 .external_links a.edit {

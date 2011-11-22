@@ -1,7 +1,7 @@
 from django import forms
 from django.forms.formsets import formset_factory
-from django.forms.models import BaseModelFormSet
-from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing, Platform, ProductionType
+from django.forms.models import BaseModelFormSet, inlineformset_factory
+from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing, Platform, ProductionType, PartyExternalLink
 from fuzzy_date_field import FuzzyDateField
 from production_field import ProductionField
 from byline_field import BylineField
@@ -15,35 +15,19 @@ class PartyForm(ModelFormWithLocation):
 	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	class Meta:
 		model = Party
-		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'party_series_name')
+		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'website', 'party_series_name')
 
 class EditPartyForm(ModelFormWithLocation):
 	start_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	class Meta:
 		model = Party
-		fields = ('name', 'start_date', 'end_date', 'tagline', 'location')
+		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'website')
 
 class PartyEditNotesForm(forms.ModelForm):
 	class Meta:
 		model = Party
 		fields = ['notes']
-
-class PartyEditExternalLinksForm(forms.ModelForm):
-	class Meta:
-		model = Party
-		fields = Party.external_site_ref_field_names + ['pouet_party_when']
-		widgets = {
-			'twitter_username': forms.TextInput(attrs={'class': 'numeric'}), # not really numeric, but box is the same size
-			'demoparty_net_url_fragment': forms.TextInput(attrs={'class': 'numeric'}), # not really numeric, but box is the same size
-			'slengpung_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'pouet_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'pouet_party_when': forms.TextInput(attrs={'class': 'numeric'}),
-			'bitworld_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'csdb_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'breaks_amiga_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'zxdemo_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-		}
 
 class EditPartySeriesForm(forms.ModelForm):
 	class Meta:
@@ -66,3 +50,20 @@ class CompetitionForm(forms.ModelForm):
 	class Meta:
 		model = Competition
 		fields = ('name', 'shown_date', 'platform', 'production_type')
+
+class PartyExternalLinkForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(PartyExternalLinkForm, self).__init__(*args, **kwargs)
+		self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url)
+	
+	def save(self, commit = True):
+		instance = super(PartyExternalLinkForm, self).save(commit = False)
+		instance.url = self.cleaned_data['url']
+		if commit:
+			instance.save()
+		return instance
+	
+	class Meta:
+		model = PartyExternalLink
+		fields = ['url']
+PartyExternalLinkFormSet = inlineformset_factory(Party, PartyExternalLink, form=PartyExternalLinkForm)

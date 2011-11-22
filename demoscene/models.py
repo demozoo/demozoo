@@ -972,21 +972,7 @@ class Party(models.Model):
 	
 	notes = models.TextField(blank = True)
 	
-	external_site_ref_field_names = [
-		'homepage', 'twitter_username', 'demoparty_net_url_fragment', 'slengpung_party_id',
-		'pouet_party_id', 'bitworld_party_id', 'csdb_party_id', 'breaks_amiga_party_id',
-		'scene_org_directory', 'zxdemo_party_id']
-	homepage = models.URLField(blank = True, verify_exists = False)
-	twitter_username = models.CharField(max_length = 30, blank = True)
-	demoparty_net_url_fragment = models.CharField(max_length = 100, blank = True, verbose_name = 'demoparty.net URL fragment', help_text = 'e.g. evoke-2010')
-	slengpung_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung party ID')
-	pouet_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet party ID')
-	pouet_party_when = models.IntegerField(null = True, blank = True)
-	bitworld_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld party ID')
-	csdb_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDB party ID')
-	breaks_amiga_party_id = models.IntegerField(null = True, blank = True, verbose_name = "Break's Amiga party ID")
-	scene_org_directory = models.CharField(max_length = 255, blank = True, verbose_name = 'scene.org directory', help_text = 'e.g. /parties/1991/theparty91/')
-	zxdemo_party_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo party ID')
+	website = models.URLField(blank = True, verify_exists = False)
 	
 	search_result_template = 'search/results/party.html'
 	
@@ -1029,37 +1015,6 @@ class Party(models.Model):
 			return screenshots.order_by('?')[0]
 		except IndexError:
 			return None
-	
-	def has_any_external_links(self):
-		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
-	
-	def twitter_url(self):
-		if self.twitter_username:
-			return "http://twitter.com/%s" % self.twitter_username
-	def demoparty_net_url(self):
-		if self.demoparty_net_url_fragment:
-			return "http://www.demoparty.net/%s/" % self.demoparty_net_url_fragment
-	def slengpung_url(self):
-		if self.slengpung_party_id:
-			return "http://www.slengpung.com/v3/parties.php?id=%s&order=name" % self.slengpung_party_id
-	def pouet_url(self):
-		if self.pouet_party_id and self.pouet_party_when:
-			return "http://www.pouet.net/party.php?which=%s&when=%s" % (self.pouet_party_id, self.pouet_party_when)
-	def bitworld_url(self):
-		if self.bitworld_party_id:
-			return "http://bitworld.bitfellas.org/party.php?id=%s" % self.bitworld_party_id
-	def csdb_url(self):
-		if self.csdb_party_id:
-			return "http://www.csdb.dk/event/?id=%s" % self.csdb_party_id
-	def breaks_amiga_url(self):
-		if self.breaks_amiga_party_id:
-			return "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s" % self.breaks_amiga_party_id
-	def zxdemo_url(self):
-		if self.zxdemo_party_id:
-			return "http://www.zxdemo.org/party.php?id=%s" % self.zxdemo_party_id
-	def scene_org_url(self):
-		if self.scene_org_directory:
-			return "http://www.scene.org/dir.php?dir=%s" % self.scene_org_directory
 	
 	# return a FuzzyDate representing our best guess at when this party's competitions were held
 	def default_competition_date(self):
@@ -1187,3 +1142,51 @@ class SoundtrackLink(models.Model):
 	
 	class Meta:
 		ordering = ['position']
+
+
+from demoscene.utils import groklinks
+
+class ExternalLink(models.Model):
+	link_class = models.CharField(max_length=100)
+	parameter = models.CharField(max_length=255)
+	
+	def _get_url(self):
+		if self.link:
+			return str(self.link)
+		else:
+			return None
+	def _set_url(self, urlstring):
+		if urlstring:
+			self.link = groklinks.grok_link_by_types(urlstring, self.link_types)
+			if self.link:
+				self.link_class = self.link.__class__.__name__
+				self.parameter = self.link.param
+			else:
+				self.link_class = None
+				self.parameter = None
+		else:
+			self.link_class = None
+			self.parameter = None
+	url = property(_get_url,_set_url)
+	
+	def __init__(self, *args, **kwargs):
+		super(ExternalLink, self).__init__(*args, **kwargs)
+		if self.link_class:
+			self.link = groklinks.__dict__[self.link_class](self.parameter)
+		else:
+			self.link = None
+	
+	class Meta:
+		abstract = True
+
+class PartyExternalLink(ExternalLink):
+	party = models.ForeignKey(Party, related_name = 'external_links')
+	link_types = [
+		groklinks.DemopartyNetParty, groklinks.SlengpungParty, groklinks.PouetParty,
+		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
+		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
+		groklinks.BaseUrl,
+	]
+	def html_link(self):
+		return self.link.as_html(self.party.name)
+	

@@ -1,32 +1,20 @@
+{% load spawning_formset %}
+
 <h2>Editing external links for {{ party.name }}:</h2>
 
-<form action="{% url party_edit_external_links party.id %}" method="post" class="entry_form external_links_form">
+<form action="{% url party_edit_external_links party.id %}" method="post" class="entry_form">
 	{% csrf_token %}
-	
-	{% with form.homepage as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.twitter_username as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.demoparty_net_url_fragment as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.slengpung_party_id as field %}{% include "shared/form_field.html" %}{% endwith %}
-	
 	<div class="field">
-		<label class="field_label">Pouet</label>
-		<div class="field_input">
-			{{ form.pouet_party_id.errors }}
-			<label for="id_pouet_party_id">ID:</label> {{ form.pouet_party_id }}
-			<label for="id_pouet_party_when">when:</label> {{ form.pouet_party_when }}
-		</div>
+		<label for="id_external_links-0-url" class="field_label">Link URLs</label>
+		{% spawningformset formset %}
+			{% spawningform as form %}
+				{{ form.url }}
+				{% for hidden in form.hidden_fields %}
+					{{ hidden }}
+				{% endfor %}
+			{% endspawningform %}
+		{% endspawningformset %}
 	</div>
-
-	{% with form.bitworld_party_id as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.csdb_party_id as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.breaks_amiga_party_id as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.zxdemo_party_id as field %}{% include "shared/form_field.html" %}{% endwith %}
-	{% with form.scene_org_directory as field %}{% include "shared/form_field.html" %}{% endwith %}
-	
-	{% for field in form.hidden_fields %}
-		{{ field }}
-	{% endfor %}
-	
 	<div class="field">
 		<input type="submit" />
 	</div>
