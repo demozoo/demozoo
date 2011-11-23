@@ -1,9 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, ReleaserExternalLink
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
+from demoscene.forms.common import ExternalLinkForm
+from django.forms.models import inlineformset_factory
 
 class CreateGroupForm(forms.ModelForm):
 	abbreviation = forms.CharField(required = False, help_text = "(optional - only if there's one that's actively being used. Don't just make one up!)")
@@ -50,22 +52,6 @@ class ScenerEditRealNameForm(forms.ModelForm):
 		fields = ['first_name', 'show_first_name', 'surname', 'show_surname', 'real_name_note']
 		widgets = {
 		    'real_name_note': forms.Textarea(attrs={'class': 'short_notes'}),
-		}
-
-class ScenerEditExternalLinksForm(forms.ModelForm):
-	class Meta:
-		model = Releaser
-		fields = Releaser.external_site_ref_field_names
-		widgets = {
-			'sceneid_user_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'slengpung_user_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'amp_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'csdb_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'nectarine_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'bitjam_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'artcity_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'mobygames_author_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'asciiarena_author_id': forms.TextInput(attrs={'class': 'numeric'}), # not actually numeric, but input box is the same size
 		}
 
 class ReleaserEditNotesForm(forms.ModelForm):
@@ -154,3 +140,9 @@ class ReleaserAddCreditForm(forms.Form):
 		self.fields['production_name'] = forms.CharField(label = 'On production', widget = forms.TextInput(attrs = {'class': 'production_autocomplete'}))
 		self.fields['production_id'] = forms.CharField(widget = forms.HiddenInput)
 		self.fields['role'] = forms.CharField()
+
+class ReleaserExternalLinkForm(ExternalLinkForm):
+	class Meta:
+		model = ReleaserExternalLink
+		fields = ['url']
+ReleaserExternalLinkFormSet = inlineformset_factory(Releaser, ReleaserExternalLink, form=ReleaserExternalLinkForm)

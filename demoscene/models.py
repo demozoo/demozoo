@@ -155,25 +155,11 @@ class ProductionType(MP_Node):
 			return 'production'
 
 class Releaser(models.Model):
-	external_site_ref_field_names = [
-		'sceneid_user_id','slengpung_user_id','amp_author_id','csdb_author_id','nectarine_author_id',
-		'bitjam_author_id','artcity_author_id','mobygames_author_id', 'asciiarena_author_id']
-	
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
 	notes = models.TextField(blank = True)
 	
-	sceneid_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'SceneID / Pouet user ID')
-	slengpung_user_id = models.IntegerField(null = True, blank = True, verbose_name = 'Slengpung user ID')
-	amp_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'AMP author ID')
-	csdb_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb author ID')
-	nectarine_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Nectarine author ID')
-	bitjam_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitjam author ID')
-	artcity_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'ArtCity author ID')
-	mobygames_author_id = models.IntegerField(null = True, blank = True, verbose_name = 'MobyGames author ID')
-	asciiarena_author_id = models.CharField(blank = True, max_length = 32, verbose_name = 'AsciiArena author ID')
 	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
-	zxdemo_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo ID')
 	
 	location = models.CharField(max_length = 255, blank = True)
 	country_code = models.CharField(max_length = 5, blank = True)
@@ -225,45 +211,6 @@ class Releaser(models.Model):
 	
 	def credits(self):
 		return Credit.objects.filter(nick__releaser = self)
-	
-	def has_any_external_links(self):
-		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
-	
-	def pouet_user_url(self):
-		if self.sceneid_user_id:
-			return "http://pouet.net/user.php?who=%s" % self.sceneid_user_id
-	
-	def slengpung_user_url(self):
-		if self.slengpung_user_id:
-			return "http://www.slengpung.com/v3/show_user.php?id=%s" % self.slengpung_user_id
-	
-	def amp_author_url(self):
-		if self.amp_author_id:
-			return "http://amp.dascene.net/detail.php?view=%s" % self.amp_author_id
-	
-	def csdb_author_url(self):
-		if self.csdb_author_id:
-			return "http://noname.c64.org/csdb/scener/?id=%s" % self.csdb_author_id
-	
-	def nectarine_author_url(self):
-		if self.nectarine_author_id:
-			return "http://www.scenemusic.net/demovibes/artist/%s/" % self.nectarine_author_id
-	
-	def bitjam_author_url(self):
-		if self.bitjam_author_id:
-			return "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1" % self.bitjam_author_id
-	
-	def artcity_author_url(self):
-		if self.artcity_author_id:
-			return "http://artcity.bitfellas.org/index.php?a=artist&id=%s" % self.artcity_author_id
-	
-	def mobygames_author_url(self):
-		if self.mobygames_author_id:
-			return "http://www.mobygames.com/developer/sheet/view/developerId,%s/" % self.mobygames_author_id
-	
-	def asciiarena_author_url(self):
-		if self.asciiarena_author_id:
-			return "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename" % self.asciiarena_author_id
 	
 	def groups(self):
 		return [membership.group for membership in self.group_memberships.select_related('group')]
@@ -1189,4 +1136,16 @@ class PartyExternalLink(ExternalLink):
 	]
 	def html_link(self):
 		return self.link.as_html(self.party.name)
-	
+
+class ReleaserExternalLink(ExternalLink):
+	releaser = models.ForeignKey(Releaser, related_name = 'external_links')
+	link_types = [
+		groklinks.TwitterAccount, groklinks.SceneidAccount, groklinks.SlengpungUser,
+		groklinks.AmpAuthor, groklinks.CsdbScener, groklinks.CsdbGroup,
+		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
+		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
+		groklinks.ScenesatAct, groklinks.ZxdemoAuthor,
+		groklinks.BaseUrl,
+	]
+	def html_link(self):
+		return self.link.as_html(self.releaser.name)

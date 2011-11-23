@@ -47,6 +47,18 @@
 				</ul>
 			{% endif %}
 		{% endwith %}
+		
+		{% if external_links or editing %}
+			<div class="external_links">
+				<h3>External links:</h3>
+				<ul>
+					{% for link in external_links %}
+						<li>{{ link.html_link|safe }}</li>
+					{% endfor %}
+					{% if editing %}<li><a href="{% url releaser_edit_external_links group.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+				</ul>
+			</div>
+		{% endif %}
 	</div>
 	
 	{% if group.notes or editing_as_admin %}

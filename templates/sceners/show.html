@@ -88,22 +88,14 @@
 			</p>
 		{% endif %}
 		
-		{% if scener.has_any_external_links or editing %}
+		{% if external_links or editing %}
 			<div class="external_links">
 				<h3>External links:</h3>
 				<ul>
-					{% if scener.pouet_user_url %}<li><a href="{{ scener.pouet_user_url }}" class="pouet" title="{{ scener.name }} on Pouët">Pouët</a></li>{% endif %}
-					{# Leave Slengpung URLs out for now - they're a can of worms. {% if scener.slengpung_user_url %}<li><a href="{{ scener.slengpung_user_url }}">{{ scener.name }} on Slengpung</a></li>{% endif %} #}
-					{% if scener.amp_author_url %}<li><a href="{{ scener.amp_author_url }}" class="amp" title="{{ scener.name }} on Amiga Music Preservation">AMP</a></li>{% endif %}
-					{% if scener.csdb_author_url %}<li><a href="{{ scener.csdb_author_url }}" class="csdb" title="{{ scener.name }} on CSDb">CSDb</a></li>{% endif %}
-					{% if scener.nectarine_author_url %}<li><a href="{{ scener.nectarine_author_url }}" class="nectarine" title="{{ scener.name }} on Nectarine Demoscene Radio">Nectarine</a></li>{% endif %}
-					{% if scener.bitjam_author_url %}<li><a href="{{ scener.bitjam_author_url }}" class="bitjam" title="{{ scener.name }} on BitJam">BitJam</a></li>{% endif %}
-					{% if scener.artcity_author_url %}<li><a href="{{ scener.artcity_author_url }}" class="artcity" title="{{ scener.name }} on ArtCity">ArtCity</a></li>{% endif %}
-					{% if scener.can_reveal_full_real_name or request.user.is_staff %}
-						{% if scener.mobygames_author_url %}<li><a href="{{ scener.mobygames_author_url }}" class="mobygames" title="{{ scener.name }} on MobyGames">MobyGames</a></li>{% endif %}
-					{% endif %}
-					{% if scener.asciiarena_author_url %}<li><a href="{{ scener.asciiarena_author_url }}" class="asciiarena" title="{{ scener.name }} on AsciiArena">AsciiArena</a></li>{% endif %}
-					{% if editing %}<li><a href="{% url scener_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+					{% for link in external_links %}
+						<li>{{ link.html_link|safe }}</li>
+					{% endfor %}
+					{% if editing %}<li><a href="{% url releaser_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}

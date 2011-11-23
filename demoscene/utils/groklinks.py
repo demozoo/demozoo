@@ -90,9 +90,10 @@ class PouetProduction(BaseUrl):
 	html_title_format = u"%s on Pouët"
 
 class SlengpungUser(BaseUrl):
-	canonical_format = "http://www.slengpung.com/v3/show_user.php?id=%s"
+	canonical_format = "http://www.slengpung.com/?userid=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?slengpung\.com/v3/show_user\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'userid', re.I),
 	]
 	html_link_class = "slengpung"
 	html_link_text = "Slengpung"
@@ -264,8 +265,8 @@ class DemopartyNetParty(BaseUrl):
 class SlengpungParty(BaseUrl):
 	canonical_format = "http://www.slengpung.com/?eventid=%s"
 	tests = [
-		querystring_match(r'https?://(?:www\.)slengpung\.com/v3/parties\.php', 'id', re.I),
-		querystring_match(r'https?://(?:www\.)slengpung.com/', 'eventid', re.I),
+		querystring_match(r'https?://(?:www\.)?slengpung\.com/v3/parties\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'eventid', re.I),
 	]
 	html_link_class = "slengpung"
 	html_link_text = "Slengpung"

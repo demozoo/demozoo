@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink
 from maintenance.models import Exclusion
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
@@ -286,36 +286,28 @@ def duplicate_external_links(request):
 			ORDER BY demoscene_production.%s
 		''' % ((column_name,)*4) )
 	
-	def releaser_duplicates_by_column(column_name):
+	def releaser_duplicates_by_link_class(link_class):
 		return Releaser.objects.raw('''
-			SELECT DISTINCT demoscene_releaser.*
+			SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
 			FROM demoscene_releaser
-			INNER JOIN demoscene_releaser AS other_releaser ON (
-				demoscene_releaser.%s IS NOT NULL
-				AND demoscene_releaser.%s = other_releaser.%s
-				AND demoscene_releaser.id <> other_releaser.id)
-			ORDER BY demoscene_releaser.%s
-		''' % ((column_name,)*4) )
+			INNER JOIN demoscene_releaserexternallink ON (
+				demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
+				AND demoscene_releaserexternallink.link_class = %s)
+			INNER JOIN demoscene_releaserexternallink AS other_link ON (
+				demoscene_releaserexternallink.link_class = other_link.link_class
+				AND demoscene_releaserexternallink.parameter = other_link.parameter
+				AND demoscene_releaserexternallink.id <> other_link.id
+			)
+			ORDER BY demoscene_releaserexternallink.parameter
+		''', [link_class])
 	
 	prod_dupes = {}
 	for column in Production.external_site_ref_field_names:
 		prod_dupes[column] = prod_duplicates_by_column(column)
 	
 	releaser_dupes = {}
-	for column in Releaser.external_site_ref_field_names:
-		if column == 'asciiarena_author_id':
-			continue
-		releaser_dupes[column] = releaser_duplicates_by_column(column)
-	# specialcase asciiarena_author_id - blank entries are '', not null
-	releaser_dupes['asciiarena_author_id'] = Releaser.objects.raw('''
-		SELECT DISTINCT demoscene_releaser.*
-		FROM demoscene_releaser
-		INNER JOIN demoscene_releaser AS other_releaser ON (
-			demoscene_releaser.asciiarena_author_id <> ''
-			AND demoscene_releaser.asciiarena_author_id = other_releaser.asciiarena_author_id
-			AND demoscene_releaser.id <> other_releaser.id)
-		ORDER BY demoscene_releaser.asciiarena_author_id
-	''')
+	for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):
+		releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
 	
 	return render(request, 'maintenance/duplicate_external_links.html', {
 		'prod_dupes': prod_dupes,

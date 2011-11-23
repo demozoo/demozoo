@@ -217,3 +217,21 @@ def delete(request, releaser_id):
 			reverse('delete_releaser', args = [releaser_id]),
 			"Are you sure you want to delete %s?" % releaser.name,
 			html_title = "Deleting %s" % releaser.name )
+
+@login_required
+def edit_external_links(request, releaser_id):
+	releaser = get_object_or_404(Releaser, id = releaser_id)
+	
+	if request.method == 'POST':
+		formset = ReleaserExternalLinkFormSet(request.POST, instance = releaser)
+		if formset.is_valid():
+			formset.save()
+			
+			return HttpResponseRedirect(releaser.get_absolute_edit_url())
+	else:
+		formset = ReleaserExternalLinkFormSet(instance = releaser)
+	return ajaxable_render(request, 'releasers/edit_external_links.html', {
+		'html_title': "Editing external links for %s" % releaser.name,
+		'releaser': releaser,
+		'formset': formset,
+	})

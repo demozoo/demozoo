@@ -22,8 +22,15 @@ def show(request, scener_id, edit_mode = False):
 	
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 	
+	external_links = scener.external_links.all()
+	if not request.user.is_staff:
+		external_links = external_links.exclude(link_class = 'SlengpungUser')
+	if not request.user.is_staff and not scener.can_reveal_full_real_name:
+		external_links = external_links.exclude(link_class = 'MobygamesDeveloper')
+	
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
+		'external_links': external_links,
 		'productions': scener.productions().order_by('-release_date_date', '-title'),
 		'credits': scener.credits().order_by('-production__release_date_date', '-production__title'),
 		'memberships': scener.group_memberships.all().select_related('group').order_by('-is_current', 'group__name'),
@@ -41,15 +48,6 @@ def edit_done(request, scener_id):
 	set_edit_mode_active(False, request.user)
 	return HttpResponseRedirect(scener.get_absolute_url())
 
-@login_required
-def edit_external_links(request, scener_id):
-	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)
-		
-	return simple_ajax_form(request, 'scener_edit_external_links', scener, ScenerEditExternalLinksForm,
-		title = 'Editing external links for %s:' % scener.name,
-		html_form_class = 'external_links_form',
-		update_datestamp = True)
-		
 @login_required
 def edit_location(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group = False, id = scener_id)

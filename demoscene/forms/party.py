@@ -2,6 +2,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import BaseModelFormSet, inlineformset_factory
 from demoscene.models import Party, PartySeries, Competition, CompetitionPlacing, Platform, ProductionType, PartyExternalLink
+from demoscene.forms.common import ExternalLinkForm
 from fuzzy_date_field import FuzzyDateField
 from production_field import ProductionField
 from byline_field import BylineField
@@ -51,18 +52,7 @@ class CompetitionForm(forms.ModelForm):
 		model = Competition
 		fields = ('name', 'shown_date', 'platform', 'production_type')
 
-class PartyExternalLinkForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super(PartyExternalLinkForm, self).__init__(*args, **kwargs)
-		self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url)
-	
-	def save(self, commit = True):
-		instance = super(PartyExternalLinkForm, self).save(commit = False)
-		instance.url = self.cleaned_data['url']
-		if commit:
-			instance.save()
-		return instance
-	
+class PartyExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = PartyExternalLink
 		fields = ['url']
