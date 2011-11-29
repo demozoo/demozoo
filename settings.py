@@ -108,12 +108,14 @@ INSTALLED_APPS = (
 	'debug_toolbar',
 	'unjoinify',
 	'compressor',
+	'djcelery',
 	
 	'demoscene',
 	'search',
 	'dataexchange',
 	'maintenance',
 	'pages',
+	'sceneorg',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
@@ -136,6 +138,15 @@ INTERNAL_IPS = ('127.0.0.1',)
 # COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATICROOT
+
+# Celery settings
+import djcelery
+djcelery.setup_loader()
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
 
 # Get local settings
 try:
