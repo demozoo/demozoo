@@ -7,8 +7,8 @@ def deploy():
 	with cd('/var/www/demozoo2'):
 		run('svn up')
 		run('source /home/demozoo/virtualenv/bin/activate && pip install -E /home/demozoo/virtualenv/ -r /var/www/demozoo2/requirements.txt')
-		run('./manage.py syncdb')
-		run('./manage.py migrate')
+		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py syncdb')
+		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py migrate')
 		run('sudo /etc/init.d/apache2 reload')
 
 def sanity():
