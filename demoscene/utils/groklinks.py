@@ -139,7 +139,7 @@ class CsdbRelease(BaseUrl):
 class NectarineArtist(BaseUrl):
 	canonical_format = "http://www.scenemusic.net/demovibes/artist/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)scenemusic\.net/demovibes/artist/(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/artist/(\d+)', re.I),
 	]
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
@@ -148,7 +148,7 @@ class NectarineArtist(BaseUrl):
 class BitjamAuthor(BaseUrl):
 	canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1"
 	tests = [
-		querystring_match(r'https?://(?:www\.)bitfellas\.org/e107_plugins/radio/radio\.php\?search', 'q', re.I),
+		querystring_match(r'https?://(?:www\.)?bitfellas\.org/e107_plugins/radio/radio\.php\?search', 'q', re.I),
 	]
 	html_link_class = "bitjam"
 	html_link_text = "BitJam"
@@ -166,7 +166,7 @@ class ArtcityArtist(BaseUrl):
 class MobygamesDeveloper(BaseUrl):
 	canonical_format = "http://www.mobygames.com/developer/sheet/view/developerId,%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)mobygames\.com/developer/sheet/view/developerId\,(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?mobygames\.com/developer/sheet/view/developerId\,(\d+)', re.I),
 	]
 	html_link_class = "mobygames"
 	html_link_text = "MobyGames"
@@ -175,7 +175,7 @@ class MobygamesDeveloper(BaseUrl):
 class AsciiarenaArtist(BaseUrl):
 	canonical_format = "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename"
 	tests = [
-		querystring_match(r'https?://(?:www\.)asciiarena\.com/info_artist\.php', 'artist', re.I),
+		querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_artist\.php', 'artist', re.I),
 	]
 	html_link_class = "asciiarena"
 	html_link_text = "AsciiArena"
@@ -184,7 +184,7 @@ class AsciiarenaArtist(BaseUrl):
 class ScenesatAct(BaseUrl):
 	canonical_format = "http://scenesat.com/act/%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)scenesat\.com/act/(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?scenesat\.com/act/(\d+)', re.I),
 	]
 	html_link_class = "scenesat"
 	html_link_text = "SceneSat"
@@ -193,7 +193,7 @@ class ScenesatAct(BaseUrl):
 class ZxdemoAuthor(BaseUrl):
 	canonical_format = "http://zxdemo.org/author.php?id=%s"
 	tests = [
-		querystring_match(r'https?://(?:www\.)zxdemo\.org/author\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?zxdemo\.org/author\.php', 'id', re.I),
 	]
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
@@ -201,7 +201,7 @@ class ZxdemoAuthor(BaseUrl):
 class ZxdemoItem(BaseUrl):
 	canonical_format = "http://zxdemo.org/item.php?id=%s"
 	tests = [
-		querystring_match(r'https?://(?:www\.)zxdemo\.org/item\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?zxdemo\.org/item\.php', 'id', re.I),
 	]
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
@@ -218,14 +218,14 @@ class BitworldDemo(BaseUrl):
 
 class SceneOrgFile(BaseUrl):
 	tests = [
-		querystring_match(r'https?://(?:www\.)scene\.org/file\.php', 'file', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org/pub(/.*)', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org(/mirrors/.*)', re.I),
+		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
-		regex_match(r'http://http\.de\.scene\.org/pub(/.*)', re.I),
+		regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
 		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
@@ -241,10 +241,10 @@ class AmigascneFile(BaseUrl):
 	canonical_format = "http://ftp.amigascne.org/pub/amiga%s"
 	tests = [
 		regex_match(r'(?:http|ftp)://ftp\.amigascne\.org/pub/amiga(/.*)', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org/mirrors/amigascne(/.*)', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
-		regex_match(r'http://http\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+		regex_match(r'http://(?:http\.)?de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'http://http\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
@@ -256,7 +256,7 @@ class AmigascneFile(BaseUrl):
 class DemopartyNetParty(BaseUrl):
 	canonical_format = "http://www.demoparty.net/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)demoparty\.net/([^/]+)', re.I),
+		regex_match(r'https?://(?:www\.)?demoparty\.net/([^/]+)', re.I),
 	]
 	html_link_class = "demoparty_net"
 	html_link_text = "demoparty.net"
@@ -274,7 +274,7 @@ class SlengpungParty(BaseUrl):
 
 class PouetParty(BaseUrl):
 	def match_pouet_party(urlstring, url):
-		regex = re.compile(r'https?://(?:www\.)pouet\.net/party\.php', re.I)
+		regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
 		if regex.match(urlstring):
 			querystring = urlparse.parse_qs(url.query)
 			try:
@@ -320,14 +320,14 @@ class BreaksAmigaParty(BaseUrl):
 
 class SceneOrgFolder(BaseUrl):
 	tests = [
-		querystring_match(r'https?://(?:www\.)scene\.org/dir\.php', 'dir', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org/pub(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)scene\.org(/mirrors/.*/)$', re.I),
+		querystring_match(r'https?://(?:www\.)?scene\.org/dir\.php', 'dir', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*/)$', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*/)$', re.I),
-		regex_match(r'http://http\.de\.scene\.org/pub(/.*/)$', re.I),
+		regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
 		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*/)$', re.I),
 		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
@@ -342,7 +342,7 @@ class SceneOrgFolder(BaseUrl):
 class ZxdemoParty(BaseUrl):
 	canonical_format = "http://zxdemo.org/party.php?id=%s"
 	tests = [
-		querystring_match(r'https?://(?:www\.)zxdemo\.org/party\.php', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?zxdemo\.org/party\.php', 'id', re.I),
 	]
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
