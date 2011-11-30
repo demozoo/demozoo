@@ -56,14 +56,13 @@
 			<div id="login_status_panel">
 				{% if user.is_authenticated %}
 					<div class="login_status">
-						Logged in as <b>{{ user.username }}</b>
+						Logged in as <a href="{% url account_index %}"><b>{{ user.username }}</b></a>
 					</div>
 					<div class="login_links">
-						<a href="{% url account_preferences %}">Preferences</a>
 						{% if user.is_staff %}
-							| <a href="{% url maintenance_index %}">Maintenance</a>
+							<a href="{% url maintenance_index %}">Maintenance</a> |
 						{% endif %}
-						| <a href="{% url log_out %}">Log out</a>
+						<a href="{% url log_out %}">Log out</a>
 					</div>
 				{% else %}
 					<div class="login_links">

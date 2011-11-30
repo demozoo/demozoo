@@ -109,6 +109,7 @@ INSTALLED_APPS = (
 	'unjoinify',
 	'compressor',
 	'djcelery',
+	'django_bcrypt',
 	
 	'demoscene',
 	'search',
@@ -125,6 +126,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 	'demoscene.context_processors.global_search_form',
 ) 
 
+LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 
 DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT,'data','djapian')
