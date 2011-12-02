@@ -150,6 +150,20 @@ BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+    "fetch-new-sceneorg-files": {
+        "task": "sceneorg.tasks.fetch_sceneorg_dir",
+        "schedule": timedelta(days=1),
+        "args": ('/', 3)
+    },
+    "fetch-all-sceneorg-files": {
+        "task": "sceneorg.tasks.fetch_sceneorg_dir",
+        "schedule": timedelta(days=30),
+        "args": ('/')
+    },
+}
+
 # Get local settings
 try:
 	from local_settings import *
