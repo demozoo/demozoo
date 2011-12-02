@@ -1,16 +1,19 @@
 from celery.task import task
 from sceneorg.models import Directory, File
-from sceneorg.scraper import scrape_dir
+from sceneorg.scraper import scrape_dir, scrape_new_files_dir
 import datetime
 
 @task(rate_limit = '6/m', ignore_result = True)
-def fetch_sceneorg_dir(path):
+def fetch_sceneorg_dir(path, days = None):
 	try:
 		dir = Directory.objects.get(path = path)
 	except Directory.DoesNotExist:
 		dir = Directory.objects.create(path = path, last_seen_at = datetime.datetime.now())
 	
-	files = scrape_dir(dir.web_url)
+	if days:
+		files = scrape_new_files_dir(dir.new_files_url(days))
+	else:
+		files = scrape_dir(dir.web_url)
 	
 	seen_dirs = []
 	seen_files = []
@@ -26,7 +29,7 @@ def fetch_sceneorg_dir(path):
 				subdir = Directory.objects.create(
 					path = subpath, last_seen_at = datetime.datetime.now(), parent = dir)
 			seen_dirs.append(subdir)
-			fetch_sceneorg_dir.delay(path = subpath)
+			fetch_sceneorg_dir.delay(path = subpath, days = days)
 		else:
 			subpath = path + filename
 			try:
@@ -38,15 +41,17 @@ def fetch_sceneorg_dir(path):
 					path = subpath, last_seen_at = datetime.datetime.now(), directory = dir)
 			seen_files.append(file)
 	
-	for subdir in dir.subdirectories.filter(is_deleted = False):
-		if subdir not in seen_dirs:
-			subdir.is_deleted = True
-			subdir.save()
-	for file in dir.files.filter(is_deleted = False):
-		if file not in seen_files:
-			file.is_deleted = True
-			file.save()
+	# Mark previously-seen-but-now-absent files as deleted, unless we're viewing the 'new files' page
+	if not days:
+		for subdir in dir.subdirectories.filter(is_deleted = False):
+			if subdir not in seen_dirs:
+				subdir.is_deleted = True
+				subdir.save()
+		for file in dir.files.filter(is_deleted = False):
+			if file not in seen_files:
+				file.is_deleted = True
+				file.save()
+		dir.last_spidered_at = datetime.datetime.now()
 	
 	dir.last_seen_at = datetime.datetime.now()
-	dir.last_spidered_at = datetime.datetime.now()
 	dir.save()

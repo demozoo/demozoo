@@ -14,6 +14,9 @@ class Directory(models.Model):
 	@property
 	def web_url(self):
 		return "http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.path.encode("utf-8"))
+	
+	def new_files_url(self, days):
+		return "http://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
 
 class File(models.Model):
 	path = models.CharField(max_length=255)

@@ -18,3 +18,19 @@ def scrape_dir(url):
 		files.append( (filename, is_dir) )
 	
 	return files
+
+def scrape_new_files_dir(url):
+	req = urllib2.Request(url, None, {'User-Agent': user_agent})
+	page = urllib2.urlopen(req)
+	soup = BeautifulSoup(page)
+	
+	files = []
+	for entry in soup.findAll('td', 'newfile'):
+		if entry.find('img')['src'] == 'img/icons/parent.gif':
+			continue
+		is_dir = (entry.find('img')['src'] == 'img/icons/dir.gif')
+		filename = entry.find('td', 'newfilesleft').text
+		
+		files.append( (filename, is_dir) )
+	
+	return files
