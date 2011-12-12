@@ -16,6 +16,8 @@ def search(request):
 	else:
 		query = None
 		page = None
+		name_results = None
+		resultset = None
 	return render(request, 'search/search.html', {
 		'form': form,
 		'query': query,
