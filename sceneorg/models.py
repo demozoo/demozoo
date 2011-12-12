@@ -17,6 +17,18 @@ class Directory(models.Model):
 	
 	def new_files_url(self, days):
 		return "http://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
+	
+	@staticmethod
+	def parties_root():
+		return Directory.objects.get(path = '/parties/')
+	
+	@staticmethod
+	def party_years():
+		return Directory.objects.filter(parent = Directory.parties_root)
+	
+	@staticmethod
+	def parties():
+		return Directory.objects.filter(parent__in = Directory.party_years)
 
 class File(models.Model):
 	path = models.CharField(max_length=255)
