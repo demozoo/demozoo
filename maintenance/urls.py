@@ -24,4 +24,5 @@ urlpatterns = patterns('maintenance.views',
 	(r'^add_membership$', 'add_membership', {}, 'maintenance_add_membership'),
 	(r'^groups_with_same_named_members$', 'groups_with_same_named_members', {}, 'maintenance_groups_with_same_named_members'),
 	(r'^releasers_with_same_named_groups$', 'releasers_with_same_named_groups', {}, 'maintenance_releasers_with_same_named_groups'),
+	(r'^sceneorg_party_dirs_with_no_party$', 'sceneorg_party_dirs_with_no_party', {}, 'maintenance_sceneorg_party_dirs_with_no_party'),
 )

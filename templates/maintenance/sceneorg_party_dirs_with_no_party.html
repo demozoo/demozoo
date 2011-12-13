@@ -1,0 +1,26 @@
+{% extends "maintenance/base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<h2>The scene.org unmatched party report of doom</h2>
+	<p>{{ matched_count }} of {{ total_count }} directories matched so far!</p>
+	
+	<div style="width: 800px; height: 20px; background-color: #eee; border: 1px solid black;">
+		<div style="width:{% widthratio matched_count total_count 800 %}px; height: 20px; background-color: #080"></div>
+	</div>
+	
+	<h3 style="padding-top: 0.5em">{{ title }}:</h3>
+	<div id="main_column">
+		<ul>
+			{% for dir in directories %}
+				<li style="padding-top: 0.5em">
+					<a href="{{ dir.web_url }}">{{ dir.path }}</a>
+				</li>
+			{% endfor %}
+		<ul>
+	</div>
+{% endblock %}

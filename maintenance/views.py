@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink
+from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
@@ -471,7 +472,31 @@ def releasers_with_same_named_groups(request):
 		'releasers': releasers,
 		'report_name': report_name,
 	})
+
+def sceneorg_party_dirs_with_no_party(request):
+	report_name = 'sceneorg_party_dirs_with_no_party'
+	directories = Directory.objects.raw('''
+		SELECT party_dir.*
+		FROM sceneorg_directory AS parties_root
+		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
+		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
+		LEFT JOIN demoscene_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+		WHERE parties_root.path = '/parties/'
+		AND demoscene_partyexternallink.id IS NULL
+		ORDER BY party_dir.path
+	''')
+	total_count = Directory.parties().count()
+	unmatched_count = len(list(directories))
+	matched_count = total_count - unmatched_count
 	
+	return render(request, 'maintenance/sceneorg_party_dirs_with_no_party.html', {
+		'title': 'scene.org party dirs which are not linked to a party',
+		'directories': directories,
+		'report_name': report_name,
+		'total_count': total_count,
+		'matched_count': matched_count,
+	})
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
