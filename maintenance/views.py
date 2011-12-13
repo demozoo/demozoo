@@ -475,7 +475,8 @@ def releasers_with_same_named_groups(request):
 
 def sceneorg_party_dirs_with_no_party(request):
 	report_name = 'sceneorg_party_dirs_with_no_party'
-	directories = Directory.objects.raw('''
+	
+	directories_plain = Directory.objects.raw('''
 		SELECT party_dir.*
 		FROM sceneorg_directory AS parties_root
 		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
@@ -485,8 +486,32 @@ def sceneorg_party_dirs_with_no_party(request):
 		AND demoscene_partyexternallink.id IS NULL
 		ORDER BY party_dir.path
 	''')
+	
+	directories = Directory.objects.raw('''
+		SELECT party_dir.*,
+			demoscene_partyseries.name AS suggested_series_name,
+			demoscene_partyseries.id AS suggested_series_id,
+			demoscene_party.name AS suggested_party_name,
+			demoscene_party.id AS suggested_party_id
+		FROM sceneorg_directory AS parties_root
+		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
+		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
+		LEFT JOIN demoscene_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+		LEFT JOIN demoscene_partyseries ON (
+			regexp_replace(substring(lower(party_dir.path) from '/parties/\\\\d+/([-a-z_]+)'), '[^a-z]', '', 'g')
+			= regexp_replace(lower(demoscene_partyseries.name), '[^a-z]', '', 'g')
+		)
+		LEFT JOIN demoscene_party ON (
+			demoscene_partyseries.id = demoscene_party.party_series_id
+			AND substring(party_dir.path from '/parties/(\\\\d+)/')
+				= cast(extract(year from demoscene_party.start_date_date) as varchar)
+		)
+		WHERE parties_root.path = '/parties/'
+		AND demoscene_partyexternallink.id IS NULL
+		ORDER BY party_dir.path
+	''')
 	total_count = Directory.parties().count()
-	unmatched_count = len(list(directories))
+	unmatched_count = len(list(directories_plain))
 	matched_count = total_count - unmatched_count
 	
 	return render(request, 'maintenance/sceneorg_party_dirs_with_no_party.html', {

@@ -15,12 +15,25 @@
 	
 	<h3 style="padding-top: 0.5em">{{ title }}:</h3>
 	<div id="main_column">
-		<ul>
+		<table>
+			<tr>
+				<th>Path</th><th>Best guess at party series</th><th>Best guess at party</th>
+			</tr>
 			{% for dir in directories %}
-				<li style="padding-top: 0.5em">
-					<a href="{{ dir.web_url }}">{{ dir.path }}</a>
-				</li>
+				<tr>
+					<td><a href="{{ dir.web_url }}">{{ dir.path }}</a></td>
+					<td>
+						{% if dir.suggested_series_name %}
+							<a href="{% url party_series dir.suggested_series_id %}">{{ dir.suggested_series_name }}</a>
+						{% endif %}
+					</td>
+					<td>
+						{% if dir.suggested_party_name %}
+							<a href="{% url party dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
+						{% endif %}
+					</td>
+				</tr>
 			{% endfor %}
-		<ul>
+		</table>
 	</div>
 {% endblock %}
