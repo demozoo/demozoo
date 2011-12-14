@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from django.db import connection, transaction
@@ -554,4 +554,14 @@ def add_membership(request):
 			member_id = request.POST['member_id'],
 			group_id = request.POST['group_id']
 		)
+	return HttpResponse('OK', mimetype='text/plain')
+
+def add_sceneorg_link_to_party(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	if request.POST and request.POST.get('path') and request.POST.get('party_id'):
+		PartyExternalLink.objects.create(
+			party_id = request.POST['party_id'],
+			parameter = request.POST['path'],
+			link_class = 'SceneOrgFolder');
 	return HttpResponse('OK', mimetype='text/plain')
