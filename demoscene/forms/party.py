@@ -14,6 +14,46 @@ class PartyForm(ModelFormWithLocation):
 	party_series_name = forms.CharField(label = 'Party series', help_text = "e.g. Revision")
 	start_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	
+	def save(self, commit=True):
+		try:
+			self.instance.party_series = PartySeries.objects.get(name = self.cleaned_data['party_series_name'])
+		except PartySeries.DoesNotExist:
+			ps = PartySeries(name = self.cleaned_data['party_series_name'])
+			ps.save()
+			self.instance.party_series = ps
+		
+		self.instance.start_date = self.cleaned_data['start_date']
+		self.instance.end_date = self.cleaned_data['end_date']
+		
+		# populate website field from party_series if not already specified
+		if self.instance.party_series.website and not self.instance.website:
+			self.instance.website = self.instance.party_series.website
+		# conversely, fill in the website field on party_series if it's given here and we don't have one already
+		elif self.instance.website and not self.instance.party_series.website:
+			self.instance.party_series.website = self.instance.website
+			self.instance.party_series.save()
+		
+		super(PartyForm, self).save(commit=commit)
+		
+		# create a Pouet link if we already know the Pouet party id from the party series record
+		if self.instance.start_date and self.instance.party_series.pouet_party_id:
+			PartyExternalLink.objects.create(
+				link_class = 'PouetParty',
+				parameter = "%s/%s" % (self.instance.party_series.pouet_party_id, self.instance.start_date.date.year),
+				party = self.instance
+			)
+		
+		# create a Twitter link if we already know a Twitter username from the party series record
+		if self.instance.party_series.twitter_username:
+			PartyExternalLink.objects.create(
+				link_class = 'TwitterAccount',
+				parameter = self.instance.party_series.twitter_username,
+				party = self.instance
+			)
+		
+		return self.instance
+	
 	class Meta:
 		model = Party
 		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'website', 'party_series_name')

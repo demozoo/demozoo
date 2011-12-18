@@ -100,41 +100,7 @@ def create(request):
 		party = Party()
 		form = PartyForm(request.POST, instance = party)
 		if form.is_valid():
-			try:
-				party.party_series = PartySeries.objects.get(name = form.cleaned_data['party_series_name'])
-			except PartySeries.DoesNotExist:
-				ps = PartySeries(name = form.cleaned_data['party_series_name'])
-				ps.save()
-				party.party_series = ps
-			
-			party.start_date = form.cleaned_data['start_date']
-			party.end_date = form.cleaned_data['end_date']
-			
-			# populate website field from party_series if not already specified
-			if party.party_series.website and not party.website:
-				party.website = party.party_series.website
-			# conversely, fill in the website field on party_series if it's given here and we don't have one already
-			elif party.website and not party.party_series.website:
-				party.party_series.website = party.website
-				party.party_series.save()
-			
 			form.save()
-			
-			# create a Pouet link if we already know the Pouet party id from the party series record
-			if party.start_date and party.party_series.pouet_party_id:
-				PartyExternalLink.objects.create(
-					link_class = 'PouetParty',
-					parameter = "%s/%s" % (party.party_series.pouet_party_id, party.start_date.date.year),
-					party = party
-				)
-			
-			# create a Twitter link if we already know a Twitter username from the party series record
-			if party.party_series.twitter_username:
-				PartyExternalLink.objects.create(
-					link_class = 'TwitterAccount',
-					parameter = party.party_series.twitter_username,
-					party = party
-				)
 			
 			messages.success(request, 'Party added')
 			return redirect('party', args = [party.id])
