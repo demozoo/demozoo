@@ -7,6 +7,9 @@
 {% block body_class %}show_party_series{% endblock %}
 
 {% block base_main %}
+	<ul class="actions">
+		<li><a href="{% url new_party %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
+	</ul>
 	<h2>
 		{{ party_series.name }}
 		<a href="{% url party_edit_series party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>

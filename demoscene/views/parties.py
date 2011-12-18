@@ -4,6 +4,7 @@ from demoscene.forms.party import *
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
 
 import re
 
@@ -102,11 +103,19 @@ def create(request):
 		if form.is_valid():
 			form.save()
 			
-			messages.success(request, 'Party added')
-			return redirect('party', args = [party.id])
+			if request.is_ajax():
+				return HttpResponse('OK: %s' % party.get_absolute_url(), mimetype='text/plain')
+			else:
+				messages.success(request, 'Party added')
+				return redirect('party', args = [party.id])
 	else:
-		form = PartyForm()
-	return render(request, 'parties/create.html', {
+		form = PartyForm(initial = {
+			'name': request.GET.get('name'),
+			'party_series_name': request.GET.get('party_series_name'),
+			'scene_org_folder': request.GET.get('scene_org_folder'),
+		})
+	return ajaxable_render(request, 'parties/create.html', {
+		'html_title': "New party",
 		'form': form,
 		'party_series_names': [ps.name for ps in PartySeries.objects.all()],
 	})

@@ -492,7 +492,8 @@ def sceneorg_party_dirs_with_no_party(request):
 			demoscene_partyseries.name AS suggested_series_name,
 			demoscene_partyseries.id AS suggested_series_id,
 			demoscene_party.name AS suggested_party_name,
-			demoscene_party.id AS suggested_party_id
+			demoscene_party.id AS suggested_party_id,
+			substring(party_dir.path from '/parties/(\\\\d+)/') AS party_year
 		FROM sceneorg_directory AS parties_root
 		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
 		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
@@ -563,5 +564,5 @@ def add_sceneorg_link_to_party(request):
 		PartyExternalLink.objects.create(
 			party_id = request.POST['party_id'],
 			parameter = request.POST['path'],
-			link_class = 'SceneOrgFolder');
+			link_class = 'SceneOrgFolder')
 	return HttpResponse('OK', mimetype='text/plain')

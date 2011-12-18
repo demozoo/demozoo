@@ -45,20 +45,12 @@ function applyGlobalBehaviours(context) {
 		$(this).datepicker(opts);
 	});
 	
-	function openUrlInLightbox(url) {
-		$('body').addClass('loading');
-		lightboxContent.load(url, function() {
-			applyGlobalBehaviours(lightbox);
-			$('body').removeClass('loading');
-			showLightbox();
-		});
-	}
 	$('a.open_in_lightbox', context).click(function(e) {
 		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
 			/* probably means they want to open it in a new window, so let them... */
 			return true;
 		}
-		openUrlInLightbox(this.href);
+		Lightbox.openUrl(this.href, applyGlobalBehaviours);
 		return false;
 	})
 	$('a.open_image_in_lightbox', context).click(function(e) {
@@ -161,7 +153,7 @@ function applyGlobalBehaviours(context) {
 	})
 	$('form.open_in_lightbox', context).submit(function() {
 		/* only use this for forms with method="get"! */
-		openUrlInLightbox(this.action + '?' + $(this).serialize());
+		Lightbox.openUrl(this.action + '?' + $(this).serialize(), applyGlobalBehaviours);
 		return false;
 	})
 	
@@ -262,42 +254,6 @@ function applyGlobalBehaviours(context) {
 	})
 }
 
-var lightboxOuter, lightbox, lightboxContent, lightboxClose;
-function setLightboxSize() {
-	var browserHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-	lightbox.css({'max-height': browserHeight - 48 + 'px'});
-}
-function lightboxCheckForEscape(evt) {
-	if (evt.keyCode == 27) closeLightbox();
-}
-function closeLightbox() {
-	$(window).unbind('resize', setLightboxSize);
-	$(window).unbind('keydown', lightboxCheckForEscape);
-	lightboxOuter.hide();
-}
-function showLightbox() {
-	lightboxOuter.show();
-	try {$(':input:visible', lightboxContent)[0].focus();}catch(_){}
-	
-	setLightboxSize();
-	$(window).keydown(lightboxCheckForEscape);
-	$(window).resize(setLightboxSize);
-}
 $(function() {
-	lightboxOuter = $('<div id="lightbox_outer"></div>');
-	var lightboxMiddle = $('<div id="lightbox_middle"></div>');
-	lightbox = $('<div id="lightbox"></div>');
-	lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
-	lightboxContent = $('<div></div>');
-	lightbox.append(lightboxClose, lightboxContent);
-	lightboxMiddle.append(lightbox);
-	lightboxOuter.append(lightboxMiddle);
-	$('body').append(lightboxOuter);
-	lightboxOuter.click(closeLightbox);
-	lightbox.click(function(e) {
-		e.stopPropagation();
-	});
-	lightboxClose.click(closeLightbox);
-	lightboxOuter.hide();
 	applyGlobalBehaviours();
 });

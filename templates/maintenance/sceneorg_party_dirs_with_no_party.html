@@ -21,7 +21,35 @@
 					$(this).serialize(),
 					function() {
 						row.fadeOut();
-					});
+					}
+				);
+				return false;
+			})
+			$('form.create_party').submit(function() {
+				var createButtonForm = $(this);
+				
+				function ajaxifyCreatePartyForm(context) {
+					applyGlobalBehaviours(context);
+					$('form', context).submit(function() {
+						$.post(this.action,
+							$(this).serialize(),
+							function(response) {
+								var match = response.match(/^OK: (.*)/);
+								if (match) {
+									Lightbox.close();
+									var createdLink = $('<a>Created</a>').attr('href', match[1]);
+									createButtonForm.replaceWith(createdLink);
+								} else {
+									/* reshow response (probably validation error) in lightbox */
+									Lightbox.openContent(response, ajaxifyCreatePartyForm);
+								}
+							}
+						);
+						return false;
+					})
+				}
+				
+				Lightbox.openUrl(this.action + '?' + $(this).serialize(), ajaxifyCreatePartyForm);
 				return false;
 			})
 		})
@@ -53,6 +81,15 @@
 								<input type="hidden" name="path" value="{{ dir.path }}" />
 								<input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />
 								<input type="submit" value="Accept suggestion" />
+							</form>
+						{% else %}
+							<form class="create_party" action="{% url new_party %}" method="GET">
+								<input type="hidden" name="scene_org_folder" value="{{ dir.path }}" />
+								{% if dir.suggested_series_name %}
+									<input type="hidden" name="name" value="{{ dir.suggested_series_name }} {{ dir.party_year }}" />
+									<input type="hidden" name="party_series_name" value="{{ dir.suggested_series_name }}" />
+								{% endif %}
+								<input type="submit" value="Create" />
 							</form>
 						{% endif %}
 					</td>

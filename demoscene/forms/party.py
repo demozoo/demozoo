@@ -14,6 +14,7 @@ class PartyForm(ModelFormWithLocation):
 	party_series_name = forms.CharField(label = 'Party series', help_text = "e.g. Revision")
 	start_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
 	end_date = FuzzyDateField(help_text = '(As accurately as you know it - e.g. "1996", "Mar 2010")')
+	scene_org_folder = forms.CharField(required=False, widget = forms.HiddenInput)
 	
 	def save(self, commit=True):
 		try:
@@ -36,21 +37,29 @@ class PartyForm(ModelFormWithLocation):
 		
 		super(PartyForm, self).save(commit=commit)
 		
-		# create a Pouet link if we already know the Pouet party id from the party series record
-		if self.instance.start_date and self.instance.party_series.pouet_party_id:
-			PartyExternalLink.objects.create(
-				link_class = 'PouetParty',
-				parameter = "%s/%s" % (self.instance.party_series.pouet_party_id, self.instance.start_date.date.year),
-				party = self.instance
-			)
-		
-		# create a Twitter link if we already know a Twitter username from the party series record
-		if self.instance.party_series.twitter_username:
-			PartyExternalLink.objects.create(
-				link_class = 'TwitterAccount',
-				parameter = self.instance.party_series.twitter_username,
-				party = self.instance
-			)
+		if commit:
+			# create a Pouet link if we already know the Pouet party id from the party series record
+			if self.instance.start_date and self.instance.party_series.pouet_party_id:
+				PartyExternalLink.objects.create(
+					link_class = 'PouetParty',
+					parameter = "%s/%s" % (self.instance.party_series.pouet_party_id, self.instance.start_date.date.year),
+					party = self.instance
+				)
+			
+			# create a Twitter link if we already know a Twitter username from the party series record
+			if self.instance.party_series.twitter_username:
+				PartyExternalLink.objects.create(
+					link_class = 'TwitterAccount',
+					parameter = self.instance.party_series.twitter_username,
+					party = self.instance
+				)
+			
+			# create a scene.org external link if folder path is passed in
+			if self.cleaned_data['scene_org_folder']:
+				PartyExternalLink.objects.create(
+					party = self.instance,
+					parameter = self.cleaned_data['scene_org_folder'],
+					link_class = 'SceneOrgFolder')
 		
 		return self.instance
 	
