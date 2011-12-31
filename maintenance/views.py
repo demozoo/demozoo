@@ -539,6 +539,22 @@ def parties_with_incomplete_dates(request):
 		'report_name': report_name,
 	})
 
+def parties_with_no_location(request):
+	report_name = 'parties_with_no_location'
+	parties = Party.objects.extra(
+		where = [
+			"woe_id IS NULL",
+			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+		],
+		params = [report_name]
+	).order_by('start_date_date')
+	
+	return render(request, 'maintenance/party_report.html', {
+		'title': 'Parties with no location',
+		'parties': parties,
+		'report_name': report_name,
+	})
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
