@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from django.db import connection, transaction
@@ -521,6 +521,22 @@ def sceneorg_party_dirs_with_no_party(request):
 		'report_name': report_name,
 		'total_count': total_count,
 		'matched_count': matched_count,
+	})
+
+def parties_with_incomplete_dates(request):
+	report_name = 'parties_with_incomplete_dates'
+	parties = Party.objects.extra(
+		where = [
+			"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
+			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+		],
+		params = [report_name]
+	).order_by('start_date_date')
+	
+	return render(request, 'maintenance/party_report.html', {
+		'title': 'Parties with incomplete dates',
+		'parties': parties,
+		'report_name': report_name,
 	})
 
 def fix_release_dates(request):
