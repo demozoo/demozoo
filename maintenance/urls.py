@@ -28,4 +28,5 @@ urlpatterns = patterns('maintenance.views',
 	(r'^add_sceneorg_link_to_party$', 'add_sceneorg_link_to_party', {}, 'maintenance_add_sceneorg_link_to_party'),
 	(r'^parties_with_incomplete_dates$', 'parties_with_incomplete_dates', {}, 'maintenance_parties_with_incomplete_dates'),
 	(r'^parties_with_no_location$', 'parties_with_no_location', {}, 'maintenance_parties_with_no_location'),
+	(r'^empty_releasers$', 'empty_releasers', {}, 'maintenance_empty_releasers'),
 )

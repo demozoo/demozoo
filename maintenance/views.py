@@ -555,6 +555,40 @@ def parties_with_no_location(request):
 		'report_name': report_name,
 	})
 
+def empty_releasers(request):
+	report_name = 'empty_releasers'
+	releasers = Releaser.objects.raw('''
+		SELECT
+			demoscene_releaser.*
+		FROM demoscene_releaser
+		LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
+		LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
+		WHERE
+		demoscene_releaser.notes = ''
+		AND groups.group_id IS NULL
+		AND members.member_id IS NULL
+		AND (
+			SELECT COUNT (demoscene_nick.id)
+			FROM demoscene_nick
+			LEFT JOIN demoscene_production_author_nicks ON (demoscene_nick.id = demoscene_production_author_nicks.nick_id)
+			LEFT JOIN demoscene_production_author_affiliation_nicks ON (demoscene_nick.id = demoscene_production_author_affiliation_nicks.nick_id)
+			LEFT JOIN demoscene_credit ON (demoscene_nick.id = demoscene_credit.nick_id)
+			WHERE demoscene_nick.releaser_id = demoscene_releaser.id
+			AND (demoscene_production_author_nicks.nick_id IS NOT NULL
+			OR demoscene_production_author_affiliation_nicks.nick_id IS NOT NULL
+			OR demoscene_credit.nick_id IS NOT NULL)
+		) = 0
+		AND demoscene_releaser.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		ORDER BY demoscene_releaser.name
+	''', [report_name])
+	
+	return render(request, 'maintenance/releaser_report.html', {
+		'title': 'Empty releaser records',
+		'releasers': releasers,
+		'report_name': report_name,
+	})
+
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
