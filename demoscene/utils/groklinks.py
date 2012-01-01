@@ -385,6 +385,15 @@ class CappedVideo(BaseUrl):
 	html_link_text = "Capped.TV"
 	html_title_format = "%s on Capped.TV"
 
+class FacebookPage(BaseUrl):
+	canonical_format = "http://www.facebook.com/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?facebook\.com/(.+)', re.I),
+	]
+	html_link_class = "facebook"
+	html_link_text = "Facebook"
+	html_title_format = "%s on Facebook"
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -397,13 +406,13 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		ZxdemoAuthor,
+		ZxdemoAuthor, FacebookPage,
 		BaseUrl,
 	])
 
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
-		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup,
+		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage,
 		BaseUrl,
 	])
 
@@ -420,5 +429,6 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
+		FacebookPage,
 		BaseUrl,
 	])

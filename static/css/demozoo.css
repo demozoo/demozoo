@@ -1042,6 +1042,9 @@ ul.parties_in_series li.current {
 .external_links a.twitter {
 	background-image: url('/static/images/icons/external_sites/twitter.png');
 }
+.external_links a.facebook {
+	background-image: url('/static/images/icons/external_sites/facebook.png');
+}
 .external_links a.amigascne {
 	background-image: url('/static/images/icons/external_sites/amigascne.png');
 }

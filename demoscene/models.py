@@ -1132,6 +1132,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.DemopartyNetParty, groklinks.SlengpungParty, groklinks.PouetParty,
 		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
+		groklinks.FacebookPage,
 		groklinks.BaseUrl,
 	]
 	def html_link(self):
@@ -1144,7 +1145,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.AmpAuthor, groklinks.CsdbScener, groklinks.CsdbGroup,
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
-		groklinks.ScenesatAct, groklinks.ZxdemoAuthor,
+		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
 		groklinks.BaseUrl,
 	]
 	def html_link(self):
