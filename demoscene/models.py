@@ -1125,6 +1125,7 @@ class ExternalLink(models.Model):
 	
 	class Meta:
 		abstract = True
+		ordering = ['link_class']
 
 class PartyExternalLink(ExternalLink):
 	party = models.ForeignKey(Party, related_name = 'external_links')
