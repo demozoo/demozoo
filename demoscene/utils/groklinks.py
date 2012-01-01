@@ -394,6 +394,15 @@ class FacebookPage(BaseUrl):
 	html_link_text = "Facebook"
 	html_title_format = "%s on Facebook"
 
+class GooglePlusPage(BaseUrl):
+	canonical_format = "https://plus.google.com/%s/"
+	tests = [
+		regex_match(r'https?://plus\.google\.com/(\d+)', re.I),
+	]
+	html_link_class = "googleplus"
+	html_link_text = "Google+"
+	html_title_format = "%s on Google+"
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -406,13 +415,13 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		ZxdemoAuthor, FacebookPage,
+		ZxdemoAuthor, FacebookPage, GooglePlusPage,
 		BaseUrl,
 	])
 
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
-		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage,
+		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
 		BaseUrl,
 	])
 
@@ -429,6 +438,6 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-		FacebookPage,
+		FacebookPage, GooglePlusPage,
 		BaseUrl,
 	])
