@@ -13,12 +13,12 @@ def deploy():
 
 def sanity():
 	with cd('/var/www/demozoo2'):
-		run('./manage.py sanity')
+		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py sanity')
 
 def reindex():
 	with cd('/var/www/demozoo2'):
-		run('./manage.py force_rebuild_index')
+		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py force_rebuild_index')
 
 def bump_external_links():
 	with cd('/var/www/demozoo2'):
-		run('./manage.py bump_external_links')
+		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py bump_external_links')
