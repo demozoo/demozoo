@@ -403,6 +403,15 @@ class GooglePlusPage(BaseUrl):
 	html_link_text = "Google+"
 	html_title_format = "%s on Google+"
 
+class SoundcloudUser(BaseUrl):
+	canonical_format = "http://soundcloud.com/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+)', re.I),
+	]
+	html_link_class = "soundcloud"
+	html_link_text = "SoundCloud"
+	html_title_format = "%s on SoundCloud"
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -415,13 +424,14 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		ZxdemoAuthor, FacebookPage, GooglePlusPage,
+		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		BaseUrl,
 	])
 
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
+		SoundcloudUser,
 		BaseUrl,
 	])
 

@@ -1069,6 +1069,9 @@ ul.parties_in_series li.current {
 .external_links a.capped {
 	background-image: url('/static/images/icons/external_sites/capped.png');
 }
+.external_links a.soundcloud {
+	background-image: url('/static/images/icons/external_sites/soundcloud.png');
+}
 .external_links a.website {
 	background-image: url('/static/images/icons/world.png');
 }
