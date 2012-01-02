@@ -213,13 +213,13 @@ class Releaser(models.Model):
 		return Credit.objects.filter(nick__releaser = self)
 	
 	def groups(self):
-		return [membership.group for membership in self.group_memberships.select_related('group')]
+		return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
 	
 	def current_groups(self):
-		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group')]
+		return [membership.group for membership in self.group_memberships.filter(is_current = True).select_related('group').order_by('group__name')]
 	
 	def members(self):
-		return [membership.member for membership in self.member_memberships.select_related('member')]
+		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
 	
 	def name_with_affiliations(self):
 		groups = self.current_groups()
