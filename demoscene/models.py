@@ -567,13 +567,8 @@ class Production(models.Model):
 	release_date_date = models.DateField(null = True, blank = True)
 	release_date_precision = models.CharField(max_length = 1, blank = True)
 
-	external_site_ref_field_names = ['pouet_id','csdb_id','bitworld_id']
-	pouet_id = models.IntegerField(null = True, blank = True, verbose_name = 'Pouet ID')
-	csdb_id = models.IntegerField(null = True, blank = True, verbose_name = 'CSDb ID')
-	bitworld_id = models.IntegerField(null = True, blank = True, verbose_name = 'Bitworld ID')
 	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
 	scene_org_id = models.IntegerField(null = True, blank = True, verbose_name = 'scene.org ID')
-	zxdemo_id = models.IntegerField(null = True, blank = True, verbose_name = 'ZXdemo ID')
 	
 	data_source = models.CharField(max_length = 32, blank = True, null = True)
 	unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
@@ -719,27 +714,6 @@ class Production(models.Model):
 			self.release_date_precision = ''
 	release_date = property(_get_release_date,_set_release_date)
 	
-	def has_any_external_links(self):
-		return [True for field in self.external_site_ref_field_names if self.__dict__[field]]
-		
-	def pouet_url(self):
-		if self.pouet_id:
-			return "http://pouet.net/prod.php?which=%s" % self.pouet_id
-			
-	def csdb_url(self):
-		if self.csdb_id:
-			return "http://noname.c64.org/csdb/release/?id=%s" % self.csdb_id
-	
-	def bitworld_url(self):
-		if self.bitworld_id:
-			return "http://bitworld.bitfellas.org/demo.php?id=%s" % self.bitworld_id
-	
-	def ordered_download_links(self):
-		download_links = self.download_links.all()
-		# reorder to put scene.org links first
-		return [d for d in download_links if d.host_identifier() == 'sceneorg'] + \
-			[d for d in download_links if d.host_identifier() != 'sceneorg']
-	
 	# whether this production is regarded as 'stable' in competition results editing;
 	# i.e. it will not be deleted or have its details edited in response to actions
 	# in the compo results editing interface
@@ -800,26 +774,6 @@ class Byline(StrAndUnicode):
 class ProductionDemozoo0Platform(models.Model):
 	production = models.ForeignKey(Production, related_name = 'demozoo0_platforms')
 	platform = models.CharField(max_length = 64)
-
-class DownloadLink(models.Model):
-	production = models.ForeignKey(Production, related_name = 'download_links')
-	url = models.CharField(max_length = 2048, verbose_name = 'download URL')
-	description = models.CharField(max_length = 255, blank = True)
-	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
-	
-	def hostname(self):
-		return urlparse(self.url).hostname
-	
-	def host_identifier(self):
-		host = self.hostname()
-		if host == 'ftp.amigascne.org':
-			return 'amigascne'
-		elif host == 'www.scene.org':
-			return 'sceneorg'
-		elif host == 'ftp.untergrund.net':
-			return 'untergrund'
-		else:
-			return None
 
 class Credit(models.Model):
 	production = models.ForeignKey(Production, related_name = 'credits')
@@ -1152,3 +1106,48 @@ class ReleaserExternalLink(ExternalLink):
 	]
 	def html_link(self):
 		return self.link.as_html(self.releaser.name)
+
+class ProductionLink(ExternalLink):
+	production = models.ForeignKey(Production, related_name = 'links')
+	is_download_link = models.BooleanField()
+	description = models.CharField(max_length = 255, blank = True)
+	demozoo0_id = models.IntegerField(null = True, blank = True, verbose_name = 'Demozoo v0 ID')
+	
+	link_types = [
+		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,
+		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
+		groklinks.DemosceneTvVideo, groklinks.CappedVideo,
+		groklinks.AmigascneFile, # must come before SceneOrgFile
+		groklinks.SceneOrgFile, groklinks.UntergrundFile,
+		groklinks.BaseUrl,
+	]
+	
+	# link classes which are always considered to be download links, even when entered as external links
+	always_download_link_classes = [
+		'AmigascneFile', 'SceneOrgFile', 'UntergrundFile',
+	]
+	# link classes which are always considered to be external (supporting) links, even when entered as
+	# download links
+	always_external_link_classes = [
+		'PouetProduction', 'CsdbRelease', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
+		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo',
+	]
+	
+	def save(self, *args, **kwargs):
+		# ensure that is_download_link is set correctly for link classes found in
+		# always_download_link_classes or always_external_link_classes
+		if self.link_class in self.always_download_link_classes:
+			self.is_download_link = True
+		elif self.link_class in self.always_external_link_classes:
+			self.is_download_link = False
+		
+		super(ProductionLink, self).save(*args, **kwargs)
+	
+	def html_link(self):
+		return self.link.as_html(self.production.title)
+	
+	def html_link_class(self):
+		return self.link.html_link_class
+	
+	def as_download_link(self):
+		return self.link.as_download_link()

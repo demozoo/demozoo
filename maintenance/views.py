@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party, ProductionLink
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from django.db import connection, transaction
@@ -32,16 +32,18 @@ def prods_without_screenshots(request):
 def prods_without_external_links(request):
 	report_name = 'prods_without_external_links'
 	
-	filters = {}
-	for field in Production.external_site_ref_field_names:
-		filters["%s__isnull" % field] = True
-	
-	productions = Production.objects \
-		.filter(supertype = 'production', **filters) \
-		.extra(
-			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params = [report_name]
-		).order_by('title')
+	productions = Production.objects.raw('''
+		SELECT demoscene_production.*
+		FROM demoscene_production
+		LEFT JOIN demoscene_productionlink ON (
+			demoscene_production.id = demoscene_productionlink.production_id
+			AND demoscene_productionlink.is_download_link = 'f'
+		)
+		WHERE demoscene_production.supertype = 'production'
+		AND demoscene_productionlink.id IS NULL
+		AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		ORDER BY demoscene_production.title
+	''', [report_name])
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without external links',
 		'productions': productions,
@@ -276,16 +278,20 @@ def same_named_prods_by_same_releaser(request):
 	})
 
 def duplicate_external_links(request):
-	def prod_duplicates_by_column(column_name):
+	def prod_duplicates_by_link_class(link_class):
 		return Production.objects.raw('''
-			SELECT DISTINCT demoscene_production.*
+			SELECT DISTINCT demoscene_production.*, demoscene_productionlink.parameter
 			FROM demoscene_production
-			INNER JOIN demoscene_production AS other_production ON (
-				demoscene_production.%s IS NOT NULL
-				AND demoscene_production.%s = other_production.%s
-				AND demoscene_production.id <> other_production.id)
-			ORDER BY demoscene_production.%s
-		''' % ((column_name,)*4) )
+			INNER JOIN demoscene_productionlink ON (
+				demoscene_production.id = demoscene_productionlink.production_id
+				AND demoscene_productionlink.link_class = %s)
+			INNER JOIN demoscene_productionlink AS other_link ON (
+				demoscene_productionlink.link_class = other_link.link_class
+				AND demoscene_productionlink.parameter = other_link.parameter
+				AND demoscene_productionlink.id <> other_link.id
+			)
+			ORDER BY demoscene_productionlink.parameter
+		''', [link_class])
 	
 	def releaser_duplicates_by_link_class(link_class):
 		return Releaser.objects.raw('''
@@ -303,8 +309,8 @@ def duplicate_external_links(request):
 		''', [link_class])
 	
 	prod_dupes = {}
-	for column in Production.external_site_ref_field_names:
-		prod_dupes[column] = prod_duplicates_by_column(column)
+	for link_class in ProductionLink.objects.distinct().values_list('link_class', flat=True):
+		prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
 	
 	releaser_dupes = {}
 	for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):

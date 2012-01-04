@@ -12,11 +12,17 @@ class BaseUrl():
 	canonical_format = "%s"
 	
 	@classmethod
-	def match(cls, *args):
+	def extract_param(cls, *args):
 		for test in cls.tests:
 			m = test(*args)
-			if m:
-				return cls(m)
+			if m != None:
+				return m
+	
+	@classmethod
+	def match(cls, *args):
+		param = cls.extract_param(*args)
+		if param != None:
+			return cls(param)
 	
 	def __str__(self):
 		return self.canonical_format % self.param
@@ -30,6 +36,12 @@ class BaseUrl():
 			escape(str(self)), escape(self.html_link_class),
 			escape(self.html_title_format % subject),
 			escape(self.html_link_text)
+		)
+	
+	def as_download_link(self):
+		hostname = urlparse.urlparse(str(self)).hostname
+		return '<a href="%s">Download (%s)</a>' % (
+			escape(str(self)), escape(hostname)
 		)
 
 def regex_match(pattern, flags = None):
@@ -217,7 +229,23 @@ class BitworldDemo(BaseUrl):
 	html_title_format = "%s on BitWorld"
 
 class SceneOrgFile(BaseUrl):
+
+	# custom test for file_dl.php URLs, of the format:
+	# http://www.scene.org/file_dl.php?url=ftp://ftp.scene.org/pub/parties/2009/stream09/in4k/moldtype.zip&id=523700
+	file_dl_regex = re.compile(r'https?://(?:www\.)?scene\.org/file_dl\.php', re.I)
+	def file_dl_match(urlstring, url):
+		if SceneOrgFile.file_dl_regex.match(urlstring):
+			# link is a file_dl.php link; extract the inner url, then recursively match on that
+			querystring = urlparse.parse_qs(url.query)
+			try:
+				inner_url_string = querystring['url'][0]
+				inner_url = urlparse.urlparse(inner_url_string)
+				return SceneOrgFile.extract_param(inner_url_string, inner_url)
+			except KeyError:
+				return None
+	
 	tests = [
+		file_dl_match,
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
 		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I),
 		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
@@ -252,6 +280,15 @@ class AmigascneFile(BaseUrl):
 	html_link_class = "amigascne"
 	html_link_text = "amigascne.org"
 	html_title_format = "%s on amigascne.org"
+
+class UntergrundFile(BaseUrl):
+	canonical_format = "ftp://ftp.untergrund.net%s"
+	tests = [
+		regex_match(r'ftp://ftp\.untergrund\.net(/.*)', re.I),
+	]
+	html_link_class = "untergrund"
+	html_link_text = "untergrund.net"
+	html_title_format = "%s on untergrund.net"
 
 class DemopartyNetParty(BaseUrl):
 	canonical_format = "http://www.demoparty.net/%s/"
@@ -439,7 +476,7 @@ def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 		AmigascneFile, # must come before SceneOrgFile
-		SceneOrgFile,
+		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
 		BaseUrl,
 	])

@@ -17,7 +17,8 @@ def show(request, production_id, edit_mode = False):
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
-		'download_links': production.ordered_download_links(),
+		'download_links': production.links.filter(is_download_link=True),
+		'external_links': production.links.filter(is_download_link=False),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'tags': production.tags.all(),
 		'editing': edit_mode,
@@ -34,7 +35,7 @@ def create(request):
 	if request.method == 'POST':
 		production = Production(updated_at = datetime.datetime.now())
 		form = CreateGraphicsForm(request.POST, instance = production)
-		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
+		download_link_formset = ProductionDownloadLinkFormSet(request.POST, instance = production)
 		if form.is_valid() and download_link_formset.is_valid():
 			form.save()
 			download_link_formset.save()
@@ -43,7 +44,7 @@ def create(request):
 		form = CreateGraphicsForm(initial = {
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
 		})
-		download_link_formset = DownloadLinkFormSet()
+		download_link_formset = ProductionDownloadLinkFormSet()
 	return ajaxable_render(request, 'graphics/create.html', {
 		'html_title': "New graphics",
 		'form': form,

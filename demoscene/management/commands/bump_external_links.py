@@ -1,9 +1,9 @@
 # Re-parse all external links of type 'BaseUrl', in case they're now recognised as a
 # specific type
 from django.core.management.base import NoArgsCommand
-from demoscene.models import PartyExternalLink, ReleaserExternalLink
+from demoscene.models import PartyExternalLink, ReleaserExternalLink, ProductionLink
 
-external_link_models = [PartyExternalLink, ReleaserExternalLink]
+external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 
 class Command(NoArgsCommand):
 	def handle_noargs(self, **options):

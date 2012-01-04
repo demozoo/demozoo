@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, DownloadLink, Nick, Screenshot, Credit, SoundtrackLink
+from demoscene.models import Production, ProductionType, Platform, Nick, Screenshot, Credit, SoundtrackLink, ProductionLink
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.forms.models import inlineformset_factory, BaseModelFormSet
@@ -7,6 +7,7 @@ from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
 from production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
+from demoscene.forms.common import ExternalLinkForm 
 
 class BaseProductionEditCoreDetailsForm(forms.Form):
 	def __init__(self, *args, **kwargs):
@@ -159,27 +160,29 @@ class CreateGraphicsForm(CreateProductionForm):
 			self.instance.platforms = [ self.cleaned_data['platform'] ]
 		return self.instance
 
-DownloadLinkFormSet = inlineformset_factory(Production, DownloadLink, extra=1)
-
 class ProductionEditNotesForm(forms.ModelForm):
 	class Meta:
 		model = Production
 		fields = ['notes']
 
-class ProductionDownloadLinkForm(forms.ModelForm):
+class ProductionDownloadLinkForm(ExternalLinkForm):
+	def save(self, commit = True):
+		instance = super(ProductionDownloadLinkForm, self).save(commit = False)
+		instance.is_download_link = True
+		if commit:
+			instance.save()
+		return instance
+	
 	class Meta:
-		model = DownloadLink
+		model = ProductionLink
 		fields = ['url']
+ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink, form=ProductionDownloadLinkForm, extra=1)
 
-class ProductionEditExternalLinksForm(forms.ModelForm):
+class ProductionExternalLinkForm(ExternalLinkForm):
 	class Meta:
-		model = Production
-		fields = Production.external_site_ref_field_names
-		widgets = {
-			'pouet_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'csdb_id': forms.TextInput(attrs={'class': 'numeric'}),
-			'bitworld_id': forms.TextInput(attrs={'class': 'numeric'}),
-		}
+		model = ProductionLink
+		fields = ['url']
+ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink, form=ProductionExternalLinkForm)
 
 class ProductionCreditForm(forms.Form):
 	def __init__(self, *args, **kwargs):

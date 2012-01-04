@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Byline, Releaser, Credit, DownloadLink, Screenshot, ProductionType
+from demoscene.models import Production, Byline, Releaser, Credit, Screenshot, ProductionType, ProductionLink
 from demoscene.forms.production import *
 from taggit.models import Tag
 from django.contrib import messages
@@ -90,7 +90,8 @@ def show(request, production_id, edit_mode = False):
 		'production': production,
 		'credits': production.credits.order_by('nick__name'),
 		'screenshots': production.screenshots.order_by('id'),
-		'download_links': production.ordered_download_links(),
+		'download_links': production.links.filter(is_download_link=True),
+		'external_links': production.links.filter(is_download_link=False),
 		'soundtracks': [
 			link.soundtrack for link in
 			production.soundtrack_links.order_by('position').select_related('soundtrack')
@@ -152,16 +153,30 @@ def edit_notes(request, production_id):
 @login_required
 def edit_external_links(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
-	return simple_ajax_form(request, 'production_edit_external_links', production, ProductionEditExternalLinksForm,
-		title = 'Editing external links for %s:' % production.title,
-		update_datestamp = True, update_bonafide_flag = True)
+	
+	if request.method == 'POST':
+		formset = ProductionExternalLinkFormSet(request.POST, instance = production, queryset=production.links.filter(is_download_link=False))
+		if formset.is_valid():
+			formset.save()
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+			production.save()
+			
+			return HttpResponseRedirect(production.get_absolute_edit_url())
+	else:
+		formset = ProductionExternalLinkFormSet(instance = production, queryset=production.links.filter(is_download_link=False))
+	return ajaxable_render(request, 'productions/edit_external_links.html', {
+		'html_title': "Editing external links for %s" % production.title,
+		'production': production,
+		'formset': formset,
+	})
 
 @login_required
 def add_download_link(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
-	download_link = DownloadLink(production = production)
+	production_link = ProductionLink(production = production, is_download_link=True)
 	if request.method == 'POST':
-		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
+		form = ProductionDownloadLinkForm(request.POST, instance = production_link)
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
@@ -169,7 +184,7 @@ def add_download_link(request, production_id):
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionDownloadLinkForm(instance = download_link)
+		form = ProductionDownloadLinkForm(instance = production_link)
 	return ajaxable_render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "Adding download link for %s:" % production.title,
@@ -178,11 +193,11 @@ def add_download_link(request, production_id):
 	})
 
 @login_required
-def edit_download_link(request, production_id, download_link_id):
+def edit_download_link(request, production_id, production_link_id):
 	production = get_object_or_404(Production, id = production_id)
-	download_link = get_object_or_404(DownloadLink, id = download_link_id, production = production)
+	production_link = get_object_or_404(ProductionLink, id=production_link_id, production=production, is_download_link=True)
 	if request.method == 'POST':
-		form = ProductionDownloadLinkForm(request.POST, instance = download_link)
+		form = ProductionDownloadLinkForm(request.POST, instance = production_link)
 		if form.is_valid():
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
@@ -190,28 +205,28 @@ def edit_download_link(request, production_id, download_link_id):
 			form.save()
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionDownloadLinkForm(instance = download_link)
+		form = ProductionDownloadLinkForm(instance = production_link)
 	return ajaxable_render(request, 'productions/edit_download_link.html', {
 		'html_title': "Editing download link for %s" % production.title,
 		'form': form,
 		'production': production,
-		'download_link': download_link,
+		'production_link': production_link,
 	})
 
 @login_required
-def delete_download_link(request, production_id, download_link_id):
+def delete_download_link(request, production_id, production_link_id):
 	production = get_object_or_404(Production, id = production_id)
-	download_link = get_object_or_404(DownloadLink, id = download_link_id, production = production)
+	production_link = get_object_or_404(ProductionLink, id = production_link_id, production = production, is_download_link=True)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
-			download_link.delete()
+			production_link.delete()
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
-			reverse('production_delete_download_link', args = [production_id, download_link_id]),
+			reverse('production_delete_download_link', args = [production_id, production_link_id]),
 			"Are you sure you want to delete this download link for %s?" % production.title,
 			html_title = "Deleting download link for %s" % production.title )
 
@@ -268,7 +283,7 @@ def create(request):
 	if request.method == 'POST':
 		production = Production(updated_at = datetime.datetime.now())
 		form = CreateProductionForm(request.POST, instance = production)
-		download_link_formset = DownloadLinkFormSet(request.POST, instance = production)
+		download_link_formset = ProductionDownloadLinkFormSet(request.POST, instance = production)
 		if form.is_valid() and download_link_formset.is_valid():
 			form.save()
 			download_link_formset.save()
@@ -277,7 +292,7 @@ def create(request):
 		form = CreateProductionForm(initial = {
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
 		})
-		download_link_formset = DownloadLinkFormSet()
+		download_link_formset = ProductionDownloadLinkFormSet()
 	return ajaxable_render(request, 'productions/create.html', {
 		'html_title': "New production",
 		'form': form,
