@@ -407,6 +407,7 @@ class VimeoVideo(BaseUrl):
 class DemosceneTvVideo(BaseUrl):
 	canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
 	tests = [
+		querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod', re.I),
 		querystring_match(r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod', re.I, othervars = {'id': '172', 'vsmaction': 'view_prod'}),
 	]
 	html_link_class = "demoscene_tv"
