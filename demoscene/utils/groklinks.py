@@ -258,12 +258,38 @@ class SceneOrgFile(BaseUrl):
 		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
 		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
 		regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
+		regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
 	]
 	def __str__(self):
 		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param)
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
+	
+	@property
+	def mirror_links(self):
+		links = [
+			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+		]
+		if not self.param.startswith('/mirrors/'):
+			links += [
+				'<li><a class="country_no" href="%s">no</a></li>' % escape(self.no_url),
+				'<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
+			]
+			if not self.param.startswith('/resources/'):
+				links += [
+					'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
+				]
+		if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
+			links += [
+				'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
+			]
+		
+		return links
 	
 	@property
 	def nl_url(self):
@@ -289,33 +315,19 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def fr_url(self):
 		return "http://http.fr.scene.org%s" % self.param
+	@property
+	def hu_url(self):
+		return "http://http.hu.scene.org%s" % self.param
 	
 	def as_download_link(self):
 		hostname = urlparse.urlparse(str(self)).hostname
+		mirrors_html = ''.join(self.mirror_links)
 		return '''
 			<a href="%s">Download from scene.org</a>
-			- mirrors: <ul class="download_mirrors">
-				<li><a class="country_nl" href="%s">nl</a></li>
-				<li><a class="country_no" href="%s">no</a></li>
-				<li><a class="country_jp" href="%s">jp</a></li>
-				<li><a href="%s" class="country_de">de/ftp</a></li>
-				<li><a href="%s" class="country_de">de/http</a></li>
-				<li><a href="%s" class="country_us">us/ftp</a></li>
-				<li><a href="%s" class="country_us">us/http</a></li>
-				<li><a class="country_fr" href="%s">fr</a></li>
-			</ul>
+			- mirrors: <ul class="download_mirrors">%s</ul>
 		''' % (
-			escape(str(self)),
-			escape(self.nl_url),
-			escape(self.no_url),
-			escape(self.jp_url),
-			escape(self.de_ftp_url),
-			escape(self.de_http_url),
-			escape(self.us_ftp_url),
-			escape(self.us_http_url),
-			escape(self.fr_url),
+			escape(str(self)), mirrors_html
 		)
-
 
 class AmigascneFile(BaseUrl):
 	canonical_format = "http://ftp.amigascne.org/pub/amiga%s"

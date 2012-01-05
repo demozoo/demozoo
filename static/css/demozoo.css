@@ -424,6 +424,9 @@ ul.download_links ul.download_mirrors li a.country_de {
 ul.download_links ul.download_mirrors li a.country_fr {
 	background-image: url(/static/images/icons/flags/fr.png);
 }
+ul.download_links ul.download_mirrors li a.country_hu {
+	background-image: url(/static/images/icons/flags/hu.png);
+}
 
 li.add {
 	line-height: 24px;
