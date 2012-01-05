@@ -381,6 +381,53 @@ class AmigascneFile(BaseUrl):
 			escape(str(self)), mirrors_html
 		)
 
+class ModlandFile(BaseUrl):
+	canonical_format = "ftp://ftp.modland.com%s"
+	tests = [
+		regex_match(r'ftp://ftp\.modland\.com(/.*)', re.I),
+		regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
+		regex_match(r'ftp://aero.exotica.org.uk/pub/mirrors/modland(/.*)', re.I),
+		regex_match(r'ftp://modland\.ziphoid\.com(/.*)', re.I),
+		regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
+		regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
+		regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
+	]
+	html_link_class = "modland"
+	html_link_text = "Modland"
+	html_title_format = "%s on Modland"
+	
+	@property
+	def mirror_links(self):
+		links = [
+			'<li><a class="country_uk" href="%s">uk</a></li>' % escape(self.uk_url),
+			'<li><a href="%s" class="country_se">se</a></li>' % escape(self.se_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_url),
+			'<li><a href="%s" class="country_ca">ca</a></li>' % escape(self.ca_url),
+		]
+		
+		return links
+	@property
+	def uk_url(self):
+		return "ftp://hangar18.exotica.org.uk/modland%s" % self.param
+	@property
+	def se_url(self):
+		return "ftp://modland.ziphoid.com%s" % self.param
+	@property
+	def us_url(self):
+		return "ftp://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
+	@property
+	def ca_url(self):
+		return "ftp://ftp.rave.ca%s" % self.param
+	def as_download_link(self):
+		hostname = urlparse.urlparse(str(self)).hostname
+		mirrors_html = ''.join(self.mirror_links)
+		return '''
+			<a href="%s">Download from Modland</a>
+			- mirrors: <ul class="download_mirrors">%s</ul>
+		''' % (
+			escape(str(self)), mirrors_html
+		)
+
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
 	tests = [
@@ -576,6 +623,7 @@ def grok_group_link(urlstring):
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
+		ModlandFile,
 		AmigascneFile, # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,

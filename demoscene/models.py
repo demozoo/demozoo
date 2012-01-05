@@ -1117,6 +1117,7 @@ class ProductionLink(ExternalLink):
 		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,
 		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
 		groklinks.DemosceneTvVideo, groklinks.CappedVideo,
+		groklinks.ModlandFile,
 		groklinks.AmigascneFile, # must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile,
 		groklinks.BaseUrl,

@@ -427,6 +427,15 @@ ul.download_links ul.download_mirrors li a.country_fr {
 ul.download_links ul.download_mirrors li a.country_hu {
 	background-image: url(/static/images/icons/flags/hu.png);
 }
+ul.download_links ul.download_mirrors li a.country_uk {
+	background-image: url(/static/images/icons/flags/gb.png);
+}
+ul.download_links ul.download_mirrors li a.country_se {
+	background-image: url(/static/images/icons/flags/se.png);
+}
+ul.download_links ul.download_mirrors li a.country_ca {
+	background-image: url(/static/images/icons/flags/ca.png);
+}
 
 li.add {
 	line-height: 24px;
