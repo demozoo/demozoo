@@ -264,6 +264,58 @@ class SceneOrgFile(BaseUrl):
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
+	
+	@property
+	def nl_url(self):
+		return "ftp://ftp.scene.org/pub%s" % self.param
+	@property
+	def no_url(self):
+		return "ftp://ftp.no.scene.org/scene.org%s" % self.param
+	@property
+	def jp_url(self):
+		return "ftp://ftp.jp.scene.org/pub/demos/scene%s" % self.param
+	@property
+	def de_ftp_url(self):
+		return "ftp://ftp.de.scene.org/pub%s" % self.param
+	@property
+	def de_http_url(self):
+		return "http://http.de.scene.org/pub%s" % self.param
+	@property
+	def us_ftp_url(self):
+		return "ftp://ftp.us.scene.org/pub/scene.org%s" % self.param
+	@property
+	def us_http_url(self):
+		return "http://http.us.scene.org/pub/scene.org%s" % self.param
+	@property
+	def fr_url(self):
+		return "http://http.fr.scene.org%s" % self.param
+	
+	def as_download_link(self):
+		hostname = urlparse.urlparse(str(self)).hostname
+		return '''
+			<a href="%s">Download from scene.org</a>
+			- mirrors: <ul class="download_mirrors">
+				<li><a class="country_nl" href="%s">nl</a></li>
+				<li><a class="country_no" href="%s">no</a></li>
+				<li><a class="country_jp" href="%s">jp</a></li>
+				<li><a href="%s" class="country_de">de/ftp</a></li>
+				<li><a href="%s" class="country_de">de/http</a></li>
+				<li><a href="%s" class="country_us">us/ftp</a></li>
+				<li><a href="%s" class="country_us">us/http</a></li>
+				<li><a class="country_fr" href="%s">fr</a></li>
+			</ul>
+		''' % (
+			escape(str(self)),
+			escape(self.nl_url),
+			escape(self.no_url),
+			escape(self.jp_url),
+			escape(self.de_ftp_url),
+			escape(self.de_http_url),
+			escape(self.us_ftp_url),
+			escape(self.us_http_url),
+			escape(self.fr_url),
+		)
+
 
 class AmigascneFile(BaseUrl):
 	canonical_format = "http://ftp.amigascne.org/pub/amiga%s"
