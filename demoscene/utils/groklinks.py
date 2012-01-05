@@ -344,6 +344,42 @@ class AmigascneFile(BaseUrl):
 	html_link_class = "amigascne"
 	html_link_text = "amigascne.org"
 	html_title_format = "%s on amigascne.org"
+	
+	@property
+	def mirror_links(self):
+		links = [
+			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+		]
+		
+		return links
+	@property
+	def nl_url(self):
+		return "ftp://ftp.scene.org/pub/mirrors/amigascne%s" % self.param
+	@property
+	def de_ftp_url(self):
+		return "ftp://ftp.de.scene.org/pub/mirrors/amigascne%s" % self.param
+	@property
+	def de_http_url(self):
+		return "http://http.de.scene.org/pub/mirrors/amigascne%s" % self.param
+	@property
+	def us_ftp_url(self):
+		return "ftp://ftp.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
+	@property
+	def us_http_url(self):
+		return "http://http.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
+	def as_download_link(self):
+		hostname = urlparse.urlparse(str(self)).hostname
+		mirrors_html = ''.join(self.mirror_links)
+		return '''
+			<a href="%s">Download from amigascne.org</a>
+			- mirrors: <ul class="download_mirrors">%s</ul>
+		''' % (
+			escape(str(self)), mirrors_html
+		)
 
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
