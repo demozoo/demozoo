@@ -124,7 +124,7 @@ class CsdbScener(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/scener/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/scener/', 'id', re.I),
-		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/scener/', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/scener/', 'id', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
@@ -133,7 +133,7 @@ class CsdbGroup(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/group/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/group/', 'id', re.I),
-		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/group/', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/group/', 'id', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
@@ -141,8 +141,9 @@ class CsdbGroup(BaseUrl):
 class CsdbRelease(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/release/?id=%s"
 	tests = [
-		querystring_match(r'https?://noname\.c64\.org/csdb/release/', 'id', re.I),
-		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/release/', 'id', re.I),
+		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
+		querystring_match(r'https?://noname\.c64\.org/csdb/release/\?', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/release/\?', 'id', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
@@ -505,7 +506,7 @@ class CsdbEvent(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/event/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/event/', 'id', re.I),
-		querystring_match(r'https?://(?:www\.)?csdb\.dk/csdb/event/', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/event/', 'id', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
