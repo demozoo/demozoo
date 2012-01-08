@@ -542,6 +542,15 @@ class YoutubeVideo(BaseUrl):
 	html_link_text = "YouTube"
 	html_title_format = "%s on YouTube"
 
+class YoutubeUser(BaseUrl):
+	canonical_format = "http://www.youtube.com/user/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)', re.I),
+	]
+	html_link_class = "youtube"
+	html_link_text = "YouTube"
+	html_title_format = "%s on YouTube"
+
 class VimeoVideo(BaseUrl):
 	canonical_format = "http://vimeo.com/%s"
 	tests = [
@@ -610,6 +619,7 @@ def grok_scener_link(urlstring):
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
+		YoutubeUser,
 		BaseUrl,
 	])
 

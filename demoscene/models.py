@@ -1101,7 +1101,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
-		groklinks.GooglePlusPage, groklinks.SoundcloudUser,
+		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.BaseUrl,
 	]
 	def html_link(self):
