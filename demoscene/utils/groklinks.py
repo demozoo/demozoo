@@ -193,6 +193,15 @@ class AsciiarenaArtist(BaseUrl):
 	html_link_text = "AsciiArena"
 	html_title_format = "%s on AsciiArena"
 
+class AsciiarenaRelease(BaseUrl):
+	canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_release\.php', 'filename', re.I),
+	]
+	html_link_class = "asciiarena"
+	html_link_text = "AsciiArena"
+	html_title_format = "%s on AsciiArena"
+
 class ScenesatAct(BaseUrl):
 	canonical_format = "http://scenesat.com/act/%s"
 	tests = [
@@ -632,7 +641,7 @@ def grok_group_link(urlstring):
 
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
-		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
+		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ModlandFile,
 		AmigascneFile, # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,

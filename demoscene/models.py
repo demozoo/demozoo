@@ -1116,7 +1116,7 @@ class ProductionLink(ExternalLink):
 	link_types = [
 		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,
 		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
-		groklinks.DemosceneTvVideo, groklinks.CappedVideo,
+		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
 		groklinks.ModlandFile,
 		groklinks.AmigascneFile, # must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile,
@@ -1131,7 +1131,7 @@ class ProductionLink(ExternalLink):
 	# download links
 	always_external_link_classes = [
 		'PouetProduction', 'CsdbRelease', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
-		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo',
+		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease',
 	]
 	
 	def save(self, *args, **kwargs):
