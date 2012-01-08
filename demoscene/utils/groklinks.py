@@ -211,6 +211,15 @@ class ScenesatAct(BaseUrl):
 	html_link_text = "SceneSat"
 	html_title_format = "%s on SceneSat Radio"
 
+class ScenesatTrack(BaseUrl):
+	canonical_format = "http://scenesat.com/track/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?scenesat\.com/track/(\d+)', re.I),
+	]
+	html_link_class = "scenesat"
+	html_link_text = "SceneSat"
+	html_title_format = "%s on SceneSat Radio"
+
 class ZxdemoAuthor(BaseUrl):
 	canonical_format = "http://zxdemo.org/author.php?id=%s"
 	tests = [
@@ -642,7 +651,7 @@ def grok_group_link(urlstring):
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
-		ModlandFile,
+		ScenesatTrack, ModlandFile,
 		AmigascneFile, # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
