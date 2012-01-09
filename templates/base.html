@@ -57,20 +57,6 @@
 			<div id="page">
 			<header id="site_header">
 				<h1><a href="{% url home %}">Demozoo</a></h1>
-				<nav>
-					<ul>
-						<li class="{% nav_active productions %}"><a href="{% url productions %}">Productions</a></li>
-						<li class="{% nav_active music %}"><a href="{% url musics %}">Music</a></li>
-						<li class="{% nav_active graphics %}"><a href="{% url graphics %}">Graphics</a></li>
-						<li class="{% nav_active groups %}"><a href="{% url groups %}">Groups</a></li>
-						<li class="{% nav_active sceners %}"><a href="{% url sceners %}">Sceners</a></li>
-						<li class="{% nav_active parties %}"><a href="{% url parties %}">Parties</a></li>
-					</ul>
-					<form class="search" method="get" action="{% url search %}">
-						{{ global_search_form.q }}
-						<input type="submit" value="Search" />
-					</form>
-				</nav>
 				<div id="login_status_panel">
 					{% if user.is_authenticated %}
 						<div class="login_status logged_in">
@@ -91,14 +77,32 @@
 							Not logged in
 						</div>
 						<div class="login_links">
+							<form action="{% url log_in %}" method="post">
+								{% csrf_token %}
+								{{ global_login_form.as_p }}
+								<input type="submit" value="Log in" />
+							</form>
 							<ul>
-								<li><a href="{% url log_in %}">Log in</a></li>
-								<li><a href="{% url user_signup %}">Register</a></li>
+								<li><a href="{% url user_signup %}">Register new account</a></li>
 							</ul>
 						</div>
 					{% endif %}
 				</div>
 				<script>$('#login_status_panel .login_links').hide();</script>
+				<nav>
+					<ul>
+						<li class="{% nav_active productions %}"><a href="{% url productions %}">Productions</a></li>
+						<li class="{% nav_active music %}"><a href="{% url musics %}">Music</a></li>
+						<li class="{% nav_active graphics %}"><a href="{% url graphics %}">Graphics</a></li>
+						<li class="{% nav_active groups %}"><a href="{% url groups %}">Groups</a></li>
+						<li class="{% nav_active sceners %}"><a href="{% url sceners %}">Sceners</a></li>
+						<li class="{% nav_active parties %}"><a href="{% url parties %}">Parties</a></li>
+					</ul>
+					<form class="search" method="get" action="{% url search %}">
+						{{ global_search_form.q }}
+						<input type="submit" value="Search" />
+					</form>
+				</nav>
 				<div style="clear: both;"></div>
 			</header>
 			

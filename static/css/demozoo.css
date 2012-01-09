@@ -167,6 +167,15 @@ html {
 	background-color: #e8e8e8;
 	border-top: 1px solid #5d5f5f;
 }
+#site_header #login_status_panel .login_links form {
+	border-bottom: 1px solid #5e5f5f;
+	padding: 8px;
+	color: #5e5f5f;
+}
+#site_header #login_status_panel .login_links form p {
+	margin-top: 0;
+	margin-bottom: 8px;
+}
 #site_header #login_status_panel .login_links ul li {
 	border-bottom: 1px solid #5e5f5f;
 }
@@ -1332,4 +1341,25 @@ body.edit_competition form.entry_form {
 }
 body.edit_competition form.entry_form input[type=submit] {
 	margin-left: 150px;
+}
+
+
+
+/* Small-screen versions */
+
+@media screen and (max-width: 1200px) {
+	#page {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+}
+@media screen and (max-width: 1081px) {
+	#page {
+		border-right: none;
+	}
+	#site_header nav {
+		width: 100%;
+		margin-left: 64px;
+		margin-top: 24px;
+	}
 }
