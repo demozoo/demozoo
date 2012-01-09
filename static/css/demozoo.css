@@ -13,6 +13,17 @@ ul, ol {
 	list-style-type: none;
 }
 
+/* Font declarations */
+@font-face {
+		font-family: 'FabricaRegular';
+		src: url('/static/font/fabrica/fabrica-webfont.eot');
+		src: url('/static/font/fabrica/fabrica-webfont.eot?#iefix') format('embedded-opentype'),
+				url('/static/font/fabrica/fabrica-webfont.woff') format('woff'),
+				url('/static/font/fabrica/fabrica-webfont.ttf') format('truetype'),
+				url('/static/font/fabrica/fabrica-webfont.svg#FabricaRegular') format('svg');
+		font-weight: normal;
+		font-style: normal;
+}
 
 /* site-wide styles */
 
@@ -20,56 +31,166 @@ html {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 10pt;
 	line-height: 1.3em;
-	background-color: white;
+	background-color: #bfbfbf;
 	color: black;
 }
 
+#page {
+	margin: auto;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	max-width: 1150px; /* exc right-border */
+	border-right: 50px solid #e8e8e8;
+	background-color: white;
+	-webkit-box-shadow: 0px 0px 7px rgba(50, 50, 50, 1);
+	-moz-box-shadow:    0px 0px 7px rgba(50, 50, 50, 1);
+	box-shadow:         0px 0px 7px rgba(50, 50, 50, 1);
+}
+
 #site_header {
-	border-bottom: 1px solid #444;
-	margin-bottom: 24px;
-	height: 60px;
-	margin-left: 8px;
-	margin-right: 8px;
-	margin-top: 8px;
+	padding-top: 36px;
+	padding-bottom: 36px;
 }
 
 #site_header h1 {
-	width: 180px;
+	float: left;
+	margin-right: 36px;
+}
+#site_header h1 a {
+	display: block;
+	width: 253px;
+	height: 52px;
+	background-color: #c32e3b;
+	text-indent: -5000px;
+	background-image: url('/static/images/demozoo_title.png');
+}
+
+#site_header nav {
+	float: left;
+	margin-right: 36px;
+}
+
+#site_header nav ul li {
 	float: left;
 }
 
-#site_header ul#main_menu {
-	float: left;
-	width: 280px;
+#site_header nav ul li a {
+	display: block;
+	line-height: 25px;
+	padding: 0 10px;
+	text-decoration: none;
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	color: #5e5f5f;
+	text-transform: uppercase;
+}
+#site_header nav ul li.active a {
+	background-color: #ec5a64;
+	color: white;
+}
+#site_header nav ul li a:hover {
+	border-top: 4px solid #ec5a64;
+	margin-top: -4px;
+}
+#site_header nav ul li.active a:hover {
+	border-top: none;
+	margin-top: 0;
 }
 
-#site_header ul#main_menu li {
+
+#site_header nav form.search {
+	clear: left;
+	padding-top: 2px;
+}
+#site_header nav form.search #id_q {
+	border: none;
+	padding: 0;
+	padding-left: 6px;
+	height: 25px;
+	width: 400px;
+	font-size: 10pt;
+	background-color: #77c6ef;
+	color: black;
+	margin: 0;
 	float: left;
-	padding-right: 20px;
+}
+#site_header nav form.search #id_q.placeholder {
+	color: white;
+	font-size: 8pt;
+}
+
+#site_header nav form.search input[type='submit'] {
+	background-color: #386580;
+	border: none;
+	height: 25px;
+	padding-left: 16px;
+	padding-right: 16px;
+	margin: 0;
+	font-size: 8pt;
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	color: white;
+	float: left;
 }
 
 #site_header #login_status_panel {
-	margin-left: 20px;
-	width: 250px;
-	float: left;
+	margin-right: 64px;
+	width: 169px;
+	float: right;
+	background-color: #e8e8e8;
+}
+#site_header #login_status_panel .login_status {
+	line-height: 33px;
+	text-indent: 32px;
+}
+#site_header #login_status_panel .login_status a {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+	background-image: url('/static/images/icons/arrow_down.png');
+	background-position: 145px center;
+	background-repeat: no-repeat;
+}
+#site_header #login_status_panel .logged_out {
+	font-style: italic;
+	color: #9d9d9d;
+}
+#site_header #login_status_panel .logged_in {
+	background-image: url('/static/images/icons/scener.png');
+	background-repeat: no-repeat;
+	background-position: 8px center;
+	font-weight: bold;
+	color: #5e5f5f;
 }
 
-#site_header form.search {
-	float: right;
+#site_header #login_status_panel .login_links {
+	position: absolute;
+	width: 169px;
+	background-color: #e8e8e8;
+	border-top: 1px solid #5d5f5f;
 }
-#site_header form.search label {
+#site_header #login_status_panel .login_links ul li {
+	border-bottom: 1px solid #5e5f5f;
+}
+#site_header #login_status_panel .login_links ul li a {
 	display: block;
+	text-decoration: none;
+	color: #5e5f5f;
+	line-height: 24px;
+	padding-left: 8px;
+}
+#site_header #login_status_panel .login_links ul li a:hover {
+	background-color: #d3d3d3;
 }
 
 #site_main {
-	padding-left: 8px;
+	margin-left: 64px;
+	margin-right: 64px;
+	border-right: 6px solid #e8e8e8;
 	padding-right: 8px;
-	/* overflow: hidden; */
 }
 
 #site_footer {
 	clear: both;
-	padding-bottom: 8px;
+	padding-bottom: 36px;
 }
 
 #side_column {

@@ -255,5 +255,50 @@ function applyGlobalBehaviours(context) {
 }
 
 $(function() {
+	var loginLinks = $('#login_status_panel .login_links');
+	
+	loginLinks.hide();
+	var loginLinksVisible = false;
+	
+	function hideLoginLinksOnBodyClick(e) {
+		if (loginLinksVisible && !loginLinks.has(e.target).length) {
+			loginLinks.hide(); loginLinksVisible = false;
+		}
+	}
+	function showLoginLinks() {
+		loginLinks.slideDown(100);
+		loginLinksVisible = true;
+		$('body').bind('click', hideLoginLinksOnBodyClick);
+	}
+	function hideLoginLinks() {
+		loginLinks.hide();
+		loginLinksVisible = false;
+		$('body').unbind('click', hideLoginLinksOnBodyClick);
+	}
+	
+	$('#login_status_panel .login_status').wrapInner('<a href="javascript:void(0)"></a>');
+	$('#login_status_panel .login_status a').click(function() {
+		if (loginLinksVisible) {
+			hideLoginLinks();
+		} else {
+			showLoginLinks();
+		}
+		return false;
+	})
+	
+	var searchPlaceholderText = 'Type in keyword';
+	var searchField = $('#site_header #id_q');
+	function fillSearchWithPlaceholder() {
+		if (searchField.val() == '') {
+			searchField.val(searchPlaceholderText).addClass('placeholder');
+		}
+	}
+	fillSearchWithPlaceholder();
+	searchField.focus(function() {
+		if (searchField.hasClass('placeholder')) {
+			searchField.val('').removeClass('placeholder');
+		}
+	}).blur(fillSearchWithPlaceholder);
+	
 	applyGlobalBehaviours();
 });

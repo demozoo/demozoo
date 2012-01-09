@@ -122,7 +122,6 @@ INSTALLED_APPS = (
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
-	'demoscene.context_processors.jquery_include_context_processor',
 	'demoscene.context_processors.global_search_form',
 ) 
 

@@ -20,14 +20,17 @@ def index(request, supertype):
 		title = "Productions"
 		add_item_url = reverse('new_production')
 		add_item_text = "New production"
+		menu_section = "productions"
 	elif supertype == 'graphics':
 		title = "Graphics"
 		add_item_url = reverse('new_graphics')
 		add_item_text = "New graphics"
+		menu_section = "graphics"
 	else: # supertype == 'music'
 		title = "Music"
 		add_item_url = reverse('new_music')
 		add_item_text = "New music"
+		menu_section = "music"
 
 	queryset = apply_order(queryset, order)
 
@@ -41,6 +44,7 @@ def index(request, supertype):
 		'add_item_url': add_item_url,
 		'add_item_text': add_item_text,
 		'production_page': production_page,
+		'menu_section': menu_section
 	})
 
 def tagged(request, tag_slug, supertype):
