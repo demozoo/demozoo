@@ -465,6 +465,15 @@ class DemopartyNetParty(BaseUrl):
 	html_link_text = "demoparty.net"
 	html_title_format = "%s on demoparty.net"
 
+class LanyrdEvent(BaseUrl):
+	canonical_format = "http://lanyrd.com/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?lanyrd\.com/(\d+/[^/]+)', re.I),
+	]
+	html_link_class = "lanyrd"
+	html_link_text = "Lanyrd"
+	html_title_format = "%s on Lanyrd"
+
 class SlengpungParty(BaseUrl):
 	canonical_format = "http://www.slengpung.com/?eventid=%s"
 	tests = [
@@ -663,6 +672,6 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-		FacebookPage, GooglePlusPage,
+		FacebookPage, GooglePlusPage, LanyrdEvent,
 		BaseUrl,
 	])

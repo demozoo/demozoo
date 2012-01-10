@@ -1087,7 +1087,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.DemopartyNetParty, groklinks.SlengpungParty, groklinks.PouetParty,
 		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
-		groklinks.FacebookPage, groklinks.GooglePlusPage,
+		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
 		groklinks.BaseUrl,
 	]
 	def html_link(self):
