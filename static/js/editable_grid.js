@@ -65,10 +65,10 @@ function EditableGrid(elem) {
 		/* walk up childElem's parent elements until we find an immediate child of
 			the grid element */
 		var elemToTest = childElem;
-		while (elemToTest.parentElement && elemToTest.parentElement != gridElem) {
-			elemToTest = elemToTest.parentElement;
+		while (elemToTest.parentNode && elemToTest.parentNode != gridElem) {
+			elemToTest = elemToTest.parentNode;
 		}
-		if (elemToTest.parentElement) {
+		if (elemToTest.parentNode) {
 			/* check each row in turn to see if its element is the one we've found */
 			for (var i = 0; i < rows.length; i++) {
 				if (rows[i].elem == elemToTest) return i;
@@ -442,10 +442,10 @@ function GridRow(index, grid) {
 		/* walk up childElem's parent elements until we find an immediate child of
 			the fieldsUlElem element */
 		var elemToTest = childElem;
-		while (elemToTest.parentElement && elemToTest.parentElement != fieldsUlElem) {
-			elemToTest = elemToTest.parentElement;
+		while (elemToTest.parentNode && elemToTest.parentNode != fieldsUlElem) {
+			elemToTest = elemToTest.parentNode;
 		}
-		if (elemToTest.parentElement) {
+		if (elemToTest.parentNode) {
 			/* check each cell in turn to see if its element is the one we've found */
 			for (var i = 0; i < cells.length; i++) {
 				if (cells[i].elem == elemToTest) return i;
