@@ -26,7 +26,7 @@ function applyGlobalBehaviours(context) {
 			})
 		},
 		'cancel': ':input,option,a,label'
-	}).disableSelection();
+	});
 	
 	$('input.production_autocomplete', context).autocomplete({
 		'source': function(request, response) {
