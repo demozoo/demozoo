@@ -20,7 +20,7 @@
 				nameWithDifferentiator: $(this).attr('data-name'),
 				nameWithAffiliations: nameWithAffiliations.trim(),
 				countryCode: $('img[data-countrycode]', this).attr('data-countrycode'),
-				differentiator: $('.differentiator', this).text(),
+				differentiator: $('.differentiator', this).text().replace(/^\((.*)\)$/, '$1'), /* strip outer brackets */
 				alias: $('.alias', this).text(),
 				id: $('input', this).val()
 			}
