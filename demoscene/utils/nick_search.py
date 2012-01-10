@@ -158,7 +158,7 @@ class BylineSearch():
 			except IndexError:
 				selection = None
 			self.affiliation_nick_searches.append(
-				NickSearch(affiliation_name, groups_only = True, member_names = author_names)
+				NickSearch(affiliation_name, selection, groups_only = True, member_names = author_names)
 			)
 		
 		self.author_nick_selections = [nick_search.selection for nick_search in self.author_nick_searches]
