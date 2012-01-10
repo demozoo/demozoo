@@ -116,7 +116,6 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 	copyIconFromSelectedLi();
 	
 	function highlightSelectedLi() {
-		console.log($('li', suggestionsUl));
 		$('li', suggestionsUl).removeClass('selected');
 		$('li:has(input:checked)', suggestionsUl).addClass('selected');
 	}
