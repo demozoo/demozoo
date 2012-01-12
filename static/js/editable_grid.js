@@ -590,6 +590,13 @@ function GridCell(opts) {
 	}
 	self.keypress = function(event) {
 	}
+	var isMac = /Mac OS/.test(navigator.userAgent);
+	self.eventIsCommandKey = function(event) {
+		/* helper function for subclasses to test whether a keyboard event has the OS's native
+		'command' key pressed (command on Mac, ctrl on other platforms). We used to be able to
+		use event.metaKey, but jquery 1.7 broke that: http://bugs.jquery.com/ticket/3368 */
+		return (isMac ? event.metaKey : event.ctrlKey);
+	}
 	
 	self._isLocked = false;
 	self.lock = function(text) {
@@ -639,7 +646,7 @@ function TextGridCell(opts) {
 						input.val('');
 						return false;
 					case 86: /* V */
-						if (event.metaKey) { /* cmd+V = paste */
+						if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
 							self._startEdit('uncapturedText');
 							return true; /* override grid event handler, defer to browser's own */
 						}

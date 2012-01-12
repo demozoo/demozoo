@@ -150,7 +150,7 @@ function BylineGridCell(opts) {
 						bylineField.setValue(null);
 						return false;
 					case 86: /* V */
-						if (event.metaKey) { /* cmd+V = paste */
+						if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
 							self._startEdit('uncapturedText');
 							setTimeout(function() {bylineField.lookUpMatches()}, 10);
 							return true; /* override grid event handler, defer to browser's own */
@@ -259,7 +259,7 @@ function ProductionTitleGridCell(opts) {
 						}
 						return false;
 					case 86: /* V */
-						if (event.metaKey) { /* cmd+V = paste */
+						if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
 							self._startEdit('uncapturedText');
 							setTimeout(function() {
 								self._input.autocomplete('search');
