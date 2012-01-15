@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Nick, Screenshot, Credit, SoundtrackLink, ProductionLink
+from demoscene.models import Production, ProductionType, Platform, Nick, Credit, SoundtrackLink, ProductionLink
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.forms.models import inlineformset_factory, BaseModelFormSet
@@ -201,13 +201,6 @@ class ProductionCreditForm(forms.Form):
 		if commit:
 			self.instance.save()
 		return self.instance
-
-class ProductionAddScreenshotForm(forms.ModelForm):
-	class Meta:
-		model = Screenshot
-		fields = ['original']
-
-ProductionAddScreenshotFormset = formset_factory(ProductionAddScreenshotForm, extra=6)
 
 # An individual form row in the 'edit soundtrack details' form.
 # Even though this corresponds to a SoundtrackLink object, this can't be a ModelForm

@@ -5,6 +5,7 @@ from taggit.models import Tag
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.core.exceptions import ValidationError
 import datetime
 try:
 	import json
@@ -246,23 +247,37 @@ def screenshots(request, production_id):
 def add_screenshot(request, production_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
-		formset = ProductionAddScreenshotFormset(request.POST, request.FILES)
-		if formset.is_valid():
-			for form in formset.forms:
-				screenshot = form.save(commit = False)
-				if screenshot.original:
-					screenshot.production = production
-					screenshot.save()
+		from django.forms import ImageField # use a standalone ImageField for validation
+		image_field = ImageField()
+		uploaded_files = request.FILES.getlist('screenshot')
+		failed_filenames = []
+		for file in uploaded_files:
+			try:
+				image_field.to_python(file)
+				screenshot = Screenshot(original = file)
+				#if screenshot.original:
+				screenshot.production = production
+				screenshot.save()
+			except ValidationError:
+				failed_filenames.append(file.name)
+		if len(uploaded_files) > len(failed_filenames):
+			# at least one screenshot was successfully added
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			return HttpResponseRedirect(production.get_absolute_edit_url())
-	else:
-		formset = ProductionAddScreenshotFormset()
+		if failed_filenames:
+			if len(uploaded_files) == 1:
+				messages.error(request, "The screenshot could not be added (file was corrupted, or not a valid image format)")
+			elif len(uploaded_files) == len(failed_filenames):
+				messages.error(request, "None of the screenshots could be added (files were corrupted, or not a valid image format)")
+			elif len(failed_filenames) == 1:
+				messages.error(request, "The screenshot %s could not be added (file was corrupted, or not a valid image format)" % failed_filenames[0])
+			else:
+				messages.error(request, "The following screenshots could not be added (files were corrupted, or not a valid image format): %s" % (', '.join(failed_filenames)))
+		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return ajaxable_render(request, 'productions/add_screenshot.html', {
 		'html_title': "Adding screenshots for %s" % production.title,
 		'production': production,
-		'formset': formset,
 	})
 
 @login_required

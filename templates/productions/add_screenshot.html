@@ -1,17 +1,10 @@
-{% load spawning_formset %}
-
 <h2>Adding screenshots for {{ production.title }}:</h2>
 
 <form action="{% url production_add_screenshot production.id %}" method="post" enctype="multipart/form-data" class="entry_form">
 	{% csrf_token %}
 	
 	<div class="field">
-		<label for="id_form-0-original" class="field_label">Image files</label>
-		{% spawningformset formset %}
-			{% spawningform as form %}
-				{{ form.original }}
-			{% endspawningform %}
-		{% endspawningformset %}
+		<input type="file" name="screenshot" multiple="multiple" />
 	</div>
 	
 	<div class="field">

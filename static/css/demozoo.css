@@ -261,6 +261,13 @@ ul.messages li.success {
 	padding: 4px;
 	margin-bottom: 4px;
 }
+ul.messages li.error {
+	background-color: #fbb;
+	color: #400;
+	border: 1px solid #400;
+	padding: 4px;
+	margin-bottom: 4px;
+}
 
 ul.errorlist {
 	margin: 1em;
