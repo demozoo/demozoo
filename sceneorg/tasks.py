@@ -1,5 +1,5 @@
 from celery.task import task
-from sceneorg.models import Directory, File
+from sceneorg.models import Directory, File, FileTooBig
 from sceneorg.scraper import scrape_dir, scrape_new_files_dir
 import datetime
 
@@ -55,3 +55,10 @@ def fetch_sceneorg_dir(path, days = None):
 	
 	dir.last_seen_at = datetime.datetime.now()
 	dir.save()
+
+@task(rate_limit = '6/m', ignore_result = True)
+def fetch_sceneorg_file(file_id):
+	try:
+		File.objects.get(id=file_id).fetch()
+	except FileTooBig:
+		pass
