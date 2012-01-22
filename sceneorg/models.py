@@ -1,5 +1,5 @@
 from django.db import models
-import urllib
+import urllib, urllib2, hashlib, datetime
 
 class Directory(models.Model):
 	path = models.CharField(max_length=255)
@@ -30,6 +30,9 @@ class Directory(models.Model):
 	def parties():
 		return Directory.objects.filter(parent__in = Directory.party_years)
 
+class FileTooBig(Exception):
+	pass
+
 class File(models.Model):
 	path = models.CharField(max_length=255)
 	is_deleted = models.BooleanField(default=False)
@@ -39,6 +42,44 @@ class File(models.Model):
 	def __unicode__(self):
 		return self.path
 	
+	def fetch(self):
+		f = urllib2.urlopen('ftp://ftp.scene.org/pub' + self.path)
+		file_content = f.read(65537)
+		f.close()
+		if len(file_content) > 65536:
+			raise FileTooBig("Cannot fetch files larger than 64Kb")
+		sha1 = hashlib.sha1(file_content).hexdigest()
+		
+		# if most recent download for this file has the same SHA1 sum, return that (and update
+		# the downloaded_at timestamp) rather than creating a new one
+		try:
+			last_download = self.downloads.order_by('-downloaded_at')[0]
+			if last_download.sha1 == sha1:
+				last_download.downloaded_at = datetime.datetime.now()
+				last_download.save()
+				return last_download
+		except IndexError:
+			pass
+		
+		download = FileDownload(file=self, downloaded_at=datetime.datetime.now(),
+			data = buffer(file_content), sha1=sha1)
+		download.save()
+		return download
+	
 	@property
 	def web_url(self):
 		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
+
+class BlobField(models.Field):
+	description = "Blob"
+	def db_type(self):
+		return 'bytea' # only valid for postgres!
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^sceneorg\.models\.BlobField"])
+
+class FileDownload(models.Model):
+	file = models.ForeignKey(File, related_name = 'downloads')
+	downloaded_at = models.DateTimeField()
+	data = BlobField(blank=True, null=True)
+	sha1 = models.CharField(max_length=40)
