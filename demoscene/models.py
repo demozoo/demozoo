@@ -1186,5 +1186,10 @@ class ResultsFile(models.Model):
 	def save(self, *args, **kwargs):
 		self.filesize = len(self.data)
 		self.sha1 = hashlib.sha1(self.data).hexdigest()
-		self.encoding = chardet.detect(self.data)['encoding']
+		self.encoding = chardet.detect(str(self.data))['encoding']
 		super(ResultsFile, self).save(*args, **kwargs)
+	
+	@property
+	def text(self):
+		return str(self.data).decode(self.encoding)
+	
