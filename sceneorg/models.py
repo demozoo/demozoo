@@ -42,12 +42,19 @@ class File(models.Model):
 	def __unicode__(self):
 		return self.path
 	
-	def fetch(self):
+	def filename(self):
+		return self.path.split('/')[-1]
+	
+	def fetched_data(self):
 		f = urllib2.urlopen('ftp://ftp.scene.org/pub' + self.path)
 		file_content = f.read(65537)
 		f.close()
 		if len(file_content) > 65536:
 			raise FileTooBig("Cannot fetch files larger than 64Kb")
+		return file_content
+	
+	def fetch(self):
+		file_content = self.fetched_data()
 		sha1 = hashlib.sha1(file_content).hexdigest()
 		
 		# if most recent download for this file has the same SHA1 sum, return that (and update

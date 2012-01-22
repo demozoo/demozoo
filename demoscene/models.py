@@ -938,6 +938,18 @@ class Party(models.Model):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 	
+	# return the sceneorg.models.File instance for our best guess at the results textfile in this
+	# party's folder on scene.org
+	def sceneorg_results_file(self):
+		from sceneorg.models import File as SceneOrgFile
+		sceneorg_dirs = self.external_links.filter(link_class = 'SceneOrgFolder')
+		for sceneorg_dir in sceneorg_dirs:
+			for subpath in ['results.txt', 'info/results.txt', 'misc/results.txt']:
+				try:
+					return SceneOrgFile.objects.get(path = sceneorg_dir.parameter + subpath)
+				except SceneOrgFile.DoesNotExist:
+					pass
+	
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("start_date_date",)
