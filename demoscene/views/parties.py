@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production, PartyExternalLink
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, Production, PartyExternalLink, ResultsFile
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -87,6 +87,7 @@ def show(request, party_id):
 	return render(request, 'parties/show.html', {
 		'party': party,
 		'competitions': competitions,
+		'results_files': party.results_files.all(),
 	})
 
 def show_series(request, party_series_id):
@@ -287,4 +288,12 @@ def edit_competition(request, party_id, competition_id):
 		'competition_placings_json': competition_placings_json,
 		'platforms_json': platforms_json,
 		'production_types_json': production_types_json,
+	})
+
+def results_file(request, party_id, file_id):
+	party = get_object_or_404(Party, id = party_id)
+	results_file = get_object_or_404(ResultsFile, party = party, id = file_id)
+	return render(request, 'parties/results_file.html', {
+		'party': party,
+		'text': results_file.text
 	})

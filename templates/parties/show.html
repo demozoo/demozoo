@@ -33,6 +33,15 @@
 				{% endif %}
 			</p>
 			
+			{% if results_files %}
+				<h3>Results file:</h3>
+				<ul>
+					{% for file in results_files %}
+						<li><a href="{% url party_results_file party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+			
 			<div class="external_links">
 				<h3>External links:</h3>
 				<ul>
