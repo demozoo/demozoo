@@ -1,5 +1,5 @@
 from django.db import models
-import re, os, datetime
+import re, os, datetime, hashlib, chardet
 from urlparse import urlparse
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
@@ -8,6 +8,7 @@ from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from strip_markup import strip_markup
+from blob_field import BlobField
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
@@ -950,6 +951,15 @@ class Party(models.Model):
 				except SceneOrgFile.DoesNotExist:
 					pass
 	
+	# add the passed sceneorg.models.File instance as a ResultsFile for this party
+	# NB best to do this through a celery task, as it requires an FTP fetch from scene.org
+	def add_sceneorg_file_as_results_file(self, sceneorg_file):
+		ResultsFile.objects.create(
+			party=self,
+			filename=sceneorg_file.filename(),
+			data = sceneorg_file.fetched_data()
+		)
+	
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("start_date_date",)
@@ -1164,3 +1174,17 @@ class ProductionLink(ExternalLink):
 	
 	def as_download_link(self):
 		return self.link.as_download_link()
+
+class ResultsFile(models.Model):
+	party = models.ForeignKey(Party, related_name='results_files')
+	filename = models.CharField(max_length=255, blank=True)
+	data = BlobField()
+	filesize = models.IntegerField()
+	sha1 = models.CharField(max_length=40)
+	encoding = models.CharField(max_length=32)
+	
+	def save(self, *args, **kwargs):
+		self.filesize = len(self.data)
+		self.sha1 = hashlib.sha1(self.data).hexdigest()
+		self.encoding = chardet.detect(self.data)['encoding']
+		super(ResultsFile, self).save(*args, **kwargs)

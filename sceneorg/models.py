@@ -1,5 +1,6 @@
 from django.db import models
 import urllib, urllib2, hashlib, datetime
+from blob_field import BlobField
 
 class Directory(models.Model):
 	path = models.CharField(max_length=255)
@@ -51,7 +52,7 @@ class File(models.Model):
 		f.close()
 		if len(file_content) > 65536:
 			raise FileTooBig("Cannot fetch files larger than 64Kb")
-		return file_content
+		return buffer(file_content)
 	
 	def fetch(self):
 		file_content = self.fetched_data()
@@ -69,21 +70,13 @@ class File(models.Model):
 			pass
 		
 		download = FileDownload(file=self, downloaded_at=datetime.datetime.now(),
-			data = buffer(file_content), sha1=sha1)
+			data=file_content, sha1=sha1)
 		download.save()
 		return download
 	
 	@property
 	def web_url(self):
 		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
-
-class BlobField(models.Field):
-	description = "Blob"
-	def db_type(self):
-		return 'bytea' # only valid for postgres!
-
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^sceneorg\.models\.BlobField"])
 
 class FileDownload(models.Model):
 	file = models.ForeignKey(File, related_name = 'downloads')
