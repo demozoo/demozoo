@@ -47,7 +47,7 @@ class File(models.Model):
 		return self.path.split('/')[-1]
 	
 	def fetched_data(self):
-		f = urllib2.urlopen('ftp://ftp.scene.org/pub' + self.path)
+		f = urllib2.urlopen('http://http.de.scene.org/pub' + self.path)
 		file_content = f.read(65537)
 		f.close()
 		if len(file_content) > 65536:
