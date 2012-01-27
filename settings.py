@@ -159,7 +159,7 @@ CELERYBEAT_SCHEDULE = {
     "fetch-all-sceneorg-files": {
         "task": "sceneorg.tasks.fetch_sceneorg_dir",
         "schedule": timedelta(days=30),
-        "args": ('/')
+        "args": ('/',)
     },
 }
 
