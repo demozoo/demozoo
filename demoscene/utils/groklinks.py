@@ -25,7 +25,7 @@ class BaseUrl():
 			return cls(param)
 	
 	def __str__(self):
-		return self.canonical_format % self.param
+		return self.canonical_format % self.param.encode('utf-8')
 	
 	html_link_class = "website"
 	html_link_text = "WWW"
