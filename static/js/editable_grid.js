@@ -708,7 +708,7 @@ function SelectGridCell(opts) {
 	
 	var input;
 	self._initEditElem = function(editElem) {
-		input = $('<select><option>--------</option></select>');
+		input = $('<select><option value="">--------</option></select>');
 		for (var i = 0; i < opts.options.length; i++) {
 			var option = opts.options[i];
 			optionElem = $('<option></option>').attr({'value': option[0]}).text(option[1]);
