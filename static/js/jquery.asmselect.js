@@ -165,7 +165,7 @@
 				buildingSelect = true; 
 
 				// add a first option to be the home option / default selectLabel
-				$select.prepend("<option>" + $original.attr('title') + "</option>"); 
+				$select.prepend("<option>" + $original.prop('title') + "</option>");
 
 				$original.children("option").each(function(n) {
 
