@@ -1,59 +1,66 @@
 # coding=utf-8
-import re, urlparse, urllib
+import re
+import urlparse
+import urllib
 from django.utils.html import escape
+
 
 class BaseUrl():
 	def __init__(self, param):
 		self.param = param
-	
+
 	tests = [
-		lambda urlstring, url: urlstring # always match, return full url
+		lambda urlstring, url: urlstring  # always match, return full url
 	]
 	canonical_format = "%s"
-	
+
 	@classmethod
 	def extract_param(cls, *args):
 		for test in cls.tests:
 			m = test(*args)
 			if m != None:
 				return m
-	
+
 	@classmethod
 	def match(cls, *args):
 		param = cls.extract_param(*args)
 		if param != None:
 			return cls(param)
-	
+
 	def __str__(self):
 		return self.canonical_format % self.param.encode('utf-8')
-	
+
 	html_link_class = "website"
 	html_link_text = "WWW"
 	html_title_format = "%s website"
-	
+
 	def as_html(self, subject):
 		return '<a href="%s" class="%s" title="%s">%s</a>' % (
 			escape(str(self)), escape(self.html_link_class),
 			escape(self.html_title_format % subject),
 			escape(self.html_link_text)
 		)
-	
+
 	def as_download_link(self):
 		hostname = urlparse.urlparse(str(self)).hostname
 		return '<a href="%s">Download (%s)</a>' % (
 			escape(str(self)), escape(hostname)
 		)
 
-def regex_match(pattern, flags = None):
+
+def regex_match(pattern, flags=None):
 	regex = re.compile(pattern, flags)
+
 	def match_fn(urlstring, url):
 		m = regex.match(urlstring)
 		if m:
 			return m.group(1)
 	return match_fn
 
-def querystring_match(pattern, varname, flags = None, othervars = {}):
+
+def querystring_match(pattern, varname, flags=None, othervars={}):
 	regex = re.compile(pattern, flags)
+
 	def match_fn(urlstring, url):
 		if regex.match(urlstring):
 			querystring = urlparse.parse_qs(url.query)
@@ -66,6 +73,7 @@ def querystring_match(pattern, varname, flags = None, othervars = {}):
 				return None
 	return match_fn
 
+
 class TwitterAccount(BaseUrl):
 	canonical_format = "http://twitter.com/%s"
 	tests = [
@@ -76,6 +84,7 @@ class TwitterAccount(BaseUrl):
 	html_link_text = "Twitter"
 	html_title_format = "%s on Twitter"
 
+
 class SceneidAccount(BaseUrl):
 	canonical_format = "http://www.pouet.net/user.php?who=%s"
 	tests = [
@@ -84,6 +93,8 @@ class SceneidAccount(BaseUrl):
 	html_link_class = "pouet"
 	html_link_text = u"Pouët"
 	html_title_format = u"%s on Pouët"
+
+
 class PouetGroup(BaseUrl):
 	canonical_format = "http://www.pouet.net/groups.php?which=%s"
 	tests = [
@@ -92,6 +103,8 @@ class PouetGroup(BaseUrl):
 	html_link_class = "pouet"
 	html_link_text = u"Pouët"
 	html_title_format = u"%s on Pouët"
+
+
 class PouetProduction(BaseUrl):
 	canonical_format = "http://www.pouet.net/prod.php?which=%s"
 	tests = [
@@ -100,6 +113,7 @@ class PouetProduction(BaseUrl):
 	html_link_class = "pouet"
 	html_link_text = u"Pouët"
 	html_title_format = u"%s on Pouët"
+
 
 class SlengpungUser(BaseUrl):
 	canonical_format = "http://www.slengpung.com/?userid=%s"
@@ -111,6 +125,7 @@ class SlengpungUser(BaseUrl):
 	html_link_text = "Slengpung"
 	html_title_format = "%s on Slengpung"
 
+
 class AmpAuthor(BaseUrl):
 	canonical_format = "http://amp.dascene.net/detail.php?view=%s"
 	tests = [
@@ -119,6 +134,7 @@ class AmpAuthor(BaseUrl):
 	html_link_class = "amp"
 	html_link_text = "AMP"
 	html_title_format = "%s on Amiga Music Preservation"
+
 
 class CsdbScener(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/scener/?id=%s"
@@ -129,6 +145,8 @@ class CsdbScener(BaseUrl):
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
 	html_title_format = "%s on CSDb"
+
+
 class CsdbGroup(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/group/?id=%s"
 	tests = [
@@ -138,6 +156,8 @@ class CsdbGroup(BaseUrl):
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
 	html_title_format = "%s on CSDb"
+
+
 class CsdbRelease(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/release/?id=%s"
 	tests = [
@@ -149,6 +169,7 @@ class CsdbRelease(BaseUrl):
 	html_link_text = "CSDb"
 	html_title_format = "%s on CSDb"
 
+
 class NectarineArtist(BaseUrl):
 	canonical_format = "http://www.scenemusic.net/demovibes/artist/%s/"
 	tests = [
@@ -157,6 +178,7 @@ class NectarineArtist(BaseUrl):
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
 	html_title_format = "%s on Nectarine Demoscene Radio"
+
 
 class BitjamAuthor(BaseUrl):
 	canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1"
@@ -167,14 +189,16 @@ class BitjamAuthor(BaseUrl):
 	html_link_text = "BitJam"
 	html_title_format = "%s on BitJam"
 
+
 class ArtcityArtist(BaseUrl):
 	canonical_format = "http://artcity.bitfellas.org/index.php?a=artist&id=%s"
 	tests = [
-		querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', re.I, othervars = {'a': 'artist'}),
+		querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', re.I, othervars={'a': 'artist'}),
 	]
 	html_link_class = "artcity"
 	html_link_text = "ArtCity"
 	html_title_format = "%s on ArtCity"
+
 
 class MobygamesDeveloper(BaseUrl):
 	canonical_format = "http://www.mobygames.com/developer/sheet/view/developerId,%s/"
@@ -185,6 +209,7 @@ class MobygamesDeveloper(BaseUrl):
 	html_link_text = "MobyGames"
 	html_title_format = "%s on MobyGames"
 
+
 class AsciiarenaArtist(BaseUrl):
 	canonical_format = "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename"
 	tests = [
@@ -193,6 +218,7 @@ class AsciiarenaArtist(BaseUrl):
 	html_link_class = "asciiarena"
 	html_link_text = "AsciiArena"
 	html_title_format = "%s on AsciiArena"
+
 
 class AsciiarenaRelease(BaseUrl):
 	canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
@@ -203,6 +229,7 @@ class AsciiarenaRelease(BaseUrl):
 	html_link_text = "AsciiArena"
 	html_title_format = "%s on AsciiArena"
 
+
 class ScenesatAct(BaseUrl):
 	canonical_format = "http://scenesat.com/act/%s"
 	tests = [
@@ -211,6 +238,7 @@ class ScenesatAct(BaseUrl):
 	html_link_class = "scenesat"
 	html_link_text = "SceneSat"
 	html_title_format = "%s on SceneSat Radio"
+
 
 class ScenesatTrack(BaseUrl):
 	canonical_format = "http://scenesat.com/track/%s"
@@ -221,6 +249,7 @@ class ScenesatTrack(BaseUrl):
 	html_link_text = "SceneSat"
 	html_title_format = "%s on SceneSat Radio"
 
+
 class ZxdemoAuthor(BaseUrl):
 	canonical_format = "http://zxdemo.org/author.php?id=%s"
 	tests = [
@@ -229,6 +258,8 @@ class ZxdemoAuthor(BaseUrl):
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
 	html_title_format = "%s on zxdemo.org"
+
+
 class ZxdemoItem(BaseUrl):
 	canonical_format = "http://zxdemo.org/item.php?id=%s"
 	tests = [
@@ -237,6 +268,7 @@ class ZxdemoItem(BaseUrl):
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
 	html_title_format = "%s on zxdemo.org"
+
 
 class BitworldDemo(BaseUrl):
 	canonical_format = "http://bitworld.bitfellas.org/demo.php?id=%s"
@@ -247,11 +279,13 @@ class BitworldDemo(BaseUrl):
 	html_link_text = "BitWorld"
 	html_title_format = "%s on BitWorld"
 
+
 class SceneOrgFile(BaseUrl):
 
 	# custom test for file_dl.php URLs, of the format:
 	# http://www.scene.org/file_dl.php?url=ftp://ftp.scene.org/pub/parties/2009/stream09/in4k/moldtype.zip&id=523700
 	file_dl_regex = re.compile(r'https?://(?:www\.)?scene\.org/file_dl\.php', re.I)
+
 	def file_dl_match(urlstring, url):
 		if SceneOrgFile.file_dl_regex.match(urlstring):
 			# link is a file_dl.php link; extract the inner url, then recursively match on that
@@ -262,7 +296,7 @@ class SceneOrgFile(BaseUrl):
 				return SceneOrgFile.extract_param(inner_url_string, inner_url)
 			except KeyError:
 				return None
-	
+
 	tests = [
 		file_dl_match,
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
@@ -279,12 +313,13 @@ class SceneOrgFile(BaseUrl):
 		regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
 		regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
 	]
+
 	def __str__(self):
 		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param)
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
-	
+
 	@property
 	def mirror_links(self):
 		links = [
@@ -307,39 +342,46 @@ class SceneOrgFile(BaseUrl):
 			links += [
 				'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
 			]
-		
+
 		return links
-	
+
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub%s" % self.param
+
 	@property
 	def no_url(self):
 		return "ftp://ftp.no.scene.org/scene.org%s" % self.param
+
 	@property
 	def jp_url(self):
 		return "ftp://ftp.jp.scene.org/pub/demos/scene%s" % self.param
+
 	@property
 	def de_ftp_url(self):
 		return "ftp://ftp.de.scene.org/pub%s" % self.param
+
 	@property
 	def de_http_url(self):
 		return "http://http.de.scene.org/pub%s" % self.param
+
 	@property
 	def us_ftp_url(self):
 		return "ftp://ftp.us.scene.org/pub/scene.org%s" % self.param
+
 	@property
 	def us_http_url(self):
 		return "http://http.us.scene.org/pub/scene.org%s" % self.param
+
 	@property
 	def fr_url(self):
 		return "http://http.fr.scene.org%s" % self.param
+
 	@property
 	def hu_url(self):
 		return "http://http.hu.scene.org%s" % self.param
-	
+
 	def as_download_link(self):
-		hostname = urlparse.urlparse(str(self)).hostname
 		mirrors_html = ''.join(self.mirror_links)
 		return '''
 			<a href="%s">Download from scene.org</a>
@@ -347,6 +389,7 @@ class SceneOrgFile(BaseUrl):
 		''' % (
 			escape(str(self)), mirrors_html
 		)
+
 
 class AmigascneFile(BaseUrl):
 	canonical_format = "http://ftp.amigascne.org/pub/amiga%s"
@@ -363,7 +406,7 @@ class AmigascneFile(BaseUrl):
 	html_link_class = "amigascne"
 	html_link_text = "amigascne.org"
 	html_title_format = "%s on amigascne.org"
-	
+
 	@property
 	def mirror_links(self):
 		links = [
@@ -373,25 +416,30 @@ class AmigascneFile(BaseUrl):
 			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
 			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
 		]
-		
+
 		return links
+
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub/mirrors/amigascne%s" % self.param
+
 	@property
 	def de_ftp_url(self):
 		return "ftp://ftp.de.scene.org/pub/mirrors/amigascne%s" % self.param
+
 	@property
 	def de_http_url(self):
 		return "http://http.de.scene.org/pub/mirrors/amigascne%s" % self.param
+
 	@property
 	def us_ftp_url(self):
 		return "ftp://ftp.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
+
 	@property
 	def us_http_url(self):
 		return "http://http.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
+
 	def as_download_link(self):
-		hostname = urlparse.urlparse(str(self)).hostname
 		mirrors_html = ''.join(self.mirror_links)
 		return '''
 			<a href="%s">Download from amigascne.org</a>
@@ -399,6 +447,7 @@ class AmigascneFile(BaseUrl):
 		''' % (
 			escape(str(self)), mirrors_html
 		)
+
 
 class ModlandFile(BaseUrl):
 	canonical_format = "ftp://ftp.modland.com%s"
@@ -414,7 +463,7 @@ class ModlandFile(BaseUrl):
 	html_link_class = "modland"
 	html_link_text = "Modland"
 	html_title_format = "%s on Modland"
-	
+
 	@property
 	def mirror_links(self):
 		links = [
@@ -423,22 +472,26 @@ class ModlandFile(BaseUrl):
 			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_url),
 			'<li><a href="%s" class="country_ca">ca</a></li>' % escape(self.ca_url),
 		]
-		
+
 		return links
+
 	@property
 	def uk_url(self):
 		return "ftp://hangar18.exotica.org.uk/modland%s" % self.param
+
 	@property
 	def se_url(self):
 		return "ftp://modland.ziphoid.com%s" % self.param
+
 	@property
 	def us_url(self):
 		return "ftp://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
+
 	@property
 	def ca_url(self):
 		return "ftp://ftp.rave.ca%s" % self.param
+
 	def as_download_link(self):
-		hostname = urlparse.urlparse(str(self)).hostname
 		mirrors_html = ''.join(self.mirror_links)
 		return '''
 			<a href="%s">Download from Modland</a>
@@ -446,6 +499,7 @@ class ModlandFile(BaseUrl):
 		''' % (
 			escape(str(self)), mirrors_html
 		)
+
 
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
@@ -456,6 +510,7 @@ class UntergrundFile(BaseUrl):
 	html_link_text = "untergrund.net"
 	html_title_format = "%s on untergrund.net"
 
+
 class DemopartyNetParty(BaseUrl):
 	canonical_format = "http://www.demoparty.net/%s/"
 	tests = [
@@ -465,6 +520,7 @@ class DemopartyNetParty(BaseUrl):
 	html_link_text = "demoparty.net"
 	html_title_format = "%s on demoparty.net"
 
+
 class LanyrdEvent(BaseUrl):
 	canonical_format = "http://lanyrd.com/%s/"
 	tests = [
@@ -473,6 +529,7 @@ class LanyrdEvent(BaseUrl):
 	html_link_class = "lanyrd"
 	html_link_text = "Lanyrd"
 	html_title_format = "%s on Lanyrd"
+
 
 class SlengpungParty(BaseUrl):
 	canonical_format = "http://www.slengpung.com/?eventid=%s"
@@ -484,6 +541,7 @@ class SlengpungParty(BaseUrl):
 	html_link_text = "Slengpung"
 	html_title_format = "%s on Slengpung"
 
+
 class PouetParty(BaseUrl):
 	def match_pouet_party(urlstring, url):
 		regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
@@ -493,15 +551,17 @@ class PouetParty(BaseUrl):
 				return "%s/%s" % (querystring['which'][0], querystring['when'][0])
 			except KeyError:
 				return None
-	
+
 	tests = [match_pouet_party]
+
 	def __str__(self):
-		(id,year) = self.param.split('/')
-		return "http://www.pouet.net/party.php?which=%s&when=%s" % (id,year)
+		(id, year) = self.param.split('/')
+		return "http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
 	html_link_class = "pouet"
 	html_link_text = u"Pouët"
 	html_title_format = u"%s on Pouët"
-	
+
+
 class BitworldParty(BaseUrl):
 	canonical_format = "http://bitworld.bitfellas.org/party.php?id=%s"
 	tests = [
@@ -510,6 +570,7 @@ class BitworldParty(BaseUrl):
 	html_link_class = "bitworld"
 	html_link_text = "BitWorld"
 	html_title_format = "%s on BitWorld"
+
 
 class CsdbEvent(BaseUrl):
 	canonical_format = "http://noname.c64.org/csdb/event/?id=%s"
@@ -521,14 +582,16 @@ class CsdbEvent(BaseUrl):
 	html_link_text = "CSDb"
 	html_title_format = "%s on CSDb"
 
+
 class BreaksAmigaParty(BaseUrl):
 	canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
 	tests = [
-		querystring_match(r'https?://(?:www\.)?arabuusimiehet\.com/break/amiga/index\.php', 'partyid', re.I, othervars = {'mode': 'party'}),
+		querystring_match(r'https?://(?:www\.)?arabuusimiehet\.com/break/amiga/index\.php', 'partyid', re.I, othervars={'mode': 'party'}),
 	]
 	html_link_class = "breaks_amiga"
 	html_link_text = "Break's Amiga Collection"
 	html_title_format = "%s on Break's Amiga Collection"
+
 
 class SceneOrgFolder(BaseUrl):
 	tests = [
@@ -545,11 +608,13 @@ class SceneOrgFolder(BaseUrl):
 		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
 		regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
 	]
+
 	def __str__(self):
 		return "http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param)
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
+
 
 class ZxdemoParty(BaseUrl):
 	canonical_format = "http://zxdemo.org/party.php?id=%s"
@@ -559,6 +624,7 @@ class ZxdemoParty(BaseUrl):
 	html_link_class = "zxdemo"
 	html_link_text = "ZXdemo"
 	html_title_format = "%s on zxdemo.org"
+
 
 class YoutubeVideo(BaseUrl):
 	canonical_format = "http://www.youtube.com/watch?v=%s"
@@ -570,6 +636,7 @@ class YoutubeVideo(BaseUrl):
 	html_link_text = "YouTube"
 	html_title_format = "%s on YouTube"
 
+
 class YoutubeUser(BaseUrl):
 	canonical_format = "http://www.youtube.com/user/%s"
 	tests = [
@@ -578,6 +645,7 @@ class YoutubeUser(BaseUrl):
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
 	html_title_format = "%s on YouTube"
+
 
 class VimeoVideo(BaseUrl):
 	canonical_format = "http://vimeo.com/%s"
@@ -588,15 +656,17 @@ class VimeoVideo(BaseUrl):
 	html_link_text = "Vimeo"
 	html_title_format = "%s on Vimeo"
 
+
 class DemosceneTvVideo(BaseUrl):
 	canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod', re.I),
-		querystring_match(r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod', re.I, othervars = {'id': '172', 'vsmaction': 'view_prod'}),
+		querystring_match(r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod', re.I, othervars={'id': '172', 'vsmaction': 'view_prod'}),
 	]
 	html_link_class = "demoscene_tv"
 	html_link_text = "Demoscene.tv"
 	html_title_format = "%s on Demoscene.tv"
+
 
 class CappedVideo(BaseUrl):
 	canonical_format = "http://capped.tv/%s"
@@ -607,6 +677,7 @@ class CappedVideo(BaseUrl):
 	html_link_text = "Capped.TV"
 	html_title_format = "%s on Capped.TV"
 
+
 class FacebookPage(BaseUrl):
 	canonical_format = "http://www.facebook.com/%s"
 	tests = [
@@ -615,6 +686,7 @@ class FacebookPage(BaseUrl):
 	html_link_class = "facebook"
 	html_link_text = "Facebook"
 	html_title_format = "%s on Facebook"
+
 
 class GooglePlusPage(BaseUrl):
 	canonical_format = "https://plus.google.com/%s/"
@@ -625,6 +697,7 @@ class GooglePlusPage(BaseUrl):
 	html_link_text = "Google+"
 	html_title_format = "%s on Google+"
 
+
 class SoundcloudUser(BaseUrl):
 	canonical_format = "http://soundcloud.com/%s/"
 	tests = [
@@ -634,12 +707,14 @@ class SoundcloudUser(BaseUrl):
 	html_link_text = "SoundCloud"
 	html_title_format = "%s on SoundCloud"
 
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
 		link = link_type.match(urlstring, url)
 		if link:
 			return link
+
 
 def grok_scener_link(urlstring):
 	return grok_link_by_types(urlstring, [
@@ -651,6 +726,7 @@ def grok_scener_link(urlstring):
 		BaseUrl,
 	])
 
+
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
@@ -658,15 +734,17 @@ def grok_group_link(urlstring):
 		BaseUrl,
 	])
 
+
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ScenesatTrack, ModlandFile,
-		AmigascneFile, # must come before SceneOrgFile
+		AmigascneFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
 		BaseUrl,
 	])
+
 
 def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
