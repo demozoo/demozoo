@@ -708,6 +708,16 @@ class SoundcloudUser(BaseUrl):
 	html_title_format = "%s on SoundCloud"
 
 
+class SoundcloudTrack(BaseUrl):
+	canonical_format = "http://soundcloud.com/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+/[^\/]+)', re.I),
+	]
+	html_link_class = "soundcloud"
+	html_link_text = "SoundCloud"
+	html_title_format = "%s on SoundCloud"
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -738,7 +748,7 @@ def grok_group_link(urlstring):
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
-		ScenesatTrack, ModlandFile,
+		ScenesatTrack, ModlandFile, SoundcloudTrack,
 		AmigascneFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
