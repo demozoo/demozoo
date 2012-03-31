@@ -31,3 +31,4 @@ scrubber==1.6.1
 ssh==1.7.11
 timelib==0.2.1
 wsgiref==0.1.2
+PyMySQL==0.4

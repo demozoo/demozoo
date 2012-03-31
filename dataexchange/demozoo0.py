@@ -442,3 +442,18 @@ def credits():
 			'nick': nick_info,
 			'releaser': releaser_info,
 		}
+
+
+def sceners_with_locations():
+	cur = connection.cursor()
+	cur.execute('''
+		SELECT releasers.id, releasers.name, countries.name
+		FROM releasers
+		LEFT JOIN countries ON (country_id = countries.id)
+		WHERE country_id IS NOT NULL AND type = 'Scener'
+	''')
+	columns = ['id', 'name', 'location']
+	for row in cur:
+		info = dict(zip(columns, row))
+		info['name'] = info['name'].encode('latin-1').decode('utf-8')
+		yield info
