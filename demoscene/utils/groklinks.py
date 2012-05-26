@@ -347,39 +347,39 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def nl_url(self):
-		return "ftp://ftp.scene.org/pub%s" % self.param
+		return "ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def no_url(self):
-		return "ftp://ftp.no.scene.org/scene.org%s" % self.param
+		return "ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def jp_url(self):
-		return "ftp://ftp.jp.scene.org/pub/demos/scene%s" % self.param
+		return "ftp://ftp.jp.scene.org/pub/demos/scene%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def de_ftp_url(self):
-		return "ftp://ftp.de.scene.org/pub%s" % self.param
+		return "ftp://ftp.de.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def de_http_url(self):
-		return "http://http.de.scene.org/pub%s" % self.param
+		return "http://http.de.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def us_ftp_url(self):
-		return "ftp://ftp.us.scene.org/pub/scene.org%s" % self.param
+		return "ftp://ftp.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def us_http_url(self):
-		return "http://http.us.scene.org/pub/scene.org%s" % self.param
+		return "http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def fr_url(self):
-		return "http://http.fr.scene.org%s" % self.param
+		return "http://http.fr.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def hu_url(self):
-		return "http://http.hu.scene.org%s" % self.param
+		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
 		mirrors_html = ''.join(self.mirror_links)
