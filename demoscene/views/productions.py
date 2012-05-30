@@ -416,10 +416,11 @@ def add_tag(request, production_id):
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 @login_required
-def remove_tag(request, production_id, tag_name):
+def remove_tag(request, production_id, tag_id):
 	production = get_object_or_404(Production, id = production_id)
 	if request.method == 'POST':
-		production.tags.remove(tag_name)
+		tags = production.tags.filter(id=tag_id)
+		production.tags.remove(*tags)
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 def autocomplete(request):
