@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Production
+from demoscene.models import Releaser, Production, Edit
 
 
 def home(request):
@@ -17,4 +17,11 @@ def home(request):
 			'scener_count': Releaser.objects.filter(is_group=False).count(),
 			'group_count': Releaser.objects.filter(is_group=True).count(),
 		}
+	})
+
+
+def recent_edits(request):
+	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')[0:50]
+	return render(request, 'recent_edits.html', {
+		'edits': edits
 	})

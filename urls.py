@@ -30,6 +30,8 @@ urlpatterns = patterns('',
 urlpatterns += patterns('demoscene.views',
 	(r'^$', 'home.home', {}, 'home'),
 
+	(r'^edits/$', 'home.recent_edits', {}, 'recent_edits'),
+
 	(r'^productions/$', 'productions.index', {'supertype': 'production'}, 'productions'),
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/edit/$', 'productions.edit', {}, 'edit_production'),
