@@ -39,9 +39,13 @@ class NickSelection():
 			return False
 		if self.id == 'newscener' and other.id == 'newscener' and self.name == other.name:
 			return True
-		if self.id == 'newgroup' and other.id == 'newgroup' and self.name == other.name:
+		elif self.id == 'newgroup' and other.id == 'newgroup' and self.name == other.name:
 			return True
-		return int(self.id) == int(other.id)
+
+		try:
+			return int(self.id) == int(other.id)
+		except ValueError:  # respond with non-match if either id is non-numeric, i.e. 'newscener' or 'newgroup'
+			return False
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
