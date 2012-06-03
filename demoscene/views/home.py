@@ -21,7 +21,11 @@ def home(request):
 
 
 def recent_edits(request):
-	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')[0:50]
+	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
+	edits_page = get_page(
+		edits,
+		request.GET.get('page', '1'))
+
 	return render(request, 'recent_edits.html', {
-		'edits': edits
+		'edits_page': edits_page,
 	})
