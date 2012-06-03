@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}{{ party.name }} edit history - Demozoo{% endblock %}
+
+{% block base_main %}
+	<div class="panel">
+		<ul class="tabs">
+			<li><a href="{% url party party.id %}">Party</a></li>
+			<li class="active_tab">History</li>
+		</ul>
+
+		<h2>Edit history for {{ party.name }}</h2>
+		{% include "shared/history_table.html" %}
+
+	</div>
+{% endblock %}

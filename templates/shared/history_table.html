@@ -1,0 +1,11 @@
+{% if edits %}
+	<table class="history">
+		{% for edit in edits %}
+			<tr>
+				<td>{{ edit.timestamp|date:"Y-m-d H:i:s" }}</td>
+				<td><strong>{{ edit.user }}</strong></td>
+				<td>{{ edit.description }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endif %}

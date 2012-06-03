@@ -6,6 +6,10 @@
 
 {% block base_main %}
 	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Scener</li>
+			<li><a href="{% url scener_history scener.id %}">History</a></li>
+		</ul>
 	
 		<ul class="actions">
 			{% if editing %}

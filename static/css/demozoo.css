@@ -166,6 +166,7 @@ html {
 	width: 169px;
 	background-color: #e8e8e8;
 	border-top: 1px solid #5d5f5f;
+	z-index: 10;
 }
 #site_header #login_status_panel .login_links form {
 	border-bottom: 1px solid #5e5f5f;
@@ -244,6 +245,7 @@ html {
 	border: 1px solid #ccc;
 	margin-top: 16px;
 	padding: 16px;
+	position: relative;
 }
 #main_column .panel {
 	margin-left: 16px;
@@ -259,14 +261,14 @@ ul.messages li.success {
 	color: #040;
 	border: 1px solid #040;
 	padding: 4px;
-	margin-bottom: 4px;
+	margin-bottom: 36px;
 }
 ul.messages li.error {
 	background-color: #fbb;
 	color: #400;
 	border: 1px solid #400;
 	padding: 4px;
-	margin-bottom: 4px;
+	margin-bottom: 36px;
 }
 
 ul.errorlist {
@@ -433,6 +435,35 @@ ul.sortable_formset li.sortable_item a.delete_button {
 	height: 30px;
 	float: right;
 	margin-right: 8px;
+}
+
+ul.tabs {
+	position: absolute;
+	top: -31px;
+}
+ul.tabs li {
+	float: left;
+	line-height: 22px;
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	margin-left: -1px;
+}
+ul.tabs a {
+	display: block;
+	background-color: #ddd;
+	text-decoration: none;
+	color: #444;
+	border-bottom: 1px solid #ccc;
+	line-height: 21px;
+	padding: 4px 12px;
+}
+ul.tabs a:hover {
+	background-color: #eee;
+}
+ul.tabs li.active_tab {
+	background-color: white;
+	padding: 4px 12px;
 }
 
 /* listings */
@@ -1353,6 +1384,9 @@ body.edit_competition form.entry_form input[type=submit] {
 	margin-left: 150px;
 }
 
+table.history {
+	margin-top: 1em;
+}
 
 
 /* Small-screen versions */

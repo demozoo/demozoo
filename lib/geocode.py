@@ -1,12 +1,10 @@
 from django.conf import settings
-import urllib, urllib2 # yay, let's arbitrarily split useful functions across two meaninglessly-named libraries!
-try:
-	import json
-except ImportError:
-	import simplejson as json
+import urllib, urllib2  # yay, let's arbitrarily split useful functions across two meaninglessly-named libraries!
+from django.utils import simplejson as json
 import re
 
 strip_nonalpha = re.compile(r'[^\w\-\ \,\.]', re.UNICODE)
+
 
 def geocode(location):
 	# strip out punctuation other than a minimal whitelisted set, because Yahoo doesn't give us
@@ -20,10 +18,10 @@ def geocode(location):
 	f = urllib2.urlopen(url)
 	response = json.load(f)
 	f.close()
-	
+
 	if response['places']['count']:
 		result = response['places']['place'][0]
-		
+
 		if result['placeTypeName attrs']['code'] == 12 or not result['country']:
 			# place is a country or international entity (continent, sea...) - just use the name
 			location = result['name']
@@ -33,19 +31,19 @@ def geocode(location):
 		else:
 			# use name + country
 			location = "%s, %s" % (result['name'], result['country'])
-			
+
 		try:
 			latitude = result['centroid']['latitude']
 			longitude = result['centroid']['longitude']
 		except KeyError:
 			latitude = None
 			longitude = None
-		
+
 		try:
 			country_code = result['country attrs']['code']
 		except KeyError:
 			country_code = None
-		
+
 		return {
 			'location': location,
 			'woeid': result['woeid'],

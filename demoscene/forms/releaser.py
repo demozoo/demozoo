@@ -1,18 +1,19 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from demoscene.models import Releaser, Nick, ReleaserExternalLink
+from demoscene.models import Releaser, Nick, ReleaserExternalLink, Edit
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
-from demoscene.forms.common import ExternalLinkForm
+from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from django.forms.models import inlineformset_factory
 
+
 class CreateGroupForm(forms.ModelForm):
-	abbreviation = forms.CharField(required = False, help_text = "(optional - only if there's one that's actively being used. Don't just make one up!)")
-	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False,
-		help_text = "(as a comma-separated list)")
-	
-	def save(self, commit = True):
+	abbreviation = forms.CharField(required=False, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
+	nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
+		help_text="(as a comma-separated list)")
+
+	def save(self, commit=True):
 		instance = super(CreateGroupForm, self).save(commit=commit)
 		if commit:
 			primary_nick = instance.primary_nick
@@ -20,129 +21,281 @@ class CreateGroupForm(forms.ModelForm):
 			primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
 			primary_nick.save()
 		return instance
-	
+
+	def log_creation(self, user):
+		Edit.objects.create(action_type='create_group', focus=self.instance,
+			description=("Added group '%s'" % self.instance.name), user=user)
+
 	class Meta:
 		model = Releaser
 		fields = ('name',)
 
+
 class CreateScenerForm(forms.ModelForm):
-	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False,
-		help_text = "(as a comma-separated list)")
-	
-	def save(self, commit = True):
+	nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
+		help_text="(as a comma-separated list)")
+
+	def save(self, commit=True):
 		instance = super(CreateScenerForm, self).save(commit=commit)
 		if commit:
 			primary_nick = instance.primary_nick
 			primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
 			primary_nick.save()
 		return instance
-	
+
+	def log_creation(self, user):
+		Edit.objects.create(action_type='create_scener', focus=self.instance,
+			description=("Added scener '%s'" % self.instance.name), user=user)
+
 	class Meta:
 		model = Releaser
 		fields = ('name',)
 
+
 class ScenerEditLocationForm(ModelFormWithLocation):
+	def log_edit(self, user):
+		Edit.objects.create(action_type='edit_scener_location', focus=self.instance,
+			description=("Set location to %s" % self.instance.location), user=user)
+
 	class Meta:
 		model = Releaser
 		fields = ('location',)
 
+
 class ScenerEditRealNameForm(forms.ModelForm):
+	def log_edit(self, user):
+		changed_fields = self.changed_data
+		if not changed_fields:
+			return
+		if 'first_name' in changed_fields or 'surname' in changed_fields:
+			# Don't give the real name in the log description, as we might redact it
+			Edit.objects.create(action_type='edit_scener_real_name', focus=self.instance,
+				description="Set real name", user=user)
+		else:
+			Edit.objects.create(action_type='edit_scener_real_name', focus=self.instance,
+				description="Updated visibility of real name", user=user)
+
 	class Meta:
 		model = Releaser
 		fields = ['first_name', 'show_first_name', 'surname', 'show_surname', 'real_name_note']
 		widgets = {
-		    'real_name_note': forms.Textarea(attrs={'class': 'short_notes'}),
+			'real_name_note': forms.Textarea(attrs={'class': 'short_notes'}),
 		}
 
+
 class ReleaserEditNotesForm(forms.ModelForm):
+	def log_edit(self, user):
+		Edit.objects.create(action_type='edit_releaser_notes', focus=self.instance,
+			description="Edited notes", user=user)
+
 	class Meta:
 		model = Releaser
 		fields = ['notes']
 
+
 class NickForm(forms.ModelForm):
-	nick_variant_list = forms.CharField(label = "Other spellings / abbreviations of this name", required = False,
-		help_text = "(as a comma-separated list)")
-	
+	nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
+		help_text="(as a comma-separated list)")
+
 	def __init__(self, releaser, *args, **kwargs):
 		for_admin = kwargs.pop('for_admin', False)
-		
+
 		super(NickForm, self).__init__(*args, **kwargs)
-		
-		if kwargs.has_key('instance'):
+
+		if 'instance' in kwargs:
 			instance = kwargs['instance']
 			self.initial['nick_variant_list'] = instance.nick_variant_list
 		else:
 			instance = None
-		
+
 		# allow them to set this as the primary nick, unless they're editing the primary nick now
 		if not (instance and instance.name == releaser.name):
 			self.fields['override_primary_nick'] = forms.BooleanField(
-				label = "Use this as their preferred name, instead of '%s'" % releaser.name,
-				required = False)
-		
+				label="Use this as their preferred name, instead of '%s'" % releaser.name,
+				required=False)
+
 		if not for_admin:
 			try:
 				del self.fields['differentiator']
 			except KeyError:
 				pass
-	
+
 	# override validate_unique so that we include the releaser test in unique_together validation;
 	# see http://stackoverflow.com/questions/2141030/djangos-modelform-unique-together-validation/3757871#3757871
 	def validate_unique(self):
 		exclude = self._get_validation_exclusions()
-		exclude.remove('releaser') # allow checking against the missing attribute
+		exclude.remove('releaser')  # allow checking against the missing attribute
 		try:
 			self.instance.validate_unique(exclude=exclude)
-		except ValidationError, e:
+		except ValidationError:
 			self._update_errors({'__all__': [u'This nick cannot be added, as it duplicates an existing one.']})
-		
-	def save(self, commit = True):
+
+	def save(self, commit=True):
 		instance = super(NickForm, self).save(commit=False)
 		instance.nick_variant_list = self.cleaned_data['nick_variant_list']
 		if commit:
 			instance.save()
 		return instance
-	
+
+	def log_creation(self, user):
+		Edit.objects.create(action_type='add_nick', focus=self.instance.releaser,
+			description=("Added nick '%s'" % self.instance.name), user=user)
+
 	class Meta:
 		model = Nick
 
+
 class ScenerNickForm(NickForm):
+	def log_edit(self, user):
+		# build up log description
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'name' in changed_fields:
+			descriptions.append("changed name to '%s'" % self.instance.name)
+		if 'nick_variant_list' in changed_fields:
+			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
+		if self.cleaned_data['override_primary_nick']:
+			descriptions.append("set as primary nick")
+		if descriptions:
+			description_list = "; ".join(descriptions)
+			Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
+				description="Edited nick '%s': %s" % (self.instance.name, description_list),
+				user=user)
+
 	class Meta(NickForm.Meta):
 		fields = ['name']
 
+
 class GroupNickForm(NickForm):
+	def log_edit(self, user):
+		# build up log description
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'name' in changed_fields:
+			descriptions.append("changed name to '%s'" % self.instance.name)
+		if 'abbreviation' in changed_fields:
+			descriptions.append("changed abbreviation to '%s'" % self.instance.abbreviation)
+		if 'differentiator' in changed_fields:
+			descriptions.append("changed differentiator to '%s'" % self.instance.differentiator)
+		if 'nick_variant_list' in changed_fields:
+			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
+		if self.cleaned_data['override_primary_nick']:
+			descriptions.append("set as primary nick")
+		if descriptions:
+			description_list = "; ".join(descriptions)
+			Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
+				description="Edited nick '%s': %s" % (self.instance.name, description_list),
+				user=user)
+
 	class Meta(NickForm.Meta):
 		fields = ['name', 'abbreviation', 'differentiator']
 
+
 class ScenerMembershipForm(forms.Form):
-	group_nick = NickField(groups_only = True, label = 'Group name')
-	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
+	group_nick = NickField(groups_only=True, label='Group name')
+	is_current = forms.BooleanField(required=False, label='Current member?', initial=True)
+
+	def log_edit(self, user, member, group):
+		# build up log description
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'group_nick' in changed_fields:
+			descriptions.append("changed group to %s" % group)
+		if 'is_current' in changed_fields:
+			if self.cleaned_data['is_current']:
+				descriptions.append("set as current member")
+			else:
+				descriptions.append("set as ex-member")
+		if descriptions:
+			description_list = ", ".join(descriptions)
+			Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
+				description="Updated %s's membership of %s: %s" % (member, group, description_list),
+				user=user)
+
 
 class GroupMembershipForm(forms.Form):
-	scener_nick = NickField(sceners_only = True, label = 'Scener name')
-	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
+	scener_nick = NickField(sceners_only=True, label='Scener name')
+	is_current = forms.BooleanField(required=False, label='Current member?', initial=True)
+
+	def log_edit(self, user, member, group):
+		# build up log description
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'scener_nick' in changed_fields:
+			descriptions.append("changed member to %s" % member)
+		if 'is_current' in changed_fields:
+			if self.cleaned_data['is_current']:
+				descriptions.append("set as current member")
+			else:
+				descriptions.append("set as ex-member")
+		if descriptions:
+			description_list = ", ".join(descriptions)
+			Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
+				description="Updated %s's membership of %s: %s" % (member, group, description_list),
+				user=user)
+
 
 class GroupSubgroupForm(forms.Form):
-	subgroup_nick = NickField(groups_only = True, label = 'Subgroup name')
-	is_current = forms.BooleanField(required = False, label = 'Current subgroup?', initial = True)
+	subgroup_nick = NickField(groups_only=True, label='Subgroup name')
+	is_current = forms.BooleanField(required=False, label='Current subgroup?', initial=True)
 
-class EditMembershipForm(forms.Form):
-	is_current = forms.BooleanField(required = False, label = 'Current member?', initial = True)
+	def log_edit(self, user, member, group):
+		# build up log description
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'subgroup_nick' in changed_fields:
+			descriptions.append("changed subgroup to %s" % member)
+		if 'is_current' in changed_fields:
+			if self.cleaned_data['is_current']:
+				descriptions.append("set as current subgroup")
+			else:
+				descriptions.append("set as ex-subgroup")
+		if descriptions:
+			description_list = ", ".join(descriptions)
+			Edit.objects.create(action_type='edit_subgroup', focus=member, focus2=group,
+				description="Updated %s's status as a subgroup of %s: %s" % (member, group, description_list),
+				user=user)
+
 
 class ReleaserAddCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):
 		super(ReleaserAddCreditForm, self).__init__(*args, **kwargs)
-		self.fields['nick_id'] = forms.ModelChoiceField(
-			label = 'Credited as',
-			queryset = releaser.nicks.order_by('name'),
-			initial = releaser.primary_nick.id
+		self.fields['nick'] = forms.ModelChoiceField(
+			label='Credited as',
+			queryset=releaser.nicks.order_by('name'),
+			initial=releaser.primary_nick.id
 		)
-		self.fields['production_name'] = forms.CharField(label = 'On production', widget = forms.TextInput(attrs = {'class': 'production_autocomplete'}))
-		self.fields['production_id'] = forms.CharField(widget = forms.HiddenInput)
+		self.fields['production_name'] = forms.CharField(label='On production', widget=forms.TextInput(attrs={'class': 'production_autocomplete'}))
+		self.fields['production_id'] = forms.CharField(widget=forms.HiddenInput)
 		self.fields['role'] = forms.CharField()
+
+	def log_creation(self, user, production, releaser):
+		Edit.objects.create(action_type='add_credit', focus=production,
+			focus2=releaser,
+			description=("Added credit for %s (%s) on %s" % (self.cleaned_data['nick'], self.cleaned_data['role'], production)),
+			user=user)
+
+	def log_edit(self, user, production, releaser):
+		descriptions = []
+		changed_fields = self.changed_data
+		if 'production_id' in changed_fields:
+			descriptions.append("release to '%s'" % production)
+		if 'nick' in changed_fields:
+			descriptions.append("nick to %s" % self.cleaned_data['nick'])
+		if 'role' in changed_fields:
+			descriptions.append("role to '%s'" % self.cleaned_data['role'])
+		if descriptions:
+			description = "Set %s" % (", ".join(descriptions))
+			Edit.objects.create(action_type='edit_credit', focus=production,
+				focus2=releaser,
+				description=("Updated %s's credit on %s: %s" % (self.cleaned_data['nick'], production, description)),
+				user=user)
+
 
 class ReleaserExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ReleaserExternalLink
 		fields = ['url']
-ReleaserExternalLinkFormSet = inlineformset_factory(Releaser, ReleaserExternalLink, form=ReleaserExternalLinkForm)
+
+ReleaserExternalLinkFormSet = inlineformset_factory(Releaser, ReleaserExternalLink,
+	form=ReleaserExternalLinkForm, formset=BaseExternalLinkFormSet)

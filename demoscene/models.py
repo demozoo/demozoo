@@ -15,6 +15,8 @@ from demoscene.utils import groklinks
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 
 # Create your models here.
@@ -701,6 +703,15 @@ class Production(models.Model):
 		else:
 			return ('production_edit_core_details', [str(self.id)])
 
+	@models.permalink
+	def get_history_url(self):
+		if self.supertype == 'music':
+			return ('demoscene.views.music.history', [str(self.id)])
+		elif self.supertype == 'graphics':
+			return ('demoscene.views.graphics.history', [str(self.id)])
+		else:
+			return ('demoscene.views.productions.history', [str(self.id)])
+
 	def can_have_screenshots(self):
 		return (self.supertype != 'music')
 
@@ -1022,6 +1033,10 @@ class Competition(models.Model):
 			self.shown_date_precision = ''
 	shown_date = property(_get_shown_date, _set_shown_date)
 
+	@models.permalink
+	def get_absolute_url(self):
+		return ('demoscene.views.competitions.show', [str(self.id)])
+
 
 class CompetitionPlacing(models.Model):
 	competition = models.ForeignKey(Competition, related_name='placings')
@@ -1225,3 +1240,27 @@ class ResultsFile(models.Model):
 	@property
 	def text(self):
 		return str(self.data).decode(self.encoding)
+
+
+class Edit(models.Model):
+	action_type = models.CharField(max_length=100)
+
+	focus_content_type = models.ForeignKey(ContentType, related_name='edits')
+	focus_object_id = models.PositiveIntegerField()
+	focus = generic.GenericForeignKey('focus_content_type', 'focus_object_id')
+
+	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2')
+	focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
+	focus2 = generic.GenericForeignKey('focus2_content_type', 'focus2_object_id')
+
+	description = models.TextField()
+	user = models.ForeignKey(User)
+	timestamp = models.DateTimeField(auto_now_add=True)
+
+	@staticmethod
+	def for_model(model):
+		model_type = ContentType.objects.get_for_model(model)
+		return Edit.objects.extra(where=["""(
+			(focus_content_type_id = %s AND focus_object_id = %s)
+			OR (focus2_content_type_id = %s AND focus2_object_id = %s)
+		)"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')

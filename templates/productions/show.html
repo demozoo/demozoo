@@ -7,6 +7,11 @@
 
 {% block base_main %}
 	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Production</li>
+			<li><a href="{{ production.get_history_url }}">History</a></li>
+		</ul>
+
 		<ul class="actions">
 			{% if editing %}
 				<li><a href="{{ production.get_edit_done_url }}" class="done">Done</a></li>

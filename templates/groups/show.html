@@ -6,6 +6,10 @@
 
 {% block base_main %}
 	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Group</li>
+			<li><a href="{% url group_history group.id %}">History</a></li>
+		</ul>
 		
 		<ul class="actions">
 			{% if editing %}

@@ -1,24 +1,24 @@
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.http import HttpResponse
-from demoscene.models import Competition, CompetitionPlacing, Production, Nick, Platform, ProductionType
+from demoscene.models import Competition, CompetitionPlacing, Production, Platform, ProductionType, Edit
 from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 import datetime
 
+
 # helper function: create or update a production according to JSON data
 def handle_production(prod_data, competition):
 	if prod_data.get('id'):
-		production = Production.objects.get(id = prod_data['id'])
+		production = Production.objects.get(id=prod_data['id'])
 	else:
 		production = Production(
-			release_date = competition.shown_date,
-			updated_at = datetime.datetime.now(),
-			has_bonafide_edits = False)
-		# TODO: populate release date by competition
-		production.save() # assign an ID so that associations work
-	
+			release_date=competition.shown_date,
+			updated_at=datetime.datetime.now(),
+			has_bonafide_edits=False)
+		production.save()  # assign an ID so that associations work
+
 	# can only edit production details if production is stable (which is always true for
 	# newly-created ones)
 	if not production.is_stable_for_competitions():
@@ -26,12 +26,12 @@ def handle_production(prod_data, competition):
 			production.title = prod_data['title']
 		if 'platform_id' in prod_data:
 			if prod_data['platform_id']:
-				production.platforms = [Platform.objects.get(id = prod_data['platform_id'])]
+				production.platforms = [Platform.objects.get(id=prod_data['platform_id'])]
 			else:
 				production.platforms = []
 		if 'production_type_id' in prod_data:
 			if prod_data['production_type_id']:
-				production.types = [ProductionType.objects.get(id = prod_data['production_type_id'])]
+				production.types = [ProductionType.objects.get(id=prod_data['production_type_id'])]
 			else:
 				production.types = []
 		if 'byline' in prod_data:
@@ -47,53 +47,66 @@ def handle_production(prod_data, competition):
 		production.updated_at = datetime.datetime.now()
 		production.supertype = production.inferred_supertype
 		production.save()
-		
+
 	return production
+
 
 @login_required
 def add_placing(request, competition_id):
-	competition = get_object_or_404(Competition, id = competition_id)
+	competition = get_object_or_404(Competition, id=competition_id)
 	if request.method == 'POST':
 		data = simplejson.loads(request.raw_post_data)
-		
+
 		# move existing placings to accommodate new entry at the stated position
-		competition.placings.filter(position__gte = data['position']).update(position=F('position') + 1)
-		
+		competition.placings.filter(position__gte=data['position']).update(position=F('position') + 1)
+
+		production = handle_production(data['production'], competition)
+
 		placing = CompetitionPlacing(
-			production = handle_production(data['production'], competition),
-			competition = competition,
-			ranking = data['ranking'],
-			position = data['position'],
-			score = data['score']
+			production=production,
+			competition=competition,
+			ranking=data['ranking'],
+			position=data['position'],
+			score=data['score'],
 		)
 		placing.save()
-		
+
+		Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
+			description=("Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
+
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
+
 
 @login_required
 def update_placing(request, placing_id):
-	placing = get_object_or_404(CompetitionPlacing, id = placing_id)
+	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
 	competition = placing.competition
 	if request.method == 'POST':
 		data = simplejson.loads(request.raw_post_data)
-		
+
 		# move existing placings to accommodate new entry at the stated position
-		if int(data['position']) > placing.position: # increasing position - move others down
-			competition.placings.filter(position__gt = placing.position, position__lte = data['position']).update(position=F('position') - 1)
-		elif int(data['position']) < placing.position: # decreasing position - move others up
-			competition.placings.filter(position__gte = data['position'], position__lt = placing.position).update(position=F('position') + 1)
-		
-		placing.production = handle_production(data['production'], competition)
+		if int(data['position']) > placing.position:  # increasing position - move others down
+			competition.placings.filter(position__gt=placing.position, position__lte=data['position']).update(position=F('position') - 1)
+		elif int(data['position']) < placing.position:  # decreasing position - move others up
+			competition.placings.filter(position__gte=data['position'], position__lt=placing.position).update(position=F('position') + 1)
+
+		production = handle_production(data['production'], competition)
+
+		Edit.objects.create(action_type='update_competition_placing', focus=competition, focus2=production,
+			description=("Updated competition placing info for %s in %s competition" % (production.title, competition)), user=request.user)
+
+		placing.production = production
 		placing.ranking = data['ranking']
 		placing.position = data['position']
 		placing.score = data['score']
 		placing.save()
-		
+
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
+
 
 @login_required
 def delete_placing(request, placing_id):
-	placing = get_object_or_404(CompetitionPlacing, id = placing_id)
+	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
 	competition = placing.competition
 	if request.method == 'POST':
 		# Delete production entry too, if it wasn't stable; need to do this test before deleting
@@ -101,8 +114,12 @@ def delete_placing(request, placing_id):
 		delete_production_too = not placing.production.is_stable_for_competitions()
 		placing.delete()
 		# move remaining placings to close the gap
-		competition.placings.filter(position__gt = placing.position).update(position=F('position') - 1)
+		competition.placings.filter(position__gt=placing.position).update(position=F('position') - 1)
+
+		Edit.objects.create(action_type='remove_competition_placing', focus=competition, focus2=placing.production,
+			description=("Removed competition placing for %s in %s competition" % (placing.production.title, competition)), user=request.user)
+
 		if delete_production_too:
 			placing.production.delete()
-		
+
 		return HttpResponse('OK', mimetype="text/plain")
