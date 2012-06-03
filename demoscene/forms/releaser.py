@@ -154,7 +154,7 @@ class ScenerNickForm(NickForm):
 			descriptions.append("changed name to '%s'" % self.instance.name)
 		if 'nick_variant_list' in changed_fields:
 			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
-		if self.cleaned_data['override_primary_nick']:
+		if self.cleaned_data.get('override_primary_nick'):
 			descriptions.append("set as primary nick")
 		if descriptions:
 			description_list = "; ".join(descriptions)
@@ -179,7 +179,7 @@ class GroupNickForm(NickForm):
 			descriptions.append("changed differentiator to '%s'" % self.instance.differentiator)
 		if 'nick_variant_list' in changed_fields:
 			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
-		if self.cleaned_data['override_primary_nick']:
+		if self.cleaned_data.get('override_primary_nick'):
 			descriptions.append("set as primary nick")
 		if descriptions:
 			description_list = "; ".join(descriptions)
