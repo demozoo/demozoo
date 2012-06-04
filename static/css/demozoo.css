@@ -1010,6 +1010,7 @@ body.show_production .production_details .competition_placings {
 body.show_production .production_details .tags li {
 	float: left;
 	margin-right: 8px;
+	margin-top: 8px;
 	font-size: 10pt;
 }
 body.show_production .production_details .tags li a.tag_name {
