@@ -449,6 +449,64 @@ class AmigascneFile(BaseUrl):
 		)
 
 
+class PaduaOrgFile(BaseUrl):
+	canonical_format = "ftp://ftp.padua.org/pub/c64%s"
+	tests = [
+		regex_match(r'ftp://ftp\.padua\.org/pub/c64(/.*)', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/padua(/.*)', re.I),
+		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub/mirrors/padua(/.*)', re.I),
+		regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/padua(/.*)', re.I),
+		regex_match(r'http://(?:http\.)?de\.scene\.org/pub/mirrors/padua(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
+		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/padua(/.*)', re.I),
+		regex_match(r'http://http\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
+	]
+	html_link_class = "padua"
+	html_link_text = "padua.org"
+	html_title_format = "%s on ftp.padua.org"
+
+	@property
+	def mirror_links(self):
+		links = [
+			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+		]
+
+		return links
+
+	@property
+	def nl_url(self):
+		return "ftp://ftp.scene.org/pub/mirrors/padua%s" % self.param
+
+	@property
+	def de_ftp_url(self):
+		return "ftp://ftp.de.scene.org/pub/mirrors/padua%s" % self.param
+
+	@property
+	def de_http_url(self):
+		return "http://http.de.scene.org/pub/mirrors/padua%s" % self.param
+
+	@property
+	def us_ftp_url(self):
+		return "ftp://ftp.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
+
+	@property
+	def us_http_url(self):
+		return "http://http.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
+
+	def as_download_link(self):
+		mirrors_html = ''.join(self.mirror_links)
+		return '''
+			<a href="%s">Download from padua.org</a>
+			- mirrors: <ul class="download_mirrors">%s</ul>
+		''' % (
+			escape(str(self)), mirrors_html
+		)
+
+
 class ModlandFile(BaseUrl):
 	canonical_format = "ftp://ftp.modland.com%s"
 	tests = [
@@ -749,7 +807,7 @@ def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ScenesatTrack, ModlandFile, SoundcloudTrack,
-		AmigascneFile,  # must come before SceneOrgFile
+		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
 		BaseUrl,
