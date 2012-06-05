@@ -200,6 +200,16 @@ class ArtcityArtist(BaseUrl):
 	html_title_format = "%s on ArtCity"
 
 
+class DeviantartUser(BaseUrl):
+	canonical_format = "http://%s.deviantart.com"
+	tests = [
+		regex_match(r'https?://(.*)\.deviantart\.com/?', re.I),
+	]
+	html_link_class = "deviantart"
+	html_link_text = "deviantART"
+	html_title_format = "%s on deviantART"
+
+
 class MobygamesDeveloper(BaseUrl):
 	canonical_format = "http://www.mobygames.com/developer/sheet/view/developerId,%s/"
 	tests = [
@@ -790,7 +800,7 @@ def grok_scener_link(urlstring):
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
-		YoutubeUser,
+		YoutubeUser, DeviantartUser,
 		BaseUrl,
 	])
 

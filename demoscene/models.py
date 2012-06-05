@@ -1169,6 +1169,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
+		groklinks.DeviantartUser,
 		groklinks.BaseUrl,
 	]
 
