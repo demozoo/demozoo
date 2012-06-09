@@ -14,7 +14,7 @@ def readable_list(list):
 	if len(list) == 0:
 		return "none"
 	else:
-		return ", ".join([str(item) for item in list])
+		return u", ".join([unicode(item) for item in list])
 
 
 class BaseProductionEditCoreDetailsForm(forms.Form):
@@ -51,27 +51,27 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'title' in changed_fields:
-			descriptions.append("title to '%s'" % self.cleaned_data['title'])
+			descriptions.append(u"title to '%s'" % self.cleaned_data['title'])
 		if 'byline' in changed_fields:
-			descriptions.append("author to '%s'" % self.cleaned_data['byline'])
+			descriptions.append(u"author to '%s'" % self.cleaned_data['byline'])
 		if 'release_date' in changed_fields:
-			descriptions.append("release date to %s" % self.cleaned_data['release_date'])
+			descriptions.append(u"release date to %s" % self.cleaned_data['release_date'])
 		if 'type' in changed_fields:
-			descriptions.append("type to %s" % self.cleaned_data['type'])
+			descriptions.append(u"type to %s" % self.cleaned_data['type'])
 		if 'types' in changed_fields:
 			if len(self.cleaned_data['types']) > 1:
-				descriptions.append("types to %s" % readable_list(self.cleaned_data['types']))
+				descriptions.append(u"types to %s" % readable_list(self.cleaned_data['types']))
 			else:
-				descriptions.append("type to %s" % readable_list(self.cleaned_data['types']))
+				descriptions.append(u"type to %s" % readable_list(self.cleaned_data['types']))
 		if 'platform' in changed_fields:
-			descriptions.append("platform to %s" % self.cleaned_data['platform'])
+			descriptions.append(u"platform to %s" % self.cleaned_data['platform'])
 		if 'platforms' in changed_fields:
 			if len(self.cleaned_data['platforms']) > 1:
-				descriptions.append("platforms to %s" % readable_list(self.cleaned_data['platforms']))
+				descriptions.append(u"platforms to %s" % readable_list(self.cleaned_data['platforms']))
 			else:
-				descriptions.append("platform to %s" % readable_list(self.cleaned_data['platforms']))
+				descriptions.append(u"platform to %s" % readable_list(self.cleaned_data['platforms']))
 		if descriptions:
-			return "Set %s" % (", ".join(descriptions))
+			return u"Set %s" % (u", ".join(descriptions))
 
 	def log_edit(self, user):
 		description = self.changed_data_description
@@ -171,7 +171,7 @@ class CreateProductionForm(forms.Form):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_production', focus=self.instance,
-			description=("Added production '%s'" % self.instance.title), user=user)
+			description=(u"Added production '%s'" % self.instance.title), user=user)
 
 
 class CreateMusicForm(CreateProductionForm):
@@ -268,10 +268,11 @@ class ProductionCreditForm(forms.Form):
 		return self.instance
 
 	def log_creation(self, user):
+		raise Exception(repr(self.instance.nick))
+		description = (u"Added credit for %s (%s) on %s" % (self.instance.nick, self.instance.role, self.instance.production))
 		Edit.objects.create(action_type='add_credit', focus=self.instance.production,
 			focus2=self.instance.nick.releaser,
-			description=("Added credit for %s (%s) on %s" % (self.instance.nick, self.instance.role, self.instance.production)),
-			user=user)
+			description=description, user=user)
 
 	def log_edit(self, user):
 		descriptions = []
@@ -284,7 +285,7 @@ class ProductionCreditForm(forms.Form):
 			description = "Set %s" % (", ".join(descriptions))
 			Edit.objects.create(action_type='edit_credit', focus=self.instance.production,
 				focus2=self.instance.nick.releaser,
-				description=("Updated %s's credit on %s: %s" % (self.instance.nick, self.instance.production, description)),
+				description=(u"Updated %s's credit on %s: %s" % (self.instance.nick, self.instance.production, description)),
 				user=user)
 
 # An individual form row in the 'edit soundtrack details' form.

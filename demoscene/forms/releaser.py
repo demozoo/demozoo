@@ -24,7 +24,7 @@ class CreateGroupForm(forms.ModelForm):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_group', focus=self.instance,
-			description=("Added group '%s'" % self.instance.name), user=user)
+			description=(u"Added group '%s'" % self.instance.name), user=user)
 
 	class Meta:
 		model = Releaser
@@ -45,7 +45,7 @@ class CreateScenerForm(forms.ModelForm):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_scener', focus=self.instance,
-			description=("Added scener '%s'" % self.instance.name), user=user)
+			description=(u"Added scener '%s'" % self.instance.name), user=user)
 
 	class Meta:
 		model = Releaser
@@ -55,7 +55,7 @@ class CreateScenerForm(forms.ModelForm):
 class ScenerEditLocationForm(ModelFormWithLocation):
 	def log_edit(self, user):
 		Edit.objects.create(action_type='edit_scener_location', focus=self.instance,
-			description=("Set location to %s" % self.instance.location), user=user)
+			description=(u"Set location to %s" % self.instance.location), user=user)
 
 	class Meta:
 		model = Releaser
@@ -139,7 +139,7 @@ class NickForm(forms.ModelForm):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='add_nick', focus=self.instance.releaser,
-			description=("Added nick '%s'" % self.instance.name), user=user)
+			description=(u"Added nick '%s'" % self.instance.name), user=user)
 
 	class Meta:
 		model = Nick
@@ -151,15 +151,15 @@ class ScenerNickForm(NickForm):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'name' in changed_fields:
-			descriptions.append("changed name to '%s'" % self.instance.name)
+			descriptions.append(u"changed name to '%s'" % self.instance.name)
 		if 'nick_variant_list' in changed_fields:
-			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
+			descriptions.append(u"changed aliases to '%s'" % self.instance.nick_variant_list)
 		if self.cleaned_data.get('override_primary_nick'):
 			descriptions.append("set as primary nick")
 		if descriptions:
-			description_list = "; ".join(descriptions)
+			description_list = u"; ".join(descriptions)
 			Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
-				description="Edited nick '%s': %s" % (self.instance.name, description_list),
+				description=u"Edited nick '%s': %s" % (self.instance.name, description_list),
 				user=user)
 
 	class Meta(NickForm.Meta):
@@ -172,19 +172,19 @@ class GroupNickForm(NickForm):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'name' in changed_fields:
-			descriptions.append("changed name to '%s'" % self.instance.name)
+			descriptions.append(u"changed name to '%s'" % self.instance.name)
 		if 'abbreviation' in changed_fields:
-			descriptions.append("changed abbreviation to '%s'" % self.instance.abbreviation)
+			descriptions.append(u"changed abbreviation to '%s'" % self.instance.abbreviation)
 		if 'differentiator' in changed_fields:
-			descriptions.append("changed differentiator to '%s'" % self.instance.differentiator)
+			descriptions.append(u"changed differentiator to '%s'" % self.instance.differentiator)
 		if 'nick_variant_list' in changed_fields:
-			descriptions.append("changed aliases to '%s'" % self.instance.nick_variant_list)
+			descriptions.append(u"changed aliases to '%s'" % self.instance.nick_variant_list)
 		if self.cleaned_data.get('override_primary_nick'):
 			descriptions.append("set as primary nick")
 		if descriptions:
-			description_list = "; ".join(descriptions)
+			description_list = u"; ".join(descriptions)
 			Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
-				description="Edited nick '%s': %s" % (self.instance.name, description_list),
+				description=u"Edited nick '%s': %s" % (self.instance.name, description_list),
 				user=user)
 
 	class Meta(NickForm.Meta):
@@ -200,16 +200,16 @@ class ScenerMembershipForm(forms.Form):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'group_nick' in changed_fields:
-			descriptions.append("changed group to %s" % group)
+			descriptions.append(u"changed group to %s" % group)
 		if 'is_current' in changed_fields:
 			if self.cleaned_data['is_current']:
 				descriptions.append("set as current member")
 			else:
 				descriptions.append("set as ex-member")
 		if descriptions:
-			description_list = ", ".join(descriptions)
+			description_list = u", ".join(descriptions)
 			Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
-				description="Updated %s's membership of %s: %s" % (member, group, description_list),
+				description=u"Updated %s's membership of %s: %s" % (member, group, description_list),
 				user=user)
 
 
@@ -222,16 +222,16 @@ class GroupMembershipForm(forms.Form):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'scener_nick' in changed_fields:
-			descriptions.append("changed member to %s" % member)
+			descriptions.append(u"changed member to %s" % member)
 		if 'is_current' in changed_fields:
 			if self.cleaned_data['is_current']:
 				descriptions.append("set as current member")
 			else:
 				descriptions.append("set as ex-member")
 		if descriptions:
-			description_list = ", ".join(descriptions)
+			description_list = u", ".join(descriptions)
 			Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
-				description="Updated %s's membership of %s: %s" % (member, group, description_list),
+				description=u"Updated %s's membership of %s: %s" % (member, group, description_list),
 				user=user)
 
 
@@ -244,16 +244,16 @@ class GroupSubgroupForm(forms.Form):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'subgroup_nick' in changed_fields:
-			descriptions.append("changed subgroup to %s" % member)
+			descriptions.append(u"changed subgroup to %s" % member)
 		if 'is_current' in changed_fields:
 			if self.cleaned_data['is_current']:
 				descriptions.append("set as current subgroup")
 			else:
 				descriptions.append("set as ex-subgroup")
 		if descriptions:
-			description_list = ", ".join(descriptions)
+			description_list = u", ".join(descriptions)
 			Edit.objects.create(action_type='edit_subgroup', focus=member, focus2=group,
-				description="Updated %s's status as a subgroup of %s: %s" % (member, group, description_list),
+				description=u"Updated %s's status as a subgroup of %s: %s" % (member, group, description_list),
 				user=user)
 
 
@@ -272,23 +272,23 @@ class ReleaserAddCreditForm(forms.Form):
 	def log_creation(self, user, production, releaser):
 		Edit.objects.create(action_type='add_credit', focus=production,
 			focus2=releaser,
-			description=("Added credit for %s (%s) on %s" % (self.cleaned_data['nick'], self.cleaned_data['role'], production)),
+			description=(u"Added credit for %s (%s) on %s" % (self.cleaned_data['nick'], self.cleaned_data['role'], production)),
 			user=user)
 
 	def log_edit(self, user, production, releaser):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'production_id' in changed_fields:
-			descriptions.append("release to '%s'" % production)
+			descriptions.append(u"release to '%s'" % production)
 		if 'nick' in changed_fields:
-			descriptions.append("nick to %s" % self.cleaned_data['nick'])
+			descriptions.append(u"nick to %s" % self.cleaned_data['nick'])
 		if 'role' in changed_fields:
-			descriptions.append("role to '%s'" % self.cleaned_data['role'])
+			descriptions.append(u"role to '%s'" % self.cleaned_data['role'])
 		if descriptions:
-			description = "Set %s" % (", ".join(descriptions))
+			description = u"Set %s" % (u", ".join(descriptions))
 			Edit.objects.create(action_type='edit_credit', focus=production,
 				focus2=releaser,
-				description=("Updated %s's credit on %s: %s" % (self.cleaned_data['nick'], production, description)),
+				description=(u"Updated %s's credit on %s: %s" % (self.cleaned_data['nick'], production, description)),
 				user=user)
 
 

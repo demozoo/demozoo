@@ -91,7 +91,7 @@ def delete_credit(request, releaser_id, credit_id):
 			production.has_bonafide_edits = True
 			production.save()
 			Edit.objects.create(action_type='delete_credit', focus=production, focus2=releaser,
-				description=("Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
+				description=(u"Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
@@ -194,7 +194,7 @@ def change_primary_nick(request, releaser_id):
 		releaser.updated_at = datetime.datetime.now()
 		releaser.save()
 		Edit.objects.create(action_type='change_primary_nick', focus=releaser,
-			description=("Set primary nick to '%s'" % nick.name), user=request.user)
+			description=(u"Set primary nick to '%s'" % nick.name), user=request.user)
 	return HttpResponseRedirect(releaser.get_absolute_edit_url())
 
 
@@ -211,7 +211,7 @@ def delete_nick(request, releaser_id, nick_id):
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 			Edit.objects.create(action_type='delete_nick', focus=releaser,
-				description=("Deleted nick '%s'" % nick.name), user=request.user)
+				description=(u"Deleted nick '%s'" % nick.name), user=request.user)
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		if nick.is_referenced():
@@ -240,10 +240,10 @@ def delete(request, releaser_id):
 			# insert a null ID for the focus field
 			if releaser.is_group:
 				Edit.objects.create(action_type='delete_group', focus=releaser,
-					description=("Deleted group '%s'" % releaser.name), user=request.user)
+					description=(u"Deleted group '%s'" % releaser.name), user=request.user)
 			else:
 				Edit.objects.create(action_type='delete_scener', focus=releaser,
-					description=("Deleted scener '%s'" % releaser.name), user=request.user)
+					description=(u"Deleted scener '%s'" % releaser.name), user=request.user)
 
 			releaser.delete()
 

@@ -26,24 +26,24 @@ class BaseExternalLinkFormSet(BaseInlineFormSet):
 		if self.new_objects:
 			added_urls = [link.url for link in self.new_objects]
 			if len(added_urls) > 1:
-				descriptions.append("Added links: %s" % ", ".join(added_urls))
+				descriptions.append(u"Added links: %s" % ", ".join(added_urls))
 			else:
-				descriptions.append("Added link %s" % ", ".join(added_urls))
+				descriptions.append(u"Added link %s" % ", ".join(added_urls))
 
 		if self.changed_objects:
 			updated_urls = [link.url for (link, fields) in self.changed_objects]
 			if len(updated_urls) > 1:
-				descriptions.append("Updated links: %s" % ", ".join(updated_urls))
+				descriptions.append(u"Updated links: %s" % ", ".join(updated_urls))
 			else:
-				descriptions.append("Updated link %s" % ", ".join(updated_urls))
+				descriptions.append(u"Updated link %s" % ", ".join(updated_urls))
 
 		if self.deleted_objects:
 			deleted_urls = [link.url for link in self.deleted_objects]
 			if len(deleted_urls) > 1:
-				descriptions.append("Deleted links: %s" % ", ".join(deleted_urls))
+				descriptions.append(u"Deleted links: %s" % ", ".join(deleted_urls))
 			else:
-				descriptions.append("Deleted link %s" % ", ".join(deleted_urls))
+				descriptions.append(u"Deleted link %s" % ", ".join(deleted_urls))
 
 		if descriptions:
 			Edit.objects.create(action_type=action_type, focus=self.instance,
-				description=("; ".join(descriptions)), user=user)
+				description=(u"; ".join(descriptions)), user=user)

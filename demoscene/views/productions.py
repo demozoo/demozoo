@@ -210,7 +210,7 @@ def add_download_link(request, production_id):
 			production.save()
 			form.save()
 			Edit.objects.create(action_type='add_download_link', focus=production,
-				description=("Added download link %s" % production_link.url), user=request.user)
+				description=(u"Added download link %s" % production_link.url), user=request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
@@ -235,7 +235,7 @@ def edit_download_link(request, production_id, production_link_id):
 			production.save()
 			form.save()
 			Edit.objects.create(action_type='edit_download_link', focus=production,
-				description=("Updated download link from %s to %s" % (original_url, production_link.url)), user=request.user)
+				description=(u"Updated download link from %s to %s" % (original_url, production_link.url)), user=request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
@@ -258,7 +258,7 @@ def delete_download_link(request, production_id, production_link_id):
 			production.has_bonafide_edits = True
 			production.save()
 			Edit.objects.create(action_type='delete_download_link', focus=production,
-				description=("Deleted download link %s" % production_link.url), user=request.user)
+				description=(u"Deleted download link %s" % production_link.url), user=request.user)
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
@@ -422,7 +422,7 @@ def delete_credit(request, production_id, credit_id):
 			production.has_bonafide_edits = True
 			production.save()
 			Edit.objects.create(action_type='delete_credit', focus=production, focus2=credit.nick.releaser,
-				description=("Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
+				description=(u"Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
@@ -454,7 +454,7 @@ def edit_soundtracks(request, production_id):
 				stl.soundtrack.has_bonafide_edits = True
 				stl.soundtrack.save()
 			Edit.objects.create(action_type='edit_soundtracks', focus=production,
-				description=("Edited soundtrack details for %s" % production.title), user=request.user)
+				description=(u"Edited soundtrack details for %s" % production.title), user=request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance=production)
@@ -473,7 +473,7 @@ def add_tag(request, production_id):
 		if tag_name:
 			production.tags.add(tag_name)
 			Edit.objects.create(action_type='production_add_tag', focus=production,
-				description="Added tag '%s'" % tag_name, user=request.user)
+				description=u"Added tag '%s'" % tag_name, user=request.user)
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 
@@ -484,7 +484,7 @@ def remove_tag(request, production_id, tag_id):
 		tags = production.tags.filter(id=tag_id)
 		production.tags.remove(*tags)
 		Edit.objects.create(action_type='production_remove_tag', focus=production,
-			description="Removed tag '%s'" % tag_name, user=request.user)
+			description=u"Removed tag '%s'" % tag_name, user=request.user)
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 
@@ -523,7 +523,7 @@ def delete(request, production_id):
 			# insert log entry before actually deleting, so that it doesn't try to
 			# insert a null ID for the focus field
 			Edit.objects.create(action_type='delete_production', focus=production,
-				description=("Deleted production '%s'" % production.title), user=request.user)
+				description=(u"Deleted production '%s'" % production.title), user=request.user)
 			production.delete()
 			messages.success(request, "'%s' deleted" % production.title)
 			return HttpResponseRedirect(reverse('productions'))

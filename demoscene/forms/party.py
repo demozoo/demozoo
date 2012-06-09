@@ -63,7 +63,7 @@ class PartyForm(ModelFormWithLocation):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_party', focus=self.instance,
-			description=("Added party '%s'" % self.instance.name), user=user)
+			description=(u"Added party '%s'" % self.instance.name), user=user)
 
 	class Meta:
 		model = Party
@@ -79,19 +79,19 @@ class EditPartyForm(ModelFormWithLocation):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'name' in changed_fields:
-			descriptions.append("name to '%s'" % self.cleaned_data['name'])
+			descriptions.append(u"name to '%s'" % self.cleaned_data['name'])
 		if 'start_date' in changed_fields:
-			descriptions.append("start date to %s" % self.cleaned_data['start_date'])
+			descriptions.append(u"start date to %s" % self.cleaned_data['start_date'])
 		if 'end_date' in changed_fields:
-			descriptions.append("end date to %s" % self.cleaned_data['end_date'])
+			descriptions.append(u"end date to %s" % self.cleaned_data['end_date'])
 		if 'tagline' in changed_fields:
-			descriptions.append("tagline to '%s'" % self.cleaned_data['tagline'])
+			descriptions.append(u"tagline to '%s'" % self.cleaned_data['tagline'])
 		if 'location' in changed_fields:
-			descriptions.append("location to %s" % self.cleaned_data['location'])
+			descriptions.append(u"location to %s" % self.cleaned_data['location'])
 		if 'website' in changed_fields:
-			descriptions.append("website to %s" % self.cleaned_data['website'])
+			descriptions.append(u"website to %s" % self.cleaned_data['website'])
 		if descriptions:
-			return "Set %s" % (", ".join(descriptions))
+			return u"Set %s" % (u", ".join(descriptions))
 
 	def log_edit(self, user):
 		description = self.changed_data_description
@@ -120,15 +120,15 @@ class EditPartySeriesForm(forms.ModelForm):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'name' in changed_fields:
-			descriptions.append("name to '%s'" % self.cleaned_data['name'])
+			descriptions.append(u"name to '%s'" % self.cleaned_data['name'])
 		if 'website' in changed_fields:
-			descriptions.append("website to %s" % self.cleaned_data['website'])
+			descriptions.append(u"website to %s" % self.cleaned_data['website'])
 		if 'twitter_username' in changed_fields:
-			descriptions.append("Twitter username to %s" % self.cleaned_data['twitter_username'])
+			descriptions.append(u"Twitter username to %s" % self.cleaned_data['twitter_username'])
 		if 'pouet_party_id' in changed_fields:
-			descriptions.append("Pouet party ID to '%s'" % self.cleaned_data['pouet_party_id'])
+			descriptions.append(u"Pouet party ID to '%s'" % self.cleaned_data['pouet_party_id'])
 		if descriptions:
-			return "Set %s" % (", ".join(descriptions))
+			return u"Set %s" % (u", ".join(descriptions))
 
 	def log_edit(self, user):
 		description = self.changed_data_description
@@ -162,22 +162,22 @@ class CompetitionForm(forms.ModelForm):
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_competiton', focus=self.instance, focus2=self.instance.party,
-			description=("Added competition %s" % self.instance.name), user=user)
+			description=(u"Added competition %s" % self.instance.name), user=user)
 
 	@property
 	def changed_data_description(self):
 		descriptions = []
 		changed_fields = self.changed_data
 		if 'name' in changed_fields:
-			descriptions.append("name to %s" % self.cleaned_data['name'])
+			descriptions.append(u"name to %s" % self.cleaned_data['name'])
 		if 'shown_date' in changed_fields:
-			descriptions.append("date to %s" % self.cleaned_data['shown_date'])
+			descriptions.append(u"date to %s" % self.cleaned_data['shown_date'])
 		if 'platform' in changed_fields:
-			descriptions.append("platform to %s" % self.cleaned_data['platform'])
+			descriptions.append(u"platform to %s" % self.cleaned_data['platform'])
 		if 'production_type' in changed_fields:
-			descriptions.append("production type to %s" % self.cleaned_data['production_type'])
+			descriptions.append(u"production type to %s" % self.cleaned_data['production_type'])
 		if descriptions:
-			return "Set %s" % (", ".join(descriptions))
+			return u"Set %s" % (u", ".join(descriptions))
 
 	def log_edit(self, user):
 		description = self.changed_data_description

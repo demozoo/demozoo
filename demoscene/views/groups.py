@@ -92,7 +92,7 @@ def add_member(request, group_id):
 				membership.save()
 				group.updated_at = datetime.datetime.now()
 				group.save()
-				description = "Added %s as a member of %s" % (member.name, group.name)
+				description = u"Added %s as a member of %s" % (member.name, group.name)
 				Edit.objects.create(action_type='add_membership', focus=member, focus2=group,
 					description=description, user=request.user)
 			return HttpResponseRedirect(group.get_absolute_edit_url())
@@ -114,7 +114,7 @@ def remove_member(request, group_id, scener_id):
 			group.member_memberships.filter(member=scener).delete()
 			group.updated_at = datetime.datetime.now()
 			group.save()
-			description = "Removed %s as a member of %s" % (scener.name, group.name)
+			description = u"Removed %s as a member of %s" % (scener.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
 				description=description, user=request.user)
 		return HttpResponseRedirect(group.get_absolute_edit_url())
@@ -174,7 +174,7 @@ def add_subgroup(request, group_id):
 				membership.save()
 				group.updated_at = datetime.datetime.now()
 				group.save()
-				description = "Added %s as a subgroup of %s" % (member.name, group.name)
+				description = u"Added %s as a subgroup of %s" % (member.name, group.name)
 				Edit.objects.create(action_type='add_subgroup', focus=member, focus2=group,
 					description=description, user=request.user)
 			return HttpResponseRedirect(group.get_absolute_edit_url())
@@ -196,7 +196,7 @@ def remove_subgroup(request, group_id, subgroup_id):
 			group.member_memberships.filter(member=subgroup).delete()
 			group.updated_at = datetime.datetime.now()
 			group.save()
-			description = "Removed %s as a subgroup of %s" % (subgroup.name, group.name)
+			description = u"Removed %s as a subgroup of %s" % (subgroup.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=subgroup, focus2=group,
 				description=description, user=request.user)
 		return HttpResponseRedirect(group.get_absolute_edit_url())
@@ -247,7 +247,7 @@ def convert_to_scener(request, group_id):
 			group.updated_at = datetime.datetime.now()
 			group.save()
 			Edit.objects.create(action_type='convert_to_scener', focus=group,
-				description=("Converted %s from a group to a scener" % group), user=request.user)
+				description=(u"Converted %s from a group to a scener" % group), user=request.user)
 		return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,

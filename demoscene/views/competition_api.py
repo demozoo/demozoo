@@ -72,7 +72,7 @@ def add_placing(request, competition_id):
 		placing.save()
 
 		Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
-			description=("Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
+			description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
 
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
 
@@ -93,7 +93,7 @@ def update_placing(request, placing_id):
 		production = handle_production(data['production'], competition)
 
 		Edit.objects.create(action_type='update_competition_placing', focus=competition, focus2=production,
-			description=("Updated competition placing info for %s in %s competition" % (production.title, competition)), user=request.user)
+			description=(u"Updated competition placing info for %s in %s competition" % (production.title, competition)), user=request.user)
 
 		placing.production = production
 		placing.ranking = data['ranking']
@@ -117,7 +117,7 @@ def delete_placing(request, placing_id):
 		competition.placings.filter(position__gt=placing.position).update(position=F('position') - 1)
 
 		Edit.objects.create(action_type='remove_competition_placing', focus=competition, focus2=placing.production,
-			description=("Removed competition placing for %s in %s competition" % (placing.production.title, competition)), user=request.user)
+			description=(u"Removed competition placing for %s in %s competition" % (placing.production.title, competition)), user=request.user)
 
 		if delete_production_too:
 			placing.production.delete()

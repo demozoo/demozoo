@@ -122,7 +122,7 @@ def add_group(request, scener_id):
 				membership.save()
 				scener.updated_at = datetime.datetime.now()
 				scener.save()
-				description = "Added %s as a member of %s" % (scener.name, group.name)
+				description = u"Added %s as a member of %s" % (scener.name, group.name)
 				Edit.objects.create(action_type='add_membership', focus=scener, focus2=group,
 					description=description, user=request.user)
 			return HttpResponseRedirect(scener.get_absolute_edit_url())
@@ -145,7 +145,7 @@ def remove_group(request, scener_id, group_id):
 			scener.group_memberships.filter(group=group).delete()
 			scener.updated_at = datetime.datetime.now()
 			scener.save()
-			description = "Removed %s as a member of %s" % (scener.name, group.name)
+			description = u"Removed %s as a member of %s" % (scener.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
 				description=description, user=request.user)
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
@@ -196,7 +196,7 @@ def convert_to_group(request, scener_id):
 			scener.updated_at = datetime.datetime.now()
 			scener.save()
 			Edit.objects.create(action_type='convert_to_group', focus=scener,
-				description=("Converted %s from a scener to a group" % scener), user=request.user)
+				description=(u"Converted %s from a scener to a group" % scener), user=request.user)
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
