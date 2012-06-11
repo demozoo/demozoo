@@ -268,7 +268,6 @@ class ProductionCreditForm(forms.Form):
 		return self.instance
 
 	def log_creation(self, user):
-		raise Exception(repr(self.instance.nick))
 		description = (u"Added credit for %s (%s) on %s" % (self.instance.nick, self.instance.role, self.instance.production))
 		Edit.objects.create(action_type='add_credit', focus=self.instance.production,
 			focus2=self.instance.nick.releaser,
