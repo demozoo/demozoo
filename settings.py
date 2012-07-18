@@ -22,7 +22,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 		'NAME': 'demozoo',                      # Or path to database file if using sqlite3.
 		'USER': 'postgres',                      # Not used with sqlite3.
 		'PASSWORD': '',                  # Not used with sqlite3.
@@ -110,7 +110,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
-	
+
 	'demoscene',
 	'search',
 	'dataexchange',
@@ -123,12 +123,12 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
 	'demoscene.context_processors.global_nav_forms',
-) 
+)
 
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 
-DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT,'data','djapian')
+DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT, 'data', 'djapian')
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
@@ -151,16 +151,16 @@ BROKER_VHOST = "/"
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
-    "fetch-new-sceneorg-files": {
-        "task": "sceneorg.tasks.fetch_sceneorg_dir",
-        "schedule": timedelta(days=1),
-        "args": ('/', 3)
-    },
-    "fetch-all-sceneorg-files": {
-        "task": "sceneorg.tasks.fetch_sceneorg_dir",
-        "schedule": timedelta(days=30),
-        "args": ('/',)
-    },
+	"fetch-new-sceneorg-files": {
+		"task": "sceneorg.tasks.fetch_sceneorg_dir",
+		"schedule": timedelta(days=1),
+		"args": ('/', 3)
+	},
+		"fetch-all-sceneorg-files": {
+		"task": "sceneorg.tasks.fetch_sceneorg_dir",
+		"schedule": timedelta(days=30),
+		"args": ('/',)
+	},
 }
 
 # Get local settings
