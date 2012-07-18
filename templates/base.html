@@ -57,38 +57,40 @@
 			<div id="page">
 			<header id="site_header">
 				<h1><a href="{% url home %}">Demozoo</a></h1>
-				<div id="login_status_panel">
-					{% if user.is_authenticated %}
-						<div class="login_status logged_in">
-							{{ user.username }}
-						</div>
-						<div class="login_links">
-							<ul>
-								<li><a href="{% url account_preferences %}">Preferences</a></li>
-								<li><a href="{% url account_change_password %}">Change password</a></li>
-								{% if user.is_staff %}
-									<li><a href="{% url maintenance_index %}">Maintenance</a></li>
-								{% endif %}
-								<li><a href="{% url log_out %}">Log out</a></li>
-							</ul>
-						</div>
-					{% else %}
-						<div class="login_status logged_out">
-							Not logged in
-						</div>
-						<div class="login_links">
-							<form action="{% url log_in %}" method="post">
-								{% csrf_token %}
-								{{ global_login_form.as_p }}
-								<input type="submit" value="Log in" />
-							</form>
-							<ul>
-								<li><a href="{% url user_signup %}">Register new account</a></li>
-							</ul>
-						</div>
-					{% endif %}
-				</div>
-				<script>$('#login_status_panel .login_links').hide();</script>
+				{% block login_status_panel %}
+					<div id="login_status_panel">
+						{% if user.is_authenticated %}
+							<div class="login_status logged_in">
+								{{ user.username }}
+							</div>
+							<div class="login_links">
+								<ul>
+									<li><a href="{% url account_preferences %}">Preferences</a></li>
+									<li><a href="{% url account_change_password %}">Change password</a></li>
+									{% if user.is_staff %}
+										<li><a href="{% url maintenance_index %}">Maintenance</a></li>
+									{% endif %}
+									<li><a href="{% url log_out %}">Log out</a></li>
+								</ul>
+							</div>
+						{% else %}
+							<div class="login_status logged_out">
+								Not logged in
+							</div>
+							<div class="login_links">
+								<form action="{% url log_in %}" method="post">
+									{% csrf_token %}
+									{{ global_login_form.as_p }}
+									<input type="submit" value="Log in" />
+								</form>
+								<ul>
+									<li><a href="{% url user_signup %}">Register new account</a></li>
+								</ul>
+							</div>
+						{% endif %}
+					</div>
+					<script>$('#login_status_panel .login_links').hide();</script>
+				{% endblock %}
 				<nav>
 					<ul>
 						<li class="{% nav_active productions %}"><a href="{% url productions %}">Productions</a></li>
@@ -98,10 +100,12 @@
 						<li class="{% nav_active sceners %}"><a href="{% url sceners %}">Sceners</a></li>
 						<li class="{% nav_active parties %}"><a href="{% url parties %}">Parties</a></li>
 					</ul>
-					<form class="search" method="get" action="{% url search %}">
-						{{ global_search_form.q }}
-						<input type="submit" value="Search" />
-					</form>
+					{% block global_search_form %}
+						<form class="search" method="get" action="{% url search %}">
+							{{ global_search_form.q }}
+							<input type="submit" value="Search" />
+						</form>
+					{% endblock %}
 				</nav>
 				<div style="clear: both;"></div>
 			</header>
