@@ -13,7 +13,7 @@ space.add_index(Releaser, ReleaserIndexer, attach_as='indexer')
 # TODO: index PartySeries (also platform?)
 
 class PartyIndexer(Indexer):
-	fields = [('name', 1000), 'location', 'plaintext_notes']
+	fields = [('name', 1000), 'location', ('tagline', 200), 'plaintext_notes']
 space.add_index(Party, PartyIndexer, attach_as='indexer')
 
 complete_indexer = CompositeIndexer(Production.indexer, Releaser.indexer, Party.indexer)
