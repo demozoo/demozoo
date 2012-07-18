@@ -1,6 +1,8 @@
 import os
 import xapian
 
+from djapian.utils.decorators import reopen_if_modified
+
 class Database(object):
     def __init__(self, path):
         self._path = path
@@ -35,7 +37,8 @@ class Database(object):
         del database
 
     def document_count(self):
-        return self.open().get_doccount()
+        database = self.open()
+        return reopen_if_modified(database)(lambda: database.get_doccount())()
 
     def clear(self):
         try:

@@ -34,6 +34,7 @@ def get_indexers(content_type):
             for space in IndexSpace.instances]
     )
 
+
 # Forcibly throw exceptions which would otherwise be swallowed up by transaction.commit_manually.
 # see http://metak4ml.blogspot.com/2011/05/django-transactioncommitmanually-mask.html
 def transact(func):
@@ -48,11 +49,12 @@ def transact(func):
         import traceback
         try:
             func(*args, **kwargs)
-        except Exception, e:
+        except Exception:
             traceback.print_exc()
             transaction.rollback()
             sys.exit()
     return decorated
+
 
 @transaction.commit_manually
 @transact

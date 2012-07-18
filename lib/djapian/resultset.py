@@ -7,6 +7,7 @@ from django.db.models import get_model
 from django.utils.encoding import force_unicode
 
 from djapian import utils, decider
+from djapian.utils.decorators import retry_if_except
 
 class ResultSet(object):
     def __init__(self, indexer, query_str, offset=0, limit=None,
@@ -190,7 +191,13 @@ class ResultSet(object):
             instances = instances.in_bulk(pks)
 
             for hit in hits:
-                hit.instance = instances[hit.pk]
+                # check if the record has been deleted since the last Xapian index update
+                instance = instances.get(hit.pk, None)
+                if instance:
+                    hit.instance = instance
+
+        # filter results which may have become invalid during the search
+        self._resultset_cache = filter(lambda hit: hit._instance, self._resultset_cache)
 
     def _get_mset(self):
         if self._mset is None:
@@ -209,8 +216,10 @@ class ResultSet(object):
 
     def _fetch_results(self):
         if self._resultset_cache is None:
-            self._get_mset()
-            self._parse_results()
+            # self._parse_results() may raise DatabaseModifiedError exception,
+            # thus we have to repeat retrieving of the whole MSet again
+            retry_if_except(xapian.DatabaseModifiedError)(
+                lambda: (self._get_mset(), self._parse_results()))()
 
         return self._resultset_cache
 
@@ -230,8 +239,17 @@ class ResultSet(object):
             collapse_count = match.collapse_count or None
             collapse_key = match.collapse_key or None
 
-            tags = dict([(tag.prefix, tag.extract(doc))\
-                                for tag in self._indexer.tags])
+            # check if the current indexer is CompositeIndexer
+            if hasattr(self._indexer, '_indexers'):
+                # so we must collect tags from every indexer of the model
+                tags = []
+                for indexer in self._indexer._indexers:
+                    if indexer._model == model:
+                        tags.extend(indexer.tags)
+            else:
+                tags = self._indexer.tags
+            # get tags' values
+            tags = dict([(tag.prefix, tag.extract(doc)) for tag in tags])
 
             self._resultset_cache.append(
                 Hit(pk, model, percent, rank, weight, tags, collapse_count, collapse_key)

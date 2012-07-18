@@ -247,3 +247,19 @@ class StemIndexerTest(BaseIndexerTest):
         ]
 
         StemEntry.indexer.update()
+
+class MultipleIndexerEntry(models.Model):
+    title = models.CharField(max_length=250, primary_key=True)
+    text = models.TextField()
+
+    class Meta:
+        app_label = "djapian"
+
+class MultipleIndexerEntryTitleIndexer(djapian.Indexer):
+    fields = ["title"]
+
+class MultipleIndexerEntryTextIndexer(djapian.Indexer):
+    fields = ["text"]
+
+djapian.add_index(MultipleIndexerEntry, MultipleIndexerEntryTitleIndexer, attach_as='indexer_title')
+djapian.add_index(MultipleIndexerEntry, MultipleIndexerEntryTextIndexer, attach_as='indexer_text')

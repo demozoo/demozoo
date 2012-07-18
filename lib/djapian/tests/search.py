@@ -44,6 +44,14 @@ class IndexerSearchTextTest(BaseIndexerTest, BaseTestCase):
         self.assert_(hasattr(result[0].instance, '_author_cache'))
         self.assertEqual(result[0].instance.author.name, 'Alex')
 
+    def test_prefetch_deleted(self):
+        result = self.result.prefetch()
+        pk_val = self.result[0].pk
+
+        Entry.objects.get(pk=pk_val).delete()
+
+        self.assertTrue(len([str(r) for r in result]) > 0)
+
 class AliasesTest(BaseTestCase):
     num_entries = 5
 
@@ -100,6 +108,11 @@ class CompositeIndexerTest(BaseIndexerTest, BaseTestCase):
 
         self.assertEqual(len(results), 4) # 3 entries + 1 comment
 
+    def test_sets_not_empty(self):
+        results = self.indexer.search('entry')
+
+        self.assertTrue(len(results[0].tags) > 0)
+
 class OrderingTest(BaseIndexerTest, BaseTestCase):
     def setUp(self):
         super(OrderingTest, self).setUp()
@@ -110,8 +123,17 @@ class OrderingTest(BaseIndexerTest, BaseTestCase):
         entries.sort(key=lambda e: e.rating)
 
         self.assertEqual(
-            list([r.instance for r in self.result.order_by('-rating').prefetch()]),
+            list([r.instance for r in self.result.order_by('rating').prefetch()]),
             entries
+        )
+
+    def test_order_by_reversed(self):
+        entries = [e  for e in self.entries if e.is_active]
+        entries.sort(key=lambda e: e.rating)
+
+        self.assertEqual(
+            list([r.instance for r in self.result.order_by('-rating').prefetch()]),
+            entries[::-1]
         )
 
 class ResultSetTest(BaseIndexerTest, BaseTestCase):
