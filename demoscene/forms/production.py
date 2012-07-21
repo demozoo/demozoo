@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, Nick, Credit, SoundtrackLink, ProductionLink, Edit
+from demoscene.models import Production, ProductionType, Platform, SoundtrackLink, ProductionLink, Edit
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet
@@ -249,43 +249,15 @@ ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink
 	form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)
 
 
-class ProductionCreditForm(forms.Form):
+class ProductionCreditedNickForm(forms.Form):
 	def __init__(self, *args, **kwargs):
-		self.instance = kwargs.pop('instance', Credit())
-		super(ProductionCreditForm, self).__init__(*args, **kwargs)
-		try:
-			nick = self.instance.nick
+		nick = kwargs.pop('nick', None)
+		super(ProductionCreditedNickForm, self).__init__(*args, **kwargs)
+		if nick:
 			self.fields['nick'] = NickField(initial=nick)
-		except Nick.DoesNotExist:
+		else:
 			self.fields['nick'] = NickField()
-		self.fields['role'] = forms.CharField(initial=self.instance.role)
 
-	def save(self, commit=True):
-		self.instance.role = self.cleaned_data['role']
-		self.instance.nick = self.cleaned_data['nick'].commit()
-		if commit:
-			self.instance.save()
-		return self.instance
-
-	def log_creation(self, user):
-		description = (u"Added credit for %s (%s) on %s" % (self.instance.nick, self.instance.role, self.instance.production))
-		Edit.objects.create(action_type='add_credit', focus=self.instance.production,
-			focus2=self.instance.nick.releaser,
-			description=description, user=user)
-
-	def log_edit(self, user):
-		descriptions = []
-		changed_fields = self.changed_data
-		if 'nick' in changed_fields:
-			descriptions.append("nick to %s" % self.cleaned_data['nick'])
-		if 'role' in changed_fields:
-			descriptions.append("role to '%s'" % self.cleaned_data['role'])
-		if descriptions:
-			description = "Set %s" % (", ".join(descriptions))
-			Edit.objects.create(action_type='edit_credit', focus=self.instance.production,
-				focus2=self.instance.nick.releaser,
-				description=(u"Updated %s's credit on %s: %s" % (self.instance.nick, self.instance.production, description)),
-				user=user)
 
 # An individual form row in the 'edit soundtrack details' form.
 # Even though this corresponds to a SoundtrackLink object, this can't be a ModelForm

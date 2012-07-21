@@ -16,7 +16,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name'),
+		'credits': production.credits.order_by('nick__name', 'category'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),

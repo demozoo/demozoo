@@ -1400,6 +1400,22 @@ table.history .user {
 	padding-right: 1em;
 }
 
+form.entry_form .credit_formset .category_header {
+	float: left;
+	font-weight: bold;
+	width: 100px;
+}
+form.entry_form .credit_formset .detail_header {
+	float: left;
+	font-weight: bold;
+}
+form.entry_form .credit_formset .field_input select {
+	width: 100px;
+}
+form.entry_form .credit_formset .field_input input[type="text"] {
+	width: 250px;
+}
+
 
 /* Small-screen versions */
 

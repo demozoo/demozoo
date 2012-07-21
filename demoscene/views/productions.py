@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Byline, Credit, Screenshot, ProductionLink, Edit
+from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionLink, Edit
 from demoscene.forms.production import *
+from demoscene.forms.common import CreditFormSet
 from taggit.models import Tag
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -94,7 +95,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name'),
+		'credits': production.credits.order_by('nick__name', 'category'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
@@ -369,66 +370,104 @@ def create(request):
 @login_required
 def add_credit(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	credit = Credit(production=production)
 	if request.method == 'POST':
-		form = ProductionCreditForm(request.POST, instance=credit)
-		if form.is_valid():
-			form.save()
+		nick_form = ProductionCreditedNickForm(request.POST)
+		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
+		if nick_form.is_valid() and credit_formset.is_valid():
+			credits = credit_formset.save(commit=False)
+			if credits:
+				nick = nick_form.cleaned_data['nick'].commit()
+				for credit in credits:
+					credit.nick = nick
+					credit.production = production
+					credit.save()
+				credits_description = ', '.join([credit.description for credit in credits])
+				description = (u"Added credit for %s on %s: %s" % (nick, production, credits_description))
+				Edit.objects.create(action_type='add_credit', focus=production,
+					focus2=nick.releaser,
+					description=description, user=request.user)
+
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			form.log_creation(request.user)
+			# form.log_creation(request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionCreditForm(instance=credit)
+		nick_form = ProductionCreditedNickForm()
+		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 	return ajaxable_render(request, 'productions/add_credit.html', {
 		'html_title': "Adding credit for %s" % production.title,
 		'production': production,
-		'form': form,
+		'nick_form': nick_form,
+		'credit_formset': credit_formset,
 	})
 
 
 @login_required
-def edit_credit(request, production_id, credit_id):
+def edit_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
-	credit = get_object_or_404(Credit, production=production, id=credit_id)
+	nick = get_object_or_404(Nick, id=nick_id)
+	credits = production.credits.filter(nick=nick)
 	if request.method == 'POST':
-		form = ProductionCreditForm(request.POST, instance=credit)
-		if form.is_valid():
-			form.save()
+		nick_form = ProductionCreditedNickForm(request.POST, nick=nick)
+		credit_formset = CreditFormSet(request.POST, queryset=credits, prefix="credit")
+		if nick_form.is_valid() and credit_formset.is_valid():
+			updated_credits = credit_formset.save(commit=False)
+			# make sure that each credit has production and nick populated
+			for credit in updated_credits:
+				credit.nick = nick
+				credit.production = production
+				credit.save()
+
+			if 'nick' in nick_form.changed_data:
+				# need to update the nick field of all credits in the set
+				# (not just the ones that have been updated by credit_formset.save)
+				nick = nick_form.cleaned_data['nick'].commit()
+				credits.update(nick=nick)
+
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			form.log_edit(request.user)
+
+			new_credits = Credit.objects.filter(nick=nick, production=production)
+			credits_description = ', '.join([credit.description for credit in new_credits])
+			Edit.objects.create(action_type='edit_credit', focus=production,
+				focus2=nick.releaser,
+				description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
+				user=request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
-		form = ProductionCreditForm(instance=credit)
+		nick_form = ProductionCreditedNickForm(nick=nick)
+		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 	return ajaxable_render(request, 'productions/edit_credit.html', {
 		'html_title': "Editing credit for %s" % production.title,
 		'production': production,
-		'credit': credit,
-		'form': form,
+		'nick': nick,
+		'nick_form': nick_form,
+		'credit_formset': credit_formset,
 	})
 
 
 @login_required
-def delete_credit(request, production_id, credit_id):
+def delete_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
-	credit = get_object_or_404(Credit, production=production, id=credit_id)
+	nick = get_object_or_404(Nick, id=nick_id)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
-			credit.delete()
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			production.save()
-			Edit.objects.create(action_type='delete_credit', focus=production, focus2=credit.nick.releaser,
-				description=(u"Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
+			credits = Credit.objects.filter(nick=nick, production=production)
+			if credits:
+				credits.delete()
+				production.updated_at = datetime.datetime.now()
+				production.has_bonafide_edits = True
+				production.save()
+				Edit.objects.create(action_type='delete_credit', focus=production, focus2=nick.releaser,
+					description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
-			reverse('production_delete_credit', args=[production_id, credit_id]),
-			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, production.title),
-			html_title="Deleting %s's credit from %s" % (credit.nick.name, production.title))
+			reverse('production_delete_credit', args=[production_id, nick_id]),
+			"Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
+			html_title="Deleting %s's credit from %s" % (nick.name, production.title))
 
 
 @login_required

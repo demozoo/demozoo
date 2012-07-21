@@ -806,9 +806,24 @@ class ProductionDemozoo0Platform(models.Model):
 
 
 class Credit(models.Model):
+	CATEGORIES = [
+		('Code', 'Code'),
+		('Graphics', 'Graphics'),
+		('Music', 'Music'),
+		('Other', 'Other')
+	]
+
 	production = models.ForeignKey(Production, related_name='credits')
 	nick = models.ForeignKey(Nick, related_name='credits')
+	category = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
 	role = models.CharField(max_length=255, blank=True)
+
+	@property
+	def description(self):
+		if self.role:
+			return "%s (%s)" % (self.category, self.role)
+		else:
+			return self.category
 
 	def __unicode__(self):
 		return "%s - %s (%s)" % (

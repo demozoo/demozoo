@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Releaser, Production, Nick, Credit, Edit
 from demoscene.forms.releaser import *
+from demoscene.forms.common import CreditFormSet
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import datetime
@@ -10,94 +11,126 @@ import datetime
 def add_credit(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	if request.method == 'POST':
-		form = ReleaserAddCreditForm(releaser, request.POST)
-		if form.is_valid():
+		form = ReleaserCreditForm(releaser, request.POST)
+		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
+		if form.is_valid() and credit_formset.is_valid():
 			production = Production.objects.get(id=form.cleaned_data['production_id'])
-			credit = Credit(
-				production=production,
-				nick=form.cleaned_data['nick'],
-				role=form.cleaned_data['role']
-			)
-			credit.save()
-			releaser.updated_at = datetime.datetime.now()
-			releaser.save()
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			production.save()
-			form.log_creation(request.user, production, releaser)
+			credits = credit_formset.save(commit=False)
+			if credits:
+				nick = form.cleaned_data['nick']
+				for credit in credits:
+					credit.nick = nick
+					credit.production = production
+					credit.save()
 
+				production.updated_at = datetime.datetime.now()
+				production.has_bonafide_edits = True
+				production.save()
+				releaser.updated_at = datetime.datetime.now()
+				releaser.save()
+				credits_description = ', '.join([credit.description for credit in credits])
+				description = (u"Added credit for %s on %s: %s" % (nick, production, credits_description))
+				Edit.objects.create(action_type='add_credit', focus=production,
+					focus2=nick.releaser,
+					description=description, user=request.user)
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = ReleaserAddCreditForm(releaser)
+		form = ReleaserCreditForm(releaser)
+		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
 
 	return ajaxable_render(request, 'releasers/add_credit.html', {
 		'html_title': "Add credit for %s" % releaser.name,
 		'releaser': releaser,
 		'form': form,
+		'credit_formset': credit_formset,
 	})
 
 
 @login_required
-def edit_credit(request, releaser_id, credit_id):
+def edit_credit(request, releaser_id, nick_id, production_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
-	credit = get_object_or_404(Credit, nick__releaser=releaser, id=credit_id)
+	nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
+	production = get_object_or_404(Production, id=production_id)
+	credits = Credit.objects.filter(nick=nick, production=production)
+
 	if request.method == 'POST':
-		form = ReleaserAddCreditForm(releaser, request.POST, initial={
-			'nick': credit.nick_id,
-			'production_id': credit.production_id,
-			'production_name': credit.production.title,
-			'role': credit.role
+		form = ReleaserCreditForm(releaser, request.POST, initial={
+			'nick': nick.id,
+			'production_id': production.id,
+			'production_name': production.title,
 		})
-		if form.is_valid():
+		credit_formset = CreditFormSet(request.POST, queryset=credits, prefix="credit")
+
+		if form.is_valid() and credit_formset.is_valid():
 			production = Production.objects.get(id=form.cleaned_data['production_id'])
-			credit.production = production
-			credit.nick = form.cleaned_data['nick']
-			credit.role = form.cleaned_data['role']
-			credit.save()
+			updated_credits = credit_formset.save(commit=False)
+
+			# make sure that each credit has production and nick populated
+			for credit in updated_credits:
+				credit.nick = nick
+				credit.production = production
+				credit.save()
+
+			new_nick = form.cleaned_data['nick']
+			if form.changed_data:
+				# need to update the production / nick field of all credits in the set
+				# (not just the ones that have been updated by credit_formset.save)
+				credits.update(nick=new_nick, production=production)
+
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			form.log_edit(request.user, production, releaser)
+
+			new_credits = Credit.objects.filter(nick=new_nick, production=production)
+			credits_description = ', '.join([credit.description for credit in new_credits])
+			Edit.objects.create(action_type='edit_credit', focus=production,
+				focus2=releaser,
+				description=(u"Updated %s's credit on %s: %s" % (new_nick, production, credits_description)),
+				user=request.user)
 
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
-		form = ReleaserAddCreditForm(releaser, {
-			'nick': credit.nick_id,
-			'production_id': credit.production_id,
-			'production_name': credit.production.title,
-			'role': credit.role
+		form = ReleaserCreditForm(releaser, {
+			'nick': nick.id,
+			'production_id': production.id,
+			'production_name': production.title,
 		})
+		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 	return ajaxable_render(request, 'releasers/edit_credit.html', {
-		'html_title': "Editing credit for %s" % credit.production.title,
+		'html_title': "Editing credit for %s" % production.title,
 		'releaser': releaser,
-		'credit': credit,
+		'nick': nick,
+		'production': production,
 		'form': form,
+		'credit_formset': credit_formset,
 	})
 
 
 @login_required
-def delete_credit(request, releaser_id, credit_id):
+def delete_credit(request, releaser_id, nick_id, production_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
-	credit = get_object_or_404(Credit, nick__releaser=releaser, id=credit_id)
+	nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
+	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
-			production = credit.production
-			credit.delete()
-			releaser.updated_at = datetime.datetime.now()
-			releaser.save()
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			production.save()
-			Edit.objects.create(action_type='delete_credit', focus=production, focus2=releaser,
-				description=(u"Deleted %s's credit on %s" % (credit.nick, production)), user=request.user)
+			credits = Credit.objects.filter(nick=nick, production=production)
+			if credits:
+				credits.delete()
+				releaser.updated_at = datetime.datetime.now()
+				releaser.save()
+				production.updated_at = datetime.datetime.now()
+				production.has_bonafide_edits = True
+				production.save()
+				Edit.objects.create(action_type='delete_credit', focus=production, focus2=releaser,
+					description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		return simple_ajax_confirmation(request,
-			reverse('releaser_delete_credit', args=[releaser_id, credit_id]),
-			"Are you sure you want to delete %s's credit from %s?" % (credit.nick.name, credit.production.title),
-			html_title="Deleting %s's credit from %s" % (credit.nick.name, credit.production.title))
+			reverse('releaser_delete_credit', args=[releaser_id, nick_id, production_id]),
+			"Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
+			html_title="Deleting %s's credit from %s" % (nick.name, production.title))
 
 
 @login_required

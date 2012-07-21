@@ -34,7 +34,7 @@ def show(request, scener_id, edit_mode=False):
 		'scener': scener,
 		'external_links': external_links,
 		'productions': scener.productions().order_by('-release_date_date', '-title'),
-		'credits': scener.credits().order_by('-production__release_date_date', '-production__title'),
+		'credits': scener.credits().order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
 		'memberships': scener.group_memberships.all().select_related('group').order_by('-is_current', 'group__name'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,

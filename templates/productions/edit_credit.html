@@ -1,20 +1,15 @@
 <h2>Editing credit for {{ production.title }}:</h2>
 
-<form action="{% url production_edit_credit production.id credit.id %}" method="post" class="entry_form">
+<form action="{% url production_edit_credit production.id nick.id %}" method="post" class="entry_form">
 	{% csrf_token %}
-	
-	{% for field in form.visible_fields %}
-		{% include "shared/form_field.html" %}
-	{% endfor %}
-	{% for field in form.hidden_fields %}
-		{{ field }}
-	{% endfor %}
-	
+
+	{% include "productions/credit_form.html" %}
+
 	<div class="field">
 		<input type="submit" />
 	</div>
 </form>
 
 <p>
-	<a href="{% url production_delete_credit production.id credit.id %}" class="open_in_lightbox">Delete credit</a>
+	<a href="{% url production_delete_credit production.id nick.id %}" class="open_in_lightbox">Delete credit</a>
 </p>

@@ -4,26 +4,47 @@
 	<col width="50%" />
 	<col width="10%" />
 	<col width="40%" />
-	{% for credit in credits %}
-		<tr>
-			<td>
-				<a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
-				{% if credit.role %}
-					- {{ credit.role }}
-				{% endif %}
-				{% if credit.nick.name != releaser.name %}
-					<i>(as {{ credit.nick.name }})</i>
-				{% endif %}
-			</td>
-			<td>{{ credit.production.release_date.short_format }}</td>
-			<td>{% byline credit.production %}</td>
-			{% if editing %}
+	{% regroup credits by production as credits_by_production %}
+
+	{% for production_with_credits in credits_by_production %}
+		{% comment %}
+			production_with_credits is a structure of
+				{'grouper': production, 'list': credits}
+			Need to regroup this credits list further by nick, so that a production with
+			multiple credits to the same scener under different nicks appears multiple times
+			in the list
+		{% endcomment %}
+		{% regroup production_with_credits.list by nick as production_credits_by_nick %}
+
+		{% for nick_with_credits in production_credits_by_nick %}
+			{% comment %}
+				nick_with_credits is a structure of
+					{'grouper': nick, 'list': credits}
+			{% endcomment %}
+
+			<tr>
 				<td>
-					<a href="{% url releaser_edit_credit releaser.id credit.id %}" class="open_in_lightbox">
-						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-					</a>
+					<a href="{{ production_with_credits.grouper.get_absolute_url }}">{{ production_with_credits.grouper.title }}</a>
+					-
+					{% for credit in nick_with_credits.list %}
+						{{ credit.description }}{% if not forloop.last %},{% endif %}
+					{% endfor %}
+					{% if nick_with_credits.grouper.name != releaser.name %}
+						<i>(as {{ nick_with_credits.grouper.name }})</i>
+					{% endif %}
 				</td>
-			{% endif %}
-		</tr>
+				<td>{{ production_with_credits.grouper.release_date.short_format }}</td>
+				<td>{% byline production_with_credits.grouper %}</td>
+
+				{% if editing %}
+					<td>
+						<a href="{% url releaser_edit_credit nick_with_credits.grouper.releaser_id nick_with_credits.grouper.id production_with_credits.grouper.id %}" class="open_in_lightbox">
+							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+						</a>
+					</td>
+				{% endif %}
+			</tr>
+		{% endfor %}
+
 	{% endfor %}
 </table>

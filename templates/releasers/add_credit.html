@@ -9,7 +9,9 @@
 	{% for field in form.hidden_fields %}
 		{{ field }}
 	{% endfor %}
-	
+
+	{% include "shared/credit_formset.html" %}
+
 	<div class="field">
 		<input type="submit" />
 	</div>

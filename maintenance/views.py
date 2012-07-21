@@ -167,28 +167,6 @@ def ambiguous_groups_with_no_differentiators(request):
 		'report_name': report_name,
 	})
 
-def non_standard_credits(request):
-	credits = Credit.objects.raw(r'''
-		SELECT demoscene_credit.id, demoscene_credit.production_id, demoscene_production.title, demoscene_nick.name, role
-		FROM demoscene_credit
-		INNER JOIN demoscene_production ON (demoscene_credit.production_id = demoscene_production.id)
-		INNER JOIN demoscene_nick ON (demoscene_credit.nick_id = demoscene_nick.id)
-		WHERE role !~* '^(Code|Music|Graphics|Other)( \\([^\\)]+\\))?(, (Code|Music|Graphics|Other)( \\([^\\)]+\\))?)*$'
-		ORDER BY role, title
-	''')
-	return render(request, 'maintenance/non_standard_credits.html', {
-		'credits': credits,
-	})
-
-def replace_credit_role(request):
-	if not request.user.is_staff:
-		return redirect('home')
-	old_role = request.POST['old_role']
-	new_role = request.POST['new_role']
-	cursor = connection.cursor()
-	cursor.execute("UPDATE demoscene_credit SET role = %s WHERE role = %s", [new_role, old_role])
-	transaction.commit_unless_managed()
-	return redirect('maintenance_non_standard_credits')
 
 def prods_with_release_date_outside_party(request):
 	report_name = 'prods_with_release_date_outside_party'

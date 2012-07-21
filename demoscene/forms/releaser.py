@@ -257,9 +257,9 @@ class GroupSubgroupForm(forms.Form):
 				user=user)
 
 
-class ReleaserAddCreditForm(forms.Form):
+class ReleaserCreditForm(forms.Form):
 	def __init__(self, releaser, *args, **kwargs):
-		super(ReleaserAddCreditForm, self).__init__(*args, **kwargs)
+		super(ReleaserCreditForm, self).__init__(*args, **kwargs)
 		self.fields['nick'] = forms.ModelChoiceField(
 			label='Credited as',
 			queryset=releaser.nicks.order_by('name'),
@@ -267,29 +267,6 @@ class ReleaserAddCreditForm(forms.Form):
 		)
 		self.fields['production_name'] = forms.CharField(label='On production', widget=forms.TextInput(attrs={'class': 'production_autocomplete'}))
 		self.fields['production_id'] = forms.CharField(widget=forms.HiddenInput)
-		self.fields['role'] = forms.CharField()
-
-	def log_creation(self, user, production, releaser):
-		Edit.objects.create(action_type='add_credit', focus=production,
-			focus2=releaser,
-			description=(u"Added credit for %s (%s) on %s" % (self.cleaned_data['nick'], self.cleaned_data['role'], production)),
-			user=user)
-
-	def log_edit(self, user, production, releaser):
-		descriptions = []
-		changed_fields = self.changed_data
-		if 'production_id' in changed_fields:
-			descriptions.append(u"release to '%s'" % production)
-		if 'nick' in changed_fields:
-			descriptions.append(u"nick to %s" % self.cleaned_data['nick'])
-		if 'role' in changed_fields:
-			descriptions.append(u"role to '%s'" % self.cleaned_data['role'])
-		if descriptions:
-			description = u"Set %s" % (u", ".join(descriptions))
-			Edit.objects.create(action_type='edit_credit', focus=production,
-				focus2=releaser,
-				description=(u"Updated %s's credit on %s: %s" % (self.cleaned_data['nick'], production, description)),
-				user=user)
 
 
 class ReleaserExternalLinkForm(ExternalLinkForm):

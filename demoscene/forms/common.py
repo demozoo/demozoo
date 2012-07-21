@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from demoscene.models import Edit
+from demoscene.models import Edit, Credit
+from django.forms.models import modelformset_factory
 
 
 class ExternalLinkForm(forms.ModelForm):
@@ -47,3 +48,18 @@ class BaseExternalLinkFormSet(BaseInlineFormSet):
 		if descriptions:
 			Edit.objects.create(action_type=action_type, focus=self.instance,
 				description=(u"; ".join(descriptions)), user=user)
+
+
+class CreditForm(forms.ModelForm):
+	category = forms.ChoiceField(
+		choices=[('', '--------')] + Credit.CATEGORIES,
+		required=True,
+		error_messages={'required': 'Category must be specified'})
+
+	class Meta:
+		model = Credit
+		fields = ('category', 'role')
+
+
+CreditFormSet = modelformset_factory(Credit,
+	fields=('category', 'role'), can_delete=True, form=CreditForm)

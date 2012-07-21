@@ -30,7 +30,7 @@ def show(request, group_id, edit_mode=False):
 		'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').order_by('-is_current', 'member__name'),
 		'productions': group.productions().order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().order_by('-release_date_date', '-title'),
-		'credits': group.credits().order_by('-production__release_date_date', '-production__title'),
+		'credits': group.credits().order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
 		'external_links': group.external_links.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,

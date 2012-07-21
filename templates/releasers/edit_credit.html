@@ -1,6 +1,6 @@
-<h2>Editing credit for {{ credit.production.title }}:</h2>
+<h2>Editing credit for {{ production.title }}:</h2>
 
-<form action="{% url releaser_edit_credit releaser.id credit.id %}" method="post" class="entry_form">
+<form action="{% url releaser_edit_credit releaser.id nick.id production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}
@@ -9,12 +9,14 @@
 	{% for field in form.hidden_fields %}
 		{{ field }}
 	{% endfor %}
-	
+
+	{% include "shared/credit_formset.html" %}
+
 	<div class="field">
 		<input type="submit" />
 	</div>
 </form>
 
 <p>
-	<a href="{% url releaser_delete_credit releaser.id credit.id %}" class="open_in_lightbox">Delete credit</a>
+	<a href="{% url releaser_delete_credit releaser.id nick.id production.id %}" class="open_in_lightbox">Delete credit</a>
 </p>
