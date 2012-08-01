@@ -547,10 +547,15 @@ def empty_releasers(request):
 		FROM demoscene_releaser
 		LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
 		LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
+		LEFT JOIN demoscene_nick AS differentiated_nick ON (
+			demoscene_releaser.id = differentiated_nick.releaser_id
+			AND differentiated_nick.differentiator <> ''
+		)
 		WHERE
 		demoscene_releaser.notes = ''
 		AND groups.group_id IS NULL
 		AND members.member_id IS NULL
+		AND differentiated_nick.id IS NULL
 		AND (
 			SELECT COUNT (demoscene_nick.id)
 			FROM demoscene_nick
