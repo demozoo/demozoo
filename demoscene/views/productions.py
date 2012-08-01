@@ -520,10 +520,13 @@ def add_tag(request, production_id):
 def remove_tag(request, production_id, tag_id):
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		tags = production.tags.filter(id=tag_id)
-		production.tags.remove(*tags)
-		Edit.objects.create(action_type='production_remove_tag', focus=production,
-			description=u"Removed tag '%s'" % tag_name, user=request.user)
+		try:
+			tag = production.tags.get(id=tag_id)
+			production.tags.remove(tag)
+			Edit.objects.create(action_type='production_remove_tag', focus=production,
+				description=u"Removed tag '%s'" % tag.name, user=request.user)
+		except Tag.DoesNotExist:
+			pass
 	return HttpResponseRedirect(production.get_absolute_edit_url())
 
 
