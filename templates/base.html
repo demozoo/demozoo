@@ -1,14 +1,16 @@
-{% if not request.is_ajax %}<!DOCTYPE HTML>
+{% if not request.is_ajax %}<!DOCTYPE html>
 {% load compress %}
 {% load menu %}
-<!--[if lt IE 9]><html class="ie"><![endif]-->
-<!--[if gte IE 9]><!--><html><!--<![endif]-->
-	<head>
-		<meta charset="utf-8"/>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1"/>
-		
-		<title>{% block html_title %}Demozoo{% endblock %}</title>
+<!--[if lt IE 7]><html class="no-js ie6 legacy" lang="en"><![endif]-->
+<!--[if IE 7]><html class="no-js ie7 legacy" lang="en"><![endif]-->
+<!--[if IE 8]><html class="no-js ie8 legacy" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
+    <head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{% block html_title %}Demozoo{% endblock %}</title>
 		{% compress css %}
 			<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
 			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
@@ -18,11 +20,8 @@
 			{% block extra_css %}{% endblock %}
 		{% endcompress %}
 		
-		<!--[if lt IE 9]>
-			<script src="/static/js/html5.js"></script>
-		<![endif]-->
-		
 		{% compress js %}
+            <script src="/static/js/lib/modernizr.js"></script>
 			<script src="/static/js/jquery-1.7.1.js"></script>
 			{# TODO: consider folding things like datepicker into widget resources, and only loading them on edit pages, to reduce up-front load times for people who rarely edit #}
 			<script src="/static/js/jquery.color.js"></script>
