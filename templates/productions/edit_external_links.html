@@ -2,8 +2,6 @@
 
 <h2>Editing external links for {{ production.title }}:</h2>
 
-{% if formset.errors %}<p>{{ formset.errors }}</p>{% endif %}
-
 <form action="{% url production_edit_external_links production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	<div class="field">

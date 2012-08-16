@@ -272,7 +272,7 @@ class ReleaserCreditForm(forms.Form):
 class ReleaserExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ReleaserExternalLink
-		fields = []
+		exclude = ['parameter', 'link_class']
 
 ReleaserExternalLinkFormSet = inlineformset_factory(Releaser, ReleaserExternalLink,
 	form=ReleaserExternalLinkForm, formset=BaseExternalLinkFormSet)
