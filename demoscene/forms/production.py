@@ -243,7 +243,7 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ProductionLink
-		fields = []
+		exclude = ['parameter', 'link_class']
 
 ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)
