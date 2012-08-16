@@ -193,7 +193,7 @@ class CompetitionForm(forms.ModelForm):
 class PartyExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = PartyExternalLink
-		exclude = ['parameter', 'link_class']
+		exclude = ['parameter', 'link_class', 'party']
 
 PartyExternalLinkFormSet = inlineformset_factory(Party, PartyExternalLink,
 	form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet)
