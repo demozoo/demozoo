@@ -2,7 +2,7 @@ from django.db import models
 
 class BlobField(models.Field):
 	description = "Blob"
-	def db_type(self):
+	def db_type(self, connection):
 		return 'bytea' # only valid for postgres!
 
 from south.modelsinspector import add_introspection_rules

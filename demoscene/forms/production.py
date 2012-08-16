@@ -234,7 +234,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 
 	class Meta:
 		model = ProductionLink
-		fields = ['url']
+		fields = []
 
 ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=1)
@@ -243,7 +243,7 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ProductionLink
-		fields = ['url']
+		fields = []
 
 ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)

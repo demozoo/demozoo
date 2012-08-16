@@ -17,7 +17,9 @@ class ExternalLinkForm(forms.ModelForm):
 		return instance
 
 	class Meta:
-		fields = ['url']
+		# no actual fields from the model are saved (only 'url', which is a property masquerading
+		# as a model and has to be handled as a special case above)
+		fields = []
 
 
 class BaseExternalLinkFormSet(BaseInlineFormSet):

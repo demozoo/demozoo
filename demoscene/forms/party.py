@@ -193,7 +193,7 @@ class CompetitionForm(forms.ModelForm):
 class PartyExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = PartyExternalLink
-		fields = ['url']
+		fields = []
 
 PartyExternalLinkFormSet = inlineformset_factory(Party, PartyExternalLink,
 	form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet)
