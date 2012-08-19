@@ -139,6 +139,9 @@ INTERNAL_IPS = ('127.0.0.1',)
 # COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATICROOT
+COMPRESS_PRECOMPILERS = (
+	('text/less', 'lessc {infile} {outfile}'),
+)
 
 # Celery settings
 import djcelery
