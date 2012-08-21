@@ -42,6 +42,33 @@ class Command(NoArgsCommand):
 			nick_variant = NickVariant(nick=nick, name=nick.name)
 			nick_variant.save()
 
+		print "Removing releaser abbreviations that are the same as the actual name"
+		cursor = connection.cursor()
+		cursor.execute('''
+			UPDATE demoscene_nick
+			SET abbreviation = ''
+			WHERE LOWER(name) = LOWER(abbreviation)
+		''')
+
+		print "Looking for Nicks without their abbreviation as a NickVariant"
+
+		nicks = Nick.objects.raw('''
+			SELECT demoscene_nick.*
+			FROM
+				demoscene_nick
+				LEFT JOIN demoscene_nickvariant ON (
+					demoscene_nick.id = demoscene_nickvariant.nick_id
+					AND demoscene_nick.abbreviation = demoscene_nickvariant.name
+				)
+			WHERE
+				demoscene_nick.abbreviation <> ''
+				AND demoscene_nickvariant.id IS NULL
+		''')
+		for nick in nicks:
+			print "creating nick_variant for %s" % nick.abbreviation
+			nick_variant = NickVariant(nick=nick, name=nick.abbreviation)
+			nick_variant.save()
+
 		print "Truncating fuzzy dates to first of the month / first of January"
 		cursor = connection.cursor()
 		cursor.execute('''
@@ -54,6 +81,14 @@ class Command(NoArgsCommand):
 			SET release_date_date = date_trunc('year', release_date_date)
 			WHERE release_date_precision = 'y'
 		''')
+
+		print "Removing abbreviations on scener nicks"
+		nicks = Nick.objects.exclude(abbreviation='').filter(releaser__is_group=False)
+		for nick in nicks:
+			print "Removing abbreviation %s of %s" % (nick.abbreviation, nick.name)
+			nick.abbreviation = ''
+			nick.save()
+
 		transaction.commit_unless_managed()
 
 		print "done."
