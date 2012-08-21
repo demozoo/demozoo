@@ -246,6 +246,12 @@ def convert_to_scener(request, group_id):
 			group.is_group = False
 			group.updated_at = datetime.datetime.now()
 			group.save()
+			for nick in group.nicks.all():
+				# sceners do not have specific 'abbreviation' fields on their nicks
+				if nick.abbreviation:
+					nick.abbreviation = ''
+					nick.save()
+
 			Edit.objects.create(action_type='convert_to_scener', focus=group,
 				description=(u"Converted %s from a group to a scener" % group), user=request.user)
 		return HttpResponseRedirect(group.get_absolute_edit_url())
