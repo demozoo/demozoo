@@ -170,6 +170,18 @@ class CsdbRelease(BaseUrl):
 	html_title_format = "%s on CSDb"
 
 
+class CsdbMusic(BaseUrl):
+	canonical_format = "http://noname.c64.org/csdb/sid/?id=%s"
+	tests = [
+		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
+		querystring_match(r'https?://noname\.c64\.org/csdb/sid/\?', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/sid/\?', 'id', re.I),
+	]
+	html_link_class = "csdb"
+	html_link_text = "CSDb"
+	html_title_format = "%s on CSDb"
+
+
 class NectarineArtist(BaseUrl):
 	canonical_format = "http://www.scenemusic.net/demovibes/artist/%s/"
 	tests = [
@@ -816,7 +828,7 @@ def grok_group_link(urlstring):
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
-		ScenesatTrack, ModlandFile, SoundcloudTrack,
+		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,

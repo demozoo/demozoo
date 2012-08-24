@@ -1203,6 +1203,7 @@ class ProductionLink(ExternalLink):
 		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
 		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
 		groklinks.ScenesatTrack, groklinks.ModlandFile, groklinks.SoundcloudTrack,
+		groklinks.CsdbMusic,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile,
 		groklinks.BaseUrl,
@@ -1215,7 +1216,7 @@ class ProductionLink(ExternalLink):
 	# link classes which are always considered to be external (supporting) links, even when entered as
 	# download links
 	always_external_link_classes = [
-		'PouetProduction', 'CsdbRelease', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
+		'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack'
 	]
 
