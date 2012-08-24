@@ -137,10 +137,37 @@ class BylineSearch():
 		parts = self.search_term.split('/')
 		authors_string = parts[0]  # everything before first slash is an author
 		affiliations_string = '^'.join(parts[1:])  # everything after first slash is an affiliation
-		author_names = re.split(r"[\,\+\^\&]", authors_string)
+
+		# split on separators that have a trailing (and optionally leading) space
+		author_names = re.split(r"\s*[\,\+\^\&]\s+", authors_string)
 		author_names = [name.lstrip() for name in author_names if name.strip()]
-		affiliation_names = re.split(r"[\,\+\^\&]", affiliations_string)
+		affiliation_names = re.split(r"\s*[\,\+\^\&]\s+", affiliations_string)
 		affiliation_names = [name.lstrip() for name in affiliation_names if name.strip()]
+
+		# Now, for any item in author_names or affiliation_names with an internal separator character,
+		# perform a pre-check for that name. If not present, split it and move on.
+		vetted_author_names = []
+		for name in author_names:
+			if re.search(r"[\,\+\^\&]", name) and not NickVariant.objects.filter(name__iexact=name.strip()).exists():
+				for subname in re.split(r"[\,\+\^\&]", name):
+					subname = subname.lstrip()
+					if subname:
+						vetted_author_names.append(subname)
+			else:
+				vetted_author_names.append(name)
+
+		vetted_affiliation_names = []
+		for name in affiliation_names:
+			if re.search(r"[\,\+\^\&]", name) and not NickVariant.objects.filter(name__iexact=name.strip(), nick__releaser__is_group=True).exists():
+				for subname in re.split(r"[\,\+\^\&]", name):
+					subname = subname.lstrip()
+					if subname:
+						vetted_affiliation_names.append(subname)
+			else:
+				vetted_affiliation_names.append(name)
+
+		author_names = vetted_author_names
+		affiliation_names = vetted_affiliation_names
 
 		# attempt to autocomplete the last element of the name,
 		# if autocomplete flag is True and search term has no trailing ,+^/& separator

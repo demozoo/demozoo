@@ -447,23 +447,37 @@ class NickVariant(models.Model):
 
 	@staticmethod
 	def autocomplete(initial_query, significant_whitespace=True, **kwargs):
+		# look for possible autocompletions; choose the top-ranked one and use that as the query
 		if significant_whitespace:
 			# treat trailing whitespace as a required part of the name
 			# (e.g. "Andromeda " will only match "Andromeda Software Development", not "Andromeda"
-			query = initial_query
+			autocompletions = NickVariant.autocompletion_search(initial_query, limit=1, **kwargs)
+			try:
+				result = autocompletions[0].name
+				# return just the suffix to add; the caller will append this to the original query,
+				# thus preserving capitalisation in exactly the way that iTunes doesn't.
+				# (Ha, I rule.)
+				return result[len(initial_query):]
+			except IndexError:  # no autocompletions available
+				return ''
 		else:
-			query = initial_query.strip()
+			# match names which are an EXACT match for the stripped name, or a prefix of the non-stripped
+			# name. e.g.: "Andromeda " will match both "Andromeda Software Development" and "Andromeda",
+			# but "Far " will only match "Far", not "Farbrausch"
 
-		# look for possible autocompletions; choose the top-ranked one and use that as the query
-		autocompletions = NickVariant.autocompletion_search(query, limit=1, **kwargs)
-		try:
-			result = autocompletions[0].name
-			# return just the suffix to add; the caller will append this to the original query,
-			# thus preserving capitalisation in exactly the way that iTunes doesn't.
-			# (Ha, I rule.)
-			return result[len(initial_query):]
-		except IndexError:  # no autocompletions available
-			return ''
+			# look for exact matches first
+			autocompletions = NickVariant.autocompletion_search(initial_query.strip(), exact=True, limit=1, **kwargs)
+			try:
+				result = autocompletions[0].name
+				return result[len(initial_query):]
+			except IndexError:
+				# look for prefixes instead
+				autocompletions = NickVariant.autocompletion_search(initial_query, limit=1, **kwargs)
+				try:
+					result = autocompletions[0].name
+					return result[len(initial_query):]
+				except IndexError:  # no autocompletions available
+					return ''
 
 	@staticmethod
 	def autocompletion_search(query, **kwargs):
