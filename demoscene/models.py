@@ -316,6 +316,9 @@ class Releaser(models.Model):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
+	class Meta:
+		ordering = ['name']
+
 
 class Nick(models.Model):
 	releaser = models.ForeignKey(Releaser, related_name='nicks')
@@ -436,6 +439,7 @@ class Nick(models.Model):
 
 	class Meta:
 		unique_together = ("releaser", "name")
+		ordering = ['name']
 
 
 class NickVariant(models.Model):
@@ -567,6 +571,9 @@ class NickVariant(models.Model):
 			nick_variants = NickVariant.objects.none()
 
 		return nick_variants
+
+	class Meta:
+		ordering = ['name']
 
 
 class Membership(models.Model):
@@ -769,6 +776,9 @@ class Production(models.Model):
 	def tags_string(self):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
+	class Meta:
+		ordering = ['title']
+
 
 # encapsulates list of authors and affiliations
 class Byline(StrAndUnicode):
@@ -840,10 +850,20 @@ class Credit(models.Model):
 			return self.category
 
 	def __unicode__(self):
-		return "%s - %s (%s)" % (
-			self.production_id and self.production.title,
-			self.nick_id and self.nick.name,
-			self.role)
+		if self.role:
+			return "%s: %s - %s (%s)" % (
+				self.production_id and self.production.title,
+				self.nick_id and self.nick.name,
+				self.category,
+				self.role)
+		else:
+			return "%s: %s - %s" % (
+				self.production_id and self.production.title,
+				self.nick_id and self.nick.name,
+				self.category)
+
+	class Meta:
+		ordering = ['production__title']
 
 
 class Screenshot(ModelWithThumbnails):
@@ -851,20 +871,20 @@ class Screenshot(ModelWithThumbnails):
 	original = models.ImageField(
 		upload_to=(lambda i, f: Screenshot.random_path('screenshots/original', f)),
 		verbose_name='image file', width_field='original_width', height_field='original_height')
-	original_width = models.IntegerField()
-	original_height = models.IntegerField()
+	original_width = models.IntegerField(editable=False)
+	original_height = models.IntegerField(editable=False)
 
 	thumbnail = models.ImageField(
 		upload_to=(lambda i, f: Screenshot.random_path('screenshots/thumb', f)),
 		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
-	thumbnail_width = models.IntegerField()
-	thumbnail_height = models.IntegerField()
+	thumbnail_width = models.IntegerField(editable=False)
+	thumbnail_height = models.IntegerField(editable=False)
 
 	standard = models.ImageField(
 		upload_to=(lambda i, f: Screenshot.random_path('screenshots/standard', f)),
 		editable=False, width_field='standard_width', height_field='standard_height')
-	standard_width = models.IntegerField()
-	standard_height = models.IntegerField()
+	standard_width = models.IntegerField(editable=False)
+	standard_height = models.IntegerField(editable=False)
 
 	def save(self, *args, **kwargs):
 		if not self.id:
@@ -913,6 +933,7 @@ class PartySeries(models.Model):
 
 	class Meta:
 		verbose_name_plural = "Party series"
+		ordering = ("name",)
 
 
 class PartySeriesDemozoo0Reference(models.Model):
@@ -1027,7 +1048,7 @@ class Party(models.Model):
 
 	class Meta:
 		verbose_name_plural = "Parties"
-		ordering = ("start_date_date",)
+		ordering = ("name",)
 
 
 class Competition(models.Model):
@@ -1065,6 +1086,9 @@ class Competition(models.Model):
 	@models.permalink
 	def get_absolute_url(self):
 		return ('demoscene.views.competitions.show', [str(self.id)])
+
+	class Meta:
+		ordering = ("party__name", "name")
 
 
 class CompetitionPlacing(models.Model):
@@ -1125,6 +1149,12 @@ class AccountProfile(models.Model):
 	sticky_edit_mode = models.BooleanField(help_text="Stays in edit mode when browsing around, until you explicitly hit 'done'")
 	edit_mode_active = models.BooleanField(editable=False)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+
+	def __unicode__(self):
+		try:
+			return self.user.__unicode__()
+		except User.DoesNotExist:
+			return "(AccountProfile)"
 
 
 class SoundtrackLink(models.Model):
