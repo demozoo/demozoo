@@ -19,7 +19,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 
-# Create your models here.
+DATE_PRECISION_CHOICES = [
+	('d', 'Day'),
+	('m', 'Month'),
+	('y', 'Year'),
+]
+
+
 class Platform(ModelWithThumbnails):
 	name = models.CharField(max_length=255)
 	intro_text = models.TextField(blank=True)
@@ -601,7 +607,7 @@ class Production(models.Model):
 	author_affiliation_nicks = models.ManyToManyField('Nick', related_name='member_productions', blank=True, null=True)
 	notes = models.TextField(blank=True)
 	release_date_date = models.DateField(null=True, blank=True)
-	release_date_precision = models.CharField(max_length=1, blank=True)
+	release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
 
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 	scene_org_id = models.IntegerField(null=True, blank=True, verbose_name='scene.org ID')
@@ -946,9 +952,9 @@ class Party(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 	tagline = models.CharField(max_length=255, blank=True)
 	start_date_date = models.DateField()
-	start_date_precision = models.CharField(max_length=1)
+	start_date_precision = models.CharField(max_length=1, choices=DATE_PRECISION_CHOICES)
 	end_date_date = models.DateField()
-	end_date_precision = models.CharField(max_length=1)
+	end_date_precision = models.CharField(max_length=1, choices=DATE_PRECISION_CHOICES)
 
 	location = models.CharField(max_length=255, blank=True)
 	country_code = models.CharField(max_length=5, blank=True)
@@ -1055,9 +1061,9 @@ class Competition(models.Model):
 	party = models.ForeignKey(Party, related_name='competitions')
 	name = models.CharField(max_length=255)
 	shown_date_date = models.DateField(null=True, blank=True)
-	shown_date_precision = models.CharField(max_length=1, blank=True)
-	platform = models.ForeignKey(Platform, null=True)
-	production_type = models.ForeignKey(ProductionType, null=True)
+	shown_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
+	platform = models.ForeignKey(Platform, blank=True, null=True)
+	production_type = models.ForeignKey(ProductionType, blank=True, null=True)
 
 	def results(self):
 		return self.placings.order_by('position')
@@ -1155,6 +1161,9 @@ class AccountProfile(models.Model):
 			return self.user.__unicode__()
 		except User.DoesNotExist:
 			return "(AccountProfile)"
+
+	class Meta:
+		ordering = ['user__username']
 
 
 class SoundtrackLink(models.Model):
