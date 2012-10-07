@@ -89,6 +89,28 @@ class Command(NoArgsCommand):
 			nick.abbreviation = ''
 			nick.save()
 
+		print "Stripping leading / trailing spaces from names and titles"
+		cursor.execute('''
+			UPDATE demoscene_production
+			SET title = REGEXP_REPLACE(title, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE title LIKE ' %%' OR title LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_releaser
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_party
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_partyseries
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+
 		transaction.commit_unless_managed()
 
 		print "done."
