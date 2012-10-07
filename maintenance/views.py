@@ -244,12 +244,38 @@ def same_named_prods_by_same_releaser(request):
 		WHERE
 			demoscene_production.title <> '?'
 			AND demoscene_production.id <> other_production.id AND LOWER(demoscene_production.title) = LOWER(other_production.title)
-			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
 		ORDER BY lower_title
 	''', [report_name])
 	
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Identically-named productions by the same releaser',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+def same_named_prods_without_special_chars(request):
+	report_name = 'same_named_prods_without_special_chars'
+	
+	productions = Production.objects.raw('''
+		SELECT DISTINCT demoscene_production.*, LOWER(demoscene_production.title) AS lower_title
+		FROM demoscene_production
+		INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
+		INNER JOIN demoscene_nick ON (demoscene_production_author_nicks.nick_id = demoscene_nick.id)
+		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
+		INNER JOIN demoscene_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
+		INNER JOIN demoscene_production AS other_production ON (other_authorship.production_id = other_production.id)
+		WHERE
+			demoscene_production.title <> '?'
+			AND demoscene_production.id <> other_production.id
+			AND LOWER(REGEXP_REPLACE(demoscene_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
+			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+		ORDER BY lower_title
+	''')
+
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Identically-named productions by the same releaser, ignoring special chars',
 		'productions': productions,
 		'mark_excludable': True,
 		'report_name': report_name,
