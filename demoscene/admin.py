@@ -55,9 +55,13 @@ admin.site.register(ProductionType, ProductionTypeAdmin)
 admin.site.register(Platform)
 admin.site.register(Production,
 	inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
-	raw_id_fields=['author_nicks', 'author_affiliation_nicks'])
-admin.site.register(Releaser, inlines=[NickInline, MemberOfInline, MembersInline])
-admin.site.register(Nick, inlines=[NickVariantInline], raw_id_fields=['releaser'])
+	raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
+	search_fields=['title'])
+admin.site.register(Releaser,
+	inlines=[NickInline, MemberOfInline, MembersInline],
+	search_fields=['nicks__variants__name'])
+admin.site.register(Nick, inlines=[NickVariantInline], raw_id_fields=['releaser'],
+	search_fields=['variants__name'])
 admin.site.register(PartySeries)
 admin.site.register(Party)
 admin.site.register(Competition, inlines=[CompetitionPlacingInline], list_select_related=True)
