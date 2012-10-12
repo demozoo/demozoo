@@ -101,6 +101,16 @@ class Command(NoArgsCommand):
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
 		cursor.execute('''
+			UPDATE demoscene_nick
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_nickvariant
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
 			UPDATE demoscene_party
 			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
 			WHERE name LIKE ' %%' OR name LIKE '%% '
