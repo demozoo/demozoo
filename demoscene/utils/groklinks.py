@@ -183,9 +183,19 @@ class CsdbMusic(BaseUrl):
 
 
 class NectarineArtist(BaseUrl):
-	canonical_format = "http://www.scenemusic.net/demovibes/artist/%s/"
+	canonical_format = "https://www.scenemusic.net/demovibes/artist/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/artist/(\d+)', re.I),
+	]
+	html_link_class = "nectarine"
+	html_link_text = "Nectarine"
+	html_title_format = "%s on Nectarine Demoscene Radio"
+
+
+class NectarineSong(BaseUrl):
+	canonical_format = "https://www.scenemusic.net/demovibes/song/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/song/(\d+)', re.I),
 	]
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
@@ -828,7 +838,7 @@ def grok_group_link(urlstring):
 def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
-		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic,
+		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,

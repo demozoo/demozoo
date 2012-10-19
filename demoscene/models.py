@@ -1256,7 +1256,7 @@ class ProductionLink(ExternalLink):
 		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
 		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
 		groklinks.ScenesatTrack, groklinks.ModlandFile, groklinks.SoundcloudTrack,
-		groklinks.CsdbMusic,
+		groklinks.CsdbMusic, groklinks.NectarineSong,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile,
 		groklinks.BaseUrl,
