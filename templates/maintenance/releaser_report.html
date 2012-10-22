@@ -1,0 +1,20 @@
+{% extends "maintenance/base.html" %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}:</h2>
+	<div id="main_column">
+		<div class="panel report" data-report-name="{{ report_name }}">
+			<ul>
+				{% for releaser in releasers %}
+					<li class="{% if releaser.is_group %}group{% else %}scener{% endif %} excludable" data-record-id="{{ releaser.id }}">
+						<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

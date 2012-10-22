@@ -1,44 +1,121 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
+{% load safe_markdown %}
+
+{% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>{{ party.name }}</h2>
-	{{ party.start_date }} - {{ party.end_date }}
-	<a href="{% url edit_party party.id %}">edit</a>
-	
-	{% with party.party_series.parties_by_date as parties_in_series %}
-		{% if parties_in_series.count > 1 %}
-			<div>
-				Other {{ party.party_series.name }} parties:
-				<ul class="parties_in_series">
-					{% for party_in_series in parties_in_series %}
-						{% if party_in_series == party %}
-							<li class="current">{{ party_in_series.name }}</li>
-						{% else %}
-							<li>
-								<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.name }}</a>
-							</li>
-						{% endif %}
+	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Party</li>
+			<li><a href="{% url party_history party.id %}">History</a></li>
+		</ul>
+		<div class="party_details">
+			<h2>
+				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
+				<a href="{% url edit_party party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+			</h2>
+			{% date_range party.start_date party.end_date %}
+			
+			{% if party.party_series.website %}
+					<p><a href="{{ party.website }}">{{ party.website }}</a></p>
+			{% else %}
+				{% if party.party_series.website %}
+					<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
+				{% endif %}
+			{% endif %}
+			
+			<p>
+				Location:
+				{% if party.location %}
+					{{ party.location }}
+					{% if party.country_code %}
+						<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+					{% endif %}
+				{% else %}
+					<em>Not set</em>
+				{% endif %}
+			</p>
+			
+			{% if results_files %}
+				<h3>Results file:</h3>
+				<ul>
+					{% for file in results_files %}
+						<li><a href="{% url party_results_file party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
 					{% endfor %}
 				</ul>
+			{% endif %}
+			
+			<div class="external_links">
+				<h3>External links:</h3>
+				<ul>
+					{% for link in party.external_links.all %}
+						<li>{{ link.html_link|safe }}</li>
+					{% endfor %}
+					<li><a href="{% url party_edit_external_links party.id %}" class="edit open_in_lightbox">Edit</a></li>
+				</ul>
 			</div>
-		{% endif %}
-	{% endwith %}
+			
+			{% with party.party_series.parties.all as parties_in_series %}
+				{% if parties_in_series.count > 1 %}
+					<div>
+						Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:
+						<ul class="parties_in_series">
+							{% for party_in_series in parties_in_series %}
+								{% if party_in_series == party %}
+									<li class="current">{{ party_in_series.suffix }}</li>
+								{% else %}
+									<li>
+										<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+			{% endwith %}
+		</div>
+	</div>
 	
-	{% for compo in party.competitions.all %}
-		<h3>{{ compo.name }}</h3>
-		{% with compo.results as results %}
-			{% if results %}
+	{% if party.notes or request.user.is_staff %}
+		<div class="notes">
+			{% if request.user.is_staff %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url party_edit_notes party.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			{{ party.notes|safe_markdown }}
+			<div style="clear: both;"></div>
+		</div>
+	{% endif %}
+	
+	{% for compo, placings in competitions %}
+		<div class="competition">
+			<a id="competition_{{ compo.id }}"></a>
+			<h3>
+				<a href="{{ compo.get_absolute_url }}">{{ compo.name }}</a>
+				<a href="{% url party_edit_competition party.id compo.id %}">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
+				</a>
+			</h3>
+			{% if placings %}
 				<table>
-					{% for result in results %}
+					{% for result, production, authors, affiliations in placings %}
 						<tr>
 							<td>{{ result.ranking }}</td>
-							<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
-							<td>{# TODO: byline #}</td>
+							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
+							<td>{% if production.unparsed_byline %}{{ production.unparsed_byline }}{% else %}{% component_byline authors affiliations %}{% endif %}</td>
 							<td>{{ result.score }}</td>
 						</tr>
 					{% endfor %}
 				</table>
 			{% endif %}
-		{% endwith %}
+		</div>
 	{% endfor %}
+	
+	<ul class="actions">
+		<li>
+			<a class="add open_in_lightbox" href="{% url party_add_competition party.id %}">Add competition</a>
+		</li>
+	</ul>
 {% endblock %}

@@ -2,14 +2,17 @@
 	<div class="panel">
 		<h3>Credits</h3>
 		<ul>
-			{% for credit in credits %}
+			{% regroup credits by nick as nick_list %}
+			{% for nick_credits in nick_list %}
 				<li>
-					<a href="{{ credit.nick.releaser.get_absolute_url }}">{{ credit.nick }}</a>
-					{% if credit.role %}
-						- {{ credit.role }}
-					{% endif %}
+					<a href="{{ nick_credits.grouper.releaser.get_absolute_url }}">{{ nick_credits.grouper }}</a>
+					-
+					{% for credit in nick_credits.list %}
+						{{ credit.description }}{% if not forloop.last %},{% endif %}
+					{% endfor %}
+
 					{% if editing %}
-						<a href="{% url production_edit_credit production.id credit.id %}" class="open_in_lightbox">
+						<a href="{% url production_edit_credit production.id nick_credits.grouper.id %}" class="open_in_lightbox">
 							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
 						</a>
 					{% endif %}

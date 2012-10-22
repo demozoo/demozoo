@@ -1,0 +1,21 @@
+{% extends "maintenance/base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}:</h2>
+	<div id="main_column">
+		<ul>
+			{% for releaser in releasers %}
+				<li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
+					<a href="/{% if releaser.is_group %}groups{% else %}sceners{% endif %}/{{ releaser.id }}/">{{ releaser.name }}</a>
+					is a member of <img src="/static/images/icons/group.png" /><a href="/groups/{{ releaser.group_1_id }}/">{{ releaser.group_1_name }}</a>
+					and <img src="/static/images/icons/group.png" /><a href="/groups/{{ releaser.group_2_id }}/">{{ releaser.group_2_name }}</a>
+				</li>
+			{% endfor %}
+		<ul>
+	</div>
+{% endblock %}

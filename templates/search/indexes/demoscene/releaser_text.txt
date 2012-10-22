@@ -1,8 +1,0 @@
-{% for nick in object.nicks.all %}
-	{% for variant in nick.variants.all %}
-		{{ variant.name }}
-	{% endfor %}
-{% endfor %}
-{{ object.first_name }} {{ object.surname }}
-{{ object.location }}
-{{ object.notes }}

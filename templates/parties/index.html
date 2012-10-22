@@ -1,26 +1,33 @@
 {% extends "base.html" %}
 
+{% block html_title %}Parties - Demozoo{% endblock %}
+
 {% block base_main %}
+	<ul class="actions">
+		<li><a href="{% url new_party %}" class="add open_in_lightbox">New party</a></li>
+	</ul>
+
 	<h2>Parties</h2>
 	
-	<ul class="actions">
-		<li><a href="{% url new_party %}">New party</a></li>
-	</ul>
+	<p>
+		<strong>By name</strong> | <a href="{% url parties_by_date %}">By date</a>
+	</p>
 	
-	<ul class="party_series_index">
-		{% for ps in party_series %}
-			<li>
-				<a href="{{ ps.get_absolute_url }}" class="party_series_link">{{ ps.name }}</a>
-				{% with ps.parties_by_date as parties %}
-					{% if parties %}
-						<ul class="parties">
-							{% for party in parties %}
-								<li><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
-							{% endfor %}
-						</ul>
-					{% endif %}
-				{% endwith %}
-			</li>
+	{% regroup parties by party_series as party_series_list %}
+	<table class="party_series_index">
+		{% for item in party_series_list %}
+			<tr class="{% cycle 'odd' 'even' %}">
+				<th>
+					<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
+				</th>
+				<td>
+					<ul class="parties">
+						{% for party in item.list %}
+							<li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
+						{% endfor %}
+					</ul>
+				</td>
+			</tr>
 		{% endfor %}
-	</ul>
+	</table>
 {% endblock %}

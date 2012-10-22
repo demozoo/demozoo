@@ -4,17 +4,7 @@
 	{% csrf_token %}
 	
 	<div class="field">
-		<label for="id_form-0-original" class="field_label">Image files</label>
-		<div class="field_input spawning_formset">
-			{{ formset.management_form }}
-			<ul>
-				{% for form in formset.forms %}
-					<li>
-						<div class="formset_item">{{ form.original }}</div>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
+		<input type="file" name="screenshot" multiple="multiple" />
 	</div>
 	
 	<div class="field">

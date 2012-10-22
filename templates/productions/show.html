@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 
+{% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
+
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
 	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Production</li>
+			<li><a href="{{ production.get_history_url }}">History</a></li>
+		</ul>
+
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url edit_production_done production.id %}" class="done">Done</a></li>
+				<li><a href="{{ production.get_edit_done_url }}" class="done">Done</a></li>
 			{% else %}
 				<li><a href="{{ production.get_absolute_edit_url }}" class="edit">Edit</a></li>
 			{% endif %}
@@ -15,45 +22,94 @@
 		
 		<div class="production_title">
 			<h2>{{ production.title }}</h2>
-			{% if production.author_nicks.all %}
+			{% if production.byline_string %}
 				<h3>
 					by {% byline production %}
 				</h3>
 			{% endif %}
 			
 			{% if editing %}
-				<a href="{% url production_edit_core_details production.id %}" class="open_in_lightbox">
+				<a href="{{ production.get_edit_core_details_url }}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 				</a>
 			{% endif %}
 		</div>
 		
-		{% include "shared/production_screenshots.html" %}
+		{% if production.can_have_screenshots %}
+			{% include "shared/production_screenshots.html" %}
+		{% endif %}
 		
 		<div class="production_details">
 			{% if production.release_date or editing %}
 				<p>Release date: {% if production.release_date %}{{ production.release_date }}{% else %}<em>not set</em>{% endif %}</p>
 			{% endif %}
 			
-			<ul>
+			<ul class="production_types">
 				{% for production_type in production.types.all %}
 					<li>{{ production_type.name }}</li>
 				{% endfor %}
 			</ul>
 			
-			<ul>
+			<ul class="platforms">
 				{% for platform in production.platforms.all %}
 					<li><a href="{% url platform platform.id %}">{{ platform.name }}</a></li>
 				{% endfor %}
 			</ul>
 			
+			{% include "shared/production_competition_placings.html" %}
+			
 			{% include "shared/production_external_links.html" %}
+			
+			{% include "shared/production_tags.html" %}
 		</div>
 		
 		<div style="clear: both;"></div>
 	</div>
 	
 	{% include "shared/production_notes.html" %}
-	{% include "shared/production_credits.html" %}
-	{% include "shared/production_downloads.html" %}
+	
+	<div id="side_column">
+		{% if production.can_have_credits %}
+			{% include "shared/production_credits.html" %}
+		{% endif %}
+	</div>
+	
+	<div id="main_column">
+		
+		{% if featured_in_productions %}
+			<div class="panel">
+				<h3 class="productions_header">Featured in:</h3>
+				{% with featured_in_productions as productions %}
+					{% include "shared/production_listing.html" %}
+				{% endwith %}
+			</div>
+		{% endif %}
+		
+		{% include "shared/production_downloads.html" %}
+		
+		{% if production.can_have_soundtracks %}
+			{% if soundtracks or editing %}
+				<div class="panel">
+					<h3 class="soundtracks_header">Soundtrack</h3>
+					{% with soundtracks as productions %}
+						{% include "shared/production_listing.html" %}
+					{% endwith %}
+					
+					{% if editing %}
+						<ul>
+							<li class="edit">
+								<a href="{% url production_edit_soundtracks production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
+							</li>
+						</ul>
+					{% endif %}
+				</div>
+			{% endif %}
+		{% endif %}
+	</div>
+	
+	{% if editing_as_admin %}
+		<ul class="maintenance_actions">
+			<li><a href="{% url delete_production production.id %}" class="delete open_in_lightbox">Delete production</a></li>
+		</ul>
+	{% endif %}
 {% endblock %}

@@ -3,10 +3,11 @@ from demoscene.models import Releaser, Nick, NickVariant
 from django.core.management.base import NoArgsCommand
 from django.db import connection, transaction
 
+
 class Command(NoArgsCommand):
 	def handle_noargs(self, **options):
 		print "Looking for releasers without their name as a Nick"
-		
+
 		releasers = Releaser.objects.raw('''
 			SELECT demoscene_releaser.*
 			FROM
@@ -20,11 +21,11 @@ class Command(NoArgsCommand):
 		''')
 		for releaser in releasers:
 			print "creating nick for %s" % releaser
-			nick = Nick(releaser = releaser, name = releaser.name)
+			nick = Nick(releaser=releaser, name=releaser.name)
 			nick.save()
-		
+
 		print "Looking for Nicks without their name as a NickVariant"
-		
+
 		nicks = Nick.objects.raw('''
 			SELECT demoscene_nick.*
 			FROM
@@ -38,9 +39,36 @@ class Command(NoArgsCommand):
 		''')
 		for nick in nicks:
 			print "creating nick_variant for %s" % nick
-			nick_variant = NickVariant(nick = nick, name = nick.name)
+			nick_variant = NickVariant(nick=nick, name=nick.name)
 			nick_variant.save()
-		
+
+		print "Removing releaser abbreviations that are the same as the actual name"
+		cursor = connection.cursor()
+		cursor.execute('''
+			UPDATE demoscene_nick
+			SET abbreviation = ''
+			WHERE LOWER(name) = LOWER(abbreviation)
+		''')
+
+		print "Looking for Nicks without their abbreviation as a NickVariant"
+
+		nicks = Nick.objects.raw('''
+			SELECT demoscene_nick.*
+			FROM
+				demoscene_nick
+				LEFT JOIN demoscene_nickvariant ON (
+					demoscene_nick.id = demoscene_nickvariant.nick_id
+					AND demoscene_nick.abbreviation = demoscene_nickvariant.name
+				)
+			WHERE
+				demoscene_nick.abbreviation <> ''
+				AND demoscene_nickvariant.id IS NULL
+		''')
+		for nick in nicks:
+			print "creating nick_variant for %s" % nick.abbreviation
+			nick_variant = NickVariant(nick=nick, name=nick.abbreviation)
+			nick_variant.save()
+
 		print "Truncating fuzzy dates to first of the month / first of January"
 		cursor = connection.cursor()
 		cursor.execute('''
@@ -53,6 +81,46 @@ class Command(NoArgsCommand):
 			SET release_date_date = date_trunc('year', release_date_date)
 			WHERE release_date_precision = 'y'
 		''')
+
+		print "Removing abbreviations on scener nicks"
+		nicks = Nick.objects.exclude(abbreviation='').filter(releaser__is_group=False)
+		for nick in nicks:
+			print "Removing abbreviation %s of %s" % (nick.abbreviation, nick.name)
+			nick.abbreviation = ''
+			nick.save()
+
+		print "Stripping leading / trailing spaces from names and titles"
+		cursor.execute('''
+			UPDATE demoscene_production
+			SET title = REGEXP_REPLACE(title, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE title LIKE ' %%' OR title LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_releaser
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_nick
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_nickvariant
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_party
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+		cursor.execute('''
+			UPDATE demoscene_partyseries
+			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
+			WHERE name LIKE ' %%' OR name LIKE '%% '
+		''')
+
 		transaction.commit_unless_managed()
-		
+
 		print "done."

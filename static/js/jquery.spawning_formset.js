@@ -1,5 +1,6 @@
 (function($) {
-	$.fn.spawningFormset = function() {
+	$.fn.spawningFormset = function(opts) {
+		if (!opts) opts = {};
 		this.each(function() {
 			var formset = this;
 			var totalFormsInput = $("input[type='hidden'][name$='TOTAL_FORMS']", this);
@@ -7,7 +8,8 @@
 			
 			function deleteForm(li) {
 				$('.delete input:checkbox', li).attr('checked', true);
-				$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
+				//$('> *', li).fadeOut(); /* fading out the LI itself is borked on Webkit (as of 2010-06-01) */
+				$(li).fadeOut();
 			}
 			
 			$('> ul > li', this).each(function() {
@@ -16,15 +18,21 @@
 				deleteButton.click(function() {
 					deleteForm(li);
 				});
-				$('.delete', li).hide().after(deleteButton);
+				/* using display: none screws with fading / ordering in unexplainable ways on Webkit */
+				$('.delete', li).css({'font-size': '1px', 'visibility':'hidden'}).after(deleteButton);
 			});
-			var lastElement = $('> ul > li:last', this);
-			var newFormTemplate = lastElement.clone();
-			var newFormInitialIndex = totalFormsInput.val() - 1;
+			
+			var placeholderElement = $('> ul > li.placeholder_form', this);
+			var newFormTemplate = placeholderElement.clone();
+			newFormTemplate.removeClass('placeholder_form');
+			placeholderElement.remove();
 			
 			if (totalFormsInput.val() > 1 || $(this).hasClass('initially_hidden')) {
-				lastElement.remove();
-				totalFormsInput.val(totalFormsInput.val() - 1);
+				var unboundForm = $('> ul > li:last.unbound', this);
+				if (unboundForm.length) {
+					unboundForm.remove();
+					totalFormsInput.val(totalFormsInput.val() - 1);
+				}
 			}
 			
 			var addButton = $('<a href="javascript:void(0);" class="add_button">add</a>');
@@ -36,19 +44,20 @@
 				var newIndex = parseInt(totalFormsInput.val());
 				totalFormsInput.val(newIndex + 1);
 				$(":input[name^='" + fieldPrefix + "']", newForm).each(function() {
-					this.name = this.name.replace(fieldPrefix + newFormInitialIndex, fieldPrefix + newIndex);
+					this.name = this.name.replace(fieldPrefix + '__prefix__', fieldPrefix + newIndex);
 				})
 				$(":input[id^='id_" + fieldPrefix + "']", newForm).each(function() {
-					this.id = this.id.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
+					this.id = this.id.replace('id_' + fieldPrefix + '__prefix__', 'id_' + fieldPrefix + newIndex);
 				})
 				$("label[for^='id_" + fieldPrefix + "']", newForm).each(function() {
-					this.htmlFor = this.htmlFor.replace('id_' + fieldPrefix + newFormInitialIndex, 'id_' + fieldPrefix + newIndex);
+					this.htmlFor = this.htmlFor.replace('id_' + fieldPrefix + '__prefix__', 'id_' + fieldPrefix + newIndex);
 				})
 				$('a.delete_button', newForm).click(function() {
 					deleteForm(newForm);
 				});
 				newForm.hide().slideDown('fast');
-				$(":input", newForm).focus();
+				if (opts.onShow) opts.onShow(newForm);
+				try {$(':input:visible', newForm)[0].focus();}catch(_){}
 			})
 			$('> ul', this).append(addLi);
 		});

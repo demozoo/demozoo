@@ -1,17 +1,73 @@
 {% extends "base.html" %}
+{% load demoscene_tags %}
+{% load safe_markdown %}
+
+{% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
+
+{% block body_class %}show_party_series{% endblock %}
 
 {% block base_main %}
-	<h2>{{ party_series.name }}</h2>
-	{% with party_series.parties_by_date as parties %}
-		{% if parties %}
-			<ul class="parties">
-				{% for party in parties %}
-					<li>
-						<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
-						{{ party.start_date }} - {{ party.end_date }}
-					</li>
-				{% endfor %}
-			</ul>
+	<div class="panel">
+		<ul class="tabs">
+			<li class="active_tab">Party</li>
+			<li><a href="{% url party_series_history party_series.id %}">History</a></li>
+		</ul>
+		<ul class="actions">
+			<li><a href="{% url new_party %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
+		</ul>
+		<h2>
+			{{ party_series.name }}
+			<a href="{% url party_edit_series party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+		</h2>
+		{% if party_series.has_any_external_links %}
+			<div class="external_links">
+				<ul>
+					{% if party_series.website %}<li><a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a></li>{% endif %}
+					{% if party_series.twitter_url %}<li><a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a></li>{% endif %}
+					{% if party_series.pouet_url %}<li><a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a></li>{% endif %}
+				</ul>
+			</div>
 		{% endif %}
-	{% endwith %}
+		{% with party_series.parties.all as parties %}
+			{% if parties %}
+				<ul class="parties">
+					{% for party in parties %}
+						<li>
+							<a href="{{ party.get_absolute_url }}">
+								{% with party.random_screenshot as pic %}
+									{% if pic %}
+										<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+									{% endif %}
+								{% endwith %}
+								<h3>{{ party.name }}</h3>
+								<div>{% date_range party.start_date party.end_date %}</div>
+								{% if party.location %}
+									<div>
+										{% if party.country_code %}
+											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+										{% endif %}
+										{{ party.location }}
+									</div>
+								{% endif %}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+
+		<div style="clear: both;"></div>
+	</div>
+	
+	{% if party_series.notes or request.user.is_staff %}
+		<div class="notes">
+			{% if request.user.is_staff %}
+				<ul class="actions">
+					<li><a class="edit open_in_lightbox" href="{% url party_edit_series_notes party_series.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			{{ party_series.notes|safe_markdown }}
+			<div style="clear: both;"></div>
+		</div>
+	{% endif %}
 {% endblock %}

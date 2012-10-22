@@ -1,16 +1,26 @@
 {% extends "base.html" %}
 
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
 {% block base_main %}
-	<h2>Productions</h2>
-	
-	<ul class="actions">
-		<li><a href="{% url new_production %}" class="add open_in_lightbox">New production</a></li>
-	</ul>
-	
+	{% if add_item_url %}
+		<ul class="actions">
+			<li><a href="{{ add_item_url }}" class="add open_in_lightbox">{{ add_item_text }}</a></li>
+		</ul>
+	{% endif %}
+
+	<h2>{{ title }}</h2>
+
+	<p>
+		Order by:
+		{% if order == 'title' %}<strong>Title</strong>{% else %}<a href="?order=title">Title</a>{% endif %}
+		| {% if order == 'date' %}<strong>Release date</strong>{% else %}<a href="?order=date">Release date</a>{% endif %}
+	</p>
+
 	<ul>
-		{% for production in production_page.object_list %}
-			<li><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-		{% endfor %}
+		{% with production_page.object_list as productions %}
+			{% include "shared/production_listing.html" %}
+		{% endwith %}
 	</ul>
 	
 	{% with production_page as page %}

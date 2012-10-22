@@ -3,8 +3,8 @@
 		<h3>Downloads</h3>
 		<ul class="download_links">
 			{% for link in download_links %}
-				<li class="download_link {% firstof link.host_identifier '' %}">
-					<a href="{{ link.url }}">download {% if link.hostname %}({{ link.hostname }}){% endif %}</a>
+				<li class="download_link {{ link.html_link_class }}">
+					{{ link.as_download_link|safe }}
 					{% if editing %}
 						<a href="{% url production_edit_download_link production.id link.id %}" class="open_in_lightbox">
 							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit download link" title="Edit download link" />

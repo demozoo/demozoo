@@ -1,0 +1,25 @@
+{% if tags or editing %}
+	<div class="tags">
+		<h3>Tags:</h3>
+		<ul>
+			{% for tag in tags %}
+				<li>
+					<a class="tag_name" href="{% if production.supertype == 'music' %}{% url music_tagged tag.slug %}{% else %}{% if production.supertype == 'graphics' %}{% url graphics_tagged tag.slug %}{% else %}{% url productions_tagged tag.slug %}{% endif %}{% endif %}">{{ tag }}</a>
+					{% if editing %}
+						<form action="{% url production_remove_tag production.id tag.id %}" method="post">
+							{% csrf_token %}
+							<button type="submit">x</button>
+						</form>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+		{% if editing %}
+			<form class="add_tag" action="{% url production_add_tag production.id %}" method="post">
+				{% csrf_token %}
+				<input type="text" name="tag_name" />
+				<input type="submit" value="Add" />
+			</form>
+		{% endif %}
+	</div>
+{% endif %}

@@ -23,7 +23,7 @@
 	var num = '(\\d+)';
 	
 	var regexps = [
-		new RegExp(start + year + sep + num + sep + num + sep + end), /* 2010-01-01 */
+		new RegExp(start + year + sep + num + sep + num + end), /* 2010-01-01 */
 		new RegExp(start + year + sep + num + end), /* 2010-01 */
 		new RegExp(start + year + end), /* 2010 */
 		new RegExp(start + num + sep + num + sep + num + end), /* 01/01/2010 */
@@ -38,15 +38,15 @@
 		if (!str) return null;
 		var m;
 		if (m = str.match(regexps[0])) {
-			return new Date(parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10));
+			return new Date(parseInt(m[1], 10), parseInt(m[2], 10)-1, parseInt(m[3], 10));
 		} else if (m = str.match(regexps[1])) {
-			return new Date(parseInt(m[1], 10), parseInt(m[2], 10), 1);
+			return new Date(parseInt(m[1], 10), parseInt(m[2], 10)-1, 1);
 		} else if (m = str.match(regexps[2])) {
 			return new Date(parseInt(m[1], 10), 0, 1);
 		} else if (m = str.match(regexps[3])) {
-			return new Date(parseInt(m[3], 10), parseInt(m[2], 10), parseInt(m[1], 10));
+			return new Date(parseInt(m[3], 10), parseInt(m[2], 10)-1, parseInt(m[1], 10));
 		} else if (m = str.match(regexps[4])) {
-			return new Date(parseInt(m[2], 10), parseInt(m[1], 10), 1);
+			return new Date(parseInt(m[2], 10), parseInt(m[1], 10)-1, 1);
 		} else if (m = str.match(regexps[5])) {
 			return new Date(parseInt(m[3], 10), monthsByName[m[2].toLowerCase()], parseInt(m[1], 10));
 		} else if (m = str.match(regexps[6])) {

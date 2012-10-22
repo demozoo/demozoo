@@ -22,7 +22,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 		'NAME': 'demozoo',                      # Or path to database file if using sqlite3.
 		'USER': 'postgres',                      # Not used with sqlite3.
 		'PASSWORD': '',                  # Not used with sqlite3.
@@ -38,11 +38,11 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/London'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 SITE_ID = 1
 
@@ -79,6 +79,7 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
+	'debug_toolbar.middleware.DebugToolbarMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -99,30 +100,71 @@ INSTALLED_APPS = (
 	'django.contrib.sites',
 	'django.contrib.messages',
 	'django.contrib.admin',
+	'django.contrib.humanize',
 	'south',
-	'haystack',
+	'djapian',
 	'treebeard',
-	
+	'taggit',
+	'debug_toolbar',
+	'unjoinify',
+	'compressor',
+	'djcelery',
+	'django_bcrypt',
+
 	'demoscene',
 	'search',
+	'dataexchange',
+	'maintenance',
+	'pages',
+	'sceneorg',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
-	'demoscene.context_processors.jquery_include_context_processor',
-	'demoscene.context_processors.global_search_form',
-) 
+	'demoscene.context_processors.global_nav_forms',
+)
 
+LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 
-HAYSTACK_SITECONF = 'search.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.path.join(FILEROOT, 'data', 'whoosh', 'demoscene_index')
+DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT, 'data', 'djapian')
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
 AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
+
+INTERNAL_IPS = ('127.0.0.1',)
+
+# COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
+COMPRESS_URL = '/static/'
+COMPRESS_ROOT = STATICROOT
+COMPRESS_PRECOMPILERS = (
+	('text/less', 'lessc {infile} {outfile}'),
+)
+
+# Celery settings
+import djcelery
+djcelery.setup_loader()
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
+
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+	"fetch-new-sceneorg-files": {
+		"task": "sceneorg.tasks.fetch_sceneorg_dir",
+		"schedule": timedelta(days=1),
+		"args": ('/', 3)
+	},
+	"fetch-all-sceneorg-files": {
+		"task": "sceneorg.tasks.fetch_sceneorg_dir",
+		"schedule": timedelta(days=30),
+		"args": ('/',)
+	},
+}
 
 # Get local settings
 try:

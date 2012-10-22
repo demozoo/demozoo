@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block html_title %}{% if html_title %}{{ html_title }} - {% endif %}Demozoo{% endblock %}
 {% block base_main %}
 	{% include subtemplate_name %}
 {% endblock %}

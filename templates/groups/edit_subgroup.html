@@ -1,0 +1,20 @@
+<h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}:</h2>
+
+<form action="{% url group_edit_subgroup group.id membership.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	
+	{% for field in form.visible_fields %}
+		{% include "shared/form_field.html" %}
+	{% endfor %}
+	{% for field in form.hidden_fields %}
+		{{ field }}
+	{% endfor %}
+	
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>
+
+<p>
+	<a href="{% url group_remove_subgroup group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
+</p>

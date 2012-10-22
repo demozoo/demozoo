@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block html_title %}Recent edits - Demozoo{% endblock %}
+
+{% block base_main %}
+	<h2>Recent edits</h2>
+
+	<table class="history">
+		{% for edit in edits_page.object_list %}
+			<tr>
+				<td class="timestamp">{{ edit.timestamp|date:"Y-m-d H:i:s" }}</td>
+				<td class="user"><strong>{{ edit.user }}</strong></td>
+				<td>
+					{{ edit.description }}
+					{% if edit.focus %}
+						(<a href="{{ edit.focus.get_absolute_url }}">link</a>)
+					{% endif %}
+					{% if edit.focus2 %}
+						(<a href="{{ edit.focus2.get_absolute_url }}">link2</a>)
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	{% with edits_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
+{% endblock %}

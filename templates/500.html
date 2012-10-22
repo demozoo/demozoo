@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
+{% block html_title %}Oh noes! - Demozoo{% endblock %}
+
+{% comment %}
+	omit login box and search form, as we can't rely on having sensible user/form variables
+	in the context here
+{% endcomment %}
+{% block login_status_panel %}{% endblock %}
+{% block global_search_form %}{% endblock %}
+
 {% block base_main %}
 	<h2>Oh noes!</h2>
 	<p>Something has gone wrong. Normal service will be resumed shortly...</p>

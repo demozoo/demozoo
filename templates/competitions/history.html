@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}{{ competition }} edit history - Demozoo{% endblock %}
+
+{% block base_main %}
+	<div class="panel">
+		<ul class="tabs">
+			<li><a href="{% url competition competition.id %}">Competition</a></li>
+			<li class="active_tab">History</li>
+		</ul>
+
+		<h2>Edit history for {{ competition }}</h2>
+		{% include "shared/history_table.html" %}
+
+	</div>
+{% endblock %}

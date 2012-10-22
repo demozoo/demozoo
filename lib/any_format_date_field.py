@@ -17,6 +17,12 @@ class AnyFormatDateField(forms.DateField):
 		if isinstance(value, datetime.date):
 			return value
 		try:
-			return timelib.strtodatetime(value).date()
+			result = timelib.strtodatetime(value).date()
 		except ValueError:
 			raise ValidationError(self.error_messages['invalid'])
+		
+		if result.year < 1900:
+			# strftime can't handle years before 1900
+			raise ValidationError(self.error_messages['invalid'])
+		
+		return result

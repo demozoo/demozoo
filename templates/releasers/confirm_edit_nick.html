@@ -35,5 +35,12 @@
 				<div class="annotation">(any existing prods / credits will be kept under the existing name)</div>
 			</form>
 		</li>
+		<li>
+			<form action="{% url releaser_edit_nick releaser.id releaser.primary_nick.id %}" method="get" class="open_in_lightbox">
+				<strong>There's an abbreviation/alternative spelling for the name '{{ releaser.name }}':</strong>
+				<input type="submit" value="Add it" />
+				<div class="annotation">(this will help us to match prods to the right {% if releaser.is_group %}group{% else %}person{% endif %} when they're released under that spelling)</div>
+			</form>
+		</li>
 	</ul>
 </p>

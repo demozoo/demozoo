@@ -1,0 +1,21 @@
+{% load spawning_formset %}
+
+<h2>Editing external links for {{ releaser.name }}:</h2>
+
+<form action="{% url releaser_edit_external_links releaser.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	<div class="field">
+		<label for="id_external_links-0-url" class="field_label">Link URLs</label>
+		{% spawningformset formset %}
+			{% spawningform as form %}
+				{{ form.url }}
+				{% for hidden in form.hidden_fields %}
+					{{ hidden }}
+				{% endfor %}
+			{% endspawningform %}
+		{% endspawningformset %}
+	</div>
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>

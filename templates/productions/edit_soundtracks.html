@@ -1,0 +1,17 @@
+{% load spawning_formset %}
+
+<h2>Editing soundtrack details for {{ production.title }}:</h2>
+
+<form action="{% url production_edit_soundtracks production.id %}" method="post" class="entry_form">
+	{% csrf_token %}
+	
+	{% spawningformset sortable formset %}
+		{% spawningform as form %}
+			{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
+		{% endspawningform %}
+	{% endspawningformset %}
+	
+	<div class="field">
+		<input type="submit" />
+	</div>
+</form>
