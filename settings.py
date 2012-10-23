@@ -110,6 +110,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
+	'tastypie',
 
 	'demoscene',
 	'search',
