@@ -468,9 +468,10 @@ def sceneorg_party_dirs_with_no_party(request):
 		LEFT JOIN demoscene_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
 		WHERE parties_root.path = '/parties/'
 		AND demoscene_partyexternallink.id IS NULL
+		AND party_dir.is_deleted = 'f'
 		ORDER BY party_dir.path
 	''')
-	
+
 	directories = Directory.objects.raw('''
 		SELECT party_dir.*,
 			demoscene_partyseries.name AS suggested_series_name,
@@ -493,6 +494,7 @@ def sceneorg_party_dirs_with_no_party(request):
 		)
 		WHERE parties_root.path = '/parties/'
 		AND demoscene_partyexternallink.id IS NULL
+		AND party_dir.is_deleted = 'f'
 		ORDER BY party_dir.path
 	''')
 	total_count = Directory.parties().count()
