@@ -45,8 +45,7 @@ def fetch_sceneorg_dir(path, days = None):
 	if not days:
 		for subdir in dir.subdirectories.filter(is_deleted = False):
 			if subdir not in seen_dirs:
-				subdir.is_deleted = True
-				subdir.save()
+				subdir.mark_deleted()
 		for file in dir.files.filter(is_deleted = False):
 			if file not in seen_files:
 				file.is_deleted = True

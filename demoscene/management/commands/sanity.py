@@ -1,4 +1,5 @@
 from demoscene.models import Releaser, Nick, NickVariant
+from sceneorg.models import Directory
 
 from django.core.management.base import NoArgsCommand
 from django.db import connection, transaction
@@ -120,6 +121,10 @@ class Command(NoArgsCommand):
 			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
+
+		print "Recursively marking children of deleted scene.org dirs as deleted"
+		for dir in Directory.objects.filter(is_deleted=True):
+			dir.mark_deleted()
 
 		transaction.commit_unless_managed()
 

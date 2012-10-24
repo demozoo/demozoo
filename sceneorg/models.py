@@ -8,7 +8,14 @@ class Directory(models.Model):
 	last_seen_at = models.DateTimeField()
 	last_spidered_at = models.DateTimeField(null=True, blank=True)
 	parent = models.ForeignKey('Directory', related_name = 'subdirectories', null=True, blank=True)
-	
+
+	def mark_deleted(self):
+		for dir in self.subdirectories.all():
+			dir.mark_deleted()
+		self.files.all().update(is_deleted=True)
+		self.is_deleted = True
+		self.save()
+
 	def __unicode__(self):
 		return self.path
 	
