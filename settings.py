@@ -1,14 +1,13 @@
 # Django settings for demozoo2 project.
 
 # Determine paths
-import os, sys
+import os
+import sys
 FILEROOT = os.path.dirname(__file__)
-STATICROOT = os.path.join(FILEROOT, "static")
 
 # Modify sys.path so it contains the right things
 sys.path.append(FILEROOT)
 sys.path.append(os.path.join(FILEROOT, "lib"))
-sys.path.insert(0, os.path.join(FILEROOT, "lib", "south"))
 
 TEMPLATE_DEBUG = True
 
@@ -54,19 +53,14 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(STATICROOT, "uploads")
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/static/uploads/'
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+STATIC_ROOT = os.path.join(FILEROOT, "static")
+STATIC_URL = "/static/"
+STATICFILES_FINDERS = (
+	'django.contrib.staticfiles.finders.FileSystemFinder',
+	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+	# other finders..
+	'compressor.finders.CompressorFinder',
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -101,6 +95,7 @@ INSTALLED_APPS = (
 	'django.contrib.messages',
 	'django.contrib.admin',
 	'django.contrib.humanize',
+	'django.contrib.staticfiles',
 	'south',
 	'djapian',
 	'treebeard',
@@ -138,7 +133,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = '/static/'
-COMPRESS_ROOT = STATICROOT
+COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = (
 	('text/less', 'lessc {infile} {outfile}'),
 )
