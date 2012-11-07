@@ -20,6 +20,13 @@ def home(request):
 	})
 
 
+def error_test(request):
+	if request.user.is_staff:
+		raise Exception("This is a test of the emergency broadcast system.")
+	else:
+		return redirect('home')
+
+
 def recent_edits(request):
 	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
 	edits_page = get_page(

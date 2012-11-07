@@ -73,6 +73,7 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.common.CommonMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
+	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'debug_toolbar.middleware.DebugToolbarMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
@@ -119,6 +120,22 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
 	'demoscene.context_processors.global_nav_forms',
 )
+
+LOGGING = {
+	'version': 1,
+	'filters': {
+		'require_debug_false': {
+			'()': 'django.utils.log.RequireDebugFalse'
+		}
+	},
+	'handlers': {
+		'mail_admins': {
+			'level': 'ERROR',
+			'filters': ['require_debug_false'],
+			'class': 'django.utils.log.AdminEmailHandler'
+		}
+	},
+}
 
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'

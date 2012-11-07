@@ -55,7 +55,7 @@ def handle_production(prod_data, competition):
 def add_placing(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 	if request.method == 'POST':
-		data = simplejson.loads(request.raw_post_data)
+		data = simplejson.loads(request.body)
 
 		# move existing placings to accommodate new entry at the stated position
 		competition.placings.filter(position__gte=data['position']).update(position=F('position') + 1)
@@ -82,7 +82,7 @@ def update_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
 	competition = placing.competition
 	if request.method == 'POST':
-		data = simplejson.loads(request.raw_post_data)
+		data = simplejson.loads(request.body)
 
 		# move existing placings to accommodate new entry at the stated position
 		if int(data['position']) > placing.position:  # increasing position - move others down
