@@ -5,13 +5,11 @@
 
 {% block base_main %}
 	{% if form.errors %}
-	<p>Your username and password didn't match. Please try again.</p>
-	{% else %}
-		{% if request.is_ajax %}
-			<p>Please log in to proceed:</p>
-		{% endif %}
+		<p>Your username and password didn't match. Please try again.</p>
+	{% elif request.is_ajax %}
+		<p>Please log in to proceed:</p>
 	{% endif %}
-	
+
 	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
 		<table>
 		<tr>

@@ -18,12 +18,10 @@
 			</h2>
 			{% date_range party.start_date party.end_date %}
 			
-			{% if party.party_series.website %}
-					<p><a href="{{ party.website }}">{{ party.website }}</a></p>
-			{% else %}
-				{% if party.party_series.website %}
-					<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
-				{% endif %}
+			{% if party.website %}
+				<p><a href="{{ party.website }}">{{ party.website }}</a></p>
+			{% elif party.party_series.website %}
+				<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
 			{% endif %}
 			
 			<p>

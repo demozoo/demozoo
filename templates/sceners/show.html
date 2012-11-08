@@ -66,14 +66,12 @@
 					</a>
 				{% endif %}
 			</p>
-		{% else %}
-			{% if scener.real_name_available_to_show %}
-				<p>
-					Real name:
-					{% if scener.show_first_name %}{{ scener.first_name }}{% endif %}
-					{% if scener.show_surname %}{{ scener.surname }}{% endif %}
-				</p>
-			{% endif %}
+		{% elif scener.real_name_available_to_show %}
+			<p>
+				Real name:
+				{% if scener.show_first_name %}{{ scener.first_name }}{% endif %}
+				{% if scener.show_surname %}{{ scener.surname }}{% endif %}
+			</p>
 		{% endif %}
 		
 		{% if scener.location or editing %}
