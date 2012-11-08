@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block extra_js %}
 	<script src="/static/js/editable_grid.js"></script>
@@ -24,7 +25,7 @@
 
 <h2>{{ competition.party.name }} {{ competition.name }} competition</h2>
 
-<form action="{% url party_edit_competition party.id competition.id %}" method="post" class="entry_form">
+<form action="{% url 'party_edit_competition' party.id competition.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}
@@ -38,7 +39,7 @@
 <ul id="results_table"></ul>
 
 <ul class="actions">
-	<li><a href="{% url party competition.party.id %}" class="done">Done</a></li>
+	<li><a href="{% url 'party' competition.party.id %}" class="done">Done</a></li>
 </ul>
 
 {% endblock %}

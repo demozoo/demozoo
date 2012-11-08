@@ -1,6 +1,8 @@
+{% load url from future %}
+
 <h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}:</h2>
 
-<form action="{% url scener_edit_membership scener.id membership.id %}" method="post" class="entry_form">
+<form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}
@@ -16,5 +18,5 @@
 </form>
 
 <p>
-	<a href="{% url scener_remove_group scener.id membership.group.id %}" class="open_in_lightbox">Remove from group</a>
+	<a href="{% url 'scener_remove_group' scener.id membership.group.id %}" class="open_in_lightbox">Remove from group</a>
 </p>

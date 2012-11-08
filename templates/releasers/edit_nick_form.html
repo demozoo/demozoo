@@ -1,8 +1,9 @@
 {% include "releasers/nick_form.html" %}
+{% load url from future %}
 
 {% if not nick.is_primary_nick %}
 	<p>
-		<a href="{% url releaser_delete_nick nick.releaser.id nick.id %}" class="open_in_lightbox">Delete this name</a>
+		<a href="{% url 'releaser_delete_nick' nick.releaser.id nick.id %}" class="open_in_lightbox">Delete this name</a>
 		<span class="hover_help" tabindex="0"><span class="help_text">Removes {{ nick.name }} as an alternative name of {{ nick.releaser.name }} - all other information about {{ nick.releaser.name }} will be left intact</span></span>
 	</p>
 {% endif %}

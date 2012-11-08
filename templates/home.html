@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block base_main %}
 	<p>
@@ -10,7 +11,7 @@
 		{{ stats.group_count }} group{{ stats.group_count|pluralize }} -
 		{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}
 	</p>
-	<p><a href="{% url recent_edits %}">Recent edits</a></p>
+	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
 	<div class="chart_set">
 		<div class="chart">
 			<h2>Latest added productions</h2>
@@ -54,7 +55,7 @@
 			<h2>Latest added groups</h2>
 			<ul>
 				{% for group in latest_added_groups %}
-					<li class="group"><a href="{% url group group.id %}">{{ group.name }}</a></li>
+					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>
@@ -62,7 +63,7 @@
 			<h2>Latest updated groups</h2>
 			<ul>
 				{% for group in latest_updated_groups %}
-					<li class="group"><a href="{% url group group.id %}">{{ group.name }}</a></li>
+					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
 				{% endfor %}
 			</ul>
 		</div>

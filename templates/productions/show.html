@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
@@ -52,7 +53,7 @@
 			
 			<ul class="platforms">
 				{% for platform in production.platforms.all %}
-					<li><a href="{% url platform platform.id %}">{{ platform.name }}</a></li>
+					<li><a href="{% url 'platform' platform.id %}">{{ platform.name }}</a></li>
 				{% endfor %}
 			</ul>
 			
@@ -98,7 +99,7 @@
 					{% if editing %}
 						<ul>
 							<li class="edit">
-								<a href="{% url production_edit_soundtracks production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
+								<a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
 							</li>
 						</ul>
 					{% endif %}
@@ -109,7 +110,7 @@
 	
 	{% if editing_as_admin %}
 		<ul class="maintenance_actions">
-			<li><a href="{% url delete_production production.id %}" class="delete open_in_lightbox">Delete production</a></li>
+			<li><a href="{% url 'delete_production' production.id %}" class="delete open_in_lightbox">Delete production</a></li>
 		</ul>
 	{% endif %}
 {% endblock %}

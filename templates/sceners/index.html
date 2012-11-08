@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block html_title %}Sceners - Demozoo{% endblock %}
 
@@ -7,7 +8,7 @@
 	<h2>Sceners</h2>
 	
 	<ul class="actions">
-		<li><a href="{% url new_scener %}" class="add open_in_lightbox">New scener</a></li>
+		<li><a href="{% url 'new_scener' %}" class="add open_in_lightbox">New scener</a></li>
 	</ul>
 	
 	<ul>

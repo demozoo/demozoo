@@ -1,5 +1,6 @@
 {% extends "maintenance/base.html" %}
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -66,24 +67,24 @@
 					<td><a href="{{ dir.web_url }}">{{ dir.path }}</a></td>
 					<td>
 						{% if dir.suggested_series_name %}
-							<a href="{% url party_series dir.suggested_series_id %}">{{ dir.suggested_series_name }}</a>
+							<a href="{% url 'party_series' dir.suggested_series_id %}">{{ dir.suggested_series_name }}</a>
 						{% endif %}
 					</td>
 					<td>
 						{% if dir.suggested_party_name %}
-							<a href="{% url party dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
+							<a href="{% url 'party' dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
 						{% endif %}
 					</td>
 					<td>
 						{% if dir.suggested_party_id %}
-							<form class="add_sceneorg_link" action="{% url maintenance_add_sceneorg_link_to_party %}" method="post">
+							<form class="add_sceneorg_link" action="{% url 'maintenance_add_sceneorg_link_to_party' %}" method="post">
 								{% csrf_token %}
 								<input type="hidden" name="path" value="{{ dir.path }}" />
 								<input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />
 								<input type="submit" value="Accept suggestion" />
 							</form>
 						{% else %}
-							<form class="create_party" action="{% url new_party %}" method="GET">
+							<form class="create_party" action="{% url 'new_party' %}" method="GET">
 								<input type="hidden" name="scene_org_folder" value="{{ dir.path }}" />
 								{% if dir.suggested_series_name %}
 									<input type="hidden" name="name" value="{{ dir.suggested_series_name }} {{ dir.party_year }}" />

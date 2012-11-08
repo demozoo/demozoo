@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block html_title %}{{ party.name }} results - Demozoo{% endblock %}
 
 {% block base_main %}
 	<h2>{{ party.name }} - Results</h2>
-	<p><a href="{% url party party.id %}">Back to party</a></p>
+	<p><a href="{% url 'party' party.id %}">Back to party</a></p>
 	<pre>{{ text }}</pre>
 {% endblock %}

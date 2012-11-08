@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 {% load safe_markdown %}
+{% load url from future %}
 
 {% block html_title %}{{ group.name }} - Demozoo{% endblock %}
 
@@ -8,14 +9,14 @@
 	<div class="panel">
 		<ul class="tabs">
 			<li class="active_tab">Group</li>
-			<li><a href="{% url group_history group.id %}">History</a></li>
+			<li><a href="{% url 'group_history' group.id %}">History</a></li>
 		</ul>
 		
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url edit_group_done group.id %}" class="done">Done</a></li>
+				<li><a href="{% url 'edit_group_done' group.id %}" class="done">Done</a></li>
 			{% else %}
-				<li><a href="{% url edit_group group.id %}" class="edit">Edit</a></li>
+				<li><a href="{% url 'edit_group' group.id %}" class="edit">Edit</a></li>
 			{% endif %}
 		</ul>
 		<h2>
@@ -23,7 +24,7 @@
 			{% if group.primary_nick.differentiator %}<span class="annotation">({{ group.primary_nick.differentiator }})</span>{% endif %}
 			{% nick_variants group.primary_nick %}
 			{% if editing %}
-				<a href="{% url releaser_edit_primary_nick group.id %}" class="open_in_lightbox">
+				<a href="{% url 'releaser_edit_primary_nick' group.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
 			{% endif %}
@@ -37,7 +38,7 @@
 						<li>
 							{{ nick.name }} {% nick_variants nick %}
 							{% if editing %}
-								<a href="{% url releaser_edit_nick group.id nick.id %}" class="open_in_lightbox">
+								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
@@ -45,7 +46,7 @@
 					{% endfor %}
 					{% if editing %}
 						<li class="add">
-							<a href="{% url releaser_add_nick group.id %}" class="open_in_lightbox">Add another name</a>
+							<a href="{% url 'releaser_add_nick' group.id %}" class="open_in_lightbox">Add another name</a>
 						</li>
 					{% endif %}
 				</ul>
@@ -59,7 +60,7 @@
 					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					{% if editing %}<li><a href="{% url releaser_edit_external_links group.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+					{% if editing %}<li><a href="{% url 'releaser_edit_external_links' group.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}
@@ -69,7 +70,7 @@
 		<div class="notes">
 			{% if editing_as_admin %}
 					<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url releaser_edit_notes group.id %}">Edit notes</a></li>
+					<li><a class="edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ group.notes|safe_markdown }}
@@ -85,7 +86,7 @@
 					<ul class="memberships">
 						{% for membership in supergroupships %}
 							<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-								<a href="{% url group membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
+								<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
 								{% releaser_flag membership.group %}
 							</li>
 						{% endfor %}
@@ -96,10 +97,10 @@
 					<ul class="memberships">
 						{% for membership in memberships %}
 							<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-								<a href="{% url scener membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+								<a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
 								{% releaser_flag membership.member %}
 								{% if editing %}
-									<a href="{% url group_edit_membership group.id membership.id %}" class="open_in_lightbox">
+									<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox">
 										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 									</a>
 								{% endif %}
@@ -107,7 +108,7 @@
 						{% endfor %}
 						{% if editing %}
 							<li class="add">
-								<a href="{% url group_add_member group.id %}" class="open_in_lightbox">Add member</a>
+								<a href="{% url 'group_add_member' group.id %}" class="open_in_lightbox">Add member</a>
 							</li>
 						{% endif %}
 					</ul>
@@ -118,10 +119,10 @@
 					<ul class="memberships">
 						{% for membership in subgroupships %}
 							<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-								<a href="{% url group membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
+								<a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
 								{% releaser_flag membership.member %}
 								{% if editing %}
-									<a href="{% url group_edit_subgroup group.id membership.id %}" class="open_in_lightbox">
+									<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox">
 										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
 									</a>
 								{% endif %}
@@ -129,7 +130,7 @@
 						{% endfor %}
 						{% if editing %}
 							<li class="add">
-								<a href="{% url group_add_subgroup group.id %}" class="open_in_lightbox">Add subgroup</a>
+								<a href="{% url 'group_add_subgroup' group.id %}" class="open_in_lightbox">Add subgroup</a>
 							</li>
 						{% endif %}
 					</ul>
@@ -147,7 +148,7 @@
 				{% if editing %}
 					<ul>
 						<li class="add">
-							<a href="{% url new_production %}?releaser_id={{ group.id }}" class="open_in_lightbox">Add production</a>
+							<a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="open_in_lightbox">Add production</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -172,7 +173,7 @@
 				{% if editing %}
 					<ul>
 						<li class="add">
-							<a href="{% url releaser_add_credit group.id %}" class="open_in_lightbox">Add credit</a>
+							<a href="{% url 'releaser_add_credit' group.id %}" class="open_in_lightbox">Add credit</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -182,10 +183,10 @@
 	{% if editing_as_admin %}
 		<ul class="maintenance_actions">
 			{% if not group.is_referenced %}
-				<li><a href="{% url delete_releaser group.id %}" class="delete open_in_lightbox">Delete group</a></li>
+				<li><a href="{% url 'delete_releaser' group.id %}" class="delete open_in_lightbox">Delete group</a></li>
 			{% endif %}
 			{% if group.can_be_converted_to_scener %}
-				<li><a href="{% url group_convert_to_scener group.id %}" class="switch open_in_lightbox">Convert to scener</a></li>
+				<li><a href="{% url 'group_convert_to_scener' group.id %}" class="switch open_in_lightbox">Convert to scener</a></li>
 			{% endif %}
 		</ul>
 	{% endif %}

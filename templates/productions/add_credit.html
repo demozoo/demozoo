@@ -1,6 +1,8 @@
+{% load url from future %}
+
 <h2>Add credit for {{ production.title }}:</h2>
 
-<form action="{% url production_add_credit production.id %}" method="post" class="entry_form">
+<form action="{% url 'production_add_credit' production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% include "productions/credit_form.html" %}

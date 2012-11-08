@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 {% load safe_markdown %}
+{% load url from future %}
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
@@ -8,12 +9,12 @@
 	<div class="panel">
 		<ul class="tabs">
 			<li class="active_tab">Party</li>
-			<li><a href="{% url party_history party.id %}">History</a></li>
+			<li><a href="{% url 'party_history' party.id %}">History</a></li>
 		</ul>
 		<div class="party_details">
 			<h2>
 				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
-				<a href="{% url edit_party party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+				<a href="{% url 'edit_party' party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
 			</h2>
 			{% date_range party.start_date party.end_date %}
 			
@@ -41,7 +42,7 @@
 				<h3>Results file:</h3>
 				<ul>
 					{% for file in results_files %}
-						<li><a href="{% url party_results_file party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
+						<li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
 					{% endfor %}
 				</ul>
 			{% endif %}
@@ -52,7 +53,7 @@
 					{% for link in party.external_links.all %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					<li><a href="{% url party_edit_external_links party.id %}" class="edit open_in_lightbox">Edit</a></li>
+					<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox">Edit</a></li>
 				</ul>
 			</div>
 			
@@ -81,7 +82,7 @@
 		<div class="notes">
 			{% if request.user.is_staff %}
 				<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url party_edit_notes party.id %}">Edit notes</a></li>
+					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ party.notes|safe_markdown }}
@@ -94,7 +95,7 @@
 			<a id="competition_{{ compo.id }}"></a>
 			<h3>
 				<a href="{{ compo.get_absolute_url }}">{{ compo.name }}</a>
-				<a href="{% url party_edit_competition party.id compo.id %}">
+				<a href="{% url 'party_edit_competition' party.id compo.id %}">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
 				</a>
 			</h3>
@@ -115,7 +116,7 @@
 	
 	<ul class="actions">
 		<li>
-			<a class="add open_in_lightbox" href="{% url party_add_competition party.id %}">Add competition</a>
+			<a class="add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
 		</li>
 	</ul>
 {% endblock %}

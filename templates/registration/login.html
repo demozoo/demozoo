@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load url from future %}
 
 {% block html_title %}Log in - Demozoo{% endblock %}
 
@@ -11,7 +12,7 @@
 		{% endif %}
 	{% endif %}
 	
-	<form method="post" action="{% url django.contrib.auth.views.login %}">{% csrf_token %}
+	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
 		<table>
 		<tr>
 			<td>{{ form.username.label_tag }}</td>

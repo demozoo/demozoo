@@ -1,15 +1,16 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block html_title %}{{ group.name }} edit history - Demozoo{% endblock %}
 
 {% block base_main %}
 	<div class="panel">
 		<ul class="tabs">
-			<li><a href="{% url group group.id %}">Group</a></li>
+			<li><a href="{% url 'group' group.id %}">Group</a></li>
 			<li class="active_tab">History</li>
 		</ul>
 
-		<h2>Edit history for <a href="{% url group group.id %}">{{ group.name }}</a></h2>
+		<h2>Edit history for <a href="{% url 'group' group.id %}">{{ group.name }}</a></h2>
 		{% include "shared/history_table.html" %}
 
 	</div>

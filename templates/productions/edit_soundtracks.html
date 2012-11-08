@@ -1,8 +1,9 @@
 {% load spawning_formset %}
+{% load url from future %}
 
 <h2>Editing soundtrack details for {{ production.title }}:</h2>
 
-<form action="{% url production_edit_soundtracks production.id %}" method="post" class="entry_form">
+<form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% spawningformset sortable formset %}

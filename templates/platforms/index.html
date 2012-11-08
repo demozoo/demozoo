@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block html_title %}Platforms - Demozoo{% endblock %}
 
@@ -8,7 +9,7 @@
 	<ul>
 		{% for platform in platforms %}
 			<li>
-				<a href="{% url platform platform.id %}">{{ platform.name }}</a>
+				<a href="{% url 'platform' platform.id %}">{{ platform.name }}</a>
 			</li>
 		{% endfor %}
 	</ul>

@@ -1,6 +1,6 @@
 {% extends "maintenance/base.html" %}
-
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -10,7 +10,7 @@
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
 		<div class="panel report" data-report-name="{{ report_name }}">
-			<form action="{% url maintenance_fix_release_dates %}" method="post">
+			<form action="{% url 'maintenance_fix_release_dates' %}" method="post">
 				{% csrf_token %}
 				<table width="100%">
 					<col width="30%" />

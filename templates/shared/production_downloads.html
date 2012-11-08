@@ -1,3 +1,5 @@
+{% load url from future %}
+
 {% if download_links or editing %}
 	<div class="panel">
 		<h3>Downloads</h3>
@@ -6,7 +8,7 @@
 				<li class="download_link {{ link.html_link_class }}">
 					{{ link.as_download_link|safe }}
 					{% if editing %}
-						<a href="{% url production_edit_download_link production.id link.id %}" class="open_in_lightbox">
+						<a href="{% url 'production_edit_download_link' production.id link.id %}" class="open_in_lightbox">
 							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit download link" title="Edit download link" />
 						</a>
 					{% endif %}
@@ -14,7 +16,7 @@
 			{% endfor %}
 			{% if editing %}
 				<li class="add">
-					<a href="{% url production_add_download_link production.id %}" class="open_in_lightbox">Add download link</a>
+					<a href="{% url 'production_add_download_link' production.id %}" class="open_in_lightbox">Add download link</a>
 				</li>
 			{% endif %}
 		</ul>

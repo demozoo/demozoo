@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 {% load safe_markdown %}
+{% load url from future %}
 
 {% block html_title %}{{ scener.name_with_affiliations }} - Demozoo{% endblock %}
 
@@ -8,20 +9,20 @@
 	<div class="panel">
 		<ul class="tabs">
 			<li class="active_tab">Scener</li>
-			<li><a href="{% url scener_history scener.id %}">History</a></li>
+			<li><a href="{% url 'scener_history' scener.id %}">History</a></li>
 		</ul>
 	
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url edit_scener_done scener.id %}" class="done">Done</a></li>
+				<li><a href="{% url 'edit_scener_done' scener.id %}" class="done">Done</a></li>
 			{% else %}
-				<li><a href="{% url edit_scener scener.id %}" class="edit">Edit</a></li>
+				<li><a href="{% url 'edit_scener' scener.id %}" class="edit">Edit</a></li>
 			{% endif %}
 		</ul>
 		<h2>
 			{{ scener.name }} {% nick_variants scener.primary_nick %}
 			{% if editing %}
-				<a href="{% url releaser_edit_primary_nick scener.id %}" class="open_in_lightbox">
+				<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
 			{% endif %}
@@ -35,7 +36,7 @@
 						<li>
 							{{ nick.name }} {% nick_variants nick %}
 							{% if editing %}
-								<a href="{% url releaser_edit_nick scener.id nick.id %}" class="open_in_lightbox">
+								<a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
@@ -43,7 +44,7 @@
 					{% endfor %}
 					{% if editing %}
 						<li class="add">
-							<a href="{% url releaser_add_nick scener.id %}" class="open_in_lightbox">Add another name</a>
+							<a href="{% url 'releaser_add_nick' scener.id %}" class="open_in_lightbox">Add another name</a>
 						</li>
 					{% endif %}
 				</ul>
@@ -60,7 +61,7 @@
 					<em>not set</em>
 				{% endif %}
 				{% if editing %}
-					<a href="{% url scener_edit_real_name scener.id %}" class="open_in_lightbox">
+					<a href="{% url 'scener_edit_real_name' scener.id %}" class="open_in_lightbox">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
 					</a>
 				{% endif %}
@@ -85,7 +86,7 @@
 					{% endif %}
 				{% endif %}
 				{% if editing %}
-					<a href="{% url scener_edit_location scener.id %}" class="open_in_lightbox">
+					<a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
 					</a>
 				{% endif %}
@@ -99,7 +100,7 @@
 					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					{% if editing %}<li><a href="{% url releaser_edit_external_links scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+					{% if editing %}<li><a href="{% url 'releaser_edit_external_links' scener.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}
@@ -109,7 +110,7 @@
 		<div class="notes">
 			{% if editing_as_admin %}
 				<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url releaser_edit_notes scener.id %}">Edit notes</a></li>
+					<li><a class="edit open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ scener.notes|safe_markdown }}
@@ -124,9 +125,9 @@
 				<ul>
 					{% for membership in memberships %}
 						<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-							<a href="{% url group membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
+							<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
 							{% if editing %}
-								<a href="{% url scener_edit_membership scener.id membership.id %}" class="open_in_lightbox">
+								<a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 								</a>
 							{% endif %}
@@ -134,7 +135,7 @@
 					{% endfor %}
 					{% if editing %}
 						<li class="add">
-							<a href="{% url scener_add_group scener.id %}" class="open_in_lightbox">Add group</a>
+							<a href="{% url 'scener_add_group' scener.id %}" class="open_in_lightbox">Add group</a>
 						</li>
 					{% endif %}
 				</ul>
@@ -151,7 +152,7 @@
 				{% if editing %}
 					<ul>
 						<li class="add">
-							<a href="{% url new_production %}?releaser_id={{ scener.id }}" class="open_in_lightbox">Add production</a>
+							<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="open_in_lightbox">Add production</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -167,7 +168,7 @@
 				{% if editing %}
 					<ul>
 						<li class="add">
-							<a href="{% url releaser_add_credit scener.id %}" class="open_in_lightbox">Add credit</a>
+							<a href="{% url 'releaser_add_credit' scener.id %}" class="open_in_lightbox">Add credit</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -178,10 +179,10 @@
 	{% if editing_as_admin %}
 		<ul class="maintenance_actions">
 			{% if not scener.is_referenced %}
-				<li><a href="{% url delete_releaser scener.id %}" class="delete open_in_lightbox">Delete scener</a></li>
+				<li><a href="{% url 'delete_releaser' scener.id %}" class="delete open_in_lightbox">Delete scener</a></li>
 			{% endif %}
 			{% if scener.can_be_converted_to_group %}
-				<li><a href="{% url scener_convert_to_group scener.id %}" class="switch open_in_lightbox">Convert to group</a></li>
+				<li><a href="{% url 'scener_convert_to_group' scener.id %}" class="switch open_in_lightbox">Convert to group</a></li>
 			{% endif %}
 		</ul>
 	{% endif %}

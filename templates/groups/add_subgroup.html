@@ -1,6 +1,8 @@
+{% load url from future %}
+
 <h2>New subgroup for {{ group.name }}:</h2>
 
-<form action="{% url group_add_subgroup group.id %}" method="post" class="entry_form">
+<form action="{% url 'group_add_subgroup' group.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}

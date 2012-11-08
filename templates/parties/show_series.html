@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
 {% load safe_markdown %}
+{% load url from future %}
 
 {% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
 
@@ -10,14 +11,14 @@
 	<div class="panel">
 		<ul class="tabs">
 			<li class="active_tab">Party</li>
-			<li><a href="{% url party_series_history party_series.id %}">History</a></li>
+			<li><a href="{% url 'party_series_history' party_series.id %}">History</a></li>
 		</ul>
 		<ul class="actions">
-			<li><a href="{% url new_party %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
+			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
 		</ul>
 		<h2>
 			{{ party_series.name }}
-			<a href="{% url party_edit_series party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+			<a href="{% url 'party_edit_series' party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
 		</h2>
 		{% if party_series.has_any_external_links %}
 			<div class="external_links">
@@ -63,7 +64,7 @@
 		<div class="notes">
 			{% if request.user.is_staff %}
 				<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url party_edit_series_notes party_series.id %}">Edit notes</a></li>
+					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ party_series.notes|safe_markdown }}

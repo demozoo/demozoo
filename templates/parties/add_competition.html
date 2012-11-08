@@ -1,6 +1,8 @@
+{% load url from future %}
+
 <h2>New competition for {{ party.name }}:</h2>
 
-<form action="{% url party_add_competition party.id %}" method="post" class="entry_form">
+<form action="{% url 'party_add_competition' party.id %}" method="post" class="entry_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}

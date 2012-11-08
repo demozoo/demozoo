@@ -1,4 +1,5 @@
 {% load demoscene_tags %}
+{% load url from future %}
 
 <table width="100%">
 	<col width="50%" />
@@ -38,7 +39,7 @@
 
 				{% if editing %}
 					<td>
-						<a href="{% url releaser_edit_credit nick_with_credits.grouper.releaser_id nick_with_credits.grouper.id production_with_credits.grouper.id %}" class="open_in_lightbox">
+						<a href="{% url 'releaser_edit_credit' nick_with_credits.grouper.releaser_id nick_with_credits.grouper.id production_with_credits.grouper.id %}" class="open_in_lightbox">
 							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
 						</a>
 					</td>

@@ -1,7 +1,9 @@
 {% load json_filter %}
+{% load url from future %}
+
 <h2>New party</h2>
 
-<form action="{% url new_party %}" method="post" class="entry_form">
+<form action="{% url 'new_party' %}" method="post" class="entry_form">
 	{% csrf_token %}
 	{% for field in form.visible_fields %}
 		{% include "shared/form_field.html" %}

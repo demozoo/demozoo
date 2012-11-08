@@ -1,6 +1,7 @@
 {% if not request.is_ajax %}<!DOCTYPE html>
 {% load compress %}
 {% load menu %}
+{% load url from future %}
 <!--[if lt IE 7]><html class="no-js ie6 legacy" lang="en"><![endif]-->
 <!--[if IE 7]><html class="no-js ie7 legacy" lang="en"><![endif]-->
 <!--[if IE 8]><html class="no-js ie8 legacy" lang="en"><![endif]-->
@@ -55,7 +56,7 @@
 	<body lang="en" class="{% block body_class %}default{% endblock %}">
 			<div id="page">
 			<header id="site_header">
-				<h1><a href="{% url home %}">Demozoo</a></h1>
+				<h1><a href="{% url 'home' %}">Demozoo</a></h1>
 				{% block login_status_panel %}
 					<div id="login_status_panel">
 						{% if user.is_authenticated %}
@@ -64,12 +65,12 @@
 							</div>
 							<div class="login_links">
 								<ul>
-									<li><a href="{% url account_preferences %}">Preferences</a></li>
-									<li><a href="{% url account_change_password %}">Change password</a></li>
+									<li><a href="{% url 'account_preferences' %}">Preferences</a></li>
+									<li><a href="{% url 'account_change_password' %}">Change password</a></li>
 									{% if user.is_staff %}
-										<li><a href="{% url maintenance_index %}">Maintenance</a></li>
+										<li><a href="{% url 'maintenance_index' %}">Maintenance</a></li>
 									{% endif %}
-									<li><a href="{% url log_out %}">Log out</a></li>
+									<li><a href="{% url 'log_out' %}">Log out</a></li>
 								</ul>
 							</div>
 						{% else %}
@@ -77,13 +78,13 @@
 								Not logged in
 							</div>
 							<div class="login_links">
-								<form action="{% url log_in %}" method="post">
+								<form action="{% url 'log_in' %}" method="post">
 									{% csrf_token %}
 									{{ global_login_form.as_p }}
 									<input type="submit" value="Log in" />
 								</form>
 								<ul>
-									<li><a href="{% url user_signup %}">Register new account</a></li>
+									<li><a href="{% url 'user_signup' %}">Register new account</a></li>
 								</ul>
 							</div>
 						{% endif %}
@@ -92,15 +93,15 @@
 				{% endblock %}
 				<nav>
 					<ul>
-						<li class="{% nav_active productions %}"><a href="{% url productions %}">Productions</a></li>
-						<li class="{% nav_active music %}"><a href="{% url musics %}">Music</a></li>
-						<li class="{% nav_active graphics %}"><a href="{% url graphics %}">Graphics</a></li>
-						<li class="{% nav_active groups %}"><a href="{% url groups %}">Groups</a></li>
-						<li class="{% nav_active sceners %}"><a href="{% url sceners %}">Sceners</a></li>
-						<li class="{% nav_active parties %}"><a href="{% url parties %}">Parties</a></li>
+						<li class="{% nav_active productions %}"><a href="{% url 'productions' %}">Productions</a></li>
+						<li class="{% nav_active music %}"><a href="{% url 'musics' %}">Music</a></li>
+						<li class="{% nav_active graphics %}"><a href="{% url 'graphics' %}">Graphics</a></li>
+						<li class="{% nav_active groups %}"><a href="{% url 'groups' %}">Groups</a></li>
+						<li class="{% nav_active sceners %}"><a href="{% url 'sceners' %}">Sceners</a></li>
+						<li class="{% nav_active parties %}"><a href="{% url 'parties' %}">Parties</a></li>
 					</ul>
 					{% block global_search_form %}
-						<form class="search" method="get" action="{% url search %}">
+						<form class="search" method="get" action="{% url 'search' %}">
 							{{ global_search_form.q }}
 							<input type="submit" value="Search" />
 						</form>

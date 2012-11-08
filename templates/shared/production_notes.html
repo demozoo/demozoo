@@ -1,10 +1,11 @@
 {% load safe_markdown %}
+{% load url from future %}
 
 {% if production.notes or editing_as_admin %}
 	<div class="notes">
 		{% if editing_as_admin %}
 			<ul class="actions">
-				<li><a class="edit open_in_lightbox" href="{% url production_edit_notes production.id %}">Edit notes</a></li>
+				<li><a class="edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
 			</ul>
 		{% endif %}
 		{{ production.notes|safe_markdown }}
