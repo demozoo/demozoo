@@ -1,0 +1,5 @@
+<ul>
+	{% for placing in placings %}
+		<li><b>{{ placing.production.title }}</b> by {{ placing.production.byline_string }}</li>
+	{% endfor %}
+</ul>

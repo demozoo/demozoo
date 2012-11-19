@@ -966,6 +966,8 @@ class Party(models.Model):
 
 	website = models.URLField(blank=True, verify_exists=False)
 
+	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
+
 	search_result_template = 'search/results/party.html'
 
 	def __unicode__(self):

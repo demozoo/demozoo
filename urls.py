@@ -151,4 +151,5 @@ urlpatterns += patterns('',
 	(r'^search/', include('search.urls')),
 	(r'^maintenance/', include('maintenance.urls')),
 	(r'^pages/', include('pages.urls')),
+	(r'^sceneorg/', include('sceneorg.urls')),
 )

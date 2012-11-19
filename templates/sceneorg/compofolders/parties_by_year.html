@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	<h2>scene.org compo folder matching</h2>
+	<p>...so here's the deal. To help us on the way to having download links for all compo entries, we need to match up each individual compo to its corresponding folder on scene.org. Select a party to get started - the ones in bold are the ones not already marked as 'done'.</p>
+	<p>
+		<strong>By year</strong> | <a href="{% url 'sceneorg_compofolders' %}?order=series">By series</a>
+	</p>
+
+	{% regroup parties by start_date.date.year as year_list %}
+	{% for year in year_list %}
+		<h3 style="margin-top: 0.5em;">{{ year.grouper }}</h3>
+		<ul class="parties">
+			{% for party in year.list %}
+				<li>
+					{% if not party.sceneorg_compofolders_done %}<strong>{% endif %}
+					<a href="{% url 'sceneorg_compofolder_party' party.id %}">{{ party.name }}</a>
+					{% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
+				</li>
+			{% endfor %}
+		<ul>
+	{% endfor %}
+{% endblock %}

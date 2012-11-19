@@ -1,0 +1,8 @@
+<ul>
+	{% for dir in subdirectories %}
+		<li class="dir">{{ dir }}</li>
+	{% endfor %}
+	{% for file in files %}
+		<li class="file">{{ file }}</li>
+	{% endfor %}
+</ul>
