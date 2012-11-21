@@ -27,21 +27,61 @@
 	$('#id_party_series_name').change(function() {
 		partySeriesEdited = true;
 	})
-	$('#id_name').change(function() {
-		if (!partySeriesEdited) {
-			var name = $(this).val();
-			var words = name.split(/\s+/);
-			for (var i = words.length; i > 0; i--) {
-				var candidate = words.slice(0, i).join(' ').toLowerCase();
-				var match = partySeriesNameMatches[candidate];
-				if (match) {
-					$('#id_party_series_name').val(match);
-					return;
-				}
+
+	/* given a party name, decide on the most likely party series name */
+	function guessPartySeriesName(name) {
+		var words = name.split(/\s+/);
+		for (var i = words.length; i > 0; i--) {
+			var candidate = words.slice(0, i).join(' ').toLowerCase();
+			var match = partySeriesNameMatches[candidate];
+			if (match) {
+				return match;
 			}
-			/* no matches, so use base name without numeric prefix */
-			var baseName = name.replace(/\s+\d+$/, '');
-			$('#id_party_series_name').val(baseName);
 		}
-	})
+		/* no matches, so use base name without numeric prefix */
+		var baseName = name.replace(/\s+\d+$/, '');
+		return baseName;
+	}
+
+	var previousDefaultStartYear = null;
+
+	/* try to extract a year value from the party name, and set the initial value of the
+	start date's datepicker accordingly */
+	function refreshDefaultStartDate() {
+		var name = $('#id_name').val();
+		var yearMatch = name.match(/\b(\d{4})\s*$/);
+		var currentYear = new Date().getFullYear();
+		var partyYear;
+
+		if (yearMatch) {
+			partyYear = parseInt(yearMatch[1], 10);
+		} else {
+			partyYear = null;
+		}
+
+		var newDefaultStartDate;
+		if (partyYear !== null && partyYear != currentYear) {
+			/* avoid setting defaultDate unless it's an actual change, otherwise we'll fail to respond to clicks on the date picker button sometimes. Specifically, if we enter a party name and immediately click away to the date picker button, the text field's 'change' event will fire, set defaultDate, and have the side effect of blocking the 'open date picker' action. To fix this, we perform refreshDefaultStartDate on every keypress, so that there's no new action to perform on the final 'change' event. */
+			if (previousDefaultStartYear != partyYear) {
+				$('#id_start_date').datepicker("option", "defaultDate", new Date(partyYear, 0, 1));
+				previousDefaultStartYear = partyYear;
+			}
+		} else {
+			if (previousDefaultStartYear != null) {
+				$('#id_start_date').datepicker("option", "defaultDate", 0); /* default date = today */
+				previousDefaultStartYear = null;
+			}
+		}
+	}
+
+	$('#id_name').change(function() {
+		var name = $(this).val();
+		if (!partySeriesEdited) {
+			$('#id_party_series_name').val(guessPartySeriesName(name));
+		}
+		refreshDefaultStartDate();
+	});
+	$('#id_name').keypress(function() {
+		setTimeout(refreshDefaultStartDate, 1);
+	});
 /* ]]> */</script>
