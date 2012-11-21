@@ -74,6 +74,11 @@
 		}
 	}
 
+	/* copy the entered start date to be the default datepicker value for the end date */
+	function refreshDefaultEndDate(date) {
+		$('#id_end_date').datepicker("option", "defaultDate", date);
+	}
+
 	$('#id_name').change(function() {
 		var name = $(this).val();
 		if (!partySeriesEdited) {
@@ -83,5 +88,8 @@
 	});
 	$('#id_name').keypress(function() {
 		setTimeout(refreshDefaultStartDate, 1);
+	});
+	$('#id_start_date').change(function() {
+		refreshDefaultEndDate($(this).val());
 	});
 /* ]]> */</script>
