@@ -53,10 +53,27 @@
 			return new Date(parseInt(m[2], 10), monthsByName[m[1].toLowerCase()], 1);
 		} else if (m = str.match(regexps[7])) {
 			thisYear = (new Date()).getFullYear();
-			return new Date(thisYear, monthsByName[m[1].toLowerCase()], parseInt(m[2], 10));
+			return new Date(thisYear, monthsByName[m[2].toLowerCase()], parseInt(m[1], 10));
 		} else if (m = str.match(regexps[8])) {
 			thisYear = (new Date()).getFullYear();
 			return new Date(thisYear, monthsByName[m[1].toLowerCase()], 1);
+		} else {
+			throw 'Invalid date';
+		}
+	}
+
+	window.parseStrictDate = function(str) {
+		if (!str) return null;
+		var m;
+		if (m = str.match(regexps[0])) {
+			return new Date(parseInt(m[1], 10), parseInt(m[2], 10)-1, parseInt(m[3], 10));
+		} else if (m = str.match(regexps[3])) {
+			return new Date(parseInt(m[3], 10), parseInt(m[2], 10)-1, parseInt(m[1], 10));
+		} else if (m = str.match(regexps[5])) {
+			return new Date(parseInt(m[3], 10), monthsByName[m[2].toLowerCase()], parseInt(m[1], 10));
+		} else if (m = str.match(regexps[7])) {
+			thisYear = (new Date()).getFullYear();
+			return new Date(thisYear, monthsByName[m[2].toLowerCase()], parseInt(m[1], 10));
 		} else {
 			throw 'Invalid date';
 		}

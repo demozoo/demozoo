@@ -391,6 +391,11 @@ form.entry_form ul.subfields > li.subfield_competition_score {
 	width: 150px;
 }
 
+form.entry_form .field .field_input .day_of_week {
+	padding-left: 0.5em;
+	color: #888;
+}
+
 /* external links form needs bigger labels */
 form.external_links_form .field label.field_label {
 	width: 200px;

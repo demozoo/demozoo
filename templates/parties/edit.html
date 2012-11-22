@@ -11,3 +11,30 @@
 		<input type="submit" />
 	</div>
 </form>
+
+<script>/* <![CDATA[ */
+	function showDayOfWeek(dateField, dayLabel) {
+		var date;
+		try {
+			date = parseStrictDate(dateField.val());
+		} catch(e) {
+			date = null;
+		}
+		dayLabel.text(date === null ? '' : dayName[date.getDay()])
+	}
+	var dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+	var startDateDayOfWeek = $('<span class="day_of_week"></span>');
+	$('#id_start_date').after(startDateDayOfWeek);
+	var endDateDayOfWeek = $('<span class="day_of_week"></span>');
+	$('#id_end_date').after(endDateDayOfWeek);
+
+	$('#id_start_date').change(function() {
+		showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
+	});
+	showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
+
+	$('#id_end_date').change(function() {
+		showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+	});
+	showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+/* ]]> */</script>

@@ -41,7 +41,7 @@ function applyGlobalBehaviours(context) {
 	});
 	
 	$('input.date', context).each(function() {
-		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', dateParser: parseFuzzyDate};
+		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', firstDay: 1, dateParser: parseFuzzyDate};
 		$(this).datepicker(opts);
 	});
 	
