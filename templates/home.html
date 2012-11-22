@@ -3,7 +3,6 @@
 {% load url from future %}
 
 {% block base_main %}
-	<p><a href="{% url 'sceneorg_compofolders' %}" style="text-decoration: none; color: #449; display: block; border: 1px solid #ccc; padding: 1em 1em 1em 40px; font-size: 14pt; background-image:url(/static/images/icons/external_sites/sceneorg.png); background-repeat: no-repeat; background-position: 16px center;">NEW! Play the scene.org compofolder game! :-)</a></p>
 	<p>
 		<b>Now serving...</b>
 		{{ stats.production_count }} production{{ stats.production_count|pluralize }} -
