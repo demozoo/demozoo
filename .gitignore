@@ -1,0 +1,3 @@
+*.pyc
+local_settings.py
+apache/demozoo2.htpasswd
