@@ -6,7 +6,7 @@ env.hosts = ['demozoo@altaria.vm.bytemark.co.uk']
 
 def deploy():
 	with cd('/var/www/demozoo2'):
-		run('git pull origin master')
+		run('git pull')
 		run('source /home/demozoo/virtualenv/bin/activate && pip install -E /home/demozoo/virtualenv/ -r /var/www/demozoo2/requirements.txt')
 		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py syncdb')
 		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py migrate')
