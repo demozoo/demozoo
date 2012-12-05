@@ -56,11 +56,13 @@
 					<li><a href="{% url 'platform' platform.id %}">{{ platform.name }}</a></li>
 				{% endfor %}
 			</ul>
-			
+
+			{% include "shared/production_invitation_parties.html" %}
+
 			{% include "shared/production_competition_placings.html" %}
-			
+
 			{% include "shared/production_external_links.html" %}
-			
+
 			{% include "shared/production_tags.html" %}
 		</div>
 		

@@ -21,6 +21,7 @@ def show(request, production_id, edit_mode=False):
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
+		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
