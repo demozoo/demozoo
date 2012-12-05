@@ -808,6 +808,17 @@ class SoundcloudTrack(BaseUrl):
 	html_title_format = "%s on SoundCloud"
 
 
+class ModarchiveMember(BaseUrl):
+	canonical_format = "http://modarchive.org/member.php?%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php?(\d+)', re.I),
+		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_profile'}),
+	]
+	html_link_class = "modarchive"
+	html_link_text = "ModArchive"
+	html_title_format = "%s on The Mod Archive"
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -822,7 +833,7 @@ def grok_scener_link(urlstring):
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
-		YoutubeUser, DeviantartUser,
+		YoutubeUser, DeviantartUser, ModarchiveMember,
 		BaseUrl,
 	])
 

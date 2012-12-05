@@ -1,5 +1,5 @@
 *.pyc
-local_settings.py
-apache/demozoo2.htpasswd
-data
-static
+/local_settings.py
+/apache/demozoo2.htpasswd
+/data
+/static

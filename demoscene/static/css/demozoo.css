@@ -1454,6 +1454,10 @@ ul.parties_in_series li.current {
 	background-image: url('/static/images/icons/external_sites/deviantart.png');
 }
 
+.external_links a.modarchive {
+	background-image: url('/static/images/icons/external_sites/modarchive.png');
+}
+
 .external_links a.website {
 	background-image: url('/static/images/icons/world.png');
 }
