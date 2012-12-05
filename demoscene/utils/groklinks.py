@@ -811,7 +811,7 @@ class SoundcloudTrack(BaseUrl):
 class ModarchiveMember(BaseUrl):
 	canonical_format = "http://modarchive.org/member.php?%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php?(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php\?(\d+)', re.I),
 		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_profile'}),
 	]
 	html_link_class = "modarchive"
