@@ -87,7 +87,21 @@
 			<div style="clear: both;"></div>
 		</div>
 	{% endif %}
-	
+
+	{% if invitations %}
+		<div class="competition">
+			<h3>Invitation{{ invitations|length|pluralize }}</h3>
+			<table>
+				{% for production in invitations %}
+					<tr>
+						<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
+						<td>{% byline production %}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% endif %}
+
 	{% for compo, placings in competitions %}
 		<div class="competition">
 			<a id="competition_{{ compo.id }}"></a>

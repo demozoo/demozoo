@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile, Production
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -83,10 +83,18 @@ def show(request, party_id):
 	'''
 	competitions = unjoinify(Competition, query, (party.id,), columns)
 
+	# Do not show an invitations section in the special case that all invitations are
+	# entries in a competition at this party (which probably means that it was an invitation compo)
+	invitations = party.invitations.all()
+	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
+	if not non_competing_invitations:
+		invitations = Production.objects.none
+
 	return render(request, 'parties/show.html', {
 		'party': party,
 		'competitions': competitions,
 		'results_files': party.results_files.all(),
+		'invitations': invitations,
 	})
 
 
