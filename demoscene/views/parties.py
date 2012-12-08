@@ -365,3 +365,29 @@ def autocomplete(request):
 		for party in parties
 	]
 	return HttpResponse(json.dumps(party_data), mimetype="text/javascript")
+
+
+@login_required
+def edit_invitations(request, party_id):
+	party = get_object_or_404(Party, id=party_id)
+	initial_forms = [
+		{'production': production}
+		for production in party.invitations.all()
+	]
+
+	if request.method == 'POST':
+		formset = PartyInvitationFormset(request.POST, initial=initial_forms)
+		if formset.is_valid():
+			invitations = [prod_form.cleaned_data['production'].commit()
+				for prod_form in formset.forms
+				if prod_form not in formset.deleted_forms]
+			party.invitations = invitations
+
+			return HttpResponseRedirect(party.get_absolute_url())
+	else:
+		formset = PartyInvitationFormset(initial=initial_forms)
+	return ajaxable_render(request, 'parties/edit_invitations.html', {
+		'html_title': "Editing invitations for %s" % party.name,
+		'party': party,
+		'formset': formset,
+	})

@@ -90,7 +90,12 @@
 
 	{% if invitations %}
 		<div class="competition">
-			<h3>Invitation{{ invitations|length|pluralize }}</h3>
+			<h3>
+				Invitation{{ invitations|length|pluralize }}
+				<a href="{% url 'party_edit_invitations' party.id %}" class="open_in_lightbox">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit invitations" title="Edit invitations" />
+				</a>
+			</h3>
 			<table>
 				{% for production in invitations %}
 					<tr>

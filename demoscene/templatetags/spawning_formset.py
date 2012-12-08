@@ -109,9 +109,9 @@ class SpawningFormNode(template.Node):
 		for form in formset.forms:
 			context[self.form_var_name] = form
 			if form.is_bound:
-				li_class = 'bound'
+				li_class = 'spawned_form bound'
 			else:
-				li_class = 'unbound'
+				li_class = 'spawned_form unbound'
 			if sortable:
 				li_class += ' sortable_item'
 
@@ -135,7 +135,7 @@ class SpawningFormNode(template.Node):
 			delete_field = u'<span class="delete">%s %s</span>' % (form['DELETE'], form['DELETE'].label_tag())
 		else:
 			delete_field = ''
-		li_class = 'placeholder_form'
+		li_class = 'spawned_form placeholder_form'
 		if sortable:
 			li_class += ' sortable_item'
 		output += [

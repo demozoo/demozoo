@@ -1,10 +1,12 @@
 from django import forms
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, Edit
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from fuzzy_date_field import FuzzyDateField
 from form_with_location import ModelFormWithLocation
 from production_type_field import ProductionTypeChoiceField
+from production_field import ProductionField
 
 
 class PartyForm(ModelFormWithLocation):
@@ -197,3 +199,10 @@ class PartyExternalLinkForm(ExternalLinkForm):
 
 PartyExternalLinkFormSet = inlineformset_factory(Party, PartyExternalLink,
 	form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet)
+
+
+class PartyInvitationForm(forms.Form):
+	production = ProductionField()
+
+PartyInvitationFormset = formset_factory(PartyInvitationForm,
+	can_delete=True, extra=1)
