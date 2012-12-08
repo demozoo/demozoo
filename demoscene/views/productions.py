@@ -137,8 +137,12 @@ def history(request, production_id):
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
+	use_invitation_formset = False
+	invitation_formset = None
+
 	if production.supertype == 'production':
 		form_class = ProductionEditCoreDetailsForm
+		use_invitation_formset = True
 	elif production.supertype == 'graphics':
 		form_class = GraphicsEditCoreDetailsForm
 	else:  # production.supertype == 'music':
@@ -147,7 +151,13 @@ def edit_core_details(request, production_id):
 	if request.method == 'POST':
 		form = form_class(request.POST, instance=production)
 
-		if form.is_valid():
+		if use_invitation_formset:
+			invitation_formset = ProductionInvitationPartyFormset(request.POST, initial=[
+				{'party': party}
+				for party in production.invitation_parties.order_by('start_date_date')
+			])
+
+		if form.is_valid() and (invitation_formset.is_valid() or not use_invitation_formset):
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			form.save()
@@ -156,10 +166,17 @@ def edit_core_details(request, production_id):
 	else:
 		form = form_class(instance=production)
 
+		if use_invitation_formset:
+			invitation_formset = ProductionInvitationPartyFormset(initial=[
+				{'party': party}
+				for party in production.invitation_parties.order_by('start_date_date')
+			])
+
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'html_title': "Editing %s: %s" % (production.supertype, production.title),
 		'production': production,
 		'form': form,
+		'invitation_formset': invitation_formset,
 	})
 
 

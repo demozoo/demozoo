@@ -1,3 +1,5 @@
+{% load spawning_formset %}
+
 <h2>Editing {{ production.supertype }}: {{ production.title }}</h2>
 
 <form action="{{ production.get_edit_core_details_url }}" method="post" class="entry_form">
@@ -28,6 +30,24 @@
 	{% with form.platforms as field %}
 		{% include "shared/form_field.html" %}
 	{% endwith %}
+
+	{% if invitation_formset %}
+		<div class="field">
+			<label class="field_label">Invitation for party</label>
+			<div class="field_input">
+				{{ invitation_formset.management_form }}
+				{% spawningformset invitation_formset %}
+					{% spawningform as form %}
+						{{ form.party.errors }}
+						{{ form.party }}
+						{% for field in form.hidden_fields %}
+							{{ field }}
+						{% endfor %}
+					{% endspawningform %}
+				{% endspawningformset %}
+			</div>
+		</div>
+	{% endif %}
 	
 	<div class="field">
 		<input type="submit" />

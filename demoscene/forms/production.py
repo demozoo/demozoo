@@ -6,6 +6,7 @@ from django.forms.models import inlineformset_factory, BaseModelFormSet
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
+from demoscene.utils.party_field import PartyField
 from production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 
@@ -318,3 +319,10 @@ ProductionSoundtrackLinkFormset = formset_factory(SoundtrackLinkForm,
 	formset=BaseProductionSoundtrackLinkFormSet,
 	can_delete=True, can_order=True, extra=1)
 ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == 'production'][0]
+
+
+class ProductionInvitationPartyForm(forms.Form):
+	party = PartyField()
+
+ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
+	can_delete=True, extra=1)
