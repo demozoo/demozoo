@@ -161,6 +161,13 @@ def edit_core_details(request, production_id):
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			form.save()
+
+			if use_invitation_formset:
+				invitation_parties = [party_form.cleaned_data['party'].commit()
+					for party_form in invitation_formset.forms
+					if party_form not in invitation_formset.deleted_forms]
+				production.invitation_parties = invitation_parties
+
 			form.log_edit(request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
