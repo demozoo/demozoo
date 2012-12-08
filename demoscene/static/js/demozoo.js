@@ -251,7 +251,25 @@ function applyGlobalBehaviours(context) {
 				staticView.show();
 			}
 		});
-	})
+	});
+
+	$('.party_field', context).each(function() {
+		var searchField = $('.party_field_search', this);
+		var partyIdField = $('.party_field_party_id', this);
+		$('.party_field_lookup', this).hide();
+		searchField.autocomplete({
+			'source': function(request, response) {
+				$.getJSON('/parties/autocomplete/', {'term': request.term}, function(data) {
+					response(data);
+				});
+			},
+			'autoFocus': true,
+			'select': function(event, ui) {
+				partyIdField.val(ui.item.id);
+			}
+		});
+		$(this).addClass('ajaxified');
+	});
 }
 
 $(function() {

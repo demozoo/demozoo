@@ -76,8 +76,8 @@ class PartyLookup():
 class PartyWidget(forms.Widget):
 	def __init__(self, attrs=None):
 		self.search_widget = forms.TextInput(attrs={'class': 'party_field_search'})
-		self.lookup_widget = SubmitButtonInput(button_text='Find party')
-		self.party_id_widget = forms.HiddenInput()
+		self.lookup_widget = SubmitButtonInput(button_text='Find party', attrs={'class': 'party_field_lookup'})
+		self.party_id_widget = forms.HiddenInput(attrs={'class': 'party_field_party_id'})
 		super(PartyWidget, self).__init__(attrs=attrs)
 
 	def render(self, name, value, attrs=None):

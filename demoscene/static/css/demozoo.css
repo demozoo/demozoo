@@ -831,6 +831,9 @@ ul.maintenance_actions li {
 form.entry_form .party_field input.party_field_search {
 	width: 300px;
 }
+form.entry_form .party_field.ajaxified input.party_field_search {
+	width: 400px;
+}
 
 /* byline matches */
 .matched_names {

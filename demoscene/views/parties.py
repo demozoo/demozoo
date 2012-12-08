@@ -350,3 +350,18 @@ def results_file(request, party_id, file_id):
 		'party': party,
 		'text': results_file.text
 	})
+
+
+def autocomplete(request):
+	query = request.GET.get('term')
+	parties = Party.objects.filter(name__istartswith=query)
+	parties = parties[:10]
+
+	party_data = [
+		{
+			'id': party.id,
+			'value': party.name,
+		}
+		for party in parties
+	]
+	return HttpResponse(json.dumps(party_data), mimetype="text/javascript")
