@@ -68,7 +68,7 @@ class SpawningFormsetNode(template.Node):
 			data_attr = u''
 
 		output = [
-			u'<div class="field_input spawning_formset"%s>' % data_attr,
+			u'<div class="spawning_formset"%s>' % data_attr,
 			str(formset.management_form),
 			u'<ul%s>' % class_attr,
 			self.nodelist.render(context),
