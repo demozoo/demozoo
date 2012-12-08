@@ -256,6 +256,7 @@ function applyGlobalBehaviours(context) {
 	$('.party_field', context).each(function() {
 		var searchField = $('.party_field_search', this);
 		var partyIdField = $('.party_field_party_id', this);
+		var helpText = $('.help_text', this);
 		$('.party_field_lookup', this).hide();
 		searchField.autocomplete({
 			'source': function(request, response) {
@@ -268,6 +269,11 @@ function applyGlobalBehaviours(context) {
 				partyIdField.val(ui.item.id);
 			}
 		});
+		searchField.focus(function() {helpText.show();});
+		searchField.blur(function() {
+			setTimeout(function() {helpText.hide();}, 1);
+		});
+		helpText.hide();
 		$(this).addClass('ajaxified');
 	});
 }

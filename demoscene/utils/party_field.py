@@ -87,6 +87,7 @@ class PartyWidget(forms.Widget):
 			self.search_widget.render(name + '_search', party_lookup.search_term, attrs=attrs),
 			self.lookup_widget.render(name + '_lookup', None, attrs=attrs),
 			self.party_id_widget.render(name + '_party_id', party_lookup.party_id, attrs=attrs),
+			'<div class="help_text">(if the party doesn\'t exist yet, <a href="/parties/new/" target="_blank">create it first</a>!)</div>'
 		]
 
 		return mark_safe(u'<div class="party_field">' + u''.join(output) + u'</div>')
