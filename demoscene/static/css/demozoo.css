@@ -336,38 +336,38 @@ form.entry_form .field {
 	padding-top: 12px;
 }
 
-form.entry_form .field label.field_label {
+form.entry_form label.field_label {
 	width: 150px;
 	float: left;
 }
 
-form.entry_form .field .field_input {
+form.entry_form .field_input {
 	width: 450px;
 	float: left;
 }
 
-form.entry_form .field .unlabelled_field_input {
+form.entry_form .unlabelled_field_input {
 	padding-left: 150px;
 }
 
-form.entry_form .field .field_input input[type=text] {
+form.entry_form .field_input input[type=text] {
 	width: 400px;
 }
 
-form.entry_form .field .field_input input.date[type=text] {
+form.entry_form .field_input input.date[type=text] {
 	width: 150px;
 }
 
-form.entry_form .field .field_input input.numeric[type=text] {
+form.entry_form  .field_input input.numeric[type=text] {
 	width: 100px;
 }
 
-form.entry_form .field .field_input textarea {
+form.entry_form .field_input textarea {
 	width: 420px;
 	height: 300px;
 }
 
-form.entry_form .field .field_input textarea.short_notes {
+form.entry_form .field_input textarea.short_notes {
 	height: 50px;
 }
 
@@ -826,6 +826,10 @@ ul.maintenance_actions li {
 	height: 16px;
 	text-indent: -5000px;
 	background-image: url('/static/images/icons/cross.png');
+}
+
+form.entry_form .party_field input.party_field_search {
+	width: 300px;
 }
 
 /* byline matches */
