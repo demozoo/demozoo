@@ -10,6 +10,7 @@ register = template.Library()
 
 import re
 
+
 @register.tag
 def spawningformset(parser, token):
 	try:
@@ -21,28 +22,29 @@ def spawningformset(parser, token):
 	if not m:
 		raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
 	sortable, formset_name = m.groups()
-	
+
 	nodelist = parser.parse(('endspawningformset',))
 	parser.delete_first_token()
 	return SpawningFormsetNode(sortable, formset_name, nodelist)
+
 
 class SpawningFormsetNode(template.Node):
 	def __init__(self, sortable, formset_name, nodelist):
 		self.sortable = sortable
 		self.formset_var = template.Variable(formset_name)
 		self.nodelist = nodelist
-	
+
 	def render(self, context):
 		try:
 			formset = self.formset_var.resolve(context)
 		except template.VariableDoesNotExist:
 			return ''
-		
+
 		context['formset_context'] = {
 			'formset': formset,
 			'sortable': self.sortable,
 		}
-		
+
 		if self.sortable:
 			class_attr = ' class="sortable_formset"'
 		else:
@@ -55,9 +57,10 @@ class SpawningFormsetNode(template.Node):
 			u'</ul>',
 			u'</div>',
 		]
-		
+
 		return u''.join(output)
-		
+
+
 @register.tag
 def spawningform(parser, token):
 	try:
@@ -69,20 +72,21 @@ def spawningform(parser, token):
 	if not m:
 		raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
 	form_var_name, = m.groups()
-	
+
 	nodelist = parser.parse(('endspawningform',))
 	parser.delete_first_token()
 	return SpawningFormNode(form_var_name, nodelist)
+
 
 class SpawningFormNode(template.Node):
 	def __init__(self, form_var_name, nodelist):
 		self.form_var_name = form_var_name
 		self.nodelist = nodelist
-	
+
 	def render(self, context):
 		formset = context['formset_context']['formset']
 		sortable = context['formset_context']['sortable']
-		
+
 		output = []
 		for form in formset.forms:
 			context[self.form_var_name] = form
@@ -92,7 +96,7 @@ class SpawningFormNode(template.Node):
 				li_class = 'unbound'
 			if sortable:
 				li_class += ' sortable_item'
-			
+
 			if 'DELETE' in form.fields:
 				delete_field = u'<span class="delete">%s %s</span>' % (form['DELETE'], form['DELETE'].label_tag())
 			else:
@@ -106,7 +110,7 @@ class SpawningFormNode(template.Node):
 				u'<div style="clear: both;"></div>',
 				u'</li>'
 			]
-		
+
 		form = formset.empty_form
 		context[self.form_var_name] = form
 		if 'DELETE' in form.fields:
@@ -122,9 +126,8 @@ class SpawningFormNode(template.Node):
 			self.nodelist.render(context),
 			u'</div>',
 			delete_field,
-                        u'<div style="clear: both;"></div>',
+			u'<div style="clear: both;"></div>',
 			u'</li>',
 		]
-		
+
 		return u''.join(output)
-		
