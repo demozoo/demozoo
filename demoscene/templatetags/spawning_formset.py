@@ -1,4 +1,5 @@
 from django import template
+from django.utils.html import escape
 
 # {% spawningformset [sortable] formset %}
 # {% spawningform as form %}
@@ -13,26 +14,37 @@ import re
 
 @register.tag
 def spawningformset(parser, token):
-	try:
-		# Splitting by None == splitting by spaces.
-		tag_name, arg = token.contents.split(None, 1)
-	except ValueError:
-		raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
-	m = re.search(r'(sortable )?(\w+)', arg)
-	if not m:
-		raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
-	sortable, formset_name = m.groups()
+	args = token.split_contents()
+	tag_name = args.pop(0)
+	if not args:
+		raise template.TemplateSyntaxError, "%r tag requires arguments" % tag_name
+
+	sortable = False
+	add_button_text = None
+	formset_name = None
+
+	for arg in args:
+		if arg == 'sortable':
+			sortable = True
+		else:
+			m = re.match(r'add_button_text="(.*)"', arg)
+			if m:
+				add_button_text = m.groups()[0]
+			else:
+				# treat this as the formset variable name
+				formset_name = arg
 
 	nodelist = parser.parse(('endspawningformset',))
 	parser.delete_first_token()
-	return SpawningFormsetNode(sortable, formset_name, nodelist)
+	return SpawningFormsetNode(sortable, add_button_text, formset_name, nodelist)
 
 
 class SpawningFormsetNode(template.Node):
-	def __init__(self, sortable, formset_name, nodelist):
+	def __init__(self, sortable, add_button_text, formset_name, nodelist):
 		self.sortable = sortable
 		self.formset_var = template.Variable(formset_name)
 		self.nodelist = nodelist
+		self.add_button_text = add_button_text
 
 	def render(self, context):
 		try:
@@ -46,11 +58,17 @@ class SpawningFormsetNode(template.Node):
 		}
 
 		if self.sortable:
-			class_attr = ' class="sortable_formset"'
+			class_attr = u' class="sortable_formset"'
 		else:
-			class_attr = ''
+			class_attr = u''
+
+		if self.add_button_text is not None:
+			data_attr = u' data-add-button-text="%s"' % escape(self.add_button_text),
+		else:
+			data_attr = u''
+
 		output = [
-			u'<div class="field_input spawning_formset">',
+			u'<div class="field_input spawning_formset"%s>' % data_attr,
 			str(formset.management_form),
 			u'<ul%s>' % class_attr,
 			self.nodelist.render(context),

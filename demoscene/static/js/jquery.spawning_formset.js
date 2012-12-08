@@ -35,7 +35,8 @@
 				}
 			}
 			
-			var addButton = $('<a href="javascript:void(0);" class="add_button">add</a>');
+			var addButtonText = $(formset).data('add-button-text') || 'add';
+			var addButton = $('<a href="javascript:void(0);" class="add_button"></a>').text(addButtonText);
 			var addLi = $('<li></li>');
 			addLi.append(addButton);
 			addButton.click(function() {
