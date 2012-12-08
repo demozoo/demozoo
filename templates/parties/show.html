@@ -88,7 +88,7 @@
 		</div>
 	{% endif %}
 
-	{% if invitations %}
+	{% if invitations or user.is_authenticated %}
 		<div class="competition">
 			<h3>
 				Invitation{{ invitations|length|pluralize }}
@@ -96,14 +96,16 @@
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit invitations" title="Edit invitations" />
 				</a>
 			</h3>
-			<table>
-				{% for production in invitations %}
-					<tr>
-						<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-						<td>{% byline production %}</td>
-					</tr>
-				{% endfor %}
-			</table>
+			{% if invitations %}
+				<table>
+					{% for production in invitations %}
+						<tr>
+							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
+							<td>{% byline production %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			{% endif %}
 		</div>
 	{% endif %}
 
