@@ -175,9 +175,12 @@ def edit_core_details(request, production_id):
 
 				if invitation_formset.has_changed():
 					party_names = [party.name for party in invitation_parties]
-					edit_descriptions.append(
-						u"Set invitation for %s" % (u", ".join(party_names))
-					)
+					if party_names:
+						edit_descriptions.append(
+							u"Set invitation for %s" % (u", ".join(party_names))
+						)
+					else:
+						edit_descriptions.append(u"Unset as invitation")
 
 			if edit_descriptions:
 				Edit.objects.create(action_type='edit_production_core_details', focus=production,
