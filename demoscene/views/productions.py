@@ -162,13 +162,27 @@ def edit_core_details(request, production_id):
 			production.has_bonafide_edits = True
 			form.save()
 
+			edit_descriptions = []
+			main_edit_description = form.changed_data_description
+			if main_edit_description:
+				edit_descriptions.append(main_edit_description)
+
 			if use_invitation_formset:
 				invitation_parties = [party_form.cleaned_data['party'].commit()
 					for party_form in invitation_formset.forms
 					if party_form not in invitation_formset.deleted_forms]
 				production.invitation_parties = invitation_parties
 
-			form.log_edit(request.user)
+				if invitation_formset.has_changed():
+					party_names = [party.name for party in invitation_parties]
+					edit_descriptions.append(
+						u"Set invitation for %s" % (u", ".join(party_names))
+					)
+
+			if edit_descriptions:
+				Edit.objects.create(action_type='edit_production_core_details', focus=production,
+					description=u"; ".join(edit_descriptions), user=request.user)
+
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = form_class(instance=production)

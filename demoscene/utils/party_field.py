@@ -57,6 +57,17 @@ class PartyLookup():
 	def commit(self):
 		return self.party
 
+	def __repr__(self):
+		return "PartyLookup: %s, %s" % (repr(self.party_id), self.search_term)
+
+	def __eq__(self, other):
+		if not isinstance(other, PartyLookup):
+			return False
+		return self.search_term == other.search_term and str(self.party_id) == str(other.party_id)
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
 	@staticmethod
 	def from_value(value):
 		# value can be:
@@ -103,6 +114,11 @@ class PartyWidget(forms.Widget):
 			return None
 		else:
 			return party_lookup
+
+	def _has_changed(self, initial, data):
+		initial = PartyLookup.from_value(initial)
+		data = PartyLookup.from_value(data)
+		return data != initial
 
 
 class PartyField(forms.Field):
