@@ -43,6 +43,14 @@ class ProductionSelection(StrAndUnicode):
 	def __unicode__(self):
 		return u"ProductionSelection: %s - %s" % (self.id, self.title)
 
+	def __eq__(self, other):
+		if not isinstance(other, ProductionSelection):
+			return False
+		return self.title == other.title and str(self.id) == str(other.id) and self.byline_lookup == other.byline_lookup
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
 	@staticmethod
 	def from_value(value, types_to_set=[]):
 		# value can be:
@@ -149,6 +157,11 @@ class ProductionWidget(forms.Widget):
 			'</div>',
 		]
 		return mark_safe(u''.join(output))
+
+	def _has_changed(self, initial, data):
+		initial = ProductionSelection.from_value(initial)
+		data = ProductionSelection.from_value(data)
+		return data != initial
 
 
 class ProductionField(forms.Field):

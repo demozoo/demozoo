@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile, Production
+from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile, Production, Edit
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -382,6 +382,12 @@ def edit_invitations(request, party_id):
 				for prod_form in formset.forms
 				if prod_form not in formset.deleted_forms]
 			party.invitations = invitations
+
+			if formset.has_changed():
+				invitation_titles = [prod.title for prod in invitations] or ['none']
+				invitation_titles = ", ".join(invitation_titles)
+				Edit.objects.create(action_type='edit_party_invitations', focus=party,
+					description=u"Set invitations to %s" % invitation_titles, user=request.user)
 
 			return HttpResponseRedirect(party.get_absolute_url())
 	else:
