@@ -322,7 +322,7 @@ ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if 
 
 
 class ProductionInvitationPartyForm(forms.Form):
-	party = PartyField()
+	party = PartyField(required=False)
 
 ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
 	can_delete=True, extra=1)
