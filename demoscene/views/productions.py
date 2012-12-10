@@ -157,7 +157,7 @@ def edit_core_details(request, production_id):
 				for party in production.invitation_parties.order_by('start_date_date')
 			])
 
-		if form.is_valid() and (invitation_formset.is_valid() or not use_invitation_formset):
+		if form.is_valid() and ((not use_invitation_formset) or invitation_formset.is_valid()):
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			form.save()
