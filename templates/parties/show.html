@@ -87,7 +87,28 @@
 			<div style="clear: both;"></div>
 		</div>
 	{% endif %}
-	
+
+	{% if invitations or user.is_authenticated %}
+		<div class="competition">
+			<h3>
+				Invitation{{ invitations|length|pluralize }}
+				<a href="{% url 'party_edit_invitations' party.id %}" class="open_in_lightbox">
+					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit invitations" title="Edit invitations" />
+				</a>
+			</h3>
+			{% if invitations %}
+				<table>
+					{% for production in invitations %}
+						<tr>
+							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
+							<td>{% byline production %}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			{% endif %}
+		</div>
+	{% endif %}
+
 	{% for compo, placings in competitions %}
 		<div class="competition">
 			<a id="competition_{{ compo.id }}"></a>

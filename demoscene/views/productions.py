@@ -104,6 +104,7 @@ def show(request, production_id, edit_mode=False):
 			production.soundtrack_links.order_by('position').select_related('soundtrack')
 		],
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
+		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
@@ -136,8 +137,12 @@ def history(request, production_id):
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
+	use_invitation_formset = False
+	invitation_formset = None
+
 	if production.supertype == 'production':
 		form_class = ProductionEditCoreDetailsForm
+		use_invitation_formset = True
 	elif production.supertype == 'graphics':
 		form_class = GraphicsEditCoreDetailsForm
 	else:  # production.supertype == 'music':
@@ -146,19 +151,56 @@ def edit_core_details(request, production_id):
 	if request.method == 'POST':
 		form = form_class(request.POST, instance=production)
 
-		if form.is_valid():
+		if use_invitation_formset:
+			invitation_formset = ProductionInvitationPartyFormset(request.POST, initial=[
+				{'party': party}
+				for party in production.invitation_parties.order_by('start_date_date')
+			])
+
+		if form.is_valid() and (invitation_formset.is_valid() or not use_invitation_formset):
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			form.save()
-			form.log_edit(request.user)
+
+			edit_descriptions = []
+			main_edit_description = form.changed_data_description
+			if main_edit_description:
+				edit_descriptions.append(main_edit_description)
+
+			if use_invitation_formset:
+				invitation_parties = [party_form.cleaned_data['party'].commit()
+					for party_form in invitation_formset.forms
+					if party_form not in invitation_formset.deleted_forms]
+				production.invitation_parties = invitation_parties
+
+				if invitation_formset.has_changed():
+					party_names = [party.name for party in invitation_parties]
+					if party_names:
+						edit_descriptions.append(
+							u"Set invitation for %s" % (u", ".join(party_names))
+						)
+					else:
+						edit_descriptions.append(u"Unset as invitation")
+
+			if edit_descriptions:
+				Edit.objects.create(action_type='edit_production_core_details', focus=production,
+					description=u"; ".join(edit_descriptions), user=request.user)
+
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = form_class(instance=production)
+
+		if use_invitation_formset:
+			invitation_formset = ProductionInvitationPartyFormset(initial=[
+				{'party': party}
+				for party in production.invitation_parties.order_by('start_date_date')
+			])
 
 	return ajaxable_render(request, 'productions/edit_core_details.html', {
 		'html_title': "Editing %s: %s" % (production.supertype, production.title),
 		'production': production,
 		'form': form,
+		'invitation_formset': invitation_formset,
 	})
 
 

@@ -963,10 +963,11 @@ class Party(models.Model):
 	woe_id = models.BigIntegerField(null=True, blank=True)
 
 	notes = models.TextField(blank=True)
-
 	website = models.URLField(blank=True, verify_exists=False)
 
 	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
+
+	invitations = models.ManyToManyField(Production, related_name='invitation_parties')
 
 	search_result_template = 'search/results/party.html'
 

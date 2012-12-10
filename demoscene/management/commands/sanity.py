@@ -1,4 +1,4 @@
-from demoscene.models import Releaser, Nick, NickVariant
+from demoscene.models import Releaser, Nick, NickVariant, Competition
 from sceneorg.models import Directory
 
 from django.core.management.base import NoArgsCommand
@@ -125,6 +125,20 @@ class Command(NoArgsCommand):
 		print "Recursively marking children of deleted scene.org dirs as deleted"
 		for dir in Directory.objects.filter(is_deleted=True):
 			dir.mark_deleted()
+
+		print "Converting invitation competitions to party invitation relations"
+		invitation_compos = Competition.objects.filter(name__istartswith='invitation').select_related('party')
+		for compo in invitation_compos:
+			placings = compo.placings.select_related('production')
+
+			is_real_compo = False
+			for placing in placings:
+				if placing.ranking != '' or placing.score != '':
+					is_real_compo = True
+				compo.party.invitations.add(placing.production)
+
+			if not is_real_compo:
+				compo.delete()
 
 		transaction.commit_unless_managed()
 
