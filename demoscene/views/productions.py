@@ -170,7 +170,7 @@ def edit_core_details(request, production_id):
 			if use_invitation_formset:
 				invitation_parties = [party_form.cleaned_data['party'].commit()
 					for party_form in invitation_formset.forms
-					if party_form not in invitation_formset.deleted_forms]
+					if party_form.cleaned_data.get('party') and party_form not in invitation_formset.deleted_forms]
 				production.invitation_parties = invitation_parties
 
 				if invitation_formset.has_changed():
