@@ -63,6 +63,6 @@ admin.site.register(Releaser,
 admin.site.register(Nick, inlines=[NickVariantInline], raw_id_fields=['releaser'],
 	search_fields=['variants__name'])
 admin.site.register(PartySeries)
-admin.site.register(Party)
+admin.site.register(Party, raw_id_fields=['invitations'])
 admin.site.register(Competition, inlines=[CompetitionPlacingInline], list_select_related=True)
 admin.site.register(AccountProfile)
