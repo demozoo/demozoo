@@ -50,9 +50,10 @@ function applyGlobalBehaviours(context) {
 			/* probably means they want to open it in a new window, so let them... */
 			return true;
 		}
-		Lightbox.openUrl(this.href, applyGlobalBehaviours);
+		var focusEmptyInput = $(this).hasClass('focus_empty_input');
+		Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
 		return false;
-	})
+	});
 	$('a.open_image_in_lightbox', context).click(function(e) {
 		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
 			/* probably means they want to open it in a new window, so let them... */

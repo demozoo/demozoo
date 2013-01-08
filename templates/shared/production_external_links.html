@@ -7,7 +7,7 @@
 			{% for link in external_links %}
 				<li>{{ link.html_link|safe }}</li>
 			{% endfor %}
-			{% if editing %}<li><a href="{% url 'production_edit_external_links' production.id %}" class="edit open_in_lightbox">Edit</a></li>{% endif %}
+			{% if editing %}<li><a href="{% url 'production_edit_external_links' production.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
 		</ul>
 	</div>
 {% endif %}

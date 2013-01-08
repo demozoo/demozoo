@@ -33,40 +33,46 @@
 	function checkForEscape(evt) {
 		if (evt.keyCode == 27) self.close();
 	}
-	function show() {
+	function show(opts) {
 		if (isShowing) return;
 		lightboxOuter.show();
 		isShowing = true;
-		try {$(':input:visible', lightboxContent)[0].focus();}catch(_){}
-		
+
+		if (opts && opts.focusEmptyInput) {
+			/* focus on the first *empty* input field */
+			try {$(':input:visible[value=""]', lightboxContent)[0].focus();}catch(_){}
+		} else {
+			try {$(':input:visible', lightboxContent)[0].focus();}catch(_){}
+		}
+
 		setSize();
 		$(window).keydown(checkForEscape);
 		$(window).resize(setSize);
 	}
 	
-	self.openContent = function(content, onLoadCallback) {
+	self.openContent = function(content, onLoadCallback, opts) {
 		init();
 		lightboxContent.html(content);
-		show();
+		show(opts);
 		if (onLoadCallback) onLoadCallback(lightboxElem);
-	}
-	
-	self.openUrl = function(url, onLoadCallback) {
+	};
+
+	self.openUrl = function(url, onLoadCallback, opts) {
 		init();
 		$('body').addClass('loading');
 		lightboxContent.load(url, function() {
 			$('body').removeClass('loading');
-			show();
+			show(opts);
 			if (onLoadCallback) onLoadCallback(lightboxElem);
 		});
-	}
+	};
 	self.close = function() {
 		if (!isShowing) return;
 		$(window).unbind('resize', setSize);
 		$(window).unbind('keydown', checkForEscape);
 		lightboxOuter.hide();
 		isShowing = false;
-	}
-	
+	};
+
 	window.Lightbox = self;
 })();

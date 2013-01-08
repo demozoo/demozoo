@@ -51,7 +51,7 @@
 					{% for link in party.external_links.all %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox">Edit</a></li>
+					<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>
 				</ul>
 			</div>
 			
