@@ -1259,7 +1259,7 @@ class ProductionLink(ExternalLink):
 		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
 		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
 		groklinks.ScenesatTrack, groklinks.ModlandFile, groklinks.SoundcloudTrack,
-		groklinks.CsdbMusic, groklinks.NectarineSong,
+		groklinks.CsdbMusic, groklinks.NectarineSong, groklinks.BitjamSong,
 		groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile,
@@ -1274,7 +1274,8 @@ class ProductionLink(ExternalLink):
 	# download links
 	always_external_link_classes = [
 		'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
-		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack', 'ModarchiveModule'
+		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
+		'ModarchiveModule', 'BitjamSong',
 	]
 
 	def save(self, *args, **kwargs):

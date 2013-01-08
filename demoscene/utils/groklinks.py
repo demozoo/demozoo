@@ -212,6 +212,16 @@ class BitjamAuthor(BaseUrl):
 	html_title_format = "%s on BitJam"
 
 
+class BitjamSong(BaseUrl):
+	canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?info&id=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?bitfellas\.org/e107_plugins/radio/radio\.php\?info', 'id', re.I),
+	]
+	html_link_class = "bitjam"
+	html_link_text = "BitJam"
+	html_title_format = "%s on BitJam"
+
+
 class ArtcityArtist(BaseUrl):
 	canonical_format = "http://artcity.bitfellas.org/index.php?a=artist&id=%s"
 	tests = [
@@ -861,7 +871,7 @@ def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
-		ModarchiveModule,
+		ModarchiveModule, BitjamSong,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
