@@ -4,8 +4,8 @@ from django.db.models import Q, Count
 from django.http import HttpResponse
 from django.contrib import messages
 
-from demoscene.models import Party, Competition
-from sceneorg.models import Directory
+from demoscene.models import Party, Competition, Production
+from sceneorg.models import Directory, File
 
 
 @login_required
@@ -137,5 +137,41 @@ def compofiles(request):
 	})
 
 
-def compofile_directory(request):
-	pass
+@login_required
+def compofile_directory(request, directory_id):
+	directory = get_object_or_404(Directory, id=directory_id)
+
+	# productions which entered a competition linked to this scene.org directory
+	compo_productions = Production.objects.filter(competition_placings__competition__sceneorg_directories=directory)
+
+	# files within this folder, joined to the productions that have those files as download links
+	files = File.objects.raw('''
+		SELECT
+			sceneorg_file.id, sceneorg_file.path,
+			demoscene_productionlink.production_id
+		FROM
+			sceneorg_file
+			LEFT JOIN demoscene_productionlink ON (
+				sceneorg_file.path = demoscene_productionlink.parameter
+				AND demoscene_productionlink.link_class = 'SceneOrgFile'
+			)
+		WHERE
+			sceneorg_file.directory_id = %s
+			AND sceneorg_file.is_deleted = 'f'
+	''', [directory.id])
+
+	unmatched_files = [f for f in files if f.production_id == None]
+	matches = [
+		(f, Production.objects.get(id=f.production_id))
+		for f in files
+		if f.production_id != None
+	]
+	matched_production_ids = [f.production_id for f in files if f.production_id != None]
+	unmatched_productions = compo_productions.exclude(id__in=matched_production_ids)
+
+	return render(request, 'sceneorg/compofiles/directory.html', {
+		'directory': directory,
+		'unmatched_files': unmatched_files,
+		'unmatched_productions': unmatched_productions,
+		'matches': matches,
+	})

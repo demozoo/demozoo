@@ -57,7 +57,7 @@ ul.folders strong a {
 	}
 }
 
-.unmatched_directories {
+.unmatched_directories, .unmatched_files {
 	width: 50%;
 	float: left;
 	> li {
@@ -66,7 +66,7 @@ ul.folders strong a {
 	}
 }
 
-.unmatched_competitions {
+.unmatched_competitions, .unmatched_productions {
 	width: 50%;
 	float: left;
 	> li {
@@ -87,17 +87,17 @@ ul.folders strong a {
 	vertical-align: top;
 }
 
-button.directory {
+button.directory, button.file {
 	.white_button;
 }
-button.directory.selected {
+button.directory.selected, button.file.selected {
 	.red_button;
 }
-button.competition {
+button.competition, button.production {
 	margin-top: 0px; /* stupidly broad rule for .competition in demozoo.css. KILL IT WITH FIRE. */
 	.white_button;
 }
-button.competition.selected {
+button.competition.selected, button.production.selected {
 	.red_button;
 }
 

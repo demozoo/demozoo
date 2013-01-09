@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+{% endblock %}
+
+{% block extra_js %}
+	<script src="/static/sceneorg/js/compofiles.js"></script>
+{% endblock %}
+
+{% block base_main %}
+	<ul class="actions">
+		<li><a href="{% url 'sceneorg_compofiles' %}" class="done">Done</a></li>
+	</ul>
+	<h2>scene.org folder contents: {{ directory.name }}</h2>
+
+	<br />
+	<h3>Unmatched:</h3>
+
+	<ul class="unmatched_files">
+		{% for file in unmatched_files %}
+			<li><button class="file unmatched" value="{{ file.id }}">{{ file.filename }}</button></li>
+		{% endfor %}
+	</ul>
+
+	<ul class="unmatched_productions">
+		{% for prod in unmatched_productions %}
+			<li><button class="production unmatched" value="{{ prod.id }}">{{ prod.title }}</button></li>
+		{% endfor %}
+	</ul>
+
+	<h3>Matched:</h3>
+	<ul class="matches">
+		{% for file, prod in matches %}
+			<li>
+				<button class="file matched" value="{{ file.id }}">{{ file.filename }}</button>
+				=
+				<button class="production matched" value="{{ prod.id }}">{{ prod.title }}</button>
+				<button class="unlink" title="Delete this match">unlink</button>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
