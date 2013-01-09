@@ -26,7 +26,9 @@
 
 	<ul class="unmatched_productions">
 		{% for prod in unmatched_productions %}
-			<li><button class="production unmatched" value="{{ prod.id }}">{{ prod.title }}</button></li>
+			{% with prod.byline_string as byline %}
+				<li><button class="production unmatched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button></li>
+			{% endwith %}
 		{% endfor %}
 	</ul>
 
@@ -36,7 +38,9 @@
 			<li>
 				<button class="file matched" value="{{ file.id }}">{{ file.filename }}</button>
 				=
-				<button class="production matched" value="{{ prod.id }}">{{ prod.title }}</button>
+				{% with prod.byline_string as byline %}
+					<button class="production matched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button>
+				{% endwith %}
 				<button class="unlink" title="Delete this match">unlink</button>
 			</li>
 		{% endfor %}
