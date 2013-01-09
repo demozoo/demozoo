@@ -10,4 +10,7 @@ urlpatterns = patterns('sceneorg.views',
 	(r'^compofolders/done/(\d+)/$', 'compofolders_done', {}, 'sceneorg_compofolders_done'),
 	(r'^compofolders/directory/(\d+)/$', 'compofolders_show_directory', {}, 'sceneorg_compofolders_show_directory'),
 	(r'^compofolders/competition/(\d+)/$', 'compofolders_show_competition', {}, 'sceneorg_compofolders_show_competition'),
+
+	(r'^compofiles/$', 'compofiles', {}, 'sceneorg_compofiles'),
+	(r'^compofiles/dir/(\d+)/$', 'compofile_directory', {}, 'sceneorg_compofile_directory'),
 )

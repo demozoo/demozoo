@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	<h2>scene.org party file matching</h2>
+	<p>...the long awaited sequel to scene.org compo folder matching. Here is a list of all scene.org folders which are now linked to a party compo. The ones in bold contain one or more files that we don't have listed as the download link for something - your mission is to match them up to the appropriate compo entries.</p>
+
+	<ul class="folders">
+		{% for dir in directories %}
+			<li>
+				{% if dir.file_count == dir.match_count %}
+					<a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a>
+				{% else %}
+					<strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong>
+				{% endif %}
+			</li>
+		{% endfor %}
+	<ul>
+{% endblock %}

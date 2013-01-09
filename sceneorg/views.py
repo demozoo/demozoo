@@ -105,3 +105,37 @@ def compofolders_show_competition(request, competition_id):
 	return render(request, 'sceneorg/compofolders/show_competition.html', {
 		'placings': placings,
 	})
+
+
+@login_required
+def compofiles(request):
+	# Retrieve a listing of scene.org directories which are associated with a party compo,
+	# annotated with the number of files in the directory,
+	# and the number of those files which are used as a download link for some production.
+	# Where these numbers differ, there are files in the directory which are unaccounted for.
+	directories = Directory.objects.raw('''
+		SELECT
+			sceneorg_directory.id, sceneorg_directory.path,
+			COUNT(sceneorg_file.id) AS file_count,
+			COUNT(demoscene_productionlink.id) AS match_count
+		FROM
+			sceneorg_directory_competitions
+			INNER JOIN sceneorg_directory ON (
+				sceneorg_directory_competitions.directory_id = sceneorg_directory.id)
+			LEFT JOIN sceneorg_file ON (
+				sceneorg_directory.id = sceneorg_file.directory_id AND sceneorg_file.is_deleted = 'f')
+			LEFT JOIN demoscene_productionlink ON (
+				sceneorg_file.path = demoscene_productionlink.parameter AND demoscene_productionlink.link_class = 'SceneOrgFile')
+		WHERE
+			sceneorg_directory.is_deleted = 'f'
+		GROUP BY
+			sceneorg_directory.id, sceneorg_directory.path
+		ORDER BY sceneorg_directory.path
+	''')
+	return render(request, 'sceneorg/compofiles/index.html', {
+		'directories': directories,
+	})
+
+
+def compofile_directory(request):
+	pass
