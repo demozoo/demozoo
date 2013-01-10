@@ -15,7 +15,7 @@
 	<ul class="actions">
 		<li><a href="{% url 'sceneorg_compofiles' %}" class="done">Done</a></li>
 	</ul>
-	<h2>scene.org party file matching: {{ directory.path }}</h2>
+	<h2>scene.org party file matching: <a href="{{ directory.web_url }}">{{ directory.path }}</a></h2>
 
 	<br />
 	<h3>Unmatched:</h3>
