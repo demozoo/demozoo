@@ -162,9 +162,10 @@ def compofiles(request):
 @login_required
 def compofile_directory(request, directory_id):
 	directory = get_object_or_404(Directory, id=directory_id)
+	competitions = Competition.objects.filter(sceneorg_directories=directory).select_related('party')
 
 	# productions which entered a competition linked to this scene.org directory
-	compo_productions = Production.objects.filter(competition_placings__competition__sceneorg_directories=directory).order_by('title')
+	compo_productions = Production.objects.filter(competition_placings__competition__in=competitions).order_by('title')
 
 	# files within this folder, joined to the productions that have those files as download links
 	files = File.objects.raw('''
@@ -194,6 +195,7 @@ def compofile_directory(request, directory_id):
 
 	return render(request, 'sceneorg/compofiles/directory.html', {
 		'directory': directory,
+		'competitions': competitions,
 		'unmatched_files': unmatched_files,
 		'unmatched_productions': unmatched_productions,
 		'matches': matches,
