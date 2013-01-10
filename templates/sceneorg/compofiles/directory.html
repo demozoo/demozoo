@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load url from future %}
 
+{% block html_title %}scene.org file matching for {{ directory.path }} - Demozoo{% endblock %}
+
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
 {% endblock %}
@@ -13,7 +15,7 @@
 	<ul class="actions">
 		<li><a href="{% url 'sceneorg_compofiles' %}" class="done">Done</a></li>
 	</ul>
-	<h2>scene.org folder contents: {{ directory.name }}</h2>
+	<h2>scene.org party file matching: {{ directory.path }}</h2>
 
 	<br />
 	<h3>Unmatched:</h3>
