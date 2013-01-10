@@ -4,7 +4,7 @@ from django.db.models import Q, Count
 from django.http import HttpResponse
 from django.contrib import messages
 
-from demoscene.models import Party, Competition, Production
+from demoscene.models import Party, Competition, Production, ProductionLink, Edit
 from sceneorg.models import Directory, File
 
 
@@ -175,3 +175,36 @@ def compofile_directory(request, directory_id):
 		'unmatched_productions': unmatched_productions,
 		'matches': matches,
 	})
+
+
+@login_required
+def compofile_link(request):
+	sceneorg_file = get_object_or_404(File, id=request.POST.get('file_id'))
+	production = get_object_or_404(Production, id=request.POST.get('production_id'))
+
+	link = ProductionLink.objects.create(
+		link_class='SceneOrgFile',
+		parameter=sceneorg_file.path,
+		production_id=production.id,
+		is_download_link=True
+	)
+	Edit.objects.create(action_type='add_download_link', focus=production,
+		description=(u"Added download link %s" % link.url), user=request.user)
+
+	return HttpResponse("OK", content_type="text/plain")
+
+
+@login_required
+def compofile_unlink(request):
+	sceneorg_file = get_object_or_404(File, id=request.POST.get('file_id'))
+	production = get_object_or_404(Production, id=request.POST.get('production_id'))
+	links = ProductionLink.objects.filter(
+		link_class='SceneOrgFile',
+		parameter=sceneorg_file.path,
+		production_id=production.id)
+	if links:
+		Edit.objects.create(action_type='delete_download_link', focus=production,
+			description=(u"Deleted download link %s" % links[0].url), user=request.user)
+		links.delete()
+
+	return HttpResponse("OK", content_type="text/plain")

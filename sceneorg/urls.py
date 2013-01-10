@@ -13,4 +13,6 @@ urlpatterns = patterns('sceneorg.views',
 
 	(r'^compofiles/$', 'compofiles', {}, 'sceneorg_compofiles'),
 	(r'^compofiles/dir/(\d+)/$', 'compofile_directory', {}, 'sceneorg_compofile_directory'),
+	(r'^compofiles/link/$', 'compofile_link', {}, 'sceneorg_compofile_link'),
+	(r'^compofiles/unlink/$', 'compofile_unlink', {}, 'sceneorg_compofile_unlink'),
 )
