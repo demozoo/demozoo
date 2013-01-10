@@ -116,8 +116,7 @@ def compofiles(request):
 	directories = Directory.objects.raw('''
 		SELECT
 			sceneorg_directory.id, sceneorg_directory.path,
-			COUNT(sceneorg_file.id) AS file_count,
-			COUNT(demoscene_productionlink.id) AS match_count
+			COUNT(DISTINCT sceneorg_file.id) - COUNT(DISTINCT demoscene_productionlink.parameter) AS unmatched_count
 		FROM
 			sceneorg_directory_competitions
 			INNER JOIN sceneorg_directory ON (

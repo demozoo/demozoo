@@ -13,10 +13,10 @@
 	<ul class="folders">
 		{% for dir in directories %}
 			<li>
-				{% if dir.file_count == dir.match_count %}
+				{% if dir.unmatched_count == 0 %}
 					<a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a>
 				{% else %}
-					<strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong>
+					<strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong> ({{ dir.unmatched_count }})
 				{% endif %}
 			</li>
 		{% endfor %}
