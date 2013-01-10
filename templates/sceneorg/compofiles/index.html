@@ -10,6 +10,15 @@
 	<p>Another chance to do some hypnotic button clicking to help with our data entry! Now that we know which folders on scene.org correspond to which party compos, it's time to match up the individual download files to the correct compo entries.</p>
 	<p>Pick a folder from the list below - the ones in <strong>bold</strong> contain some uncategorised files that haven't yet been attached to a production as a download link. Your mission is to match them up to the appropriate compo entry...</p>
 
+	<div style="width: 300px; float: right; border: 1px solid #ccc; padding: 10px;">
+		<h3>Leaderboard</h3>
+		<ol style="list-style-type: decimal; margin-left: 2em;">
+			{% for user in top_users %}
+				<li>{{ user }} - {{ user.edit_count }}</li>
+			{% endfor %}
+		</ol>
+	</div>
+
 	<ul class="folders">
 		{% for dir in directories %}
 			<li>

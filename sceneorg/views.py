@@ -6,6 +6,7 @@ from django.contrib import messages
 
 from demoscene.models import Party, Competition, Production, ProductionLink, Edit
 from sceneorg.models import Directory, File
+from django.contrib.auth.models import User
 
 
 @login_required
@@ -131,8 +132,30 @@ def compofiles(request):
 			sceneorg_directory.id, sceneorg_directory.path
 		ORDER BY sceneorg_directory.path
 	''')
+
+	top_users = User.objects.raw('''
+		SELECT
+			auth_user.id, auth_user.username,
+			COUNT(demoscene_edit.id) AS edit_count
+		FROM
+			auth_user
+			INNER JOIN demoscene_edit ON (
+				auth_user.id = demoscene_edit.user_id
+				AND action_type = 'add_download_link'
+				AND timestamp >= '2013-01-10'
+			)
+		GROUP BY
+			auth_user.id, auth_user.username
+		HAVING
+			COUNT(demoscene_edit.id) > 0
+		ORDER BY
+			COUNT(demoscene_edit.id) DESC
+		LIMIT 20
+	''')
+
 	return render(request, 'sceneorg/compofiles/index.html', {
 		'directories': directories,
+		'top_users': top_users,
 	})
 
 
