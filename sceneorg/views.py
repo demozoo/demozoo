@@ -142,7 +142,7 @@ def compofile_directory(request, directory_id):
 	directory = get_object_or_404(Directory, id=directory_id)
 
 	# productions which entered a competition linked to this scene.org directory
-	compo_productions = Production.objects.filter(competition_placings__competition__sceneorg_directories=directory)
+	compo_productions = Production.objects.filter(competition_placings__competition__sceneorg_directories=directory).order_by('title')
 
 	# files within this folder, joined to the productions that have those files as download links
 	files = File.objects.raw('''
@@ -158,6 +158,7 @@ def compofile_directory(request, directory_id):
 		WHERE
 			sceneorg_file.directory_id = %s
 			AND sceneorg_file.is_deleted = 'f'
+		ORDER BY sceneorg_file.path
 	''', [directory.id])
 
 	unmatched_files = [f for f in files if f.production_id == None]
