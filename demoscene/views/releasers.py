@@ -36,7 +36,7 @@ def add_credit(request, releaser_id):
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		form = ReleaserCreditForm(releaser)
-		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
+		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
 	return ajaxable_render(request, 'releasers/add_credit.html', {
 		'html_title': "Add credit for %s" % releaser.name,
