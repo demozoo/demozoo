@@ -12,8 +12,6 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'graphics':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	edit_mode = edit_mode or sticky_editing_active(request.user)
-
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name', 'category'),
@@ -23,8 +21,6 @@ def show(request, production_id, edit_mode=False):
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
-		'editing': edit_mode,
-		'editing_as_admin': edit_mode and request.user.is_staff,
 	})
 
 

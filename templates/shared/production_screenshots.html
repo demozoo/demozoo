@@ -1,40 +1,36 @@
 {% load url from future %}
 
-{% if screenshots or editing %}
-	<div class="screenshots">
-		{% if screenshots %}
-			{% with screenshots.0 as pic %}
-				<a href="{{ pic.original.url }}" target="_blank" class="open_image_in_lightbox" id="main_image">
-					<img src="{{ pic.standard.url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
-				</a>
-			{% endwith %}
-			{% if screenshots.count > 1 %}
-				<div class="carousel_panel">
-					<button class="prev">&larr;</button>
-					<button class="next">&rarr;</button>
-					<div class="carousel">
-						<ul>
-							{% for pic in screenshots %}
-								<li>
-									<a href="{{ pic.original.url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original.url }}" data-main-image="{{ pic.standard.url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
-										<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
-									</a>
-								</li>
-							{% endfor %}
-						</ul>
-					</div>
+<div class="screenshots">
+	{% if screenshots %}
+		{% with screenshots.0 as pic %}
+			<a href="{{ pic.original.url }}" target="_blank" class="open_image_in_lightbox" id="main_image">
+				<img src="{{ pic.standard.url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
+			</a>
+		{% endwith %}
+		{% if screenshots.count > 1 %}
+			<div class="carousel_panel">
+				<button class="prev">&larr;</button>
+				<button class="next">&rarr;</button>
+				<div class="carousel">
+					<ul>
+						{% for pic in screenshots %}
+							<li>
+								<a href="{{ pic.original.url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original.url }}" data-main-image="{{ pic.standard.url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
+									<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
 				</div>
-			{% endif %}
+			</div>
 		{% endif %}
-		{% if editing %}
-			<ul class="actions">
-				<li>
-					<a href="{% url 'production_add_screenshot' production.id %}" class="add open_in_lightbox">Add screenshot</a>
-				</li>
-				<li>
-					<a href="{% url 'production_screenshots' production.id %}" class="edit">Manage screenshots</a>
-				</li>
-			</ul>
-		{% endif %}
-	</div>
-{% endif %}
+	{% endif %}
+	<ul class="actions">
+		<li>
+			<a href="{% url 'production_add_screenshot' production.id %}" class="add open_in_lightbox">Add screenshot</a>
+		</li>
+		<li>
+			<a href="{% url 'production_screenshots' production.id %}" class="edit">Manage screenshots</a>
+		</li>
+	</ul>
+</div>
