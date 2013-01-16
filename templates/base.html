@@ -13,7 +13,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{% block html_title %}Demozoo{% endblock %}</title>
 		{% compress css %}
-			<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
+			<link rel="stylesheet" href="/static/css/reset.less" type="text/less" />
+			<link rel="stylesheet" href="/static/css/type.less" type="text/less" />
+			<link rel="stylesheet" href="/static/css/page_base.less" type="text/less" />
+
+			{% block legacy_css %}
+				<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
+			{% endblock %}
 			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
 			<link rel="stylesheet" href="/static/css/jquery.asmselect.css" type="text/css" />
 		{% endcompress %}
