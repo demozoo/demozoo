@@ -107,18 +107,6 @@ def show(request, production_id, edit_mode=False):
 	})
 
 
-@login_required
-def edit(request, production_id):
-	set_edit_mode_active(True, request.user)
-	return show(request, production_id, edit_mode=True)
-
-
-def edit_done(request, production_id):
-	production = get_object_or_404(Production, id=production_id)
-	set_edit_mode_active(False, request.user)
-	return HttpResponseRedirect(production.get_absolute_url())
-
-
 def history(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if production.supertype != 'production':
@@ -182,7 +170,7 @@ def edit_core_details(request, production_id):
 				Edit.objects.create(action_type='edit_production_core_details', focus=production,
 					description=u"; ".join(edit_descriptions), user=request.user)
 
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = form_class(instance=production)
 
@@ -204,7 +192,7 @@ def edit_core_details(request, production_id):
 def edit_notes(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
-		return HttpResponseRedirect(production.get_absolute_edit_url())
+		return HttpResponseRedirect(production.get_absolute_url())
 
 	def success(form):
 		form.log_edit(request.user)
@@ -227,7 +215,7 @@ def edit_external_links(request, production_id):
 			production.has_bonafide_edits = True
 			production.save()
 
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		formset = ProductionExternalLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=False))
 	return ajaxable_render(request, 'productions/edit_external_links.html', {
@@ -250,7 +238,7 @@ def add_download_link(request, production_id):
 			form.save()
 			Edit.objects.create(action_type='add_download_link', focus=production,
 				description=(u"Added download link %s" % production_link.url), user=request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
 	return ajaxable_render(request, 'shared/simple_form.html', {
@@ -275,7 +263,7 @@ def edit_download_link(request, production_id, production_link_id):
 			form.save()
 			Edit.objects.create(action_type='edit_download_link', focus=production,
 				description=(u"Updated download link from %s to %s" % (original_url, production_link.url)), user=request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
 	return ajaxable_render(request, 'productions/edit_download_link.html', {
@@ -298,7 +286,7 @@ def delete_download_link(request, production_id, production_link_id):
 			production.save()
 			Edit.objects.create(action_type='delete_download_link', focus=production,
 				description=(u"Deleted download link %s" % production_link.url), user=request.user)
-		return HttpResponseRedirect(production.get_absolute_edit_url())
+		return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_download_link', args=[production_id, production_link_id]),
@@ -355,7 +343,7 @@ def add_screenshot(request, production_id):
 				messages.error(request, "The screenshot %s could not be added (file was corrupted, or not a valid image format)" % failed_filenames[0])
 			else:
 				messages.error(request, "The following screenshots could not be added (files were corrupted, or not a valid image format): %s" % (', '.join(failed_filenames)))
-		return HttpResponseRedirect(production.get_absolute_edit_url())
+		return HttpResponseRedirect(production.get_absolute_url())
 	return ajaxable_render(request, 'productions/add_screenshot.html', {
 		'html_title': "Adding screenshots for %s" % production.title,
 		'production': production,
@@ -392,7 +380,7 @@ def create(request):
 			form.save()
 			download_link_formset.save()
 			form.log_creation(request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = CreateProductionForm(initial={
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
@@ -429,7 +417,7 @@ def add_credit(request, production_id):
 			production.has_bonafide_edits = True
 			production.save()
 			# form.log_creation(request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		nick_form = ProductionCreditedNickForm()
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
@@ -473,7 +461,7 @@ def edit_credit(request, production_id, nick_id):
 				focus2=nick.releaser,
 				description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
 				user=request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		nick_form = ProductionCreditedNickForm(nick=nick)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
@@ -500,7 +488,7 @@ def delete_credit(request, production_id, nick_id):
 				production.save()
 				Edit.objects.create(action_type='delete_credit', focus=production, focus2=nick.releaser,
 					description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
-		return HttpResponseRedirect(production.get_absolute_edit_url())
+		return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_credit', args=[production_id, nick_id]),
@@ -532,7 +520,7 @@ def edit_soundtracks(request, production_id):
 				stl.soundtrack.save()
 			Edit.objects.create(action_type='edit_soundtracks', focus=production,
 				description=(u"Edited soundtrack details for %s" % production.title), user=request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance=production)
 	return ajaxable_render(request, 'productions/edit_soundtracks.html', {
@@ -551,7 +539,7 @@ def add_tag(request, production_id):
 			production.tags.add(tag_name)
 			Edit.objects.create(action_type='production_add_tag', focus=production,
 				description=u"Added tag '%s'" % tag_name, user=request.user)
-	return HttpResponseRedirect(production.get_absolute_edit_url())
+	return HttpResponseRedirect(production.get_absolute_url())
 
 
 @login_required
@@ -565,7 +553,7 @@ def remove_tag(request, production_id, tag_id):
 				description=u"Removed tag '%s'" % tag.name, user=request.user)
 		except Tag.DoesNotExist:
 			pass
-	return HttpResponseRedirect(production.get_absolute_edit_url())
+	return HttpResponseRedirect(production.get_absolute_url())
 
 
 def autocomplete(request):
@@ -597,7 +585,7 @@ def autocomplete(request):
 def delete(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
-		return HttpResponseRedirect(production.get_absolute_edit_url())
+		return HttpResponseRedirect(production.get_absolute_url())
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			# insert log entry before actually deleting, so that it doesn't try to
@@ -608,7 +596,7 @@ def delete(request, production_id):
 			messages.success(request, "'%s' deleted" % production.title)
 			return HttpResponseRedirect(reverse('productions'))
 		else:
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('delete_production', args=[production_id]),

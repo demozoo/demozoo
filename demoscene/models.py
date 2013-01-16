@@ -703,23 +703,8 @@ class Production(models.Model):
 		else:
 			return ('demoscene.views.productions.show', [str(self.id)])
 
-	@models.permalink
 	def get_absolute_edit_url(self):
-		if self.supertype == 'music':
-			return ('demoscene.views.music.edit', [str(self.id)])
-		elif self.supertype == 'graphics':
-			return ('demoscene.views.graphics.edit', [str(self.id)])
-		else:
-			return ('demoscene.views.productions.edit', [str(self.id)])
-
-	@models.permalink
-	def get_edit_done_url(self):
-		if self.supertype == 'music':
-			return ('edit_music_done', [str(self.id)])
-		elif self.supertype == 'graphics':
-			return ('edit_graphics_done', [str(self.id)])
-		else:
-			return ('edit_production_done', [str(self.id)])
+		return self.get_absolute_url()
 
 	@models.permalink
 	def get_edit_core_details_url(self):

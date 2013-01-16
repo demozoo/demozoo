@@ -24,12 +24,6 @@ def show(request, production_id, edit_mode=False):
 	})
 
 
-@login_required
-def edit(request, production_id):
-	set_edit_mode_active(True, request.user)
-	return show(request, production_id, edit_mode=True)
-
-
 def history(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if production.supertype != 'graphics':
@@ -50,7 +44,7 @@ def create(request):
 			form.save()
 			download_link_formset.save()
 			form.log_creation(request.user)
-			return HttpResponseRedirect(production.get_absolute_edit_url())
+			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = CreateGraphicsForm(initial={
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
