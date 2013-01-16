@@ -1,0 +1,6 @@
+{% if edit %}
+	<p>
+		Last edited on {{ edit.timestamp|date:"j M Y" }} by {{ edit.user.username }}.
+		<a href="{{ item.get_history_url }}">See all edits</a>
+	</p>
+{% endif %}

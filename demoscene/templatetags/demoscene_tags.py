@@ -1,7 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, Edit
 
 register = template.Library()
 
@@ -55,4 +55,16 @@ def date_range(start_date, end_date):
 	return {
 		'start_date': start_date,
 		'end_date': end_date,
+	}
+
+
+@register.inclusion_tag('shared/last_edited_by.html')
+def last_edited_by(item):
+	try:
+		edit = Edit.for_model(item).order_by('-timestamp')[0]
+	except IndexError:
+		edit = None
+	return {
+		'edit': edit,
+		'item': item,
 	}

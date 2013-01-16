@@ -8,11 +8,6 @@
 
 {% block base_main %}
 	<div class="panel">
-		<ul class="tabs">
-			<li class="active_tab">Production</li>
-			<li><a href="{{ production.get_history_url }}">History</a></li>
-		</ul>
-
 		<div class="production_title">
 			<h2>{{ production.title }}</h2>
 			{% if production.byline_string %}
@@ -93,6 +88,8 @@
 			</div>
 		{% endif %}
 	</div>
+
+	{% last_edited_by production %}
 	
 	{% if request.user.is_staff %}
 		<ul class="maintenance_actions">
