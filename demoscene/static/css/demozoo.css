@@ -984,33 +984,6 @@ ul.memberships {
 	background-color: #000;
 }
 
-#lightbox_outer {
-	display: table;
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	height: 100%;
-	padding-bottom: 16px;
-	width: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-#lightbox_middle {
-	display: table-cell;
-	vertical-align: middle;
-	padding-top: 8px;
-}
-
-#lightbox {
-	margin: auto;
-	width: 620px;
-	overflow: auto;
-	border: 1px solid #444;
-	background-color: #EEE;
-	color: #333;
-	padding: 12px;
-}
-
 /* party series listing */
 .party_series_index {
 	width: 100%;

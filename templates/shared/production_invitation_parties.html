@@ -1,7 +1,0 @@
-{% if invitation_parties %}
-	<ul class="invitation_parties">
-		{% for party in invitation_parties %}
-			<li>Invitation for <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
-		{% endfor %}
-	</ul>
-{% endif %}
