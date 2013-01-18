@@ -625,6 +625,8 @@ class Production(models.Model):
 	def save(self, *args, **kwargs):
 		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
+		if self.title:
+			self.title = self.title.strip()
 		return super(Production, self).save(*args, **kwargs)
 
 	def __unicode__(self):

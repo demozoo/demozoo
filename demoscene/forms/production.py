@@ -47,6 +47,18 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 			self.instance.save()
 		return self.instance
 
+	def clean_title(self):
+		# The Production model will strip whitespace from the title when saving, which is
+		# after validation occurs. We therefore need to test for and reject titles consisting
+		# entirely of whitespace. (Doing this within model validation would be cleaner, but it's
+		# a whole other can of worms to make model validation work in the context of forms that
+		# aren't proper ModelForms, like this one)
+		title = self.cleaned_data['title']
+		if not title or not title.strip():
+			raise forms.ValidationError("This field is required.")
+
+		return title
+
 	@property
 	def changed_data_description(self):
 		descriptions = []
@@ -169,6 +181,14 @@ class CreateProductionForm(forms.Form):
 		self.instance.types = self.cleaned_data['types']
 		self.instance.platforms = self.cleaned_data['platforms']
 		return self.instance
+
+	def clean_title(self):
+		# Reject titles consisting entirely of whitespace
+		title = self.cleaned_data['title']
+		if not title or not title.strip():
+			raise forms.ValidationError("This field is required.")
+
+		return title
 
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_production', focus=self.instance,
