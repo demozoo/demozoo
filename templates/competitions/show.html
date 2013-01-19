@@ -13,7 +13,7 @@
 		<div class="competition_details">
 			<h2>
 				{{ competition }}
-				<a href="{% url 'party_edit_competition' competition.party_id competition.id %}"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" /></a>
+				<a href="{% url 'competition_edit' competition.id %}"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" /></a>
 			</h2>
 			
 			{% with competition.party.competitions.all as compos_at_party %}

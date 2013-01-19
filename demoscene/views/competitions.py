@@ -1,7 +1,10 @@
-from demoscene.shortcuts import *
-from demoscene.models import Competition, CompetitionPlacing, Edit
+from demoscene.shortcuts import get_object_or_404, render, redirect
+from demoscene.models import Competition, CompetitionPlacing, Edit, Platform, ProductionType, Party
+from demoscene.forms.party import CompetitionForm
 
 from unjoinify import unjoinify
+from django.utils import simplejson as json
+from django.contrib.auth.decorators import login_required
 
 
 def show(request, competition_id):
@@ -67,4 +70,49 @@ def history(request, competition_id):
 	return render(request, 'competitions/history.html', {
 		'competition': competition,
 		'edits': Edit.for_model(competition),
+	})
+
+
+@login_required
+def edit(request, competition_id):
+	competition = get_object_or_404(Competition, id=competition_id)
+	party = competition.party
+
+	if request.method == 'POST':
+		competition_form = CompetitionForm(request.POST, instance=competition)
+		if competition_form.is_valid():
+			competition.shown_date = competition_form.cleaned_data['shown_date']
+			competition_form.save()
+			competition_form.log_edit(request.user)
+			return redirect('competition_edit', args=[competition.id])
+	else:
+		competition_form = CompetitionForm(instance=competition, initial={
+			'shown_date': competition.shown_date,
+		})
+
+	competition_placings = [placing.json_data for placing in competition.results()]
+
+	competition_placings_json = json.dumps(competition_placings)
+
+	platforms = Platform.objects.all()
+	platforms_json = json.dumps([[p.id, p.name] for p in platforms])
+
+	production_types = ProductionType.objects.all()
+	production_types_json = json.dumps([[p.id, p.name] for p in production_types])
+
+	competition_json = json.dumps({
+		'id': competition.id,
+		'platformId': competition.platform_id,
+		'productionTypeId': competition.production_type_id,
+	})
+
+	return render(request, 'competitions/edit.html', {
+		'html_title': "Editing %s %s competition" % (party.name, competition.name),
+		'form': competition_form,
+		'party': party,
+		'competition': competition,
+		'competition_json': competition_json,
+		'competition_placings_json': competition_placings_json,
+		'platforms_json': platforms_json,
+		'production_types_json': production_types_json,
 	})
