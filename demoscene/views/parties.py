@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile, Production, Edit
+from demoscene.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile, Production, Edit
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -284,7 +284,7 @@ def add_competition(request, party_id):
 			# party.updated_at = datetime.datetime.now()
 			# party.save()
 			if request.POST.get('enter_results'):
-				return redirect('party_edit_competition', args=[party.id, competition.id])
+				return redirect('competition_edit', args=[competition.id])
 			else:
 				return HttpResponseRedirect(party.get_absolute_url())
 	else:
@@ -295,51 +295,6 @@ def add_competition(request, party_id):
 		'html_title': "New competition for %s" % party.name,
 		'party': party,
 		'form': form,
-	})
-
-
-@login_required
-def edit_competition(request, party_id, competition_id):
-	party = get_object_or_404(Party, id=party_id)
-	competition = get_object_or_404(Competition, party=party, id=competition_id)
-
-	if request.method == 'POST':
-		competition_form = CompetitionForm(request.POST, instance=competition)
-		if competition_form.is_valid():
-			competition.shown_date = competition_form.cleaned_data['shown_date']
-			competition_form.save()
-			competition_form.log_edit(request.user)
-			return redirect('party_edit_competition', args=[party.id, competition.id])
-	else:
-		competition_form = CompetitionForm(instance=competition, initial={
-			'shown_date': competition.shown_date,
-		})
-
-	competition_placings = [placing.json_data for placing in competition.results()]
-
-	competition_placings_json = json.dumps(competition_placings)
-
-	platforms = Platform.objects.all()
-	platforms_json = json.dumps([[p.id, p.name] for p in platforms])
-
-	production_types = ProductionType.objects.all()
-	production_types_json = json.dumps([[p.id, p.name] for p in production_types])
-
-	competition_json = json.dumps({
-		'id': competition.id,
-		'platformId': competition.platform_id,
-		'productionTypeId': competition.production_type_id,
-	})
-
-	return render(request, 'parties/edit_competition.html', {
-		'html_title': "Editing %s %s competition" % (party.name, competition.name),
-		'form': competition_form,
-		'party': party,
-		'competition': competition,
-		'competition_json': competition_json,
-		'competition_placings_json': competition_placings_json,
-		'platforms_json': platforms_json,
-		'production_types_json': production_types_json,
 	})
 
 
@@ -397,3 +352,8 @@ def edit_invitations(request, party_id):
 		'party': party,
 		'formset': formset,
 	})
+
+
+@login_required
+def edit_competition(request, party_id, competition_id):
+	return redirect('competition_edit', args=[competition_id])

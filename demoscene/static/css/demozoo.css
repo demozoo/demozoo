@@ -737,6 +737,13 @@ ul.actions li a.done {
 	background-repeat: no-repeat;
 }
 
+ul.actions li a.import_table {
+	padding-left: 24px;
+	background-image: url(/static/images/icons/table_go.png);
+	background-position: 4px center;
+	background-repeat: no-repeat;
+}
+
 ul.maintenance_actions {
 	clear: both;
 	padding-top: 16px;
