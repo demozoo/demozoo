@@ -137,6 +137,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^competitions/(\d+)/$', 'competitions.show', {}, 'competition'),
 	(r'^competitions/(\d+)/history/$', 'competitions.history', {}, 'competition_history'),
 	(r'^competitions/(\d+)/edit$', 'competitions.edit', {}, 'competition_edit'),
+	(r'^competitions/(\d+)/import_text$', 'competitions.import_text', {}, 'competition_import_text'),
 
 	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
 	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),

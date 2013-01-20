@@ -115,4 +115,13 @@ def edit(request, competition_id):
 		'competition_placings_json': competition_placings_json,
 		'platforms_json': platforms_json,
 		'production_types_json': production_types_json,
+		'is_admin': request.user.is_staff
 	})
+
+
+@login_required
+def import_text(request, competition_id):
+	if not request.user.is_staff:
+		return redirect('competition_edit', args=[competition_id])
+
+	competition = get_object_or_404(Competition, id=competition_id)

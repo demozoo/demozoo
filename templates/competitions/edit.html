@@ -23,6 +23,12 @@
 	});
 /* ]]> */</script>
 
+{% if is_admin %}
+	<ul class="actions">
+		<li><a href="{% url 'competition_import_text' competition.id %}" class="import_table">Import results</a></li>
+	</ul>
+{% endif %}
+
 <h2>{{ competition.party.name }} {{ competition.name }} competition</h2>
 
 <form action="{% url 'competition_edit' competition.id %}" method="post" class="entry_form">
@@ -35,7 +41,7 @@
 		<input type="submit" value="Update" />
 	</div>
 </form>
-	
+
 <ul id="results_table"></ul>
 
 <ul class="actions">
