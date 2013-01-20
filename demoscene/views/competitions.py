@@ -1,10 +1,12 @@
 from demoscene.shortcuts import get_object_or_404, render, redirect
-from demoscene.models import Competition, CompetitionPlacing, Edit, Platform, ProductionType, Party
+from demoscene.models import Competition, CompetitionPlacing, Edit, Platform, ProductionType, Production
 from demoscene.forms.party import CompetitionForm
 
 from unjoinify import unjoinify
 from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
+import datetime
 
 
 def show(request, competition_id):
@@ -115,7 +117,7 @@ def edit(request, competition_id):
 		'competition_placings_json': competition_placings_json,
 		'platforms_json': platforms_json,
 		'production_types_json': production_types_json,
-		'is_admin': request.user.is_staff
+		'is_admin': request.user.is_staff,
 	})
 
 
@@ -125,3 +127,52 @@ def import_text(request, competition_id):
 		return redirect('competition_edit', args=[competition_id])
 
 	competition = get_object_or_404(Competition, id=competition_id)
+
+	if request.POST:
+		current_highest_position = CompetitionPlacing.objects.filter(competition=competition).aggregate(Max('position'))['position__max']
+		next_position = (current_highest_position or 0) + 1
+
+		result_lines = request.POST['results'].split('\n')
+		for line in result_lines:
+			fields = [field.strip() for field in line.split('\t')] + ['', '', '', '']
+			placing, title, byline, score = fields[0:4]
+			if not title:
+				continue
+
+			production = Production(
+				release_date=competition.shown_date,
+				updated_at=datetime.datetime.now(),
+				has_bonafide_edits=False,
+				title=title)
+			production.save()  # assign an ID so that associations work
+
+			if competition.platform:
+				production.platforms = [competition.platform]
+
+			if competition.production_type:
+				production.types = [competition.production_type]
+
+			if byline:
+				production.byline_string = byline
+
+			production.supertype = production.inferred_supertype
+			production.save()
+
+			placing = CompetitionPlacing(
+				production=production,
+				competition=competition,
+				ranking=placing,
+				position=next_position,
+				score=score,
+			)
+			next_position += 1
+			placing.save()
+
+			Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
+				description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
+
+		return redirect('competition_edit', args=[competition_id])
+	else:
+		return render(request, 'competitions/import_text.html', {
+			'competition': competition,
+		})
