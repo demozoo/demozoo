@@ -16,6 +16,7 @@
 			<option value="tsv">Tab-separated values</option>
 			<option value="pm1">Partymeister v1</option>
 			<option value="pm2">Partymeister v2</option>
+			<option value="wuhu">Wuhu</option>
 		</select>
 	</div>
 
@@ -49,14 +50,44 @@
 			}
 		}
 
-		function parseAsPartymeister(authorSeparator) {
-			/* Use first text line to establish column positions */
+		/* Generalised Partymeister and Wuhu results exporting.
+		Any non-blank line in the results is one of the following:
+		1) A ranked result, with values given for ranking, score and title/author
+		2) An unranked result, where ranking is blank to indicate that it tied with the result above
+			(and thus we should populate it with the previously seen ranking)
+		3) A continuation of the name/author field from the previous line
+
+		To determine which one it is, we use the first line (which should always be a ranked result -
+		if not, we keep scanning until we find one) as a reference, and compare its indent level.
+		*/
+
+		function parseAsPartymeisterV1() {
+			parseAsGenericResultsTxt(
+				/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
+				/^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
+				' - ');  /* title / author separator */
+		}
+		function parseAsPartymeisterV2() {
+			parseAsGenericResultsTxt(
+				/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
+				/^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
+				' by ');  /* title / author separator */
+		}
+		function parseAsWuhu() {
+			parseAsGenericResultsTxt(
+				/^(\s*)(\S+)(\s+\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for ranked result */
+				/^(\s*\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for unranked result */
+				' - ');  /* title / author separator */
+		}
+
+		function parseAsGenericResultsTxt(rankedResultRegexp, unrankedResultRegexp, authorSeparator) {
+			/* The first line (barring any blank ones) should be a  first text line to establish column positions */
 			var lines = results.split(/\n/);
 			var rankingIndent = null;
 			var scoreIndent = null;
 			var titleIndent = null;
 			for (var i = 0; i < lines.length; i++) {
-				var match = lines[i].match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S)/);
+				var match = lines[i].match(rankedResultRegexp);
 				if (!match) continue;
 				rankingIndent = match[1].length;
 				scoreIndent = rankingIndent + match[2].length + match[3].length;
@@ -76,22 +107,22 @@
 				var match = line.match(/^(\s*)\S/);
 				if (!match) continue;
 				var indent = match[1].length;
-				if (indent < scoreIndent) {
-					/* something (i.e. a ranking) exists to the left of the score, so start a new row */
-					var match = line.match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/);
-					if (!match) continue;
-					rows.push([match[2], match[4], match[6]]);
-					lastRanking = match[2];
-				} else if (indent < titleIndent) {
-					/* something (i.e. a score) exists to the left of the title; treat this as a new row with the same ranking as the previous entry */
+				if (indent >= titleIndent) {
+					/* continuation of previous entry */
+					if (rows.length == 0) continue;
+					rows[rows.length - 1][2] += ' ' + line.trim();
+				} else if (indent > rankingIndent) {
+					/* unranked result */
 					if (!lastRanking) continue;
-					var match = line.match(/^(\s*)(\S+)(\s+)(\S.*)/);
+					var match = line.match(unrankedResultRegexp);
 					if (!match) continue;
 					rows.push([lastRanking, match[2], match[4]])
 				} else {
-					/* text starts at the same indent level as the title; treat this as a continuation of the previous entry */
-					if (rows.length == 0) continue;
-					rows[rows.length - 1][2] += ' ' + line.trim();
+					/* ranked result */
+					var match = line.match(rankedResultRegexp);
+					if (!match) continue;
+					rows.push([match[2], match[4], match[6]]);
+					lastRanking = match[2];
 				}
 			}
 
@@ -135,10 +166,13 @@
 				}
 				break;
 			case 'pm1':
-				parseAsPartymeister(' - ');
+				parseAsPartymeisterV1();
 				break;
 			case 'pm2':
-				parseAsPartymeister(' by ');
+				parseAsPartymeisterV2();
+				break;
+			case 'wuhu':
+				parseAsWuhu();
 				break;
 		}
 	}
