@@ -133,7 +133,16 @@ def import_text(request, competition_id):
 		current_highest_position = CompetitionPlacing.objects.filter(competition=competition).aggregate(Max('position'))['position__max']
 		next_position = (current_highest_position or 0) + 1
 
-		rows = result_parser.tsv(request.POST['results'])
+		format = request.POST['format']
+		if format == 'tsv':
+			rows = result_parser.tsv(request.POST['results'])
+		elif format == 'pm1':
+			rows = result_parser.partymeister(request.POST['results'])
+		elif format == 'pm2':
+			rows = result_parser.partymeister(request.POST['results'], author_separator=' by ')
+		else:
+			return redirect('competition_edit', args=[competition_id])
+
 		for placing, title, byline, score in rows:
 			if not title:
 				continue

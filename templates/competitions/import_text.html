@@ -100,7 +100,7 @@
 				var row = rows[i];
 
 				var ranking = row[0].replace(/\.$/, ''); /* remove trailing dot */
-				if (ranking.match(/[o\d]+/gi)) {
+				if (ranking.match(/^[o\d]+$/i)) {
 					/* replace any oh-so-l33t letter 'o's within numbers by digit '0', and remove leading zeroes */
 					ranking = ranking.replace(/o/gi, '0').replace(/^0+/, '');
 				}
