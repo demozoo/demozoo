@@ -4,6 +4,13 @@
 import re
 
 
+PM_RANKED_RESULT = re.compile(r'(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)')
+PM_UNRANKED_RESULT = re.compile(r'(\s*)(\S+)(\s+)(\S.*)')
+
+WUHU_RANKED_RESULT = re.compile(r'^(\s*)(\S+)(\s+\#\d+\s+)(\S+)( pts\s+)(\S.*)')
+WUHU_UNRANKED_RESULT = re.compile(r'^(\s*\#\d+\s+)(\S+)( pts\s+)(\S.*)')
+
+
 # Tab-separated values
 def tsv(results_text):
 	rows = []
@@ -15,7 +22,19 @@ def tsv(results_text):
 	return rows
 
 
-def partymeister(results_text, author_separator=' - '):
+def partymeister_v1(results_text):
+	return generic_results_txt(results_text, PM_RANKED_RESULT, PM_UNRANKED_RESULT, ' - ')
+
+
+def partymeister_v2(results_text):
+	return generic_results_txt(results_text, PM_RANKED_RESULT, PM_UNRANKED_RESULT, ' by ')
+
+
+def wuhu(results_text):
+	return generic_results_txt(results_text, WUHU_RANKED_RESULT, WUHU_UNRANKED_RESULT, ' - ')
+
+
+def generic_results_txt(results_text, ranked_result_re, unranked_result_re, author_separator):
 	lines = results_text.split('\n')
 	# use first text line to establish column positions
 	ranking_indent = None
@@ -23,7 +42,7 @@ def partymeister(results_text, author_separator=' - '):
 	title_indent = None
 
 	for line in lines:
-		match = re.match(r'(\s*)(\S+)(\s+)(\S+)(\s+)(\S)', line)
+		match = ranked_result_re.match(line)
 		if not match:
 			continue
 		ranking_indent = len(match.group(1))
@@ -45,29 +64,27 @@ def partymeister(results_text, author_separator=' - '):
 			continue
 		indent = len(match.group(1))
 
-		if indent < score_indent:
-			# something (i.e. a ranking) exists to the left of the score, so start a new row
-			match = re.match(r'(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)', line)
-			if not match:
-				continue
-			rough_rows.append([match.group(2), match.group(4), match.group(6)])
-			last_ranking = match.group(2)
-		elif indent < title_indent:
-			# something (i.e. a score) exists to the left of the title;
-			# treat this as a new row with the same ranking as the previous entry
-			if last_ranking == None:
-				continue
-			match = re.match(r'(\s*)(\S+)(\s+)(\S.*)', line)
-			if not match:
-				continue
-			rough_rows.append([last_ranking, match.group(2), match.group(4)])
-		else:
-			# text starts at the same indent level as the title;
+		if indent >= title_indent:
 			# treat this as a continuation of the previous entry
 			if len(rough_rows) == 0:
 				continue
 			print "appending to: %s" % repr(rough_rows[-1][2])
 			rough_rows[-1][2] += ' ' + line.strip()
+		elif indent > ranking_indent:
+			# treat this as a new row with the same ranking as the previous entry
+			if last_ranking == None:
+				continue
+			match = unranked_result_re.match(line)
+			if not match:
+				continue
+			rough_rows.append([last_ranking, match.group(2), match.group(4).strip()])
+		else:
+			# something (i.e. a ranking) exists to the left of the score, so start a new row
+			match = ranked_result_re.match(line)
+			if not match:
+				continue
+			rough_rows.append([match.group(2), match.group(4), match.group(6).strip()])
+			last_ranking = match.group(2)
 
 	# now clean up individual fields and build the final row set
 	final_rows = []

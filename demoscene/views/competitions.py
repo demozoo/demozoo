@@ -137,9 +137,11 @@ def import_text(request, competition_id):
 		if format == 'tsv':
 			rows = result_parser.tsv(request.POST['results'])
 		elif format == 'pm1':
-			rows = result_parser.partymeister(request.POST['results'])
+			rows = result_parser.partymeister_v1(request.POST['results'])
 		elif format == 'pm2':
-			rows = result_parser.partymeister(request.POST['results'], author_separator=' by ')
+			rows = result_parser.partymeister_v2(request.POST['results'])
+		elif format == 'wuhu':
+			rows = result_parser.wuhu(request.POST['results'])
 		else:
 			return redirect('competition_edit', args=[competition_id])
 
