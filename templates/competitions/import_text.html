@@ -13,10 +13,53 @@
 
 <form action="{% url 'competition_import_text' competition.id %}" method="post">
 	{% csrf_token %}
-	<textarea name="results" style="width: 100%; height: 400px; font-family: monospace;"></textarea>
+	<textarea id="results_text" name="results" style="width: 100%; height: 400px; font-family: monospace;"></textarea>
 	<div class="field" style="float: right;">
 		<input type="submit" value="Import" />
 	</div>
 </form>
+
+<div id="preview" style="clear: both;">
+</div>
+
+<script>
+	var resultsTextarea = $('#results_text');
+	var previewContainer = $('#preview');
+
+	function refreshPreview() {
+		var results = resultsTextarea.val();
+		previewContainer.html('<h3>Preview:</h3><table border="1"><tr><th>Ranking</th><th>Title</th><th>Author</th><th>Score</th></tr></table>');
+		var table = previewContainer.find('table');
+
+		var rows = results.split(/\n/);
+		for (var i = 0; i < rows.length; i++) {
+			var row = rows[i];
+			var cells = row.split(/\t/);
+			var ranking = cells[0] && cells[0].trim();
+			var title = cells[1] && cells[1].trim();
+			var author = cells[2] && cells[2].trim();
+			var score = cells[3] && cells[3].trim();
+
+			if (title) {
+				var tr = $('<tr></tr>');
+				tr.append($('<td></td>').text(ranking));
+				tr.append($('<td></td>').text(title));
+				tr.append($('<td></td>').text(author));
+				tr.append($('<td></td>').text(score));
+				table.append(tr);
+			}
+		}
+	}
+	var refreshScheduled = false;
+	function scheduleRefreshPreview() {
+		if (refreshScheduled) return;
+		refreshScheduled = true;
+		setTimeout(function() {
+			refreshScheduled = false;
+			refreshPreview();
+		}, 100);
+	}
+	resultsTextarea.change(refreshPreview).keydown(scheduleRefreshPreview);
+</script>
 
 {% endblock %}
