@@ -15,6 +15,7 @@
 		<select id="results_format" name="format">
 			<option value="tsv">Tab-separated values</option>
 			<option value="pm1">Partymeister v1</option>
+			<option value="pm2">Partymeister v2</option>
 		</select>
 	</div>
 
@@ -48,6 +49,78 @@
 			}
 		}
 
+		function parseAsPartymeister(authorSeparator) {
+			/* Use first text line to establish column positions */
+			var lines = results.split(/\n/);
+			var rankingIndent = null;
+			var scoreIndent = null;
+			var titleIndent = null;
+			for (var i = 0; i < lines.length; i++) {
+				var match = lines[i].match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S)/);
+				if (!match) continue;
+				rankingIndent = match[1].length;
+				scoreIndent = rankingIndent + match[2].length + match[3].length;
+				titleIndent = scoreIndent + match[4].length + match[5].length;
+				break;
+			}
+			if (rankingIndent == null) {
+				/* no usable result lines found at all */
+				return;
+			}
+
+			/* now loop over the lines properly, compiling a list of (ranking, score, title_and_author) tuples */
+			var rows = [];
+			var lastRanking = null;
+			for (var i = 0; i < lines.length; i++) {
+				var line = lines[i];
+				var match = line.match(/^(\s*)\S/);
+				if (!match) continue;
+				var indent = match[1].length;
+				if (indent < scoreIndent) {
+					/* something (i.e. a ranking) exists to the left of the score, so start a new row */
+					var match = line.match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/);
+					if (!match) continue;
+					rows.push([match[2], match[4], match[6]]);
+					lastRanking = match[2];
+				} else if (indent < titleIndent) {
+					/* something (i.e. a score) exists to the left of the title; treat this as a new row with the same ranking as the previous entry */
+					if (!lastRanking) continue;
+					var match = line.match(/^(\s*)(\S+)(\s+)(\S.*)/);
+					if (!match) continue;
+					rows.push([lastRanking, match[2], match[4]])
+				} else {
+					/* text starts at the same indent level as the title; treat this as a continuation of the previous entry */
+					if (rows.length == 0) continue;
+					rows[rows.length - 1][2] += ' ' + line.trim();
+				}
+			}
+
+			/* now clean up individual fields and build the preview table */
+			for (var i = 0; i < rows.length; i++) {
+				var row = rows[i];
+
+				var ranking = row[0].replace(/\.$/, ''); /* remove trailing dot */
+				if (ranking.match(/[o\d]+/gi)) {
+					/* replace any oh-so-l33t letter 'o's within numbers by digit '0', and remove leading zeroes */
+					ranking = ranking.replace(/o/gi, '0').replace(/^0+/, '');
+				}
+				var score = row[1];
+
+				/* split title and author on the final ' - ', on the assumption that titles are more likely to have an embedded ' - ' than author strings */
+				/* ...but allow other separators in place of ' - ', as Partymeister v2 uses ' by ' */
+				var titleAndAuthor = row[2].split(authorSeparator);
+				if (titleAndAuthor.length > 1) {
+					var author = titleAndAuthor.pop();
+					var title = titleAndAuthor.join(authorSeparator);
+				} else {
+					var author = '';
+					var title = titleAndAuthor[0];
+				}
+
+				addRow(ranking, title, author, score);
+			}
+		}
+
 		switch (resultsFormatSelector.val()) {
 			case 'tsv':
 				var rows = results.split(/\n/);
@@ -62,74 +135,10 @@
 				}
 				break;
 			case 'pm1':
-				/* Use first text line to establish column positions */
-				var lines = results.split(/\n/);
-				var rankingIndent = null;
-				var scoreIndent = null;
-				var titleIndent = null;
-				for (var i = 0; i < lines.length; i++) {
-					var match = lines[i].match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S)/);
-					if (!match) continue;
-					rankingIndent = match[1].length;
-					scoreIndent = rankingIndent + match[2].length + match[3].length;
-					titleIndent = scoreIndent + match[4].length + match[5].length;
-					break;
-				}
-				if (rankingIndent == null) {
-					/* no usable result lines found at all */
-					return;
-				}
-
-				/* now loop over the lines properly, compiling a list of (ranking, score, title_and_author) tuples */
-				var rows = [];
-				var lastRanking = null;
-				for (var i = 0; i < lines.length; i++) {
-					var line = lines[i];
-					var match = line.match(/^(\s*)\S/);
-					if (!match) continue;
-					var indent = match[1].length;
-					if (indent < scoreIndent) {
-						/* something (i.e. a ranking) exists to the left of the score, so start a new row */
-						var match = line.match(/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/);
-						if (!match) continue;
-						rows.push([match[2], match[4], match[6]]);
-						lastRanking = match[2];
-					} else if (indent < titleIndent) {
-						/* something (i.e. a score) exists to the left of the title; treat this as a new row with the same ranking as the previous entry */
-						if (!lastRanking) continue;
-						var match = line.match(/^(\s*)(\S+)(\s+)(\S.*)/);
-						if (!match) continue;
-						rows.push([lastRanking, match[2], match[4]])
-					} else {
-						/* text starts at the same indent level as the title; treat this as a continuation of the previous entry */
-						if (rows.length == 0) continue;
-						rows[rows.length - 1][2] += ' ' + line.trim();
-					}
-				}
-
-				/* now clean up individual fields and build the preview table */
-				for (var i = 0; i < rows.length; i++) {
-					var row = rows[i];
-
-					var ranking = row[0].replace(/\.$/, ''); /* remove trailing dot */
-					if (ranking.match(/[o\d]+/gi)) {
-						/* replace any oh-so-l33t letter 'o's within numbers by digit '0', and remove leading zeroes */
-						ranking = ranking.replace(/o/gi, '0').replace(/^0+/, '');
-					}
-					var score = row[1];
-					/* split title and author on the final ' - ', on the assumption that titles are more likely to have an embedded ' - ' than author strings */
-					var titleAndAuthor = row[2].split(' - ');
-					if (titleAndAuthor.length > 1) {
-						var author = titleAndAuthor.pop();
-						var title = titleAndAuthor.join(' - ');
-					} else {
-						var author = '';
-						var title = titleAndAuthor[0];
-					}
-
-					addRow(ranking, title, author, score);
-				}
-
+				parseAsPartymeister(' - ');
+				break;
+			case 'pm2':
+				parseAsPartymeister(' by ');
 				break;
 		}
 	}
