@@ -1,6 +1,7 @@
 from demoscene.shortcuts import get_object_or_404, render, redirect
 from demoscene.models import Competition, CompetitionPlacing, Edit, Platform, ProductionType, Production
 from demoscene.forms.party import CompetitionForm
+from demoscene.utils import result_parser
 
 from unjoinify import unjoinify
 from django.utils import simplejson as json
@@ -132,10 +133,8 @@ def import_text(request, competition_id):
 		current_highest_position = CompetitionPlacing.objects.filter(competition=competition).aggregate(Max('position'))['position__max']
 		next_position = (current_highest_position or 0) + 1
 
-		result_lines = request.POST['results'].split('\n')
-		for line in result_lines:
-			fields = [field.strip() for field in line.split('\t')] + ['', '', '', '']
-			placing, title, byline, score = fields[0:4]
+		rows = result_parser.tsv(request.POST['results'])
+		for placing, title, byline, score in rows:
 			if not title:
 				continue
 
