@@ -47,6 +47,13 @@ class BaseUrl():
 			escape(str(self)), escape(hostname)
 		)
 
+	@property
+	def download_url(self):
+		# gives the most suitable URL for actually downloading the item. Override this
+		# in cases where the 'master' URL is not a direct download (e.g. scene.org)
+		return str(self)
+
+
 
 def regex_match(pattern, flags=None):
 	regex = re.compile(pattern, flags)
@@ -390,6 +397,10 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def download_url(self):
+		return self.nl_url
 
 	@property
 	def no_url(self):

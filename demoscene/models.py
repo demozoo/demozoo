@@ -1299,6 +1299,10 @@ class ProductionLink(ExternalLink):
 	def as_download_link(self):
 		return self.link.as_download_link()
 
+	@property
+	def download_url(self):
+		return self.link.download_url
+
 
 class ResultsFile(models.Model):
 	party = models.ForeignKey(Party, related_name='results_files')

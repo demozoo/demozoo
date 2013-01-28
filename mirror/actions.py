@@ -12,6 +12,7 @@ from boto.s3.key import Key
 
 from django.conf import settings
 from mirror.models import Download
+from demoscene.models import Production
 
 user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 max_size = 1048576
@@ -106,10 +107,16 @@ def fetch_url(url):
 	# Fetch our mirrored copy of the given URL if available;
 	# if not, mirror and return the original file
 
-	try:
-		# try to grab the most recent download of this URL which resulted in a mirror_s3_key
-		download = Download.objects.filter(url=url).exclude(mirror_s3_key='').order_by('-downloaded_at')[0]
-	except IndexError:
+	download = Download.last_mirrored_download_for_url(url)
+	if download:
+		# existing download was found; fetch it
+		bucket = open_bucket()
+		k = Key(bucket)
+		k.key = download.mirror_s3_key
+		file_content = buffer(k.get_contents_as_string())
+		remote_filename = download.mirror_s3_key.split('/')[-1]
+		return remote_filename, file_content
+	else:
 		# no mirrored copy exists - fetch and mirror the origin file
 		try:
 			remote_filename, file_content = fetch_origin_url(url)
@@ -123,14 +130,6 @@ def fetch_url(url):
 		upload_to_mirror(url, remote_filename, file_content)
 		return remote_filename, file_content
 
-	# existing download was found; fetch it
-	bucket = open_bucket()
-	k = Key(bucket)
-	k.key = download.mirror_s3_key
-	file_content = buffer(k.get_contents_as_string())
-	remote_filename = download.mirror_s3_key.split('/')[-1]
-	return remote_filename, file_content
-
 
 def fetch_to_local(url):
 	remote_filename, file_content = fetch_url(url)
@@ -141,3 +140,30 @@ def fetch_to_local(url):
 	local_file.write(file_content)
 	local_file.close()
 	return local_path
+
+
+def find_screenshottable_graphics():
+	# Graphic productions with downloads but no screenshots
+	from django.db.models import Count
+	prods = Production.objects.annotate(screenshot_count=Count('screenshots')).filter(
+		supertype='graphics', screenshot_count=0, links__is_download_link=True).prefetch_related('links', 'platforms', 'types')
+
+	fetches = []
+	for prod in prods:
+		for link in prod.links.all():
+			if not link.is_download_link:
+				continue
+			url = link.download_url
+			filename = url.split('/')[-1]
+			extension = filename.split('.')[-1]
+			if filename == extension:
+				# filename has no extension
+				continue
+			if extension.lower() not in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']:
+				continue
+
+			# URL is usable
+			fetches.append((url, prod.id))
+			break
+
+	return fetches
