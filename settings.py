@@ -113,6 +113,7 @@ INSTALLED_APPS = (
 	'maintenance',
 	'pages',
 	'sceneorg',
+	'mirror',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
