@@ -876,34 +876,20 @@ class Credit(models.Model):
 
 class Screenshot(ModelWithThumbnails):
 	production = models.ForeignKey(Production, related_name='screenshots')
-	original = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/original', f)),
-		verbose_name='image file', width_field='original_width', height_field='original_height')
-	original_width = models.IntegerField(editable=False)
-	original_height = models.IntegerField(editable=False)
+	original_url = models.CharField(max_length=255, blank=True)
+	original_width = models.IntegerField(editable=False, null=True, blank=True)
+	original_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	thumbnail = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/thumb', f)),
-		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
-	thumbnail_width = models.IntegerField(editable=False)
-	thumbnail_height = models.IntegerField(editable=False)
+	thumbnail_url = models.CharField(max_length=255, blank=True)
+	thumbnail_width = models.IntegerField(editable=False, null=True, blank=True)
+	thumbnail_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	standard = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/standard', f)),
-		editable=False, width_field='standard_width', height_field='standard_height')
-	standard_width = models.IntegerField(editable=False)
-	standard_height = models.IntegerField(editable=False)
-
-	def save(self, *args, **kwargs):
-		if not self.id:
-			Screenshot.generate_thumbnail(self.original, self.thumbnail, (135, 90), crop=True)
-			Screenshot.generate_thumbnail(self.original, self.standard, (400, 400), crop=False)
-
-		# Save this photo instance
-		super(Screenshot, self).save(*args, **kwargs)
+	standard = models.CharField(max_length=255, blank=True)
+	standard_width = models.IntegerField(editable=False, null=True, blank=True)
+	standard_height = models.IntegerField(editable=False, null=True, blank=True)
 
 	def __unicode__(self):
-		return "%s - %s" % (self.production.title, self.original)
+		return "%s - %s" % (self.production.title, self.original_url)
 
 
 class PartySeries(models.Model):
