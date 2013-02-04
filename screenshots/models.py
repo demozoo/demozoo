@@ -56,7 +56,7 @@ class PILConvertibleImage(object):
 		output = StringIO.StringIO()
 		if has_limited_palette:
 			if img.mode not in ['1', 'P']:
-				img = img.convert('P')
+				img = img.convert('P', palette=Image.ADAPTIVE, colors=256)
 			img.save(output, format='PNG', optimize=True)
 			return output, img.size, 'png'
 		else:

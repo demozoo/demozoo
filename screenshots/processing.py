@@ -5,6 +5,9 @@ from boto.s3.key import Key
 from django.conf import settings
 
 
+MIME_TYPE_BY_EXTENSION = {'png': 'image/png', 'jpg': 'image/jpeg', 'gif': 'image/gif'}
+
+
 def get_thumbnail_sizing_params(original_size, target_size):
 	"""
 		Given the dimensions of a source image, return a (crop_params, resize_params) tuple that
@@ -97,6 +100,7 @@ def upload_to_s3(fp, prefix, extension, reduced_redundancy=False):
 	bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
 	k = Key(bucket)
 	k.key = key_name
+	k.content_type = MIME_TYPE_BY_EXTENSION.get(extension, 'application/octet-stream')
 	k.set_contents_from_file(fp, reduced_redundancy=reduced_redundancy, rewind=True)
 	k.set_acl('public-read')
 
