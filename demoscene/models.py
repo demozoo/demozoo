@@ -874,7 +874,7 @@ class Credit(models.Model):
 		ordering = ['production__title']
 
 
-class Screenshot(ModelWithThumbnails):
+class Screenshot(models.Model):
 	production = models.ForeignKey(Production, related_name='screenshots')
 	original_url = models.CharField(max_length=255, blank=True)
 	original_width = models.IntegerField(editable=False, null=True, blank=True)
@@ -884,7 +884,7 @@ class Screenshot(ModelWithThumbnails):
 	thumbnail_width = models.IntegerField(editable=False, null=True, blank=True)
 	thumbnail_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	standard = models.CharField(max_length=255, blank=True)
+	standard_url = models.CharField(max_length=255, blank=True)
 	standard_width = models.IntegerField(editable=False, null=True, blank=True)
 	standard_height = models.IntegerField(editable=False, null=True, blank=True)
 

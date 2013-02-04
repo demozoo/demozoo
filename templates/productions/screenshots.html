@@ -14,8 +14,8 @@
 		<ul>
 			{% for pic in screenshots %}
 				<li>
-					<a href="{{ pic.original.url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original.url }}" data-main-image="{{ pic.standard.url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
-						<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+					<a href="{{ pic.original_url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original_url }}" data-main-image="{{ pic.standard_url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
+						<img src="{{ pic.thumbnail_url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
 					</a>
 					<a href="{% url 'production_delete_screenshot' production.id pic.id %}" class="open_in_lightbox">
 						<img src="/static/images/icons/delete.png" width="16" height="16" />
