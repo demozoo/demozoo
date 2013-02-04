@@ -4,7 +4,7 @@ import StringIO
 
 from screenshots.processing import get_thumbnail_sizing_params
 
-PIL_READABLE_FORMATS = []
+PIL_READABLE_FORMATS = ['BMP', 'GIF', 'ICO', 'JPEG', 'PCD', 'PCX', 'PNG', 'PPM', 'PSD', 'TGA', 'TIFF', 'XBM', 'XPM']
 WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
 EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
 
@@ -58,7 +58,7 @@ class PILConvertibleImage(object):
 			if img.mode not in ['1', 'P']:
 				img = img.convert('P')
 			img.save(output, format='PNG', optimize=True)
-			return output, self.image.size, 'png'
+			return output, img.size, 'png'
 		else:
 			img.save(output, format='JPEG', optimize=True, quality=90)
-			return output, self.image.size, 'jpg'
+			return output, img.size, 'jpg'
