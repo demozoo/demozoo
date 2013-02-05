@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 import datetime
 from django.utils import simplejson as json
+from screenshots.tasks import capture_upload_for_processing
 
 
 def index(request, supertype):
@@ -323,42 +324,25 @@ def screenshots(request, production_id):
 def add_screenshot(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		from django.forms import ImageField  # use a standalone ImageField for validation
-		image_field = ImageField()
 		uploaded_files = request.FILES.getlist('screenshot')
-		failed_filenames = []
-		for file in uploaded_files:
-			try:
-				image_field.to_python(file)
-				screenshot = Screenshot(original=file)
-				#if screenshot.original:
-				screenshot.production = production
-				screenshot.save()
-			except ValidationError:
-				failed_filenames.append(file.name)
-		if len(uploaded_files) > len(failed_filenames):
-			# at least one screenshot was successfully added
+		file_count = len(uploaded_files)
+		for f in uploaded_files:
+			screenshot = Screenshot.objects.create(production=production)
+			capture_upload_for_processing(f, screenshot.id)
+
+		if file_count:
+			# at least one screenshot was uploaded
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
 
-			successful_files_count = len(uploaded_files) - len(failed_filenames)
-			if successful_files_count == 1:
+			if file_count == 1:
 				Edit.objects.create(action_type='add_screenshot', focus=production,
 					description=("Added screenshot"), user=request.user)
 			else:
 				Edit.objects.create(action_type='add_screenshot', focus=production,
-					description=("Added %s screenshots" % successful_files_count), user=request.user)
+					description=("Added %s screenshots" % file_count), user=request.user)
 
-		if failed_filenames:
-			if len(uploaded_files) == 1:
-				messages.error(request, "The screenshot could not be added (file was corrupted, or not a valid image format)")
-			elif len(uploaded_files) == len(failed_filenames):
-				messages.error(request, "None of the screenshots could be added (files were corrupted, or not a valid image format)")
-			elif len(failed_filenames) == 1:
-				messages.error(request, "The screenshot %s could not be added (file was corrupted, or not a valid image format)" % failed_filenames[0])
-			else:
-				messages.error(request, "The following screenshots could not be added (files were corrupted, or not a valid image format): %s" % (', '.join(failed_filenames)))
 		return HttpResponseRedirect(production.get_absolute_edit_url())
 	return ajaxable_render(request, 'productions/add_screenshot.html', {
 		'html_title': "Adding screenshots for %s" % production.title,

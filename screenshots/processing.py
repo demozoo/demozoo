@@ -1,4 +1,3 @@
-import uuid
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
@@ -86,14 +85,11 @@ def get_thumbnail_sizing_params(original_size, target_size):
 		return (crop_params, resize_params)
 
 
-def upload_to_s3(fp, prefix, extension, reduced_redundancy=False):
+def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
 	"""
 		Upload the contents of file handle 'fp' to the S3 bucket specified by AWS_STORAGE_BUCKET_NAME,
-		under a random filename with the specified prefix and extension. Return the public URL.
+		under the given filename. Return the public URL.
 	"""
-	# generate random hex string and build key name from it
-	u = uuid.uuid4().hex
-	key_name = prefix + u[0:2] + '/' + u[2:4] + '/' + u[4:16] + '.' + extension
 
 	# connect to S3 and send the file contents
 	conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
@@ -101,6 +97,7 @@ def upload_to_s3(fp, prefix, extension, reduced_redundancy=False):
 	k = Key(bucket)
 	k.key = key_name
 	k.content_type = MIME_TYPE_BY_EXTENSION.get(extension, 'application/octet-stream')
+	# print "uploading: %s" % key_name
 	k.set_contents_from_file(fp, reduced_redundancy=reduced_redundancy, rewind=True)
 	k.set_acl('public-read')
 
