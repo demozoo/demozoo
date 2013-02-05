@@ -37,7 +37,7 @@
 							<a href="{{ party.get_absolute_url }}">
 								{% with party.random_screenshot as pic %}
 									{% if pic %}
-										<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+										<img src="{{ pic.thumbnail_url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
 									{% endif %}
 								{% endwith %}
 								<h3>{{ party.name }}</h3>
