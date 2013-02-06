@@ -56,3 +56,22 @@ def date_range(start_date, end_date):
 		'start_date': start_date,
 		'end_date': end_date,
 	}
+
+
+@register.inclusion_tag('shared/thumbnail.html')
+def thumbnail(screenshot):
+	thumbnail_width = screenshot.thumbnail_width or 1
+	thumbnail_height = screenshot.thumbnail_height or 1
+	# scale down by whatever factor is required to get both width and height within 160x120
+	width_scale = min(160.0 / thumbnail_width, 1)
+	height_scale = min(120.0 / thumbnail_height, 1)
+	scale = min(width_scale, height_scale)
+
+	width = int(thumbnail_width * scale)
+	height = int(thumbnail_height * scale)
+	return {
+		'url': screenshot.thumbnail_url,
+		'width': width,
+		'height': height,
+		'top_padding': (120 - height) / 2
+	}
