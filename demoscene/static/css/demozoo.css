@@ -321,6 +321,13 @@ ul.errorlist {
 	display: block;
 }
 
+.thumbnail {
+	background-color: #888;
+	width: 160px;
+	height: 120px;
+	display: inline-block;
+}
+
 /* data entry forms */
 .form_title h2 {
 	display: inline;
@@ -1283,6 +1290,11 @@ ul.memberships {
 
 .show_party_series ul.parties li a:link h3 {
 	text-decoration: underline;
+}
+
+.show_party_series ul.parties .thumbnail {
+	margin: auto;
+	margin-bottom: 10px;
 }
 
 ul.parties_in_series {
