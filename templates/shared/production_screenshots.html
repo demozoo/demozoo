@@ -1,4 +1,5 @@
 {% load url from future %}
+{% load demoscene_tags %}
 
 {% if screenshots or editing %}
 	<div class="screenshots">
@@ -17,7 +18,7 @@
 							{% for pic in screenshots %}
 								<li>
 									<a href="{{ pic.original_url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original_url }}" data-main-image="{{ pic.standard_url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
-										<img src="{{ pic.thumbnail_url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
+										{% thumbnail pic %}
 									</a>
 								</li>
 							{% endfor %}

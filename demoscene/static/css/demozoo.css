@@ -323,9 +323,14 @@ ul.errorlist {
 
 .thumbnail {
 	background-color: #888;
-	width: 160px;
-	height: 120px;
+	width: 133px;
+	height: 100px;
 	display: inline-block;
+	line-height: 100px;
+	text-align: center;
+}
+.thumbnail img {
+	vertical-align: middle;
 }
 
 /* data entry forms */
@@ -1083,6 +1088,21 @@ body.show_production .screenshots {
 	float: left;
 	margin-right: 16px;
 	width: 400px;
+}
+
+body.show_production #main_image {
+	width: 400px;
+	height: 300px;
+	background-color: #888;
+	display: block;
+	margin-bottom: 10px;
+	line-height: 300px;
+	text-align: center;
+}
+
+body.show_production #main_image img {
+	margin: auto;
+	vertical-align: middle;
 }
 
 body.show_production .screenshots .carousel li {
