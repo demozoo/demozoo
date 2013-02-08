@@ -56,6 +56,9 @@ class PILConvertibleImage(object):
 		output = StringIO.StringIO()
 		if has_limited_palette:
 			if img.mode not in ['1', 'P']:
+				# img.convert with palette=Image.ADAPTIVE will apparently only work on
+				# 'L' or 'RGB' images, not RGBA for example. So, need to pre-convert to RGB...
+				img = img.convert('RGB')
 				img = img.convert('P', palette=Image.ADAPTIVE, colors=256)
 			img.save(output, format='PNG', optimize=True)
 			return output, img.size, 'png'
