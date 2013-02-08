@@ -92,7 +92,7 @@ def rebuild_screenshot(screenshot_id):
 		pass
 
 
-@task(rate_limit='1/m', ignore_result=True)
+@task(rate_limit='6/m', ignore_result=True)
 def create_screenshot_from_remote_file(url, production_id):
 	try:
 		download, file_content = fetch_url(url)
