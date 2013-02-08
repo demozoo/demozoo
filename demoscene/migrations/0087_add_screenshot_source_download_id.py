@@ -4,93 +4,19 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-from django.conf import settings
-
-
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        
+        # Adding field 'Screenshot.source_download_id'
+        db.add_column('demoscene_screenshot', 'source_download_id', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True), keep_default=False)
 
-        try:
-            bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        except AttributeError:
-            bucket_name = 'media.demozoo.org'
-
-        try:
-            bucket_format = settings.AWS_BOTO_CALLING_FORMAT
-        except AttributeError:
-            bucket_format = 'VHostCallingFormat'
-
-        if bucket_format == 'VHostCallingFormat':
-            url_prefix = "http://%s/" % bucket_name
-        else:
-            url_prefix = "http://%s.s3.amazonaws.com/" % bucket_name
-
-        # Renaming field 'Screenshot.original' to 'Screenshot.original_url' and allowing nulls
-        db.rename_column('demoscene_screenshot', 'original', 'original_url')
-        db.alter_column('demoscene_screenshot', 'original_url', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True))
-
-        # Renaming field 'Screenshot.standard' to 'Screenshot.standard_url'
-        db.rename_column('demoscene_screenshot', 'standard', 'standard_url')
-        db.alter_column('demoscene_screenshot', 'standard_url', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True))
-
-        # Renaming field 'Screenshot.thumbnail' to 'Screenshot.thumbnail_url'
-        db.rename_column('demoscene_screenshot', 'thumbnail', 'thumbnail_url')
-        db.alter_column('demoscene_screenshot', 'thumbnail_url', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True))
-
-        # Changing field 'Screenshot.original_height'
-        db.alter_column('demoscene_screenshot', 'original_height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        # Changing field 'Screenshot.original_width'
-        db.alter_column('demoscene_screenshot', 'original_width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        # Changing field 'Screenshot.standard_width'
-        db.alter_column('demoscene_screenshot', 'standard_width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        # Changing field 'Screenshot.standard_height'
-        db.alter_column('demoscene_screenshot', 'standard_height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        # Changing field 'Screenshot.thumbnail_width'
-        db.alter_column('demoscene_screenshot', 'thumbnail_width', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        # Changing field 'Screenshot.thumbnail_height'
-        db.alter_column('demoscene_screenshot', 'thumbnail_height', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True))
-
-        db.execute("UPDATE demoscene_screenshot SET original_url = %s || original_url", [url_prefix])
-        db.execute("UPDATE demoscene_screenshot SET standard_url = %s || standard_url", [url_prefix])
-        db.execute("UPDATE demoscene_screenshot SET thumbnail_url = %s || thumbnail_url", [url_prefix])
 
     def backwards(self, orm):
+        
+        # Deleting field 'Screenshot.source_download_id'
+        db.delete_column('demoscene_screenshot', 'source_download_id')
 
-        # Renaming field 'Screenshot.original_url' to 'Screenshot.original'
-        db.rename_column('demoscene_screenshot', 'original_url', 'original')
-        db.alter_column('demoscene_screenshot', 'original', self.gf('django.db.models.fields.files.ImageField')(default='', max_length=100), keep_default=False)
-
-        # Renaming field 'Screenshot.standard_url' to 'Screenshot.standard'
-        db.rename_column('demoscene_screenshot', 'standard_url', 'standard')
-        db.alter_column('demoscene_screenshot', 'standard', self.gf('django.db.models.fields.files.ImageField')(default='', max_length=100), keep_default=False)
-
-        # Renaming field 'Screenshot.thumbnail_url' to 'Screenshot.thumbnail'
-        db.rename_column('demoscene_screenshot', 'thumbnail_url', 'thumbnail')
-        db.alter_column('demoscene_screenshot', 'thumbnail', self.gf('django.db.models.fields.files.ImageField')(default='', max_length=100), keep_default=False)
-
-        # Changing field 'Screenshot.standard_width'
-        db.alter_column('demoscene_screenshot', 'standard_width', self.gf('django.db.models.fields.IntegerField')())
-
-        # Changing field 'Screenshot.original_height'
-        db.alter_column('demoscene_screenshot', 'original_height', self.gf('django.db.models.fields.IntegerField')())
-
-        # Changing field 'Screenshot.standard_height'
-        db.alter_column('demoscene_screenshot', 'standard_height', self.gf('django.db.models.fields.IntegerField')())
-
-        # Changing field 'Screenshot.thumbnail_width'
-        db.alter_column('demoscene_screenshot', 'thumbnail_width', self.gf('django.db.models.fields.IntegerField')())
-
-        # Changing field 'Screenshot.thumbnail_height'
-        db.alter_column('demoscene_screenshot', 'thumbnail_height', self.gf('django.db.models.fields.IntegerField')())
-
-        # Changing field 'Screenshot.original_width'
-        db.alter_column('demoscene_screenshot', 'original_width', self.gf('django.db.models.fields.IntegerField')())
 
     models = {
         'auth.group': {
@@ -108,7 +34,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 4, 0, 0, 43, 716885)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 0, 9, 29, 367635)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -116,7 +42,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 4, 0, 0, 43, 716747)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 8, 0, 9, 29, 367494)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -343,8 +269,9 @@ class Migration(SchemaMigration):
             'original_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'original_width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'production': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'screenshots'", 'to': "orm['demoscene.Production']"}),
-            'standard_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'source_download_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'standard_height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'standard_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'standard_width': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'thumbnail_height': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'thumbnail_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),

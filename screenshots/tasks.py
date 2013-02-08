@@ -96,7 +96,7 @@ def rebuild_screenshot(screenshot_id):
 def create_screenshot_from_remote_file(url, production_id):
 	try:
 		download, file_content = fetch_url(url)
-		screenshot = Screenshot(production_id=production_id)
+		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
 
 		buf = cStringIO.StringIO(file_content)
 		img = PILConvertibleImage(buf)

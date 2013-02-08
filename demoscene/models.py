@@ -888,6 +888,9 @@ class Screenshot(models.Model):
 	standard_width = models.IntegerField(editable=False, null=True, blank=True)
 	standard_height = models.IntegerField(editable=False, null=True, blank=True)
 
+	# for diagnostics: ID of the mirror.models.Download instance that this screen was generated from
+	source_download_id = models.IntegerField(editable=False, null=True, blank=True)
+
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
 
