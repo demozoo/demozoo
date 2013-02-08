@@ -69,7 +69,7 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
 
 
 # token rate limit so that new uploads from local files get priority
-@task(rate_limit='12/m', ignore_result=True)
+@task(rate_limit='1/s', ignore_result=True)
 def rebuild_screenshot(screenshot_id):
 	try:
 		screenshot = Screenshot.objects.get(id=screenshot_id)
