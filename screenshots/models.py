@@ -9,6 +9,13 @@ WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
 EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
 
 
+# some sort of hack for screwy JPEG saving - see
+# http://mail.python.org/pipermail/image-sig/1999-August/000816.html
+# http://code.google.com/p/django-filebrowser/issues/detail?id=56
+import ImageFile
+ImageFile.MAXBLOCK = 1024 * 1024  # default is 64k
+
+
 class PILConvertibleImage(object):
 	"""
 		represents an image which can be converted to an 'original' or a thumbnail
@@ -63,5 +70,10 @@ class PILConvertibleImage(object):
 			img.save(output, format='PNG', optimize=True)
 			return output, img.size, 'png'
 		else:
-			img.save(output, format='JPEG', optimize=True, quality=90)
+			try:
+				img.save(output, format='JPEG', optimize=True, quality=90)
+			except IOError:
+				# optimize option can fail with quality > 85 - see http://mail.python.org/pipermail/image-sig/2006-April/003858.html
+				# ...so try without optimize
+				img.save(output, format='JPEG', quality=90)
 			return output, img.size, 'jpg'
