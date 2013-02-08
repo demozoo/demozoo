@@ -9,6 +9,7 @@ import cStringIO
 from demoscene.models import Screenshot
 from screenshots.models import PILConvertibleImage
 from screenshots.processing import upload_to_s3
+from mirror.actions import fetch_url, FileTooBig
 from django.conf import settings
 
 
@@ -88,6 +89,27 @@ def rebuild_screenshot(screenshot_id):
 
 	except Screenshot.DoesNotExist:
 		# guess it was deleted in the meantime, then.
+		pass
+
+
+@task(rate_limit='1/m', ignore_result=True)
+def create_screenshot_from_remote_file(url, production_id):
+	try:
+		download, file_content = fetch_url(url)
+		screenshot = Screenshot(production_id=production_id)
+
+		buf = cStringIO.StringIO(file_content)
+		img = PILConvertibleImage(buf)
+
+		u = download.sha1
+		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.p' + str(production_id) + '.'
+		upload_original(img, screenshot, basename, reduced_redundancy=True)
+		upload_standard(img, screenshot, basename)
+		upload_thumb(img, screenshot, basename)
+		screenshot.save()
+
+	except (urllib2.URLError, FileTooBig):
+		# oh well.
 		pass
 
 

@@ -10,6 +10,10 @@ class Download(models.Model):
 	file_size = models.IntegerField(null=True, blank=True)
 	mirror_s3_key = models.CharField(max_length=255)
 
+	@property
+	def filename(self):
+		return self.mirror_s3_key.split('/')[-1]
+
 	@staticmethod
 	def last_mirrored_download_for_url(url):
 		try:

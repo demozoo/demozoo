@@ -14,6 +14,8 @@ from django.conf import settings
 from mirror.models import Download
 from demoscene.models import Production
 
+PIL_READABLE_EXTENSIONS = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']
+
 user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 max_size = 1048576
 mirror_bucket_name = 'mirror.demozoo.org'
@@ -77,7 +79,7 @@ def upload_to_mirror(url, remote_filename, file_content):
 
 	if download:
 		# existing download was found; use the same mirror s3 key
-		Download.objects.create(
+		return Download.objects.create(
 			url=url,
 			downloaded_at=datetime.datetime.now(),
 			sha1=sha1,
@@ -93,7 +95,7 @@ def upload_to_mirror(url, remote_filename, file_content):
 		k.key = key_name
 		k.set_contents_from_string(file_content)
 
-		Download.objects.create(
+		return Download.objects.create(
 			url=url,
 			downloaded_at=datetime.datetime.now(),
 			sha1=sha1,
@@ -114,8 +116,7 @@ def fetch_url(url):
 		k = Key(bucket)
 		k.key = download.mirror_s3_key
 		file_content = buffer(k.get_contents_as_string())
-		remote_filename = download.mirror_s3_key.split('/')[-1]
-		return remote_filename, file_content
+		return download, file_content
 	else:
 		# no mirrored copy exists - fetch and mirror the origin file
 		try:
@@ -127,13 +128,13 @@ def fetch_url(url):
 				error_type=ex.__class__.__name__
 			)
 			raise
-		upload_to_mirror(url, remote_filename, file_content)
-		return remote_filename, file_content
+		download = upload_to_mirror(url, remote_filename, file_content)
+		return download, file_content
 
 
 def fetch_to_local(url):
-	remote_filename, file_content = fetch_url(url)
-	local_filename = uuid.uuid4().hex[:16] + '_' + clean_filename(remote_filename)
+	download, file_content = fetch_url(url)
+	local_filename = uuid.uuid4().hex[:16] + '_' + clean_filename(download.filename)
 	local_path = os.path.join(upload_dir, local_filename)
 
 	local_file = open(local_path, 'wb')
@@ -159,7 +160,7 @@ def find_screenshottable_graphics():
 			if filename == extension:
 				# filename has no extension
 				continue
-			if extension.lower() not in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']:
+			if extension.lower() not in PIL_READABLE_EXTENSIONS:
 				continue
 
 			# URL is usable
