@@ -183,10 +183,34 @@ def find_zipped_screenshottable_graphics():
 			if prod.platforms.exclude(name__in=['MS-Dos', 'Windows']):
 				continue
 
-			# TODO: check if we've already catalogued the archive contents for
-			# this URL, and possibly use that knowledge to reject further
+			file_for_screenshot = None
+			# see if we've already got a best candidate archive member to take the image from
+			if link.file_for_screenshot:
+				file_for_screenshot = link.file_for_screenshot
+			else:
+				# failing that, see if we already have a directory listing for this download
+				# and can derive a candidate from that
+				download = Download.last_mirrored_download_for_url(link.download_url)
+				if download and download.archive_members.count():
+					file_for_screenshot = download.select_screenshot_file()
+					if file_for_screenshot:
+						# we've found a candidate (which probably means we've improved select_screenshot_file
+						# since it was last run on this archive) - might as well store it against the
+						# ProductionLink, so it doesn't show up as something to be manually resolved
+						link.file_for_screenshot = file_for_screenshot
+						link.save()
+					else:
+						# we have a directory listing but no clear candidate, so give up on this link
+						continue
+
+			if file_for_screenshot:
+				# we know in advance which file we'd like to extract from the archive -
+				# better make sure it's a format we can actually handle, then.
+				extension = link.file_for_screenshot.split('.')[-1].lower()
+				if extension not in USABLE_IMAGE_FILE_EXTENSIONS:
+					continue
 
 			prod_links.append(link)
-			break  # ignore any remaining links for this prod
+			break  # success, so ignore any remaining links for this prod
 
 	return prod_links
