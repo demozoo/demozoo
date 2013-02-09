@@ -26,7 +26,14 @@ class Download(models.Model):
 
 	def log_zip_contents(self, zip_file):
 		for info in zip_file.infolist():
-			member = ArchiveMember(filename=info.filename, file_size=info.file_size)
+			# zip files do not contain information about the character encoding of filenames.
+			# We therefore decode the filename as iso-8859-1 (an encoding which defines a character
+			# for every byte value) to ensure that it is *some* valid sequence of unicode characters
+			# that can be inserted into the database. When we need to access this zipfile entry
+			# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
+			member = ArchiveMember(
+				filename=info.filename.decode('iso-8859-1'),
+				file_size=info.file_size)
 			self.archive_members.add(member)
 
 	def select_screenshot_file(self):

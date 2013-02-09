@@ -112,7 +112,12 @@ def create_screenshot_from_production_link(production_link_id):
 
 			image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
 			if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
-				member_buf = cStringIO.StringIO(z.read(prod_link.file_for_screenshot))
+				# we encode the filename as iso-8859-1 before retrieving it, because we
+				# decoded it that way on insertion into the database to ensure that it had
+				# a valid unicode string representation - see mirror/models.py
+				member_buf = cStringIO.StringIO(
+					z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
+				)
 				z.close()
 				img = PILConvertibleImage(member_buf)
 			else:  # image is not a usable format
