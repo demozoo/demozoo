@@ -12,9 +12,8 @@ from boto.s3.key import Key
 
 from django.conf import settings
 from mirror.models import Download
-from demoscene.models import Production, ProductionLink
-
-PIL_READABLE_EXTENSIONS = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']
+from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
+from demoscene.models import Production
 
 user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 max_size = 10485760
@@ -152,7 +151,7 @@ def find_screenshottable_graphics():
 	prod_links = []
 	for prod in prods:
 		for link in prod.links.all():
-			if link.is_download_link and link.download_file_extension() in PIL_READABLE_EXTENSIONS:
+			if link.is_download_link and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS:
 				prod_links.append(link)
 				break  # ignore any remaining links for this prod
 
