@@ -169,6 +169,9 @@ COMPRESS_PRECOMPILERS = (
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ROUTES = {
+	'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
+}
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
