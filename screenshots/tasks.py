@@ -89,6 +89,9 @@ def rebuild_screenshot(screenshot_id):
 def create_screenshot_from_production_link(production_link_id):
 	try:
 		prod_link = ProductionLink.objects.get(id=production_link_id)
+		if prod_link.production.screenshots.count():
+			return  # don't create a screenshot if there's one already
+
 		production_id = prod_link.production_id
 		url = prod_link.download_url
 		download, file_content = fetch_url(url)
