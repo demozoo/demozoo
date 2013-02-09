@@ -322,7 +322,6 @@ def screenshots(request, production_id):
 
 @login_required
 def add_screenshot(request, production_id):
-	return HttpResponse('screenshot uploading temporarily disabled because I broke it. Sorry, will fix asap... - gasman 2013-02-09')
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
 		uploaded_files = request.FILES.getlist('screenshot')

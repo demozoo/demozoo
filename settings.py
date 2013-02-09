@@ -168,7 +168,7 @@ COMPRESS_PRECOMPILERS = (
 # Celery settings
 import djcelery
 djcelery.setup_loader()
-BROKER_URL = "amqp://guest:guest@localhost:5672/"
+BROKER_URL = 'redis://localhost:6379/0'
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
