@@ -7,7 +7,7 @@ import cStringIO
 import zipfile
 
 from demoscene.models import Screenshot, ProductionLink
-from screenshots.models import PILConvertibleImage
+from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3
 from mirror.actions import fetch_url, FileTooBig
 from django.conf import settings
@@ -96,15 +96,31 @@ def create_screenshot_from_production_link(production_link_id):
 
 		if prod_link.is_zip_file():
 			z = zipfile.ZipFile(buf, 'r')
+			# catalogue the zipfile contents if we don't have them already
 			if not download.archive_members.all():
 				download.log_zip_contents(z)
-			return
+			# select the archive member to extract a screenshot from, if we don't have
+			# a candidate already
+			if not prod_link.file_for_screenshot:
+				file_for_screenshot = download.select_screenshot_file()
+				if file_for_screenshot:
+					prod_link.file_for_screenshot = file_for_screenshot
+					prod_link.save()
+
+			image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
+			if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
+				member_buf = cStringIO.StringIO(z.read(prod_link.file_for_screenshot))
+				z.close()
+				img = PILConvertibleImage(member_buf)
+			else:  # image is not a usable format
+				z.close()
+				return
 		else:
 			img = PILConvertibleImage(buf)
 
 		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
 		u = download.sha1
-		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.p' + str(production_id) + '.'
+		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.pl' + str(production_link_id) + '.'
 		upload_original(img, screenshot, basename, reduced_redundancy=True)
 		upload_standard(img, screenshot, basename)
 		upload_thumb(img, screenshot, basename)
