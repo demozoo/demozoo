@@ -17,7 +17,7 @@ from demoscene.models import Production
 PIL_READABLE_EXTENSIONS = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']
 
 user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
-max_size = 1048576
+max_size = 10485760
 mirror_bucket_name = 'mirror.demozoo.org'
 
 upload_dir = os.path.join(settings.FILEROOT, 'media', 'mirror')
