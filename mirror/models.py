@@ -3,7 +3,12 @@ from django.db import models
 
 from screenshots.models import IMAGE_FILE_EXTENSIONS
 
-IGNORED_ARCHIVE_MEMBERS_RE = re.compile(r'(scene\.org\.txt|file_id\.diz)', re.I)
+# successively more aggressive rules for what files we should ignore in an archive
+# when looking for screenshots - break out as soon as we have exactly one file remaining
+IGNORED_ARCHIVE_MEMBER_RULES = [
+	re.compile(r'(__MACOSX.*|.*\.txt|.*\.nfo|.*\.diz)', re.I),
+	re.compile(r'(__MACOSX.*|.*\.txt|.*\.nfo|.*\.diz|.*step\d+\.\w+)', re.I),
+]
 
 
 class Download(models.Model):
@@ -25,10 +30,14 @@ class Download(models.Model):
 			self.archive_members.add(member)
 
 	def select_screenshot_file(self):
-		interesting_files = []
-		for member in self.archive_members.all():
-			if not IGNORED_ARCHIVE_MEMBERS_RE.match(member.filename):
-				interesting_files.append(member.filename)
+		for rule in IGNORED_ARCHIVE_MEMBER_RULES:
+			interesting_files = []
+			for member in self.archive_members.all():
+				if not rule.match(member.filename):
+					interesting_files.append(member.filename)
+
+			if len(interesting_files) == 1:
+				break
 
 		if len(interesting_files) == 1:
 			filename = interesting_files[0]
