@@ -1,6 +1,5 @@
 from celery.task import task
 import os
-import errno
 import re
 import uuid
 import urllib2
@@ -14,13 +13,6 @@ from django.conf import settings
 
 
 upload_dir = os.path.join(settings.FILEROOT, 'media', 'screenshot_uploads')
-try:  # create upload_dir if not already present
-	os.makedirs(upload_dir)
-except OSError as exc:
-	if exc.errno == errno.EEXIST and os.path.isdir(upload_dir):
-		pass
-	else:
-		raise
 
 
 def create_basename(screenshot_id):
