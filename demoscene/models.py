@@ -1292,6 +1292,9 @@ class ProductionLink(ExternalLink):
 	def download_url(self):
 		return self.link.download_url
 
+	def is_zip_file(self):
+		return self.download_url[-4:].lower() == '.zip'
+
 
 class ResultsFile(models.Model):
 	party = models.ForeignKey(Party, related_name='results_files')

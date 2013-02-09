@@ -4,8 +4,9 @@ import re
 import uuid
 import urllib2
 import cStringIO
+import zipfile
 
-from demoscene.models import Screenshot
+from demoscene.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage
 from screenshots.processing import upload_to_s3
 from mirror.actions import fetch_url, FileTooBig
@@ -84,6 +85,37 @@ def rebuild_screenshot(screenshot_id):
 		pass
 
 
+@task(rate_limit='6/m', ignore_result=True)
+def create_screenshot_from_production_link(production_link_id):
+	try:
+		prod_link = ProductionLink.objects.get(id=production_link_id)
+		production_id = prod_link.production_id
+		url = prod_link.download_url
+		download, file_content = fetch_url(url)
+		buf = cStringIO.StringIO(file_content)
+
+		if prod_link.is_zip_file():
+			z = zipfile.ZipFile(buf, 'r')
+			if not download.archive_members.all():
+				download.log_zip_contents(z)
+			return
+		else:
+			img = PILConvertibleImage(buf)
+
+		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
+		u = download.sha1
+		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.p' + str(production_id) + '.'
+		upload_original(img, screenshot, basename, reduced_redundancy=True)
+		upload_standard(img, screenshot, basename)
+		upload_thumb(img, screenshot, basename)
+		screenshot.save()
+
+	except ProductionLink.DoesNotExist:
+		# guess it was deleted in the meantime, then.
+		pass
+
+
+# DEPRECATED
 @task(rate_limit='6/m', ignore_result=True)
 def create_screenshot_from_remote_file(url, production_id):
 	try:

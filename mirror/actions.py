@@ -12,7 +12,7 @@ from boto.s3.key import Key
 
 from django.conf import settings
 from mirror.models import Download
-from demoscene.models import Production
+from demoscene.models import Production, ProductionLink
 
 PIL_READABLE_EXTENSIONS = ['bmp', 'gif', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tga', 'tif', 'tiff', 'pcx']
 
@@ -168,3 +168,36 @@ def find_screenshottable_graphics():
 			break
 
 	return fetches
+
+
+def find_zipped_screenshottable_graphics():
+	# Return a set of ProductionLink objects that link to archive files,
+	# that we can plausibly expect to extract screenshots from, for productions that don't
+	# have screenshots already.
+
+	# prods of supertype=graphics that have download links but no screenshots
+	from django.db.models import Count
+	prods = Production.objects.annotate(screenshot_count=Count('screenshots')).filter(
+		supertype='graphics', screenshot_count=0, links__is_download_link=True).prefetch_related('links', 'platforms', 'types')
+
+	prod_links = []
+	for prod in prods:
+		for link in prod.links.all():
+
+			if not (link.is_download_link and link.is_zip_file()):
+				continue
+
+			# skip ASCII and executable graphics
+			if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi', 'exe-graphics', '4k-exe-graphics']):
+				continue
+
+			# skip prods for a specific platform other than DOS/Windows
+			if prod.platforms.exclude(name__in=['MS-Dos', 'Windows']):
+				continue
+
+			# TODO: check if we've already catalogued the archive contents for
+			# this URL, and possibly use that knowledge to reject further
+
+			prod_links.append(link)
+
+	return prod_links
