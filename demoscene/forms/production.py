@@ -255,7 +255,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 
 	class Meta:
 		model = ProductionLink
-		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id']
+		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot']
 
 ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=1)
@@ -264,7 +264,7 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ProductionLink
-		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id']
+		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot']
 
 ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)
