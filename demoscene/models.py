@@ -1292,8 +1292,17 @@ class ProductionLink(ExternalLink):
 	def download_url(self):
 		return self.link.download_url
 
+	def download_file_extension(self):
+		filename = self.download_url.split('/')[-1]
+		extension = filename.split('.')[-1]
+		if filename == extension:
+			# filename has no extension
+			return None
+		else:
+			return extension.lower()
+
 	def is_zip_file(self):
-		return self.download_url[-4:].lower() == '.zip'
+		return self.download_file_extension() == 'zip'
 
 
 class ResultsFile(models.Model):

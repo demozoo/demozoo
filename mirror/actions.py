@@ -149,25 +149,14 @@ def find_screenshottable_graphics():
 	prods = Production.objects.annotate(screenshot_count=Count('screenshots')).filter(
 		supertype='graphics', screenshot_count=0, links__is_download_link=True).prefetch_related('links', 'platforms', 'types')
 
-	fetches = []
+	prod_links = []
 	for prod in prods:
 		for link in prod.links.all():
-			if not link.is_download_link:
-				continue
-			url = link.download_url
-			filename = url.split('/')[-1]
-			extension = filename.split('.')[-1]
-			if filename == extension:
-				# filename has no extension
-				continue
-			if extension.lower() not in PIL_READABLE_EXTENSIONS:
-				continue
+			if link.is_download_link and link.download_file_extension() in PIL_READABLE_EXTENSIONS:
+				prod_links.append(link)
+				break  # ignore any remaining links for this prod
 
-			# URL is usable
-			fetches.append((url, prod.id))
-			break
-
-	return fetches
+	return prod_links
 
 
 def find_zipped_screenshottable_graphics():
@@ -199,5 +188,6 @@ def find_zipped_screenshottable_graphics():
 			# this URL, and possibly use that knowledge to reject further
 
 			prod_links.append(link)
+			break  # ignore any remaining links for this prod
 
 	return prod_links
