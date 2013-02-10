@@ -1,11 +1,15 @@
 from django.db import models
 from PIL import Image
 import StringIO
+import pygame
 
 from screenshots.processing import get_thumbnail_sizing_params
 
 # file extensions that we are able to convert to web-usable images
-USABLE_IMAGE_FILE_EXTENSIONS = ['bmp', 'gif', 'jpg', 'jpeg', 'pcx', 'png', 'tga', 'tif', 'tiff']
+USABLE_IMAGE_FILE_EXTENSIONS = [
+	'bmp', 'gif', 'ilbm', 'jpg', 'jpeg', 'lbm', 'pcx', 'png', 'tga', 'tif',
+	'tiff', 'xbm', 'xpm',
+]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
 	'bmp', 'ce', 'ce1', 'ce2', 'dcx', 'dib', 'eps', 'fpx', 'gif', 'ic1',
@@ -32,10 +36,23 @@ class PILConvertibleImage(object):
 		represents an image which can be converted to an 'original' or a thumbnail
 		using PIL.
 	"""
-	def __init__(self, source_file):
+	def __init__(self, source_file, name_hint=""):
 		self.file = source_file
-		self.image = Image.open(source_file)  # raises IOError if image can't be identified
-		if self.image.format not in PIL_READABLE_FORMATS:
+
+		opened_with_pil = False
+		try:
+			self.image = Image.open(source_file)  # raises IOError if image can't be identified
+			opened_with_pil = True
+		except IOError:
+			# try pygame instead
+			try:
+				surface = pygame.image.load(source_file, name_hint)
+				# export as RGBA and import back into PIL
+				self.image = Image.fromstring('RGBA', surface.get_size(), pygame.image.tostring(surface, 'RGBA'))
+			except pygame.error:
+				raise IOError("Image format is not supported")
+
+		if opened_with_pil and self.image.format not in PIL_READABLE_FORMATS:
 			raise IOError("Image format is not supported")
 
 	def create_original(self):

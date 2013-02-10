@@ -44,7 +44,7 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
 	try:
 		screenshot = Screenshot.objects.get(id=screenshot_id)
 		f = open(filename, 'rb')
-		img = PILConvertibleImage(f)
+		img = PILConvertibleImage(f, name_hint=filename)
 
 		basename = create_basename(screenshot_id)
 		upload_original(img, screenshot, basename)
@@ -70,7 +70,7 @@ def rebuild_screenshot(screenshot_id):
 		# read into a cStringIO buffer so that PIL can seek on it (which isn't possible for urllib2 responses) -
 		# see http://mail.python.org/pipermail/image-sig/2004-April/002729.html
 		buf = cStringIO.StringIO(f.read())
-		img = PILConvertibleImage(buf)
+		img = PILConvertibleImage(buf, screenshot.original_url.split('/')[-1])
 
 		basename = create_basename(screenshot_id)
 		upload_original(img, screenshot, basename)
@@ -119,12 +119,12 @@ def create_screenshot_from_production_link(production_link_id):
 					z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
 				)
 				z.close()
-				img = PILConvertibleImage(member_buf)
+				img = PILConvertibleImage(member_buf, name_hint=prod_link.file_for_screenshot)
 			else:  # image is not a usable format
 				z.close()
 				return
 		else:
-			img = PILConvertibleImage(buf)
+			img = PILConvertibleImage(buf, name_hint=url.split('/')[-1])
 
 		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
 		u = download.sha1
@@ -147,7 +147,7 @@ def create_screenshot_from_remote_file(url, production_id):
 		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
 
 		buf = cStringIO.StringIO(file_content)
-		img = PILConvertibleImage(buf)
+		img = PILConvertibleImage(buf, name_hint=url.split('/')[-1])
 
 		u = download.sha1
 		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.p' + str(production_id) + '.'

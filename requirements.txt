@@ -32,6 +32,7 @@ paramiko==1.7.7.1
 psycopg2==2.2.1
 py-bcrypt==0.2
 pycrypto==2.4.1
+hg+http://bitbucket.org/pygame/pygame
 python-dateutil==1.5
 pytz==2012j
 redis==2.7.2
