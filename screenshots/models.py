@@ -46,6 +46,7 @@ class PILConvertibleImage(object):
 		except IOError:
 			# try pygame instead
 			try:
+				source_file.seek(0)
 				surface = pygame.image.load(source_file, name_hint)
 				# export as RGBA and import back into PIL
 				self.image = Image.fromstring('RGBA', surface.get_size(), pygame.image.tostring(surface, 'RGBA'))
