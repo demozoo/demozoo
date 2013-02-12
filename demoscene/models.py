@@ -1245,6 +1245,7 @@ class ProductionLink(ExternalLink):
 	description = models.CharField(max_length=255, blank=True)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
+	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
 	link_types = [
 		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,

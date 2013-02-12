@@ -108,7 +108,10 @@ def create_screenshot_from_production_link(production_link_id):
 				file_for_screenshot = download.select_screenshot_file()
 				if file_for_screenshot:
 					prod_link.file_for_screenshot = file_for_screenshot
-					prod_link.save()
+					prod_link.is_unresolved_for_screenshotting = False
+				else:
+					prod_link.is_unresolved_for_screenshotting = True
+				prod_link.save()
 
 			image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
 			if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:

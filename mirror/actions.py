@@ -198,9 +198,12 @@ def find_zipped_screenshottable_graphics():
 						# since it was last run on this archive) - might as well store it against the
 						# ProductionLink, so it doesn't show up as something to be manually resolved
 						link.file_for_screenshot = file_for_screenshot
+						link.is_unresolved_for_screenshotting = False
 						link.save()
 					else:
 						# we have a directory listing but no clear candidate, so give up on this link
+						link.is_unresolved_for_screenshotting = True
+						link.save()
 						continue
 
 			if file_for_screenshot:
