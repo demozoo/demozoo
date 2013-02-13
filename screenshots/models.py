@@ -7,13 +7,13 @@ from screenshots.processing import get_thumbnail_sizing_params
 
 # file extensions that we are able to convert to web-usable images
 USABLE_IMAGE_FILE_EXTENSIONS = [
-	'bmp', 'gif', 'ilbm', 'jpg', 'jpeg', 'lbm', 'pcx', 'png', 'tga', 'tif',
+	'bmp', 'gif', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx', 'png', 'tga', 'tif',
 	'tiff', 'xbm', 'xpm',
 ]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
 	'bmp', 'ce', 'ce1', 'ce2', 'dcx', 'dib', 'eps', 'fpx', 'gif', 'ic1',
-	'ic2', 'ic3', 'ico', 'ilbm', 'jng', 'jpg', 'jpeg', 'lbm', 'msp', 'neo',
+	'ic2', 'ic3', 'ico', 'iff', 'iff24', 'ilbm', 'jng', 'jpe', 'jpg', 'jpeg', 'lbm', 'msp', 'neo',
 	'pac', 'pbm', 'pc1', 'pc2', 'pc3', 'pcd', 'pcx', 'pgm', 'pi1', 'pi2',
 	'pi3', 'png', 'ppm', 'psd', 'rgb', 'rle', 'scr', 'sgi', 'svg', 'tga',
 	'tif', 'tiff', 'tny', 'tn1', 'tn2', 'tn3', 'wmf', 'xbm', 'xcf', 'xpm',
