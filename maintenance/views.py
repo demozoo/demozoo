@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party, ProductionLink
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
+from mirror.models import Download
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -552,7 +553,7 @@ def parties_with_no_location(request):
 			"woe_id IS NULL",
 			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
-		params = [report_name]
+		params=[report_name]
 	).order_by('start_date_date')
 
 	return render(request, 'maintenance/party_report.html', {
@@ -598,6 +599,21 @@ def empty_releasers(request):
 		'title': 'Empty releaser records',
 		'releasers': releasers,
 		'report_name': report_name,
+	})
+
+
+def unresolved_screenshots(request):
+	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True).select_related('production')[:100]
+
+	entries = []
+	for link in links:
+		download = Download.last_mirrored_download_for_url(link.download_url)
+		entries.append((link, download, download.archive_members.all()))
+
+	return render(request, 'maintenance/unresolved_screenshots.html', {
+		'title': 'Unresolved screenshots',
+		'entries': entries,
+		'report_name': 'unresolved_screenshots',
 	})
 
 
