@@ -1,5 +1,6 @@
 {% extends "maintenance/base.html" %}
 {% load demoscene_tags %}
+{% load url from future %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -8,13 +9,16 @@
 {% block base_main %}
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
+		<br />
+		<h3>Total remaining: {{ link_count }}</h3>
+		<br />
 		{% for link, download, archive_members in entries %}
 			<div style="margin-bottom: 1em;">
-				<h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - {{ link.download_url }}</h3>
+				<h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
 				<ul>
 					{% for file in archive_members %}
 						<li>
-							{{ file.filename }} ({{ file.file_size }} bytes)
+							{{ file.filename }} ({{ file.file_size }} bytes) - <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
 						</li>
 					{% endfor %}
 				<ul>

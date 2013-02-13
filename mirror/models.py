@@ -1,4 +1,6 @@
 import re
+import zipfile
+import cStringIO
 from django.db import models
 
 from screenshots.models import IMAGE_FILE_EXTENSIONS
@@ -43,18 +45,25 @@ class Download(models.Model):
 			interesting_files = []
 			for member in self.archive_members.all():
 				if member.file_size and not rule.match(member.filename):
-					interesting_files.append(member.filename)
+					interesting_files.append(member)
 
 			if len(interesting_files) == 1:
 				break
 
 		if len(interesting_files) == 1:
-			filename = interesting_files[0]
-			extension = filename.split('.')[-1]
-			if filename != extension and extension.lower() in IMAGE_FILE_EXTENSIONS:
-				return filename
+			if interesting_files[0].file_extension in IMAGE_FILE_EXTENSIONS:
+				return interesting_files[0].filename
 
 		return None
+
+	def fetch_from_s3(self):
+		from mirror.actions import open_bucket
+		from boto.s3.key import Key
+
+		bucket = open_bucket()
+		k = Key(bucket)
+		k.key = self.mirror_s3_key
+		return buffer(k.get_contents_as_string())
 
 	@staticmethod
 	def last_mirrored_download_for_url(url):
@@ -72,3 +81,27 @@ class ArchiveMember(models.Model):
 
 	def __unicode__(self):
 		return self.filename
+
+	def fetch_from_zip(self):
+		f = cStringIO.StringIO(self.download.fetch_from_s3())
+		z = zipfile.ZipFile(f, 'r')
+		member_buf = cStringIO.StringIO(
+			z.read(self.filename.encode('iso-8859-1'))
+		)
+		z.close()
+		return member_buf
+
+	@property
+	def file_extension(self):
+		extension = self.filename.split('.')[-1]
+		if extension == self.filename:
+			return None
+		else:
+			return extension
+
+	def guess_mime_type(self):
+		from screenshots.processing import MIME_TYPE_BY_EXTENSION
+		return MIME_TYPE_BY_EXTENSION.get(self.file_extension, 'application/octet-stream')
+
+	class Meta:
+		ordering = ['filename']

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party, ProductionLink
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
-from mirror.models import Download
+from mirror.models import Download, ArchiveMember
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -603,15 +603,16 @@ def empty_releasers(request):
 
 
 def unresolved_screenshots(request):
-	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True).select_related('production')[:100]
+	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True).select_related('production')
 
 	entries = []
-	for link in links:
+	for link in links[:100]:
 		download = Download.last_mirrored_download_for_url(link.download_url)
 		entries.append((link, download, download.archive_members.all()))
 
 	return render(request, 'maintenance/unresolved_screenshots.html', {
 		'title': 'Unresolved screenshots',
+		'link_count': links.count(),
 		'entries': entries,
 		'report_name': 'unresolved_screenshots',
 	})
@@ -663,3 +664,9 @@ def add_sceneorg_link_to_party(request):
 			parameter=request.POST['path'],
 			link_class='SceneOrgFolder')
 	return HttpResponse('OK', mimetype='text/plain')
+
+
+def view_archive_member(request, archive_member_id):
+	member = ArchiveMember.objects.get(id=archive_member_id)
+	buf = member.fetch_from_zip()
+	return HttpResponse(buf, mimetype=member.guess_mime_type())

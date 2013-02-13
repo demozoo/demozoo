@@ -111,11 +111,7 @@ def fetch_url(url):
 	download = Download.last_mirrored_download_for_url(url)
 	if download:
 		# existing download was found; fetch it
-		bucket = open_bucket()
-		k = Key(bucket)
-		k.key = download.mirror_s3_key
-		file_content = buffer(k.get_contents_as_string())
-		return download, file_content
+		return download, download.fetch_from_s3()
 	else:
 		# no mirrored copy exists - fetch and mirror the origin file
 		try:
