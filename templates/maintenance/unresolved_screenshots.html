@@ -4,7 +4,7 @@
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
-{% block body_class %}maintenance_report{% endblock %}
+{% block body_class %}maintenance_report unresolved_screenshots{% endblock %}
 
 {% block base_main %}
 	<h2>{{ title }}:</h2>
@@ -18,11 +18,20 @@
 				<ul>
 					{% for file in archive_members %}
 						<li>
-							{{ file.filename }} ({{ file.file_size }} bytes) - <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
+							<a href="{% url 'maintenance_resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a> - <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
 						</li>
 					{% endfor %}
 				<ul>
 			</div>
 		{% endfor %}
+		<script>
+			$('a.resolve').click(function() {
+				var a = this;
+				$.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
+					$(a).closest('ul').fadeOut();
+				});
+				return false;
+			})
+		</script>
 	</div>
 {% endblock %}

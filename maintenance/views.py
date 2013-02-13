@@ -4,6 +4,7 @@ from demoscene.models import Production, Nick, Credit, Releaser, Membership, Rel
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from mirror.models import Download, ArchiveMember
+from screenshots.tasks import create_screenshot_from_production_link
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -670,3 +671,15 @@ def view_archive_member(request, archive_member_id):
 	member = ArchiveMember.objects.get(id=archive_member_id)
 	buf = member.fetch_from_zip()
 	return HttpResponse(buf, mimetype=member.guess_mime_type())
+
+
+def resolve_screenshot(request, productionlink_id, archive_member_id):
+	production_link = ProductionLink.objects.get(id=productionlink_id)
+	archive_member = ArchiveMember.objects.get(id=archive_member_id)
+
+	if request.POST:
+		production_link.file_for_screenshot = archive_member.filename
+		production_link.is_unresolved_for_screenshotting = False
+		production_link.save()
+		create_screenshot_from_production_link.delay(productionlink_id)
+	return HttpResponse('OK', mimetype='text/plain')

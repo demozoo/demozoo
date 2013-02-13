@@ -21,3 +21,12 @@ body.maintenance_report .exclude_button {
 .report {
 	margin-bottom: 1em;
 }
+
+body.unresolved_screenshots a.resolve {
+	color: #001;
+	text-decoration: none;
+}
+
+body.unresolved_screenshots a:hover.resolve {
+	background-color: #bbb;
+}

@@ -30,4 +30,5 @@ urlpatterns = patterns('maintenance.views',
 
 	(r'^unresolved_screenshots$', 'unresolved_screenshots', {}, 'maintenance_unresolved_screenshots'),
 	(r'^archive_member/(\d+)/$', 'view_archive_member', {}, 'maintenance_view_archive_member'),
+	(r'^resolve_screenshot/(\d+)/(\d+)/$', 'resolve_screenshot', {}, 'maintenance_resolve_screenshot'),
 )
