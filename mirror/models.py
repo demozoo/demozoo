@@ -6,8 +6,10 @@ from screenshots.models import IMAGE_FILE_EXTENSIONS
 # successively more aggressive rules for what files we should ignore in an archive
 # when looking for screenshots - break out as soon as we have exactly one file remaining
 IGNORED_ARCHIVE_MEMBER_RULES = [
-	re.compile(r'(__MACOSX.*|.*\.txt|.*\.nfo|.*\.diz)', re.I),
-	re.compile(r'(__MACOSX.*|.*\.txt|.*\.nfo|.*\.diz|.*step\d+\.\w+)', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*step\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*step\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*step\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),
 ]
 
 
@@ -40,7 +42,7 @@ class Download(models.Model):
 		for rule in IGNORED_ARCHIVE_MEMBER_RULES:
 			interesting_files = []
 			for member in self.archive_members.all():
-				if not rule.match(member.filename):
+				if member.file_size and not rule.match(member.filename):
 					interesting_files.append(member.filename)
 
 			if len(interesting_files) == 1:
