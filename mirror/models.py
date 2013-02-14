@@ -97,7 +97,7 @@ class ArchiveMember(models.Model):
 		if extension == self.filename:
 			return None
 		else:
-			return extension
+			return extension.lower()
 
 	def guess_mime_type(self):
 		from screenshots.processing import MIME_TYPE_BY_EXTENSION
