@@ -562,6 +562,20 @@ class PaduaOrgFile(BaseUrl):
 
 class ModlandFile(BaseUrl):
 	canonical_format = "ftp://ftp.modland.com%s"
+
+	# need to fiddle querystring_match to prepend a slash to the matched query param
+	def exotica_querystring_match():
+		inner_fn = querystring_match(r'https?://files.exotica.org.uk/modland/\?', 'file', re.I)
+
+		def wrapped_fn(*args):
+			result = inner_fn(*args)
+			if result is None:
+				return None
+			else:
+				return '/' + result
+
+		return wrapped_fn
+
 	tests = [
 		regex_match(r'ftp://ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
@@ -570,6 +584,7 @@ class ModlandFile(BaseUrl):
 		regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
 		regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
+		exotica_querystring_match(),
 	]
 	html_link_class = "modland"
 	html_link_text = "Modland"
