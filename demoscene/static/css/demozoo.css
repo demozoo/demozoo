@@ -1504,6 +1504,10 @@ ul.parties_in_series li.current {
 	background-image: url('/static/images/icons/external_sites/modarchive.png');
 }
 
+.external_links a.wikipedia {
+	background-image: url('/static/images/icons/external_sites/wikipedia.png');
+}
+
 .external_links a.website {
 	background-image: url('/static/images/icons/world.png');
 }

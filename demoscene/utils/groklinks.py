@@ -866,6 +866,16 @@ class ModarchiveModule(BaseUrl):
 	html_title_format = "%s on The Mod Archive"
 
 
+class WikipediaPage(BaseUrl):
+	canonical_format = "%s"  # entire URL is stored as parameter, to cover all language domains
+	tests = [
+		regex_match(r'(https?://\w+\.wikipedia\.org/.*)', re.I),
+	]
+	html_link_class = "wikipedia"
+	html_link_text = "Wikipedia"
+	html_title_format = "%s on Wikipedia"
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -880,7 +890,7 @@ def grok_scener_link(urlstring):
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
-		YoutubeUser, DeviantartUser, ModarchiveMember,
+		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -888,7 +898,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		SoundcloudUser,
+		SoundcloudUser, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -900,7 +910,7 @@ def grok_production_link(urlstring):
 		ModarchiveModule, BitjamSong,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
-		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
+		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -909,6 +919,6 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-		FacebookPage, GooglePlusPage, LanyrdEvent,
+		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage,
 		BaseUrl,
 	])

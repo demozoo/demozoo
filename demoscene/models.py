@@ -1215,6 +1215,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
 		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
+		groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1231,7 +1232,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
-		groklinks.DeviantartUser, groklinks.ModarchiveMember,
+		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1255,7 +1256,7 @@ class ProductionLink(ExternalLink):
 		groklinks.CsdbMusic, groklinks.NectarineSong, groklinks.BitjamSong,
 		groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-		groklinks.SceneOrgFile, groklinks.UntergrundFile,
+		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
