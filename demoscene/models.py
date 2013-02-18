@@ -227,7 +227,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return Production.objects.filter(author_affiliation_nicks__releaser=self)
 
 	def credits(self):
-		return Credit.objects.filter(nick__releaser=self)
+		return Credit.objects.select_related('nick').filter(nick__releaser=self)
 
 	def groups(self):
 		return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
