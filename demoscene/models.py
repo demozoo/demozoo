@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from strip_markup import strip_markup
 from blob_field import BlobField
 from demoscene.utils import groklinks
+from prefetch_snooping import ModelWithPrefetchSnooping
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
@@ -170,7 +171,7 @@ class ProductionType(MP_Node):
 			return 'production'
 
 
-class Releaser(models.Model):
+class Releaser(ModelWithPrefetchSnooping, models.Model):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
 	notes = models.TextField(blank=True)
@@ -232,7 +233,15 @@ class Releaser(models.Model):
 		return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
 
 	def current_groups(self):
-		return [membership.group for membership in self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')]
+		if self.has_prefetched('group_memberships'):
+			# do the is_current filter in Python to avoid another SQL query
+			return [
+				membership.group
+				for membership in self.group_memberships.all()
+				if membership.is_current
+			]
+		else:
+			return [membership.group for membership in self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')]
 
 	def members(self):
 		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
@@ -253,9 +262,19 @@ class Releaser(models.Model):
 
 	@property
 	def primary_nick(self):
-		# find the nick which matches this releaser by name
-		# (will die loudly if one doesn't exist. So let's hope it does, eh?)
-		return self.nicks.get(name=self.name)
+		if self.has_prefetched('nicks'):
+			# filter the nicks list in Python to avoid another SQL query
+			matching_nicks = [n for n in self.nicks.all() if n.name == self.name]
+			if not matching_nicks:
+				raise Nick.DoesNotExist()
+			elif len(matching_nicks) > 1:
+				raise Nick.MultipleObjectsReturned()
+			else:
+				return matching_nicks[0]
+		else:
+			# find the nick which matches this releaser by name
+			# (will die loudly if one doesn't exist. So let's hope it does, eh?)
+			return self.nicks.get(name=self.name)
 
 	@property
 	def abbreviation(self):

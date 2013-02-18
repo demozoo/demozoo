@@ -3,13 +3,19 @@ from demoscene.models import Releaser, Production, Edit
 
 
 def home(request):
+	latest_added_sceners = Releaser.objects.filter(is_group=False).\
+		prefetch_related('group_memberships__group__nicks').order_by('-created_at')[0:10]
+
+	latest_updated_sceners = Releaser.objects.filter(is_group=False).\
+		prefetch_related('group_memberships__group__nicks').order_by('-updated_at')[0:10]
+
 	return render(request, 'home.html', {
 		'latest_added_productions': Production.objects.order_by('-created_at')[0:10],
 		'latest_updated_productions': Production.objects.order_by('-updated_at')[0:10],
 		'latest_added_groups': Releaser.objects.filter(is_group=True).order_by('-created_at')[0:10],
 		'latest_updated_groups': Releaser.objects.filter(is_group=True).order_by('-updated_at')[0:10],
-		'latest_added_sceners': Releaser.objects.filter(is_group=False).order_by('-created_at')[0:10],
-		'latest_updated_sceners': Releaser.objects.filter(is_group=False).order_by('-updated_at')[0:10],
+		'latest_added_sceners': latest_added_sceners,
+		'latest_updated_sceners': latest_updated_sceners,
 		'stats': {
 			'production_count': Production.objects.filter(supertype='production').count(),
 			'graphics_count': Production.objects.filter(supertype='graphics').count(),
