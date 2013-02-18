@@ -876,6 +876,40 @@ class WikipediaPage(BaseUrl):
 	html_title_format = "%s on Wikipedia"
 
 
+class PushnpopEntry(BaseUrl):  # for use as an abstract superclass
+	html_link_class = "pushnpop"
+	html_link_text = "Push'n'Pop"
+	html_title_format = "%s on Push'n'Pop"
+
+
+class PushnpopProduction(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/prod-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/prod-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopParty(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/parties-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/parties-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopGroup(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/group-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/group-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopProfile(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/profile-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/profile-(\d+)\.html', re.I),
+	]
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -889,6 +923,7 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
+		PushnpopProfile,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		BaseUrl,
@@ -898,6 +933,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
+		PushnpopGroup,
 		SoundcloudUser, WikipediaPage,
 		BaseUrl,
 	])
@@ -907,7 +943,7 @@ def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
-		ModarchiveModule, BitjamSong,
+		ModarchiveModule, BitjamSong, PushnpopProduction,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, WikipediaPage,
@@ -919,6 +955,7 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
+		PushnpopParty,
 		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage,
 		BaseUrl,
 	])

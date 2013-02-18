@@ -1488,6 +1488,10 @@ ul.parties_in_series li.current {
 	background-image: url('/static/images/icons/external_sites/capped.png');
 }
 
+.external_links a.pushnpop {
+	background-image: url('/static/images/icons/external_sites/pushnpop.png');
+}
+
 .external_links a.soundcloud {
 	background-image: url('/static/images/icons/external_sites/soundcloud.png');
 }
