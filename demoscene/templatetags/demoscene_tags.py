@@ -34,8 +34,8 @@ def releaser_flag(releaser):
 def byline(production):
 	return {
 		'unparsed_byline': production.unparsed_byline,
-		'authors': [(nick, nick.releaser) for nick in production.author_nicks.select_related('releaser')],
-		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks.select_related('releaser')],
+		'authors': [(nick, nick.releaser) for nick in production.author_nicks_with_authors()],
+		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks_with_groups()],
 	}
 
 @register.inclusion_tag('shared/byline.html')

@@ -13,7 +13,7 @@ from screenshots.tasks import capture_upload_for_processing
 
 
 def index(request, supertype):
-	queryset = Production.objects.filter(supertype=supertype)
+	queryset = Production.objects.filter(supertype=supertype).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 
@@ -54,7 +54,7 @@ def tagged(request, tag_slug, supertype):
 		tag = Tag.objects.get(slug=tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name=tag_slug)
-	queryset = Production.objects.filter(supertype=supertype, tags__slug=tag_slug)
+	queryset = Production.objects.filter(supertype=supertype, tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 
@@ -558,7 +558,7 @@ def remove_tag(request, production_id, tag_id):
 
 def autocomplete(request):
 	query = request.GET.get('term')
-	productions = Production.objects.filter(title__istartswith=query)
+	productions = Production.objects.filter(title__istartswith=query).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 	supertype = request.GET.get('supertype')
 	if supertype:
 		productions = productions.filter(supertype=supertype)

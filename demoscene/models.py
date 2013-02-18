@@ -617,7 +617,7 @@ SUPERTYPE_CHOICES = (
 )
 
 
-class Production(models.Model):
+class Production(ModelWithPrefetchSnooping, models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name='productions', blank=True)
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES)
@@ -640,6 +640,20 @@ class Production(models.Model):
 	tags = TaggableManager(blank=True)
 
 	search_result_template = 'search/results/production.html'
+
+	# do the equivalent of self.author_nicks.select_related('releaser'), unless that would be
+	# less efficient because we've already got the author_nicks relation cached from a prefetch_related
+	def author_nicks_with_authors(self):
+		if self.has_prefetched('author_nicks'):
+			return self.author_nicks.all()
+		else:
+			return self.author_nicks.select_related('releaser')
+
+	def author_affiliation_nicks_with_groups(self):
+		if self.has_prefetched('author_affiliation_nicks'):
+			return self.author_affiliation_nicks.all()
+		else:
+			return self.author_affiliation_nicks.select_related('releaser')
 
 	def save(self, *args, **kwargs):
 		if self.id and not self.supertype:
