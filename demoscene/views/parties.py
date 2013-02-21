@@ -204,7 +204,7 @@ def edit_external_links(request, party_id):
 	if request.method == 'POST':
 		formset = PartyExternalLinkFormSet(request.POST, instance=party)
 		if formset.is_valid():
-			formset.save()
+			formset.save_ignoring_uniqueness()
 			formset.log_edit(request.user, 'party_edit_external_links')
 
 			# see if there's anything useful we can extract for the PartySeries record

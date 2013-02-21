@@ -301,7 +301,7 @@ def edit_external_links(request, releaser_id):
 	if request.method == 'POST':
 		formset = ReleaserExternalLinkFormSet(request.POST, instance=releaser)
 		if formset.is_valid():
-			formset.save()
+			formset.save_ignoring_uniqueness()
 			formset.log_edit(request.user, 'releaser_edit_external_links')
 
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())

@@ -250,6 +250,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 		instance = super(ProductionDownloadLinkForm, self).save(commit=False)
 		instance.is_download_link = True
 		if commit:
+			instance.validate_unique()
 			instance.save()
 		return instance
 

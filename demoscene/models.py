@@ -1256,6 +1256,11 @@ class PartyExternalLink(ExternalLink):
 	def html_link(self):
 		return self.link.as_html(self.party.name)
 
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'party'),
+		)
+
 
 class ReleaserExternalLink(ExternalLink):
 	releaser = models.ForeignKey(Releaser, related_name='external_links')
@@ -1273,6 +1278,11 @@ class ReleaserExternalLink(ExternalLink):
 
 	def html_link(self):
 		return self.link.as_html(self.releaser.name)
+
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'releaser'),
+		)
 
 
 class ProductionLink(ExternalLink):
@@ -1341,6 +1351,11 @@ class ProductionLink(ExternalLink):
 
 	def is_zip_file(self):
 		return self.download_file_extension() == 'zip'
+
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'production', 'is_download_link'),
+		)
 
 
 class ResultsFile(models.Model):
