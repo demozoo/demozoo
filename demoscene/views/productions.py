@@ -49,21 +49,16 @@ def index(request, supertype):
 	})
 
 
-def tagged(request, tag_slug, supertype):
+def tagged(request, tag_slug):
 	try:
 		tag = Tag.objects.get(slug=tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name=tag_slug)
-	queryset = Production.objects.filter(supertype=supertype, tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 
-	if supertype == 'production':
-		title = "Productions tagged '%s'" % tag.name
-	elif supertype == 'graphics':
-		title = "Graphics tagged '%s'" % tag.name
-	else:  # supertype == 'music'
-		title = "Music tagged '%s'" % tag.name
+	title = "Productions tagged '%s'" % tag.name
 
 	queryset = apply_order(queryset, order)
 
