@@ -991,7 +991,7 @@ class Party(models.Model):
 
 	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
 
-	invitations = models.ManyToManyField(Production, related_name='invitation_parties')
+	invitations = models.ManyToManyField(Production, related_name='invitation_parties', blank=True)
 
 	search_result_template = 'search/results/party.html'
 
