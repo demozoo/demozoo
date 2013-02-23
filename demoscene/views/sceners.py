@@ -84,7 +84,7 @@ def edit_real_name(request, scener_id):
 
 	return simple_ajax_form(request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
 		title="Editing %s's real name:" % scener.name,
-		update_datestamp=True, on_success=success)
+		update_datestamp=True, on_success=success, ajax_submit=request.GET.get('ajax_submit'))
 
 
 @login_required

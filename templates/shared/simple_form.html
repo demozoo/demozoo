@@ -2,7 +2,7 @@
 	<h2>{{ title }}</h2>
 {% endif %}
 
-<form action="{{ action_url }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {{ html_form_class }}">
+<form action="{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {{ html_form_class }}">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}
@@ -16,3 +16,18 @@
 		<input type="submit" />
 	</div>
 </form>
+{% if ajax_submit %}
+<script>
+	$('.entry_form').submit(function() {
+		$.post(this.action, $(this).serialize(), function(response) {
+			if (response == 'OK') {
+				Lightbox.close();
+			} else {
+				$('#lightbox').html(response);
+				applyGlobalBehaviours($('#lightbox'));
+			}
+		});
+		return false;
+	});
+</script>
+{% endif %}
