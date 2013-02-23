@@ -8,6 +8,7 @@ from screenshots.tasks import create_screenshot_from_production_link
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Q
 
 
 def index(request):
@@ -616,6 +617,28 @@ def unresolved_screenshots(request):
 		'link_count': links.count(),
 		'entries': entries,
 		'report_name': 'unresolved_screenshots',
+	})
+
+
+def public_real_names(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
+	has_public_surname = (~Q(surname='')) & Q(show_surname=True)
+
+	sceners = Releaser.objects.filter(
+		Q(is_group=False),
+		has_public_first_name | has_public_surname
+	).order_by('name')
+
+	if request.GET.get('without_note'):
+		sceners = sceners.filter(real_name_note='')
+
+	return render(request, 'maintenance/public_real_names.html', {
+		'title': 'Sceners with public real names',
+		'sceners': sceners,
+		'report_name': 'public_real_names',
 	})
 
 
