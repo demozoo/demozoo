@@ -1,7 +1,10 @@
-from search.forms import SearchForm
-from django.http import HttpResponseRedirect
-from demoscene.shortcuts import render, get_page
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
+from django.utils import simplejson
+
+from search.forms import SearchForm
+from demoscene.shortcuts import render, get_page
+from demoscene.index import name_indexer
 
 def search(request):
 	form = SearchForm(request.GET)
@@ -25,3 +28,13 @@ def search(request):
 		'page': page,
 		'resultset': resultset,
 	})
+
+def live_search(request):
+	query = request.GET.get('q')
+	if query:
+		results = name_indexer.search(query).flags(name_indexer.flags.PARTIAL)[0:10].prefetch()
+		results = [hit.instance.search_result_json() for hit in results]
+	else:
+		results = []
+
+	return HttpResponse(simplejson.dumps(results), mimetype="text/javascript")

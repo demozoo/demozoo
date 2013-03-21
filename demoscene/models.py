@@ -341,6 +341,13 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
+	def search_result_json(self):
+		return {
+			'type': 'group' if self.is_group else 'scener',
+			'url': self.get_absolute_url(),
+			'title': self.name_with_affiliations(),
+		}
+
 	class Meta:
 		ordering = ['name']
 
@@ -817,6 +824,13 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def tags_string(self):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
+	def search_result_json(self):
+		return {
+			'type': self.supertype,
+			'url': self.get_absolute_url(),
+			'title': self.title,
+		}
+
 	class Meta:
 		ordering = ['title']
 
@@ -1078,6 +1092,13 @@ class Party(models.Model):
 			filename=sceneorg_file.filename(),
 			data=sceneorg_file.fetched_data()
 		)
+
+	def search_result_json(self):
+		return {
+			'type': 'party',
+			'url': self.get_absolute_url(),
+			'title': self.name,
+		}
 
 	class Meta:
 		verbose_name_plural = "Parties"
