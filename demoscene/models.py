@@ -329,9 +329,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 			or self.member_productions().count())
 
 	def can_be_converted_to_group(self):
-		return True
-		# might come up with some restrictions later - e.g. must not have full name.
-		# No pressing need for this right now though - it doesn't screw up data integrity or anything...
+		return (not self.first_name and not self.surname and not self.location)
 
 	def can_be_converted_to_scener(self):
 		# don't allow converting a group to scener if it has members or member productions
