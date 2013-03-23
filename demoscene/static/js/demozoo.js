@@ -332,8 +332,12 @@ $(function() {
 	});
 
 	searchField.autocomplete({
+		'html': true,
 		'source': function(request, response) {
 			$.getJSON('/search/live/', {'q': request.term}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					data[i].label = '<div class="autosuggest_result ' + htmlEncode(data[i].type) + '">' + htmlEncode(data[i].value) + '</div>';
+				}
 				response(data);
 			});
 		},

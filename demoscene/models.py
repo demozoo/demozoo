@@ -345,7 +345,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return {
 			'type': 'group' if self.is_group else 'scener',
 			'url': self.get_absolute_url(),
-			'label': self.name_with_affiliations(),
+			'value': self.name_with_affiliations(),
 		}
 
 	class Meta:
@@ -828,7 +828,7 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 		return {
 			'type': self.supertype,
 			'url': self.get_absolute_url(),
-			'label': self.title_with_byline,
+			'value': self.title_with_byline,
 		}
 
 	class Meta:
@@ -1097,7 +1097,7 @@ class Party(models.Model):
 		return {
 			'type': 'party',
 			'url': self.get_absolute_url(),
-			'label': self.name,
+			'value': self.name,
 		}
 
 	class Meta:
