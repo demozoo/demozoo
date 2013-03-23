@@ -60,7 +60,8 @@ class ModelWithThumbnails(models.Model):
 			new_filename = original_filename_root + '.png'
 			new_content_type = 'image/png'
 		temp_handle.seek(0) # rewind the file
-		
+		original_field.seek(0)
+
 		# save to the thumbnail field
 		suf = SimpleUploadedFile(new_filename,
 			temp_handle.read(),

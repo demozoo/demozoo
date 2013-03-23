@@ -47,7 +47,7 @@ class Platform(ModelWithThumbnails):
 
 	def save(self, *args, **kwargs):
 		if self.photo:
-			Screenshot.generate_thumbnail(self.photo, self.thumbnail, (135, 90), crop=True)
+			Platform.generate_thumbnail(self.photo, self.thumbnail, (135, 90), crop=True)
 		super(Platform, self).save(*args, **kwargs)
 
 	def __unicode__(self):
