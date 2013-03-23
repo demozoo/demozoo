@@ -309,21 +309,27 @@ $(function() {
 			showLoginLinks();
 		}
 		return false;
-	})
-	
+	});
+
 	var searchPlaceholderText = 'Type in keyword';
-	var searchField = $('#site_header #id_q');
-	function fillSearchWithPlaceholder() {
-		if (searchField.val() == '') {
-			searchField.val(searchPlaceholderText).addClass('placeholder');
-		}
+	var searchField = $('#global_search #id_q');
+	if (searchField.val() === '' || searchField.val() === searchPlaceholderText) {
+		searchField.val(searchPlaceholderText).addClass('placeholder');
 	}
-	fillSearchWithPlaceholder();
 	searchField.focus(function() {
 		if (searchField.hasClass('placeholder')) {
 			searchField.val('').removeClass('placeholder');
 		}
-	}).blur(fillSearchWithPlaceholder);
-	
+	}).blur(function() {
+		if (searchField.val() === '') {
+			searchField.val(searchPlaceholderText).addClass('placeholder');
+		}
+	});
+	$('#global_search').submit(function() {
+		if (searchField.hasClass('placeholder') || searchField.val() === '') {
+			searchField.focus(); return false;
+		}
+	});
+
 	applyGlobalBehaviours();
 });
