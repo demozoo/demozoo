@@ -331,5 +331,16 @@ $(function() {
 		}
 	});
 
+	searchField.autocomplete({
+		'source': function(request, response) {
+			$.getJSON('/search/live/', {'q': request.term}, function(data) {
+				response(data);
+			});
+		},
+		'select': function(event, ui) {
+			document.location.href = ui.item.url;
+		}
+	});
+
 	applyGlobalBehaviours();
 });
