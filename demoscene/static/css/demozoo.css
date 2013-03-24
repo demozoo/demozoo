@@ -1651,6 +1651,30 @@ a.lightbox_close {
 	margin: 0.3em 0 0 0;
 }
 
+.homepage .news {
+	clear: both;
+	margin-top: 24px;
+	border-top: 1px solid #888;
+	border-bottom: 1px solid #888;
+}
+.homepage .news .news_story {
+	padding-top: 24px;
+}
+.homepage .news .news_story h2 {
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	float: left;
+	margin-bottom: 8px;
+}
+.homepage .news .news_story .date {
+	float: right;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #888;
+}
+.homepage .news .news_story p {
+	clear: both;
+}
+
 /* latest activity page */
 .chart_set {
 	clear: both;

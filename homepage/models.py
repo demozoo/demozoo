@@ -2,6 +2,7 @@ from django.db import models
 
 from demoscene.models import random_path
 
+
 class Banner(models.Model):
 	image = models.ImageField(
 		upload_to=(lambda i, f: random_path('homepage_banners', f)),
@@ -20,6 +21,7 @@ class Banner(models.Model):
 	def __unicode__(self):
 		return self.title
 
+
 class Teaser(models.Model):
 	image = models.ImageField(
 		upload_to=(lambda i, f: random_path('homepage_teasers', f)),
@@ -37,3 +39,16 @@ class Teaser(models.Model):
 
 	def __unicode__(self):
 		return self.title
+
+
+class NewsStory(models.Model):
+	title = models.CharField(max_length=255)
+	text = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __unicode__(self):
+		return self.title
+
+	class Meta:
+		verbose_name_plural = 'News stories'

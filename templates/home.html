@@ -25,8 +25,17 @@
 			</li>
 		{% endfor %}
 	</ul>
-
 	<div style="clear: both;"></div>
+
+	<div class="news">
+		{% for story in news_stories %}
+			<div class="news_story">
+				<h2>{{ story.title }}</h2>
+				<div class="date">{{ story.created_at|date:"d M Y" }}</div>
+				{{ story.text|safe_markdown }}
+			</div>
+		{% endfor %}
+	</div>
 
 	{% site_stats %}
 	<p>
