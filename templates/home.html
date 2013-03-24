@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 {% load demoscene_tags %}
+{% load safe_markdown %}
 {% load url from future %}
 
+{% block body_class %}homepage{% endblock %}
+
 {% block base_main %}
-	<h1>home.</h1>
+	{% if banner %}
+		<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
+			<h1>{{ banner.title }}</h1>
+			{{ banner.text|safe_markdown }}
+		</a>
+	{% endif %}
+
 	{% site_stats %}
 	<p>
 		<a href="{% url 'latest_activity' %}">Latest activity</a>

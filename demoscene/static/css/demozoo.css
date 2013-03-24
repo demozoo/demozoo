@@ -1592,7 +1592,39 @@ a.lightbox_close {
 	background-position: center;
 }
 
-/* homepage */
+/* Homepage */
+.homepage .banner {
+	display: block;
+	width: 100%;
+	border-radius: 8px;
+	height: 350px;
+	position: relative;
+}
+.homepage .banner h1 {
+	position: absolute;
+	top: 180px;
+	right: 100px;
+	font-size: 28pt;
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	background-color: rgba(32, 32, 32, 0.6);
+	line-height: 1em;
+	padding: 8px;
+	color: #d4d2ff;
+}
+
+.homepage .banner p {
+	position: absolute;
+	top: 250px;
+	right: 100px;
+	font-size: 12pt;
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	background-color: rgba(32, 32, 32, 0.6);
+	line-height: 1em;
+	padding: 8px;
+	color: white;
+}
+
+/* latest activity page */
 .chart_set {
 	clear: both;
 }
