@@ -3,6 +3,7 @@
 {% load url from future %}
 
 {% block base_main %}
+	<h2>Latest activity</h2>
 	{% site_stats %}
 	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
 	<div class="chart_set">

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load demoscene_tags %}
+{% load url from future %}
+
+{% block base_main %}
+	<h1>home.</h1>
+	{% site_stats %}
+	<p>
+		<a href="{% url 'latest_activity' %}">Latest activity</a>
+		| <a href="{% url 'recent_edits' %}">Recent edits</a>
+	</p>
+{% endblock %}

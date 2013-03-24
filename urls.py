@@ -15,6 +15,8 @@ urlpatterns = patterns('',
 	# to INSTALLED_APPS to enable admin documentation:
 	# (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
+	(r'^$', 'homepage.views.home', {}, 'home'),
+
 	(r'^admin/', include(admin.site.urls)),
 
 	(r'^account/$', 'demoscene.views.accounts.index', {}, 'account_index'),
@@ -26,7 +28,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('demoscene.views',
-	(r'^$', 'home.latest_activity', {}, 'home'),
+	(r'^latest_activity/$', 'home.latest_activity', {}, 'latest_activity'),
 
 	(r'^error/$', 'home.error_test', {}, 'error_test'),
 	(r'^edits/$', 'home.recent_edits', {}, 'recent_edits'),

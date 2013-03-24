@@ -115,6 +115,7 @@ INSTALLED_APPS = (
 	'sceneorg',
 	'mirror',
 	'screenshots',
+	'homepage',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
