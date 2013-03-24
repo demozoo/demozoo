@@ -26,7 +26,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('demoscene.views',
-	(r'^$', 'home.home', {}, 'home'),
+	(r'^$', 'home.latest_activity', {}, 'home'),
 
 	(r'^error/$', 'home.error_test', {}, 'error_test'),
 	(r'^edits/$', 'home.recent_edits', {}, 'recent_edits'),
