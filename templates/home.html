@@ -13,6 +13,21 @@
 		</a>
 	{% endif %}
 
+	<ul class="teasers">
+		{% for teaser in teasers %}
+			<li>
+				<a href="{{ teaser.url }}" class="teaser" style="background-image: url('{{ teaser.image.url }}');">
+					<div class="caption">
+						<h3>{{ teaser.title }}</h3>
+						{{ teaser.text|safe_markdown }}
+					</div>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+
+	<div style="clear: both;"></div>
+
 	{% site_stats %}
 	<p>
 		<a href="{% url 'latest_activity' %}">Latest activity</a>

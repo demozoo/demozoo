@@ -1599,6 +1599,8 @@ a.lightbox_close {
 	border-radius: 8px;
 	height: 350px;
 	position: relative;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 .homepage .banner h1 {
 	position: absolute;
@@ -1622,6 +1624,31 @@ a.lightbox_close {
 	line-height: 1em;
 	padding: 8px;
 	color: white;
+}
+
+.homepage .teasers {
+	margin-top: 32px;
+}
+.homepage .teaser {
+	width: 320px;
+	height: 180px;
+	float: left;
+	background-position: center;
+	background-repeat: no-repeat;
+	position: relative;
+}
+.homepage .teaser .caption {
+	position: absolute;
+	bottom: 0;
+	background-color: rgba(128, 128, 128, 0.9);
+	padding: 16px;
+	color: white;
+}
+.homepage .teaser .caption h3 {
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+}
+.homepage .teaser .caption p {
+	margin: 0.3em 0 0 0;
 }
 
 /* latest activity page */
