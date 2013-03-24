@@ -1637,11 +1637,21 @@ a.lightbox_close {
 	background-repeat: no-repeat;
 	position: relative;
 }
+.homepage .teasers li {
+	float: left;
+	margin-left: 20px;
+	width: 320px;
+}
+.homepage .teasers li:first-child {
+	margin-left: 0;
+}
+
 .homepage .teaser .caption {
 	position: absolute;
 	bottom: 0;
+	width: 300px;
 	background-color: rgba(128, 128, 128, 0.9);
-	padding: 16px;
+	padding: 10px;
 	color: white;
 }
 .homepage .teaser .caption h3 {
