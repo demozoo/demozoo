@@ -1798,6 +1798,22 @@ form.party_invitation_form .spawning_formset .spawned_form a.delete_button {
 		margin-left: 16px;
 		margin-right: 16px;
 	}
+
+	.homepage .banner {
+		height: 175px;
+		background-size: 100%;
+	}
+	.homepage .banner h1 {
+		top: 60px;
+		right: 30px;
+		font-size: 18pt;
+	}
+
+	.homepage .banner p {
+		top: 80px;
+		right: 30px;
+		font-size: 10pt;
+	}
 }
 
 @media screen and (max-width: 501px) {
