@@ -2,7 +2,7 @@ from PIL import Image
 from StringIO import StringIO
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
-import os, uuid
+import os
 
 class ModelWithThumbnails(models.Model):
 	class Meta:
@@ -67,10 +67,3 @@ class ModelWithThumbnails(models.Model):
 			temp_handle.read(),
 			content_type = new_content_type)
 		thumbnail_field.save(suf.name, suf, save=False)
-	
-	@staticmethod
-	def random_path(prefix, filepath):
-		hex = uuid.uuid4().hex;
-		filename = os.path.basename(filepath)
-		filename_root, filename_ext = os.path.splitext(filename)
-		return prefix + '/' + hex[0] + '/' + hex[1] + '/' + hex[2:] + filename_ext

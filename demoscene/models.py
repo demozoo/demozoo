@@ -3,6 +3,8 @@ import re
 import datetime
 import hashlib
 import chardet
+import uuid
+import os
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
@@ -26,6 +28,11 @@ DATE_PRECISION_CHOICES = [
 	('y', 'Year'),
 ]
 
+def random_path(prefix, filepath):
+	hex = uuid.uuid4().hex;
+	filename = os.path.basename(filepath)
+	filename_root, filename_ext = os.path.splitext(filename)
+	return prefix + '/' + hex[0] + '/' + hex[1] + '/' + hex[2:] + filename_ext
 
 class Platform(ModelWithThumbnails):
 	name = models.CharField(max_length=255)
@@ -33,14 +40,14 @@ class Platform(ModelWithThumbnails):
 
 	photo = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: Platform.random_path('platform_photos/original', f)),
+		upload_to=(lambda i, f: random_path('platform_photos/original', f)),
 		width_field='photo_width', height_field='photo_height')
 	photo_width = models.IntegerField(null=True, blank=True, editable=False)
 	photo_height = models.IntegerField(null=True, blank=True, editable=False)
 
 	thumbnail = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: Platform.random_path('platform_photos/thumb', f)),
+		upload_to=(lambda i, f: random_path('platform_photos/thumb', f)),
 		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
 	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
