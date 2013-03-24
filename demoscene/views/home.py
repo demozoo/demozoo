@@ -16,13 +16,6 @@ def home(request):
 		'latest_updated_groups': Releaser.objects.filter(is_group=True).order_by('-updated_at')[0:10],
 		'latest_added_sceners': latest_added_sceners,
 		'latest_updated_sceners': latest_updated_sceners,
-		'stats': {
-			'production_count': Production.objects.filter(supertype='production').count(),
-			'graphics_count': Production.objects.filter(supertype='graphics').count(),
-			'music_count': Production.objects.filter(supertype='music').count(),
-			'scener_count': Releaser.objects.filter(is_group=False).count(),
-			'group_count': Releaser.objects.filter(is_group=True).count(),
-		}
 	})
 
 

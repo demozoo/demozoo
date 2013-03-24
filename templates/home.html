@@ -4,14 +4,7 @@
 
 {% block base_main %}
 	<p><a href="{% url 'sceneorg_compofiles' %}" style="text-decoration: none; color: #449; display: block; border: 1px solid #ccc; padding: 1em 1em 1em 40px; font-size: 14pt; background-image:url(/static/images/icons/external_sites/sceneorg.png); background-repeat: no-repeat; background-position: 16px center;">It's back. It's bigger. Play the scene.org file matching game, and be a data entry superhero! :-)</a></p>
-	<p>
-		<b>Now serving...</b>
-		{{ stats.production_count }} production{{ stats.production_count|pluralize }} -
-		{{ stats.graphics_count }} graphics -
-		{{ stats.music_count }} music track{{ stats.music_count|pluralize }} -
-		{{ stats.group_count }} group{{ stats.group_count|pluralize }} -
-		{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}
-	</p>
+	{% site_stats %}
 	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
 	<div class="chart_set">
 		<div class="chart">

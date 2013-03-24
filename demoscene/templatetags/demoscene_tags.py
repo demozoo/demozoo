@@ -1,7 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 
-from demoscene.models import Releaser, Nick
+from demoscene.models import Releaser, Nick, Production
 
 register = template.Library()
 
@@ -73,4 +73,15 @@ def thumbnail(screenshot):
 		'url': screenshot.thumbnail_url,
 		'width': width,
 		'height': height
+	}
+
+
+@register.inclusion_tag('shared/site_stats.html')
+def site_stats():
+	return {
+		'production_count': Production.objects.filter(supertype='production').count(),
+		'graphics_count': Production.objects.filter(supertype='graphics').count(),
+		'music_count': Production.objects.filter(supertype='music').count(),
+		'scener_count': Releaser.objects.filter(is_group=False).count(),
+		'group_count': Releaser.objects.filter(is_group=True).count(),
 	}
