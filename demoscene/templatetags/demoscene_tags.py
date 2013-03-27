@@ -58,13 +58,12 @@ def date_range(start_date, end_date):
 	}
 
 
-@register.inclusion_tag('shared/thumbnail.html')
-def thumbnail(screenshot):
+def thumbnail_params_for_size(screenshot, width, height):
 	thumbnail_width = screenshot.thumbnail_width or 1
 	thumbnail_height = screenshot.thumbnail_height or 1
 	# scale down by whatever factor is required to get both width and height within 133x100
-	width_scale = min(133.0 / thumbnail_width, 1)
-	height_scale = min(100.0 / thumbnail_height, 1)
+	width_scale = min(float(width) / thumbnail_width, 1)
+	height_scale = min(float(height) / thumbnail_height, 1)
 	scale = min(width_scale, height_scale)
 
 	width = int(thumbnail_width * scale)
@@ -74,6 +73,16 @@ def thumbnail(screenshot):
 		'width': width,
 		'height': height
 	}
+
+
+@register.inclusion_tag('shared/thumbnail.html')
+def thumbnail(screenshot):
+	return thumbnail_params_for_size(screenshot, 133, 100)
+
+
+@register.inclusion_tag('shared/microthumb.html')
+def microthumb(screenshot):
+	return thumbnail_params_for_size(screenshot, 48, 36)
 
 
 @register.inclusion_tag('shared/site_stats.html')

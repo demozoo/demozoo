@@ -357,6 +357,24 @@ ul.errorlist {
 	vertical-align: middle;
 }
 
+
+.microthumb {
+	background-color: #888;
+	width: 48px;
+	height: 36px;
+	display: inline-block;
+	line-height: 36px;
+	text-align: center;
+}
+.microthumb img {
+	vertical-align: middle;
+}
+
+.listing_with_screenshots tr {
+	height: 36px;
+}
+
+
 /* data entry forms */
 .form_title h2 {
 	display: inline;
@@ -607,7 +625,7 @@ li.production, td.production {
 	padding-top: 2px;
 	padding-bottom: 3px;
 	background-image: url(/static/images/icons/disk.png);
-	background-position: left 2px;
+	background-position: left center;
 	background-repeat: no-repeat;
 }
 
@@ -616,7 +634,7 @@ li.music, td.music {
 	padding-top: 2px;
 	padding-bottom: 3px;
 	background-image: url(/static/images/icons/music.png);
-	background-position: left 2px;
+	background-position: left center;
 	background-repeat: no-repeat;
 }
 
@@ -625,7 +643,7 @@ li.graphics, td.graphics {
 	padding-top: 2px;
 	padding-bottom: 3px;
 	background-image: url(/static/images/icons/palette.png);
-	background-position: left 2px;
+	background-position: left center;
 	background-repeat: no-repeat;
 }
 

@@ -13,7 +13,7 @@ from screenshots.tasks import capture_upload_for_processing
 
 
 def index(request, supertype):
-	queryset = Production.objects.filter(supertype=supertype).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	queryset = Production.objects.filter(supertype=supertype).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 

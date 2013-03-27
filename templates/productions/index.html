@@ -19,7 +19,7 @@
 
 	<ul>
 		{% with production_page.object_list as productions %}
-			{% include "shared/production_listing.html" %}
+			{% include "shared/production_listing.html" with show_screenshots=1 %}
 		{% endwith %}
 	</ul>
 	
