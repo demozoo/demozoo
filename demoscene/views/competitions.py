@@ -12,7 +12,7 @@ import datetime
 def show(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 
-	placings = competition.placings.order_by('position', 'production__id').select_related('production').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+	placings = competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
 
 	return render(request, 'competitions/show.html', {
 		'competition': competition,
