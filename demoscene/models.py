@@ -833,10 +833,22 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
 	def search_result_json(self):
+		if self.default_screenshot:
+			width, height = self.default_screenshot.thumb_dimensions_to_fit(48, 36)
+			thumbnail = {
+				'url': self.default_screenshot.thumbnail_url,
+				'width': width, 'height': height,
+				'natural_width': self.default_screenshot.thumbnail_width,
+				'natural_height': self.default_screenshot.thumbnail_height,
+			}
+		else:
+			thumbnail = None
+
 		return {
 			'type': self.supertype,
 			'url': self.get_absolute_url(),
 			'value': self.title_with_byline,
+			'thumbnail': thumbnail
 		}
 
 	class Meta:
