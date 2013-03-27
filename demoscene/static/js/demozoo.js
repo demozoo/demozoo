@@ -338,7 +338,11 @@ $(function() {
 		'source': function(request, response) {
 			$.getJSON('/search/live/', {'q': request.term}, function(data) {
 				for (var i = 0; i < data.length; i++) {
-					data[i].label = '<div class="autosuggest_result ' + htmlEncode(data[i].type) + '">' + htmlEncode(data[i].value) + '</div>';
+					var thumbnail = '';
+					if (data[i].thumbnail) {
+						thumbnail = '<div class="microthumb"><img src="' + htmlEncode(data[i].thumbnail.url) + '" width="' + data[i].thumbnail.width + '" height="' + data[i].thumbnail.height + '" alt="" /></div>';
+					}
+					data[i].label = '<div class="autosuggest_result ' + htmlEncode(data[i].type) + '">' + thumbnail + htmlEncode(data[i].value) + '</div>';
 				}
 				response(data);
 			});

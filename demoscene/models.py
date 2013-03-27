@@ -969,7 +969,7 @@ class Screenshot(models.Model):
 		height_scale = min(float(height) / thumbnail_height, 1)
 		scale = min(width_scale, height_scale)
 
-		return (int(thumbnail_width * scale), int(thumbnail_height * scale))
+		return (round(thumbnail_width * scale), round(thumbnail_height * scale))
 
 
 	def __unicode__(self):

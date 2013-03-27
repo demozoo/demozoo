@@ -138,6 +138,12 @@ html {
 	background-repeat: no-repeat;
 	background-position: 0 center;
 	padding-left: 22px;
+	height: 30px;
+	overflow: hidden; /* clearfix for thumbnails */
+	vertical-align: middle;
+}
+.autosuggest_result .microthumb {
+	float: right;
 }
 .autosuggest_result.production {
 	background-image: url('/static/images/icons/disk.png');
