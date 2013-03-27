@@ -10,9 +10,10 @@
 					'position': 'absolute', 'z-index': 100,
 					'height': '100px', 'width': '133px', 'margin-top': '-125px', 'margin-left': '-76px',
 					'padding': '10px',
-					'line-height': '36px', 'text-align': 'center',
+					'line-height': '100px', 'text-align': 'center',
 					'background-color': '#eee', 'border': '1px solid #ccc', 'border-radius': '4px'
 				});
+				popup.find('img').css({'vertical-align': 'middle'});
 			}
 			var thumbPos = $(this).offset();
 			var thumbImg = $(this).find('img');
