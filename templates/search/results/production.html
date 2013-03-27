@@ -1,6 +1,7 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <li class="{{ result.instance.supertype }}">
+	{% if result.instance.default_screenshot %}{% microthumb result.instance.default_screenshot %}{% endif %}
 	<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 	{% if result.instance.author_nicks.all %}
 		<span class="annotation">by {% byline result.instance %}</span>
