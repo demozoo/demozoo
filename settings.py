@@ -186,6 +186,11 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(days=30),
 		"args": ('/',)
 	},
+	"set-default-screenshots": {
+		"task": "demoscene.tasks.set_default_screenshots",
+		"schedule": timedelta(hours=1),
+		"args": ()
+	},
 }
 
 # Get local settings

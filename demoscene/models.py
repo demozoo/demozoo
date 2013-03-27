@@ -646,6 +646,9 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	data_source = models.CharField(max_length=32, blank=True, null=True)
 	unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
 	has_bonafide_edits = models.BooleanField(default=True, help_text="True if this production has been updated through its own forms, as opposed to just compo results tables")
+	default_screenshot = models.ForeignKey('Screenshot', null=True, blank=True, related_name='+', editable=False,
+		on_delete=models.SET_NULL,  # don't want deletion to cascade to the production if screenshot is deleted
+		help_text="Screenshot to use alongside this production in listings - randomly assigned by script")
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
