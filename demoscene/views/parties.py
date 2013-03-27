@@ -95,6 +95,8 @@ def show(request, party_id):
 		'competitions': competitions,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
+		'parties_in_series': party.party_series.parties.select_related('party_series'),
+		'external_links': party.external_links.select_related('party'),
 	})
 
 
