@@ -102,7 +102,6 @@ INSTALLED_APPS = (
 	'treebeard',
 	'taggit',
 	'debug_toolbar',
-	'unjoinify',
 	'compressor',
 	'djcelery',
 	'django_bcrypt',

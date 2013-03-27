@@ -1,0 +1,15 @@
+{% load demoscene_tags %}
+
+<table class="listing_with_screenshots">
+	{% for result in placings %}
+		<tr>
+			<td>{{ result.ranking }}</td>
+			<td>
+				{% if result.production.default_screenshot %}{% microthumb result.production.default_screenshot %}{% endif %}
+			</td>
+			<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
+			<td>{% byline result.production %}</td>
+			<td>{{ result.score }}</td>
+		</tr>
+	{% endfor %}
+</table>

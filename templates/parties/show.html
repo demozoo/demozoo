@@ -107,7 +107,7 @@
 		</div>
 	{% endif %}
 
-	{% for compo, placings in competitions %}
+	{% for compo, placings in competitions_with_placings %}
 		<div class="competition">
 			<a id="competition_{{ compo.id }}"></a>
 			<h3>
@@ -117,16 +117,7 @@
 				</a>
 			</h3>
 			{% if placings %}
-				<table>
-					{% for result, production, authors, affiliations in placings %}
-						<tr>
-							<td>{{ result.ranking }}</td>
-							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-							<td>{% if production.unparsed_byline %}{{ production.unparsed_byline }}{% else %}{% component_byline authors affiliations %}{% endif %}</td>
-							<td>{{ result.score }}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/competition_results.html" %}
 			{% endif %}
 		</div>
 	{% endfor %}
