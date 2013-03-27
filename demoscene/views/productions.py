@@ -91,15 +91,15 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name', 'category'),
+		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
 		'soundtracks': [
 			link.soundtrack for link in
-			production.soundtrack_links.order_by('position').select_related('soundtrack')
+			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')
 		],
-		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
+		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'editing': edit_mode,

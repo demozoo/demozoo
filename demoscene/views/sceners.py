@@ -24,7 +24,7 @@ def show(request, scener_id, edit_mode=False):
 
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 
-	external_links = scener.external_links.all()
+	external_links = scener.external_links.select_related('releaser')
 	if not request.user.is_staff:
 		external_links = external_links.exclude(link_class='SlengpungUser')
 	if not request.user.is_staff and not scener.can_reveal_full_real_name:
@@ -34,7 +34,7 @@ def show(request, scener_id, edit_mode=False):
 		'scener': scener,
 		'external_links': external_links,
 		'productions': scener.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('-release_date_date', '-title'),
-		'credits': scener.credits().select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
+		'credits': scener.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
 		'memberships': scener.group_memberships.all().select_related('group').order_by('-is_current', 'group__name'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
