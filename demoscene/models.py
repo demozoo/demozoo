@@ -355,6 +355,9 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 
 	class Meta:
 		ordering = ['name']
+		permissions = (
+			("view_releaser_real_names", "Can view non-public real names"),
+		)
 
 
 class Nick(models.Model):

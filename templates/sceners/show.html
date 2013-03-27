@@ -51,7 +51,7 @@
 			{% endif %}
 		{% endwith %}
 		
-		{% if request.user.is_staff %}
+		{% if user_has_real_name_access %}
 			<p>
 				Real name:
 				{% if scener.real_name %}
@@ -68,9 +68,7 @@
 			</p>
 		{% elif scener.real_name_available_to_show %}
 			<p>
-				Real name:
-				{% if scener.show_first_name %}{{ scener.first_name }}{% endif %}
-				{% if scener.show_surname %}{{ scener.surname }}{% endif %}
+				Real name: {{ scener.public_real_name }}
 			</p>
 		{% endif %}
 		

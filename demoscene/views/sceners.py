@@ -24,10 +24,12 @@ def show(request, scener_id, edit_mode=False):
 
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 
+	user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
+
 	external_links = scener.external_links.select_related('releaser').defer('releaser__notes')
 	if not request.user.is_staff:
 		external_links = external_links.exclude(link_class='SlengpungUser')
-	if not request.user.is_staff and not scener.can_reveal_full_real_name:
+	if not user_has_real_name_access and not scener.can_reveal_full_real_name:
 		external_links = external_links.exclude(link_class='MobygamesDeveloper')
 
 	return render(request, 'sceners/show.html', {
@@ -38,6 +40,7 @@ def show(request, scener_id, edit_mode=False):
 		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
+		'user_has_real_name_access': user_has_real_name_access
 	})
 
 
