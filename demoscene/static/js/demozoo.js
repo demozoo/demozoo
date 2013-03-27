@@ -277,6 +277,8 @@ function applyGlobalBehaviours(context) {
 		helpText.hide();
 		$(this).addClass('ajaxified');
 	});
+
+	$('.microthumb', context).thumbPreview();
 }
 
 $(function() {

@@ -71,7 +71,9 @@ def thumbnail_params_for_size(screenshot, width, height):
 	return {
 		'url': screenshot.thumbnail_url,
 		'width': width,
-		'height': height
+		'height': height,
+		'natural_width': thumbnail_width,
+		'natural_height': thumbnail_height,
 	}
 
 
