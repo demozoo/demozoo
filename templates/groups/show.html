@@ -168,7 +168,7 @@
 			<div class="panel">
 				<h3 class="credits_header">Credited on:</h3>
 				{% with group as releaser %}
-					{% include "shared/credited_production_listing.html" %}
+					{% include "shared/credited_production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
 				{% if editing %}
 					<ul>
