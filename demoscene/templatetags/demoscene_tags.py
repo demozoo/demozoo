@@ -58,22 +58,15 @@ def date_range(start_date, end_date):
 	}
 
 
-def thumbnail_params_for_size(screenshot, width, height):
-	thumbnail_width = screenshot.thumbnail_width or 1
-	thumbnail_height = screenshot.thumbnail_height or 1
-	# scale down by whatever factor is required to get both width and height within 133x100
-	width_scale = min(float(width) / thumbnail_width, 1)
-	height_scale = min(float(height) / thumbnail_height, 1)
-	scale = min(width_scale, height_scale)
+def thumbnail_params_for_size(screenshot, target_width, target_height):
+	width, height = screenshot.thumb_dimensions_to_fit(target_width, target_height)
 
-	width = int(thumbnail_width * scale)
-	height = int(thumbnail_height * scale)
 	return {
 		'url': screenshot.thumbnail_url,
 		'width': width,
 		'height': height,
-		'natural_width': thumbnail_width,
-		'natural_height': thumbnail_height,
+		'natural_width': screenshot.thumbnail_width or 1,
+		'natural_height': screenshot.thumbnail_height or 1,
 	}
 
 

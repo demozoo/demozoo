@@ -946,6 +946,20 @@ class Screenshot(models.Model):
 	# for diagnostics: ID of the mirror.models.Download instance that this screen was generated from
 	source_download_id = models.IntegerField(editable=False, null=True, blank=True)
 
+	def thumb_dimensions_to_fit(self, width, height):
+		# return the width and height to render the thumbnail image at in order to fit within the given
+		# width/height while preserving aspect ratio
+
+		thumbnail_width = self.thumbnail_width or 1
+		thumbnail_height = self.thumbnail_height or 1
+
+		width_scale = min(float(width) / thumbnail_width, 1)
+		height_scale = min(float(height) / thumbnail_height, 1)
+		scale = min(width_scale, height_scale)
+
+		return (int(thumbnail_width * scale), int(thumbnail_height * scale))
+
+
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
 
