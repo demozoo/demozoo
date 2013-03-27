@@ -4,13 +4,15 @@ from django.utils import simplejson
 
 from search.forms import SearchForm
 from demoscene.shortcuts import render, get_page
-from demoscene.index import name_indexer
+from demoscene.index import name_indexer, name_indexer_with_real_names
 
 def search(request):
 	form = SearchForm(request.GET)
 	if form.is_valid():
 		query = form.cleaned_data['q']
-		(name_results, results, resultset) = form.search()
+
+		has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
+		(name_results, results, resultset) = form.search(with_real_names=has_real_name_access)
 		
 		if len(name_results) == 1 and len(results) == 0:
 			messages.success(request, "One match found for '%s'" % query)
@@ -32,7 +34,8 @@ def search(request):
 def live_search(request):
 	query = request.GET.get('q')
 	if query:
-		results = name_indexer.search(query).flags(name_indexer.flags.PARTIAL)[0:10].prefetch()
+		has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
+		results = (name_indexer_with_real_names if has_real_name_access else name_indexer).search(query).flags(name_indexer.flags.PARTIAL)[0:10].prefetch()
 		results = [hit.instance.search_result_json() for hit in results]
 	else:
 		results = []
