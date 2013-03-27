@@ -38,11 +38,11 @@
 	</div>
 	
 	<table>
-		{% for result, production, authors, affiliations in placings %}
+		{% for result in placings %}
 			<tr>
 				<td>{{ result.ranking }}</td>
-				<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-				<td>{% if production.unparsed_byline %}{{ production.unparsed_byline }}{% else %}{% component_byline authors affiliations %}{% endif %}</td>
+				<td><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
+				<td>{% byline result.production %}</td>
 				<td>{{ result.score }}</td>
 			</tr>
 		{% endfor %}
