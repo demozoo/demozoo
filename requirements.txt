@@ -7,7 +7,7 @@ PyMySQL==0.4
 South==0.7.1
 amqp==1.0.8
 anyjson==0.3.3
-billiard==2.7.3.20
+billiard==2.7.3.23
 boto==2.8.0
 celery==3.0.17
 celerymon==0.4.0
