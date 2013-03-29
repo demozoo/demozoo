@@ -95,14 +95,7 @@
 				</a>
 			</h3>
 			{% if invitations %}
-				<table>
-					{% for production in invitations %}
-						<tr>
-							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-							<td>{% byline production %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 %}
 			{% endif %}
 		</div>
 	{% endif %}

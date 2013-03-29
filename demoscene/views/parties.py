@@ -41,7 +41,7 @@ def show(request, party_id):
 
 	# Do not show an invitations section in the special case that all invitations are
 	# entries in a competition at this party (which probably means that it was an invitation compo)
-	invitations = party.invitations.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
 	if not non_competing_invitations:
 		invitations = Production.objects.none
