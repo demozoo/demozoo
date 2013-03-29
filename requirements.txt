@@ -9,7 +9,7 @@ amqp==1.0.8
 anyjson==0.3.3
 billiard==2.7.3.20
 boto==2.8.0
-celery==3.0.14
+celery==3.0.17
 celerymon==0.4.0
 chardet==1.0.1
 django-appconf==0.4.1
