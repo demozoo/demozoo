@@ -24,20 +24,23 @@ def show(request, scener_id, edit_mode=False):
 
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 
-	external_links = scener.external_links.all()
+	user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
+
+	external_links = scener.external_links.select_related('releaser').defer('releaser__notes')
 	if not request.user.is_staff:
 		external_links = external_links.exclude(link_class='SlengpungUser')
-	if not request.user.is_staff and not scener.can_reveal_full_real_name:
+	if not user_has_real_name_access and not scener.can_reveal_full_real_name:
 		external_links = external_links.exclude(link_class='MobygamesDeveloper')
 
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'external_links': external_links,
-		'productions': scener.productions().order_by('-release_date_date', '-title'),
-		'credits': scener.credits().order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
-		'memberships': scener.group_memberships.all().select_related('group').order_by('-is_current', 'group__name'),
+		'productions': scener.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
+		'credits': scener.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
+		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
+		'user_has_real_name_access': user_has_real_name_access
 	})
 
 
@@ -76,7 +79,7 @@ def edit_location(request, scener_id):
 @login_required
 def edit_real_name(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-	if not request.user.is_staff:
+	if not request.user.has_perm('demoscene.view_releaser_real_names'):
 		return HttpResponseRedirect(scener.get_absolute_edit_url())
 
 	def success(form):
@@ -84,7 +87,7 @@ def edit_real_name(request, scener_id):
 
 	return simple_ajax_form(request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
 		title="Editing %s's real name:" % scener.name,
-		update_datestamp=True, on_success=success)
+		update_datestamp=True, on_success=success, ajax_submit=request.GET.get('ajax_submit'))
 
 
 @login_required

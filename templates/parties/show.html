@@ -48,31 +48,29 @@
 			<div class="external_links">
 				<h3>External links:</h3>
 				<ul>
-					{% for link in party.external_links.all %}
+					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
 					<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>
 				</ul>
 			</div>
 			
-			{% with party.party_series.parties.all as parties_in_series %}
-				{% if parties_in_series.count > 1 %}
-					<div>
-						Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:
-						<ul class="parties_in_series">
-							{% for party_in_series in parties_in_series %}
-								{% if party_in_series == party %}
-									<li class="current">{{ party_in_series.suffix }}</li>
-								{% else %}
-									<li>
-										<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
-									</li>
-								{% endif %}
-							{% endfor %}
-						</ul>
-					</div>
-				{% endif %}
-			{% endwith %}
+			{% if parties_in_series.count > 1 %}
+				<div>
+					Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:
+					<ul class="parties_in_series">
+						{% for party_in_series in parties_in_series %}
+							{% if party_in_series == party %}
+								<li class="current">{{ party_in_series.suffix }}</li>
+							{% else %}
+								<li>
+									<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 	
@@ -97,19 +95,12 @@
 				</a>
 			</h3>
 			{% if invitations %}
-				<table>
-					{% for production in invitations %}
-						<tr>
-							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-							<td>{% byline production %}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 %}
 			{% endif %}
 		</div>
 	{% endif %}
 
-	{% for compo, placings in competitions %}
+	{% for compo, placings in competitions_with_placings %}
 		<div class="competition">
 			<a id="competition_{{ compo.id }}"></a>
 			<h3>
@@ -119,16 +110,7 @@
 				</a>
 			</h3>
 			{% if placings %}
-				<table>
-					{% for result, production, authors, affiliations in placings %}
-						<tr>
-							<td>{{ result.ranking }}</td>
-							<td><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></td>
-							<td>{% if production.unparsed_byline %}{{ production.unparsed_byline }}{% else %}{% component_byline authors affiliations %}{% endif %}</td>
-							<td>{{ result.score }}</td>
-						</tr>
-					{% endfor %}
-				</table>
+				{% include "shared/competition_results.html" %}
 			{% endif %}
 		</div>
 	{% endfor %}

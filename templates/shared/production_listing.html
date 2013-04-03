@@ -1,11 +1,23 @@
 {% load demoscene_tags %}
 
-<table width="100%">
-	<col width="50%" />
-	<col width="10%" />
-	<col width="40%" />
+<table width="100%" {% if show_screenshots %}class="listing_with_screenshots"{% endif %}>
+	{% if show_screenshots %}
+		<col width="5%" />
+		<col width="45%" />
+		<col width="10%" />
+		<col width="40%" />
+	{% else %}
+		<col width="50%" />
+		<col width="10%" />
+		<col width="40%" />
+	{% endif %}
 	{% for prod in productions %}
 		<tr {% if mark_excludable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
+			{% if show_screenshots %}
+				<td>
+					{% if prod.default_screenshot %}{% microthumb prod.default_screenshot %}{% endif %}
+				</td>
+			{% endif %}
 			<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
 			<td>{{ prod.release_date.short_format }}</td>
 			<td>{% byline prod %}</td>

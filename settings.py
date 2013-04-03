@@ -102,7 +102,6 @@ INSTALLED_APPS = (
 	'treebeard',
 	'taggit',
 	'debug_toolbar',
-	'unjoinify',
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
@@ -115,6 +114,7 @@ INSTALLED_APPS = (
 	'sceneorg',
 	'mirror',
 	'screenshots',
+	'homepage',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
@@ -184,6 +184,11 @@ CELERYBEAT_SCHEDULE = {
 		"task": "sceneorg.tasks.fetch_sceneorg_dir",
 		"schedule": timedelta(days=30),
 		"args": ('/',)
+	},
+	"set-default-screenshots": {
+		"task": "demoscene.tasks.set_default_screenshots",
+		"schedule": timedelta(hours=1),
+		"args": ()
 	},
 }
 

@@ -13,7 +13,7 @@ from screenshots.tasks import capture_upload_for_processing
 
 
 def index(request, supertype):
-	queryset = Production.objects.filter(supertype=supertype)
+	queryset = Production.objects.filter(supertype=supertype).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 
@@ -49,21 +49,16 @@ def index(request, supertype):
 	})
 
 
-def tagged(request, tag_slug, supertype):
+def tagged(request, tag_slug):
 	try:
 		tag = Tag.objects.get(slug=tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name=tag_slug)
-	queryset = Production.objects.filter(supertype=supertype, tags__slug=tag_slug)
+	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 
-	if supertype == 'production':
-		title = "Productions tagged '%s'" % tag.name
-	elif supertype == 'graphics':
-		title = "Graphics tagged '%s'" % tag.name
-	else:  # supertype == 'music'
-		title = "Music tagged '%s'" % tag.name
+	title = "Productions tagged '%s'" % tag.name
 
 	queryset = apply_order(queryset, order)
 
@@ -96,15 +91,15 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name', 'category'),
+		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
 		'screenshots': production.screenshots.order_by('id'),
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
 		'soundtracks': [
 			link.soundtrack for link in
-			production.soundtrack_links.order_by('position').select_related('soundtrack')
+			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')
 		],
-		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
+		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'editing': edit_mode,
@@ -226,7 +221,7 @@ def edit_external_links(request, production_id):
 	if request.method == 'POST':
 		formset = ProductionExternalLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=False))
 		if formset.is_valid():
-			formset.save()
+			formset.save_ignoring_uniqueness()
 			formset.log_edit(request.user, 'production_edit_external_links')
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
@@ -249,12 +244,15 @@ def add_download_link(request, production_id):
 	if request.method == 'POST':
 		form = ProductionDownloadLinkForm(request.POST, instance=production_link)
 		if form.is_valid():
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			production.save()
-			form.save()
-			Edit.objects.create(action_type='add_download_link', focus=production,
-				description=(u"Added download link %s" % production_link.url), user=request.user)
+			try:
+				form.save()
+				production.updated_at = datetime.datetime.now()
+				production.has_bonafide_edits = True
+				production.save()
+				Edit.objects.create(action_type='add_download_link', focus=production,
+					description=(u"Added download link %s" % production_link.url), user=request.user)
+			except ValidationError:
+				pass  # skip over any links that fail uniqueness
 			return HttpResponseRedirect(production.get_absolute_edit_url())
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
@@ -274,10 +272,17 @@ def edit_download_link(request, production_id, production_link_id):
 	if request.method == 'POST':
 		form = ProductionDownloadLinkForm(request.POST, instance=production_link)
 		if form.is_valid():
+			form.save(commit=False)
+			try:
+				production_link.validate_unique()
+				production_link.save()
+			except ValidationError:
+				# failing validation at this point means that the new link clashes
+				# with an existing one. So, delete it.
+				production_link.delete()
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			form.save()
 			Edit.objects.create(action_type='edit_download_link', focus=production,
 				description=(u"Updated download link from %s to %s" % (original_url, production_link.url)), user=request.user)
 			return HttpResponseRedirect(production.get_absolute_edit_url())
@@ -558,7 +563,7 @@ def remove_tag(request, production_id, tag_id):
 
 def autocomplete(request):
 	query = request.GET.get('term')
-	productions = Production.objects.filter(title__istartswith=query)
+	productions = Production.objects.filter(title__istartswith=query).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 	supertype = request.GET.get('supertype')
 	if supertype:
 		productions = productions.filter(supertype=supertype)

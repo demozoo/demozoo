@@ -12,5 +12,5 @@ def show(request, platform_id):
 	return render(request, 'platforms/show.html', {
 		'platform': platform,
 		'active_groups': platform.random_active_groups()[:],
-		'productions': platform.productions.filter(release_date_date__isnull=False).order_by('-release_date_date', '-title')[0:30],
+		'productions': platform.productions.filter(release_date_date__isnull=False).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('-release_date_date', '-title')[0:30],
 	})

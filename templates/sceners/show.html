@@ -51,7 +51,7 @@
 			{% endif %}
 		{% endwith %}
 		
-		{% if request.user.is_staff %}
+		{% if user_has_real_name_access %}
 			<p>
 				Real name:
 				{% if scener.real_name %}
@@ -68,9 +68,7 @@
 			</p>
 		{% elif scener.real_name_available_to_show %}
 			<p>
-				Real name:
-				{% if scener.show_first_name %}{{ scener.first_name }}{% endif %}
-				{% if scener.show_surname %}{{ scener.surname }}{% endif %}
+				Real name: {{ scener.public_real_name }}
 			</p>
 		{% endif %}
 		
@@ -145,7 +143,7 @@
 		{% if productions or editing %}
 			<div class="panel">
 				<h3 class="productions_header">Productions:</h3>
-				{% include "shared/production_listing.html" %}
+				{% include "shared/production_listing.html" with show_screenshots=1 %}
 				
 				{% if editing %}
 					<ul>
@@ -161,7 +159,7 @@
 			<div class="panel">
 				<h3 class="credits_header">Credited on:</h3>
 				{% with scener as releaser %}
-					{% include "shared/credited_production_listing.html" %}
+					{% include "shared/credited_production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
 				{% if editing %}
 					<ul>

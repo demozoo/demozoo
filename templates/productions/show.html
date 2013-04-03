@@ -83,7 +83,7 @@
 			<div class="panel">
 				<h3 class="productions_header">Featured in:</h3>
 				{% with featured_in_productions as productions %}
-					{% include "shared/production_listing.html" %}
+					{% include "shared/production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
 			</div>
 		{% endif %}

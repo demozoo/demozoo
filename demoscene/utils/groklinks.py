@@ -562,6 +562,20 @@ class PaduaOrgFile(BaseUrl):
 
 class ModlandFile(BaseUrl):
 	canonical_format = "ftp://ftp.modland.com%s"
+
+	# need to fiddle querystring_match to prepend a slash to the matched query param
+	def exotica_querystring_match():
+		inner_fn = querystring_match(r'https?://files.exotica.org.uk/modland/\?', 'file', re.I)
+
+		def wrapped_fn(*args):
+			result = inner_fn(*args)
+			if result is None:
+				return None
+			else:
+				return '/' + result
+
+		return wrapped_fn
+
 	tests = [
 		regex_match(r'ftp://ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
@@ -570,6 +584,7 @@ class ModlandFile(BaseUrl):
 		regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
 		regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
+		exotica_querystring_match(),
 	]
 	html_link_class = "modland"
 	html_link_text = "Modland"
@@ -851,6 +866,50 @@ class ModarchiveModule(BaseUrl):
 	html_title_format = "%s on The Mod Archive"
 
 
+class WikipediaPage(BaseUrl):
+	canonical_format = "%s"  # entire URL is stored as parameter, to cover all language domains
+	tests = [
+		regex_match(r'(https?://\w+\.wikipedia\.org/.*)', re.I),
+	]
+	html_link_class = "wikipedia"
+	html_link_text = "Wikipedia"
+	html_title_format = "%s on Wikipedia"
+
+
+class PushnpopEntry(BaseUrl):  # for use as an abstract superclass
+	html_link_class = "pushnpop"
+	html_link_text = "Push'n'Pop"
+	html_title_format = "%s on Push'n'Pop"
+
+
+class PushnpopProduction(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/prod-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/prod-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopParty(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/parties-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/parties-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopGroup(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/group-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/group-(\d+)\.html', re.I),
+	]
+
+
+class PushnpopProfile(PushnpopEntry):
+	canonical_format = "http://pushnpop.net/profile-%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pushnpop\.net/profile-(\d+)\.html', re.I),
+	]
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -864,8 +923,9 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
+		PushnpopProfile,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
-		YoutubeUser, DeviantartUser, ModarchiveMember,
+		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -873,7 +933,8 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		SoundcloudUser,
+		PushnpopGroup,
+		SoundcloudUser, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -882,10 +943,10 @@ def grok_production_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
 		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
-		ModarchiveModule, BitjamSong,
+		ModarchiveModule, BitjamSong, PushnpopProduction,
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
-		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
+		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, WikipediaPage,
 		BaseUrl,
 	])
 
@@ -894,6 +955,7 @@ def grok_party_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-		FacebookPage, GooglePlusPage, LanyrdEvent,
+		PushnpopParty,
+		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage,
 		BaseUrl,
 	])

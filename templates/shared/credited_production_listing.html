@@ -1,10 +1,17 @@
 {% load demoscene_tags %}
 {% load url from future %}
 
-<table width="100%">
-	<col width="50%" />
-	<col width="10%" />
-	<col width="40%" />
+<table width="100%" {% if show_screenshots %}class="listing_with_screenshots"{% endif %}>
+	{% if show_screenshots %}
+		<col width="5%" />
+		<col width="45%" />
+		<col width="10%" />
+		<col width="40%" />
+	{% else %}
+		<col width="50%" />
+		<col width="10%" />
+		<col width="40%" />
+	{% endif %}
 	{% regroup credits by production as credits_by_production %}
 
 	{% for production_with_credits in credits_by_production %}
@@ -24,6 +31,13 @@
 			{% endcomment %}
 
 			<tr>
+				{% if show_screenshots %}
+					<td>
+						{% if production_with_credits.grouper.default_screenshot %}
+							{% microthumb production_with_credits.grouper.default_screenshot %}
+						{% endif %}
+					</td>
+				{% endif %}
 				<td>
 					<a href="{{ production_with_credits.grouper.get_absolute_url }}">{{ production_with_credits.grouper.title }}</a>
 					-

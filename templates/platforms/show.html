@@ -35,7 +35,7 @@
 		{% if productions %}
 			<div class="panel">
 				<h3 class="productions_header">Recent releases:</h3>
-				{% include "shared/production_listing.html" %}
+				{% include "shared/production_listing.html" with show_screenshots=1 %}
 			</div>
 		{% endif %}
 	</div>
