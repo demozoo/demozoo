@@ -23,6 +23,10 @@ urlpatterns = patterns('',
 	(r'^account/signup/$', 'demoscene.views.accounts.signup', {}, 'user_signup'),
 	(r'^account/preferences/$', 'demoscene.views.accounts.preferences', {}, 'account_preferences'),
 	(r'^account/change_password/$', 'demoscene.views.accounts.change_password', {}, 'account_change_password'),
+	(r'^account/reset_password/$', 'django.contrib.auth.views.password_reset', {'is_admin_site': False}, 'password_reset'),
+    (r'^account/reset_password/done/$', 'django.contrib.auth.views.password_reset_done', {}, 'password_reset_done'),
+	(r'^account/reset_password/confirm/(?P<uidb36>\d+)/(?P<token>.*)/$', 'django.contrib.auth.views.password_reset_confirm', {}, 'password_reset_confirm'),
+    (r'^account/reset_password/complete/$', 'django.contrib.auth.views.password_reset_complete', {}, 'password_reset_complete'),
 )
 
 urlpatterns += patterns('demoscene.views',
