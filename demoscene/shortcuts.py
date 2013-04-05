@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from demoscene.models import AccountProfile
@@ -53,7 +53,10 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 			form.save()
 			if kwargs.get('on_success'):
 				kwargs['on_success'](form)
-			return HttpResponseRedirect(instance.get_absolute_edit_url())
+			if kwargs.get('ajax_submit') and request.is_ajax():
+				return HttpResponse('OK', mimetype='text/plain')
+			else:
+				return HttpResponseRedirect(instance.get_absolute_edit_url())
 	else:
 		form = form_class(instance=instance)
 
@@ -69,6 +72,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 		'title': title,
 		'html_title': clean_title,
 		'action_url': reverse(url_name, args=[instance.id]),
+		'ajax_submit': kwargs.get('ajax_submit'),
 	})
 
 

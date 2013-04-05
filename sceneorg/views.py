@@ -123,7 +123,12 @@ def compofiles(request):
 			INNER JOIN sceneorg_directory ON (
 				sceneorg_directory_competitions.directory_id = sceneorg_directory.id)
 			LEFT JOIN sceneorg_file ON (
-				sceneorg_directory.id = sceneorg_file.directory_id AND sceneorg_file.is_deleted = 'f')
+				sceneorg_directory.id = sceneorg_file.directory_id
+				AND sceneorg_file.is_deleted = 'f'
+				AND sceneorg_file.path NOT LIKE '%%/descript.ion'
+				AND sceneorg_file.path NOT LIKE '%%/index.htm'
+				AND sceneorg_file.path NOT LIKE '%%/files.lst'
+			)
 			LEFT JOIN demoscene_productionlink ON (
 				sceneorg_file.path = demoscene_productionlink.parameter AND demoscene_productionlink.link_class = 'SceneOrgFile')
 		WHERE

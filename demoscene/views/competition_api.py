@@ -19,7 +19,7 @@ def handle_production(prod_data, competition):
 			has_bonafide_edits=False)
 		production.save()  # assign an ID so that associations work
 
-	# can only edit production details if production is stable (which is always true for
+	# can only edit production details if production is non-stable (which is always true for
 	# newly-created ones)
 	if not production.is_stable_for_competitions():
 		if 'title' in prod_data:

@@ -1,0 +1,37 @@
+{% extends "maintenance/base.html" %}
+{% load demoscene_tags %}
+{% load url from future %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report unresolved_screenshots{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}:</h2>
+	<div id="main_column">
+		<br />
+		<h3>Total remaining: {{ link_count }}</h3>
+		<br />
+		{% for link, download, archive_members in entries %}
+			<div style="margin-bottom: 1em;">
+				<h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
+				<ul>
+					{% for file in archive_members %}
+						<li>
+							<a href="{% url 'maintenance_resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a> - <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
+						</li>
+					{% endfor %}
+				<ul>
+			</div>
+		{% endfor %}
+		<script>
+			$('a.resolve').click(function() {
+				var a = this;
+				$.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
+					$(a).closest('ul').fadeOut();
+				});
+				return false;
+			})
+		</script>
+	</div>
+{% endblock %}

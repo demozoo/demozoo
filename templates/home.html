@@ -1,72 +1,45 @@
 {% extends 'base.html' %}
 {% load demoscene_tags %}
+{% load safe_markdown %}
 {% load url from future %}
 
+{% block body_class %}homepage{% endblock %}
+
 {% block base_main %}
-	<p><a href="{% url 'sceneorg_compofiles' %}" style="text-decoration: none; color: #449; display: block; border: 1px solid #ccc; padding: 1em 1em 1em 40px; font-size: 14pt; background-image:url(/static/images/icons/external_sites/sceneorg.png); background-repeat: no-repeat; background-position: 16px center;">It's back. It's bigger. Play the scene.org file matching game, and be a data entry superhero! :-)</a></p>
-	<p>
-		<b>Now serving...</b>
-		{{ stats.production_count }} production{{ stats.production_count|pluralize }} -
-		{{ stats.graphics_count }} graphics -
-		{{ stats.music_count }} music track{{ stats.music_count|pluralize }} -
-		{{ stats.group_count }} group{{ stats.group_count|pluralize }} -
-		{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}
-	</p>
-	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
-	<div class="chart_set">
-		<div class="chart">
-			<h2>Latest added productions</h2>
-			<ul>
-				{% for production in latest_added_productions %}
-					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="chart">
-			<h2>Latest updated productions</h2>
-			<ul>
-				{% for production in latest_updated_productions %}
-					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-	
-	<div class="chart_set">
-		<div class="chart">
-			<h2>Latest added sceners</h2>
-			<ul>
-				{% for scener in latest_added_sceners %}
-					<li class="scener">{% scener_with_affiliations scener %}</li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="chart">
-			<h2>Latest updated sceners</h2>
-			<ul>
-				{% for scener in latest_updated_sceners %}
-					<li class="scener">{% scener_with_affiliations scener %}</li>
-				{% endfor %}
-			</ul>
-		</div>
+	{% if banner %}
+		<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
+			<h1>{{ banner.title }}</h1>
+			{{ banner.text|safe_markdown }}
+		</a>
+	{% endif %}
+
+	<ul class="teasers">
+		{% for teaser in teasers %}
+			<li>
+				<a href="{{ teaser.url }}" class="teaser" style="background-image: url('{{ teaser.image.url }}');">
+					<div class="caption">
+						<h3>{{ teaser.title }}</h3>
+						{{ teaser.text|safe_markdown }}
+					</div>
+				</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<div style="clear: both;"></div>
+
+	<div class="news">
+		{% for story in news_stories %}
+			<div class="news_story">
+				<h2>{{ story.title }}</h2>
+				<div class="date">{{ story.created_at|date:"d M Y" }}</div>
+				{{ story.text|safe_markdown }}
+			</div>
+		{% endfor %}
 	</div>
 
-	<div class="chart_set">
-		<div class="chart">
-			<h2>Latest added groups</h2>
-			<ul>
-				{% for group in latest_added_groups %}
-					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="chart">
-			<h2>Latest updated groups</h2>
-			<ul>
-				{% for group in latest_updated_groups %}
-					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+	{% site_stats %}
+	<p>
+		<a href="{% url 'latest_activity' %}">Latest activity</a>
+		| <a href="{% url 'recent_edits' %}">Recent edits</a>
+	</p>
 {% endblock %}

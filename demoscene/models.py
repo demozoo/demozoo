@@ -3,6 +3,8 @@ import re
 import datetime
 import hashlib
 import chardet
+import uuid
+import os
 from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 from model_thumbnail import ModelWithThumbnails
@@ -12,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from strip_markup import strip_markup
 from blob_field import BlobField
 from demoscene.utils import groklinks
+from prefetch_snooping import ModelWithPrefetchSnooping
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
@@ -25,6 +28,11 @@ DATE_PRECISION_CHOICES = [
 	('y', 'Year'),
 ]
 
+def random_path(prefix, filepath):
+	hex = uuid.uuid4().hex;
+	filename = os.path.basename(filepath)
+	filename_root, filename_ext = os.path.splitext(filename)
+	return prefix + '/' + hex[0] + '/' + hex[1] + '/' + hex[2:] + filename_ext
 
 class Platform(ModelWithThumbnails):
 	name = models.CharField(max_length=255)
@@ -32,21 +40,21 @@ class Platform(ModelWithThumbnails):
 
 	photo = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: Platform.random_path('platform_photos/original', f)),
+		upload_to=(lambda i, f: random_path('platform_photos/original', f)),
 		width_field='photo_width', height_field='photo_height')
 	photo_width = models.IntegerField(null=True, blank=True, editable=False)
 	photo_height = models.IntegerField(null=True, blank=True, editable=False)
 
 	thumbnail = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: Platform.random_path('platform_photos/thumb', f)),
+		upload_to=(lambda i, f: random_path('platform_photos/thumb', f)),
 		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
 	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
 
 	def save(self, *args, **kwargs):
 		if self.photo:
-			Screenshot.generate_thumbnail(self.photo, self.thumbnail, (135, 90), crop=True)
+			Platform.generate_thumbnail(self.photo, self.thumbnail, (135, 90), crop=True)
 		super(Platform, self).save(*args, **kwargs)
 
 	def __unicode__(self):
@@ -170,7 +178,7 @@ class ProductionType(MP_Node):
 			return 'production'
 
 
-class Releaser(models.Model):
+class Releaser(ModelWithPrefetchSnooping, models.Model):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField()
 	notes = models.TextField(blank=True)
@@ -226,13 +234,21 @@ class Releaser(models.Model):
 		return Production.objects.filter(author_affiliation_nicks__releaser=self)
 
 	def credits(self):
-		return Credit.objects.filter(nick__releaser=self)
+		return Credit.objects.select_related('nick').filter(nick__releaser=self)
 
 	def groups(self):
 		return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
 
 	def current_groups(self):
-		return [membership.group for membership in self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')]
+		if self.has_prefetched('group_memberships'):
+			# do the is_current filter in Python to avoid another SQL query
+			return [
+				membership.group
+				for membership in self.group_memberships.all()
+				if membership.is_current
+			]
+		else:
+			return [membership.group for membership in self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')]
 
 	def members(self):
 		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
@@ -253,9 +269,19 @@ class Releaser(models.Model):
 
 	@property
 	def primary_nick(self):
-		# find the nick which matches this releaser by name
-		# (will die loudly if one doesn't exist. So let's hope it does, eh?)
-		return self.nicks.get(name=self.name)
+		if self.has_prefetched('nicks'):
+			# filter the nicks list in Python to avoid another SQL query
+			matching_nicks = [n for n in self.nicks.all() if n.name == self.name]
+			if not matching_nicks:
+				raise Nick.DoesNotExist()
+			elif len(matching_nicks) > 1:
+				raise Nick.MultipleObjectsReturned()
+			else:
+				return matching_nicks[0]
+		else:
+			# find the nick which matches this releaser by name
+			# (will die loudly if one doesn't exist. So let's hope it does, eh?)
+			return self.nicks.get(name=self.name)
 
 	@property
 	def abbreviation(self):
@@ -310,9 +336,7 @@ class Releaser(models.Model):
 			or self.member_productions().count())
 
 	def can_be_converted_to_group(self):
-		return True
-		# might come up with some restrictions later - e.g. must not have full name.
-		# No pressing need for this right now though - it doesn't screw up data integrity or anything...
+		return (not self.first_name and not self.surname and not self.location)
 
 	def can_be_converted_to_scener(self):
 		# don't allow converting a group to scener if it has members or member productions
@@ -322,8 +346,18 @@ class Releaser(models.Model):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
+	def search_result_json(self):
+		return {
+			'type': 'group' if self.is_group else 'scener',
+			'url': self.get_absolute_url(),
+			'value': self.name_with_affiliations(),
+		}
+
 	class Meta:
 		ordering = ['name']
+		permissions = (
+			("view_releaser_real_names", "Can view non-public real names"),
+		)
 
 
 class Nick(models.Model):
@@ -598,7 +632,7 @@ SUPERTYPE_CHOICES = (
 )
 
 
-class Production(models.Model):
+class Production(ModelWithPrefetchSnooping, models.Model):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('Platform', related_name='productions', blank=True)
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES)
@@ -615,6 +649,9 @@ class Production(models.Model):
 	data_source = models.CharField(max_length=32, blank=True, null=True)
 	unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
 	has_bonafide_edits = models.BooleanField(default=True, help_text="True if this production has been updated through its own forms, as opposed to just compo results tables")
+	default_screenshot = models.ForeignKey('Screenshot', null=True, blank=True, related_name='+', editable=False,
+		on_delete=models.SET_NULL,  # don't want deletion to cascade to the production if screenshot is deleted
+		help_text="Screenshot to use alongside this production in listings - randomly assigned by script")
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
@@ -622,9 +659,25 @@ class Production(models.Model):
 
 	search_result_template = 'search/results/production.html'
 
+	# do the equivalent of self.author_nicks.select_related('releaser'), unless that would be
+	# less efficient because we've already got the author_nicks relation cached from a prefetch_related
+	def author_nicks_with_authors(self):
+		if self.has_prefetched('author_nicks'):
+			return self.author_nicks.all()
+		else:
+			return self.author_nicks.select_related('releaser')
+
+	def author_affiliation_nicks_with_groups(self):
+		if self.has_prefetched('author_affiliation_nicks'):
+			return self.author_affiliation_nicks.all()
+		else:
+			return self.author_affiliation_nicks.select_related('releaser')
+
 	def save(self, *args, **kwargs):
 		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
+		if self.title:
+			self.title = self.title.strip()
 		return super(Production, self).save(*args, **kwargs)
 
 	def __unicode__(self):
@@ -767,6 +820,25 @@ class Production(models.Model):
 	def tags_string(self):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
+	def search_result_json(self):
+		if self.default_screenshot:
+			width, height = self.default_screenshot.thumb_dimensions_to_fit(48, 36)
+			thumbnail = {
+				'url': self.default_screenshot.thumbnail_url,
+				'width': width, 'height': height,
+				'natural_width': self.default_screenshot.thumbnail_width,
+				'natural_height': self.default_screenshot.thumbnail_height,
+			}
+		else:
+			thumbnail = None
+
+		return {
+			'type': self.supertype,
+			'url': self.get_absolute_url(),
+			'value': self.title_with_byline,
+			'thumbnail': thumbnail
+		}
+
 	class Meta:
 		ordering = ['title']
 
@@ -857,36 +929,39 @@ class Credit(models.Model):
 		ordering = ['production__title']
 
 
-class Screenshot(ModelWithThumbnails):
+class Screenshot(models.Model):
 	production = models.ForeignKey(Production, related_name='screenshots')
-	original = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/original', f)),
-		verbose_name='image file', width_field='original_width', height_field='original_height')
-	original_width = models.IntegerField(editable=False)
-	original_height = models.IntegerField(editable=False)
+	original_url = models.CharField(max_length=255, blank=True)
+	original_width = models.IntegerField(editable=False, null=True, blank=True)
+	original_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	thumbnail = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/thumb', f)),
-		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
-	thumbnail_width = models.IntegerField(editable=False)
-	thumbnail_height = models.IntegerField(editable=False)
+	thumbnail_url = models.CharField(max_length=255, blank=True)
+	thumbnail_width = models.IntegerField(editable=False, null=True, blank=True)
+	thumbnail_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	standard = models.ImageField(
-		upload_to=(lambda i, f: Screenshot.random_path('screenshots/standard', f)),
-		editable=False, width_field='standard_width', height_field='standard_height')
-	standard_width = models.IntegerField(editable=False)
-	standard_height = models.IntegerField(editable=False)
+	standard_url = models.CharField(max_length=255, blank=True)
+	standard_width = models.IntegerField(editable=False, null=True, blank=True)
+	standard_height = models.IntegerField(editable=False, null=True, blank=True)
 
-	def save(self, *args, **kwargs):
-		if not self.id:
-			Screenshot.generate_thumbnail(self.original, self.thumbnail, (135, 90), crop=True)
-			Screenshot.generate_thumbnail(self.original, self.standard, (400, 400), crop=False)
+	# for diagnostics: ID of the mirror.models.Download instance that this screen was generated from
+	source_download_id = models.IntegerField(editable=False, null=True, blank=True)
 
-		# Save this photo instance
-		super(Screenshot, self).save(*args, **kwargs)
+	def thumb_dimensions_to_fit(self, width, height):
+		# return the width and height to render the thumbnail image at in order to fit within the given
+		# width/height while preserving aspect ratio
+
+		thumbnail_width = self.thumbnail_width or 1
+		thumbnail_height = self.thumbnail_height or 1
+
+		width_scale = min(float(width) / thumbnail_width, 1)
+		height_scale = min(float(height) / thumbnail_height, 1)
+		scale = min(width_scale, height_scale)
+
+		return (round(thumbnail_width * scale), round(thumbnail_height * scale))
+
 
 	def __unicode__(self):
-		return "%s - %s" % (self.production.title, self.original)
+		return "%s - %s" % (self.production.title, self.original_url)
 
 
 class PartySeries(models.Model):
@@ -952,7 +1027,7 @@ class Party(models.Model):
 
 	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
 
-	invitations = models.ManyToManyField(Production, related_name='invitation_parties')
+	invitations = models.ManyToManyField(Production, related_name='invitation_parties', blank=True)
 
 	search_result_template = 'search/results/party.html'
 
@@ -1039,6 +1114,13 @@ class Party(models.Model):
 			filename=sceneorg_file.filename(),
 			data=sceneorg_file.fetched_data()
 		)
+
+	def search_result_json(self):
+		return {
+			'type': 'party',
+			'url': self.get_absolute_url(),
+			'value': self.name,
+		}
 
 	class Meta:
 		verbose_name_plural = "Parties"
@@ -1208,12 +1290,19 @@ class PartyExternalLink(ExternalLink):
 		groklinks.DemopartyNetParty, groklinks.SlengpungParty, groklinks.PouetParty,
 		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
+		groklinks.PushnpopParty,
 		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
+		groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
 	def html_link(self):
 		return self.link.as_html(self.party.name)
+
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'party'),
+		)
 
 
 class ReleaserExternalLink(ExternalLink):
@@ -1224,13 +1313,19 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
+		groklinks.PushnpopGroup, groklinks.PushnpopProfile,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
-		groklinks.DeviantartUser, groklinks.ModarchiveMember,
+		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
 	def html_link(self):
 		return self.link.as_html(self.releaser.name)
+
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'releaser'),
+		)
 
 
 class ProductionLink(ExternalLink):
@@ -1238,6 +1333,8 @@ class ProductionLink(ExternalLink):
 	is_download_link = models.BooleanField()
 	description = models.CharField(max_length=255, blank=True)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
+	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
 	link_types = [
 		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,
@@ -1245,9 +1342,9 @@ class ProductionLink(ExternalLink):
 		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
 		groklinks.ScenesatTrack, groklinks.ModlandFile, groklinks.SoundcloudTrack,
 		groklinks.CsdbMusic, groklinks.NectarineSong, groklinks.BitjamSong,
-		groklinks.ModarchiveModule,
+		groklinks.PushnpopProduction, groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-		groklinks.SceneOrgFile, groklinks.UntergrundFile,
+		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1281,6 +1378,27 @@ class ProductionLink(ExternalLink):
 
 	def as_download_link(self):
 		return self.link.as_download_link()
+
+	@property
+	def download_url(self):
+		return self.link.download_url
+
+	def download_file_extension(self):
+		filename = self.download_url.split('/')[-1]
+		extension = filename.split('.')[-1]
+		if filename == extension:
+			# filename has no extension
+			return None
+		else:
+			return extension.lower()
+
+	def is_zip_file(self):
+		return self.download_file_extension() == 'zip'
+
+	class Meta:
+		unique_together = (
+			('link_class', 'parameter', 'production', 'is_download_link'),
+		)
 
 
 class ResultsFile(models.Model):

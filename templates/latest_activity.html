@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load demoscene_tags %}
+{% load url from future %}
+
+{% block base_main %}
+	<h2>Latest activity</h2>
+	{% site_stats %}
+	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
+	<div class="chart_set">
+		<div class="chart">
+			<h2>Latest added productions</h2>
+			<ul>
+				{% for production in latest_added_productions %}
+					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="chart">
+			<h2>Latest updated productions</h2>
+			<ul>
+				{% for production in latest_updated_productions %}
+					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	
+	<div class="chart_set">
+		<div class="chart">
+			<h2>Latest added sceners</h2>
+			<ul>
+				{% for scener in latest_added_sceners %}
+					<li class="scener">{% scener_with_affiliations scener %}</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="chart">
+			<h2>Latest updated sceners</h2>
+			<ul>
+				{% for scener in latest_updated_sceners %}
+					<li class="scener">{% scener_with_affiliations scener %}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class="chart_set">
+		<div class="chart">
+			<h2>Latest added groups</h2>
+			<ul>
+				{% for group in latest_added_groups %}
+					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="chart">
+			<h2>Latest updated groups</h2>
+			<ul>
+				{% for group in latest_updated_groups %}
+					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

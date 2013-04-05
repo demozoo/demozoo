@@ -277,6 +277,8 @@ function applyGlobalBehaviours(context) {
 		helpText.hide();
 		$(this).addClass('ajaxified');
 	});
+
+	$('.microthumb', context).thumbPreview();
 }
 
 $(function() {
@@ -309,21 +311,46 @@ $(function() {
 			showLoginLinks();
 		}
 		return false;
-	})
-	
+	});
+
 	var searchPlaceholderText = 'Type in keyword';
-	var searchField = $('#site_header #id_q');
-	function fillSearchWithPlaceholder() {
-		if (searchField.val() == '') {
-			searchField.val(searchPlaceholderText).addClass('placeholder');
-		}
+	var searchField = $('#global_search #id_q');
+	if (searchField.val() === '' || searchField.val() === searchPlaceholderText) {
+		searchField.val(searchPlaceholderText).addClass('placeholder');
 	}
-	fillSearchWithPlaceholder();
 	searchField.focus(function() {
 		if (searchField.hasClass('placeholder')) {
 			searchField.val('').removeClass('placeholder');
 		}
-	}).blur(fillSearchWithPlaceholder);
-	
+	}).blur(function() {
+		if (searchField.val() === '') {
+			searchField.val(searchPlaceholderText).addClass('placeholder');
+		}
+	});
+	$('#global_search').submit(function() {
+		if (searchField.hasClass('placeholder') || searchField.val() === '') {
+			searchField.focus(); return false;
+		}
+	});
+
+	searchField.autocomplete({
+		'html': true,
+		'source': function(request, response) {
+			$.getJSON('/search/live/', {'q': request.term}, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					var thumbnail = '';
+					if (data[i].thumbnail) {
+						thumbnail = '<div class="microthumb"><img src="' + htmlEncode(data[i].thumbnail.url) + '" width="' + data[i].thumbnail.width + '" height="' + data[i].thumbnail.height + '" alt="" /></div>';
+					}
+					data[i].label = '<div class="autosuggest_result ' + htmlEncode(data[i].type) + '">' + thumbnail + htmlEncode(data[i].value) + '</div>';
+				}
+				response(data);
+			});
+		},
+		'select': function(event, ui) {
+			document.location.href = ui.item.url;
+		}
+	});
+
 	applyGlobalBehaviours();
 });

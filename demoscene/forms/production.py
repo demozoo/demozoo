@@ -47,6 +47,18 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 			self.instance.save()
 		return self.instance
 
+	def clean_title(self):
+		# The Production model will strip whitespace from the title when saving, which is
+		# after validation occurs. We therefore need to test for and reject titles consisting
+		# entirely of whitespace. (Doing this within model validation would be cleaner, but it's
+		# a whole other can of worms to make model validation work in the context of forms that
+		# aren't proper ModelForms, like this one)
+		title = self.cleaned_data['title']
+		if not title or not title.strip():
+			raise forms.ValidationError("This field is required.")
+
+		return title
+
 	@property
 	def changed_data_description(self):
 		descriptions = []
@@ -170,6 +182,14 @@ class CreateProductionForm(forms.Form):
 		self.instance.platforms = self.cleaned_data['platforms']
 		return self.instance
 
+	def clean_title(self):
+		# Reject titles consisting entirely of whitespace
+		title = self.cleaned_data['title']
+		if not title or not title.strip():
+			raise forms.ValidationError("This field is required.")
+
+		return title
+
 	def log_creation(self, user):
 		Edit.objects.create(action_type='create_production', focus=self.instance,
 			description=(u"Added production '%s'" % self.instance.title), user=user)
@@ -230,12 +250,13 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 		instance = super(ProductionDownloadLinkForm, self).save(commit=False)
 		instance.is_download_link = True
 		if commit:
+			instance.validate_unique()
 			instance.save()
 		return instance
 
 	class Meta:
 		model = ProductionLink
-		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id']
+		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
 
 ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=1)
@@ -244,7 +265,7 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionExternalLinkForm(ExternalLinkForm):
 	class Meta:
 		model = ProductionLink
-		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id']
+		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
 
 ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink,
 	form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)

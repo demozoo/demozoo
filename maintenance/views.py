@@ -3,24 +3,29 @@ from django.contrib.auth.decorators import login_required
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party, ProductionLink
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
+from mirror.models import Download, ArchiveMember
+from screenshots.tasks import create_screenshot_from_production_link
 from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Q
+
 
 def index(request):
 	if not request.user.is_staff:
 		return redirect('home')
 	return render(request, 'maintenance/index.html')
 
+
 def prods_without_screenshots(request):
 	report_name = 'prods_without_screenshots'
-	
+
 	productions = Production.objects \
-		.filter(screenshots__id__isnull = True) \
-		.exclude(supertype = 'music') \
+		.filter(screenshots__id__isnull=True) \
+		.exclude(supertype='music') \
 		.extra(
-			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params = [report_name]
+			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
@@ -29,9 +34,10 @@ def prods_without_screenshots(request):
 		'report_name': report_name,
 	})
 
+
 def prods_without_external_links(request):
 	report_name = 'prods_without_external_links'
-	
+
 	productions = Production.objects.raw('''
 		SELECT demoscene_production.*
 		FROM demoscene_production
@@ -51,13 +57,14 @@ def prods_without_external_links(request):
 		'report_name': report_name,
 	})
 
+
 def prods_without_release_date(request):
 	report_name = 'prods_without_release_date'
-	
-	productions = Production.objects.filter(release_date_date__isnull = True) \
+
+	productions = Production.objects.filter(release_date_date__isnull=True) \
 		.extra(
-			where = ['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params = [report_name]
+			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without a release date',
@@ -66,9 +73,10 @@ def prods_without_release_date(request):
 		'report_name': report_name,
 	})
 
+
 def prods_without_release_date_with_placement(request):
 	report_name = 'prods_without_release_date_with_placement'
-	
+
 	productions = Production.objects.raw('''
 		SELECT DISTINCT ON (demoscene_production.id)
 			demoscene_production.*,
@@ -85,7 +93,7 @@ def prods_without_release_date_with_placement(request):
 			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_production.id, demoscene_party.end_date_date
 	''', [report_name])
-	
+
 	productions = list(productions)
 	for production in productions:
 		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
@@ -96,9 +104,10 @@ def prods_without_release_date_with_placement(request):
 		'return_to': reverse('maintenance_prods_without_release_date_with_placement'),
 	})
 
+
 def prod_soundtracks_without_release_date(request):
 	report_name = 'prod_soundtracks_without_release_date'
-	
+
 	productions = Production.objects.raw('''
 		SELECT DISTINCT ON (soundtrack.id)
 			soundtrack.*,
@@ -126,10 +135,11 @@ def prod_soundtracks_without_release_date(request):
 		'return_to': reverse('maintenance_prod_soundtracks_without_release_date'),
 	})
 
+
 def group_nicks_with_brackets(request):
 	report_name = 'group_nicks_with_brackets'
-	
-	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group = True) \
+
+	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group=True) \
 		.extra(
 			where = ['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params = [report_name]
@@ -140,9 +150,10 @@ def group_nicks_with_brackets(request):
 		'report_name': report_name,
 	})
 
+
 def ambiguous_groups_with_no_differentiators(request):
 	report_name = 'ambiguous_groups_with_no_differentiators'
-	
+
 	nicks = Nick.objects.raw('''
 		SELECT demoscene_nick.*
 		FROM
@@ -170,7 +181,7 @@ def ambiguous_groups_with_no_differentiators(request):
 
 def prods_with_release_date_outside_party(request):
 	report_name = 'prods_with_release_date_outside_party'
-	
+
 	productions = Production.objects.raw('''
 		SELECT * FROM (
 			SELECT DISTINCT ON (demoscene_production.id)
@@ -202,7 +213,7 @@ def prods_with_release_date_outside_party(request):
 	productions = list(productions)
 	for production in productions:
 		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
-	
+
 	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Productions with a release date more than 14 days away from their release party',
 		'productions': productions,
@@ -210,9 +221,10 @@ def prods_with_release_date_outside_party(request):
 		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
 	})
 
+
 def prods_with_same_named_credits(request):
 	report_name = 'prods_with_same_named_credits'
-	
+
 	productions = Production.objects.raw('''
 		SELECT DISTINCT demoscene_production.*
 		FROM demoscene_production
@@ -222,7 +234,7 @@ def prods_with_same_named_credits(request):
 		INNER JOIN demoscene_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = demoscene_production.id)
 		AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 	''', [report_name])
-	
+
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions with identically-named sceners in the credits',
 		'productions': productions,
@@ -230,9 +242,10 @@ def prods_with_same_named_credits(request):
 		'report_name': report_name,
 	})
 
+
 def same_named_prods_by_same_releaser(request):
 	report_name = 'same_named_prods_by_same_releaser'
-	
+
 	productions = Production.objects.raw('''
 		SELECT DISTINCT demoscene_production.*, LOWER(demoscene_production.title) AS lower_title
 		FROM demoscene_production
@@ -247,7 +260,7 @@ def same_named_prods_by_same_releaser(request):
 			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
 		ORDER BY lower_title
 	''', [report_name])
-	
+
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Identically-named productions by the same releaser',
 		'productions': productions,
@@ -255,9 +268,10 @@ def same_named_prods_by_same_releaser(request):
 		'report_name': report_name,
 	})
 
+
 def same_named_prods_without_special_chars(request):
 	report_name = 'same_named_prods_without_special_chars'
-	
+
 	productions = Production.objects.raw('''
 		SELECT DISTINCT demoscene_production.*, LOWER(demoscene_production.title) AS lower_title
 		FROM demoscene_production
@@ -281,6 +295,7 @@ def same_named_prods_without_special_chars(request):
 		'report_name': report_name,
 	})
 
+
 def duplicate_external_links(request):
 	def prod_duplicates_by_link_class(link_class):
 		return Production.objects.raw('''
@@ -296,7 +311,7 @@ def duplicate_external_links(request):
 			)
 			ORDER BY demoscene_productionlink.parameter
 		''', [link_class])
-	
+
 	def releaser_duplicates_by_link_class(link_class):
 		return Releaser.objects.raw('''
 			SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
@@ -311,23 +326,24 @@ def duplicate_external_links(request):
 			)
 			ORDER BY demoscene_releaserexternallink.parameter
 		''', [link_class])
-	
+
 	prod_dupes = {}
 	for link_class in ProductionLink.objects.distinct().values_list('link_class', flat=True):
 		prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
-	
+
 	releaser_dupes = {}
 	for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):
 		releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
-	
+
 	return render(request, 'maintenance/duplicate_external_links.html', {
 		'prod_dupes': prod_dupes,
 		'releaser_dupes': releaser_dupes,
 	})
 
+
 def matching_real_names(request):
 	report_name = 'matching_real_names'
-	
+
 	releasers = Releaser.objects.raw('''
 		SELECT DISTINCT demoscene_releaser.*
 		FROM demoscene_releaser
@@ -345,9 +361,10 @@ def matching_real_names(request):
 		'report_name': report_name,
 	})
 
+
 def matching_surnames(request):
 	report_name = 'matching_surnames'
-	
+
 	releasers = Releaser.objects.raw('''
 		SELECT DISTINCT demoscene_releaser.*
 		FROM demoscene_releaser
@@ -363,9 +380,10 @@ def matching_surnames(request):
 		'report_name': report_name,
 	})
 
+
 def implied_memberships(request):
 	report_name = 'implied_memberships'
-	
+
 	cursor = connection.cursor()
 	cursor.execute("""
 		SELECT
@@ -403,6 +421,7 @@ def implied_memberships(request):
 		'report_name': report_name,
 	})
 
+
 def groups_with_same_named_members(request):
 	report_name = 'groups_with_same_named_members'
 	groups = Releaser.objects.raw('''
@@ -429,6 +448,7 @@ def groups_with_same_named_members(request):
 		'groups': groups,
 		'report_name': report_name,
 	})
+
 
 def releasers_with_same_named_groups(request):
 	report_name = 'releasers_with_same_named_groups'
@@ -457,9 +477,10 @@ def releasers_with_same_named_groups(request):
 		'report_name': report_name,
 	})
 
+
 def sceneorg_party_dirs_with_no_party(request):
 	report_name = 'sceneorg_party_dirs_with_no_party'
-	
+
 	directories_plain = Directory.objects.raw('''
 		SELECT party_dir.*
 		FROM sceneorg_directory AS parties_root
@@ -500,7 +521,7 @@ def sceneorg_party_dirs_with_no_party(request):
 	total_count = Directory.parties().count()
 	unmatched_count = len(list(directories_plain))
 	matched_count = total_count - unmatched_count
-	
+
 	return render(request, 'maintenance/sceneorg_party_dirs_with_no_party.html', {
 		'title': 'scene.org party dirs which are not linked to a party',
 		'directories': directories,
@@ -509,37 +530,40 @@ def sceneorg_party_dirs_with_no_party(request):
 		'matched_count': matched_count,
 	})
 
+
 def parties_with_incomplete_dates(request):
 	report_name = 'parties_with_incomplete_dates'
 	parties = Party.objects.extra(
-		where = [
+		where=[
 			"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
 			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
-		params = [report_name]
+		params=[report_name]
 	).order_by('start_date_date')
-	
+
 	return render(request, 'maintenance/party_report.html', {
 		'title': 'Parties with incomplete dates',
 		'parties': parties,
 		'report_name': report_name,
 	})
 
+
 def parties_with_no_location(request):
 	report_name = 'parties_with_no_location'
 	parties = Party.objects.extra(
-		where = [
+		where=[
 			"woe_id IS NULL",
 			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
-		params = [report_name]
+		params=[report_name]
 	).order_by('start_date_date')
-	
+
 	return render(request, 'maintenance/party_report.html', {
 		'title': 'Parties with no location',
 		'parties': parties,
 		'report_name': report_name,
 	})
+
 
 def empty_releasers(request):
 	report_name = 'empty_releasers'
@@ -572,7 +596,7 @@ def empty_releasers(request):
 		AND demoscene_releaser.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_releaser.name
 	''', [report_name])
-	
+
 	return render(request, 'maintenance/releaser_report.html', {
 		'title': 'Empty releaser records',
 		'releasers': releasers,
@@ -580,46 +604,105 @@ def empty_releasers(request):
 	})
 
 
+def unresolved_screenshots(request):
+	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True).select_related('production')
+
+	entries = []
+	for link in links[:100]:
+		download = Download.last_mirrored_download_for_url(link.download_url)
+		entries.append((link, download, download.archive_members.all()))
+
+	return render(request, 'maintenance/unresolved_screenshots.html', {
+		'title': 'Unresolved screenshots',
+		'link_count': links.count(),
+		'entries': entries,
+		'report_name': 'unresolved_screenshots',
+	})
+
+
+def public_real_names(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
+	has_public_surname = (~Q(surname='')) & Q(show_surname=True)
+
+	sceners = Releaser.objects.filter(
+		Q(is_group=False),
+		has_public_first_name | has_public_surname
+	).order_by('name')
+
+	if request.GET.get('without_note'):
+		sceners = sceners.filter(real_name_note='')
+
+	return render(request, 'maintenance/public_real_names.html', {
+		'title': 'Sceners with public real names',
+		'sceners': sceners,
+		'report_name': 'public_real_names',
+	})
+
+
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
 	for prod_id in request.POST.getlist('production_id'):
-		prod = Production.objects.get(id = prod_id)
+		prod = Production.objects.get(id=prod_id)
 		prod.release_date_date = request.POST['production_%s_release_date_date' % prod_id]
 		prod.release_date_precision = request.POST['production_%s_release_date_precision' % prod_id]
 		prod.save()
 	return HttpResponseRedirect(request.POST['return_to'])
 
+
 def exclude(request):
 	if not request.user.is_staff:
 		return redirect('home')
 	Exclusion.objects.create(
-		report_name = request.POST['report_name'],
-		record_id = request.POST['record_id']
+		report_name=request.POST['report_name'],
+		record_id=request.POST['record_id']
 	)
 	return HttpResponse('OK', mimetype='text/plain')
+
 
 def add_membership(request):
 	if not request.user.is_staff:
 		return redirect('home')
 	try:
 		Membership.objects.get(
-			member__id = request.POST['member_id'],
-			group__id = request.POST['group_id']
+			member__id=request.POST['member_id'],
+			group__id=request.POST['group_id']
 		)
 	except Membership.DoesNotExist:
 		Membership.objects.create(
-			member_id = request.POST['member_id'],
-			group_id = request.POST['group_id']
+			member_id=request.POST['member_id'],
+			group_id=request.POST['group_id']
 		)
 	return HttpResponse('OK', mimetype='text/plain')
+
 
 def add_sceneorg_link_to_party(request):
 	if not request.user.is_staff:
 		return redirect('home')
 	if request.POST and request.POST.get('path') and request.POST.get('party_id'):
 		PartyExternalLink.objects.create(
-			party_id = request.POST['party_id'],
-			parameter = request.POST['path'],
-			link_class = 'SceneOrgFolder')
+			party_id=request.POST['party_id'],
+			parameter=request.POST['path'],
+			link_class='SceneOrgFolder')
+	return HttpResponse('OK', mimetype='text/plain')
+
+
+def view_archive_member(request, archive_member_id):
+	member = ArchiveMember.objects.get(id=archive_member_id)
+	buf = member.fetch_from_zip()
+	return HttpResponse(buf, mimetype=member.guess_mime_type())
+
+
+def resolve_screenshot(request, productionlink_id, archive_member_id):
+	production_link = ProductionLink.objects.get(id=productionlink_id)
+	archive_member = ArchiveMember.objects.get(id=archive_member_id)
+
+	if request.POST:
+		production_link.file_for_screenshot = archive_member.filename
+		production_link.is_unresolved_for_screenshotting = False
+		production_link.save()
+		create_screenshot_from_production_link.delay(productionlink_id)
 	return HttpResponse('OK', mimetype='text/plain')

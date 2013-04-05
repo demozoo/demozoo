@@ -15,6 +15,8 @@ urlpatterns = patterns('',
 	# to INSTALLED_APPS to enable admin documentation:
 	# (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
+	(r'^$', 'homepage.views.home', {}, 'home'),
+
 	(r'^admin/', include(admin.site.urls)),
 
 	(r'^account/$', 'demoscene.views.accounts.index', {}, 'account_index'),
@@ -26,7 +28,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('demoscene.views',
-	(r'^$', 'home.home', {}, 'home'),
+	(r'^latest_activity/$', 'home.latest_activity', {}, 'latest_activity'),
 
 	(r'^error/$', 'home.error_test', {}, 'error_test'),
 	(r'^edits/$', 'home.recent_edits', {}, 'recent_edits'),
@@ -36,14 +38,12 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/(\d+)/history/$', 'productions.history', {}, 'production_history'),
 
 	(r'^music/$', 'productions.index', {'supertype': 'music'}, 'musics'),
-	(r'^music/tagged/(.+)/$', 'productions.tagged', {'supertype': 'music'}, 'music_tagged'),
 	(r'^music/(\d+)/$', 'music.show', {}, 'music'),
 	(r'^music/(\d+)/edit_core_details/$', 'productions.edit_core_details', {}, 'music_edit_core_details'),
 	(r'^music/new/$', 'music.create', {}, 'new_music'),
 	(r'^music/(\d+)/history/$', 'music.history', {}, 'music_history'),
 
 	(r'^graphics/$', 'productions.index', {'supertype': 'graphics'}, 'graphics'),
-	(r'^graphics/tagged/(.+)/$', 'productions.tagged', {'supertype': 'graphics'}, 'graphics_tagged'),
 	(r'^graphics/(\d+)/$', 'graphics.show', {}, 'graphic'),
 	(r'^graphics/(\d+)/edit_core_details/$', 'productions.edit_core_details', {}, 'graphics_edit_core_details'),
 	(r'^graphics/new/$', 'graphics.create', {}, 'new_graphics'),
@@ -51,7 +51,7 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^productions/new/$', 'productions.create', {}, 'new_production'),
 	(r'^productions/autocomplete/$', 'productions.autocomplete', {}),
-	(r'^productions/tagged/(.+)/$', 'productions.tagged', {'supertype': 'production'}, 'productions_tagged'),
+	(r'^productions/tagged/(.+)/$', 'productions.tagged', {}, 'productions_tagged'),
 	(r'^productions/(\d+)/edit_core_details/$', 'productions.edit_core_details', {}, 'production_edit_core_details'),
 	(r'^productions/(\d+)/add_credit/$', 'productions.add_credit', {}, 'production_add_credit'),
 	(r'^productions/(\d+)/edit_credit/(\d+)/$', 'productions.edit_credit', {}, 'production_edit_credit'),
@@ -130,6 +130,8 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^competitions/(\d+)/$', 'competitions.show', {}, 'competition'),
 	(r'^competitions/(\d+)/history/$', 'competitions.history', {}, 'competition_history'),
+	(r'^competitions/(\d+)/edit$', 'competitions.edit', {}, 'competition_edit'),
+	(r'^competitions/(\d+)/import_text$', 'competitions.import_text', {}, 'competition_import_text'),
 
 	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
 	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),

@@ -102,7 +102,6 @@ INSTALLED_APPS = (
 	'treebeard',
 	'taggit',
 	'debug_toolbar',
-	'unjoinify',
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
@@ -113,6 +112,9 @@ INSTALLED_APPS = (
 	'maintenance',
 	'pages',
 	'sceneorg',
+	'mirror',
+	'screenshots',
+	'homepage',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
@@ -166,11 +168,10 @@ COMPRESS_PRECOMPILERS = (
 # Celery settings
 import djcelery
 djcelery.setup_loader()
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ROUTES = {
+	'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
+}
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
@@ -183,6 +184,11 @@ CELERYBEAT_SCHEDULE = {
 		"task": "sceneorg.tasks.fetch_sceneorg_dir",
 		"schedule": timedelta(days=30),
 		"args": ('/',)
+	},
+	"set-default-screenshots": {
+		"task": "demoscene.tasks.set_default_screenshots",
+		"schedule": timedelta(hours=1),
+		"args": ()
 	},
 }
 

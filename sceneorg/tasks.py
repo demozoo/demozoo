@@ -35,6 +35,7 @@ def fetch_sceneorg_dir(path, days = None):
 			try:
 				file = File.objects.get(path = subpath)
 				file.last_seen_at = datetime.datetime.now()
+				file.is_deleted = False
 				file.save()
 			except File.DoesNotExist:
 				file = File.objects.create(

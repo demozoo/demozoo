@@ -1,11 +1,16 @@
 {% load url from future %}
+{% load demoscene_tags %}
 
 <div class="screenshots">
 	{% if screenshots %}
 		{% with screenshots.0 as pic %}
-			<a href="{{ pic.original.url }}" target="_blank" class="open_image_in_lightbox" id="main_image">
-				<img src="{{ pic.standard.url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
-			</a>
+				<a href="{{ pic.original_url }}" target="_blank" class="open_image_in_lightbox" id="main_image">
+					{% if pic.original_url %}
+						<img src="{{ pic.standard_url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
+					{% else %}
+						<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
+					{% endif %}
+				</a>
 		{% endwith %}
 		{% if screenshots.count > 1 %}
 			<div class="carousel_panel">
@@ -15,9 +20,9 @@
 					<ul>
 						{% for pic in screenshots %}
 							<li>
-								<a href="{{ pic.original.url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original.url }}" data-main-image="{{ pic.standard.url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">
-									<img src="{{ pic.thumbnail.url }}" width="{{ pic.thumbnail_width }}" height="{{ pic.thumbnail_height }}" alt="" />
-								</a>
+								{% if pic.original_url %}<a href="{{ pic.original_url }}" target="_blank" class="replace_main_image" data-original-image="{{ pic.original_url }}" data-main-image="{{ pic.standard_url }}" data-main-image-width="{{ pic.standard_width }}" data-main-image-height="{{ pic.standard_height }}">{% endif %}
+									{% thumbnail pic %}
+								{% if pic.original_url %}</a>{% endif %}
 							</li>
 						{% endfor %}
 					</ul>

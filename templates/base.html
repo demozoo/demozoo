@@ -37,6 +37,7 @@
 			<script src="/static/js/jquery.ui.position.js"></script>
 			<script src="/static/js/jquery.ui.widget.js"></script>
 			<script src="/static/js/jquery.ui.autocomplete.js"></script>
+			<script src="/static/js/jquery.ui.autocomplete.html.js"></script>
 			<script src="/static/js/jquery.ui.datepicker.js"></script>
 			<script src="/static/js/jquery.ui.mouse.js"></script>
 			<script src="/static/js/jquery.ui.sortable.js"></script>
@@ -46,6 +47,7 @@
 			<script src="/static/js/jquery.spawning_formset.js"></script>
 			<script src="/static/js/jquery.asmselect.js"></script>
 			<script src="/static/js/jquery.ajaxqueue.js"></script>
+			<script src="/static/js/jquery.thumb_preview.js"></script>
 			<script src="/static/js/jcarousellite-1.0.1.min.js"></script>
 			<script src="/static/js/nick_match_widget.js"></script>
 			<script src="/static/js/fuzzy_date_parser.js"></script>
@@ -108,7 +110,7 @@
 						<li class="{% nav_active parties %}"><a href="{% url 'parties' %}">Parties</a></li>
 					</ul>
 					{% block global_search_form %}
-						<form class="search" method="get" action="{% url 'search' %}">
+						<form class="search" id="global_search" method="get" action="{% url 'search' %}">
 							{{ global_search_form.q }}
 							<input type="submit" value="Search" />
 						</form>

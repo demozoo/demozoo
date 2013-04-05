@@ -1,7 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 
-from demoscene.models import Releaser, Nick, Edit
+from demoscene.models import Releaser, Nick, Edit, Production
 
 register = template.Library()
 
@@ -34,16 +34,8 @@ def releaser_flag(releaser):
 def byline(production):
 	return {
 		'unparsed_byline': production.unparsed_byline,
-		'authors': [(nick, nick.releaser) for nick in production.author_nicks.select_related('releaser')],
-		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks.select_related('releaser')],
-	}
-
-@register.inclusion_tag('shared/byline.html')
-def component_byline(authors, affiliations):
-	return {
-		'unparsed_byline': None,
-		'authors': authors,
-		'affiliations': affiliations,
+		'authors': [(nick, nick.releaser) for nick in production.author_nicks_with_authors()],
+		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks_with_groups()],
 	}
 
 @register.simple_tag
@@ -67,4 +59,36 @@ def last_edited_by(item):
 	return {
 		'edit': edit,
 		'item': item,
+	}
+
+def thumbnail_params_for_size(screenshot, target_width, target_height):
+	width, height = screenshot.thumb_dimensions_to_fit(target_width, target_height)
+
+	return {
+		'url': screenshot.thumbnail_url,
+		'width': width,
+		'height': height,
+		'natural_width': screenshot.thumbnail_width or 1,
+		'natural_height': screenshot.thumbnail_height or 1,
+	}
+
+
+@register.inclusion_tag('shared/thumbnail.html')
+def thumbnail(screenshot):
+	return thumbnail_params_for_size(screenshot, 133, 100)
+
+
+@register.inclusion_tag('shared/microthumb.html')
+def microthumb(screenshot):
+	return thumbnail_params_for_size(screenshot, 48, 36)
+
+
+@register.inclusion_tag('shared/site_stats.html')
+def site_stats():
+	return {
+		'production_count': Production.objects.filter(supertype='production').count(),
+		'graphics_count': Production.objects.filter(supertype='graphics').count(),
+		'music_count': Production.objects.filter(supertype='music').count(),
+		'scener_count': Releaser.objects.filter(is_group=False).count(),
+		'group_count': Releaser.objects.filter(is_group=True).count(),
 	}

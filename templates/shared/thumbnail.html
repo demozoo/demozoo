@@ -1,0 +1,7 @@
+<div class="thumbnail">
+	{% if url %}
+		<img src="{{ url }}" width="{{ width }}" height="{{ height }}" alt="" />
+	{% else %}
+		<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
+	{% endif %}
+</div>

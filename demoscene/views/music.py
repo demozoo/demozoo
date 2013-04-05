@@ -17,7 +17,7 @@ def show(request, production_id, edit_mode=False):
 		'external_links': production.links.filter(is_download_link=False),
 		'featured_in_productions': [
 			appearance.production for appearance in
-			production.appearances_as_soundtrack.select_related('production').order_by('production__release_date_date')
+			production.appearances_as_soundtrack.select_related('production', 'production__default_screenshot').order_by('production__release_date_date')
 		],
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),

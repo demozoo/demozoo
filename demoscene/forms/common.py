@@ -2,6 +2,7 @@ from django import forms
 from django.forms.models import BaseInlineFormSet
 from demoscene.models import Edit, Credit
 from django.forms.models import modelformset_factory
+from django.core.exceptions import ValidationError
 
 
 class ExternalLinkForm(forms.ModelForm):
@@ -13,6 +14,7 @@ class ExternalLinkForm(forms.ModelForm):
 		instance = super(ExternalLinkForm, self).save(commit=False)
 		instance.url = self.cleaned_data['url']
 		if commit:
+			instance.validate_unique()
 			instance.save()
 		return instance
 
@@ -50,6 +52,15 @@ class BaseExternalLinkFormSet(BaseInlineFormSet):
 		if descriptions:
 			Edit.objects.create(action_type=action_type, focus=self.instance,
 				description=(u"; ".join(descriptions)), user=user)
+
+	def save_ignoring_uniqueness(self):
+		links = self.save(commit=False)
+		for link in links:
+			try:
+				link.validate_unique()
+				link.save()
+			except ValidationError:
+				pass  # skip over any links that fail uniqueness
 
 
 class CreditForm(forms.ModelForm):

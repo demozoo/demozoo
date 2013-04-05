@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Party, PartySeries, Competition, Platform, ProductionType, PartyExternalLink, ResultsFile, Production, Edit
+from demoscene.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile, Production, Edit
 from demoscene.forms.party import *
 
 from django.contrib import messages
@@ -8,8 +8,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import simplejson as json
 
 import re
-
-from unjoinify import unjoinify
 
 
 def index(request):
@@ -29,72 +27,32 @@ def by_date(request):
 def show(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
 
-	columns = [
-		'id',
-		'name',
-		'placings__id',
-		'placings__ranking',
-		'placings__score',
-		'placings__production__id',
-		'placings__production__title',
-		'placings__production__supertype',
-		'placings__production__unparsed_byline',
-		'placings__production__author_nicks__id',
-		'placings__production__author_nicks__name',
-		'placings__production__author_nicks__releaser__id',
-		'placings__production__author_nicks__releaser__is_group',
-		'placings__production__author_affiliation_nicks__id',
-		'placings__production__author_affiliation_nicks__name',
-		'placings__production__author_affiliation_nicks__releaser__id',
-		'placings__production__author_affiliation_nicks__releaser__is_group',
+	# trying to retrieve all competition results in one massive prefetch_related clause:
+	#    competitions = party.competitions.prefetch_related('placings__production__author_nicks__releaser', 'placings__production__author_affiliation_nicks__releaser').defer('placings__production__notes', 'placings__production__author_nicks__releaser__notes', 'placings__production__author_affiliation_nicks__releaser__notes').order_by('name', 'id', 'placings__position', 'placings__production__id')
+	# - fails with 'RelatedObject' object has no attribute 'rel', where the RelatedObject is <RelatedObject: demoscene:competitionplacing related to competition>. Shame, that...
+	# for now, we'll do it one compo at a time (which allows us to use the slightly more sane select_related approach to pull in production records)
+	competitions_with_placings = [
+		(
+			competition,
+			competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+		)
+		for competition in party.competitions.order_by('name', 'id')
 	]
-	query = '''
-		SELECT
-			demoscene_competition.id AS id,
-			demoscene_competition.name AS name,
-			demoscene_competitionplacing.id AS placings__id,
-			demoscene_competitionplacing.ranking AS placings__ranking,
-			demoscene_competitionplacing.score AS placings__score,
-			demoscene_production.id AS placings__production__id,
-			demoscene_production.title AS placings__production__title,
-			demoscene_production.supertype AS placings__production__supertype,
-			demoscene_production.unparsed_byline AS placings__production__unparsed_byline,
-			author_nick.id AS placings__production__author_nicks__id,
-			author_nick.name AS placings__production__author_nicks__name,
-			author.id AS placings__production__author_nicks__releaser__id,
-			author.is_group AS placings__production__author_nicks__releaser__is_group,
-			affiliation_nick.id AS placings__production__author_affiliation_nicks__id,
-			affiliation_nick.name AS placings__production__author_affiliation_nicks__name,
-			affiliation.id AS placings__production__author_affiliation_nicks__releaser__id,
-			affiliation.is_group AS placings__production__author_affiliation_nicks__releaser__is_group
-		FROM demoscene_competition
-		LEFT JOIN demoscene_competitionplacing ON (demoscene_competition.id = demoscene_competitionplacing.competition_id)
-		LEFT JOIN demoscene_production ON (demoscene_competitionplacing.production_id = demoscene_production.id)
-		LEFT JOIN demoscene_production_author_nicks ON (demoscene_production_author_nicks.production_id = demoscene_production.id)
-		LEFT JOIN demoscene_nick AS author_nick ON (demoscene_production_author_nicks.nick_id = author_nick.id)
-		LEFT JOIN demoscene_releaser AS author ON (author_nick.releaser_id = author.id)
-		LEFT JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production_author_affiliation_nicks.production_id = demoscene_production.id)
-		LEFT JOIN demoscene_nick AS affiliation_nick ON (demoscene_production_author_affiliation_nicks.nick_id = affiliation_nick.id)
-		LEFT JOIN demoscene_releaser AS affiliation ON (affiliation_nick.releaser_id = affiliation.id)
-		WHERE demoscene_competition.party_id = %s
-		ORDER BY
-			demoscene_competition.name, demoscene_competition.id, demoscene_competitionplacing.position,
-			demoscene_production.id, author_nick.id, affiliation_nick.id
-	'''
-	competitions = unjoinify(Competition, query, (party.id,), columns)
 
 	# Do not show an invitations section in the special case that all invitations are
 	# entries in a competition at this party (which probably means that it was an invitation compo)
-	invitations = party.invitations.all()
+	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
 	if not non_competing_invitations:
 		invitations = Production.objects.none
 
 	return render(request, 'parties/show.html', {
 		'party': party,
-		'competitions': competitions,
+		'competitions_with_placings': competitions_with_placings,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
+		'parties_in_series': party.party_series.parties.select_related('party_series'),
+		'external_links': party.external_links.select_related('party'),
 	})
 
 
@@ -204,7 +162,7 @@ def edit_external_links(request, party_id):
 	if request.method == 'POST':
 		formset = PartyExternalLinkFormSet(request.POST, instance=party)
 		if formset.is_valid():
-			formset.save()
+			formset.save_ignoring_uniqueness()
 			formset.log_edit(request.user, 'party_edit_external_links')
 
 			# see if there's anything useful we can extract for the PartySeries record
@@ -284,7 +242,7 @@ def add_competition(request, party_id):
 			# party.updated_at = datetime.datetime.now()
 			# party.save()
 			if request.POST.get('enter_results'):
-				return redirect('party_edit_competition', args=[party.id, competition.id])
+				return redirect('competition_edit', args=[competition.id])
 			else:
 				return HttpResponseRedirect(party.get_absolute_url())
 	else:
@@ -295,51 +253,6 @@ def add_competition(request, party_id):
 		'html_title': "New competition for %s" % party.name,
 		'party': party,
 		'form': form,
-	})
-
-
-@login_required
-def edit_competition(request, party_id, competition_id):
-	party = get_object_or_404(Party, id=party_id)
-	competition = get_object_or_404(Competition, party=party, id=competition_id)
-
-	if request.method == 'POST':
-		competition_form = CompetitionForm(request.POST, instance=competition)
-		if competition_form.is_valid():
-			competition.shown_date = competition_form.cleaned_data['shown_date']
-			competition_form.save()
-			competition_form.log_edit(request.user)
-			return redirect('party_edit_competition', args=[party.id, competition.id])
-	else:
-		competition_form = CompetitionForm(instance=competition, initial={
-			'shown_date': competition.shown_date,
-		})
-
-	competition_placings = [placing.json_data for placing in competition.results()]
-
-	competition_placings_json = json.dumps(competition_placings)
-
-	platforms = Platform.objects.all()
-	platforms_json = json.dumps([[p.id, p.name] for p in platforms])
-
-	production_types = ProductionType.objects.all()
-	production_types_json = json.dumps([[p.id, p.name] for p in production_types])
-
-	competition_json = json.dumps({
-		'id': competition.id,
-		'platformId': competition.platform_id,
-		'productionTypeId': competition.production_type_id,
-	})
-
-	return render(request, 'parties/edit_competition.html', {
-		'html_title': "Editing %s %s competition" % (party.name, competition.name),
-		'form': competition_form,
-		'party': party,
-		'competition': competition,
-		'competition_json': competition_json,
-		'competition_placings_json': competition_placings_json,
-		'platforms_json': platforms_json,
-		'production_types_json': production_types_json,
 	})
 
 
@@ -397,3 +310,8 @@ def edit_invitations(request, party_id):
 		'party': party,
 		'formset': formset,
 	})
+
+
+@login_required
+def edit_competition(request, party_id, competition_id):
+	return redirect('competition_edit', args=[competition_id])
