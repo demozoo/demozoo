@@ -161,7 +161,22 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 		}
 	}
 
+	var suppressCloseDropdown = false;
+	function closeDropdown() {
+		selectedResult.removeClass('active');
+		suggestionsUl.hide();
+		copyIconFromSelectedLi();
+		$(document).unbind('keydown', keypress);
+		suppressCloseDropdown = false;
+	}
+
 	suggestionsUl.hide();
+	suggestionsUl.mousedown(function() {
+		suppressCloseDropdown = true;
+		$(document).one('mouseup', function() {
+			setTimeout(closeDropdown, 100);
+		});
+	});
 	var wasFocusedOnLastMousedown = false;
 	selectedResult.focus(function() {
 		selectedResult.addClass('active');
@@ -169,12 +184,8 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 		highlightSelectedLi();
 		$(document).bind('keydown', keypress);
 	}).blur(function() {
-		setTimeout(function() {
-			selectedResult.removeClass('active');
-			suggestionsUl.hide();
-			copyIconFromSelectedLi();
-			$(document).unbind('keydown', keypress);
-		}, 100);
+		if (suppressCloseDropdown) return false;
+		setTimeout(closeDropdown, 100);
 	}).click(function() {
 		if (selectedResult.hasClass('active') && wasFocusedOnLastMousedown) {
 			selectedResult.blur();
