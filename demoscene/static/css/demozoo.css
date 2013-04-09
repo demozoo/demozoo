@@ -1098,6 +1098,10 @@ form.entry_form .party_field.ajaxified input.party_field_search {
 
 .nick_match ul li label {
 	display: block;
+	margin-left: -28px;
+	padding-left: 28px;
+	margin-right: -4px;
+	padding-right: 4px;
 	line-height: 24px;
 }
 
