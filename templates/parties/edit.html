@@ -1,11 +1,28 @@
 {% load url from future %}
+{% load demoscene_tags %}
 
 <h2>Editing party: {{ party.name }}</h2>
 
 <form action="{% url 'edit_party' party.id %}" method="post" class="entry_form">
 	{% csrf_token %}
-	{% for field in form %}
-		{% include "shared/form_field.html" %}
+
+	{% include "shared/form_field.html" with field=form.name %}
+	{% include "shared/form_field.html" with field=form.start_date %}
+	{% include "shared/form_field.html" with field=form.end_date %}
+	{% include "shared/form_field.html" with field=form.tagline %}
+
+	<div class="field">
+		{% field_label form.location %}
+		<div class="field_input">
+			{{ form.location }}<br>
+			{{ form.is_online }} <label for="id_is_online">Online</label>
+		</div>
+	</div>
+
+	{% include "shared/form_field.html" with field=form.website %}
+
+	{% for field in form.hidden_fields %}
+		{{ field }}
 	{% endfor %}
 	<div class="field">
 		<input type="submit" />
@@ -37,4 +54,14 @@
 		showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
 	});
 	showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+
+	function refreshLocationDisabledState() {
+		if ($('#id_is_online').is(':checked')) {
+			$('#id_location').val('').attr('disabled', true);
+		} else {
+			$('#id_location').removeAttr('disabled');
+		}
+	}
+	refreshLocationDisabledState();
+	$('#id_is_online').change(refreshLocationDisabledState);
 /* ]]> */</script>

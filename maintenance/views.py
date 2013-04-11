@@ -553,6 +553,7 @@ def parties_with_no_location(request):
 	parties = Party.objects.extra(
 		where=[
 			"woe_id IS NULL",
+			"is_online = 'f'",
 			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
 		params=[report_name]

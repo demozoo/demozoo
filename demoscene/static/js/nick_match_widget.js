@@ -2,15 +2,15 @@
 	$.fn.extractNickMatchData = function() {
 		var context = this.get(0);
 		var searchTermField = $('input[type=hidden]', context);
-		var fieldPrefix = searchTermField.attr('name').replace(/name$/, '')
-		
+		var fieldPrefix = searchTermField.attr('name').replace(/name$/, '');
+
 		var name = searchTermField.val();
 		var choices = [];
 		var id;
 		$('> ul > li', this).each(function(i) {
 			/* nameWithAffiliations = content of the <label> element excluding child elements (i.e. only including text nodes, nodeType=3) */
-			var nameWithAffiliations = $('label', this).contents().filter(function() { return this.nodeType == 3 }).text();
-			
+			var nameWithAffiliations = $('label', this).contents().filter(function() { return this.nodeType == 3; }).text();
+
 			var input = $('input', this);
 			if (input.is(':checked')) {
 				id = input.attr('value');
@@ -23,37 +23,37 @@
 				differentiator: $('.differentiator', this).text().replace(/^\((.*)\)$/, '$1'), /* strip outer brackets */
 				alias: $('.alias', this).text(),
 				id: $('input', this).val()
-			}
-		})
+			};
+		});
 		return {
 			'selection': {'id': id, 'name': name},
 			'choices': choices,
 			'fieldPrefix': fieldPrefix
 		};
-	}
-	
+	};
+
 	$.fn.nickMatchWidget = function() {
 		this.each(function() {
 			var context = this;
-			
+
 			var matchData = $(context).extractNickMatchData();
 			NickMatchWidget(context, matchData.selection, matchData.choices, matchData.fieldPrefix);
-		})
-	}
+		});
+	};
 })(jQuery);
 
 function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 	var self = {};
 	var $elem = $(elem);
-	
+
 	$elem.empty();
-	
+
 	var selectedResult = $('<a href="javascript:void(0)" tabindex="0" class="selected_result"></a>');
 	/* tabindex ensures that a click causes it to be focused on Chrome */
 	var selectedResultInner = $('<span></span>');
 	selectedResult.append(selectedResultInner);
 	selectedResultInner.text(nickSelection.name);
-	
+
 	var suggestionsUl = $('<ul></ul>');
 	for (var i = 0; i < choices.length; i++) {
 		var choice = choices[i];
@@ -67,36 +67,36 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 				'src': '/static/images/icons/flags/' + choice.countryCode + '.png',
 				'data-countrycode': choice.countryCode,
 				'alt': '(' + choice.countryCode.toUpperCase() + ')'
-			})
+			});
 			label.prepend(flag, ' ');
 		}
-		
+
 		var input = $('<input type="radio" />').attr({
 			'name': fieldPrefix + 'id',
 			'value': choice.id
 		});
 		if (nickSelection.id == choice.id) input.attr('checked', 'checked');
 		label.prepend(input);
-		
+
 		if (choice.differentiator) {
 			var differentiator = $('<em class="differentiator"></em>').text('(' + choice.differentiator + ')');
 			label.append(' ', differentiator);
 		}
-		
+
 		if (choice.alias) {
 			var alias = $('<em class="alias"></em>').text('(' + choice.alias + ')');
 			label.append(' ', alias);
 		}
-		
+
 		li.append(label);
 		suggestionsUl.append(li);
 	}
-	
+
 	var searchTermField = $('<input type="hidden" />').attr({
 		'name': fieldPrefix + 'name',
 		'value': nickSelection.name
 	});
-	
+
 	$elem.append(selectedResult, suggestionsUl, searchTermField);
 
 	function copyIconFromSelectedLi() {
@@ -114,12 +114,12 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 		}
 	}
 	copyIconFromSelectedLi();
-	
+
 	function highlightSelectedLi() {
 		$('li', suggestionsUl).removeClass('selected');
 		$('li:has(input:checked)', suggestionsUl).addClass('selected');
 	}
-	
+
 	function keypress(e) {
 		if (e.which == 40) { /* cursor down */
 			if (suggestionsUl.is(':visible')) {
@@ -127,7 +127,7 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 				if (nextElem.length) {
 					$('input', nextElem).attr('checked', 'checked');
 				} else {
-					$('li:first input', suggestionsUl).attr('checked', 'checked')
+					$('li:first input', suggestionsUl).attr('checked', 'checked');
 				}
 				highlightSelectedLi();
 				copyIconFromSelectedLi();
@@ -142,7 +142,7 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 				if (prevElem.length) {
 					$('input', prevElem).attr('checked', 'checked');
 				} else {
-					$('li:last input', suggestionsUl).attr('checked', 'checked')
+					$('li:last input', suggestionsUl).attr('checked', 'checked');
 				}
 				highlightSelectedLi();
 				copyIconFromSelectedLi();
@@ -160,8 +160,23 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 			}
 		}
 	}
-	
+
+	var suppressCloseDropdown = false;
+	function closeDropdown() {
+		selectedResult.removeClass('active');
+		suggestionsUl.hide();
+		copyIconFromSelectedLi();
+		$(document).unbind('keydown', keypress);
+		suppressCloseDropdown = false;
+	}
+
 	suggestionsUl.hide();
+	suggestionsUl.mousedown(function() {
+		suppressCloseDropdown = true;
+		$(document).one('mouseup', function() {
+			setTimeout(closeDropdown, 100);
+		});
+	});
 	var wasFocusedOnLastMousedown = false;
 	selectedResult.focus(function() {
 		selectedResult.addClass('active');
@@ -169,37 +184,33 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
 		highlightSelectedLi();
 		$(document).bind('keydown', keypress);
 	}).blur(function() {
-		setTimeout(function() {
-			selectedResult.removeClass('active');
-			suggestionsUl.hide();
-			copyIconFromSelectedLi();
-			$(document).unbind('keydown', keypress);
-		}, 100);
+		if (suppressCloseDropdown) return false;
+		setTimeout(closeDropdown, 100);
 	}).click(function() {
 		if (selectedResult.hasClass('active') && wasFocusedOnLastMousedown) {
 			selectedResult.blur();
 		}
 	}).mousedown(function() {
 		wasFocusedOnLastMousedown = selectedResult.hasClass('active');
-	})
-	
+	});
+
 	$elem.addClass('ajaxified');
-	
+
 	self.isValid = function() {
 		var id = suggestionsUl.find('input:checked').val();
-		return (id != null);
-	}
+		return (id !== null);
+	};
 	self.getSelection = function() {
 		var id = suggestionsUl.find('input:checked').val();
 		/* id=null indicates nothing selected (i.e. ambiguous name) */
 		return {'id': id, 'name': nickSelection.name};
-	}
+	};
 	self.getValue = function() {
 		return {
 			'selection': self.getSelection(),
 			'choices': choices
 		};
-	}
-	
+	};
+
 	return self;
 }

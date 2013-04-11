@@ -8,7 +8,7 @@ def index(request):
 	})
 
 def show(request, platform_id):
-	platform = Platform.objects.get(id = platform_id)
+	platform = get_object_or_404(Platform, id = platform_id)
 	return render(request, 'platforms/show.html', {
 		'platform': platform,
 		'active_groups': platform.random_active_groups()[:],
