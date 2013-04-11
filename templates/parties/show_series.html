@@ -42,7 +42,12 @@
 								{% endwith %}
 								<h3>{{ party.name }}</h3>
 								<div>{% date_range party.start_date party.end_date %}</div>
-								{% if party.location %}
+								{% if party.is_online %}
+									<div>
+										<img src="/static/images/icons/computer.png" alt="" />
+										Online
+									</div>
+								{% elif party.location %}
 									<div>
 										{% if party.country_code %}
 											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />

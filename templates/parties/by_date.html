@@ -23,7 +23,10 @@
 				<li>
 					<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
 					- {% date_range party.start_date party.end_date %}
-					{% if party.location %}
+					{% if party.is_online %}
+						- Online
+						<img src="/static/images/icons/computer.png" alt="" />
+					{% elif party.location %}
 						- 
 						{{ party.location }}
 						{% if party.country_code %}
