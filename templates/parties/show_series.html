@@ -29,38 +29,36 @@
 				</ul>
 			</div>
 		{% endif %}
-		{% with party_series.parties.all as parties %}
-			{% if parties %}
-				<ul class="parties">
-					{% for party in parties %}
-						<li>
-							<a href="{{ party.get_absolute_url }}">
-								{% with party.random_screenshot as pic %}
-									{% if pic %}
-										{% thumbnail pic %}
-									{% endif %}
-								{% endwith %}
-								<h3>{{ party.name }}</h3>
-								<div>{% date_range party.start_date party.end_date %}</div>
-								{% if party.is_online %}
-									<div>
-										<img src="/static/images/icons/computer.png" alt="" />
-										Online
-									</div>
-								{% elif party.location %}
-									<div>
-										{% if party.country_code %}
-											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
-										{% endif %}
-										{{ party.location }}
-									</div>
+		{% if parties %}
+			<ul class="parties">
+				{% for party in parties %}
+					<li>
+						<a href="{{ party.get_absolute_url }}">
+							{% with party.random_screenshot as pic %}
+								{% if pic %}
+									{% thumbnail pic %}
 								{% endif %}
-							</a>
-						</li>
-					{% endfor %}
-				</ul>
-			{% endif %}
-		{% endwith %}
+							{% endwith %}
+							<h3>{{ party.name }}</h3>
+							<div>{% date_range party.start_date party.end_date %}</div>
+							{% if party.is_online %}
+								<div>
+									<img src="/static/images/icons/computer.png" alt="" />
+									Online
+								</div>
+							{% elif party.location %}
+								<div>
+									{% if party.country_code %}
+										<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+									{% endif %}
+									{{ party.location }}
+								</div>
+							{% endif %}
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
 
 		<div style="clear: both;"></div>
 	</div>
