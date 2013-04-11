@@ -103,7 +103,7 @@ class EditPartyForm(ModelFormWithLocation):
 
 	class Meta:
 		model = Party
-		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'website')
+		fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'website')
 
 
 class PartyEditNotesForm(forms.ModelForm):
