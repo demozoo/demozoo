@@ -212,14 +212,15 @@ def compofile_link(request):
 	sceneorg_file = get_object_or_404(File, id=request.POST.get('file_id'))
 	production = get_object_or_404(Production, id=request.POST.get('production_id'))
 
-	link = ProductionLink.objects.create(
+	(link, created) = ProductionLink.objects.get_or_create(
 		link_class='SceneOrgFile',
 		parameter=sceneorg_file.path,
 		production_id=production.id,
 		is_download_link=True
 	)
-	Edit.objects.create(action_type='add_download_link', focus=production,
-		description=(u"Added download link %s" % link.url), user=request.user)
+	if created:
+		Edit.objects.create(action_type='add_download_link', focus=production,
+			description=(u"Added download link %s" % link.url), user=request.user)
 
 	return HttpResponse("OK", content_type="text/plain")
 
