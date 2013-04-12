@@ -110,18 +110,23 @@ $(function() {
 	$('button.unlink').addUnlinkButtonBehaviour();
 
 	function makeLink(fileButton, productionButton) {
+		/* discard attempts to match two buttons that are already linked */
+		var alreadyMatched = $(fileButton).parent().get(0) == $(productionButton).parent().get(0);
+
 		var fileId = fileButton.value;
 		var productionId = productionButton.value;
-		/* post the ID pair to the server */
-		$.ajax({
-			type: 'POST',
-			url: '/sceneorg/compofiles/link/',
-			data: {'file_id': fileId, 'production_id': productionId},
-			beforeSend: function(xhr) {
-				/* need to add CSRF token to the request so that Django will accept it */
-				xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
-			}
-		});
+		if (!alreadyMatched) {
+			/* post the ID pair to the server */
+			$.ajax({
+				type: 'POST',
+				url: '/sceneorg/compofiles/link/',
+				data: {'file_id': fileId, 'production_id': productionId},
+				beforeSend: function(xhr) {
+					/* need to add CSRF token to the request so that Django will accept it */
+					xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+				}
+			});
+		}
 
 		/* clear selection state so that the next button click won't be considered a link to one of these */
 		selectedProductionButton = null;
@@ -143,16 +148,18 @@ $(function() {
 			$(productionButton).removeClass('selected');
 		}
 
-		/* create new buttons for the 'matched' section. Should duplicate the original buttons,
-			but not be selected and be labelled 'matched' */
-		var newFileButton = $(fileButton).clone().removeClass('selected unmatched').addClass('matched');
-		var newProductionButton = $(productionButton).clone().removeClass('selected unmatched').addClass('matched');
-		var newUnlinkButton = $('<button class="unlink" title="Delete this match">unlink</button>');
+		if (!alreadyMatched) {
+			/* create new buttons for the 'matched' section. Should duplicate the original buttons,
+				but not be selected and be labelled 'matched' */
+			var newFileButton = $(fileButton).clone().removeClass('selected unmatched').addClass('matched');
+			var newProductionButton = $(productionButton).clone().removeClass('selected unmatched').addClass('matched');
+			var newUnlinkButton = $('<button class="unlink" title="Delete this match">unlink</button>');
 
-		var matchElement = $('<li></li>').append(newFileButton, ' = ', newProductionButton, ' ', newUnlinkButton);
-		$('ul.matches').append(matchElement);
-		newFileButton.addFileButtonBehaviour();
-		newProductionButton.addProductionButtonBehaviour();
-		newUnlinkButton.addUnlinkButtonBehaviour();
+			var matchElement = $('<li></li>').append(newFileButton, ' = ', newProductionButton, ' ', newUnlinkButton);
+			$('ul.matches').append(matchElement);
+			newFileButton.addFileButtonBehaviour();
+			newProductionButton.addProductionButtonBehaviour();
+			newUnlinkButton.addUnlinkButtonBehaviour();
+		}
 	}
 });
