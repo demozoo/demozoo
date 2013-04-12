@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load demoscene_tags %}
+
+{% block html_title %}Screenshots for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
+
+{% block legacy_css %}{% endblock %}
+
+{% block base_main %}
+	<div class="production_title">
+		<h2>{{ production.title }}</h2>
+		{% if production.byline_string %}
+			<h3>
+				by {% byline production %}
+			</h3>
+		{% endif %}
+	</div>
+
+	<h3>Screenshots</h3>
+	{% for pic in screenshots %}
+		{% if pic.original_url %}
+			<a href="{{ pic.original_url }}" target="_blank" class="open_image_in_lightbox">
+				<img src="{{ pic.standard_url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
+			</a>
+		{% endif %}
+	{% endfor %}
+
+{% endblock %}
