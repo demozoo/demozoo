@@ -5,6 +5,11 @@
 
 {% block body_class %}homepage{% endblock %}
 
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/home.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	{% if banner %}
 		<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
