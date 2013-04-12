@@ -300,10 +300,18 @@ def delete_download_link(request, production_id, production_link_id):
 			html_title="Deleting download link for %s" % production.title)
 
 
-@login_required
 def screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	return render(request, 'productions/screenshots.html', {
+		'production': production,
+		'screenshots': production.screenshots.order_by('id'),
+	})
+
+
+@login_required
+def edit_screenshots(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	return render(request, 'productions/edit_screenshots.html', {
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
 	})
@@ -351,7 +359,7 @@ def delete_screenshot(request, production_id, screenshot_id):
 			production.save()
 			Edit.objects.create(action_type='delete_screenshot', focus=production,
 				description="Deleted screenshot", user=request.user)
-		return HttpResponseRedirect(reverse('production_screenshots', args=[production.id]))
+		return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
