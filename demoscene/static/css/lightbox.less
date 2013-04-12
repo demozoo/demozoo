@@ -24,3 +24,40 @@
 	color: #333;
 	padding: 12px;
 }
+
+.screenshot_wrapper {
+	position: fixed;
+	z-index: 1001;
+	padding: 8px;
+	border: 1px solid #444;
+	background-color: #eee;
+	background-image: url('/static/images/screenshot_loading.gif');
+	background-repeat: no-repeat;
+	background-position: center;
+
+	.lightbox_close {
+		margin-top: -4px;
+		margin-bottom: 4px;
+	}
+
+	img {
+		float: left;
+		clear: both;
+	}
+}
+
+.screenshot_overlay {
+	position: fixed;
+	z-index: 1000;
+	left: 0px;
+	top: 0px;
+	background-color: #000;
+}
+
+a.lightbox_close {
+	float: right;
+	width: 16px;
+	height: 16px;
+	text-indent: -5000px;
+	background-image: url('/static/images/icons/cross.png');
+}
