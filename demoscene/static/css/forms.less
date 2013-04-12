@@ -1,0 +1,69 @@
+/* data entry forms */
+.form_title {
+	h2 {
+		display: inline;
+	}
+
+	p {
+		padding-left: 16px;
+		display: inline;
+	}
+}
+
+form.entry_form {
+	.field {
+		clear: both;
+		padding-top: 12px;
+	}
+
+	label.field_label {
+		width: 150px;
+		float: left;
+	}
+
+	.field_input {
+		width: 450px;
+		float: left;
+
+		input[type=text] {
+			width: 400px;
+		}
+		input.date[type=text] {
+			width: 150px;
+		}
+		.day_of_week {
+			padding-left: 0.5em;
+			color: #888;
+		}
+		input.numeric[type=text] {
+			width: 100px;
+		}
+		textarea {
+			width: 420px;
+			height: 300px;
+		}
+		textarea.short_notes {
+			height: 50px;
+		}
+	}
+
+	.unlabelled_field_input {
+		padding-left: 150px;
+	}
+
+	.formset_header {
+		padding-left: 32px;
+	}
+
+}
+
+/* external links form needs bigger labels */
+form.external_links_form .field {
+	label.field_label {
+		width: 200px;
+	}
+
+	.field_input {
+		width: 400px;
+	}
+}
