@@ -354,6 +354,11 @@ def delete_screenshot(request, production_id, screenshot_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			screenshot.delete()
+
+			# reload production model, as the deletion above may have nullified default_screenshot
+			# (which won't be reflected in the existing model instance)
+			production = Production.objects.get(pk=production.pk)
+
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
