@@ -35,7 +35,6 @@
 		<div class="field">
 			<label class="field_label">Invitation for party</label>
 			<div class="field_input">
-				{{ invitation_formset.management_form }}
 				{% spawningformset invitation_formset add_button_text="another party" %}
 					{% spawningform as form %}
 						{{ form.party.errors }}
