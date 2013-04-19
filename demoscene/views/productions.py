@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 import datetime
 from django.utils import simplejson as json
+from django.db import transaction
 from screenshots.tasks import capture_upload_for_processing
 
 
@@ -114,6 +115,7 @@ def history(request, production_id):
 
 
 @login_required
+@transaction.commit_on_success
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
