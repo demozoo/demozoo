@@ -461,16 +461,16 @@ function CompetitionPlacing(data, table, row, opts) {
 						release();
 					},
 					success: function(newData) {
-						cells.placing.value.set(newData.ranking);
+						if (!cells.placing.isEditing()) cells.placing.value.set(newData.ranking);
 						if (newData.production.stable) {
 							populateProductionAndLock(newData.production);
 						} else {
-							cells.title.value.set(newData.production.title);
-							cells.by.value.set(newData.production.byline);
-							cells.platform.value.set(newData.production.platform);
-							cells.type.value.set(newData.production.production_type);
+							if (!cells.title.isEditing()) cells.title.value.set(newData.production.title);
+							if (!cells.by.isEditing()) cells.by.value.set(newData.production.byline);
+							if (!cells.platform.isEditing()) cells.platform.value.set(newData.production.platform);
+							if (!cells.type.isEditing()) cells.type.value.set(newData.production.production_type);
 						}
-						cells.score.value.set(newData.score);
+						if (!cells.score.isEditing()) cells.score.value.set(newData.score);
 						productionId = newData.production.id;
 						placingId = newData.id;
 						self.row.setStatus('normal');
