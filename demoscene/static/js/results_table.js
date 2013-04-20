@@ -98,7 +98,7 @@ function BylineGridCell(opts) {
 		if (value == null) return true; /* null value is equivalent to empty byline */
 		/* consider invalid if any of the authors/affiliations have unspecified (null) IDs */
 		for (i = 0; i < value.author_matches.length; i++) {
-			if (value.author_matches[i].selection.id === null) {
+			if (value.author_matches[i].selection.id == null) {
 				return false;
 			}
 		}
