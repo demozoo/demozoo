@@ -1,6 +1,6 @@
 function ResultsTable(elem, opts) {
 	var self = {};
-	
+
 	var grid = EditableGrid(elem);
 	self.grid = grid;
 	grid.addHeader('Placing', 'placing_field');
@@ -9,57 +9,66 @@ function ResultsTable(elem, opts) {
 	grid.addHeader('Platform', 'platform_field');
 	grid.addHeader('Type', 'type_field');
 	grid.addHeader('Score', 'score_field');
-	
+
 	var rowOptions = {
 		'platforms': opts.platforms,
 		'productionTypes': opts.productionTypes
 	};
-	
+
 	self.competition = opts.competition;
-	
+
 	/* Suggest a value for the 'placing' field of the row in position 'position', based on the
 		'placing' values of its neighbours. If allowFirst is true, suggest '1' as a placing at the
 		top of the table (which is appropriate when reordering, but not for inserting new rows) */
 	self.placingForPosition = function(position, allowFirst) {
 		var match;
 		var newPlacing;
-		
-		if (position == 0) {
+
+		if (position === 0) {
+			/* entry is at the top of the table. Give it a placing of '1' or leave it blank, according to allowFirst */
 			return (allowFirst ? '1' : null);
 		} else {
+			/* try to interpret the placing of the entry above as a number */
 			var lastPlacing = self.placings[position - 1].getPlacing();
 			var lastPlacingNum = parseInt(lastPlacing, 10);
 			if (!isNaN(lastPlacingNum)) {
+				/* The placing above parses as a number, so set this placing to be one more */
 				newPlacing = lastPlacingNum + 1;
-			} else if (match = lastPlacing.match(/^\s*\=(\d+)/)) {
-				lastPlacingNum = parseInt(match[1], 10);
-				/* re-use this string, unless there's one above it and it also matches,
-					in which case increment */
-				newPlacing = lastPlacing;
-				if (position > 1) {
-					var lastLastPlacing = self.placings[position - 2].getPlacing();
-					if (match = lastLastPlacing.match(/^\s*\=(\d+)/)) {
-						if (match[1] == lastPlacingNum) newPlacing = lastPlacingNum + 1;
+			} else {
+				/* see if the placing above is of the format '=7', indicating a tied placing */
+				match = lastPlacing.match(/^\s*\=(\d+)/);
+				if (match) {
+					lastPlacingNum = parseInt(match[1], 10);
+					/* re-use this string, unless there's one above it and it also matches,
+						in which case increment */
+					newPlacing = lastPlacing;
+					if (position > 1) {
+						var lastLastPlacing = self.placings[position - 2].getPlacing();
+						match = lastLastPlacing.match(/^\s*\=(\d+)/);
+						if (match && match[1] == lastPlacingNum) {
+							newPlacing = lastPlacingNum + 1;
+						}
 					}
 				}
 			}
 			return newPlacing;
 		}
-	}
-	
+	};
+
 	self.placings = [];
-	
+
+	var row;
 	if (opts.competitionPlacings.length) {
 		for (var i = 0; i < opts.competitionPlacings.length; i++) {
-			var row = grid.addRow();
+			row = grid.addRow();
 			self.placings[i] = CompetitionPlacing(opts.competitionPlacings[i], self, row, rowOptions);
 		}
 	} else {
 		/* add an initial empty row */
-		var row = grid.addRow();
+		row = grid.addRow();
 		self.placings[0] = CompetitionPlacing(null, self, row, rowOptions);
 	}
-	
+
 	grid.onAddRow.bind(function(row) {
 		var rowIndex = row.index.get();
 		var competitionPlacing = CompetitionPlacing({
@@ -68,49 +77,48 @@ function ResultsTable(elem, opts) {
 		self.placings.splice(rowIndex, 0, competitionPlacing);
 		grid.setCursor(1, rowIndex);
 		grid.focus();
-	})
-	
+	});
+
 	grid.onReorder.bind(function(row, oldIndex, newIndex) {
 		var placing = self.placings[oldIndex];
 		self.placings.splice(oldIndex, 1);
 		self.placings.splice(newIndex, 0, placing);
-	})
-	
+	});
+
 	return self;
 }
 
 function BylineGridCell(opts) {
 	var self = GridCell(opts);
-	
+
 	var bylineField;
-	
+
 	function valueIsValid(value) {
-		if (value == null) return true; /* null value is equivalent to empty byline */
+		var i;
+		if (value === null) return true; /* null value is equivalent to empty byline */
 		/* consider invalid if any of the authors/affiliations have unspecified (null) IDs */
-		for (var i = 0; i < value.author_matches.length; i++) {
-			if (value.author_matches[i].selection.id == null) {
+		for (i = 0; i < value.author_matches.length; i++) {
+			if (value.author_matches[i].selection.id === null) {
 				return false;
-				break;
 			}
 		}
-		for (var i = 0; i < value.affiliation_matches.length; i++) {
-			if (value.affiliation_matches[i].selection.id == null) {
+		for (i = 0; i < value.affiliation_matches.length; i++) {
+			if (value.affiliation_matches[i].selection.id === null) {
 				return false;
-				break;
 			}
 		}
 		return true;
 	}
-	
+
 	self.isValid = function() {
 		return valueIsValid(self.value.get());
-	}
-	
+	};
+
 	self._initEditElem = function(editElem) {
 		var bylineFieldElem = $('<div class="byline_field"></div>');
 		editElem.append(bylineFieldElem);
 		bylineField = BylineField(bylineFieldElem, '', [], [], $.uid('bylineGridCell'));
-	}
+	};
 	self._refreshShowElem = function(showElem, value) {
 		if (value) {
 			showElem.text(value.search_term || ''); /* TODO: get properly capitalised / primary-nick-varianted text from bylineField */
@@ -122,20 +130,20 @@ function BylineGridCell(opts) {
 		} else {
 			showElem.addClass('invalid');
 		}
-	}
+	};
 	self._refreshEditElem = function(editElem, value) {
 		bylineField.setValue(value);
-	}
+	};
 	self._valueFromEditElem = function(editElem) {
 		return bylineField.getValue();
-	}
+	};
 	self._prepareEditElem = function(editElem) {
-		var selectAll = (self._editMode == 'uncapturedText')
+		var selectAll = (self._editMode == 'uncapturedText');
 		bylineField.focus(selectAll);
 		/* ensure that typeahead autocompletion captures the initial keypress even if
 		the real keydown event doesn't reach it */
 		bylineField.triggerFakeKeydown();
-	}
+	};
 	/* BylineField must capture cursors and tab in all cases,
 		but enter can have the standard 'finish edit' behaviour */
 	self.keydown = function(event) {
@@ -152,7 +160,7 @@ function BylineGridCell(opts) {
 					case 86: /* V */
 						if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
 							self._startEdit('uncapturedText');
-							setTimeout(function() {bylineField.lookUpMatches()}, 10);
+							setTimeout(function() {bylineField.lookUpMatches();}, 10);
 							return true; /* override grid event handler, defer to browser's own */
 						}
 						break;
@@ -176,8 +184,8 @@ function BylineGridCell(opts) {
 						return true;
 					case 9: /* tab */
 						if (
-							(bylineField.firstFieldIsFocused() && event.shiftKey)
-							|| (bylineField.lastFieldIsFocused() && !event.shiftKey)
+							(bylineField.firstFieldIsFocused() && event.shiftKey) ||
+							(bylineField.lastFieldIsFocused() && !event.shiftKey)
 						) {
 							/* let default gridcell handler kick in and escape the cell */
 							return null;
@@ -188,25 +196,25 @@ function BylineGridCell(opts) {
 				}
 				break;
 		}
-	}
+	};
 	self.keypress = function(event) {
 		switch (self._editMode) {
 			case null:
 				self._startEdit('uncapturedText');
 				break;
 		}
-	}
-	
+	};
+
 	return self;
 }
 
 function ProductionTitleGridCell(opts) {
 	var self = TextGridCell(opts);
-	
+
 	var initEditElemWithoutAutocomplete = self._initEditElem;
-	
+
 	self.autocomplete = Event();
-	
+
 	self._initEditElem = function(editElem) {
 		initEditElemWithoutAutocomplete(editElem);
 		editElem.find('input').autocomplete({
@@ -221,28 +229,28 @@ function ProductionTitleGridCell(opts) {
 			'autoFocus': false,
 			/* don't fill in text field on focus, as this makes it look like the item has been chosen
 				already, when actually they might leave the cell without selecting it */
-			'focus': function() {return false},
+			'focus': function() {return false;},
 			'select': function(event, ui) {
 				setTimeout(function() {
 					var proceed = self.autocomplete.trigger(ui.item);
 					if (proceed) self._finishEdit();
 				}, 1);
 			}
-		})
-	}
-	
+		});
+	};
+
 	var prepareEditElemWithoutAutocomplete = self._prepareEditElem;
 	self._prepareEditElem = function(editElem) {
 		prepareEditElemWithoutAutocomplete(editElem);
-	}
-	
+	};
+
 	self._unprepareEditElem = function(editElem) {
 		editElem.find('input').autocomplete('close');
 		editElem.find('input').blur();
-	}
-	
+	};
+
 	self.cancelUnlock = Event();
-	
+
 	self.keydown = function(event) {
 		switch (self._editMode) {
 			case null:
@@ -320,8 +328,8 @@ function ProductionTitleGridCell(opts) {
 				}
 				break;
 		}
-	}
-	
+	};
+
 	var originalLock = self.lock;
 	self.requestUnlock = Event();
 	self.lock = function(name, url) {
@@ -331,16 +339,16 @@ function ProductionTitleGridCell(opts) {
 		self._showElem.prepend(clearButton);
 		clearButton.click(function() {
 			self.requestUnlock.trigger();
-		})
-	}
-	
+		});
+	};
+
 	return self;
 }
 
 function CompetitionPlacing(data, table, row, opts) {
 	var self = {};
 	self.row = row;
-	
+
 	if (!data) data = {};
 	if (!data.production) data.production = {
 		'platform': table.competition.platformId,
@@ -351,10 +359,10 @@ function CompetitionPlacing(data, table, row, opts) {
 			'search_term': '', 'author_matches': [], 'affiliation_matches': []
 		};
 	}
-	
+
 	var productionId = data.production.id;
 	var placingId = data.id;
-	
+
 	var isLocked = false;
 	var lastLockedData;
 	function populateProductionAndLock(production) {
@@ -366,19 +374,19 @@ function CompetitionPlacing(data, table, row, opts) {
 		cells.type.lock(production.production_type_name);
 		isLocked = true;
 	}
-	
+
 	function isValid() {
 		/* Locked productions are always valid;
 			unlocked productions are valid if title is nonempty and byline is valid */
 		if (isLocked) return true;
 		var title = cells.title.value.get();
-		return (title != null && title.match(/\S/) && cells.by.isValid());
+		return (title !== null && title.match(/\S/) && cells.by.isValid());
 	}
-	
+
 	self.existsOnServer = function() {
-		return (placingId != null);
-	}
-	
+		return (placingId !== null);
+	};
+
 	/* get the index number of this placing within the list, counting only
 		entries that exist on the server */
 	function serverPosition() {
@@ -388,8 +396,9 @@ function CompetitionPlacing(data, table, row, opts) {
 			if (table.placings[i].existsOnServer()) position++;
 		}
 	}
-	
+
 	function dataForServer() {
+		var i;
 		var savedata = {
 			position: serverPosition(),
 			ranking: cells.placing.value.get(),
@@ -398,31 +407,31 @@ function CompetitionPlacing(data, table, row, opts) {
 				id: productionId
 			}
 		};
-		if (savedata.ranking == null) savedata.ranking = '';
-		if (savedata.score == null) savedata.score = '';
-		
+		if (savedata.ranking === null) savedata.ranking = '';
+		if (savedata.score === null) savedata.score = '';
+
 		if (!isLocked) {
 			var byline = cells.by.value.get();
 			var authorSelections = [];
-			for (var i = 0; i < byline.author_matches.length; i++) {
+			for (i = 0; i < byline.author_matches.length; i++) {
 				authorSelections.push(byline.author_matches[i].selection);
 			}
 			var affiliationSelections = [];
-			for (var i = 0; i < byline.affiliation_matches.length; i++) {
+			for (i = 0; i < byline.affiliation_matches.length; i++) {
 				affiliationSelections.push(byline.affiliation_matches[i].selection);
 			}
-				
+
 			savedata.production.title = cells.title.value.get();
 			savedata.production.byline = {
 				'authors': authorSelections,
 				'affiliations': affiliationSelections
-			}
+			};
 			savedata.production.platform_id = cells.platform.value.get();
 			savedata.production.production_type_id = cells.type.value.get();
 		}
 		return savedata;
 	}
-	
+
 	var uid = $.uid('competitionplacing');
 	function saveIfValid() {
 		if (isValid()) {
@@ -430,13 +439,14 @@ function CompetitionPlacing(data, table, row, opts) {
 				valid if we wait for ajaxQueue callback */
 			$.ajaxQueue(uid, function(release) {
 				self.row.setStatus('saving', 'Saving...');
-				
-				if (placingId == null) {
-					var submitUrl = '/competition_api/add_placing/' + table.competition.id + '/'
+
+				var submitUrl;
+				if (placingId === null) {
+					submitUrl = '/competition_api/add_placing/' + table.competition.id + '/';
 				} else {
-					var submitUrl = '/competition_api/update_placing/' + placingId + '/'
+					submitUrl = '/competition_api/update_placing/' + placingId + '/';
 				}
-			
+
 				$.ajax({
 					type: 'POST',
 					url: submitUrl,
@@ -466,69 +476,71 @@ function CompetitionPlacing(data, table, row, opts) {
 						self.row.setStatus('normal');
 						release();
 					}
-				})
-			})
-			
+				});
+			});
+
 		} else {
 			self.row.setStatus('unsaved', 'Unsaved changes');
 		}
 	}
-	
+
+	var i;
 	var cellOrder = ['placing', 'title', 'by', 'platform', 'type', 'score'];
+	var cells;
 	if (data.production.stable) {
-		var cells = {
+		cells = {
 			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
 			'title': ProductionTitleGridCell({'class': 'title_field', 'value': null}),
 			'by': BylineGridCell({'class': 'by_field', 'value': null}),
 			'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': null}),
 			'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': null}),
 			'score': TextGridCell({'class': 'score_field', 'value': data.score})
-		}
-		for (var i = 0; i < cellOrder.length; i++) {
+		};
+		for (i = 0; i < cellOrder.length; i++) {
 			self.row.addCell(cells[cellOrder[i]]);
 			cells[cellOrder[i]].onFinishEdit.bind(saveIfValid);
 		}
 		populateProductionAndLock(data.production);
 	} else {
-		var cells = {
+		cells = {
 			'placing': TextGridCell({'class': 'placing_field', 'value': data.ranking}),
 			'title': ProductionTitleGridCell({'class': 'title_field', 'value': data.production.title}),
 			'by': BylineGridCell({'class': 'by_field', 'value': data.production.byline}),
 			'platform': SelectGridCell({'class': 'platform_field', 'options': opts.platforms, 'value': data.production.platform}),
 			'type': SelectGridCell({'class': 'type_field', 'options': opts.productionTypes, 'value': data.production.production_type}),
 			'score': TextGridCell({'class': 'score_field', 'value': data.score})
-		}
-		for (var i = 0; i < cellOrder.length; i++) {
+		};
+		for (i = 0; i < cellOrder.length; i++) {
 			self.row.addCell(cells[cellOrder[i]]);
 			cells[cellOrder[i]].onFinishEdit.bind(saveIfValid);
 		}
 	}
-	
+
 	if (data.id) {
 		self.row.setStatus('normal');
 	} else {
 		self.row.setStatus('unsaved', 'Unsaved changes');
 	}
-	
+
 	self.getPlacing = function() {
 		var placing = cells.placing.value.get();
-		return (placing == null ? '' : String(placing));
-	}
+		return (placing === null ? '' : String(placing));
+	};
 	row.onReorder.bind(function(oldIndex, newIndex) {
 		if (self.getPlacing().match(/^\s*$/)) {
 			/* placing field not previously populated; auto-populate it now */
 			cells.placing.value.set(table.placingForPosition(newIndex, true));
 		}
 		saveIfValid();
-	})
-	
+	});
+
 	cells.title.autocomplete.bind(function(production) {
 		populateProductionAndLock(production);
 		table.grid.setCursor(5, self.row.index.get());
 		return false; /* tell the autocomplete handler not to call finishEdit
 			(which prematurely submits the entry without an ID) */
-	})
-	
+	});
+
 	cells.title.requestUnlock.bind(function() {
 		cells.title.unlock();
 		cells.by.unlock();
@@ -537,14 +549,14 @@ function CompetitionPlacing(data, table, row, opts) {
 		isLocked = false;
 		productionId = null;
 		cells.title._startEdit('unlock');
-	})
+	});
 	cells.title.cancelUnlock.bind(function() {
 		populateProductionAndLock(lastLockedData);
-	})
-	
+	});
+
 	self.row.onDelete.bind(function() {
 		$.ajaxQueue(uid, function(release) {
-			if (placingId == null) {
+			if (placingId === null) {
 				release();
 			} else {
 				$.ajax({
@@ -556,10 +568,10 @@ function CompetitionPlacing(data, table, row, opts) {
 					complete: function() {
 						release();
 					}
-				})
+				});
 			}
-		})
-	})
-	
+		});
+	});
+
 	return self;
 }
