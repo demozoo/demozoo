@@ -24,7 +24,7 @@ function ResultsTable(elem, opts) {
 		var match;
 		var newPlacing;
 
-		if (position === 0) {
+		if (position == 0) {
 			/* entry is at the top of the table. Give it a placing of '1' or leave it blank, according to allowFirst */
 			return (allowFirst ? '1' : null);
 		} else {
@@ -95,7 +95,7 @@ function BylineGridCell(opts) {
 
 	function valueIsValid(value) {
 		var i;
-		if (value === null) return true; /* null value is equivalent to empty byline */
+		if (value == null) return true; /* null value is equivalent to empty byline */
 		/* consider invalid if any of the authors/affiliations have unspecified (null) IDs */
 		for (i = 0; i < value.author_matches.length; i++) {
 			if (value.author_matches[i].selection.id === null) {
@@ -103,7 +103,7 @@ function BylineGridCell(opts) {
 			}
 		}
 		for (i = 0; i < value.affiliation_matches.length; i++) {
-			if (value.affiliation_matches[i].selection.id === null) {
+			if (value.affiliation_matches[i].selection.id == null) {
 				return false;
 			}
 		}
@@ -380,11 +380,11 @@ function CompetitionPlacing(data, table, row, opts) {
 			unlocked productions are valid if title is nonempty and byline is valid */
 		if (isLocked) return true;
 		var title = cells.title.value.get();
-		return (title !== null && title.match(/\S/) && cells.by.isValid());
+		return (title != null && title.match(/\S/) && cells.by.isValid());
 	}
 
 	self.existsOnServer = function() {
-		return (placingId !== null);
+		return (placingId != null);
 	};
 
 	/* get the index number of this placing within the list, counting only
@@ -407,8 +407,8 @@ function CompetitionPlacing(data, table, row, opts) {
 				id: productionId
 			}
 		};
-		if (savedata.ranking === null) savedata.ranking = '';
-		if (savedata.score === null) savedata.score = '';
+		if (savedata.ranking == null) savedata.ranking = '';
+		if (savedata.score == null) savedata.score = '';
 
 		if (!isLocked) {
 			var byline = cells.by.value.get();
@@ -441,7 +441,7 @@ function CompetitionPlacing(data, table, row, opts) {
 				self.row.setStatus('saving', 'Saving...');
 
 				var submitUrl;
-				if (placingId === null) {
+				if (placingId == null) {
 					submitUrl = '/competition_api/add_placing/' + table.competition.id + '/';
 				} else {
 					submitUrl = '/competition_api/update_placing/' + placingId + '/';
@@ -524,7 +524,7 @@ function CompetitionPlacing(data, table, row, opts) {
 
 	self.getPlacing = function() {
 		var placing = cells.placing.value.get();
-		return (placing === null ? '' : String(placing));
+		return (placing == null ? '' : String(placing));
 	};
 	row.onReorder.bind(function(oldIndex, newIndex) {
 		if (self.getPlacing().match(/^\s*$/)) {
@@ -556,7 +556,7 @@ function CompetitionPlacing(data, table, row, opts) {
 
 	self.row.onDelete.bind(function() {
 		$.ajaxQueue(uid, function(release) {
-			if (placingId === null) {
+			if (placingId == null) {
 				release();
 			} else {
 				$.ajax({
