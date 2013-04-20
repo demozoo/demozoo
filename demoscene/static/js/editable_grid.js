@@ -495,7 +495,11 @@ function GridCell(opts) {
 		'uncapturedText' = select on focus; cursor keys move cell
 	*/
 	self._editMode = null;
-	
+
+	self.isEditing = function() {
+		return (self._editMode !== null);
+	}
+
 	self.constructElem = function() {
 		$elem = $('<li></li>');
 		self.elem = $elem.get(0);
