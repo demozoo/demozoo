@@ -5,6 +5,10 @@
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/production_listing.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	<div class="panel">
 		<ul class="tabs">
@@ -80,7 +84,7 @@
 		<div class="notes">
 			{% if request.user.is_staff %}
 				<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
+					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ party.notes|safe_markdown }}
@@ -119,7 +123,7 @@
 	
 	<ul class="actions">
 		<li>
-			<a class="add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
+			<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
 		</li>
 	</ul>
 {% endblock %}

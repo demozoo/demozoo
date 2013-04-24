@@ -4,6 +4,10 @@
 
 {% block html_title %}{{ competition }} - Demozoo{% endblock %}
 
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/production_listing.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	<div class="panel">
 		<ul class="tabs">

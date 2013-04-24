@@ -14,7 +14,7 @@
 			<li><a href="{% url 'party_series_history' party_series.id %}">History</a></li>
 		</ul>
 		<ul class="actions">
-			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
+			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
 		</ul>
 		<h2>
 			{{ party_series.name }}
@@ -67,7 +67,7 @@
 		<div class="notes">
 			{% if request.user.is_staff %}
 				<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
+					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ party_series.notes|safe_markdown }}

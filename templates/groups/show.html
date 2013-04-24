@@ -5,6 +5,10 @@
 
 {% block html_title %}{{ group.name }} - Demozoo{% endblock %}
 
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/production_listing.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	<div class="panel">
 		<ul class="tabs">
@@ -14,9 +18,9 @@
 		
 		<ul class="actions">
 			{% if editing %}
-				<li><a href="{% url 'edit_group_done' group.id %}" class="done">Done</a></li>
+				<li><a href="{% url 'edit_group_done' group.id %}" class="action_button icon done">Done</a></li>
 			{% else %}
-				<li><a href="{% url 'edit_group' group.id %}" class="edit">Edit</a></li>
+				<li><a href="{% url 'edit_group' group.id %}" class="action_button icon edit">Edit</a></li>
 			{% endif %}
 		</ul>
 		<h2>
@@ -69,8 +73,8 @@
 	{% if group.notes or editing_as_admin %}
 		<div class="notes">
 			{% if editing_as_admin %}
-					<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
+				<ul class="actions">
+					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
 			{{ group.notes|safe_markdown }}
@@ -183,10 +187,10 @@
 	{% if editing_as_admin %}
 		<ul class="maintenance_actions">
 			{% if not group.is_referenced %}
-				<li><a href="{% url 'delete_releaser' group.id %}" class="delete open_in_lightbox">Delete group</a></li>
+				<li><a href="{% url 'delete_releaser' group.id %}" class="action_button icon delete open_in_lightbox">Delete group</a></li>
 			{% endif %}
 			{% if group.can_be_converted_to_scener %}
-				<li><a href="{% url 'group_convert_to_scener' group.id %}" class="switch open_in_lightbox">Convert to scener</a></li>
+				<li><a href="{% url 'group_convert_to_scener' group.id %}" class="action_button icon switch open_in_lightbox">Convert to scener</a></li>
 			{% endif %}
 		</ul>
 	{% endif %}

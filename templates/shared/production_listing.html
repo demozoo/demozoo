@@ -1,6 +1,6 @@
 {% load demoscene_tags %}
 
-<table width="100%" {% if show_screenshots %}class="listing_with_screenshots"{% endif %}>
+<table width="100%" class="production_listing {% if show_screenshots %}listing_with_screenshots{% endif %}">
 	{% if show_screenshots %}
 		<col width="5%" />
 		<col width="45%" />
@@ -18,7 +18,7 @@
 					{% if prod.default_screenshot %}{% microthumb prod.default_screenshot %}{% endif %}
 				</td>
 			{% endif %}
-			<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+			<td class="icon icon_{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
 			<td>{{ prod.release_date.short_format }}</td>
 			<td>{% byline prod %}</td>
 		</tr>

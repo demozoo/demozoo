@@ -11,7 +11,7 @@
 
 {% block base_main %}
 	<ul class="actions">
-		<li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<a href="javascript:void($('#compofolders_done').submit())" class="done">All done</a></form></li>
+		<li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<a href="javascript:void($('#compofolders_done').submit())" class="action_button icon done">All done</a></form></li>
 	</ul>
 	<h2><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h2>
 

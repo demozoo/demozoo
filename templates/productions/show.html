@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="/static/css/lightbox.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/editing.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/show_production.less" type="text/less" />
 {% endblock %}
 
@@ -19,7 +20,7 @@
 {% block base_main %}
 	<div class="production_core_details">
 		<ul class="actions">
-			<li><a class="edit open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
+			<li><a class="action_button icon edit open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
 		</ul>
 
 		<ul class="production_types">
@@ -119,7 +120,7 @@
 	
 	{% if request.user.is_staff %}
 		<ul class="maintenance_actions">
-			<li><a href="{% url 'delete_production' production.id %}" class="delete open_in_lightbox">Delete production</a></li>
+			<li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
 		</ul>
 	{% endif %}
 {% endblock %}

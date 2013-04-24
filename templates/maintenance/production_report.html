@@ -4,6 +4,10 @@
 
 {% block body_class %}maintenance_report{% endblock %}
 
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/production_listing.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	<h2>{{ title }}:</h2>
 	<div id="main_column">

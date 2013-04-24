@@ -5,7 +5,7 @@
 	<div class="notes">
 		{% if request.user.is_staff %}
 			<ul class="actions">
-				<li><a class="edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
+				<li><a class="action_button icon edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
 			</ul>
 		{% endif %}
 		{{ production.notes|safe_markdown }}

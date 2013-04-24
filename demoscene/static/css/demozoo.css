@@ -222,7 +222,7 @@ li.add_group {
 	background-repeat: no-repeat;
 }
 
-li.production, td.production {
+li.production {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
@@ -231,7 +231,7 @@ li.production, td.production {
 	background-repeat: no-repeat;
 }
 
-li.music, td.music {
+li.music {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
@@ -240,7 +240,7 @@ li.music, td.music {
 	background-repeat: no-repeat;
 }
 
-li.graphics, td.graphics {
+li.graphics {
 	padding-left: 24px;
 	padding-top: 2px;
 	padding-bottom: 3px;
@@ -350,92 +350,6 @@ li.edit {
 	background-repeat: no-repeat;
 }
 
-ul.actions {
-	float: right;
-}
-
-ul.actions li {
-	display: inline;
-}
-
-ul.actions li a {
-	line-height: 32px;
-	border: 1px solid #888;
-	background-color: #eee;
-	color: #008;
-	padding: 4px;
-	margin-left: 4px;
-	text-decoration: none;
-}
-
-ul.actions li a:hover {
-	background-color: #ccc;
-}
-
-ul.actions li a.add {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/add.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.actions li a.edit {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/edit.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.actions li a.done {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/tick.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.actions li a.import_table {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/table_go.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.maintenance_actions {
-	clear: both;
-	padding-top: 16px;
-}
-
-ul.maintenance_actions li a {
-	line-height: 32px;
-	border: 1px solid #888;
-	background-color: #eee;
-	color: #008;
-	padding: 4px;
-	margin-left: 4px;
-	text-decoration: none;
-}
-
-ul.maintenance_actions li a:hover {
-	background-color: #ccc;
-}
-
-ul.maintenance_actions li a.delete {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/delete.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.maintenance_actions li a.switch {
-	padding-left: 24px;
-	background-image: url(/static/images/icons/arrow_refresh.png);
-	background-position: 4px center;
-	background-repeat: no-repeat;
-}
-
-ul.maintenance_actions li {
-	display: inline;
-}
 
 form.entry_form .party_field input.party_field_search {
 	width: 300px;
