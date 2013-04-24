@@ -25,6 +25,7 @@ def fetch_sceneorg_dir(path, days=None):
 			try:
 				subdir = Directory.objects.get(path=subpath)
 				subdir.last_seen_at = datetime.datetime.now()
+				subdir.is_deleted = False
 				subdir.save()
 			except Directory.DoesNotExist:
 				subdir = Directory.objects.create(
@@ -55,6 +56,7 @@ def fetch_sceneorg_dir(path, days=None):
 		dir.last_spidered_at = datetime.datetime.now()
 
 	dir.last_seen_at = datetime.datetime.now()
+	dir.is_deleted = False
 	dir.save()
 
 
