@@ -94,4 +94,47 @@
 			}
 		}
 	}
+
+
+	ul.download_links {
+		li.download_link {
+			padding-left: 24px;
+			padding-top: 2px;
+			padding-bottom: 3px;
+			background-image: url(/static/images/icons/disk.png);
+			background-position: left center;
+			background-repeat: no-repeat;
+		}
+
+		li.sceneorg { background-image: url(/static/images/icons/external_sites/sceneorg.png); }
+		li.amigascne { background-image: url(/static/images/icons/external_sites/amigascne.png); }
+		li.untergrund { background-image: url(/static/images/icons/external_sites/untergrund.png); }
+
+		ul.download_mirrors {
+			display: inline;
+
+			li {
+				display: inline;
+				padding-right: 8px;
+
+				a {
+					padding-left: 20px;
+					background-position: left center;
+					background-repeat: no-repeat;
+
+					&.country_nl { background-image: url(/static/images/icons/flags/nl.png); }
+					&.country_no { background-image: url(/static/images/icons/flags/no.png); }
+					&.country_us { background-image: url(/static/images/icons/flags/us.png); }
+					&.country_jp { background-image: url(/static/images/icons/flags/jp.png); }
+					&.country_de { background-image: url(/static/images/icons/flags/de.png); }
+					&.country_fr { background-image: url(/static/images/icons/flags/fr.png); }
+					&.country_hu { background-image: url(/static/images/icons/flags/hu.png); }
+					&.country_uk { background-image: url(/static/images/icons/flags/gb.png); }
+					&.country_se { background-image: url(/static/images/icons/flags/se.png); }
+					&.country_ca { background-image: url(/static/images/icons/flags/ca.png); }
+				}
+			}
+		}
+	}
+
 }
