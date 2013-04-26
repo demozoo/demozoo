@@ -11,7 +11,7 @@ def deploy():
 		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py syncdb')
 		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py migrate')
 		run('source /home/demozoo/virtualenv/bin/activate && ./manage.py collectstatic --noinput')
-		run('touch apache/demozoo.wsgi')
+		run('touch apache/demozoo2.wsgi')
 
 
 def sanity():
