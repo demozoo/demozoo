@@ -1,13 +1,13 @@
 (function() {
 	var self = {};
-	
+
 	var isInitialised = false;
 	var isShowing = false;
 	var lightboxOuter, lightboxElem, lightboxContent, lightboxClose;
-	
+
 	function init() {
 		if (isInitialised) return;
-		
+
 		lightboxOuter = $('<div id="lightbox_outer"></div>');
 		var lightboxMiddle = $('<div id="lightbox_middle"></div>');
 		lightboxElem = $('<div id="lightbox"></div>');
@@ -25,7 +25,7 @@
 		lightboxOuter.hide();
 		isInitialised = true;
 	}
-	
+
 	function setSize() {
 		var browserHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 		lightboxElem.css({'max-height': browserHeight - 48 + 'px'});
@@ -49,7 +49,7 @@
 		$(window).keydown(checkForEscape);
 		$(window).resize(setSize);
 	}
-	
+
 	self.openContent = function(content, onLoadCallback, opts) {
 		init();
 		lightboxContent.html(content);
