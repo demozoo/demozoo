@@ -16,4 +16,5 @@ class Command(NoArgsCommand):
 				else:
 					link.url = link.link.nl_url
 				if link.link_class != original_link_class:
+					print "%s ID %s bumped to %s" % (model.__name__, link.id, link.link_class)
 					link.save()
