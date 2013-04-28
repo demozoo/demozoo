@@ -49,10 +49,6 @@
 	margin-left: 16px;
 }
 
-body.loading {
-	cursor: progress;
-}
-
 /* notification messages */
 ul.messages li.success {
 	background-color: #bfb;
