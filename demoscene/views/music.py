@@ -51,7 +51,7 @@ def create(request):
 			'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
 		})
 		download_link_formset = ProductionDownloadLinkFormSet()
-	return ajaxable_render(request, 'music/create.html', {
+	return render(request, 'music/create.html', {
 		'html_title': "New music",
 		'form': form,
 		'download_link_formset': download_link_formset,

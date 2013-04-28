@@ -1,7 +1,11 @@
-<p>{{ message }}</p>
-<form action="{{ action_url }}" method="post">
-	{% csrf_token %}
-	
-	<input type="submit" name="yes" value="Yes" class="yes_button" />
-	<input type="submit" name="no" value="No" class="no_button" />
-</form>
+{% extends base_template_with_ajax_option %}
+
+{% block base_main %}
+	<p>{{ message }}</p>
+	<form action="{{ action_url }}" method="post">
+		{% csrf_token %}
+		
+		<input type="submit" name="yes" value="Yes" class="yes_button" />
+		<input type="submit" name="no" value="No" class="no_button" />
+	</form>
+{% endblock %}

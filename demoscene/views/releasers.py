@@ -38,7 +38,7 @@ def add_credit(request, releaser_id):
 		form = ReleaserCreditForm(releaser)
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
-	return ajaxable_render(request, 'releasers/add_credit.html', {
+	return render(request, 'releasers/add_credit.html', {
 		'html_title': "Add credit for %s" % releaser.name,
 		'releaser': releaser,
 		'form': form,
@@ -98,7 +98,7 @@ def edit_credit(request, releaser_id, nick_id, production_id):
 			'production_name': production.title,
 		})
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
-	return ajaxable_render(request, 'releasers/edit_credit.html', {
+	return render(request, 'releasers/edit_credit.html', {
 		'html_title': "Editing credit for %s" % production.title,
 		'releaser': releaser,
 		'nick': nick,
@@ -169,7 +169,7 @@ def edit_nick(request, releaser_id, nick_id):
 	else:
 		form = nick_form_class(releaser, instance=nick, for_admin=request.user.is_staff)
 
-	return ajaxable_render(request, 'releasers/edit_nick_form.html', {
+	return render(request, 'releasers/edit_nick_form.html', {
 		'form': form,
 		'nick': nick,
 		'html_title': "Editing name: %s" % nick.name,
@@ -201,7 +201,7 @@ def add_nick(request, releaser_id):
 	else:
 		form = nick_form_class(releaser, for_admin=request.user.is_staff)
 
-	return ajaxable_render(request, 'releasers/nick_form.html', {
+	return render(request, 'releasers/add_nick_form.html', {
 		'form': form,
 		'title': "Adding another nick for %s" % releaser.name,
 		'html_title': "Adding another nick for %s" % releaser.name,
@@ -212,7 +212,7 @@ def add_nick(request, releaser_id):
 @login_required
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
-	return ajaxable_render(request, 'releasers/confirm_edit_nick.html', {
+	return render(request, 'releasers/confirm_edit_nick.html', {
 		'html_title': "Editing %s's name" % releaser.name,
 		'releaser': releaser,
 	})
@@ -307,7 +307,7 @@ def edit_external_links(request, releaser_id):
 			return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	else:
 		formset = ReleaserExternalLinkFormSet(instance=releaser)
-	return ajaxable_render(request, 'releasers/edit_external_links.html', {
+	return render(request, 'releasers/edit_external_links.html', {
 		'html_title': "Editing external links for %s" % releaser.name,
 		'releaser': releaser,
 		'formset': formset,

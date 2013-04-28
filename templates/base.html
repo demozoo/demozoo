@@ -1,4 +1,4 @@
-{% if not request.is_ajax %}<!DOCTYPE html>
+<!DOCTYPE html>
 {% load compress %}
 {% load menu %}
 {% load url from future %}
@@ -6,12 +6,12 @@
 <!--[if IE 7]><html class="no-js ie7 legacy" lang="en"><![endif]-->
 <!--[if IE 8]><html class="no-js ie8 legacy" lang="en"><![endif]-->
 <!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
-    <head>
+	<head>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{% block html_title %}Demozoo{% endblock %}</title>
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{% block html_title %}Demozoo{% endblock %}</title>
 		{% compress css %}
 			<link rel="stylesheet" href="/static/css/core.less" type="text/less" />
 			<link rel="stylesheet" href="/static/css/page_base.less" type="text/less" />
@@ -30,7 +30,7 @@
 		{% endcompress %}
 		
 		{% compress js %}
-            <script src="/static/js/lib/modernizr.js"></script>
+			<script src="/static/js/lib/modernizr.js"></script>
 			<script src="/static/js/jquery-1.7.1.js"></script>
 			{# TODO: consider folding things like datepicker into widget resources, and only loading them on edit pages, to reduce up-front load times for people who rarely edit #}
 			<script src="/static/js/jquery.color.js"></script>
@@ -64,7 +64,7 @@
 		{% block extra_head %}{% endblock %}
 	</head>
 	<body lang="en" class="{% block body_class %}default{% endblock %}">
-			<div id="page">
+		<div id="page">
 			<header id="site_header">
 				<h1><a href="{% url 'home' %}">Demozoo</a></h1>
 				{% block login_status_panel %}
@@ -121,20 +121,11 @@
 			</header>
 			
 			<div id="site_main">
-				{% if messages %}
-				<ul class="messages">
-					{% for message in messages %}
-					<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-					{% endfor %}
-				</ul>
-				{% endif %}
-	{% endif %}
+				{% include "shared/messages.html" %}
 				{% block base_main %}{% endblock %}
-	{% if not request.is_ajax %}
 				<div style="clear: both;"></div>
 			</div>
 			<div id="site_footer"></div>
 		</div>
 	</body>
 </html>
-{% endif %}

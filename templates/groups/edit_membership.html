@@ -1,22 +1,25 @@
+{% extends base_template_with_ajax_option %}
 {% load url from future %}
 
-<h2>Editing {{ membership.member.name }}'s membership of {{ group.name }}:</h2>
+{% block base_main %}
+	<h2>Editing {{ membership.member.name }}'s membership of {{ group.name }}:</h2>
 
-<form action="{% url 'group_edit_membership' group.id membership.id %}" method="post" class="entry_form">
-	{% csrf_token %}
-	
-	{% for field in form.visible_fields %}
-		{% include "shared/form_field.html" %}
-	{% endfor %}
-	{% for field in form.hidden_fields %}
-		{{ field }}
-	{% endfor %}
-	
-	<div class="field">
-		<input type="submit" />
-	</div>
-</form>
+	<form action="{% url 'group_edit_membership' group.id membership.id %}" method="post" class="entry_form">
+		{% csrf_token %}
+		
+		{% for field in form.visible_fields %}
+			{% include "shared/form_field.html" %}
+		{% endfor %}
+		{% for field in form.hidden_fields %}
+			{{ field }}
+		{% endfor %}
+		
+		<div class="field">
+			<input type="submit" />
+		</div>
+	</form>
 
-<p>
-	<a href="{% url 'group_remove_member' group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
-</p>
+	<p>
+		<a href="{% url 'group_remove_member' group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
+	</p>
+{% endblock %}

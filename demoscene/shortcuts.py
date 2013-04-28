@@ -11,14 +11,6 @@ def render(request, template, context={}, **kwargs):
 	return render_to_response(template, context, context_instance=RequestContext(request), **kwargs)
 
 
-def ajaxable_render(request, template, context={}, **kwargs):
-	if request.is_ajax():
-		return render(request, template, context, **kwargs)
-	else:
-		context['subtemplate_name'] = template
-		return render(request, "base_wrapper.html", context, **kwargs)
-
-
 # TODO: see if we can (largely) replace this with get_absolute_url
 def redirect(*args, **kwargs):
 	return HttpResponseRedirect(reverse(*args, **kwargs))
@@ -66,7 +58,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 	else:
 		clean_title = title
 
-	return ajaxable_render(request, 'shared/simple_form.html', {
+	return render(request, 'shared/simple_form.html', {
 		'form': form,
 		'html_form_class': kwargs.get('html_form_class'),
 		'title': title,
@@ -77,7 +69,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 
 
 def simple_ajax_confirmation(request, action_url, message, html_title=None):
-	return ajaxable_render(request, 'shared/simple_confirmation.html', {
+	return render(request, 'shared/simple_confirmation.html', {
 		'html_title': html_title,
 		'message': message,
 		'action_url': action_url,

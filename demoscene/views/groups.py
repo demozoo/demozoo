@@ -69,7 +69,7 @@ def create(request):
 	else:
 		form = CreateGroupForm()
 
-	return ajaxable_render(request, 'shared/simple_form.html', {
+	return render(request, 'shared/simple_form.html', {
 		'form': form,
 		'title': "New group",
 		'html_title': "New group",
@@ -98,7 +98,7 @@ def add_member(request, group_id):
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupMembershipForm()
-	return ajaxable_render(request, 'groups/add_member.html', {
+	return render(request, 'groups/add_member.html', {
 		'html_title': "New member for %s" % group.name,
 		'group': group,
 		'form': form,
@@ -151,7 +151,7 @@ def edit_membership(request, group_id, membership_id):
 			'scener_nick': membership.member.primary_nick,
 			'is_current': membership.is_current,
 		})
-	return ajaxable_render(request, 'groups/edit_membership.html', {
+	return render(request, 'groups/edit_membership.html', {
 		'html_title': "Editing %s's membership of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,
@@ -180,7 +180,7 @@ def add_subgroup(request, group_id):
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:
 		form = GroupSubgroupForm()
-	return ajaxable_render(request, 'groups/add_subgroup.html', {
+	return render(request, 'groups/add_subgroup.html', {
 		'html_title': "New subgroup for %s" % group.name,
 		'group': group,
 		'form': form,
@@ -228,7 +228,7 @@ def edit_subgroup(request, group_id, membership_id):
 			'subgroup_nick': membership.member.primary_nick,
 			'is_current': membership.is_current,
 		})
-	return ajaxable_render(request, 'groups/edit_subgroup.html', {
+	return render(request, 'groups/edit_subgroup.html', {
 		'html_title': "Editing %s as a subgroup of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,

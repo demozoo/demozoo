@@ -121,6 +121,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
 	'demoscene.context_processors.global_nav_forms',
+	'demoscene.context_processors.ajax_base_template',
 )
 
 LOGGING = {

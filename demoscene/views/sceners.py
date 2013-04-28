@@ -102,7 +102,7 @@ def create(request):
 	else:
 		form = CreateScenerForm()
 
-	return ajaxable_render(request, 'shared/simple_form.html', {
+	return render(request, 'shared/simple_form.html', {
 		'form': form,
 		'html_title': "New scener",
 		'title': "New scener",
@@ -132,7 +132,7 @@ def add_group(request, scener_id):
 	else:
 		form = ScenerMembershipForm()
 
-	return ajaxable_render(request, 'sceners/add_group.html', {
+	return render(request, 'sceners/add_group.html', {
 		'html_title': "New group for %s" % scener.name,
 		'scener': scener,
 		'form': form,
@@ -180,7 +180,7 @@ def edit_membership(request, scener_id, membership_id):
 			'group_nick': membership.group.primary_nick,
 			'is_current': membership.is_current,
 		})
-	return ajaxable_render(request, 'sceners/edit_membership.html', {
+	return render(request, 'sceners/edit_membership.html', {
 		'html_title': "Editing %s's membership of %s" % (scener.name, membership.group.name),
 		'scener': scener,
 		'membership': membership,

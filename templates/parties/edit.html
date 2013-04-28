@@ -1,67 +1,70 @@
+{% extends base_template_with_ajax_option %}
 {% load url from future %}
 {% load demoscene_tags %}
 
-<h2>Editing party: {{ party.name }}</h2>
+{% block base_main %}
+	<h2>Editing party: {{ party.name }}</h2>
 
-<form action="{% url 'edit_party' party.id %}" method="post" class="entry_form">
-	{% csrf_token %}
+	<form action="{% url 'edit_party' party.id %}" method="post" class="entry_form">
+		{% csrf_token %}
 
-	{% include "shared/form_field.html" with field=form.name %}
-	{% include "shared/form_field.html" with field=form.start_date %}
-	{% include "shared/form_field.html" with field=form.end_date %}
-	{% include "shared/form_field.html" with field=form.tagline %}
+		{% include "shared/form_field.html" with field=form.name %}
+		{% include "shared/form_field.html" with field=form.start_date %}
+		{% include "shared/form_field.html" with field=form.end_date %}
+		{% include "shared/form_field.html" with field=form.tagline %}
 
-	<div class="field">
-		{% field_label form.location %}
-		<div class="field_input">
-			{{ form.location }}<br>
-			{{ form.is_online }} <label for="id_is_online">Online</label>
+		<div class="field">
+			{% field_label form.location %}
+			<div class="field_input">
+				{{ form.location }}<br>
+				{{ form.is_online }} <label for="id_is_online">Online</label>
+			</div>
 		</div>
-	</div>
 
-	{% include "shared/form_field.html" with field=form.website %}
+		{% include "shared/form_field.html" with field=form.website %}
 
-	{% for field in form.hidden_fields %}
-		{{ field }}
-	{% endfor %}
-	<div class="field">
-		<input type="submit" />
-	</div>
-</form>
+		{% for field in form.hidden_fields %}
+			{{ field }}
+		{% endfor %}
+		<div class="field">
+			<input type="submit" />
+		</div>
+	</form>
 
-<script>/* <![CDATA[ */
-	function showDayOfWeek(dateField, dayLabel) {
-		var date;
-		try {
-			date = parseStrictDate(dateField.val());
-		} catch(e) {
-			date = null;
+	<script>/* <![CDATA[ */
+		function showDayOfWeek(dateField, dayLabel) {
+			var date;
+			try {
+				date = parseStrictDate(dateField.val());
+			} catch(e) {
+				date = null;
+			}
+			dayLabel.text(date === null ? '' : dayName[date.getDay()])
 		}
-		dayLabel.text(date === null ? '' : dayName[date.getDay()])
-	}
-	var dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-	var startDateDayOfWeek = $('<span class="day_of_week"></span>');
-	$('#id_start_date').after(startDateDayOfWeek);
-	var endDateDayOfWeek = $('<span class="day_of_week"></span>');
-	$('#id_end_date').after(endDateDayOfWeek);
+		var dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+		var startDateDayOfWeek = $('<span class="day_of_week"></span>');
+		$('#id_start_date').after(startDateDayOfWeek);
+		var endDateDayOfWeek = $('<span class="day_of_week"></span>');
+		$('#id_end_date').after(endDateDayOfWeek);
 
-	$('#id_start_date').change(function() {
+		$('#id_start_date').change(function() {
+			showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
+		});
 		showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
-	});
-	showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
 
-	$('#id_end_date').change(function() {
+		$('#id_end_date').change(function() {
+			showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+		});
 		showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
-	});
-	showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
 
-	function refreshLocationDisabledState() {
-		if ($('#id_is_online').is(':checked')) {
-			$('#id_location').val('').attr('disabled', true);
-		} else {
-			$('#id_location').removeAttr('disabled');
+		function refreshLocationDisabledState() {
+			if ($('#id_is_online').is(':checked')) {
+				$('#id_location').val('').attr('disabled', true);
+			} else {
+				$('#id_location').removeAttr('disabled');
+			}
 		}
-	}
-	refreshLocationDisabledState();
-	$('#id_is_online').change(refreshLocationDisabledState);
-/* ]]> */</script>
+		refreshLocationDisabledState();
+		$('#id_is_online').change(refreshLocationDisabledState);
+	/* ]]> */</script>
+{% endblock %}

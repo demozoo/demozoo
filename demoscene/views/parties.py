@@ -100,7 +100,7 @@ def create(request):
 			'party_series_name': request.GET.get('party_series_name'),
 			'scene_org_folder': request.GET.get('scene_org_folder'),
 		})
-	return ajaxable_render(request, 'parties/create.html', {
+	return render(request, 'parties/create.html', {
 		'html_title': "New party",
 		'form': form,
 		'party_series_names': [ps.name for ps in PartySeries.objects.all()],
@@ -134,7 +134,7 @@ def edit(request, party_id):
 			'end_date': party.end_date
 		})
 
-	return ajaxable_render(request, 'parties/edit.html', {
+	return render(request, 'parties/edit.html', {
 		'html_title': "Editing party: %s" % party.name,
 		'party': party,
 		'form': form,
@@ -194,7 +194,7 @@ def edit_external_links(request, party_id):
 			return HttpResponseRedirect(party.get_absolute_edit_url())
 	else:
 		formset = PartyExternalLinkFormSet(instance=party)
-	return ajaxable_render(request, 'parties/edit_external_links.html', {
+	return render(request, 'parties/edit_external_links.html', {
 		'html_title': "Editing external links for %s" % party.name,
 		'party': party,
 		'formset': formset,
@@ -250,7 +250,7 @@ def add_competition(request, party_id):
 		form = CompetitionForm(instance=competition, initial={
 			'shown_date': party.default_competition_date(),
 		})
-	return ajaxable_render(request, 'parties/add_competition.html', {
+	return render(request, 'parties/add_competition.html', {
 		'html_title': "New competition for %s" % party.name,
 		'party': party,
 		'form': form,
@@ -306,7 +306,7 @@ def edit_invitations(request, party_id):
 			return HttpResponseRedirect(party.get_absolute_url())
 	else:
 		formset = PartyInvitationFormset(initial=initial_forms)
-	return ajaxable_render(request, 'parties/edit_invitations.html', {
+	return render(request, 'parties/edit_invitations.html', {
 		'html_title': "Editing invitations for %s" % party.name,
 		'party': party,
 		'formset': formset,
