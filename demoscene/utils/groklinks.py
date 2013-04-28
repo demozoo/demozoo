@@ -933,7 +933,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		PushnpopGroup,
+		PushnpopGroup, SceneOrgFolder,
 		SoundcloudUser, WikipediaPage,
 		BaseUrl,
 	])

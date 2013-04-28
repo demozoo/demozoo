@@ -1329,7 +1329,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
-		groklinks.PushnpopGroup, groklinks.PushnpopProfile,
+		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
 		groklinks.BaseUrl,
