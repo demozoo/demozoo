@@ -172,6 +172,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ROUTES = {
 	'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
 }
+CELERYD_CONCURRENCY = 2
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
