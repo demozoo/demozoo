@@ -1,6 +1,10 @@
 {% extends base_template_with_ajax_option %}
 {% load url from future %}
 
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
 {% block base_main %}
 	<h2>Editing {{ membership.member.name }}'s membership of {{ group.name }}:</h2>
 

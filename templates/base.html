@@ -19,11 +19,8 @@
 
 			{% block legacy_css %}
 				<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
-				<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-				<link rel="stylesheet" href="/static/css/editing.less" type="text/less" />
+				{% include "shared/editor_css.html" %}
 			{% endblock %}
-			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: consider folding into widget resources. Also, decide which theme we actually want #}
-			<link rel="stylesheet" href="/static/css/jquery.asmselect.css" type="text/css" />
 		{% endcompress %}
 		{% compress css %}
 			{% block extra_css %}{% endblock %}

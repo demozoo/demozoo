@@ -1,5 +1,9 @@
 {% extends base_template_with_ajax_option %}
 
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+{% endblock %}
+
 {% block base_main %}
 	{% if title %}
 		<h2>{{ title }}</h2>

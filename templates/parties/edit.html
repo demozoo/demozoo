@@ -2,6 +2,10 @@
 {% load url from future %}
 {% load demoscene_tags %}
 
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
 {% block base_main %}
 	<h2>Editing party: {{ party.name }}</h2>
 

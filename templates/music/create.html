@@ -2,6 +2,10 @@
 {% load query_string %}
 {% load url from future %}
 
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
 {% block base_main %}
 	<div class="form_title">
 		<h2>New music</h2>
