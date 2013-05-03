@@ -5,21 +5,19 @@
 {% block html_title %}Screenshots for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/lightbox.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/show_production.less" type="text/less" />
+{% endblock %}
+
+{% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	<div class="production_title">
-		<h2>{{ production.title }}</h2>
-		{% if production.byline_string %}
-			<h3>
-				by {% byline production %}
-			</h3>
-		{% endif %}
-	</div>
+	{% include "productions/_core_details.html" with show_back_button=1 %}
 
-	<h3>Screenshots</h3>
 	{% for pic in screenshots %}
 		{% if pic.original_url %}
-			<a href="{{ pic.original_url }}" target="_blank" class="open_image_in_lightbox">
+			<a href="{{ pic.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
 				<img src="{{ pic.standard_url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
 			</a>
 		{% endif %}

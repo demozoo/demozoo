@@ -6,33 +6,6 @@
 		overflow: hidden; /* self-clear */
 		padding-bottom: 10px;
 
-		.actions {
-			float: right;
-
-			li {
-				display: inline;
-
-				a {
-					line-height: 32px;
-					border: 1px solid #888;
-					background-color: #eee;
-					color: #008;
-					padding: 4px;
-					margin-left: 4px;
-					text-decoration: none;
-					&:hover {background-color: #ccc;}
-				}
-
-				a.edit {
-					padding-left: 24px;
-					background-image: url(/static/images/icons/edit.png);
-					background-position: 4px center;
-					background-repeat: no-repeat;
-				}
-
-			}
-		}
-
 		.production_types li {
 			background-color: @demozoo_lightblue;
 			color: white;
@@ -95,6 +68,20 @@
 		}
 	}
 
+	.screenshot {
+		width: 400px;
+		height: 300px;
+		background-color: #888;
+		display: inline-block;
+		margin: 10px;
+		line-height: 300px;
+		text-align: center;
+	}
+
+	.screenshot img {
+		margin: auto;
+		vertical-align: middle;
+	}
 
 	ul.download_links {
 		li.download_link {

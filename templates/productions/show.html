@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load demoscene_tags %}
-{% load humanize %}
 {% load url from future %}
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -17,52 +16,7 @@
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	<div class="production_core_details">
-		<ul class="actions">
-			<li><a class="action_button icon edit open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
-		</ul>
-
-		<ul class="production_types">
-			{% for production_type in production.types.all %}
-				<li>{{ production_type.name }}</li>
-			{% endfor %}
-		</ul>
-		<div class="production_title">
-			<h2>{{ production.title }}</h2>
-			{% if production.byline_string %}
-				<h3>
-					by {% byline production %}
-				</h3>
-			{% endif %}
-		</div>
-
-		{% for party in invitation_parties %}
-			<h4>Invitation for <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h4>
-		{% endfor %}
-
-		<ul class="attributes">
-			{% if production.release_date %}
-				<li>Released {{ production.release_date }}</li>
-			{% endif %}
-
-			{% for placing in competition_placings %}
-				<li>
-					{{ placing.ranking|ordinal }} @
-					<a href="{{ placing.competition.party.get_absolute_url }}#competition_{{ placing.competition.id }}">{{ placing.competition.party.name }} {{ placing.competition.name }} competition</a>
-				</li>
-			{% endfor %}
-
-			{% with production.platforms.all as platforms %}
-				{% if platforms %}
-					<li>
-						{% for platform in platforms %}
-							<a href="{% url 'platform' platform.id %}">{{ platform.name }}</a>{% if not forloop.last %},{% endif %}
-						{% endfor %}
-					</li>
-				{% endif %}
-			{% endwith %}
-		</ul>
-	</div>
+	{% include "productions/_core_details.html" with show_edit_button=1 %}
 
 	<div>
 		{% if production.can_have_screenshots %}
