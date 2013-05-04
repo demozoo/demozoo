@@ -4,7 +4,7 @@ function initScreenshotCarousel(screenshots) {
 	var leftScreenshot = $('a.screenshot', panel);
 	var leftImg = leftScreenshot.find('img');
 
-	var viewport = $('<div class="screenshot_carousel"><div class="viewport"><div class="tray"></div></div><a href="javascript:void(0);" class="prev">Previous</a><a href="javascript:void(0);" class="next">Next</a></div>');
+	var viewport = $('<div class="screenshot_carousel"><div class="viewport"><div class="tray"></div></div><a href="javascript:void(0);" class="nav prev">Previous</a><a href="javascript:void(0);" class="nav next">Next</a></div>');
 	leftScreenshot.replaceWith(viewport);
 	var tray = $('.tray', viewport);
 	tray.append(leftScreenshot);
