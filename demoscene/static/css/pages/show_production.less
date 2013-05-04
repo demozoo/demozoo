@@ -68,19 +68,71 @@
 		}
 	}
 
-	.screenshot {
+	.screenshots_panel {
 		width: 400px;
-		height: 300px;
-		background-color: #888;
-		display: inline-block;
-		margin: 10px;
-		line-height: 300px;
-		text-align: center;
-	}
+		margin-bottom: 10px;
 
-	.screenshot img {
-		margin: auto;
-		vertical-align: middle;
+		.screenshot {
+			width: 400px;
+			height: 300px;
+			background-color: #888;
+			display: inline-block;
+			line-height: 300px;
+			text-align: center;
+		}
+
+		.screenshot img {
+			margin: auto;
+			vertical-align: middle;
+		}
+
+		ul.actions {
+			float: left;
+		}
+
+		.screenshot_carousel {
+			width: 400px;
+			height: 300px;
+			position: relative;
+
+			.viewport {
+				position: absolute;
+				width: 400px;
+				height: 300px;
+				top: 0;
+				left: 0;
+				overflow: hidden;
+
+				.tray {
+					width: 800px;
+					height: 300px;
+					top: 0;
+					left: 0;
+					position: absolute;
+				}
+			}
+
+			a.prev {
+				position: absolute;
+				display: block;
+				left: 0;
+				top: 0;
+				width: 50px;
+				height: 300px;
+				background-color: rgba(32, 32, 32, 0.5);
+			}
+
+			a.next {
+				position: absolute;
+				display: block;
+				right: 0;
+				top: 0;
+				width: 50px;
+				height: 300px;
+				background-color: rgba(32, 32, 32, 0.5);
+			}
+
+		}
 	}
 
 	ul.download_links {

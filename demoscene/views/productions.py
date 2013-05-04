@@ -88,10 +88,20 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'production':
 		return HttpResponseRedirect(production.get_absolute_url())
 
+	screenshots = production.screenshots.order_by('id')
+	screenshots_json = json.dumps([
+		{
+			'original_url': pic.original_url, 'src': pic.standard_url,
+			'width': pic.standard_width, 'height': pic.standard_height
+		}
+		for pic in screenshots
+	])
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
-		'screenshots': production.screenshots.order_by('id'),
+		'screenshots': screenshots,
+		'screenshots_json': screenshots_json,
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
 		'soundtracks': [
@@ -304,9 +314,11 @@ def delete_download_link(request, production_id, production_link_id):
 
 def screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	screenshots = production.screenshots.order_by('id')
+
 	return render(request, 'productions/screenshots.html', {
 		'production': production,
-		'screenshots': production.screenshots.order_by('id'),
+		'screenshots': screenshots,
 	})
 
 
