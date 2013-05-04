@@ -26,23 +26,23 @@
 
 	<div>
 		{% if production.can_have_screenshots %}
-			{% include "shared/production_screenshots.html" %}
+			{% include "productions/_screenshots.html" %}
 		{% endif %}
 		
 		<div class="production_details">
-			{% include "shared/production_external_links.html" %}
+			{% include "productions/_external_links.html" %}
 
-			{% include "shared/production_tags.html" %}
+			{% include "productions/_tags.html" %}
 		</div>
 		
 		<div style="clear: both;"></div>
 	</div>
 	
-	{% include "shared/production_notes.html" %}
+	{% include "productions/_notes.html" %}
 	
 	<div id="side_column">
 		{% if production.can_have_credits %}
-			{% include "shared/production_credits.html" %}
+			{% include "productions/_credits.html" %}
 		{% endif %}
 	</div>
 	
@@ -57,7 +57,7 @@
 			</div>
 		{% endif %}
 		
-		{% include "shared/production_downloads.html" %}
+		{% include "productions/_downloads.html" %}
 		
 		{% if production.can_have_soundtracks %}
 			<div class="panel">
