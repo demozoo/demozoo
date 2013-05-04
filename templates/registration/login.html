@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends base_template_with_ajax_option %}
 {% load url from future %}
 
 {% block html_title %}Log in - Demozoo{% endblock %}
@@ -22,7 +22,7 @@
 		</tr>
 		</table>
 		
-		<input type="submit" value="login" />
+		<input type="submit" value="Log in" />
 		<input type="hidden" name="next" value="{{ next }}" />
 	</form>
 {% endblock %}
