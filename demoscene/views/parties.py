@@ -101,7 +101,6 @@ def create(request):
 			'scene_org_folder': request.GET.get('scene_org_folder'),
 		})
 	return render(request, 'parties/create.html', {
-		'html_title': "New party",
 		'form': form,
 		'party_series_names': [ps.name for ps in PartySeries.objects.all()],
 	})
@@ -135,7 +134,6 @@ def edit(request, party_id):
 		})
 
 	return render(request, 'parties/edit.html', {
-		'html_title': "Editing party: %s" % party.name,
 		'party': party,
 		'form': form,
 	})
@@ -195,7 +193,6 @@ def edit_external_links(request, party_id):
 	else:
 		formset = PartyExternalLinkFormSet(instance=party)
 	return render(request, 'parties/edit_external_links.html', {
-		'html_title': "Editing external links for %s" % party.name,
 		'party': party,
 		'formset': formset,
 	})
@@ -251,7 +248,6 @@ def add_competition(request, party_id):
 			'shown_date': party.default_competition_date(),
 		})
 	return render(request, 'parties/add_competition.html', {
-		'html_title': "New competition for %s" % party.name,
 		'party': party,
 		'form': form,
 	})
@@ -307,7 +303,6 @@ def edit_invitations(request, party_id):
 	else:
 		formset = PartyInvitationFormset(initial=initial_forms)
 	return render(request, 'parties/edit_invitations.html', {
-		'html_title': "Editing invitations for %s" % party.name,
 		'party': party,
 		'formset': formset,
 	})

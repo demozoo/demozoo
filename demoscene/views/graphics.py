@@ -51,7 +51,6 @@ def create(request):
 		})
 		download_link_formset = ProductionDownloadLinkFormSet()
 	return render(request, 'graphics/create.html', {
-		'html_title': "New graphics",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})

@@ -39,7 +39,6 @@ def add_credit(request, releaser_id):
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
 	return render(request, 'releasers/add_credit.html', {
-		'html_title': "Add credit for %s" % releaser.name,
 		'releaser': releaser,
 		'form': form,
 		'credit_formset': credit_formset,
@@ -99,7 +98,6 @@ def edit_credit(request, releaser_id, nick_id, production_id):
 		})
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 	return render(request, 'releasers/edit_credit.html', {
-		'html_title': "Editing credit for %s" % production.title,
 		'releaser': releaser,
 		'nick': nick,
 		'production': production,
@@ -172,7 +170,6 @@ def edit_nick(request, releaser_id, nick_id):
 	return render(request, 'releasers/edit_nick_form.html', {
 		'form': form,
 		'nick': nick,
-		'html_title': "Editing name: %s" % nick.name,
 		'title': "Editing name: %s" % nick.name,
 		'action_url': reverse('releaser_edit_nick', args=[releaser.id, nick.id]),
 	})
@@ -204,7 +201,6 @@ def add_nick(request, releaser_id):
 	return render(request, 'releasers/add_nick_form.html', {
 		'form': form,
 		'title': "Adding another nick for %s" % releaser.name,
-		'html_title': "Adding another nick for %s" % releaser.name,
 		'action_url': reverse('releaser_add_nick', args=[releaser.id]),
 	})
 
@@ -213,7 +209,6 @@ def add_nick(request, releaser_id):
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	return render(request, 'releasers/confirm_edit_nick.html', {
-		'html_title': "Editing %s's name" % releaser.name,
 		'releaser': releaser,
 	})
 
@@ -308,7 +303,6 @@ def edit_external_links(request, releaser_id):
 	else:
 		formset = ReleaserExternalLinkFormSet(instance=releaser)
 	return render(request, 'releasers/edit_external_links.html', {
-		'html_title': "Editing external links for %s" % releaser.name,
 		'releaser': releaser,
 		'formset': formset,
 	})

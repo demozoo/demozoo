@@ -2,6 +2,8 @@
 {% load url from future %}
 {% load demoscene_tags %}
 
+{% block html_title %}Editing party: {{ party.name }} - Demozoo{% endblock %}
+
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
 {% endblock %}

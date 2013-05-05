@@ -1,5 +1,9 @@
 {% extends base_template_with_ajax_option %}
 
+{% block html_title %}
+	{% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
+{% endblock %}
+
 {% block base_main %}
 	<p>{{ message }}</p>
 	<form action="{{ action_url }}" method="post">

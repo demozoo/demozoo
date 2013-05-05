@@ -189,7 +189,6 @@ def edit_core_details(request, production_id):
 			])
 
 	return render(request, 'productions/edit_core_details.html', {
-		'html_title': "Editing %s: %s" % (production.supertype, production.title),
 		'production': production,
 		'form': form,
 		'invitation_formset': invitation_formset,
@@ -227,7 +226,6 @@ def edit_external_links(request, production_id):
 	else:
 		formset = ProductionExternalLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=False))
 	return render(request, 'productions/edit_external_links.html', {
-		'html_title': "Editing external links for %s" % production.title,
 		'production': production,
 		'formset': formset,
 	})
@@ -285,7 +283,6 @@ def edit_download_link(request, production_id, production_link_id):
 	else:
 		form = ProductionDownloadLinkForm(instance=production_link)
 	return render(request, 'productions/edit_download_link.html', {
-		'html_title': "Editing download link for %s" % production.title,
 		'form': form,
 		'production': production,
 		'production_link': production_link,
@@ -356,7 +353,6 @@ def add_screenshot(request, production_id):
 
 		return HttpResponseRedirect(production.get_absolute_url())
 	return render(request, 'productions/add_screenshot.html', {
-		'html_title': "Adding screenshots for %s" % production.title,
 		'production': production,
 	})
 
@@ -403,7 +399,6 @@ def create(request):
 		})
 		download_link_formset = ProductionDownloadLinkFormSet()
 	return render(request, 'productions/create.html', {
-		'html_title': "New production",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})
@@ -438,7 +433,6 @@ def add_credit(request, production_id):
 		nick_form = ProductionCreditedNickForm()
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 	return render(request, 'productions/add_credit.html', {
-		'html_title': "Adding credit for %s" % production.title,
 		'production': production,
 		'nick_form': nick_form,
 		'credit_formset': credit_formset,
@@ -482,7 +476,6 @@ def edit_credit(request, production_id, nick_id):
 		nick_form = ProductionCreditedNickForm(nick=nick)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 	return render(request, 'productions/edit_credit.html', {
-		'html_title': "Editing credit for %s" % production.title,
 		'production': production,
 		'nick': nick,
 		'nick_form': nick_form,
@@ -540,7 +533,6 @@ def edit_soundtracks(request, production_id):
 	else:
 		formset = ProductionSoundtrackLinkFormset(instance=production)
 	return render(request, 'productions/edit_soundtracks.html', {
-		'html_title': "Editing soundtrack details for %s" % production.title,
 		'production': production,
 		'formset': formset,
 	})

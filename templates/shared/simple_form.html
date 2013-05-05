@@ -1,5 +1,9 @@
 {% extends base_template_with_ajax_option %}
 
+{% block html_title %}
+	{% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
+{% endblock %}
+
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
 {% endblock %}

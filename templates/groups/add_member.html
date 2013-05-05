@@ -1,6 +1,8 @@
 {% extends base_template_with_ajax_option %}
 {% load url from future %}
 
+{% block html_title %}New member for {{ group.name }} - Demozoo{% endblock %}
+
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
 {% endblock %}

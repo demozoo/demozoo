@@ -99,7 +99,6 @@ def add_member(request, group_id):
 	else:
 		form = GroupMembershipForm()
 	return render(request, 'groups/add_member.html', {
-		'html_title': "New member for %s" % group.name,
 		'group': group,
 		'form': form,
 	})
@@ -152,7 +151,6 @@ def edit_membership(request, group_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return render(request, 'groups/edit_membership.html', {
-		'html_title': "Editing %s's membership of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,
 		'form': form,
@@ -181,7 +179,6 @@ def add_subgroup(request, group_id):
 	else:
 		form = GroupSubgroupForm()
 	return render(request, 'groups/add_subgroup.html', {
-		'html_title': "New subgroup for %s" % group.name,
 		'group': group,
 		'form': form,
 	})
@@ -229,7 +226,6 @@ def edit_subgroup(request, group_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return render(request, 'groups/edit_subgroup.html', {
-		'html_title': "Editing %s as a subgroup of %s" % (membership.member.name, group.name),
 		'group': group,
 		'membership': membership,
 		'form': form,

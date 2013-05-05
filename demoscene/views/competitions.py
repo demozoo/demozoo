@@ -62,7 +62,6 @@ def edit(request, competition_id):
 	})
 
 	return render(request, 'competitions/edit.html', {
-		'html_title': "Editing %s %s competition" % (party.name, competition.name),
 		'form': competition_form,
 		'party': party,
 		'competition': competition,

@@ -52,7 +52,6 @@ def create(request):
 		})
 		download_link_formset = ProductionDownloadLinkFormSet()
 	return render(request, 'music/create.html', {
-		'html_title': "New music",
 		'form': form,
 		'download_link_formset': download_link_formset,
 	})

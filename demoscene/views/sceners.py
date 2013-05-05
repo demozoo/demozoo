@@ -133,7 +133,6 @@ def add_group(request, scener_id):
 		form = ScenerMembershipForm()
 
 	return render(request, 'sceners/add_group.html', {
-		'html_title': "New group for %s" % scener.name,
 		'scener': scener,
 		'form': form,
 	})
@@ -181,7 +180,6 @@ def edit_membership(request, scener_id, membership_id):
 			'is_current': membership.is_current,
 		})
 	return render(request, 'sceners/edit_membership.html', {
-		'html_title': "Editing %s's membership of %s" % (scener.name, membership.group.name),
 		'scener': scener,
 		'membership': membership,
 		'form': form,
