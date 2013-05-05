@@ -24,19 +24,17 @@
 {% block base_main %}
 	{% include "productions/_core_details.html" with show_edit_button=1 %}
 
-	<div>
-		{% if production.can_have_screenshots %}
-			{% include "productions/_screenshots.html" %}
-		{% endif %}
-		
-		<div class="production_details">
-			{% include "productions/_external_links.html" %}
+	{% if production.can_have_screenshots %}
+		{% include "productions/_screenshots.html" %}
+	{% endif %}
 
-			{% include "productions/_tags.html" %}
-		</div>
+	{% include "productions/_downloads.html" %}
+
+	{% include "productions/_external_links.html" %}
+
+	{% include "productions/_tags.html" %}
 		
-		<div style="clear: both;"></div>
-	</div>
+	<div style="clear: both;"></div>
 	
 	{% include "productions/_notes.html" %}
 	
@@ -56,8 +54,6 @@
 				{% endwith %}
 			</div>
 		{% endif %}
-		
-		{% include "productions/_downloads.html" %}
 		
 		{% if production.can_have_soundtracks %}
 			<div class="panel">

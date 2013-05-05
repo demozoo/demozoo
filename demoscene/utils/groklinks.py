@@ -43,7 +43,7 @@ class BaseUrl():
 
 	def as_download_link(self):
 		hostname = urlparse.urlparse(str(self)).hostname
-		return '<a href="%s">Download (%s)</a>' % (
+		return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
 			escape(str(self)), escape(hostname)
 		)
 
@@ -435,10 +435,10 @@ class SceneOrgFile(BaseUrl):
 		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
-		mirrors_html = ''.join(self.mirror_links)
+		mirrors_html = ' '.join(self.mirror_links)
 		return '''
-			<a href="%s">Download from scene.org</a>
-			- mirrors: <ul class="download_mirrors">%s</ul>
+			<div class="primary"><a href="%s">Download from scene.org</a></div>
+			<div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
 		''' % (
 			escape(str(self)), mirrors_html
 		)
@@ -493,10 +493,10 @@ class AmigascneFile(BaseUrl):
 		return "http://http.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
 
 	def as_download_link(self):
-		mirrors_html = ''.join(self.mirror_links)
+		mirrors_html = ' '.join(self.mirror_links)
 		return '''
-			<a href="%s">Download from amigascne.org</a>
-			- mirrors: <ul class="download_mirrors">%s</ul>
+			<div class="primary"><a href="%s">Download from amigascne.org</a></div>
+			<div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
 		''' % (
 			escape(str(self)), mirrors_html
 		)
@@ -551,10 +551,10 @@ class PaduaOrgFile(BaseUrl):
 		return "http://http.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
 
 	def as_download_link(self):
-		mirrors_html = ''.join(self.mirror_links)
+		mirrors_html = ' '.join(self.mirror_links)
 		return '''
-			<a href="%s">Download from padua.org</a>
-			- mirrors: <ul class="download_mirrors">%s</ul>
+			<div class="primary"><a href="%s">Download from padua.org</a></div>
+			<div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
 		''' % (
 			escape(str(self)), mirrors_html
 		)
@@ -618,10 +618,10 @@ class ModlandFile(BaseUrl):
 		return "ftp://ftp.rave.ca%s" % self.param
 
 	def as_download_link(self):
-		mirrors_html = ''.join(self.mirror_links)
+		mirrors_html = ' '.join(self.mirror_links)
 		return '''
-			<a href="%s">Download from Modland</a>
-			- mirrors: <ul class="download_mirrors">%s</ul>
+			<div class="primary"><a href="%s">Download from Modland</a></div>
+			<div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
 		''' % (
 			escape(str(self)), mirrors_html
 		)
