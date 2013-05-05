@@ -2,17 +2,16 @@
 
 <div class="panel">
 	<h3>Downloads</h3>
+	<ul class="actions">
+		<li>
+			<a href="{% url 'production_edit_download_links' production.id %}" class="action_button icon edit open_in_lightbox">Edit</a>
+		</li>
+	</ul>
 	<ul class="download_links">
 		{% for link in download_links %}
 			<li class="download_link {{ link.html_link_class }}">
 				{{ link.as_download_link|safe }}
-				<a href="{% url 'production_edit_download_link' production.id link.id %}" class="open_in_lightbox">
-					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit download link" title="Edit download link" />
-				</a>
 			</li>
 		{% endfor %}
-		<li class="add">
-			<a href="{% url 'production_add_download_link' production.id %}" class="open_in_lightbox">Add download link</a>
-		</li>
 	</ul>
 </div>

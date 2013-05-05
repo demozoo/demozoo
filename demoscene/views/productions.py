@@ -225,88 +225,36 @@ def edit_external_links(request, production_id):
 			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		formset = ProductionExternalLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=False))
-	return render(request, 'productions/edit_external_links.html', {
+	return render(request, 'productions/edit_links.html', {
+		'submit_url': reverse('production_edit_external_links', args=[production.id]),
+		'external_or_download': 'external',
 		'production': production,
 		'formset': formset,
 	})
 
 
 @login_required
-def add_download_link(request, production_id):
+def edit_download_links(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	production_link = ProductionLink(production=production, is_download_link=True)
-	if request.method == 'POST':
-		form = ProductionDownloadLinkForm(request.POST, instance=production_link)
-		if form.is_valid():
-			try:
-				form.save()
-				production.updated_at = datetime.datetime.now()
-				production.has_bonafide_edits = True
-				production.save()
-				Edit.objects.create(action_type='add_download_link', focus=production,
-					description=(u"Added download link %s" % production_link.url), user=request.user)
-			except ValidationError:
-				pass  # skip over any links that fail uniqueness
-			return HttpResponseRedirect(production.get_absolute_url())
-	else:
-		form = ProductionDownloadLinkForm(instance=production_link)
-	return render(request, 'shared/simple_form.html', {
-		'form': form,
-		'title': "Adding download link for %s:" % production.title,
-		'html_title': "Adding download link for %s" % production.title,
-		'action_url': reverse('production_add_download_link', args=[production.id]),
-	})
 
-
-@login_required
-def edit_download_link(request, production_id, production_link_id):
-	production = get_object_or_404(Production, id=production_id)
-	production_link = get_object_or_404(ProductionLink, id=production_link_id, production=production, is_download_link=True)
-	original_url = production_link.url
 	if request.method == 'POST':
-		form = ProductionDownloadLinkForm(request.POST, instance=production_link)
-		if form.is_valid():
-			form.save(commit=False)
-			try:
-				production_link.validate_unique()
-				production_link.save()
-			except ValidationError:
-				# failing validation at this point means that the new link clashes
-				# with an existing one. So, delete it.
-				production_link.delete()
+		formset = ProductionDownloadLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=True))
+		if formset.is_valid():
+			formset.save_ignoring_uniqueness()
+			formset.log_edit(request.user, 'production_edit_download_links')
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			Edit.objects.create(action_type='edit_download_link', focus=production,
-				description=(u"Updated download link from %s to %s" % (original_url, production_link.url)), user=request.user)
+
 			return HttpResponseRedirect(production.get_absolute_url())
 	else:
-		form = ProductionDownloadLinkForm(instance=production_link)
-	return render(request, 'productions/edit_download_link.html', {
-		'form': form,
+		formset = ProductionDownloadLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=True))
+	return render(request, 'productions/edit_links.html', {
+		'submit_url': reverse('production_edit_download_links', args=[production.id]),
+		'external_or_download': 'download',
 		'production': production,
-		'production_link': production_link,
+		'formset': formset,
 	})
-
-
-@login_required
-def delete_download_link(request, production_id, production_link_id):
-	production = get_object_or_404(Production, id=production_id)
-	production_link = get_object_or_404(ProductionLink, id=production_link_id, production=production, is_download_link=True)
-	if request.method == 'POST':
-		if request.POST.get('yes'):
-			production_link.delete()
-			production.updated_at = datetime.datetime.now()
-			production.has_bonafide_edits = True
-			production.save()
-			Edit.objects.create(action_type='delete_download_link', focus=production,
-				description=(u"Deleted download link %s" % production_link.url), user=request.user)
-		return HttpResponseRedirect(production.get_absolute_url())
-	else:
-		return simple_ajax_confirmation(request,
-			reverse('production_delete_download_link', args=[production_id, production_link_id]),
-			"Are you sure you want to delete this download link for %s?" % production.title,
-			html_title="Deleting download link for %s" % production.title)
 
 
 def screenshots(request, production_id):
