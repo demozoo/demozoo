@@ -136,7 +136,7 @@ class SlengpungUser(BaseUrl):
 class AmpAuthor(BaseUrl):
 	canonical_format = "http://amp.dascene.net/detail.php?view=%s"
 	tests = [
-		querystring_match(r'https?://amp\.dascene\.net/detail\.php', 'view', re.I),
+		querystring_match(r'https?://(?:www\.)?amp\.dascene\.net/detail\.php', 'view', re.I),
 	]
 	html_link_class = "amp"
 	html_link_text = "AMP"
