@@ -1308,7 +1308,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
 		groklinks.PushnpopParty,
 		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
-		groklinks.WikipediaPage,
+		groklinks.WikipediaPage, groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1332,6 +1332,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1361,6 +1362,7 @@ class ProductionLink(ExternalLink):
 		groklinks.PushnpopProduction, groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 

@@ -876,6 +876,16 @@ class WikipediaPage(BaseUrl):
 	html_title_format = "%s on Wikipedia"
 
 
+class SpeccyWikiPage(BaseUrl):
+	canonical_format = "http://speccy.info/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?speccy.info/(.+)', re.I),
+	]
+	html_link_class = "speccywiki"
+	html_link_text = "SpeccyWiki"
+	html_title_format = "%s on SpeccyWiki"
+
+
 class PushnpopEntry(BaseUrl):  # for use as an abstract superclass
 	html_link_class = "pushnpop"
 	html_link_text = "Push'n'Pop"
@@ -926,6 +936,7 @@ def grok_scener_link(urlstring):
 		PushnpopProfile,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
+		SpeccyWikiPage,
 		BaseUrl,
 	])
 
@@ -934,7 +945,7 @@ def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
 		PushnpopGroup, SceneOrgFolder,
-		SoundcloudUser, WikipediaPage,
+		SoundcloudUser, WikipediaPage, SpeccyWikiPage,
 		BaseUrl,
 	])
 
@@ -947,6 +958,7 @@ def grok_production_link(urlstring):
 		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
 		SceneOrgFile, UntergrundFile,
 		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, WikipediaPage,
+		SpeccyWikiPage,
 		BaseUrl,
 	])
 
@@ -956,6 +968,6 @@ def grok_party_link(urlstring):
 		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
 		PushnpopParty,
-		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage,
+		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
 		BaseUrl,
 	])
