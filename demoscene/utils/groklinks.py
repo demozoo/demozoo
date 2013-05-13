@@ -844,6 +844,16 @@ class SoundcloudTrack(BaseUrl):
 	html_title_format = "%s on SoundCloud"
 
 
+class DiscogsArtist(BaseUrl):
+	canonical_format = "http://www.discogs.com/artist/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?discogs\.com/(.+)', re.I),
+	]
+	html_link_class = "discogs"
+	html_link_text = "Discogs"
+	html_title_format = "%s on Discogs"
+
+
 class ModarchiveMember(BaseUrl):
 	canonical_format = "http://modarchive.org/member.php?%s"
 	tests = [
@@ -933,7 +943,7 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		PushnpopProfile,
+		PushnpopProfile, DiscogsArtist,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		SpeccyWikiPage,
@@ -944,7 +954,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		PushnpopGroup, SceneOrgFolder,
+		PushnpopGroup, SceneOrgFolder, DiscogsArtist,
 		SoundcloudUser, WikipediaPage, SpeccyWikiPage,
 		BaseUrl,
 	])
