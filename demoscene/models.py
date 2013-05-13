@@ -1319,6 +1319,7 @@ class PartyExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'party'),
 		)
+		ordering = ['link_class']
 
 
 class ReleaserExternalLink(ExternalLink):
@@ -1343,6 +1344,7 @@ class ReleaserExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'releaser'),
 		)
+		ordering = ['link_class']
 
 
 class ProductionLink(ExternalLink):
@@ -1417,6 +1419,7 @@ class ProductionLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'production', 'is_download_link'),
 		)
+		ordering = ['link_class']
 
 
 class ResultsFile(models.Model):
