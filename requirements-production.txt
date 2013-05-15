@@ -16,3 +16,4 @@ django-treebeard==1.61
 psycopg2==2.2.1
 scrubber==1.6.1
 timelib==0.2.1
+django-gevent-deploy==1.0

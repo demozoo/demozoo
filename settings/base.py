@@ -3,7 +3,7 @@
 # Determine paths
 import os
 import sys
-FILEROOT = os.path.dirname(__file__)
+FILEROOT = os.path.join(os.path.dirname(__file__), '..')
 
 # Modify sys.path so it contains the right things
 sys.path.append(FILEROOT)
@@ -190,15 +190,3 @@ CELERYBEAT_SCHEDULE = {
 		"args": ()
 	},
 }
-
-# Get local settings
-DEBUG_TOOLBAR_ENABLED = False
-try:
-	from local_settings import *
-except ImportError:
-	print "You have no local_settings.py file! Run:   cp local_settings.py.example local_settings.py"
-	sys.exit(1)
-
-if DEBUG_TOOLBAR_ENABLED:
-	INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
-	MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']

@@ -1,4 +1,4 @@
-DEBUG_TOOLBAR_ENABLED = True
+from .base import *
 
 DATABASES = {
 	'default': {
@@ -11,16 +11,15 @@ DATABASES = {
 	}
 }
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'q=5-*%!&#5gbfk93oz!+y9it_m55^9a&!96i0@$_2mq^12($-g'
 DEBUG = True
-EMAIL_HOST = 'localhost'
+INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
+MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
-YAHOO_API_KEY = 'get one from http://developer.yahoo.com/wsregapp/'
-
-AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
 AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
-AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
-AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
-AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
+AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
+
+try:
+	from .local import *
+except ImportError:
+	pass
