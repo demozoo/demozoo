@@ -193,10 +193,10 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Get local settings
-LOCAL_APPS = None
+LOCAL_APPS = []
 try:
 	from local_settings import *
-	INSTALLED_APPS += LOCAL_APPS
+	INSTALLED_APPS = list(INSTALLED_APPS) + list(LOCAL_APPS)
 except ImportError:
 	print "You have no local_settings.py file! Run:   cp local_settings.py.example local_settings.py"
 	sys.exit(1)
