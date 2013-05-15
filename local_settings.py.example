@@ -1,6 +1,4 @@
-LOCAL_APPS = [
-	'debug_toolbar',
-]
+DEBUG_TOOLBAR_ENABLED = True
 
 DATABASES = {
 	'default': {

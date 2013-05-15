@@ -74,7 +74,6 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'debug_toolbar.middleware.DebugToolbarMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -193,10 +192,13 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Get local settings
-LOCAL_APPS = []
+DEBUG_TOOLBAR_ENABLED = False
 try:
 	from local_settings import *
-	INSTALLED_APPS = list(INSTALLED_APPS) + list(LOCAL_APPS)
 except ImportError:
 	print "You have no local_settings.py file! Run:   cp local_settings.py.example local_settings.py"
 	sys.exit(1)
+
+if DEBUG_TOOLBAR_ENABLED:
+	INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
+	MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
