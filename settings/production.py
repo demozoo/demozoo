@@ -20,6 +20,8 @@ AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
 
+GEVENT_ADDR_PORT = "localhost:4801"
+
 try:
 	from .local import *
 except ImportError:
