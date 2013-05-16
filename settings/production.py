@@ -22,6 +22,8 @@ AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
 
 GEVENT_ADDR_PORT = "localhost:4801"
 
+BROKER_URL = 'redis://localhost:4803/0'
+
 try:
 	from .local import *
 except ImportError:
