@@ -8,13 +8,15 @@
 {% endblock %}
 
 {% block extra_js %}
-	<script src="/static/sceneorg/js/compofiles.js"></script>
+	{% if site_is_writeable %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endif %}
 {% endblock %}
 
 {% block base_main %}
-	<ul class="actions">
-		<li><a href="{% url 'sceneorg_compofiles' %}" class="done">Done</a></li>
-	</ul>
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'sceneorg_compofiles' %}" class="done">Done</a></li>
+		</ul>
+	{% endif %}
 	<h2>scene.org party file matching: <a href="{{ directory.web_url }}">{{ directory.path }}</a></h2>
 
 	<ul>
@@ -23,7 +25,9 @@
 		{% endfor %}
 	</ul>
 
-	<p style="color: #666;">To match a file to its corresponding production, click on one item in each column and that pair will be moved to the "matched" section. Items in the 'matched' list are still clickable, so if a production has multiple download links, simply select that production title again. Match up as many as you can, and don't worry if there are leftover entries on either side. Thanks!</p>
+	{% if site_is_writeable %}
+		<p style="color: #666;">To match a file to its corresponding production, click on one item in each column and that pair will be moved to the "matched" section. Items in the 'matched' list are still clickable, so if a production has multiple download links, simply select that production title again. Match up as many as you can, and don't worry if there are leftover entries on either side. Thanks!</p>
+	{% endif %}
 
 	<br />
 	<h3>Unmatched:</h3>

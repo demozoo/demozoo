@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from demoscene.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile, Production, Edit
 from demoscene.forms.party import *
+from read_only_mode import writeable_site_required
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -80,6 +81,7 @@ def series_history(request, party_series_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def create(request):
 	if request.method == 'POST':
@@ -107,6 +109,7 @@ def create(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -141,6 +144,7 @@ def edit(request, party_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_notes(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -156,6 +160,7 @@ def edit_notes(request, party_id):
 		)
 
 
+@writeable_site_required
 @login_required
 def edit_external_links(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -201,6 +206,7 @@ def edit_external_links(request, party_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_series_notes(request, party_series_id):
 	party_series = get_object_or_404(PartySeries, id=party_series_id)
@@ -216,6 +222,7 @@ def edit_series_notes(request, party_series_id):
 		)
 
 
+@writeable_site_required
 @login_required
 def edit_series(request, party_series_id):
 	party_series = get_object_or_404(PartySeries, id=party_series_id)
@@ -229,6 +236,7 @@ def edit_series(request, party_series_id):
 	)
 
 
+@writeable_site_required
 @login_required
 def add_competition(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -281,6 +289,7 @@ def autocomplete(request):
 	return HttpResponse(json.dumps(party_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def edit_invitations(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -313,6 +322,7 @@ def edit_invitations(request, party_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_competition(request, party_id, competition_id):
 	return redirect('competition_edit', args=[competition_id])

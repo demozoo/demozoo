@@ -9,6 +9,7 @@ from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
+from read_only_mode import writeable_site_required
 
 
 def index(request):
@@ -643,6 +644,7 @@ def public_real_names(request):
 	})
 
 
+@writeable_site_required
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -654,6 +656,7 @@ def fix_release_dates(request):
 	return HttpResponseRedirect(request.POST['return_to'])
 
 
+@writeable_site_required
 def exclude(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -664,6 +667,7 @@ def exclude(request):
 	return HttpResponse('OK', mimetype='text/plain')
 
 
+@writeable_site_required
 def add_membership(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -680,6 +684,7 @@ def add_membership(request):
 	return HttpResponse('OK', mimetype='text/plain')
 
 
+@writeable_site_required
 def add_sceneorg_link_to_party(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -697,6 +702,7 @@ def view_archive_member(request, archive_member_id):
 	return HttpResponse(buf, mimetype=member.guess_mime_type())
 
 
+@writeable_site_required
 def resolve_screenshot(request, productionlink_id, archive_member_id):
 	production_link = ProductionLink.objects.get(id=productionlink_id)
 	archive_member = ArchiveMember.objects.get(id=archive_member_id)

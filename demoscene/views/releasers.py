@@ -5,8 +5,10 @@ from demoscene.forms.common import CreditFormSet
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import datetime
+from read_only_mode import writeable_site_required
 
 
+@writeable_site_required
 @login_required
 def add_credit(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -46,6 +48,7 @@ def add_credit(request, releaser_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_credit(request, releaser_id, nick_id, production_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -108,6 +111,7 @@ def edit_credit(request, releaser_id, nick_id, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def delete_credit(request, releaser_id, nick_id, production_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -133,6 +137,7 @@ def delete_credit(request, releaser_id, nick_id, production_id):
 			html_title="Deleting %s's credit from %s" % (nick.name, production.title))
 
 
+@writeable_site_required
 @login_required
 def edit_notes(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -147,6 +152,7 @@ def edit_notes(request, releaser_id):
 		update_datestamp=True, on_success=success)
 
 
+@writeable_site_required
 @login_required
 def edit_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -178,6 +184,7 @@ def edit_nick(request, releaser_id, nick_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -209,6 +216,7 @@ def add_nick(request, releaser_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -218,6 +226,7 @@ def edit_primary_nick(request, releaser_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def change_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -231,6 +240,7 @@ def change_primary_nick(request, releaser_id):
 	return HttpResponseRedirect(releaser.get_absolute_edit_url())
 
 
+@writeable_site_required
 @login_required
 def delete_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -261,6 +271,7 @@ def delete_nick(request, releaser_id, nick_id):
 			html_title="Deleting name: %s" % nick.name)
 
 
+@writeable_site_required
 @login_required
 def delete(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
@@ -294,6 +305,7 @@ def delete(request, releaser_id):
 			html_title="Deleting %s" % releaser.name)
 
 
+@writeable_site_required
 @login_required
 def edit_external_links(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)

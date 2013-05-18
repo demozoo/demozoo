@@ -10,7 +10,7 @@
 		<div class="panel report" data-report-name="{{ report_name }}">
 			<ul>
 				{% for party in parties %}
-					<li class="excludable" data-record-id="{{ party.id }}">
+					<li {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ party.id }}">
 						<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
 					</li>
 				{% endfor %}

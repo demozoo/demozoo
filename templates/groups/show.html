@@ -12,18 +12,20 @@
 			<li><a href="{% url 'group_history' group.id %}">History</a></li>
 		</ul>
 		
-		<ul class="actions">
-			{% if editing %}
-				<li><a href="{% url 'edit_group_done' group.id %}" class="done">Done</a></li>
-			{% else %}
-				<li><a href="{% url 'edit_group' group.id %}" class="edit">Edit</a></li>
-			{% endif %}
-		</ul>
+		{% if site_is_writeable %}
+			<ul class="actions">
+				{% if editing %}
+					<li><a href="{% url 'edit_group_done' group.id %}" class="done">Done</a></li>
+				{% else %}
+					<li><a href="{% url 'edit_group' group.id %}" class="edit">Edit</a></li>
+				{% endif %}
+			</ul>
+		{% endif %}
 		<h2>
 			{{ group.name }}
 			{% if group.primary_nick.differentiator %}<span class="annotation">({{ group.primary_nick.differentiator }})</span>{% endif %}
 			{% nick_variants group.primary_nick %}
-			{% if editing %}
+			{% if editing and site_is_writeable %}
 				<a href="{% url 'releaser_edit_primary_nick' group.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
@@ -37,14 +39,14 @@
 					{% for nick in alternative_nicks %}
 						<li>
 							{{ nick.name }} {% nick_variants nick %}
-							{% if editing %}
+							{% if editing and site_is_writeable %}
 								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
 						</li>
 					{% endfor %}
-					{% if editing %}
+					{% if editing and site_is_writeable %}
 						<li class="add">
 							<a href="{% url 'releaser_add_nick' group.id %}" class="open_in_lightbox">Add another name</a>
 						</li>
@@ -60,7 +62,7 @@
 					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					{% if editing %}<li><a href="{% url 'releaser_edit_external_links' group.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
+					{% if editing and site_is_writeable %}<li><a href="{% url 'releaser_edit_external_links' group.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}
@@ -68,7 +70,7 @@
 	
 	{% if group.notes or editing_as_admin %}
 		<div class="notes">
-			{% if editing_as_admin %}
+			{% if editing_as_admin and site_is_writeable %}
 					<ul class="actions">
 					<li><a class="edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
 				</ul>
@@ -99,14 +101,14 @@
 							<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
 								<a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
 								{% releaser_flag membership.member %}
-								{% if editing %}
+								{% if editing and site_is_writeable %}
 									<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox">
 										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 									</a>
 								{% endif %}
 							</li>
 						{% endfor %}
-						{% if editing %}
+						{% if editing and site_is_writeable %}
 							<li class="add">
 								<a href="{% url 'group_add_member' group.id %}" class="open_in_lightbox">Add member</a>
 							</li>
@@ -121,14 +123,14 @@
 							<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
 								<a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
 								{% releaser_flag membership.member %}
-								{% if editing %}
+								{% if editing and site_is_writeable %}
 									<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox">
 										<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
 									</a>
 								{% endif %}
 							</li>
 						{% endfor %}
-						{% if editing %}
+						{% if editing and site_is_writeable %}
 							<li class="add">
 								<a href="{% url 'group_add_subgroup' group.id %}" class="open_in_lightbox">Add subgroup</a>
 							</li>
@@ -145,7 +147,7 @@
 				<h3 class="productions_header">Productions:</h3>
 				{% include "shared/production_listing.html" with show_screenshots=1 %}
 				
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<ul>
 						<li class="add">
 							<a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="open_in_lightbox">Add production</a>
@@ -170,7 +172,7 @@
 				{% with group as releaser %}
 					{% include "shared/credited_production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<ul>
 						<li class="add">
 							<a href="{% url 'releaser_add_credit' group.id %}" class="open_in_lightbox">Add credit</a>
@@ -180,7 +182,7 @@
 			</div>
 		{% endif %}
 	</div>
-	{% if editing_as_admin %}
+	{% if editing_as_admin and site_is_writeable %}
 		<ul class="maintenance_actions">
 			{% if not group.is_referenced %}
 				<li><a href="{% url 'delete_releaser' group.id %}" class="delete open_in_lightbox">Delete group</a></li>

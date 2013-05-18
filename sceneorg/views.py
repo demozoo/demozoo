@@ -7,6 +7,7 @@ from django.contrib import messages
 from demoscene.models import Party, Competition, Production, ProductionLink, Edit
 from sceneorg.models import Directory, File
 from django.contrib.auth.models import User
+from read_only_mode import writeable_site_required
 
 
 @login_required
@@ -53,6 +54,7 @@ def compofolder_party(request, party_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def compofolder_link(request):
 	directory = get_object_or_404(Directory, id=request.POST.get('directory_id'))
@@ -63,6 +65,7 @@ def compofolder_link(request):
 	return HttpResponse("OK", content_type="text/plain")
 
 
+@writeable_site_required
 @login_required
 def compofolder_unlink(request):
 	directory = get_object_or_404(Directory, id=request.POST.get('directory_id'))
@@ -73,6 +76,7 @@ def compofolder_unlink(request):
 	return HttpResponse("OK", content_type="text/plain")
 
 
+@writeable_site_required
 @login_required
 def compofolders_done(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
@@ -207,6 +211,7 @@ def compofile_directory(request, directory_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def compofile_link(request):
 	sceneorg_file = get_object_or_404(File, id=request.POST.get('file_id'))
@@ -225,6 +230,7 @@ def compofile_link(request):
 	return HttpResponse("OK", content_type="text/plain")
 
 
+@writeable_site_required
 @login_required
 def compofile_unlink(request):
 	sceneorg_file = get_object_or_404(File, id=request.POST.get('file_id'))
