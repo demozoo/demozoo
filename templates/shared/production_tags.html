@@ -7,7 +7,7 @@
 			{% for tag in tags %}
 				<li>
 					<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
-					{% if editing %}
+					{% if editing and site_is_writeable %}
 						<form action="{% url 'production_remove_tag' production.id tag.id %}" method="post">
 							{% csrf_token %}
 							<button type="submit">x</button>
@@ -16,7 +16,7 @@
 				</li>
 			{% endfor %}
 		</ul>
-		{% if editing %}
+		{% if editing and site_is_writeable %}
 			<form class="add_tag" action="{% url 'production_add_tag' production.id %}" method="post">
 				{% csrf_token %}
 				<input type="text" name="tag_name" />

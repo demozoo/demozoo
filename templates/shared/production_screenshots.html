@@ -31,7 +31,7 @@
 				</div>
 			{% endif %}
 		{% endif %}
-		{% if editing %}
+		{% if editing and site_is_writeable %}
 			<ul class="actions">
 				<li>
 					<a href="{% url 'production_add_screenshot' production.id %}" class="add open_in_lightbox">Add screenshot</a>

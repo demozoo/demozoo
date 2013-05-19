@@ -13,13 +13,15 @@
 			<li><a href="{{ production.get_history_url }}">History</a></li>
 		</ul>
 
-		<ul class="actions">
-			{% if editing %}
-				<li><a href="{{ production.get_edit_done_url }}" class="done">Done</a></li>
-			{% else %}
-				<li><a href="{{ production.get_absolute_edit_url }}" class="edit">Edit</a></li>
-			{% endif %}
-		</ul>
+		{% if site_is_writeable %}
+			<ul class="actions">
+				{% if editing %}
+					<li><a href="{{ production.get_edit_done_url }}" class="done">Done</a></li>
+				{% else %}
+					<li><a href="{{ production.get_absolute_edit_url }}" class="edit">Edit</a></li>
+				{% endif %}
+			</ul>
+		{% endif %}
 		
 		<div class="production_title">
 			<h2>{{ production.title }}</h2>
@@ -29,7 +31,7 @@
 				</h3>
 			{% endif %}
 			
-			{% if editing %}
+			{% if editing and site_is_writeable %}
 				<a href="{{ production.get_edit_core_details_url }}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit production details" title="Edit production details" />
 				</a>
@@ -98,7 +100,7 @@
 						{% include "shared/production_listing.html" %}
 					{% endwith %}
 					
-					{% if editing %}
+					{% if editing and site_is_writeable %}
 						<ul>
 							<li class="edit">
 								<a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
@@ -110,7 +112,7 @@
 		{% endif %}
 	</div>
 	
-	{% if editing_as_admin %}
+	{% if editing_as_admin and site_is_writeable %}
 		<ul class="maintenance_actions">
 			<li><a href="{% url 'delete_production' production.id %}" class="delete open_in_lightbox">Delete production</a></li>
 		</ul>

@@ -20,9 +20,11 @@
 							{% if releaser.show_surname %}{{ releaser.surname }}{% else %}<span class="redacted">{{ releaser.surname }}</span>{% endif %}
 						</td>
 						<td>
-							<a href="{% url 'scener_edit_real_name' releaser.id %}?ajax_submit=true" class="open_in_lightbox">
-								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
-							</a>
+							{% if site_is_writeable %}
+								<a href="{% url 'scener_edit_real_name' releaser.id %}?ajax_submit=true" class="open_in_lightbox">
+									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
+								</a>
+							{% endif %}
 						</td>
 						<td style="width: 80%;">
 							<div style="display:block; max-width: 600px; word-wrap: break-word;">

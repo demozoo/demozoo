@@ -6,6 +6,7 @@ from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 import datetime
+from read_only_mode import writeable_site_required
 
 
 # helper function: create or update a production according to JSON data
@@ -64,6 +65,7 @@ def handle_production(prod_data, competition):
 	return production
 
 
+@writeable_site_required
 @login_required
 def add_placing(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
@@ -90,6 +92,7 @@ def add_placing(request, competition_id):
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def update_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
@@ -117,6 +120,7 @@ def update_placing(request, placing_id):
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def delete_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)

@@ -7,6 +7,7 @@ from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 import datetime
+from read_only_mode import writeable_site_required
 
 
 def show(request, competition_id):
@@ -28,6 +29,7 @@ def history(request, competition_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
@@ -74,6 +76,7 @@ def edit(request, competition_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def import_text(request, competition_id):
 	if not request.user.is_staff:

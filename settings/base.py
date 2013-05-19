@@ -119,6 +119,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
 	'demoscene.context_processors.global_nav_forms',
+	'demoscene.context_processors.read_only_mode',
 )
 
 LOGGING = {
@@ -190,3 +191,6 @@ CELERYBEAT_SCHEDULE = {
 		"args": ()
 	},
 }
+
+# Read-only mode
+SITE_IS_WRITEABLE = True

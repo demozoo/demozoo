@@ -18,8 +18,8 @@ MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.Debug
 AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
+AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
+AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
 
-try:
-	from .local import *
-except ImportError:
-	pass
+# Read-only mode:
+# SITE_IS_WRITEABLE = False

@@ -6,13 +6,16 @@ from django.contrib import messages
 from demoscene.shortcuts import *
 from demoscene.forms.account import *
 from demoscene.models import AccountProfile
+from read_only_mode import writeable_site_required
 
 
+@writeable_site_required
 @login_required
 def index(request):
 	return render(request, 'accounts/index.html', {})
 
 
+@writeable_site_required
 def signup(request):
 	if request.method == 'POST':
 		form = UserCreationForm(request.POST)
@@ -32,6 +35,7 @@ def signup(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def preferences(request):
 	try:
@@ -55,6 +59,7 @@ def preferences(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def change_password(request):
 	if request.method == 'POST':

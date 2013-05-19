@@ -7,9 +7,11 @@
 {% block base_main %}
 	<h2>Groups</h2>
 	
-	<ul class="actions">
-		<li><a href="{% url 'new_group' %}" class="add open_in_lightbox">New group</a></li>
-	</ul>
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_group' %}" class="add open_in_lightbox">New group</a></li>
+		</ul>
+	{% endif %}
 	
 	<ul>
 		{% for nick in nick_page.object_list %}

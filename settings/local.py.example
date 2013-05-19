@@ -5,3 +5,6 @@ YAHOO_API_KEY = 'get one from http://developer.yahoo.com/wsregapp/'
 AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
 AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
 AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
+
+# Read-only mode:
+# SITE_IS_WRITEABLE = False

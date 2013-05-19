@@ -13,12 +13,16 @@
 			<li class="active_tab">Party</li>
 			<li><a href="{% url 'party_series_history' party_series.id %}">History</a></li>
 		</ul>
-		<ul class="actions">
-			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
-		</ul>
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="add open_in_lightbox">New party edition</a></li>
+			</ul>
+		{% endif %}
 		<h2>
 			{{ party_series.name }}
-			<a href="{% url 'party_edit_series' party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+			{% if site_is_writeable %}
+				<a href="{% url 'party_edit_series' party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+			{% endif %}
 		</h2>
 		{% if party_series.has_any_external_links %}
 			<div class="external_links">
@@ -65,7 +69,7 @@
 	
 	{% if party_series.notes or request.user.is_staff %}
 		<div class="notes">
-			{% if request.user.is_staff %}
+			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
 				</ul>

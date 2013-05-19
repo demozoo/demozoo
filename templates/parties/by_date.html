@@ -5,9 +5,12 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
-	<ul class="actions">
-		<li><a href="{% url 'new_party' %}" class="add">New party</a></li>
-	</ul>
+
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_party' %}" class="add">New party</a></li>
+		</ul>
+	{% endif %}
 
 	<h2>Parties</h2>
 	
