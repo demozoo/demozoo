@@ -82,7 +82,7 @@
 	
 	{% if party.notes or request.user.is_staff %}
 		<div class="notes">
-			{% if request.user.is_staff and site_is_editable %}
+			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
 				</ul>
