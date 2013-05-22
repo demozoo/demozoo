@@ -17,16 +17,19 @@
 			<li><a href="{% url 'scener_history' scener.id %}">History</a></li>
 		</ul>
 	
-		<ul class="actions">
-			{% if editing %}
-				<li><a href="{% url 'edit_scener_done' scener.id %}" class="action_button icon done">Done</a></li>
-			{% else %}
-				<li><a href="{% url 'edit_scener' scener.id %}" class="action_button icon edit">Edit</a></li>
-			{% endif %}
-		</ul>
+		{% if site_is_writeable %}
+			<ul class="actions">
+				{% if editing %}
+					<li><a href="{% url 'edit_scener_done' scener.id %}" class="action_button icon done">Done</a></li>
+				{% else %}
+					<li><a href="{% url 'edit_scener' scener.id %}" class="action_button icon edit">Edit</a></li>
+				{% endif %}
+			</ul>
+		{% endif %}
+
 		<h2>
 			{{ scener.name }} {% nick_variants scener.primary_nick %}
-			{% if editing %}
+			{% if editing and site_is_writeable %}
 				<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
@@ -40,14 +43,14 @@
 					{% for nick in alternative_nicks %}
 						<li>
 							{{ nick.name }} {% nick_variants nick %}
-							{% if editing %}
+							{% if editing and site_is_writeable %}
 								<a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
 						</li>
 					{% endfor %}
-					{% if editing %}
+					{% if editing and site_is_writeable %}
 						<li class="add">
 							<a href="{% url 'releaser_add_nick' scener.id %}" class="open_in_lightbox">Add another name</a>
 						</li>
@@ -65,7 +68,7 @@
 				{% else %}
 					<em>not set</em>
 				{% endif %}
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<a href="{% url 'scener_edit_real_name' scener.id %}" class="open_in_lightbox">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
 					</a>
@@ -86,7 +89,7 @@
 						<img src="/static/images/icons/flags/{{ scener.country_code|lower }}.png" alt="" />
 					{% endif %}
 				{% endif %}
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
 					</a>
@@ -101,7 +104,7 @@
 					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					{% if editing %}<li><a href="{% url 'releaser_edit_external_links' scener.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
+					{% if editing and site_is_writeable %}<li><a href="{% url 'releaser_edit_external_links' scener.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
 				</ul>
 			</div>
 		{% endif %}
@@ -109,7 +112,7 @@
 	
 	{% if scener.notes or editing_as_admin %}
 		<div class="notes">
-			{% if editing_as_admin %}
+			{% if editing_as_admin and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
 				</ul>
@@ -127,14 +130,14 @@
 					{% for membership in memberships %}
 						<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
 							<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
-							{% if editing %}
+							{% if editing and site_is_writeable %}
 								<a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="open_in_lightbox">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 								</a>
 							{% endif %}
 						</li>
 					{% endfor %}
-					{% if editing %}
+					{% if editing and site_is_writeable %}
 						<li class="add">
 							<a href="{% url 'scener_add_group' scener.id %}" class="open_in_lightbox">Add group</a>
 						</li>
@@ -150,7 +153,7 @@
 				<h3 class="productions_header">Productions:</h3>
 				{% include "shared/production_listing.html" with show_screenshots=1 %}
 				
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<ul>
 						<li class="add">
 							<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="open_in_lightbox">Add production</a>
@@ -166,7 +169,7 @@
 				{% with scener as releaser %}
 					{% include "shared/credited_production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<ul>
 						<li class="add">
 							<a href="{% url 'releaser_add_credit' scener.id %}" class="open_in_lightbox">Add credit</a>
@@ -177,7 +180,7 @@
 		{% endif %}
 	</div>
 	
-	{% if editing_as_admin %}
+	{% if editing_as_admin and site_is_writeable %}
 		<ul class="maintenance_actions">
 			{% if not scener.is_referenced %}
 				<li><a href="{% url 'delete_releaser' scener.id %}" class="action_button icon delete open_in_lightbox">Delete scener</a></li>

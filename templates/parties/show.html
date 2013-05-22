@@ -19,7 +19,9 @@
 		<div class="party_details">
 			<h2>
 				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
-				<a href="{% url 'edit_party' party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+				{% if site_is_writeable %}
+					<a href="{% url 'edit_party' party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
+				{% endif %}
 			</h2>
 			{% date_range party.start_date party.end_date %}
 			
@@ -58,7 +60,9 @@
 					{% for link in external_links %}
 						<li>{{ link.html_link|safe }}</li>
 					{% endfor %}
-					<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>
+					{% if site_is_writeable %}
+						<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>
+					{% endif %}
 				</ul>
 			</div>
 			
@@ -83,7 +87,7 @@
 	
 	{% if party.notes or request.user.is_staff %}
 		<div class="notes">
-			{% if request.user.is_staff %}
+			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
 				</ul>
@@ -97,9 +101,11 @@
 		<div class="competition">
 			<h3>
 				Invitation{{ invitations|length|pluralize }}
-				<a href="{% url 'party_edit_invitations' party.id %}" class="open_in_lightbox">
-					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit invitations" title="Edit invitations" />
-				</a>
+				{% if site_is_writeable %}
+					<a href="{% url 'party_edit_invitations' party.id %}" class="open_in_lightbox">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit invitations" title="Edit invitations" />
+					</a>
+				{% endif %}
 			</h3>
 			{% if invitations %}
 				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 %}
@@ -112,9 +118,11 @@
 			<a id="competition_{{ compo.id }}"></a>
 			<h3>
 				<a href="{{ compo.get_absolute_url }}">{{ compo.name }}</a>
-				<a href="{% url 'competition_edit' compo.id %}">
-					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
-				</a>
+				{% if site_is_writeable %}
+					<a href="{% url 'competition_edit' compo.id %}">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
+					</a>
+				{% endif %}
 			</h3>
 			{% if placings %}
 				{% include "shared/competition_results.html" %}
@@ -122,9 +130,11 @@
 		</div>
 	{% endfor %}
 	
-	<ul class="actions">
-		<li>
-			<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
-		</li>
-	</ul>
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li>
+				<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
+			</li>
+		</ul>
+	{% endif %}
 {% endblock %}

@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block base_main %}
-	{% if add_item_url %}
+	{% if add_item_url and site_is_writeable %}
 		<ul class="actions">
 			<li><a href="{{ add_item_url }}" class="action_button icon add open_in_lightbox">{{ add_item_text }}</a></li>
 		</ul>

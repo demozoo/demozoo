@@ -1293,7 +1293,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
 		groklinks.PushnpopParty,
 		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
-		groklinks.WikipediaPage,
+		groklinks.WikipediaPage, groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1304,6 +1304,7 @@ class PartyExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'party'),
 		)
+		ordering = ['link_class']
 
 
 class ReleaserExternalLink(ExternalLink):
@@ -1314,9 +1315,10 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
-		groklinks.PushnpopGroup, groklinks.PushnpopProfile,
+		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage, groklinks.DiscogsArtist,
 		groklinks.BaseUrl,
 	]
 
@@ -1327,6 +1329,7 @@ class ReleaserExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'releaser'),
 		)
+		ordering = ['link_class']
 
 
 class ProductionLink(ExternalLink):
@@ -1346,6 +1349,7 @@ class ProductionLink(ExternalLink):
 		groklinks.PushnpopProduction, groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1400,6 +1404,7 @@ class ProductionLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'production', 'is_download_link'),
 		)
+		ordering = ['link_class']
 
 
 class ResultsFile(models.Model):

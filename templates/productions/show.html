@@ -22,7 +22,7 @@
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	{% include "productions/_core_details.html" with show_edit_button=1 %}
+	{% include "productions/_core_details.html" with show_edit_button=site_is_writeable %}
 
 	{% if production.can_have_screenshots %}
 		{% include "productions/_screenshots.html" %}
@@ -62,18 +62,20 @@
 					{% include "shared/production_listing.html" %}
 				{% endwith %}
 				
-				<ul>
-					<li class="edit">
-						<a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
-					</li>
-				</ul>
+				{% if site_is_writeable %}
+					<ul>
+						<li class="edit">
+							<a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
+						</li>
+					</ul>
+				{% endif %}
 			</div>
 		{% endif %}
 	</div>
 
 	{% last_edited_by production %}
 	
-	{% if request.user.is_staff %}
+	{% if request.user.is_staff and site_is_writeable %}
 		<ul class="maintenance_actions">
 			<li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
 		</ul>

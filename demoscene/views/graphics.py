@@ -5,6 +5,7 @@ from demoscene.forms.production import *
 
 from django.contrib.auth.decorators import login_required
 import datetime
+from read_only_mode import writeable_site_required
 
 
 def show(request, production_id, edit_mode=False):
@@ -34,6 +35,7 @@ def history(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def create(request):
 	if request.method == 'POST':

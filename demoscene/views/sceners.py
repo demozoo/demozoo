@@ -4,6 +4,7 @@ from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
 import datetime
+from read_only_mode import writeable_site_required
 
 
 def index(request):
@@ -44,12 +45,14 @@ def show(request, scener_id, edit_mode=False):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit(request, scener_id):
 	set_edit_mode_active(True, request.user)
 	return show(request, scener_id, edit_mode=True)
 
 
+@writeable_site_required
 def edit_done(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 	set_edit_mode_active(False, request.user)
@@ -64,6 +67,7 @@ def history(request, scener_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_location(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
@@ -76,6 +80,7 @@ def edit_location(request, scener_id):
 		update_datestamp=True, on_success=success)
 
 
+@writeable_site_required
 @login_required
 def edit_real_name(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
@@ -90,6 +95,7 @@ def edit_real_name(request, scener_id):
 		update_datestamp=True, on_success=success, ajax_submit=request.GET.get('ajax_submit'))
 
 
+@writeable_site_required
 @login_required
 def create(request):
 	if request.method == 'POST':
@@ -110,6 +116,7 @@ def create(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_group(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
@@ -138,6 +145,7 @@ def add_group(request, scener_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def remove_group(request, scener_id, group_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
@@ -158,6 +166,7 @@ def remove_group(request, scener_id, group_id):
 			html_title="Removing %s from %s" % (scener.name, group.name))
 
 
+@writeable_site_required
 @login_required
 def edit_membership(request, scener_id, membership_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
@@ -186,6 +195,7 @@ def edit_membership(request, scener_id, membership_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def convert_to_group(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)

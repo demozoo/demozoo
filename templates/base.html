@@ -68,6 +68,9 @@
 	</head>
 	<body lang="en" class="{% block body_class %}default{% endblock %}">
 		<div id="page">
+			{% if user.is_authenticated and not site_is_writeable %}
+				<div style="background-color: black; color: #ffc; padding: 2px; text-align: center">Demozoo is currently in <strong>read-only mode</strong>. We'll get things back to normal as soon as possible.</div>
+			{% endif %}
 			<header id="site_header">
 				<h1><a href="{% url 'home' %}">Demozoo</a></h1>
 				{% block login_status_panel %}

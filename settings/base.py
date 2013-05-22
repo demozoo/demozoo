@@ -3,7 +3,7 @@
 # Determine paths
 import os
 import sys
-FILEROOT = os.path.dirname(__file__)
+FILEROOT = os.path.join(os.path.dirname(__file__), '..')
 
 # Modify sys.path so it contains the right things
 sys.path.append(FILEROOT)
@@ -74,7 +74,6 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'debug_toolbar.middleware.DebugToolbarMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -101,7 +100,6 @@ INSTALLED_APPS = (
 	'djapian',
 	'treebeard',
 	'taggit',
-	'debug_toolbar',
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
@@ -122,6 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 	'django.core.context_processors.request',
 	'demoscene.context_processors.global_nav_forms',
 	'demoscene.context_processors.ajax_base_template',
+	'demoscene.context_processors.read_only_mode',
 )
 
 LOGGING = {
@@ -173,6 +172,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ROUTES = {
 	'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
 }
+CELERYD_CONCURRENCY = 2
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
@@ -193,9 +193,5 @@ CELERYBEAT_SCHEDULE = {
 	},
 }
 
-# Get local settings
-try:
-	from local_settings import *
-except ImportError:
-	print "You have no local_settings.py file! Run:   cp local_settings.py.example local_settings.py"
-	sys.exit(1)
+# Read-only mode
+SITE_IS_WRITEABLE = True

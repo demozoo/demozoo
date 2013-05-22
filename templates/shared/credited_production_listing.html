@@ -51,7 +51,7 @@
 				<td>{{ production_with_credits.grouper.release_date.short_format }}</td>
 				<td>{% byline production_with_credits.grouper %}</td>
 
-				{% if editing %}
+				{% if editing and site_is_writeable %}
 					<td>
 						<a href="{% url 'releaser_edit_credit' nick_with_credits.grouper.releaser_id nick_with_credits.grouper.id production_with_credits.grouper.id %}" class="open_in_lightbox">
 							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />

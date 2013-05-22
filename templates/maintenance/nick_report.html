@@ -10,7 +10,8 @@
 		<div class="panel report" data-report-name="{{ report_name }}">
 			<ul>
 				{% for nick in nicks %}
-					<li class="{% if nick.releaser.is_group %}group{% else %}scener{% endif %} excludable" data-record-id="{{ nick.id }}">
+					<li class="{% if nick.releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}
+excludable{% endif %}" data-record-id="{{ nick.id }}">
 						<a href="{{ nick.releaser.get_absolute_url }}">{{ nick.name }}</a>
 					</li>
 				{% endfor %}

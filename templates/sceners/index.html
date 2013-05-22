@@ -7,9 +7,11 @@
 {% block base_main %}
 	<h2>Sceners</h2>
 	
-	<ul class="actions">
-		<li><a href="{% url 'new_scener' %}" class="action_button icon add open_in_lightbox">New scener</a></li>
-	</ul>
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_scener' %}" class="action_button icon add open_in_lightbox">New scener</a></li>
+		</ul>
+	{% endif %}
 	
 	<ul>
 		{% for nick in nick_page.object_list %}

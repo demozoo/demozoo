@@ -11,6 +11,7 @@ import datetime
 from django.utils import simplejson as json
 from django.db import transaction
 from screenshots.tasks import capture_upload_for_processing
+from read_only_mode import writeable_site_required
 
 
 def index(request, supertype):
@@ -124,6 +125,7 @@ def history(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 @transaction.commit_on_success
 def edit_core_details(request, production_id):
@@ -195,6 +197,7 @@ def edit_core_details(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_notes(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -209,6 +212,7 @@ def edit_notes(request, production_id):
 		update_datestamp=True, update_bonafide_flag=True, on_success=success)
 
 
+@writeable_site_required
 @login_required
 def edit_external_links(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -233,6 +237,7 @@ def edit_external_links(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_download_links(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -267,6 +272,7 @@ def screenshots(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -276,6 +282,7 @@ def edit_screenshots(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_screenshot(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -305,6 +312,7 @@ def add_screenshot(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def delete_screenshot(request, production_id, screenshot_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -330,6 +338,7 @@ def delete_screenshot(request, production_id, screenshot_id):
 			html_title="Deleting screenshot for %s" % production.title)
 
 
+@writeable_site_required
 @login_required
 def create(request):
 	if request.method == 'POST':
@@ -352,6 +361,7 @@ def create(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_credit(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -387,6 +397,7 @@ def add_credit(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -431,6 +442,7 @@ def edit_credit(request, production_id, nick_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def delete_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -453,6 +465,7 @@ def delete_credit(request, production_id, nick_id):
 			html_title="Deleting %s's credit from %s" % (nick.name, production.title))
 
 
+@writeable_site_required
 @login_required
 def edit_soundtracks(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -486,6 +499,7 @@ def edit_soundtracks(request, production_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_tag(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -498,6 +512,7 @@ def add_tag(request, production_id):
 	return HttpResponseRedirect(production.get_absolute_url())
 
 
+@writeable_site_required
 @login_required
 def remove_tag(request, production_id, tag_id):
 	production = get_object_or_404(Production, id=production_id)
@@ -537,6 +552,7 @@ def autocomplete(request):
 	return HttpResponse(json.dumps(production_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def delete(request, production_id):
 	production = get_object_or_404(Production, id=production_id)

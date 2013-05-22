@@ -13,19 +13,23 @@
 			</a>
 		{% endwith %}
 	{% endif %}
-	<ul class="actions">
-		{% if screenshots.count > 1 %}
-			<li class="all_screenshots">
-				<a class="action_button" href="{% url 'production_screenshots' production.id %}">All screenshots</a>
-			</li>
-		{% endif %}
-		<li>
-			<a href="{% url 'production_add_screenshot' production.id %}" class="action_button icon add open_in_lightbox">Add screenshot</a>
-		</li>
-		<li>
-			<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
-		</li>
-	</ul>
+	{% if screenshots.count > 1 or site_is_writeable %}
+		<ul class="actions">
+			{% if screenshots.count > 1 %}
+				<li class="all_screenshots">
+					<a class="action_button" href="{% url 'production_screenshots' production.id %}">All screenshots</a>
+				</li>
+			{% endif %}
+			{% if site_is_writeable %}
+				<li>
+					<a href="{% url 'production_add_screenshot' production.id %}" class="action_button icon add open_in_lightbox">Add screenshot</a>
+				</li>
+				<li>
+					<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
+				</li>
+			{% endif %}
+		</ul>
+	{% endif %}
 	<div style="clear: both;"></div>
 </div>
 

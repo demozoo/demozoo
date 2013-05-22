@@ -18,7 +18,12 @@
 				<ul>
 					{% for file in archive_members %}
 						<li>
-							<a href="{% url 'maintenance_resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a> - <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
+							{% if site_is_writeable %}
+								<a href="{% url 'maintenance_resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
+							{% else %}
+								{{ file.filename }} ({{ file.file_size }} bytes)
+							{% endif %}
+							- <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
 						</li>
 					{% endfor %}
 				<ul>
