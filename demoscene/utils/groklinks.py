@@ -400,7 +400,7 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def download_url(self):
-		return self.nl_url
+		return self.de_http_url
 
 	@property
 	def no_url(self):
