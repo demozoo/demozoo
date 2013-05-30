@@ -17,6 +17,15 @@
 
 {% block extra_js %}
 	<script src="/static/js/screenshot_carousel.js"></script>
+	<script>
+		$(function() {
+			$('.panel_edit').hover(function() {
+				$(this).closest('.panel').addClass('hover');
+			}, function() {
+				$(this).closest('.panel').removeClass('hover');
+			});
+		});
+	</script>
 {% endblock %}
 
 {% block body_class %}show_production{% endblock %}

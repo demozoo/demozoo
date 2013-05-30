@@ -2,10 +2,10 @@
 {% load url from future %}
 
 {% if production.notes or request.user.is_staff %}
-	<div class="notes">
+	<div class="panel notes">
 		{% if request.user.is_staff and site_is_writeable %}
 			<ul class="actions">
-				<li><a class="action_button icon edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
+				<li><a class="action_button icon edit panel_edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
 			</ul>
 		{% endif %}
 		{{ production.notes|safe_markdown }}
