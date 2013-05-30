@@ -1,27 +1,32 @@
 @import "../variables.less";
 
-.panel_heading() {
-	background-color: @demozoo_lightgreen;
-	float: left;
-	font-weight: normal;
-	color: white;
-	font-size: 10pt;
-	text-transform: uppercase;
-	font-family: FabricaRegular, sans-serif;
-	padding: 6px;
-	border-right: 6px solid #eaeaea;
-}
-
 .show_production {
 
-	.panel {
+	.editable_chunk {
 		transition: background-color 0.6s;
 		-moz-transition: background-color 0.6s;
 		-webkit-transition: background-color 0.6s;
 		-o-transition: background-color 0.6s;
 	}
-	.panel.hover {
+	.editable_chunk.hover {
 		background-color: #edeeff;
+	}
+
+	.panel {
+		overflow: hidden; /* self-clear */
+
+		h3 {
+			background-color: @demozoo_lightgreen;
+			float: left;
+			font-weight: normal;
+			color: white;
+			font-size: 10pt;
+			text-transform: uppercase;
+			font-family: FabricaRegular, sans-serif;
+			padding: 6px;
+			border-right: 6px solid #eaeaea;
+		}
+
 	}
 
 	.production_core_details {
@@ -176,7 +181,6 @@
 		margin-bottom: 20px;
 
 		h3 {
-			.panel_heading;
 			margin-bottom: 8px;
 		}
 
@@ -184,7 +188,7 @@
 			clear: both;
 
 			li.download_link {
-				background-color: #eee;
+				background-color: rgba(224, 224, 224, 0.5);
 				border-radius: 2px;
 				border: 1px solid #ccc;
 				margin-top: 8px;
@@ -247,9 +251,6 @@
 		overflow: hidden;
 		margin-bottom: 20px;
 
-		h3 {
-			.panel_heading;
-		}
 		ul.external_links {
 			clear: both;
 		}
@@ -258,11 +259,60 @@
 		overflow: hidden;
 		margin-bottom: 20px;
 
-		h3 {
-			.panel_heading;
-		}
 		ul {
 			clear: both;
 		}
+	}
+
+	.notes_panel {
+		border: 1px solid #eee;
+		margin-top: 8px;
+		margin-bottom: 20px;
+		padding-left: 8px;
+		padding-right: 8px;
+		color: #444;
+
+		.notes {
+			a:link {
+				text-decoration: none;
+				border-bottom: 1px solid #000088;
+			}
+			a:visited {
+				text-decoration: none;
+				border-bottom: 1px solid #880088;
+			}
+		}
+	}
+
+	.secondary_panels {
+		border-top: 1px dotted #ddd;
+		border-bottom: 1px dotted #ddd;
+		padding-top: 20px;
+		padding-bottom: 20px;
+		overflow: hidden;
+
+		.panel {
+			float: left;
+			width: 50%;
+		}
+
+		.credits_panel {
+			.credits {
+				clear: both;
+			}
+		}
+
+		.featured_in_panel {
+			.production_listing {
+				clear: both;
+			}
+		}
+
+		.soundtracks_panel {
+			.production_listing {
+				clear: both;
+			}
+		}
+
 	}
 }

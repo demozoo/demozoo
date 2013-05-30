@@ -1,7 +1,7 @@
 {% load url from future %}
 {% load demoscene_tags %}
 
-<div class="screenshots_panel">
+<div class="panel screenshots_panel">
 	{% if screenshots %}
 		{% with screenshots.0 as pic %}
 			<a href="{{ pic.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">

@@ -1,8 +1,8 @@
 {% load url from future %}
 
-<div class="panel">
+<div class="credits_panel panel">
 	<h3>Credits</h3>
-	<ul>
+	<ul class="credits">
 		{% regroup credits by nick as nick_list %}
 		{% for nick_credits in nick_list %}
 			<li>

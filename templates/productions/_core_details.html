@@ -2,11 +2,11 @@
 {% load humanize %}
 {% load url from future %}
 
-<div class="production_core_details panel">
+<div class="production_core_details editable_chunk">
 	{% if show_edit_button or show_back_button %}
 		<ul class="actions">
 			{% if show_edit_button %}
-				<li><a class="action_button icon edit panel_edit open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
+				<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
 			{% endif %}
 			{% if show_back_button %}
 				<li><a class="action_button icon back" href="{{ production.get_absolute_url }}">Back to production</a></li>

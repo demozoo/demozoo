@@ -19,10 +19,10 @@
 	<script src="/static/js/screenshot_carousel.js"></script>
 	<script>
 		$(function() {
-			$('.panel_edit').hover(function() {
-				$(this).closest('.panel').addClass('hover');
+			$('.edit_chunk').hover(function() {
+				$(this).closest('.editable_chunk').addClass('hover');
 			}, function() {
-				$(this).closest('.panel').removeClass('hover');
+				$(this).closest('.editable_chunk').removeClass('hover');
 			});
 		});
 	</script>
@@ -42,42 +42,41 @@
 	{% include "productions/_external_links.html" %}
 
 	{% include "productions/_tags.html" %}
-		
+
 	<div style="clear: both;"></div>
 	
 	{% include "productions/_notes.html" %}
-	
-	<div id="side_column">
+
+	<div class="secondary_panels">
 		{% if production.can_have_credits %}
 			{% include "productions/_credits.html" %}
 		{% endif %}
-	</div>
-	
-	<div id="main_column">
-		
+
 		{% if featured_in_productions %}
-			<div class="panel">
-				<h3 class="productions_header">Featured in:</h3>
+			<div class="featured_in_panel panel">
+				<h3>Featured in:</h3>
 				{% with featured_in_productions as productions %}
 					{% include "shared/production_listing.html" with show_screenshots=1 %}
 				{% endwith %}
 			</div>
 		{% endif %}
-		
+
 		{% if production.can_have_soundtracks %}
-			<div class="panel">
-				<h3 class="soundtracks_header">Soundtrack</h3>
+			<div class="soundtracks_panel panel editable_chunk">
+				<h3>Soundtrack</h3>
+
+				{% if site_is_writeable %}
+					<ul class="actions">
+						<li>
+							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
+						</li>
+					</ul>
+				{% endif %}
+
 				{% with soundtracks as productions %}
 					{% include "shared/production_listing.html" %}
 				{% endwith %}
 				
-				{% if site_is_writeable %}
-					<ul>
-						<li class="edit">
-							<a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Edit soundtrack details</a>
-						</li>
-					</ul>
-				{% endif %}
 			</div>
 		{% endif %}
 	</div>
