@@ -1333,7 +1333,7 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
-		groklinks.SpeccyWikiPage, groklinks.DiscogsArtist,
+		groklinks.SpeccyWikiPage, groklinks.DiscogsArtist, groklinks.DiscogsLabel,
 		groklinks.BaseUrl,
 	]
 

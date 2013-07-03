@@ -854,6 +854,16 @@ class DiscogsArtist(BaseUrl):
 	html_title_format = "%s on Discogs"
 
 
+class DiscogsLabel(BaseUrl):
+	canonical_format = "http://www.discogs.com/label/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
+	]
+	html_link_class = "discogs"
+	html_link_text = "Discogs"
+	html_title_format = "%s on Discogs"
+
+
 class ModarchiveMember(BaseUrl):
 	canonical_format = "http://modarchive.org/member.php?%s"
 	tests = [
