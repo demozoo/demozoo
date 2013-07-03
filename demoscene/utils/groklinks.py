@@ -953,7 +953,7 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		PushnpopProfile, DiscogsArtist,
+		PushnpopProfile, DiscogsArtist, DiscogsLabel,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		SpeccyWikiPage,
@@ -964,7 +964,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		PushnpopGroup, SceneOrgFolder, DiscogsArtist,
+		PushnpopGroup, SceneOrgFolder, DiscogsArtist, DiscogsLabel,
 		SoundcloudUser, WikipediaPage, SpeccyWikiPage,
 		BaseUrl,
 	])
