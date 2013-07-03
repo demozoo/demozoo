@@ -27,8 +27,11 @@ class BaseUrl():
 		if param != None:
 			return cls(param)
 
+	def __unicode__(self):
+		return self.canonical_format % self.param
+
 	def __str__(self):
-		return self.canonical_format % self.param.encode('utf-8')
+		return unicode(self).encode('utf-8')
 
 	html_link_class = "website"
 	html_link_text = "WWW"

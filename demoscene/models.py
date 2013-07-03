@@ -1270,7 +1270,7 @@ class ExternalLink(models.Model):
 
 	def _get_url(self):
 		if self.link:
-			return str(self.link)
+			return unicode(self.link)
 		else:
 			return None
 
