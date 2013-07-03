@@ -156,7 +156,8 @@ def ambiguous_groups_with_no_differentiators(request):
 	report_name = 'ambiguous_groups_with_no_differentiators'
 
 	nicks = Nick.objects.raw('''
-		SELECT demoscene_nick.*
+		SELECT demoscene_nick.*,
+			same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name, same_named_nick.differentiator AS clashing_differentiator
 		FROM
 			demoscene_nick
 			INNER JOIN demoscene_releaser ON (demoscene_nick.releaser_id = demoscene_releaser.id)
@@ -173,7 +174,7 @@ def ambiguous_groups_with_no_differentiators(request):
 			AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_nick.name
 	''', [report_name])
-	return render(request, 'maintenance/nick_report.html', {
+	return render(request, 'maintenance/ambiguous_group_names.html', {
 		'title': 'Ambiguous group names with no differentiators',
 		'nicks': nicks,
 		'report_name': report_name,
