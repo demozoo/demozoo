@@ -847,7 +847,7 @@ class SoundcloudTrack(BaseUrl):
 class DiscogsArtist(BaseUrl):
 	canonical_format = "http://www.discogs.com/artist/%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?discogs\.com/(.+)', re.I),
+		regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
 	]
 	html_link_class = "discogs"
 	html_link_text = "Discogs"
