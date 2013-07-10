@@ -347,10 +347,16 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return strip_markup(self.notes)
 
 	def search_result_json(self):
+		primary_nick = self.primary_nick
+		if primary_nick.differentiator:
+			differentiator = " (%s)" % primary_nick.differentiator
+		else:
+			differentiator = ""
+
 		return {
 			'type': 'group' if self.is_group else 'scener',
 			'url': self.get_absolute_url(),
-			'value': self.name_with_affiliations(),
+			'value': self.name_with_affiliations() + differentiator,
 		}
 
 	class Meta:
