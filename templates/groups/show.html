@@ -76,15 +76,9 @@
 	
 	{% if group.notes or editing_as_admin %}
 		<div class="notes">
-<<<<<<< HEAD
-			{% if editing_as_admin %}
+			{% if editing_as_admin and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
-=======
-			{% if editing_as_admin and site_is_writeable %}
-					<ul class="actions">
-					<li><a class="edit open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}">Edit notes</a></li>
->>>>>>> dkev
 				</ul>
 			{% endif %}
 			{{ group.notes|safe_markdown }}
