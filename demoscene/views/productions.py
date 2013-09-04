@@ -18,6 +18,7 @@ def index(request, supertype):
 	queryset = Production.objects.filter(supertype=supertype).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
+	asc = request.GET.get('dir', 'asc') == 'asc'
 
 	if supertype == 'production':
 		title = "Productions"
@@ -35,7 +36,7 @@ def index(request, supertype):
 		add_item_text = "New music"
 		menu_section = "music"
 
-	queryset = apply_order(queryset, order)
+	queryset = apply_order(queryset, order, asc)
 
 	production_page = get_page(
 		queryset,
@@ -47,7 +48,8 @@ def index(request, supertype):
 		'add_item_url': add_item_url,
 		'add_item_text': add_item_text,
 		'production_page': production_page,
-		'menu_section': menu_section
+		'menu_section': menu_section,
+		'asc': asc,
 	})
 
 
@@ -59,10 +61,11 @@ def tagged(request, tag_slug):
 	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
+	asc = request.GET.get('dir', 'asc') == 'asc'
 
 	title = "Productions tagged '%s'" % tag.name
 
-	queryset = apply_order(queryset, order)
+	queryset = apply_order(queryset, order, asc)
 
 	production_page = get_page(
 		queryset,
@@ -72,16 +75,17 @@ def tagged(request, tag_slug):
 		'title': title,
 		'production_page': production_page,
 		'order': order,
+		'asc': asc,
 	})
 
 
-def apply_order(queryset, order):
+def apply_order(queryset, order, asc):
 	if order == 'date':
-		return queryset.order_by('release_date_date')
+		return queryset.order_by('%srelease_date_date' % ('' if asc else '-'))
 	else:  # title
 		return queryset.extra(
 			select={'lower_title': 'lower(demoscene_production.title)'}
-		).order_by('lower_title')
+		).order_by('%slower_title' % ('' if asc else '-'))
 
 
 def show(request, production_id, edit_mode=False):
