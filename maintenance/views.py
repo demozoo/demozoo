@@ -9,6 +9,7 @@ from django.db import connection, transaction
 from fuzzy_date import FuzzyDate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
+from read_only_mode import writeable_site_required
 
 
 def index(request):
@@ -155,7 +156,8 @@ def ambiguous_groups_with_no_differentiators(request):
 	report_name = 'ambiguous_groups_with_no_differentiators'
 
 	nicks = Nick.objects.raw('''
-		SELECT demoscene_nick.*
+		SELECT demoscene_nick.*,
+			same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name, same_named_nick.differentiator AS clashing_differentiator
 		FROM
 			demoscene_nick
 			INNER JOIN demoscene_releaser ON (demoscene_nick.releaser_id = demoscene_releaser.id)
@@ -172,7 +174,7 @@ def ambiguous_groups_with_no_differentiators(request):
 			AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_nick.name
 	''', [report_name])
-	return render(request, 'maintenance/nick_report.html', {
+	return render(request, 'maintenance/ambiguous_group_names.html', {
 		'title': 'Ambiguous group names with no differentiators',
 		'nicks': nicks,
 		'report_name': report_name,
@@ -553,6 +555,7 @@ def parties_with_no_location(request):
 	parties = Party.objects.extra(
 		where=[
 			"woe_id IS NULL",
+			"is_online = 'f'",
 			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
 		params=[report_name]
@@ -610,7 +613,8 @@ def unresolved_screenshots(request):
 	entries = []
 	for link in links[:100]:
 		download = Download.last_mirrored_download_for_url(link.download_url)
-		entries.append((link, download, download.archive_members.all()))
+		if download:
+			entries.append((link, download, download.archive_members.all()))
 
 	return render(request, 'maintenance/unresolved_screenshots.html', {
 		'title': 'Unresolved screenshots',
@@ -642,6 +646,7 @@ def public_real_names(request):
 	})
 
 
+@writeable_site_required
 def fix_release_dates(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -653,6 +658,7 @@ def fix_release_dates(request):
 	return HttpResponseRedirect(request.POST['return_to'])
 
 
+@writeable_site_required
 def exclude(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -663,6 +669,7 @@ def exclude(request):
 	return HttpResponse('OK', mimetype='text/plain')
 
 
+@writeable_site_required
 def add_membership(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -679,6 +686,7 @@ def add_membership(request):
 	return HttpResponse('OK', mimetype='text/plain')
 
 
+@writeable_site_required
 def add_sceneorg_link_to_party(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -696,6 +704,7 @@ def view_archive_member(request, archive_member_id):
 	return HttpResponse(buf, mimetype=member.guess_mime_type())
 
 
+@writeable_site_required
 def resolve_screenshot(request, productionlink_id, archive_member_id):
 	production_link = ProductionLink.objects.get(id=productionlink_id)
 	archive_member = ArchiveMember.objects.get(id=archive_member_id)

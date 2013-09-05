@@ -4,6 +4,7 @@ from demoscene.forms.releaser import *
 
 from django.contrib.auth.decorators import login_required
 import datetime
+from read_only_mode import writeable_site_required
 
 
 def index(request):
@@ -37,12 +38,14 @@ def show(request, group_id, edit_mode=False):
 	})
 
 
+@writeable_site_required
 @login_required
 def edit(request, group_id):
 	set_edit_mode_active(True, request.user)
 	return show(request, group_id, edit_mode=True)
 
 
+@writeable_site_required
 def edit_done(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	set_edit_mode_active(False, request.user)
@@ -57,6 +60,7 @@ def history(request, group_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def create(request):
 	if request.method == 'POST':
@@ -77,6 +81,7 @@ def create(request):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_member(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -105,6 +110,7 @@ def add_member(request, group_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def remove_member(request, group_id, scener_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -125,6 +131,7 @@ def remove_member(request, group_id, scener_id):
 			html_title="Removing %s from %s" % (scener.name, group.name))
 
 
+@writeable_site_required
 @login_required
 def edit_membership(request, group_id, membership_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -159,6 +166,7 @@ def edit_membership(request, group_id, membership_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def add_subgroup(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -187,6 +195,7 @@ def add_subgroup(request, group_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def remove_subgroup(request, group_id, subgroup_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -207,6 +216,7 @@ def remove_subgroup(request, group_id, subgroup_id):
 			html_title="Removing %s from %s" % (subgroup.name, group.name))
 
 
+@writeable_site_required
 @login_required
 def edit_subgroup(request, group_id, membership_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
@@ -236,6 +246,7 @@ def edit_subgroup(request, group_id, membership_id):
 	})
 
 
+@writeable_site_required
 @login_required
 def convert_to_scener(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)

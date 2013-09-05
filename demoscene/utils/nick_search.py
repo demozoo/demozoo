@@ -14,6 +14,9 @@ class NickSelection():
 		self.id = id
 		self.name = name
 
+	class FailedToResolve(Exception):
+		pass
+
 	def commit(self):
 		if self.id == 'newscener':
 			releaser = Releaser(name=self.name, is_group=False, updated_at=datetime.datetime.now())
@@ -26,7 +29,10 @@ class NickSelection():
 			self.id = releaser.primary_nick.id
 			return releaser.primary_nick
 		else:
-			return Nick.objects.get(id=self.id)
+			try:
+				return Nick.objects.get(id=self.id)
+			except Nick.DoesNotExist:
+				raise NickSelection.FailedToResolve("Tried to match the name '#{self.name}' to nick ID #{self.id} which does not exist")
 
 	def __str__(self):
 		return self.name

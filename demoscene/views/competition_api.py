@@ -6,6 +6,7 @@ from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
 import datetime
+from read_only_mode import writeable_site_required
 
 
 # helper function: create or update a production according to JSON data
@@ -35,15 +36,28 @@ def handle_production(prod_data, competition):
 			else:
 				production.types = []
 		if 'byline' in prod_data:
-			production.author_nicks = [
-				NickSelection(author['id'], author['name']).commit()
-				for author in prod_data['byline']['authors']
-			]
-			production.author_affiliation_nicks = [
-				NickSelection(affillation['id'], affillation['name']).commit()
-				for affillation in prod_data['byline']['affiliations']
-			]
-			production.unparsed_byline = None
+			try:
+				production.author_nicks = [
+					NickSelection(author['id'], author['name']).commit()
+					for author in prod_data['byline']['authors']
+				]
+				production.author_affiliation_nicks = [
+					NickSelection(affillation['id'], affillation['name']).commit()
+					for affillation in prod_data['byline']['affiliations']
+				]
+				production.unparsed_byline = None
+			except NickSelection.FailedToResolve:
+				# failed to match up the passed nick IDs to valid nick records.
+				# Keep the passed names, as an unparsed byline
+				author_names = [author['name'] for author in prod_data['byline']['authors']]
+				affiliation_names = [affiliation['name'] for affiliation in prod_data['byline']['affiliations']]
+				byline_string = ' + '.join(author_names)
+				if affiliation_names:
+					byline_string += ' / ' + ' ^ '.join(affiliation_names)
+				production.unparsed_byline = byline_string
+				production.author_nicks = []
+				production.author_affiliation_nicks = []
+
 		production.updated_at = datetime.datetime.now()
 		production.supertype = production.inferred_supertype
 		production.save()
@@ -51,6 +65,7 @@ def handle_production(prod_data, competition):
 	return production
 
 
+@writeable_site_required
 @login_required
 def add_placing(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
@@ -77,6 +92,7 @@ def add_placing(request, competition_id):
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def update_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
@@ -104,6 +120,7 @@ def update_placing(request, placing_id):
 		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
 
 
+@writeable_site_required
 @login_required
 def delete_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)

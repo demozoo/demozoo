@@ -1,4 +1,4 @@
-from demoscene.models import Releaser, Nick, NickVariant, Competition
+from demoscene.models import Releaser, Nick, NickVariant, Competition, ResultsFile
 from sceneorg.models import Directory
 
 from django.core.management.base import NoArgsCommand
@@ -139,6 +139,14 @@ class Command(NoArgsCommand):
 
 			if not is_real_compo:
 				compo.delete()
+
+		print "Checking encodings on results files"
+		results_files = ResultsFile.objects.all()
+		for results_file in results_files:
+			try:
+				results_file.text
+			except UnicodeDecodeError:
+				print "Error on /parties/%d/results_file/%d/ - cannot decode as %s" % (results_file.party_id, results_file.id, results_file.encoding)
 
 		transaction.commit_unless_managed()
 

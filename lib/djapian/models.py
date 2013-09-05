@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.encoding import smart_str
@@ -8,6 +8,7 @@ from datetime import datetime
 from djapian import utils
 
 class ChangeManager(models.Manager):
+    @transaction.commit_on_success
     def create(self, object, action, **kwargs):
         ct = ContentType.objects.get_for_model(object.__class__)
         pk = smart_str(object.pk)

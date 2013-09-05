@@ -27,7 +27,9 @@
 						<td></td>
 						<td></td>
 						<td></td>
-						<td><input type="checkbox" id="check_all" /><label for="check_all">Check all</label></td>
+						{% if site_is_writeable %}
+							<td><input type="checkbox" id="check_all" /><label for="check_all">Check all</label></td>
+						{% endif %}
 					</tr>
 					<script>
 						$('#check_all').change(function() {
@@ -39,12 +41,12 @@
 						})
 					</script>
 					{% for prod in productions %}
-						<tr class="excludable" data-record-id="{{ prod.id }}">
+						<tr {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ prod.id }}">
 							<td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
 							<td>{{ prod.release_date }}</td>
 							<td>{% byline prod %}</td>
 							<td>
-								{% if prod.suggested_release_date %}
+								{% if prod.suggested_release_date and site_is_writeable %}
 									<input type="checkbox" name="production_id" id="production_id_{{ prod.id }}" value="{{ prod.id }}" />
 									<input type="hidden" name="production_{{ prod.id }}_release_date_date" value="{{ prod.suggested_release_date.date|date:"Y-m-d" }}" />
 									<input type="hidden" name="production_{{ prod.id }}_release_date_precision" value="{{ prod.suggested_release_date.precision }}" />
@@ -55,15 +57,17 @@
 						</tr>
 					{% endfor %}
 					
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td>
-							<input type="hidden" name="return_to" value="{{ return_to }}" />
-							<input type="submit" value="Update selected records" />
-						</td>
-					</tr>
+					{% if site_is_writeable %}
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td>
+								<input type="hidden" name="return_to" value="{{ return_to }}" />
+								<input type="submit" value="Update selected records" />
+							</td>
+						</tr>
+					{% endif %}
 				</table>
 			</form>
 		</div>

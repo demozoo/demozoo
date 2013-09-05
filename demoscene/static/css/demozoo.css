@@ -1564,6 +1564,14 @@ ul.parties_in_series li.current {
 	background-image: url('/static/images/icons/external_sites/wikipedia.png');
 }
 
+.external_links a.speccywiki {
+	background-image: url('/static/images/icons/external_sites/speccywiki.png');
+}
+
+.external_links a.discogs {
+	background-image: url('/static/images/icons/external_sites/discogs.png');
+}
+
 .external_links a.website {
 	background-image: url('/static/images/icons/world.png');
 }

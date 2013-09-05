@@ -347,10 +347,16 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return strip_markup(self.notes)
 
 	def search_result_json(self):
+		primary_nick = self.primary_nick
+		if primary_nick.differentiator:
+			differentiator = " (%s)" % primary_nick.differentiator
+		else:
+			differentiator = ""
+
 		return {
 			'type': 'group' if self.is_group else 'scener',
 			'url': self.get_absolute_url(),
-			'value': self.name_with_affiliations(),
+			'value': self.name_with_affiliations() + differentiator,
 		}
 
 	class Meta:
@@ -1031,6 +1037,7 @@ class Party(models.Model):
 	end_date_date = models.DateField()
 	end_date_precision = models.CharField(max_length=1, choices=DATE_PRECISION_CHOICES)
 
+	is_online = models.BooleanField(default=False)
 	location = models.CharField(max_length=255, blank=True)
 	country_code = models.CharField(max_length=5, blank=True)
 	latitude = models.FloatField(null=True, blank=True)
@@ -1269,7 +1276,7 @@ class ExternalLink(models.Model):
 
 	def _get_url(self):
 		if self.link:
-			return str(self.link)
+			return unicode(self.link)
 		else:
 			return None
 
@@ -1307,7 +1314,7 @@ class PartyExternalLink(ExternalLink):
 		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
 		groklinks.PushnpopParty,
 		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
-		groklinks.WikipediaPage,
+		groklinks.WikipediaPage, groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1318,6 +1325,7 @@ class PartyExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'party'),
 		)
+		ordering = ['link_class']
 
 
 class ReleaserExternalLink(ExternalLink):
@@ -1328,9 +1336,10 @@ class ReleaserExternalLink(ExternalLink):
 		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
 		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
 		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
-		groklinks.PushnpopGroup, groklinks.PushnpopProfile,
+		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
 		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
 		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage, groklinks.DiscogsArtist, groklinks.DiscogsLabel,
 		groklinks.BaseUrl,
 	]
 
@@ -1341,6 +1350,7 @@ class ReleaserExternalLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'releaser'),
 		)
+		ordering = ['link_class']
 
 
 class ProductionLink(ExternalLink):
@@ -1360,6 +1370,7 @@ class ProductionLink(ExternalLink):
 		groklinks.PushnpopProduction, groklinks.ModarchiveModule,
 		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
+		groklinks.SpeccyWikiPage,
 		groklinks.BaseUrl,
 	]
 
@@ -1414,6 +1425,7 @@ class ProductionLink(ExternalLink):
 		unique_together = (
 			('link_class', 'parameter', 'production', 'is_download_link'),
 		)
+		ordering = ['link_class']
 
 
 class ResultsFile(models.Model):

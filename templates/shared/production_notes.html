@@ -3,7 +3,7 @@
 
 {% if production.notes or editing_as_admin %}
 	<div class="notes">
-		{% if editing_as_admin %}
+		{% if editing_as_admin and site_is_writeable %}
 			<ul class="actions">
 				<li><a class="edit open_in_lightbox" href="{% url 'production_edit_notes' production.id %}">Edit notes</a></li>
 			</ul>

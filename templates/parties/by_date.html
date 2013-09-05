@@ -5,9 +5,12 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
-	<ul class="actions">
-		<li><a href="{% url 'new_party' %}" class="add">New party</a></li>
-	</ul>
+
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_party' %}" class="add">New party</a></li>
+		</ul>
+	{% endif %}
 
 	<h2>Parties</h2>
 	
@@ -23,7 +26,10 @@
 				<li>
 					<a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
 					- {% date_range party.start_date party.end_date %}
-					{% if party.location %}
+					{% if party.is_online %}
+						- Online
+						<img src="/static/images/icons/computer.png" alt="" />
+					{% elif party.location %}
 						- 
 						{{ party.location }}
 						{% if party.country_code %}
