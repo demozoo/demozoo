@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
@@ -18,7 +18,7 @@ def index(request):
 @writeable_site_required
 def signup(request):
 	if request.method == 'POST':
-		form = UserCreationForm(request.POST)
+		form = SignupForm(request.POST)
 		if form.is_valid():
 			form.save()
 			user = authenticate(
@@ -29,7 +29,7 @@ def signup(request):
 			messages.success(request, 'Account created')
 			return redirect('home')
 	else:
-		form = UserCreationForm()
+		form = SignupForm()
 	return render(request, 'accounts/signup.html', {
 		'form': form,
 	})
