@@ -1,0 +1,80 @@
+/* Tags */
+.tags_panel {
+	ul.tags {
+		li {
+			float: left;
+			margin-right: 8px;
+			margin-top: 8px;
+			font-size: 10pt;
+
+			border: 1px solid #888;
+			background-color: #ddd;
+
+			&:hover {
+				background-color: #ccc;
+			}
+
+			a.tag_name {
+				text-decoration: none;
+				color: #444;
+				padding: 4px;
+				float: left;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+
+			form {
+				float: right;
+			}
+
+			button {
+				background-image: url('/static/images/icons/delete_mini_button.png');
+				border: 2px solid #ddd;
+				background-color: transparent;
+				width: 18px;
+				height: 18px;
+				text-indent: -5000px;
+				cursor: pointer;
+			}
+
+			&:hover button {
+				border: 2px solid #ccc;
+			}
+
+			button:hover {
+				border-left: 2px solid #eee;
+				border-top: 2px solid #eee;
+				border-right: 2px solid #888;
+				border-bottom: 2px solid #888;
+			}
+		}
+	}
+
+	form.add_tag {
+		float: left;
+		padding-top: 4px;
+	}
+}
+
+/* if js enabled, only show edit controls when the 'editing' class is explicitly present on the panel */
+html.js .tags_panel {
+	ul.tags li form {
+		display: none;
+	}
+
+	form.add_tag {
+		display: none;
+	}
+
+	&.editing {
+		ul.tags li form {
+			display: block;
+		}
+
+		form.add_tag {
+			display: block;
+		}
+	}
+}

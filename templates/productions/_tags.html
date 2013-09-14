@@ -1,12 +1,25 @@
 {% load url from future %}
 
-<div class="panel tags_panel">
+<div class="editable_chunk panel tags_panel">
 	<h3>Tags</h3>
-	<ul>
+
+	{% if site_is_writeable and not user.is_authenticated %}
+		{% comment %} Provide an 'edit' button that takes them to the login page.
+			For logged-in users, the 'edit' button will be added via JS
+			(because non-JS users will see the edit controls on the tags anyhow).
+		{% endcomment %}
+		<ul class="actions">
+			<li>
+				<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" title="Edit tags">Edit</a>
+			</li>
+		</ul>
+	{% endif %}
+
+	<ul class="tags">
 		{% for tag in tags %}
 			<li>
 				<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
-				{% if site_is_writeable %}
+				{% if site_is_writeable and user.is_authenticated %}
 					<form action="{% url 'production_remove_tag' production.id tag.id %}" method="post">
 						{% csrf_token %}
 						<button type="submit">x</button>
@@ -15,7 +28,7 @@
 			</li>
 		{% endfor %}
 	</ul>
-	{% if site_is_writeable %}
+	{% if site_is_writeable and user.is_authenticated %}
 		<form class="add_tag" action="{% url 'production_add_tag' production.id %}" method="post">
 			{% csrf_token %}
 			<input type="text" name="tag_name" />
