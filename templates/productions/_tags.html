@@ -17,15 +17,7 @@
 
 	<ul class="tags">
 		{% for tag in tags %}
-			<li>
-				<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
-				{% if site_is_writeable and user.is_authenticated %}
-					<form action="{% url 'production_remove_tag' production.id tag.id %}" method="post">
-						{% csrf_token %}
-						<button type="submit">x</button>
-					</form>
-				{% endif %}
-			</li>
+			{% include "productions/_tag.html" %}
 		{% endfor %}
 	</ul>
 	{% if site_is_writeable and user.is_authenticated %}

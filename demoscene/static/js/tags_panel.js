@@ -3,6 +3,7 @@ $(function() {
 		var panel = $(this);
 
 		var addTagForm = panel.find('form.add_tag');
+		var tagList = panel.find('ul.tags');
 
 		/* only proceed if we actually have an addTagForm
 			(i.e. user is logged in and site is in editable mode) */
@@ -35,8 +36,20 @@ $(function() {
 			});
 		}
 
-		panel.find('ul.tags li').each(function() {
+		tagList.find('li').each(function() {
 			ajaxifyTagLi(this);
+		});
+
+		addTagForm.submit(function() {
+			$.post(this.action, $(this).serialize(), function(html) {
+				var newLi = $(html);
+				tagList.append(newLi);
+				ajaxifyTagLi(newLi);
+			});
+
+			$('input:text', this).val('');
+
+			return false;
 		});
 
 	});

@@ -5,7 +5,7 @@ from demoscene.forms.common import CreditFormSet
 from taggit.models import Tag
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core.exceptions import ValidationError
 import datetime
 from django.utils import simplejson as json
@@ -510,10 +510,27 @@ def add_tag(request, production_id):
 	if request.method == 'POST':
 		tag_name = request.POST.get('tag_name', '').strip()
 		if tag_name:
-			production.tags.add(tag_name)
-			Edit.objects.create(action_type='production_add_tag', focus=production,
-				description=u"Added tag '%s'" % tag_name, user=request.user)
-	return HttpResponseRedirect(production.get_absolute_url())
+			# check whether it's already present
+			existing_tag = production.tags.filter(name=tag_name)
+			if not existing_tag:
+
+				production.tags.add(tag_name)
+				Edit.objects.create(action_type='production_add_tag', focus=production,
+					description=u"Added tag '%s'" % tag_name, user=request.user)
+
+				if request.is_ajax():
+					tag = production.tags.get(name=tag_name)
+					return render(request, 'productions/_tag.html', {
+						'production': production, 'tag': tag
+					})
+
+	if request.is_ajax():
+		raise Http404
+		# an arbitrary failure response so that it won't try to insert a
+		# tag based on the HTML we send back. Should probably be a 405 or something.
+		# Meh, whatever.
+	else:
+		return HttpResponseRedirect(production.get_absolute_url())
 
 
 @writeable_site_required
