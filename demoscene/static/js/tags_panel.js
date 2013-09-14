@@ -13,7 +13,7 @@ $(function() {
 		actions.append(editButton.wrap('<li></li>'));
 		actions.insertAfter(panel.find('h3'));
 
-		isEditing = false;
+		var isEditing = false;
 		editButton.click(function() {
 			if (isEditing) {
 				isEditing = false;
@@ -25,5 +25,19 @@ $(function() {
 				editButton.removeClass('edit').addClass('done').text('Done');
 			}
 		});
+
+		function ajaxifyTagLi(li) {
+			$('form', li).submit(function() {
+				$.post(this.action, $(this).serialize(), function() {
+					$(li).fadeOut('fast', function() {$(this).remove();});
+				});
+				return false;
+			});
+		}
+
+		panel.find('ul.tags li').each(function() {
+			ajaxifyTagLi(this);
+		});
+
 	});
 });

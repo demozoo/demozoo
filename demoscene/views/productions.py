@@ -528,7 +528,11 @@ def remove_tag(request, production_id, tag_id):
 				description=u"Removed tag '%s'" % tag.name, user=request.user)
 		except Tag.DoesNotExist:
 			pass
-	return HttpResponseRedirect(production.get_absolute_url())
+
+	if request.is_ajax():
+		return HttpResponse('OK', mimetype="text/plain")
+	else:
+		return HttpResponseRedirect(production.get_absolute_url())
 
 
 def autocomplete(request):
