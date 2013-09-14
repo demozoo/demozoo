@@ -18,17 +18,17 @@ def deploy():
 
 def sanity():
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/virtualenvs/demozoo/bin/python ./manage.py sanity --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=settings.production')
 
 
 def reindex():
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.production')
 
 
 def bump_external_links():
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=settings.production')
 
 
 def fetchdb():

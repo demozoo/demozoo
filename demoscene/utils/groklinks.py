@@ -27,8 +27,11 @@ class BaseUrl():
 		if param != None:
 			return cls(param)
 
+	def __unicode__(self):
+		return self.canonical_format % self.param
+
 	def __str__(self):
-		return self.canonical_format % self.param.encode('utf-8')
+		return unicode(self).encode('utf-8')
 
 	html_link_class = "website"
 	html_link_text = "WWW"
@@ -400,7 +403,7 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def download_url(self):
-		return self.nl_url
+		return self.de_http_url
 
 	@property
 	def no_url(self):
@@ -847,7 +850,17 @@ class SoundcloudTrack(BaseUrl):
 class DiscogsArtist(BaseUrl):
 	canonical_format = "http://www.discogs.com/artist/%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?discogs\.com/(.+)', re.I),
+		regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
+	]
+	html_link_class = "discogs"
+	html_link_text = "Discogs"
+	html_title_format = "%s on Discogs"
+
+
+class DiscogsLabel(BaseUrl):
+	canonical_format = "http://www.discogs.com/label/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
 	]
 	html_link_class = "discogs"
 	html_link_text = "Discogs"
@@ -943,7 +956,7 @@ def grok_scener_link(urlstring):
 		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
 		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		PushnpopProfile, DiscogsArtist,
+		PushnpopProfile, DiscogsArtist, DiscogsLabel,
 		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
 		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
 		SpeccyWikiPage,
@@ -954,7 +967,7 @@ def grok_scener_link(urlstring):
 def grok_group_link(urlstring):
 	return grok_link_by_types(urlstring, [
 		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		PushnpopGroup, SceneOrgFolder, DiscogsArtist,
+		PushnpopGroup, SceneOrgFolder, DiscogsArtist, DiscogsLabel,
 		SoundcloudUser, WikipediaPage, SpeccyWikiPage,
 		BaseUrl,
 	])

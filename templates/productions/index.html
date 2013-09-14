@@ -18,8 +18,8 @@
 
 	<p>
 		Order by:
-		{% if order == 'title' %}<strong>Title</strong>{% else %}<a href="?order=title">Title</a>{% endif %}
-		| {% if order == 'date' %}<strong>Release date</strong>{% else %}<a href="?order=date">Release date</a>{% endif %}
+		{% if order == 'title' %}<strong><a href="?order=title&dir={% if asc %}desc{% else %}asc{% endif %}">Title</a></strong>{% else %}<a href="?order=title">Title</a>{% endif %}
+		| {% if order == 'date' %}<strong><a href="?order=date&dir={% if asc %}desc{% else %}asc{% endif %}">Release date</a></strong>{% else %}<a href="?order=date">Release date</a>{% endif %}
 	</p>
 
 	<ul>

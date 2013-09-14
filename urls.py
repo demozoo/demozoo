@@ -149,4 +149,5 @@ urlpatterns += patterns('',
 	(r'^maintenance/', include('maintenance.urls')),
 	(r'^pages/', include('pages.urls')),
 	(r'^sceneorg/', include('sceneorg.urls')),
+	(r'^api/', include('api.urls')),
 )
