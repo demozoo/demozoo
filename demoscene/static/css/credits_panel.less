@@ -1,0 +1,38 @@
+.credits_panel {
+	ul.credits li {
+		line-height: 1.5em;
+		padding: 2px 0 2px 24px;
+		margin-right: 20px;
+
+		&.scener {
+			background-image: url(/static/images/icons/scener.png);
+			background-position: left center;
+			background-repeat: no-repeat;
+		}
+		&.group {
+			background-image: url(/static/images/icons/group.png);
+			background-position: left center;
+			background-repeat: no-repeat;
+		}
+
+		a.edit_credit {
+			float: right;
+		}
+	}
+}
+/* if js enabled, only show edit controls when the 'editing' class is explicitly present on the panel */
+html.js .credits_panel {
+	a.edit_credit, a.add_credit {
+		display: none;
+	}
+
+	&.editing {
+		a.edit_credit, a.add_credit {
+			display: inline;
+		}
+
+		ul.credits li:hover {
+			background-color: #ddd;
+		}
+	}
+}

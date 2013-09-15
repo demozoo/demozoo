@@ -1,28 +1,39 @@
 {% load url from future %}
 
-<div class="credits_panel panel">
+<div class="editable_chunk credits_panel panel">
 	<h3>Credits</h3>
+
+	{% if site_is_writeable and not user.is_authenticated %}
+		{% comment %} Provide an 'edit' button that takes them to the login page.
+			For logged-in users, the 'edit' button will be added via JS
+			(because non-JS users will see the edit controls on the tags anyhow).
+		{% endcomment %}
+		<ul class="actions">
+			<li>
+				<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" title="Edit credits">Edit</a>
+			</li>
+		</ul>
+	{% endif %}
+
 	<ul class="credits">
 		{% regroup credits by nick as nick_list %}
 		{% for nick_credits in nick_list %}
-			<li>
+			<li class="{% if nick_credits.grouper.releaser.is_group %}group{% else %}scener{% endif %}">
 				<a href="{{ nick_credits.grouper.releaser.get_absolute_url }}">{{ nick_credits.grouper }}</a>
 				-
 				{% for credit in nick_credits.list %}
 					{{ credit.description }}{% if not forloop.last %},{% endif %}
 				{% endfor %}
 
-				{% if site_is_writeable %}
-					<a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="open_in_lightbox">
+				{% if site_is_writeable and user.is_authenticated %}
+					<a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="edit_credit open_in_lightbox">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
 					</a>
 				{% endif %}
 			</li>
 		{% endfor %}
-		{% if site_is_writeable %}
-			<li class="add">
-				<a href="{% url 'production_add_credit' production.id %}" class="open_in_lightbox">Add credit</a>
-			</li>
-		{% endif %}
 	</ul>
+	{% if site_is_writeable and user.is_authenticated %}
+		<a href="{% url 'production_add_credit' production.id %}" class="action_button icon add add_credit open_in_lightbox">Add credit</a>
+	{% endif %}
 </div>
