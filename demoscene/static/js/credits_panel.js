@@ -11,21 +11,23 @@ $(function() {
 		/* TODO: cut out the blatant copy-and-pasting between here and tags_panel.js */
 
 		var actions = $('<ul class="actions"></ul>');
-		var editButton = $('<a href="javascript:void(0);" class="action_button icon edit edit_chunk" title="Edit credits">Edit</a>');
+		var editButton = $('<a href="javascript:void(0);" class="action_button icon edit_chunk" title="Edit credits"></a>');
+
+		function updateEditButtonState() {
+			if (panel.hasClass('editing')) {
+				editButton.removeClass('edit').addClass('done').text('Done');
+			} else {
+				editButton.removeClass('done').addClass('edit').text('Edit');
+			}
+		}
+		updateEditButtonState();
+
 		actions.append(editButton.wrap('<li></li>'));
 		actions.insertAfter(panel.find('h3'));
 
-		var isEditing = false;
 		editButton.click(function() {
-			if (isEditing) {
-				isEditing = false;
-				panel.removeClass('editing');
-				editButton.removeClass('done').addClass('edit').text('Edit');
-			} else {
-				isEditing = true;
-				panel.addClass('editing');
-				editButton.removeClass('edit').addClass('done').text('Done');
-			}
+			panel.toggleClass('editing');
+			updateEditButtonState();
 		});
 
 	});

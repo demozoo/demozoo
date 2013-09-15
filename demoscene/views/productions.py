@@ -104,6 +104,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
+		'editing_credits': (request.GET.get('editing') == 'credits'),
 		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
 		'screenshots': screenshots,
 		'screenshots_json': screenshots_json,
@@ -390,7 +391,7 @@ def add_credit(request, production_id):
 			production.has_bonafide_edits = True
 			production.save()
 			# form.log_creation(request.user)
-			return HttpResponseRedirect(production.get_absolute_url())
+			return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 	else:
 		nick_form = ProductionCreditedNickForm()
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
@@ -434,7 +435,7 @@ def edit_credit(request, production_id, nick_id):
 				focus2=nick.releaser,
 				description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
 				user=request.user)
-			return HttpResponseRedirect(production.get_absolute_url())
+			return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 	else:
 		nick_form = ProductionCreditedNickForm(nick=nick)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
@@ -461,7 +462,7 @@ def delete_credit(request, production_id, nick_id):
 				production.save()
 				Edit.objects.create(action_type='delete_credit', focus=production, focus2=nick.releaser,
 					description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
-		return HttpResponseRedirect(production.get_absolute_url())
+		return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('production_delete_credit', args=[production_id, nick_id]),
