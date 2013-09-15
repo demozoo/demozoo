@@ -630,23 +630,19 @@ form.party_invitation_form .spawning_formset .spawned_form a.delete_button {
 }
 
 /* external links listings */
-.external_links {
+.external_links_section {
 	margin-top: 16px;
 	margin-bottom: 8px;
 	line-height: 16px;
+}
+.external_links_section h3 {
+	display: inline;
+}
+.external_links_section ul {
+	display: inline;
+}
 
-	h3 {
-		display: inline;
-	}
-	ul {
-		display: inline;
-	}
-	li {
-		display: inline;
-	}
-
-	a.edit {
-		background-image: url('/static/images/icons/edit.png');
-		font-weight: bold;
-	}
+.external_links_section a.edit {
+	background-image: url('/static/images/icons/edit.png');
+	font-weight: bold;
 }
