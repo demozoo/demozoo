@@ -104,15 +104,30 @@
 		.screenshot {
 			width: 400px;
 			height: 300px;
-			background-color: #888;
+			background-color: #bbb;
 			display: inline-block;
 			line-height: 300px;
 			text-align: center;
+
+			img {
+				margin: auto;
+				vertical-align: middle;
+			}
 		}
 
-		.screenshot img {
-			margin: auto;
-			vertical-align: middle;
+		.no_screenshot {
+			width: 400px;
+			height: 300px;
+			background-color: #bbb;
+
+			p {
+				margin: 0;
+				padding-top: 182px;
+				background-image: url(/static/images/camera.png);
+				background-repeat: no-repeat;
+				background-position: center 100px;
+				text-align: center;
+			}
 		}
 
 		ul.actions {

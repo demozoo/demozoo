@@ -12,8 +12,16 @@
 				{% endif %}
 			</a>
 		{% endwith %}
+	{% else %}
+		<div class="no_screenshot">
+			<p>
+				No screenshot yet!
+				<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
+			</p>
+		</div>
 	{% endif %}
-	{% if screenshots.count > 1 or site_is_writeable %}
+
+	{% if screenshots.count > 1 or site_is_writeable and screenshots.count > 0 %}
 		<ul class="actions">
 			{% if screenshots.count > 1 %}
 				<li class="all_screenshots">
