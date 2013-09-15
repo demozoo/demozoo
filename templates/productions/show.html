@@ -39,6 +39,10 @@
 
 	{% if production.can_have_screenshots %}
 		{% include "productions/_screenshots.html" %}
+	{% else %}
+		<div class="panel screenshots_panel">
+			<div class="no_screenshot music"></div>
+		</div>
 	{% endif %}
 
 	{% include "productions/_downloads.html" %}
