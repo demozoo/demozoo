@@ -366,8 +366,8 @@ class SceneOrgFile(BaseUrl):
 		regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
 	]
 
-	def __str__(self):
-		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param.encode('iso-8859-1'))
+	def __unicode__(self):
+		return u"http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
@@ -683,9 +683,9 @@ class PouetParty(BaseUrl):
 
 	tests = [match_pouet_party]
 
-	def __str__(self):
+	def __unicode__(self):
 		(id, year) = self.param.split('/')
-		return "http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
+		return u"http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
 	html_link_class = "pouet"
 	html_link_text = u"Pouët"
 	html_title_format = u"%s on Pouët"
@@ -738,8 +738,8 @@ class SceneOrgFolder(BaseUrl):
 		regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
 	]
 
-	def __str__(self):
-		return "http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param.encode('iso-8859-1'))
+	def __unicode__(self):
+		return u"http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
