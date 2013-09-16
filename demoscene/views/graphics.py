@@ -4,6 +4,7 @@ from demoscene.forms.production import *
 
 
 from django.contrib.auth.decorators import login_required
+from django.utils import simplejson as json
 import datetime
 from read_only_mode import writeable_site_required
 
@@ -13,10 +14,20 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'graphics':
 		return HttpResponseRedirect(production.get_absolute_url())
 
+	screenshots = production.screenshots.order_by('id')
+	screenshots_json = json.dumps([
+		{
+			'original_url': pic.original_url, 'src': pic.standard_url,
+			'width': pic.standard_width, 'height': pic.standard_height
+		}
+		for pic in screenshots
+	])
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits.order_by('nick__name', 'category'),
-		'screenshots': production.screenshots.order_by('id'),
+		'screenshots': screenshots,
+		'screenshots_json': screenshots_json,
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
