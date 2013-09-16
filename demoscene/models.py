@@ -1293,15 +1293,7 @@ class ExternalLink(models.Model):
 
 class PartyExternalLink(ExternalLink):
 	party = models.ForeignKey(Party, related_name='external_links')
-	link_types = [
-		groklinks.DemopartyNetParty, groklinks.SlengpungParty, groklinks.PouetParty,
-		groklinks.BitworldParty, groklinks.CsdbEvent, groklinks.BreaksAmigaParty,
-		groklinks.ZxdemoParty, groklinks.SceneOrgFolder, groklinks.TwitterAccount,
-		groklinks.PushnpopParty,
-		groklinks.FacebookPage, groklinks.GooglePlusPage, groklinks.LanyrdEvent,
-		groklinks.WikipediaPage, groklinks.SpeccyWikiPage,
-		groklinks.BaseUrl,
-	]
+	link_types = groklinks.PARTY_LINK_TYPES
 
 	def html_link(self):
 		return self.link.as_html(self.party.name)
@@ -1315,18 +1307,7 @@ class PartyExternalLink(ExternalLink):
 
 class ReleaserExternalLink(ExternalLink):
 	releaser = models.ForeignKey(Releaser, related_name='external_links')
-	link_types = [
-		groklinks.TwitterAccount, groklinks.SceneidAccount, groklinks.SlengpungUser,
-		groklinks.AmpAuthor, groklinks.CsdbScener, groklinks.CsdbGroup,
-		groklinks.NectarineArtist, groklinks.BitjamAuthor, groklinks.ArtcityArtist,
-		groklinks.MobygamesDeveloper, groklinks.AsciiarenaArtist, groklinks.PouetGroup,
-		groklinks.ScenesatAct, groklinks.ZxdemoAuthor, groklinks.FacebookPage,
-		groklinks.PushnpopGroup, groklinks.PushnpopProfile, groklinks.SceneOrgFolder,
-		groklinks.GooglePlusPage, groklinks.SoundcloudUser, groklinks.YoutubeUser,
-		groklinks.DeviantartUser, groklinks.ModarchiveMember, groklinks.WikipediaPage,
-		groklinks.SpeccyWikiPage, groklinks.DiscogsArtist, groklinks.DiscogsLabel,
-		groklinks.BaseUrl,
-	]
+	link_types = groklinks.RELEASER_LINK_TYPES
 
 	def html_link(self):
 		return self.link.as_html(self.releaser.name)
@@ -1346,37 +1327,15 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
-	link_types = [
-		groklinks.PouetProduction, groklinks.CsdbRelease, groklinks.ZxdemoItem,
-		groklinks.BitworldDemo, groklinks.YoutubeVideo, groklinks.VimeoVideo,
-		groklinks.DemosceneTvVideo, groklinks.CappedVideo, groklinks.AsciiarenaRelease,
-		groklinks.ScenesatTrack, groklinks.ModlandFile, groklinks.SoundcloudTrack,
-		groklinks.CsdbMusic, groklinks.NectarineSong, groklinks.BitjamSong,
-		groklinks.PushnpopProduction, groklinks.ModarchiveModule,
-		groklinks.AmigascneFile, groklinks.PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-		groklinks.SceneOrgFile, groklinks.UntergrundFile, groklinks.WikipediaPage,
-		groklinks.SpeccyWikiPage,
-		groklinks.BaseUrl,
-	]
-
-	# link classes which are always considered to be download links, even when entered as external links
-	always_download_link_classes = [
-		'AmigascneFile', 'SceneOrgFile', 'UntergrundFile', 'PaduaOrgFile'
-	]
-	# link classes which are always considered to be external (supporting) links, even when entered as
-	# download links
-	always_external_link_classes = [
-		'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
-		'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
-		'ModarchiveModule', 'BitjamSong',
-	]
+	link_types = groklinks.PRODUCTION_LINK_TYPES
 
 	def save(self, *args, **kwargs):
-		# ensure that is_download_link is set correctly for link classes found in
-		# always_download_link_classes or always_external_link_classes
-		if self.link_class in self.always_download_link_classes:
+		# certain link types are marked as always download links, or always external links,
+		# regardless of where they are entered -
+		# if this is one of those types, ensure that is_download_link is set appropriately
+		if self.link_class in groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES:
 			self.is_download_link = True
-		elif self.link_class in self.always_external_link_classes:
+		elif self.link_class in groklinks.PRODUCTION_EXTERNAL_LINK_TYPES:
 			self.is_download_link = False
 
 		super(ProductionLink, self).save(*args, **kwargs)

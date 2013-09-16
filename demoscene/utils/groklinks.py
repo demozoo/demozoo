@@ -943,6 +943,51 @@ class PushnpopProfile(PushnpopEntry):
 	]
 
 
+RELEASER_LINK_TYPES = [
+	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
+	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
+	MobygamesDeveloper, AsciiarenaArtist, PouetGroup,
+	ScenesatAct, ZxdemoAuthor, FacebookPage,
+	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
+	GooglePlusPage, SoundcloudUser, YoutubeUser,
+	DeviantartUser, ModarchiveMember, WikipediaPage,
+	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
+	BaseUrl,
+]
+
+PRODUCTION_LINK_TYPES = [
+	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
+	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
+	AsciiarenaRelease,
+	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
+	ModarchiveModule, BitjamSong, PushnpopProduction,
+	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
+	SceneOrgFile, UntergrundFile,
+	WikipediaPage,
+	SpeccyWikiPage,
+	BaseUrl,
+]
+
+PRODUCTION_DOWNLOAD_LINK_TYPES = [
+	'AmigascneFile', 'SceneOrgFile', 'UntergrundFile', 'PaduaOrgFile', 'ModlandFile'
+]
+
+PRODUCTION_EXTERNAL_LINK_TYPES = [
+	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
+	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
+	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong',
+	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage',
+]
+
+PARTY_LINK_TYPES = [
+	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
+	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
+	PushnpopParty,
+	FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
+	BaseUrl,
+]
+
+
 def grok_link_by_types(urlstring, link_types):
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
@@ -951,46 +996,5 @@ def grok_link_by_types(urlstring, link_types):
 			return link
 
 
-def grok_scener_link(urlstring):
-	return grok_link_by_types(urlstring, [
-		TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
-		CsdbScener, NectarineArtist, BitjamAuthor, ArtcityArtist,
-		MobygamesDeveloper, AsciiarenaArtist, PouetGroup, ScenesatAct,
-		PushnpopProfile, DiscogsArtist, DiscogsLabel,
-		ZxdemoAuthor, FacebookPage, GooglePlusPage, SoundcloudUser,
-		YoutubeUser, DeviantartUser, ModarchiveMember, WikipediaPage,
-		SpeccyWikiPage,
-		BaseUrl,
-	])
-
-
-def grok_group_link(urlstring):
-	return grok_link_by_types(urlstring, [
-		TwitterAccount, PouetGroup, ZxdemoAuthor, CsdbGroup, FacebookPage, GooglePlusPage,
-		PushnpopGroup, SceneOrgFolder, DiscogsArtist, DiscogsLabel,
-		SoundcloudUser, WikipediaPage, SpeccyWikiPage,
-		BaseUrl,
-	])
-
-
 def grok_production_link(urlstring):
-	return grok_link_by_types(urlstring, [
-		PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo, AsciiarenaRelease,
-		ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
-		ModarchiveModule, BitjamSong, PushnpopProduction,
-		AmigascneFile, PaduaOrgFile,  # must come before SceneOrgFile
-		SceneOrgFile, UntergrundFile,
-		YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, WikipediaPage,
-		SpeccyWikiPage,
-		BaseUrl,
-	])
-
-
-def grok_party_link(urlstring):
-	return grok_link_by_types(urlstring, [
-		DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
-		CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-		PushnpopParty,
-		FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
-		BaseUrl,
-	])
+	return grok_link_by_types(urlstring, PRODUCTION_LINK_TYPES)
