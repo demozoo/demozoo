@@ -943,6 +943,16 @@ class PushnpopProfile(PushnpopEntry):
 	]
 
 
+class HallOfLightArtist(BaseUrl):
+	canonical_format = "http://hol.abime.net/hol_search.php?N_ref_artist=%s"
+	tests = [
+		querystring_match(r'https?://hol\.abime\.net/hol_search\.php', 'N_ref_artist', re.I),
+	]
+	html_link_class = "hall_of_light"
+	html_link_text = "Hall Of Light"
+	html_title_format = "%s on Hall Of Light"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -952,6 +962,7 @@ RELEASER_LINK_TYPES = [
 	GooglePlusPage, SoundcloudUser, YoutubeUser,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
+	HallOfLightArtist,
 	BaseUrl,
 ]
 
