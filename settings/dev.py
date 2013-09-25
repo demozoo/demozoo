@@ -12,7 +12,7 @@ DATABASES = {
 }
 
 DEBUG = True
-INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
+INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar', 'django_extensions']
 MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 AWS_QUERYSTRING_AUTH = False
