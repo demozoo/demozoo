@@ -40,9 +40,13 @@
 
 		<div class="right">
 
-			{% include "productions/_downloads.html" %}
+			{% if download_links %}
+				{% include "productions/_downloads.html" %}
+			{% endif %}
 
-			{% include "productions/_external_links.html" %}
+			{% if external_links %}
+				{% include "productions/_external_links.html" %}
+			{% endif %}
 
 			{% include "productions/_tags.html" %}
 
@@ -54,6 +58,11 @@
 						{% if user.is_authenticated %}
 							<div class="tell_us_something_title">Tell us something!</div>
 							<ul class="tell_us_something_options">
+								<li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox">Add a download link</a></li>
+								<li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
+								{% if production.can_have_screenshots %}
+									<li><a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add a screenshot</a></li>
+								{% endif %}
 								<li><a href="{% url 'production_add_credit' production.id %}" class="open_in_lightbox">Add a credit</a></li>
 								{% if production.can_have_soundtracks %}
 									<li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
@@ -74,39 +83,41 @@
 
 	{% include "productions/_notes.html" %}
 
-	<div class="secondary_panels">
-		{% if credits %}
-			{% include "productions/_credits.html" %}
-		{% endif %}
+	{% if credits or featured_in_productions or soundtracks %}
+		<div class="secondary_panels">
+			{% if credits %}
+				{% include "productions/_credits.html" %}
+			{% endif %}
 
-		{% if featured_in_productions %}
-			<div class="featured_in_panel panel">
-				<h3>Featured in:</h3>
-				{% with featured_in_productions as productions %}
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
-				{% endwith %}
-			</div>
-		{% endif %}
+			{% if featured_in_productions %}
+				<div class="featured_in_panel panel">
+					<h3>Featured in:</h3>
+					{% with featured_in_productions as productions %}
+						{% include "shared/production_listing.html" with show_screenshots=1 %}
+					{% endwith %}
+				</div>
+			{% endif %}
 
-		{% if soundtracks %}
-			<div class="soundtracks_panel panel editable_chunk">
-				<h3>Soundtrack</h3>
+			{% if soundtracks %}
+				<div class="soundtracks_panel panel editable_chunk">
+					<h3>Soundtrack</h3>
 
-				{% if site_is_writeable %}
-					<ul class="actions">
-						<li>
-							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
-						</li>
-					</ul>
-				{% endif %}
+					{% if site_is_writeable %}
+						<ul class="actions">
+							<li>
+								<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
+							</li>
+						</ul>
+					{% endif %}
 
-				{% with soundtracks as productions %}
-					{% include "shared/production_listing.html" %}
-				{% endwith %}
-				
-			</div>
-		{% endif %}
-	</div>
+					{% with soundtracks as productions %}
+						{% include "shared/production_listing.html" %}
+					{% endwith %}
+
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
 
 	{% last_edited_by production %}
 	
