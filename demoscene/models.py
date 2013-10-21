@@ -786,14 +786,6 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def can_have_screenshots(self):
 		return (self.supertype != 'music')
 
-	def can_have_credits(self):
-		if self.supertype == 'production':
-			return True
-		elif self.supertype == 'graphics' and self.types.filter(internal_name='ascii-collection'):
-			return True
-		else:
-			return False
-
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
 
