@@ -1,6 +1,7 @@
 from celery.task import task
 from sceneorg.models import Directory, File, FileTooBig
 from sceneorg.scraper import scrape_dir, scrape_new_files_dir
+from sceneorg.dirparser import parse_all_dirs
 import datetime
 
 
@@ -16,12 +17,33 @@ def fetch_sceneorg_dir(path, days=None):
 	else:
 		files = scrape_dir(dir.web_url)
 
+	# Mark previously-seen-but-now-absent files as deleted, unless we're viewing the 'new files' page
+	update_dir_records(dir, files, mark_deletions=(not days))
+
+	# recursively fetch subdirs
+	for (filename, is_dir) in files:
+		if is_dir:
+			subpath = path + filename + '/'
+			fetch_sceneorg_dir.delay(path=subpath, days=days)
+
+def scan_dir_listing(filename):
+	for path, entries in parse_all_dirs(filename):
+		print path
+		try:
+			dir = Directory.objects.get(path=path)
+		except Directory.DoesNotExist:
+			dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now())
+
+		update_dir_records(dir, entries)
+
+
+def update_dir_records(dir, files, mark_deletions=True):
 	seen_dirs = []
 	seen_files = []
 
 	for (filename, is_dir) in files:
 		if is_dir:
-			subpath = path + filename + '/'
+			subpath = dir.path + filename + '/'
 			try:
 				subdir = Directory.objects.get(path=subpath)
 				subdir.last_seen_at = datetime.datetime.now()
@@ -31,9 +53,8 @@ def fetch_sceneorg_dir(path, days=None):
 				subdir = Directory.objects.create(
 					path=subpath, last_seen_at=datetime.datetime.now(), parent=dir)
 			seen_dirs.append(subdir)
-			fetch_sceneorg_dir.delay(path=subpath, days=days)
 		else:
-			subpath = path + filename
+			subpath = dir.path + filename
 			try:
 				file = File.objects.get(path=subpath)
 				file.last_seen_at = datetime.datetime.now()
@@ -44,8 +65,8 @@ def fetch_sceneorg_dir(path, days=None):
 					path=subpath, last_seen_at=datetime.datetime.now(), directory=dir)
 			seen_files.append(file)
 
-	# Mark previously-seen-but-now-absent files as deleted, unless we're viewing the 'new files' page
-	if not days:
+	# Mark previously-seen-but-now-absent files as deleted
+	if mark_deletions:
 		for subdir in dir.subdirectories.filter(is_deleted=False):
 			if subdir not in seen_dirs:
 				subdir.mark_deleted()

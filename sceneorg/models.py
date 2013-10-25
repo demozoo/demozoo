@@ -7,7 +7,7 @@ from blob_field import BlobField
 
 
 class Directory(models.Model):
-	path = models.CharField(max_length=255)
+	path = models.CharField(max_length=255, db_index=True)
 	is_deleted = models.BooleanField(default=False)
 	last_seen_at = models.DateTimeField()
 	last_spidered_at = models.DateTimeField(null=True, blank=True)
@@ -49,7 +49,7 @@ class FileTooBig(Exception):
 
 
 class File(models.Model):
-	path = models.CharField(max_length=255)
+	path = models.CharField(max_length=255, db_index=True)
 	is_deleted = models.BooleanField(default=False)
 	last_seen_at = models.DateTimeField()
 	directory = models.ForeignKey(Directory, related_name='files')
