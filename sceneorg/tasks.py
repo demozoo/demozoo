@@ -41,7 +41,7 @@ def update_dir_records(dir, files, mark_deletions=True):
 	seen_dirs = []
 	seen_files = []
 
-	for (filename, is_dir) in files:
+	for (filename, is_dir, file_size) in files:
 		if is_dir:
 			subpath = dir.path + filename + '/'
 			try:
@@ -59,10 +59,13 @@ def update_dir_records(dir, files, mark_deletions=True):
 				file = File.objects.get(path=subpath)
 				file.last_seen_at = datetime.datetime.now()
 				file.is_deleted = False
+				if file_size is not None:
+					file.size = file_size
 				file.save()
 			except File.DoesNotExist:
 				file = File.objects.create(
-					path=subpath, last_seen_at=datetime.datetime.now(), directory=dir)
+					path=subpath, last_seen_at=datetime.datetime.now(), directory=dir,
+					size=file_size)
 			seen_files.append(file)
 
 	# Mark previously-seen-but-now-absent files as deleted

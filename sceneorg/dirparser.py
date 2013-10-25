@@ -39,10 +39,9 @@ def get_dir_listing(f):
 		if m:
 			node_type, file_size, filename = m.groups(0)
 			if node_type == '-':
-				# entries.append(filename, False, file_size)
-				entries.append((filename, False))
+				entries.append((filename, False, file_size))
 			elif node_type == 'd':
-				entries.append((filename, True))
+				entries.append((filename, True, None))
 		else:
 			raise Exception("Expected dir entry, got %r" % line)
 

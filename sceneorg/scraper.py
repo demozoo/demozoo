@@ -16,7 +16,7 @@ def scrape_dir(url):
 		is_dir = (entry.find('img')['src'] == 'img/icons/dir.gif')
 		filename = entry.find('td', 'browseleft').text
 
-		files.append((filename, is_dir))
+		files.append((filename, is_dir, None))
 
 	return files
 
@@ -33,6 +33,6 @@ def scrape_new_files_dir(url):
 		is_dir = (entry.find('img')['src'] == 'img/icons/dir.gif')
 		filename = entry.find('td', 'newfilesleft').text
 
-		files.append((filename, is_dir))
+		files.append((filename, is_dir, None))
 
 	return files

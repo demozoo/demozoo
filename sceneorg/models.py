@@ -53,6 +53,7 @@ class File(models.Model):
 	is_deleted = models.BooleanField(default=False)
 	last_seen_at = models.DateTimeField()
 	directory = models.ForeignKey(Directory, related_name='files')
+	size = models.BigIntegerField(null=True)
 
 	def __unicode__(self):
 		return self.path
