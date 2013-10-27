@@ -1,8 +1,17 @@
 import gzip
 import re
+from ftplib import FTP
+import StringIO
 
-def parse_all_dirs(filename):
-	f = gzip.open(filename, 'rb')
+def parse_all_dirs():
+	ftp = FTP('ftp.scene.org')
+	ftp.login('anonymous', 'gasman@raww.org')
+	gzipped_file = StringIO.StringIO()
+	ftp.retrbinary('RETR ls-lR.gz', gzipped_file.write)
+	ftp.quit()
+
+	gzipped_file.seek(0)
+	f = gzip.GzipFile(fileobj=gzipped_file)
 
 	while True:
 		line = f.readline().decode('iso-8859-1')
@@ -23,8 +32,6 @@ def parse_all_dirs(filename):
 		entries = get_dir_listing(f)
 		if not dir_name.startswith('/incoming/'):
 			yield (dir_name, entries)
-
-	f.close()
 
 
 def get_dir_listing(f):

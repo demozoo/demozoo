@@ -178,13 +178,13 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
 	"fetch-new-sceneorg-files": {
 		"task": "sceneorg.tasks.fetch_sceneorg_dir",
-		"schedule": timedelta(days=1),
-		"args": ('/', 3)
+		"schedule": timedelta(hours=4),
+		"args": ('/', 1)
 	},
 	"fetch-all-sceneorg-files": {
-		"task": "sceneorg.tasks.fetch_sceneorg_dir",
-		"schedule": timedelta(days=30),
-		"args": ('/',)
+		"task": "sceneorg.tasks.scan_dir_listing",
+		"schedule": timedelta(days=1),
+		"args": ()
 	},
 	"set-default-screenshots": {
 		"task": "demoscene.tasks.set_default_screenshots",

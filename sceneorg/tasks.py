@@ -26,9 +26,10 @@ def fetch_sceneorg_dir(path, days=None):
 			subpath = path + filename + '/'
 			fetch_sceneorg_dir.delay(path=subpath, days=days)
 
-def scan_dir_listing(filename):
-	for path, entries in parse_all_dirs(filename):
-		print path
+@task(ignore_result=True)
+def scan_dir_listing():
+	for path, entries in parse_all_dirs():
+		# print path
 		try:
 			dir = Directory.objects.get(path=path)
 		except Directory.DoesNotExist:
