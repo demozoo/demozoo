@@ -367,7 +367,7 @@ class SceneOrgFile(BaseUrl):
 	]
 
 	def __unicode__(self):
-		return u"http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
@@ -739,7 +739,7 @@ class SceneOrgFolder(BaseUrl):
 	]
 
 	def __unicode__(self):
-		return u"http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"

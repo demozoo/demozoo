@@ -26,10 +26,10 @@ class Directory(models.Model):
 
 	@property
 	def web_url(self):
-		return "http://www.scene.org/dir.php?dir=%s" % urllib.quote(self.path.encode("utf-8"))
+		return "https://www.scene.org/dir.php?dir=%s" % urllib.quote(self.path.encode("utf-8"))
 
 	def new_files_url(self, days):
-		return "http://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
+		return "https://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
 
 	@staticmethod
 	def parties_root():
@@ -91,7 +91,7 @@ class File(models.Model):
 
 	@property
 	def web_url(self):
-		return "http://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
+		return "https://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
 
 
 class FileDownload(models.Model):
