@@ -183,7 +183,7 @@ CELERYBEAT_SCHEDULE = {
 	},
 	"fetch-all-sceneorg-files": {
 		"task": "sceneorg.tasks.scan_dir_listing",
-		"schedule": timedelta(days=1),
+		"schedule": timedelta(days=8),
 		"args": ()
 	},
 	"set-default-screenshots": {
