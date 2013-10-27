@@ -26,7 +26,7 @@ def fetch_sceneorg_dir(path, days=None):
 			subpath = path + filename + '/'
 			fetch_sceneorg_dir.delay(path=subpath, days=days)
 
-@task(ignore_result=True)
+@task(time_limit=7200, ignore_result=True)
 def scan_dir_listing():
 	for path, entries in parse_all_dirs():
 		# print path
