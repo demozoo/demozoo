@@ -953,6 +953,26 @@ class HallOfLightArtist(BaseUrl):
 	html_title_format = "%s on Hall Of Light"
 
 
+class SpotifyArtist(BaseUrl):
+	canonical_format = "http://open.spotify.com/artist/%s"
+	tests = [
+		regex_match(r'https?://open\.spotify\.com/artist/(\w+)', re.I),
+	]
+	html_link_class = "spotify"
+	html_link_text = "Spotify"
+	html_title_format = "%s on Spotify"
+
+
+class SpotifyTrack(BaseUrl):
+	canonical_format = "https://play.spotify.com/track/%s"
+	tests = [
+		regex_match(r'https?://play\.spotify\.com/track/(\w+)', re.I),
+	]
+	html_link_class = "spotify"
+	html_link_text = "Spotify"
+	html_title_format = "%s on Spotify"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -962,7 +982,7 @@ RELEASER_LINK_TYPES = [
 	GooglePlusPage, SoundcloudUser, YoutubeUser,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
-	HallOfLightArtist,
+	HallOfLightArtist, SpotifyArtist,
 	BaseUrl,
 ]
 
@@ -971,7 +991,7 @@ PRODUCTION_LINK_TYPES = [
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
 	AsciiarenaRelease,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
-	ModarchiveModule, BitjamSong, PushnpopProduction,
+	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, UntergrundFile,
 	WikipediaPage,
@@ -987,7 +1007,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong',
-	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage',
+	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
 ]
 
 PARTY_LINK_TYPES = [
