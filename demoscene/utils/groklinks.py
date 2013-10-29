@@ -332,6 +332,36 @@ class BitworldDemo(BaseUrl):
 	html_title_format = "%s on BitWorld"
 
 
+class KestraBitworldRelease(BaseUrl):
+	canonical_format = "http://janeway.exotica.org.uk/release.php?id=%s"
+	tests = [
+		querystring_match(r'https?://janeway\.exotica\.org\.uk/release\.php', 'id', re.I),
+	]
+	html_link_class = "kestra_bitworld"
+	html_link_text = "Kestra BitWorld"
+	html_title_format = "%s on Kestra BitWorld"
+
+
+class KestraBitworldAuthor(BaseUrl):
+	canonical_format = "http://janeway.exotica.org.uk/author.php?id=%s"
+	tests = [
+		querystring_match(r'https?://janeway\.exotica\.org\.uk/author\.php', 'id', re.I),
+	]
+	html_link_class = "kestra_bitworld"
+	html_link_text = "Kestra BitWorld"
+	html_title_format = "%s on Kestra BitWorld"
+
+
+class KestraBitworldParty(BaseUrl):
+	canonical_format = "http://janeway.exotica.org.uk/party.php?id=%s"
+	tests = [
+		querystring_match(r'https?://janeway\.exotica\.org\.uk/party\.php', 'id', re.I),
+	]
+	html_link_class = "kestra_bitworld"
+	html_link_text = "Kestra BitWorld"
+	html_title_format = "%s on Kestra BitWorld"
+
+
 class SceneOrgFile(BaseUrl):
 
 	# custom test for file_dl.php URLs, of the format:
@@ -982,14 +1012,14 @@ RELEASER_LINK_TYPES = [
 	GooglePlusPage, SoundcloudUser, YoutubeUser,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
-	HallOfLightArtist, SpotifyArtist,
+	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	BaseUrl,
 ]
 
 PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
-	AsciiarenaRelease,
+	AsciiarenaRelease, KestraBitworldRelease,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
@@ -1006,14 +1036,14 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
-	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong',
+	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
 ]
 
 PARTY_LINK_TYPES = [
 	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-	PushnpopParty,
+	PushnpopParty, KestraBitworldParty,
 	FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
 	BaseUrl,
 ]
