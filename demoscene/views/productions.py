@@ -102,6 +102,9 @@ def show(request, production_id, edit_mode=False):
 		for pic in screenshots
 	])
 
+	external_links = production.links.filter(is_download_link=False)
+	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
@@ -109,7 +112,7 @@ def show(request, production_id, edit_mode=False):
 		'screenshots': screenshots,
 		'screenshots_json': screenshots_json,
 		'download_links': production.links.filter(is_download_link=True),
-		'external_links': production.links.filter(is_download_link=False),
+		'external_links': external_links,
 		'soundtracks': [
 			link.soundtrack for link in
 			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')

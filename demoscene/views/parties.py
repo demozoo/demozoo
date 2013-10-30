@@ -47,13 +47,15 @@ def show(request, party_id):
 	if not non_competing_invitations:
 		invitations = Production.objects.none
 
+	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
+
 	return render(request, 'parties/show.html', {
 		'party': party,
 		'competitions_with_placings': competitions_with_placings,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
 		'parties_in_series': party.party_series.parties.select_related('party_series'),
-		'external_links': party.external_links.select_related('party'),
+		'external_links': external_links,
 	})
 
 

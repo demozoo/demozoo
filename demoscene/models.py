@@ -1278,6 +1278,10 @@ class ExternalLink(models.Model):
 		else:
 			self.link = None
 
+	@property
+	def sort_key(self):
+		return '0000' if self.link_class == 'BaseUrl' else self.link_class
+
 	class Meta:
 		abstract = True
 		ordering = ['link_class']

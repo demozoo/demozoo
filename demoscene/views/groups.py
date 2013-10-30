@@ -24,6 +24,9 @@ def show(request, group_id, edit_mode=False):
 
 	edit_mode = edit_mode or sticky_editing_active(request.user)
 
+	external_links = group.external_links.select_related('releaser').defer('releaser__notes')
+	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
+
 	return render(request, 'groups/show.html', {
 		'group': group,
 		'supergroupships': group.group_memberships.all().select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
@@ -32,7 +35,7 @@ def show(request, group_id, edit_mode=False):
 		'productions': group.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'credits': group.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
-		'external_links': group.external_links.select_related('releaser').defer('releaser__notes'),
+		'external_links': external_links,
 		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 	})

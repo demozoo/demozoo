@@ -33,6 +33,8 @@ def show(request, scener_id, edit_mode=False):
 	if not user_has_real_name_access and not scener.can_reveal_full_real_name():
 		external_links = external_links.exclude(link_class__in=['MobygamesDeveloper', 'HallOfLightArtist'])
 
+	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
+
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'external_links': external_links,
