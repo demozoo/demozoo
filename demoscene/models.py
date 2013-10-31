@@ -14,7 +14,6 @@ from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from strip_markup import strip_markup
-from blob_field import BlobField
 from demoscene.utils import groklinks
 from prefetch_snooping import ModelWithPrefetchSnooping
 
@@ -1373,21 +1372,28 @@ class ProductionLink(ExternalLink):
 class ResultsFile(models.Model):
 	party = models.ForeignKey(Party, related_name='results_files')
 	filename = models.CharField(max_length=255, blank=True)
-	data = BlobField()
-	file = models.FileField(storage=FileSystemStorage(), upload_to='results', null=True, blank=True)
+	file = models.FileField(storage=FileSystemStorage(), upload_to='results', blank=True)
 	filesize = models.IntegerField()
 	sha1 = models.CharField(max_length=40)
 	encoding = models.CharField(max_length=32)
 
 	def save(self, *args, **kwargs):
-		self.filesize = len(self.data)
-		self.sha1 = hashlib.sha1(self.data).hexdigest()
-		self.encoding = chardet.detect(str(self.data))['encoding']
+		data = self.data
+		self.filesize = len(data)
+		self.sha1 = hashlib.sha1(data).hexdigest()
+		self.encoding = chardet.detect(data)['encoding']
 		super(ResultsFile, self).save(*args, **kwargs)
 
 	@property
+	def data(self):
+		self.file.open()
+		data = self.file.read()
+		self.file.close()
+		return data
+
+	@property
 	def text(self):
-		return str(self.data).decode(self.encoding)
+		return self.data.decode(self.encoding)
 
 
 class Edit(models.Model):
