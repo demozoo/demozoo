@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.files.storage import FileSystemStorage
+
 import re
 import datetime
 import hashlib
@@ -1372,6 +1374,7 @@ class ResultsFile(models.Model):
 	party = models.ForeignKey(Party, related_name='results_files')
 	filename = models.CharField(max_length=255, blank=True)
 	data = BlobField()
+	file = models.FileField(storage=FileSystemStorage(), upload_to='results', null=True, blank=True)
 	filesize = models.IntegerField()
 	sha1 = models.CharField(max_length=40)
 	encoding = models.CharField(max_length=32)

@@ -193,5 +193,7 @@ CELERYBEAT_SCHEDULE = {
 	},
 }
 
+MEDIA_ROOT = os.path.join(FILEROOT, 'media')
+
 # Read-only mode
 SITE_IS_WRITEABLE = True
