@@ -1101,9 +1101,9 @@ class Party(models.Model):
 		from sceneorg.models import File as SceneOrgFile
 		sceneorg_dirs = self.external_links.filter(link_class='SceneOrgFolder')
 		for sceneorg_dir in sceneorg_dirs:
-			for subpath in ['results.txt', 'info/results.txt', 'misc/results.txt']:
+			for subpath in ['info/results.txt', 'misc/results.txt', 'results.txt']:
 				try:
-					return SceneOrgFile.objects.get(path=sceneorg_dir.parameter + subpath)
+					return SceneOrgFile.objects.get(path=sceneorg_dir.parameter + subpath, is_deleted=False)
 				except SceneOrgFile.DoesNotExist:
 					pass
 
