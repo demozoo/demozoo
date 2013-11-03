@@ -146,7 +146,7 @@ class Command(NoArgsCommand):
 			try:
 				results_file.text
 			except UnicodeDecodeError:
-				print "Error on /parties/%d/results_file/%d/ - cannot decode as %s" % (results_file.party_id, results_file.id, results_file.encoding)
+				print "Error on /parties/%d/results_file/%d/ - cannot decode as %r" % (results_file.party_id, results_file.id, results_file.encoding)
 
 		transaction.commit_unless_managed()
 

@@ -5,7 +5,6 @@ from django.core.files.base import ContentFile
 import re
 import datetime
 import hashlib
-import chardet
 import uuid
 import os
 from fuzzy_date import FuzzyDate
@@ -1383,14 +1382,38 @@ class ResultsFile(models.Model):
 	file = models.FileField(storage=FileSystemStorage(), upload_to='results', blank=True)
 	filesize = models.IntegerField()
 	sha1 = models.CharField(max_length=40)
-	encoding = models.CharField(max_length=32)
+	encoding = models.CharField(blank=True, null=True, max_length=32)
 
 	def save(self, *args, **kwargs):
 		data = self.data
 		self.filesize = len(data)
 		self.sha1 = hashlib.sha1(data).hexdigest()
-		self.encoding = chardet.detect(data)['encoding']
+		if not self.encoding:
+			decode = self.guess_encoding(data)
+			if decode:
+				self.encoding = decode[0]
 		super(ResultsFile, self).save(*args, **kwargs)
+
+	@staticmethod
+	def guess_encoding(data, fuzzy=False):
+		"""
+		Make a best guess at what character encoding this data is in.
+		Returns a tuple of (encoding, decoded_data).
+		If fuzzy=False, we return None if the encoding is uncertain;
+		if fuzzy=True, we make a wild guess.
+		"""
+		# Try to decode the data using several candidate encodings, least permissive first.
+		# Accept the first one that doesn't break.
+		if fuzzy:
+			candidate_encodings = ['ascii', 'utf-8', 'windows-1252', 'iso-8859-1']
+		else:
+			candidate_encodings = ['ascii', 'utf-8']
+
+		for encoding in candidate_encodings:
+			try:
+				return (encoding, data.decode(encoding))
+			except UnicodeDecodeError:
+				pass
 
 	@property
 	def data(self):
@@ -1401,7 +1424,11 @@ class ResultsFile(models.Model):
 
 	@property
 	def text(self):
-		return self.data.decode(self.encoding)
+		if self.encoding:
+			return self.data.decode(self.encoding)
+		else:
+			encoding, output = self.guess_encoding(self.data, fuzzy=True)
+			return output
 
 
 class Edit(models.Model):
