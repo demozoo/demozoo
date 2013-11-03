@@ -191,6 +191,7 @@ def compofile_directory(request, directory_id):
 		WHERE
 			sceneorg_file.directory_id = %s
 			AND sceneorg_file.is_deleted = 'f'
+			AND sceneorg_file.path NOT LIKE '%%.diz'
 		ORDER BY sceneorg_file.path
 	''', [directory.id])
 
