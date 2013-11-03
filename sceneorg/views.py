@@ -132,6 +132,7 @@ def compofiles(request):
 				AND sceneorg_file.path NOT LIKE '%%/descript.ion'
 				AND sceneorg_file.path NOT LIKE '%%/index.htm'
 				AND sceneorg_file.path NOT LIKE '%%/files.lst'
+				AND sceneorg_file.path NOT LIKE '%%.diz'
 			)
 			LEFT JOIN demoscene_productionlink ON (
 				sceneorg_file.path = demoscene_productionlink.parameter AND demoscene_productionlink.link_class = 'SceneOrgFile')
