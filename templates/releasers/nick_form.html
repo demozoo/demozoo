@@ -2,7 +2,7 @@
 	<h2>{{ title }}</h2>
 {% endif %}
 
-<form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
+<form action="{{ action_url }}" method="post" class="entry_form nick_form {{ html_form_class }}">
 	{% csrf_token %}
 	
 	{{ form.non_field_errors }}

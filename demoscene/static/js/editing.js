@@ -16,6 +16,25 @@ function applyEditControls(context) {
 		'cancel': ':input,option,a,label'
 	});
 
+	$('select[multiple]', context).asmSelect();
+
+	$('input.date', context).each(function() {
+		var opts = {dateFormat: 'd M yy', constrainInput: false, showOn: 'button', firstDay: 1, dateParser: parseFuzzyDate};
+		$(this).datepicker(opts);
+	});
+
+	$('input.production_autocomplete', context).autocomplete({
+		'source': function(request, response) {
+			$.getJSON('/productions/autocomplete/', {'term': request.term}, function(data) {
+				response(data);
+			});
+		},
+		'autoFocus': true,
+		'select': function(event, ui) {
+			$('input#id_production_id').val(ui.item.id);
+		}
+	});
+
 	$('.byline_field', context).bylineField();
 
 	$('.production_field', context).each(function() {
@@ -81,6 +100,58 @@ function applyEditControls(context) {
 			setTimeout(function() {helpText.hide();}, 1);
 		});
 		helpText.hide();
+		$(this).addClass('ajaxified');
+	});
+
+	$('.nick_match', context).nickMatchWidget();
+
+	$('.nick_field', context).each(function() {
+		var nickFieldElement = this;
+		var nickField = $(this);
+		var uid = $.uid('nickfield');
+		
+		var searchParams = {};
+		if (nickField.hasClass('sceners_only')) searchParams['sceners_only'] = true;
+		if (nickField.hasClass('groups_only')) searchParams['groups_only'] = true;
+		
+		$('.nick_search input:submit', nickFieldElement).hide();
+		var searchField = $('.nick_search input:text', nickFieldElement);
+		var searchFieldElement = searchField.get(0);
+		searchField.attr('autocomplete', 'off');
+		var fieldPrefix = searchField.attr('name').replace(/_search$/, '_match_');
+		var nickMatchContainer = $('.nick_match_container', nickFieldElement);
+		
+		searchField.typeahead(function(value, autocomplete) {
+			if (value.match(/\S/)) {
+				$.ajaxQueue(uid, function(release) {
+					/* TODO: consider caching results in a JS variable */
+					$.getJSON('/nicks/match/', $.extend({
+						q: value,
+						autocomplete: autocomplete
+					}, searchParams), function(data) {
+						if (searchField.val() == data['initial_query']) {
+							/* only update fields if search box contents have not changed since making this query */
+							nickMatchContainer.html('<div class="nick_match"></div>');
+							NickMatchWidget(
+								nickMatchContainer.find('.nick_match'),
+								data.match.selection, data.match.choices, fieldPrefix);
+							if (autocomplete) {
+								searchField.val(data.query);
+								if (searchFieldElement.setSelectionRange) {
+									searchFieldElement.setSelectionRange(data['initial_query'].length, data.query.length);
+									/* TODO: IE compatibility */
+								}
+							}
+						}
+						release();
+					});
+				});
+			} else {
+				/* blank */
+				nickMatchContainer.html('');
+			}
+		});
+		
 		$(this).addClass('ajaxified');
 	});
 }

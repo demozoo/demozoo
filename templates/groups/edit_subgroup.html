@@ -5,12 +5,18 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.edit_subgroup_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}
 	<h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}:</h2>
 
-	<form action="{% url 'group_edit_subgroup' group.id membership.id %}" method="post" class="entry_form">
+	<form action="{% url 'group_edit_subgroup' group.id membership.id %}" method="post" class="entry_form edit_subgroup_form">
 		{% csrf_token %}
 		
 		{% for field in form.visible_fields %}

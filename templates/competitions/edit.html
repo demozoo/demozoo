@@ -11,6 +11,16 @@
 	<link rel="stylesheet" href="/static/css/results_table.css"></script>
 {% endblock %}
 
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.edit_competition_form'));
+		})
+	</script>
+{% endblock %}
+
 {% block body_class %}edit_competition{% endblock %}
 
 {% block base_main %}
@@ -33,7 +43,7 @@
 
 <h2>{{ competition.party.name }} {{ competition.name }} competition</h2>
 
-<form action="{% url 'competition_edit' competition.id %}" method="post" class="entry_form">
+<form action="{% url 'competition_edit' competition.id %}" method="post" class="entry_form edit_competition_form">
 	{% csrf_token %}
 	
 	{% for field in form.visible_fields %}

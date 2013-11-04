@@ -5,12 +5,18 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.production_screenshot_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}
 	<h2>Adding screenshots for {{ production.title }}:</h2>
 
-	<form action="{% url 'production_add_screenshot' production.id %}" method="post" enctype="multipart/form-data" class="entry_form">
+	<form action="{% url 'production_add_screenshot' production.id %}" method="post" enctype="multipart/form-data" class="entry_form production_screenshot_form">
 		{% csrf_token %}
 		
 		<div class="field">

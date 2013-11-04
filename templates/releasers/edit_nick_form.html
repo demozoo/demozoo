@@ -5,6 +5,12 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.nick_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}

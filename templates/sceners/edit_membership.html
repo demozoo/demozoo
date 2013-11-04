@@ -5,12 +5,18 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.edit_membership_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}
 	<h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}:</h2>
 
-	<form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" class="entry_form">
+	<form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" class="entry_form edit_membership_form">
 		{% csrf_token %}
 		
 		{% for field in form.visible_fields %}
