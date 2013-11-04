@@ -6,12 +6,18 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.production_soundtrack_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}
 	<h2>Editing soundtrack details for {{ production.title }}:</h2>
 
-	<form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form">
+	<form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form production_soundtrack_form">
 		{% csrf_token %}
 		
 		{% spawningformset sortable formset %}

@@ -6,6 +6,12 @@
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.production_create_form'));
+		})
+	</script>
 {% endblock %}
 
 {% block base_main %}
@@ -16,7 +22,7 @@
 			| <a href="{% url 'new_music' %}{% query_string "" "" %}" class="open_in_lightbox">New music</a>)</p>
 	</div>
 
-	<form action="{% url 'new_graphics' %}" method="post" class="entry_form">
+	<form action="{% url 'new_graphics' %}" method="post" class="entry_form production_create_form">
 		{% csrf_token %}
 		
 		{% with form.title as field %}
