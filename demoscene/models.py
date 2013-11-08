@@ -19,6 +19,7 @@ from prefetch_snooping import ModelWithPrefetchSnooping
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
+from unidecode import unidecode
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
@@ -311,6 +312,16 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		else:
 			return None
 
+	@property
+	def asciified_real_name(self):
+		real_name = self.real_name
+		return real_name and unidecode(real_name)
+
+	@property
+	def asciified_public_real_name(self):
+		real_name = self.public_real_name
+		return real_name and unidecode(real_name)
+
 	def real_name_available_to_show(self):
 		return (self.first_name and self.show_first_name) or (self.surname and self.show_surname)
 
@@ -321,6 +332,14 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	def all_names_string(self):
 		all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser=self)]
 		return ', '.join(all_names)
+
+	@property
+	def asciified_all_names_string(self):
+		return unidecode(self.all_names_string)
+
+	@property
+	def asciified_location(self):
+		return self.location and unidecode(self.location)
 
 	@property
 	def all_affiliation_names_string(self):
@@ -754,6 +773,10 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def type_name(self):
 		return Production.list_to_name(self.types.all())
 
+	@property
+	def asciified_title(self):
+		return unidecode(self.title)
+
 	@models.permalink
 	def get_absolute_url(self):
 		if self.supertype == 'music':
@@ -1049,6 +1072,14 @@ class Party(models.Model):
 			return self.start_date.date.year
 		else:
 			return re.sub(r"^" + re.escape(series_name) + r"\s+", '', self.name)
+
+	@property
+	def asciified_name(self):
+		return unidecode(self.name)
+
+	@property
+	def asciified_location(self):
+		return self.location and unidecode(self.location)
 
 	def _get_start_date(self):
 		return FuzzyDate(self.start_date_date, self.start_date_precision)

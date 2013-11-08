@@ -2,6 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.utils import simplejson
 
+from unidecode import unidecode
+
 from search.forms import SearchForm
 from demoscene.shortcuts import render, get_page
 from demoscene.index import name_indexer, name_indexer_with_real_names
@@ -34,6 +36,7 @@ def search(request):
 def live_search(request):
 	query = request.GET.get('q')
 	if query:
+		query = unidecode(query)
 		has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
 		results = (name_indexer_with_real_names if has_real_name_access else name_indexer).search(query).flags(name_indexer.flags.PARTIAL)[0:10].prefetch()
 		results = [hit.instance.search_result_json() for hit in results]
