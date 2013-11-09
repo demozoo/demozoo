@@ -88,7 +88,8 @@
 									<input type="submit" value="Log in" />
 								</form>
 								<ul>
-									<li><a href="{% url 'user_signup' %}">Register new account</a></li>
+									<li><a href="{% url 'user_signup' %}">Register new account</a>
+									<a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
 								</ul>
 							</div>
 						{% endif %}
