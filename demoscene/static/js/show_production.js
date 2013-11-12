@@ -10,11 +10,24 @@ function initAddCreditLink(context) {
 	});
 }
 
+function initEditCreditLink(context) {
+	$('a.edit_credit', context).click(function() {
+		ModalWorkflow({
+			'url': this.href,
+			'responses': {
+				'creditUpdated': replaceCreditsPanel
+			}
+		});
+		return false;
+	});
+}
+
 function replaceCreditsPanel(creditsHtml) {
 	$('#credits_panel').replaceWith(creditsHtml);
 	var panel = $('#credits_panel');
 	applyGlobalBehaviours(panel);
 	initAddCreditLink(panel);
+	initEditCreditLink(panel);
 	initCreditsPanel(panel);
 }
 
@@ -46,4 +59,5 @@ $(function() {
 		}
 	});
 	initAddCreditLink();
+	initEditCreditLink();
 });

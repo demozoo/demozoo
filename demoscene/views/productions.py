@@ -463,16 +463,40 @@ def edit_credit(request, production_id, nick_id):
 				focus2=nick.releaser,
 				description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
 				user=request.user)
-			return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+
+			if request.is_ajax():
+				credits_html = render_to_string('productions/_credits.html', {
+					'production': production,
+					'credits': production.credits_for_listing(),
+					'editing_credits': True,
+				}, RequestContext(request))
+				return render_modal_workflow(
+					request, None, 'productions/edit_credit_done.js', {
+						'credits_html': credits_html,
+					}
+				)
+			else:
+				return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 	else:
 		nick_form = ProductionCreditedNickForm(nick=nick)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
-	return render(request, 'productions/edit_credit.html', {
-		'production': production,
-		'nick': nick,
-		'nick_form': nick_form,
-		'credit_formset': credit_formset,
-	})
+
+	if request.is_ajax():
+		return render_modal_workflow(request,
+			'productions/edit_credit.html', 'productions/edit_credit.js', {
+				'production': production,
+				'nick': nick,
+				'nick_form': nick_form,
+				'credit_formset': credit_formset,
+			}
+		)
+	else:
+		return render(request, 'productions/edit_credit.html', {
+			'production': production,
+			'nick': nick,
+			'nick_form': nick_form,
+			'credit_formset': credit_formset,
+		})
 
 
 @writeable_site_required
