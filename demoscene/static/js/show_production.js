@@ -29,14 +29,19 @@ function replaceCreditsPanel(creditsHtml) {
 	initAddCreditLink(panel);
 	initEditCreditLink(panel);
 	initCreditsPanel(panel);
+	initEditChunkHover(panel);
 }
 
-$(function() {
-	$('.edit_chunk').hover(function() {
+function initEditChunkHover(context) {
+	$('.edit_chunk', context).hover(function() {
 		$(this).closest('.editable_chunk').addClass('hover');
 	}, function() {
 		$(this).closest('.editable_chunk').removeClass('hover');
 	});
+}
+
+$(function() {
+	initEditChunkHover();
 
 	$('.tell_us_something_panel').each(function() {
 		var heading = $('.tell_us_something_title', this);
