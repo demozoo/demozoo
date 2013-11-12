@@ -10,8 +10,11 @@ from django.core.exceptions import ValidationError
 import datetime
 from django.utils import simplejson as json
 from django.db import transaction
+from django.template.loader import render_to_string
+from django.template import RequestContext
 from screenshots.tasks import capture_upload_for_processing
 from read_only_mode import writeable_site_required
+from modal_workflow import render_modal_workflow
 
 
 def index(request, supertype):
@@ -108,7 +111,7 @@ def show(request, production_id, edit_mode=False):
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
-		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
+		'credits': production.credits_for_listing(),
 		'screenshots': screenshots,
 		'screenshots_json': screenshots_json,
 		'download_links': production.links.filter(is_download_link=True),
@@ -394,15 +397,37 @@ def add_credit(request, production_id):
 			production.has_bonafide_edits = True
 			production.save()
 			# form.log_creation(request.user)
-			return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+			if request.is_ajax():
+				credits_html = render_to_string('productions/_credits.html', {
+					'production': production,
+					'credits': production.credits_for_listing(),
+					'editing_credits': True,
+				}, RequestContext(request))
+				return render_modal_workflow(
+					request, None, 'productions/add_credit_done.js', {
+						'credits_html': credits_html,
+					}
+				)
+			else:
+				return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 	else:
 		nick_form = ProductionCreditedNickForm()
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
-	return render(request, 'productions/add_credit.html', {
-		'production': production,
-		'nick_form': nick_form,
-		'credit_formset': credit_formset,
-	})
+
+	if request.is_ajax():
+		return render_modal_workflow(
+			request, 'productions/add_credit.html', 'productions/add_credit.js', {
+				'production': production,
+				'nick_form': nick_form,
+				'credit_formset': credit_formset,
+			}
+		)
+	else:
+		return render(request, 'productions/add_credit.html', {
+			'production': production,
+			'nick_form': nick_form,
+			'credit_formset': credit_formset,
+		})
 
 
 @writeable_site_required

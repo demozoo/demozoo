@@ -861,6 +861,9 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 			'thumbnail': thumbnail
 		}
 
+	def credits_for_listing(self):
+		return self.credits.select_related('nick__releaser').order_by('nick__name', 'category')
+
 	class Meta:
 		ordering = ['title']
 

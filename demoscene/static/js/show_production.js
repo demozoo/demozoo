@@ -1,3 +1,23 @@
+function initAddCreditLink(context) {
+	$('a.add_credit', context).click(function() {
+		ModalWorkflow({
+			'url': this.href,
+			'responses': {
+				'creditAdded': replaceCreditsPanel
+			}
+		});
+		return false;
+	});
+}
+
+function replaceCreditsPanel(creditsHtml) {
+	$('#credits_panel').replaceWith(creditsHtml);
+	var panel = $('#credits_panel');
+	applyGlobalBehaviours(panel);
+	initAddCreditLink(panel);
+	initCreditsPanel(panel);
+}
+
 $(function() {
 	$('.edit_chunk').hover(function() {
 		$(this).closest('.editable_chunk').addClass('hover');
@@ -25,4 +45,5 @@ $(function() {
 			});
 		}
 	});
+	initAddCreditLink();
 });
