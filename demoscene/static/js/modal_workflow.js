@@ -37,6 +37,12 @@ function ModalWorkflow(opts) {
             }
         });
     };
+    self.ajaxifyLink = function(linkSelector) {
+        $(linkSelector).click(function() {
+            self.loadUrl(this.href);
+            return false;
+        });
+    };
 
     self.loadResponseText = function(responseText) {
         var response = eval('(' + responseText + ')');

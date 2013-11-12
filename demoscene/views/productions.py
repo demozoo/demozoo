@@ -397,19 +397,8 @@ def add_credit(request, production_id):
 			production.has_bonafide_edits = True
 			production.save()
 			# form.log_creation(request.user)
-			if request.is_ajax():
-				credits_html = render_to_string('productions/_credits.html', {
-					'production': production,
-					'credits': production.credits_for_listing(),
-					'editing_credits': True,
-				}, RequestContext(request))
-				return render_modal_workflow(
-					request, None, 'productions/add_credit_done.js', {
-						'credits_html': credits_html,
-					}
-				)
-			else:
-				return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+
+			return render_credits_update(request, production)
 	else:
 		nick_form = ProductionCreditedNickForm()
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
@@ -464,19 +453,7 @@ def edit_credit(request, production_id, nick_id):
 				description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
 				user=request.user)
 
-			if request.is_ajax():
-				credits_html = render_to_string('productions/_credits.html', {
-					'production': production,
-					'credits': production.credits_for_listing(),
-					'editing_credits': True,
-				}, RequestContext(request))
-				return render_modal_workflow(
-					request, None, 'productions/edit_credit_done.js', {
-						'credits_html': credits_html,
-					}
-				)
-			else:
-				return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+			return render_credits_update(request, production)
 	else:
 		nick_form = ProductionCreditedNickForm(nick=nick)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
@@ -514,9 +491,9 @@ def delete_credit(request, production_id, nick_id):
 				production.save()
 				Edit.objects.create(action_type='delete_credit', focus=production, focus2=nick.releaser,
 					description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
-		return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+		return render_credits_update(request, production)
 	else:
-		return simple_ajax_confirmation(request,
+		return modal_workflow_confirmation(request,
 			reverse('production_delete_credit', args=[production_id, nick_id]),
 			"Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
 			html_title="Deleting %s's credit from %s" % (nick.name, production.title))
@@ -652,3 +629,19 @@ def delete(request, production_id):
 			reverse('delete_production', args=[production_id]),
 			"Are you sure you want to delete '%s'?" % production.title,
 			html_title="Deleting %s" % production.title)
+
+def render_credits_update(request, production):
+	if request.is_ajax():
+		credits_html = render_to_string('productions/_credits.html', {
+			'production': production,
+			'credits': production.credits_for_listing(),
+			'editing_credits': True,
+		}, RequestContext(request))
+		return render_modal_workflow(
+			request, None, 'productions/edit_credit_done.js', {
+				'credits_html': credits_html,
+			}
+		)
+	else:
+		return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+

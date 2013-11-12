@@ -6,7 +6,7 @@
 
 {% block base_main %}
 	<p>{{ message }}</p>
-	<form action="{{ action_url }}" method="post">
+	<form action="{{ action_url }}" class="confirmation_form" method="post">
 		{% csrf_token %}
 		
 		<input type="submit" name="yes" value="Yes" class="yes_button" />

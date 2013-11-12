@@ -1,21 +1,9 @@
-function initAddCreditLink(context) {
-	$('a.add_credit', context).click(function() {
-		ModalWorkflow({
-			'url': this.href,
-			'responses': {
-				'creditAdded': replaceCreditsPanel
-			}
-		});
-		return false;
-	});
-}
-
 function initEditCreditLink(context) {
-	$('a.edit_credit', context).click(function() {
+	$('a.edit_credit, a.add_credit', context).click(function() {
 		ModalWorkflow({
 			'url': this.href,
 			'responses': {
-				'creditUpdated': replaceCreditsPanel
+				'creditsUpdated': replaceCreditsPanel
 			}
 		});
 		return false;
@@ -26,7 +14,6 @@ function replaceCreditsPanel(creditsHtml) {
 	$('#credits_panel').replaceWith(creditsHtml);
 	var panel = $('#credits_panel');
 	applyGlobalBehaviours(panel);
-	initAddCreditLink(panel);
 	initEditCreditLink(panel);
 	initCreditsPanel(panel);
 	initEditChunkHover(panel);
@@ -63,6 +50,5 @@ $(function() {
 			});
 		}
 	});
-	initAddCreditLink();
 	initEditCreditLink();
 });
