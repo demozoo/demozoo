@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
 
@@ -233,7 +234,15 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return Production.objects.filter(author_nicks__releaser=self)
 
 	def member_productions(self):
-		return Production.objects.filter(author_affiliation_nicks__releaser=self)
+		# Member productions are those which list this group in the 'affiliations' portion of the byline,
+		# OR the author is a SUBGROUP of this group (regardless of whether this parent group is named as an affiliation).
+
+		subgroup_ids = self.member_memberships.filter(member__is_group=True).values_list('member_id', flat=True)
+
+		return Production.objects.filter(
+			Q(author_affiliation_nicks__releaser=self)
+			| Q(author_nicks__releaser__in=subgroup_ids)
+		)
 
 	def credits(self):
 		return Credit.objects.select_related('nick').filter(nick__releaser=self)
