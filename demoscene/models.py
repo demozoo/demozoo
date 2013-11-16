@@ -242,7 +242,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		return Production.objects.filter(
 			Q(author_affiliation_nicks__releaser=self)
 			| Q(author_nicks__releaser__in=subgroup_ids)
-		)
+		).distinct()
 
 	def credits(self):
 		return Credit.objects.select_related('nick').filter(nick__releaser=self)
