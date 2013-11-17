@@ -35,3 +35,26 @@ class Admin2Code(models.Model):
 			s = u"{}, {}".format(s, self.admin1.name)
 
 		return u"{}, {}".format(s, self.country.name)
+
+
+class Locality(models.Model):
+	geonameid = models.PositiveIntegerField(primary_key=True)
+	name = models.CharField(max_length=200, db_index=True)
+	country = models.ForeignKey(Country, null=True, blank=True, related_name="localities")
+	admin1 = models.ForeignKey(Admin1Code, null=True, blank=True, related_name="localities")
+	admin2 = models.ForeignKey(Admin2Code, null=True, blank=True, related_name="localities")
+	latitude = models.DecimalField(max_digits=8, decimal_places=5)
+	longitude = models.DecimalField(max_digits=8, decimal_places=5)
+	feature_class = models.CharField(max_length=1)
+	feature_code = models.CharField(max_length=10)
+	population = models.BigIntegerField(null=True)
+
+	def __unicode__(self):
+		long_name = u"{}".format(self.name)
+		if self.admin2 is not None:
+			long_name = u"{}, {}".format(long_name, self.admin2.name)
+
+		if self.admin1 is not None:
+			long_name = u"{}, {}".format(long_name, self.admin1.name)
+
+		return long_name
