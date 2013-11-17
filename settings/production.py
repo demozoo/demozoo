@@ -1,15 +1,9 @@
 from .base import *
 
-DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-		'NAME': 'demozoo',                      # Or path to database file if using sqlite3.
-		'USER': 'demozoo',                      # Not used with sqlite3.
-		'PASSWORD': '',                  # Not used with sqlite3.
-		'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-		'PORT': '4800',                      # Set to empty string for default. Not used with sqlite3.
-	}
-}
+DATABASES['default']['PORT'] = 4800
+DATABASES['default']['USER'] = 'demozoo'
+DATABASES['geonameslite']['PORT'] = 4800
+DATABASES['geonameslite']['USER'] = 'demozoo'
 
 DEBUG = False
 EMAIL_HOST = 'localhost'
