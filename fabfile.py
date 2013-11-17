@@ -9,6 +9,7 @@ def deploy():
 		run('git pull')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --database=geonameslite --settings=settings.production')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.production')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.production')
 		run('sudo supervisorctl restart demozoo')
