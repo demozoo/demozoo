@@ -1,25 +1,55 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand, NoArgsCommand
+from optparse import make_option
 
+from contextlib import contextmanager
 import urllib2
+import os.path
+from zipfile import ZipFile
 
 from geonameslite.models import Country, Admin1Code, Admin2Code, Locality
 
 
 class Command(NoArgsCommand):
+	option_list = BaseCommand.option_list + (
+		make_option('--dir',
+			action='store', type='string',
+			dest='dir',
+			default=None,
+			help='Directory containing pre-downloaded files from geonames'),
+		)
+
 	countries = {}
 	localities = set()
 
+	@contextmanager
+	def open_file(self, url):
+		if self.dir:
+			filename = url.split('/')[-1]
+			try:
+				fd = open(os.path.join(self.dir, filename), 'r')
+				yield fd
+				fd.close()
+				return
+			except IOError:
+				pass
+
+		print "Downloading %s ..." % url
+		fd = urllib2.urlopen(url)
+		yield fd
+		fd.close()
+
+
 	def clear_tables(self):
 		print "Clearing tables"
-		Country.objects.all().delete()
-		Admin1Code.objects.all().delete()
-		Admin2Code.objects.all().delete()
-		Locality.objects.all().delete()
+		from django.db import connections
+		cursor = connections['geonameslite'].cursor()
+		for model in (Locality, Admin2Code, Admin1Code, Country):
+			cursor.execute('TRUNCATE TABLE "{0}" CASCADE'.format(model._meta.db_table))
 
 	def load_countries(self):
-		print "Loading countries"
 		objects = []
-		with urllib2.urlopen('http://download.geonames.org/export/dump/countryInfo.txt') as fd:
+		with self.open_file('http://download.geonames.org/export/dump/countryInfo.txt') as fd:
+			print "Importing countries"
 			for line in fd:
 				if line.startswith('#'):
 					continue
@@ -32,9 +62,9 @@ class Command(NoArgsCommand):
 		Country.objects.bulk_create(objects)
 
 	def load_admin1_codes(self):
-		print "Loading admin level 1 codes"
 		objects = []
-		with urllib2.urlopen('http://download.geonames.org/export/dump/admin1CodesASCII.txt') as fd:
+		with self.open_file('http://download.geonames.org/export/dump/admin1CodesASCII.txt') as fd:
+			print "Importing admin level 1 codes"
 			for line in fd:
 				fields = line[:-1].split('\t')
 				codes, name = fields[0:2]
@@ -49,11 +79,11 @@ class Command(NoArgsCommand):
 		Admin1Code.objects.bulk_create(objects)
 
 	def load_admin2_codes(self):
-		print "Loading admin level 2 codes"
 		objects = []
 		admin2_list = []  # to find duplicated
 		skipped_duplicated = 0
-		with urllib2.urlopen('http://download.geonames.org/export/dump/admin2Codes.txt') as fd:
+		with self.open_file('http://download.geonames.org/export/dump/admin2Codes.txt') as fd:
+			print "Importing admin level 2 codes"
 			for line in fd:
 				fields = line[:-1].split('\t')
 				codes, name = fields[0:2]
@@ -93,58 +123,62 @@ class Command(NoArgsCommand):
 		objects = []
 		batch = 10000
 		processed = 0
-		with open('/Users/matthew/Development/zxdemo/demozoo2/data-research/geonames/allCountries.txt', 'r') as fd:
-			for line in fd:
-				geonameid, name, asciiname, altnames, lat, lng, feature_class, feature_code, country_code, cc2, admin1_code, admin2_code, admin3_code, admin4_code, population = line.split('\t')[:15]
-				if feature_class not in ('P', 'A'):
-					continue
-				if country_code:
-					admin1_dic = self.countries[country_code].get(admin1_code)
-					if admin1_dic:
-						admin1_id = admin1_dic['geonameid']
-						admin2_id = admin1_dic['admins2'].get(admin2_code)
+		with self.open_file('http://download.geonames.org/export/dump/allCountries.zip') as fd:
+			with ZipFile(fd) as all_countries_zip:
+				all_countries_txt = all_countries_zip.open('allCountries.txt')
+				for line in all_countries_txt:
+					geonameid, name, asciiname, altnames, lat, lng, feature_class, feature_code, country_code, cc2, admin1_code, admin2_code, admin3_code, admin4_code, population = line.split('\t')[:15]
+					if feature_class not in ('P', 'A'):
+						continue
+					if country_code:
+						admin1_dic = self.countries[country_code].get(admin1_code)
+						if admin1_dic:
+							admin1_id = admin1_dic['geonameid']
+							admin2_id = admin1_dic['admins2'].get(admin2_code)
+						else:
+							admin1_id = None
+							admin2_id = None
 					else:
+						country_code = None
 						admin1_id = None
 						admin2_id = None
-				else:
-					country_code = None
-					admin1_id = None
-					admin2_id = None
 
-				name = unicode(name, 'utf-8')
-				latitude = float(lat)
-				longitude = float(lng)
+					name = unicode(name, 'utf-8')
+					latitude = float(lat)
+					longitude = float(lng)
 
-				if population:
-					population = int(population)
-				else:
-					population = None
+					if population:
+						population = int(population)
+					else:
+						population = None
 
-				locality = Locality(
-					geonameid=geonameid,
-					name=name,
-					country_id=country_code,
-					admin1_id=admin1_id,
-					admin2_id=admin2_id,
-					latitude=latitude,
-					longitude=longitude,
-					feature_class=feature_class,
-					feature_code=feature_code,
-					population=population)
-				objects.append(locality)
-				processed += 1
-				self.localities.add(geonameid)
+					locality = Locality(
+						geonameid=geonameid,
+						name=name,
+						country_id=country_code,
+						admin1_id=admin1_id,
+						admin2_id=admin2_id,
+						latitude=latitude,
+						longitude=longitude,
+						feature_class=feature_class,
+						feature_code=feature_code,
+						population=population)
+					objects.append(locality)
+					processed += 1
+					self.localities.add(geonameid)
 
-				if processed % batch == 0:
-					Locality.objects.bulk_create(objects)
-					print "{0:8d} Localities loaded".format(processed)
-					objects = []
+					if processed % batch == 0:
+						Locality.objects.bulk_create(objects)
+						print "{0:8d} Localities loaded".format(processed)
+						objects = []
 
 		Locality.objects.bulk_create(objects)
 		print "{0:8d} Localities loaded".format(processed)
 
 
 	def handle_noargs(self, **options):
+		self.dir = options.get('dir')
+
 		self.clear_tables()
 		self.load_countries()
 		self.load_admin1_codes()
