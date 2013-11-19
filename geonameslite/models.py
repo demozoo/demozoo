@@ -58,3 +58,10 @@ class Locality(models.Model):
 			long_name = u"{}, {}".format(long_name, self.admin1.name)
 
 		return long_name
+
+class AlternateName(models.Model):
+	locality = models.ForeignKey(Locality, related_name="alternatenames")
+	name = models.CharField(max_length=200, db_index=True)
+
+	def __unicode__(self):
+		return self.name

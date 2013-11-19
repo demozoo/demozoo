@@ -5,8 +5,9 @@ from contextlib import contextmanager
 import urllib2
 import os.path
 from zipfile import ZipFile
+from cStringIO import StringIO
 
-from geonameslite.models import Country, Admin1Code, Admin2Code, Locality
+from geonameslite.models import Country, Admin1Code, Admin2Code, Locality, AlternateName
 
 
 class Command(NoArgsCommand):
@@ -43,7 +44,7 @@ class Command(NoArgsCommand):
 		print "Clearing tables"
 		from django.db import connections
 		cursor = connections['geonameslite'].cursor()
-		for model in (Locality, Admin2Code, Admin1Code, Country):
+		for model in (AlternateName, Locality, Admin2Code, Admin1Code, Country):
 			cursor.execute('TRUNCATE TABLE "{0}" CASCADE'.format(model._meta.db_table))
 
 	def load_countries(self):
@@ -124,7 +125,8 @@ class Command(NoArgsCommand):
 		batch = 10000
 		processed = 0
 		with self.open_file('http://download.geonames.org/export/dump/allCountries.zip') as fd:
-			with ZipFile(fd) as all_countries_zip:
+			_fd = StringIO(fd.read())
+			with ZipFile(_fd) as all_countries_zip:
 				all_countries_txt = all_countries_zip.open('allCountries.txt')
 				for line in all_countries_txt:
 					geonameid, name, asciiname, altnames, lat, lng, feature_class, feature_code, country_code, cc2, admin1_code, admin2_code, admin3_code, admin4_code, population = line.split('\t')[:15]
@@ -175,6 +177,45 @@ class Command(NoArgsCommand):
 		Locality.objects.bulk_create(objects)
 		print "{0:8d} Localities loaded".format(processed)
 
+	def load_altnames(self):
+		print 'Loading alternate names'
+		objects = []
+		allobjects = {}
+		batch = 10000
+		processed = 0
+		with self.open_file('http://download.geonames.org/export/dump/alternateNames.zip') as fd:
+			_fd = StringIO(fd.read())
+			with ZipFile(_fd) as alternate_names_zip:
+				alternate_names_txt = alternate_names_zip.open('alternateNames.txt')
+				for line in alternate_names_txt:
+					fields = line.split('\t')
+					locality_geonameid = fields[1]
+					if locality_geonameid not in self.localities:
+						continue
+
+					if fields[2] == 'link':
+						continue
+
+					name = fields[3]
+					if locality_geonameid in allobjects:
+						if name in allobjects[locality_geonameid]:
+							continue
+					else:
+						allobjects[locality_geonameid] = set()
+
+					allobjects[locality_geonameid].add(name)
+					objects.append(AlternateName(
+						locality_id=locality_geonameid,
+						name=name))
+					processed += 1
+
+				if processed % batch == 0:
+					AlternateName.objects.bulk_create(objects)
+					print "{0:8d} AlternateNames loaded".format(processed)
+					objects = []
+
+		AlternateName.objects.bulk_create(objects)
+		print "{0:8d} AlternateNames loaded".format(processed)
 
 	def handle_noargs(self, **options):
 		self.dir = options.get('dir')
@@ -194,3 +235,4 @@ class Command(NoArgsCommand):
 		#	if admin1_dic:
 		#		admin1_dic['admins2'][admin2.code] = admin2.geonameid
 		self.load_localities()
+		self.load_altnames()
