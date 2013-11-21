@@ -1,7 +1,7 @@
 <div class="pagination">
 	<span class="step-links">
 		{% if page.has_previous %}
-			<a href="?page={{ page.previous_page_number }}">previous</a>
+		<a href="?page={{ page.previous_page_number }}{% if order %}&order={{ order }}&dir={% if asc %}asc{% else %}desc{% endif %}{% endif %}">previous</a>
 		{% endif %}
 		
 		<span class="current">
@@ -9,7 +9,7 @@
 		</span>
 		
 		{% if page.has_next %}
-			<a href="?page={{ page.next_page_number }}">next</a>
+			<a href="?page={{ page.next_page_number }}{% if order %}&order={{ order }}&dir={% if asc %}asc{% else %}desc{% endif %}{% endif %}">next</a>
 		{% endif %}
 	</span>
 </div>
