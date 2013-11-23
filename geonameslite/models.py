@@ -52,15 +52,20 @@ class Locality(models.Model):
 	feature_code = models.CharField(max_length=10)
 	population = models.BigIntegerField(null=True)
 
+	@property
+	def long_name(self):
+		parts = [self.name]
+		if self.admin2 is not None and self.admin2.name != parts[-1]:
+			parts.append(self.admin2.name)
+		if self.admin1 is not None and self.admin1.name != parts[-1]:
+			parts.append(self.admin1.name)
+		if self.country is not None and self.country.name != parts[-1]:
+			parts.append(self.country.name)
+
+		return ', '.join(parts)
+
 	def __unicode__(self):
-		long_name = u"{}".format(self.name)
-		if self.admin2 is not None:
-			long_name = u"{}, {}".format(long_name, self.admin2.name)
-
-		if self.admin1 is not None:
-			long_name = u"{}, {}".format(long_name, self.admin1.name)
-
-		return long_name
+		return self.long_name
 
 	@staticmethod
 	def search(term, partial=False):
@@ -78,19 +83,21 @@ class Locality(models.Model):
 			query = Q(name__iexact=parts[0]) | Q(geonameid__in=alt_name_matches)
 			if partial:
 				qualifiers = parts[1:-1]
+				alt_name_matches = list(AlternateName.objects.filter(name__istartswith=parts[-1]).values_list('locality_id', flat=True).distinct())
 				query &= (
 					Q(country__name__istartswith=parts[-1]) | Q(country__code__istartswith=parts[-1])
-					| Q(admin1__name__istartswith=parts[-1])
-					| Q(admin2__name__istartswith=parts[-1])
+					| Q(admin1__name__istartswith=parts[-1]) | Q(admin1__geonameid__in=alt_name_matches)
+					| Q(admin2__name__istartswith=parts[-1]) | Q(admin2__geonameid__in=alt_name_matches)
 				)
 			else:
 				qualifiers = parts[1:]
 
 			for qualifier in qualifiers:
+				alt_name_matches = list(AlternateName.objects.filter(name__iexact=parts[-1]).values_list('locality_id', flat=True).distinct())
 				query &= (
 					Q(country__name__iexact=parts[-1]) | Q(country__code__iexact=parts[-1])
-					| Q(admin1__name__iexact=parts[-1])
-					| Q(admin2__name__iexact=parts[-1])
+					| Q(admin1__name__iexact=parts[-1]) | Q(admin1__geonameid__in=alt_name_matches)
+					| Q(admin2__name__iexact=parts[-1]) | Q(admin2__geonameid__in=alt_name_matches)
 				)
 
 		return Locality.objects.filter(query).order_by('-population')
