@@ -149,8 +149,6 @@ class Command(NoArgsCommand):
 					admin2_id = None
 
 				name = unicode(name, 'utf-8')
-				latitude = float(lat)
-				longitude = float(lng)
 
 				if population:
 					population = int(population)
@@ -163,8 +161,8 @@ class Command(NoArgsCommand):
 					country_id=country_code,
 					admin1_id=admin1_id,
 					admin2_id=admin2_id,
-					latitude=latitude,
-					longitude=longitude,
+					latitude=lat,
+					longitude=lng,
 					feature_class=feature_class,
 					feature_code=feature_code,
 					population=population)
