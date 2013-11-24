@@ -193,6 +193,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	latitude = models.FloatField(null=True, blank=True)
 	longitude = models.FloatField(null=True, blank=True)
 	woe_id = models.BigIntegerField(null=True, blank=True)
+	geonames_id = models.BigIntegerField(null=True, blank=True)
 
 	first_name = models.CharField(max_length=255, blank=True)
 	show_first_name = models.BooleanField(default=True)
@@ -1056,6 +1057,7 @@ class Party(models.Model):
 	latitude = models.FloatField(null=True, blank=True)
 	longitude = models.FloatField(null=True, blank=True)
 	woe_id = models.BigIntegerField(null=True, blank=True)
+	geonames_id = models.BigIntegerField(null=True, blank=True)
 
 	notes = models.TextField(blank=True)
 	website = models.URLField(blank=True, verify_exists=False)
