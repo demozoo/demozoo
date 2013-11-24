@@ -94,7 +94,7 @@ class Command(NoArgsCommand):
 				country_code, admin1_code, admin2_code = codes.split('.')
 
 				# if there is a duplicated
-				long_code = "{}.{}.{}".format(country_code, admin1_code, name)
+				long_code = "{0}.{1}.{2}".format(country_code, admin1_code, name)
 				if long_code in admin2_list:
 					skipped_duplicated += 1
 					continue
