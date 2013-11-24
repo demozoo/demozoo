@@ -113,6 +113,7 @@ class AlternateName(models.Model):
 	name = models.CharField(max_length=200)
 	is_preferred_name = models.BooleanField(default=False)
 	is_short_name = models.BooleanField(default=False)
+	is_asciified = models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.name
