@@ -27,8 +27,15 @@ DATABASES = {
 		'PASSWORD': '',                  # Not used with sqlite3.
 		'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
 		'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+	},
+	'geonameslite': {
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',
+		'NAME': 'geonameslite',
+		'USER': 'postgres',
 	}
 }
+
+DATABASE_ROUTERS = ['geonameslite.router.GeonamesLiteRouter']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -103,6 +110,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'django_bcrypt',
+	'geonameslite',
 
 	'demoscene',
 	'search',
