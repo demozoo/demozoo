@@ -56,10 +56,13 @@ class Command(NoArgsCommand):
 					continue
 
 				fields = line.split('\t')
-				iso, iso3, iso_numeric, fips, name = fields[:5]
+				iso, iso3, iso_numeric, fips, name, capital, area, population, continent, tld, currency_code, currency_name, phone, postcode_format, postcode_regex, languages, geonameid = fields[:17]
+				if geonameid == '':  # former countries Serbia and Montenegro and Netherlands Antilles are present in countryInfo.txt with no geonames code
+					continue
+
 				self.countries[iso] = {}
 
-				objects.append(Country(code=iso, name=name))
+				objects.append(Country(code=iso, name=name, geonameid=geonameid))
 		Country.objects.bulk_create(objects)
 
 	def load_admin1_codes(self):
@@ -197,6 +200,8 @@ class Command(NoArgsCommand):
 						continue
 
 					name = fields[3]
+					is_preferred_name = bool(fields[4])
+					is_short_name = bool(fields[5])
 					if locality_geonameid in allobjects:
 						if name in allobjects[locality_geonameid]:
 							continue
@@ -206,13 +211,15 @@ class Command(NoArgsCommand):
 					allobjects[locality_geonameid].add(name)
 					objects.append(AlternateName(
 						locality_id=locality_geonameid,
-						name=name))
+						name=name,
+						is_preferred_name=is_preferred_name,
+						is_short_name=is_short_name))
 					processed += 1
 
-				if processed % batch == 0:
-					AlternateName.objects.bulk_create(objects)
-					print "{0:8d} AlternateNames loaded".format(processed)
-					objects = []
+					if processed % batch == 0:
+						AlternateName.objects.bulk_create(objects)
+						print "{0:8d} AlternateNames loaded".format(processed)
+						objects = []
 
 		AlternateName.objects.bulk_create(objects)
 		print "{0:8d} AlternateNames loaded".format(processed)
