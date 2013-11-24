@@ -11,6 +11,7 @@ function initEditCreditLink(context) {
 }
 
 function replaceCreditsPanel(creditsHtml) {
+	$('.secondary_panels').removeClass('hidden');
 	$('#credits_panel').replaceWith(creditsHtml);
 	var panel = $('#credits_panel');
 	applyGlobalBehaviours(panel);

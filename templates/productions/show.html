@@ -84,39 +84,37 @@
 
 	{% include "productions/_notes.html" %}
 
-	{% if credits or featured_in_productions or soundtracks %}
-		<div class="secondary_panels">
-			{% include "productions/_credits.html" %}
+	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks %}hidden{% endif %}">
+		{% include "productions/_credits.html" %}
 
-			{% if featured_in_productions %}
-				<div class="featured_in_panel panel">
-					<h3>Featured in:</h3>
-					{% with featured_in_productions as productions %}
-						{% include "shared/production_listing.html" with show_screenshots=1 %}
-					{% endwith %}
-				</div>
-			{% endif %}
+		{% if featured_in_productions %}
+			<div class="featured_in_panel panel">
+				<h3>Featured in:</h3>
+				{% with featured_in_productions as productions %}
+					{% include "shared/production_listing.html" with show_screenshots=1 %}
+				{% endwith %}
+			</div>
+		{% endif %}
 
-			{% if soundtracks %}
-				<div class="soundtracks_panel panel editable_chunk">
-					<h3>Soundtrack</h3>
+		{% if soundtracks %}
+			<div class="soundtracks_panel panel editable_chunk">
+				<h3>Soundtrack</h3>
 
-					{% if site_is_writeable %}
-						<ul class="actions">
-							<li>
-								<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
-							</li>
-						</ul>
-					{% endif %}
+				{% if site_is_writeable %}
+					<ul class="actions">
+						<li>
+							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
+						</li>
+					</ul>
+				{% endif %}
 
-					{% with soundtracks as productions %}
-						{% include "shared/production_listing.html" %}
-					{% endwith %}
+				{% with soundtracks as productions %}
+					{% include "shared/production_listing.html" %}
+				{% endwith %}
 
-				</div>
-			{% endif %}
-		</div>
-	{% endif %}
+			</div>
+		{% endif %}
+	</div>
 
 	{% last_edited_by production %}
 	
