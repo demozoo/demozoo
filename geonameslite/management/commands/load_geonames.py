@@ -129,53 +129,55 @@ class Command(NoArgsCommand):
 		processed = 0
 		with self.open_file('http://download.geonames.org/export/dump/allCountries.zip') as fd:
 			_fd = StringIO(fd.read())
-			with ZipFile(_fd) as all_countries_zip:
-				all_countries_txt = all_countries_zip.open('allCountries.txt')
-				for line in all_countries_txt:
-					geonameid, name, asciiname, altnames, lat, lng, feature_class, feature_code, country_code, cc2, admin1_code, admin2_code, admin3_code, admin4_code, population = line.split('\t')[:15]
-					if feature_class not in ('P', 'A'):
-						continue
-					if country_code:
-						admin1_dic = self.countries[country_code].get(admin1_code)
-						if admin1_dic:
-							admin1_id = admin1_dic['geonameid']
-							admin2_id = admin1_dic['admins2'].get(admin2_code)
-						else:
-							admin1_id = None
-							admin2_id = None
+			all_countries_zip = ZipFile(_fd)
+			all_countries_txt = all_countries_zip.open('allCountries.txt')
+			for line in all_countries_txt:
+				geonameid, name, asciiname, altnames, lat, lng, feature_class, feature_code, country_code, cc2, admin1_code, admin2_code, admin3_code, admin4_code, population = line.split('\t')[:15]
+				if feature_class not in ('P', 'A'):
+					continue
+				if country_code:
+					admin1_dic = self.countries[country_code].get(admin1_code)
+					if admin1_dic:
+						admin1_id = admin1_dic['geonameid']
+						admin2_id = admin1_dic['admins2'].get(admin2_code)
 					else:
-						country_code = None
 						admin1_id = None
 						admin2_id = None
+				else:
+					country_code = None
+					admin1_id = None
+					admin2_id = None
 
-					name = unicode(name, 'utf-8')
-					latitude = float(lat)
-					longitude = float(lng)
+				name = unicode(name, 'utf-8')
+				latitude = float(lat)
+				longitude = float(lng)
 
-					if population:
-						population = int(population)
-					else:
-						population = None
+				if population:
+					population = int(population)
+				else:
+					population = None
 
-					locality = Locality(
-						geonameid=geonameid,
-						name=name,
-						country_id=country_code,
-						admin1_id=admin1_id,
-						admin2_id=admin2_id,
-						latitude=latitude,
-						longitude=longitude,
-						feature_class=feature_class,
-						feature_code=feature_code,
-						population=population)
-					objects.append(locality)
-					processed += 1
-					self.localities.add(geonameid)
+				locality = Locality(
+					geonameid=geonameid,
+					name=name,
+					country_id=country_code,
+					admin1_id=admin1_id,
+					admin2_id=admin2_id,
+					latitude=latitude,
+					longitude=longitude,
+					feature_class=feature_class,
+					feature_code=feature_code,
+					population=population)
+				objects.append(locality)
+				processed += 1
+				self.localities.add(geonameid)
 
-					if processed % batch == 0:
-						Locality.objects.bulk_create(objects)
-						print "{0:8d} Localities loaded".format(processed)
-						objects = []
+				if processed % batch == 0:
+					Locality.objects.bulk_create(objects)
+					print "{0:8d} Localities loaded".format(processed)
+					objects = []
+
+			all_countries_zip.close()
 
 		Locality.objects.bulk_create(objects)
 		print "{0:8d} Localities loaded".format(processed)
@@ -188,38 +190,40 @@ class Command(NoArgsCommand):
 		processed = 0
 		with self.open_file('http://download.geonames.org/export/dump/alternateNames.zip') as fd:
 			_fd = StringIO(fd.read())
-			with ZipFile(_fd) as alternate_names_zip:
-				alternate_names_txt = alternate_names_zip.open('alternateNames.txt')
-				for line in alternate_names_txt:
-					fields = line.split('\t')
-					locality_geonameid = fields[1]
-					if locality_geonameid not in self.localities:
+			alternate_names_zip = ZipFile(_fd)
+			alternate_names_txt = alternate_names_zip.open('alternateNames.txt')
+			for line in alternate_names_txt:
+				fields = line.split('\t')
+				locality_geonameid = fields[1]
+				if locality_geonameid not in self.localities:
+					continue
+
+				if fields[2] == 'link':
+					continue
+
+				name = fields[3]
+				is_preferred_name = bool(fields[4])
+				is_short_name = bool(fields[5])
+				if locality_geonameid in allobjects:
+					if name in allobjects[locality_geonameid]:
 						continue
+				else:
+					allobjects[locality_geonameid] = set()
 
-					if fields[2] == 'link':
-						continue
+				allobjects[locality_geonameid].add(name)
+				objects.append(AlternateName(
+					locality_id=locality_geonameid,
+					name=name,
+					is_preferred_name=is_preferred_name,
+					is_short_name=is_short_name))
+				processed += 1
 
-					name = fields[3]
-					is_preferred_name = bool(fields[4])
-					is_short_name = bool(fields[5])
-					if locality_geonameid in allobjects:
-						if name in allobjects[locality_geonameid]:
-							continue
-					else:
-						allobjects[locality_geonameid] = set()
+				if processed % batch == 0:
+					AlternateName.objects.bulk_create(objects)
+					print "{0:8d} AlternateNames loaded".format(processed)
+					objects = []
 
-					allobjects[locality_geonameid].add(name)
-					objects.append(AlternateName(
-						locality_id=locality_geonameid,
-						name=name,
-						is_preferred_name=is_preferred_name,
-						is_short_name=is_short_name))
-					processed += 1
-
-					if processed % batch == 0:
-						AlternateName.objects.bulk_create(objects)
-						print "{0:8d} AlternateNames loaded".format(processed)
-						objects = []
+			alternate_names_zip.close()
 
 		AlternateName.objects.bulk_create(objects)
 		print "{0:8d} AlternateNames loaded".format(processed)
