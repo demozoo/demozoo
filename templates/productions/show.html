@@ -43,8 +43,13 @@
 			{% if request.user.is_staff %}
 				{% with production.blurbs.all as blurbs %}
 					{% if blurbs %}
+						<ul>
+							{% for blurb in blurbs %}
+								<li>{{ blurb.body }}</li>
+							{% endfor %}
+						</ul>
 					{% else %}
-						<a href="">Add blurb</a>
+						<a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add blurb</a>
 					{% endif %}
 				{% endwith %}
 			{% endif %}

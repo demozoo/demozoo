@@ -73,6 +73,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^productions/(\d+)/add_tag/$', 'productions.add_tag', {}, 'production_add_tag'),
 	(r'^productions/(\d+)/remove_tag/(\d+)/$', 'productions.remove_tag', {}, 'production_remove_tag'),
 	(r'^productions/(\d+)/delete/$', 'productions.delete', {}, 'delete_production'),
+	(r'^productions/(\d+)/add_blurb/$', 'productions.add_blurb', {}, 'production_add_blurb'),
 
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),

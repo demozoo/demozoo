@@ -929,7 +929,7 @@ class ProductionDemozoo0Platform(models.Model):
 
 class ProductionBlurb(models.Model):
 	production = models.ForeignKey(Production, related_name='blurbs')
-	body = models.TextField()
+	body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
 class Credit(models.Model):

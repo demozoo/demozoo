@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, SoundtrackLink, ProductionLink, Edit
+from demoscene.models import Production, ProductionType, Platform, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet
@@ -244,6 +244,14 @@ class ProductionEditNotesForm(forms.ModelForm):
 		model = Production
 		fields = ['notes']
 
+
+class ProductionBlurbForm(forms.ModelForm):
+	class Meta:
+		model = ProductionBlurb
+		exclude = ['production']
+		widgets = {
+			'body': forms.Textarea(attrs={'class': 'short_notes'}),
+		}
 
 class ProductionDownloadLinkForm(ExternalLinkForm):
 	def save(self, commit=True):

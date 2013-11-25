@@ -1,5 +1,5 @@
 from demoscene.shortcuts import *
-from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionLink, Edit
+from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionLink, ProductionBlurb, Edit
 from demoscene.forms.production import *
 from demoscene.forms.common import CreditFormSet
 from taggit.models import Tag
@@ -221,6 +221,32 @@ def edit_notes(request, production_id):
 	return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
 		title='Editing notes for %s:' % production.title,
 		update_datestamp=True, update_bonafide_flag=True, on_success=success)
+
+
+@writeable_site_required
+@login_required
+def add_blurb(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+
+	blurb = ProductionBlurb(production=production)
+	if request.POST:
+		form = ProductionBlurbForm(request.POST, instance=blurb)
+		if form.is_valid():
+			form.save()
+			production.has_bonafide_edits = True
+			production.save()
+			return HttpResponseRedirect(production.get_absolute_url())
+	else:
+		form = ProductionBlurbForm(instance=blurb)
+
+	return render(request, 'shared/simple_form.html', {
+		'form': form,
+		'title': 'Adding blurb for %s:' % production.title,
+		'html_title': 'Adding blurb for %s' % production.title,
+		'action_url': reverse('production_add_blurb', args=[production.id]),
+	})
 
 
 @writeable_site_required
