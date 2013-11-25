@@ -927,6 +927,11 @@ class ProductionDemozoo0Platform(models.Model):
 	platform = models.CharField(max_length=64)
 
 
+class ProductionBlurb(models.Model):
+	production = models.ForeignKey(Production, related_name='blurbs')
+	body = models.TextField()
+
+
 class Credit(models.Model):
 	CATEGORIES = [
 		('Code', 'Code'),

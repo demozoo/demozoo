@@ -40,6 +40,14 @@
 		{% endif %}
 
 		<div class="right">
+			{% if request.user.is_staff %}
+				{% with production.blurbs.all as blurbs %}
+					{% if blurbs %}
+					{% else %}
+						<a href="">Add blurb</a>
+					{% endif %}
+				{% endwith %}
+			{% endif %}
 
 			{% if download_links %}
 				{% include "productions/_downloads.html" %}
