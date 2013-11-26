@@ -1007,7 +1007,7 @@ class Screenshot(models.Model):
 class PartySeries(models.Model):
 	name = models.CharField(max_length=255, unique=True)
 	notes = models.TextField(blank=True)
-	website = models.URLField(blank=True, verify_exists=False)
+	website = models.URLField(blank=True)
 	twitter_username = models.CharField(max_length=30, blank=True)
 	pouet_party_id = models.IntegerField(null=True, blank=True, verbose_name='Pouet party ID')
 
@@ -1065,7 +1065,7 @@ class Party(models.Model):
 	geonames_id = models.BigIntegerField(null=True, blank=True)
 
 	notes = models.TextField(blank=True)
-	website = models.URLField(blank=True, verify_exists=False)
+	website = models.URLField(blank=True)
 
 	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
 
