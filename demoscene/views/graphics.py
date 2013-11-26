@@ -33,6 +33,7 @@ def show(request, production_id, edit_mode=False):
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
+		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 	})
 
 

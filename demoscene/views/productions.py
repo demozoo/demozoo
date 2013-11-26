@@ -123,6 +123,7 @@ def show(request, production_id, edit_mode=False):
 		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
+		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 	})
 
 
@@ -246,6 +247,29 @@ def add_blurb(request, production_id):
 		'title': 'Adding blurb for %s:' % production.title,
 		'html_title': 'Adding blurb for %s' % production.title,
 		'action_url': reverse('production_add_blurb', args=[production.id]),
+	})
+
+@writeable_site_required
+@login_required
+def edit_blurb(request, production_id, blurb_id):
+	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+	blurb = get_object_or_404(ProductionBlurb, production=production, id=blurb_id)
+
+	if request.POST:
+		form = ProductionBlurbForm(request.POST, instance=blurb)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(production.get_absolute_url())
+	else:
+		form = ProductionBlurbForm(instance=blurb)
+
+	return render(request, 'shared/simple_form.html', {
+		'form': form,
+		'title': 'Editing blurb for %s:' % production.title,
+		'html_title': 'Editing blurb for %s' % production.title,
+		'action_url': reverse('production_edit_blurb', args=[production.id, blurb.id]),
 	})
 
 

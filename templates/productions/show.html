@@ -30,6 +30,17 @@
 {% block base_main %}
 	{% include "productions/_core_details.html" with show_edit_button=site_is_writeable %}
 
+	{% if request.user.is_staff %}
+		{% for blurb in blurbs %}
+			<div class="blurb">
+				<ul class="actions">
+					<li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit open_in_lightbox">Edit</a></li>
+				</ul>
+				<p>{{ blurb.body }}</p>
+			</div>
+		{% endfor %}
+	{% endif %}
+
 	<div class="mainstage">
 		{% if production.can_have_screenshots %}
 			{% include "productions/_screenshots.html" %}
@@ -40,20 +51,6 @@
 		{% endif %}
 
 		<div class="right">
-			{% if request.user.is_staff %}
-				{% with production.blurbs.all as blurbs %}
-					{% if blurbs %}
-						<ul>
-							{% for blurb in blurbs %}
-								<li>{{ blurb.body }}</li>
-							{% endfor %}
-						</ul>
-					{% else %}
-						<a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add blurb</a>
-					{% endif %}
-				{% endwith %}
-			{% endif %}
-
 			{% if download_links %}
 				{% include "productions/_downloads.html" %}
 			{% endif %}
@@ -80,6 +77,9 @@
 								<li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
 								{% if production.can_have_soundtracks %}
 									<li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
+								{% endif %}
+								{% if request.user.is_staff and not blurbs %}
+									<li><a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add a 'blurb'</a></li>
 								{% endif %}
 							</ul>
 						{% else %}
