@@ -1,4 +1,4 @@
-from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not demoscene.views.parties
+from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
 from demoscene.shortcuts import get_object_or_404, render, redirect
 from demoscene.models import Edit, Platform, ProductionType, Production

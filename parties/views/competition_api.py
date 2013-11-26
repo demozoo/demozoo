@@ -1,4 +1,4 @@
-from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not demoscene.views.parties
+from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson

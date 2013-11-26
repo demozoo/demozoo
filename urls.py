@@ -118,6 +118,15 @@ urlpatterns += patterns('demoscene.views',
 	(r'^releasers/(\d+)/delete/$', 'releasers.delete', {}, 'delete_releaser'),
 	(r'^releasers/(\d+)/edit_external_links/$', 'releasers.edit_external_links', {}, 'releaser_edit_external_links'),
 
+	(r'^nicks/match/$', 'nicks.match', {}),
+	(r'^nicks/byline_match/$', 'nicks.byline_match', {}),
+
+	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
+	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
+
+)
+
+urlpatterns += patterns('parties.views',
 	(r'^parties/$', 'parties.index', {}, 'parties'),
 	(r'^parties/by_date/$', 'parties.by_date', {}, 'parties_by_date'),
 	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),
@@ -144,13 +153,6 @@ urlpatterns += patterns('demoscene.views',
 	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
 	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),
 	(r'^competition_api/delete_placing/(\d+)/$', 'competition_api.delete_placing', {}),
-
-	(r'^nicks/match/$', 'nicks.match', {}),
-	(r'^nicks/byline_match/$', 'nicks.byline_match', {}),
-
-	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
-	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
-
 )
 
 urlpatterns += patterns('',
