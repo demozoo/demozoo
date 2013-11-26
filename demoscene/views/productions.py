@@ -265,12 +265,30 @@ def edit_blurb(request, production_id, blurb_id):
 	else:
 		form = ProductionBlurbForm(instance=blurb)
 
-	return render(request, 'shared/simple_form.html', {
+	return render(request, 'productions/edit_blurb_form.html', {
 		'form': form,
-		'title': 'Editing blurb for %s:' % production.title,
-		'html_title': 'Editing blurb for %s' % production.title,
+		'production': production,
+		'blurb': blurb,
 		'action_url': reverse('production_edit_blurb', args=[production.id, blurb.id]),
 	})
+
+@writeable_site_required
+@login_required
+def delete_blurb(request, production_id, blurb_id):
+	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+	blurb = get_object_or_404(ProductionBlurb, production=production, id=blurb_id)
+
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			blurb.delete()
+		return HttpResponseRedirect(production.get_absolute_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('production_delete_blurb', args=[production_id, blurb_id]),
+			"Are you sure you want to delete this blurb?",
+			html_title="Deleting blurb for %s" % production.title)
 
 
 @writeable_site_required

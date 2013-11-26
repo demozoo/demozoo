@@ -1,0 +1,33 @@
+{% extends base_template_with_ajax_option %}
+{% load url from future %}
+
+{% block html_title %}
+	Editing blurb for {{ production.title }} - Demozoo
+{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	<h2>Editing blurb for {{ production.title }}:</h2>
+
+	<form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
+		{% csrf_token %}
+
+		{% for field in form.visible_fields %}
+			{% include "shared/form_field.html" %}
+		{% endfor %}
+		{% for field in form.hidden_fields %}
+			{{ field }}
+		{% endfor %}
+
+		<div class="field">
+			<input type="submit" />
+		</div>
+
+		<p>
+			<a href="{% url 'production_delete_blurb' production.id blurb.id %}" class="open_in_lightbox">Delete this blurb</a>
+		</p>
+	</form>
+{% endblock %}
