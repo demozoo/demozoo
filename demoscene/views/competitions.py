@@ -3,7 +3,7 @@ from __future__ import absolute_import  # ensure that 'from parties.foo' imports
 from demoscene.shortcuts import get_object_or_404, render, redirect
 from demoscene.models import Edit, Platform, ProductionType, Production
 from parties.models import Competition, CompetitionPlacing
-from demoscene.forms.party import CompetitionForm
+from parties.forms import CompetitionForm
 from demoscene.utils import result_parser
 
 from django.utils import simplejson as json

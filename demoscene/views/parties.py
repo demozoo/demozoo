@@ -3,7 +3,7 @@ from __future__ import absolute_import  # ensure that 'from parties.foo' imports
 from demoscene.shortcuts import *
 from demoscene.models import Production, Edit
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
-from demoscene.forms.party import *
+from parties.forms import *
 from read_only_mode import writeable_site_required
 
 from django.contrib import messages
