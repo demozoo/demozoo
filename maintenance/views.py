@@ -1,6 +1,7 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, PartyExternalLink, Party, ProductionLink
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink
+from parties.models import PartyExternalLink, Party
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from mirror.models import Download, ArchiveMember

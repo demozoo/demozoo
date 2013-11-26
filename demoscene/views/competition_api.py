@@ -1,7 +1,10 @@
+from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not demoscene.views.parties
+
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.http import HttpResponse
-from demoscene.models import Competition, CompetitionPlacing, Production, Platform, ProductionType, Edit
+from demoscene.models import Production, Platform, ProductionType, Edit
+from parties.models import Competition, CompetitionPlacing
 from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F

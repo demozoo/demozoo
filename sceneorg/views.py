@@ -4,7 +4,8 @@ from django.db.models import Q, Count
 from django.http import HttpResponse
 from django.contrib import messages
 
-from demoscene.models import Party, Competition, Production, ProductionLink, Edit
+from demoscene.models import Production, ProductionLink, Edit
+from parties.models import Party, Competition
 from sceneorg.models import Directory, File
 from django.contrib.auth.models import User
 from read_only_mode import writeable_site_required

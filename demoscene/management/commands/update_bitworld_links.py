@@ -1,7 +1,8 @@
 # Update Bitworld links to their new Kestra versions
 from django.core.management.base import NoArgsCommand
 from django.db.utils import IntegrityError
-from demoscene.models import PartyExternalLink, ProductionLink
+from demoscene.models import ProductionLink
+from parties.models import PartyExternalLink
 from django.db import transaction
 import httplib
 from time import sleep

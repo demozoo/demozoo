@@ -4,7 +4,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from submit_button_field import SubmitButtonInput
-from demoscene.models import Party
+from parties.models import Party
 
 
 # An object which encapsulates the state of a PartyWidget as derived from its posted data;

@@ -1,5 +1,6 @@
 from django.core.management.base import NoArgsCommand
-from demoscene.models import Party, Competition, CompetitionPlacing, Production
+from parties.models import Party, Competition, CompetitionPlacing
+from demoscene.models import Production
 
 import pymysql
 import re

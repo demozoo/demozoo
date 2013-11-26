@@ -3,7 +3,8 @@
 from django.core.management.base import NoArgsCommand
 from django.db.utils import IntegrityError
 from django.db import transaction
-from demoscene.models import PartyExternalLink, ReleaserExternalLink, ProductionLink
+from demoscene.models import ReleaserExternalLink, ProductionLink
+from parties.models import PartyExternalLink
 
 external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 

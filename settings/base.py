@@ -113,6 +113,7 @@ INSTALLED_APPS = (
 	'geonameslite',
 
 	'demoscene',
+	'parties',
 	'search',
 	'dataexchange',
 	'maintenance',

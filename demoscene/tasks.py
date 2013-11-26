@@ -3,7 +3,7 @@ from django.db import connection, transaction
 import random
 from itertools import groupby
 
-from demoscene.models import Party
+from parties.models import Party
 from sceneorg.models import File
 
 @task(rate_limit = '6/m', ignore_result = True)

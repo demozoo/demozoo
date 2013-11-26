@@ -12,7 +12,7 @@ class Directory(models.Model):
 	last_seen_at = models.DateTimeField()
 	last_spidered_at = models.DateTimeField(null=True, blank=True)
 	parent = models.ForeignKey('Directory', related_name='subdirectories', null=True, blank=True)
-	competitions = models.ManyToManyField('demoscene.Competition', related_name="sceneorg_directories")
+	competitions = models.ManyToManyField('parties.Competition', related_name="sceneorg_directories")
 
 	def mark_deleted(self):
 		for dir in self.subdirectories.all():

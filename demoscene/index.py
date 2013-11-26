@@ -1,6 +1,7 @@
 from djapian import space, Indexer, CompositeIndexer
 
 from demoscene.models import *
+from parties.models import *
 
 
 class ProductionIndexer(Indexer):

@@ -1,4 +1,5 @@
-from demoscene.models import Releaser, Nick, NickVariant, Competition, ResultsFile
+from demoscene.models import Releaser, Nick, NickVariant
+from parties.models import Competition, ResultsFile
 from sceneorg.models import Directory
 
 from django.core.management.base import NoArgsCommand

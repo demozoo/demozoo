@@ -2,14 +2,13 @@
 
 from django.core.management.base import NoArgsCommand
 
-import pymysql
 import sys
 import re
 from django.contrib.auth.models import User
 from demoscene.models import *
+from parties.models import *
 from dataexchange import demozoo0
 import datetime
-import fuzzy_date
 
 PUNCTUATION_REGEX = r'[\s\-\#\:\!\'\.\[\]\(\)\=\?\_]'
 
