@@ -18,7 +18,7 @@ GEVENT_ADDR_PORT = "localhost:4801"
 
 BROKER_URL = 'redis://localhost:4803/0'
 
-ALLOWED_HOSTS = ['dev.demozoo.org']
+ALLOWED_HOSTS = ['localhost', 'dev.demozoo.org']
 
 try:
 	from .local import *
