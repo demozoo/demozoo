@@ -82,18 +82,18 @@ def prods_without_release_date_with_placement(request):
 	productions = Production.objects.raw('''
 		SELECT DISTINCT ON (demoscene_production.id)
 			demoscene_production.*,
-			demoscene_party.end_date_date AS suggested_release_date_date,
-			demoscene_party.end_date_precision AS suggested_release_date_precision,
-			demoscene_party.name AS release_detail
+			parties_party.end_date_date AS suggested_release_date_date,
+			parties_party.end_date_precision AS suggested_release_date_precision,
+			parties_party.name AS release_detail
 		FROM
 			demoscene_production
-			INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
-			INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id  AND demoscene_competition.name <> 'Invitation')
-			INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+			INNER JOIN parties_competitionplacing ON (demoscene_production.id = parties_competitionplacing.production_id)
+			INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
+			INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
 		WHERE
 			demoscene_production.release_date_date IS NULL
 			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY demoscene_production.id, demoscene_party.end_date_date
+		ORDER BY demoscene_production.id, parties_party.end_date_date
 	''', [report_name])
 
 	productions = list(productions)
@@ -189,21 +189,21 @@ def prods_with_release_date_outside_party(request):
 		SELECT * FROM (
 			SELECT DISTINCT ON (demoscene_production.id)
 				demoscene_production.*,
-				demoscene_party.start_date_date AS party_start_date,
-				demoscene_party.end_date_date AS party_end_date,
-				demoscene_party.end_date_date AS suggested_release_date_date,
-				demoscene_party.end_date_precision AS suggested_release_date_precision,
-				demoscene_party.name AS release_detail,
-				demoscene_party.end_date_precision AS party_end_date_precision
+				parties_party.start_date_date AS party_start_date,
+				parties_party.end_date_date AS party_end_date,
+				parties_party.end_date_date AS suggested_release_date_date,
+				parties_party.end_date_precision AS suggested_release_date_precision,
+				parties_party.name AS release_detail,
+				parties_party.end_date_precision AS party_end_date_precision
 			FROM
 				demoscene_production
-				INNER JOIN demoscene_competitionplacing ON (demoscene_production.id = demoscene_competitionplacing.production_id)
-				INNER JOIN demoscene_competition ON (demoscene_competitionplacing.competition_id = demoscene_competition.id  AND demoscene_competition.name <> 'Invitation')
-				INNER JOIN demoscene_party ON (demoscene_competition.party_id = demoscene_party.id)
+				INNER JOIN parties_competitionplacing ON (demoscene_production.id = parties_competitionplacing.production_id)
+				INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
+				INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
 			WHERE
 				demoscene_production.release_date_date IS NOT NULL
 				AND demoscene_production.release_date_precision = 'd'
-			ORDER BY demoscene_production.id, demoscene_party.end_date_date
+			ORDER BY demoscene_production.id, parties_party.end_date_date
 		) AS releases
 		WHERE
 			releases.party_end_date_precision = 'd'
@@ -489,35 +489,35 @@ def sceneorg_party_dirs_with_no_party(request):
 		FROM sceneorg_directory AS parties_root
 		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
 		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
-		LEFT JOIN demoscene_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+		LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
 		WHERE parties_root.path = '/parties/'
-		AND demoscene_partyexternallink.id IS NULL
+		AND parties_partyexternallink.id IS NULL
 		AND party_dir.is_deleted = 'f'
 		ORDER BY party_dir.path
 	''')
 
 	directories = Directory.objects.raw('''
 		SELECT party_dir.*,
-			demoscene_partyseries.name AS suggested_series_name,
-			demoscene_partyseries.id AS suggested_series_id,
-			demoscene_party.name AS suggested_party_name,
-			demoscene_party.id AS suggested_party_id,
+			parties_partyseries.name AS suggested_series_name,
+			parties_partyseries.id AS suggested_series_id,
+			parties_party.name AS suggested_party_name,
+			parties_party.id AS suggested_party_id,
 			substring(party_dir.path from '/parties/(\\\\d+)/') AS party_year
 		FROM sceneorg_directory AS parties_root
 		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
 		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
-		LEFT JOIN demoscene_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
-		LEFT JOIN demoscene_partyseries ON (
+		LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+		LEFT JOIN parties_partyseries ON (
 			regexp_replace(substring(lower(party_dir.path) from '/parties/\\\\d+/([-a-z_]+)'), '[^a-z]', '', 'g')
-			= regexp_replace(lower(demoscene_partyseries.name), '[^a-z]', '', 'g')
+			= regexp_replace(lower(parties_partyseries.name), '[^a-z]', '', 'g')
 		)
-		LEFT JOIN demoscene_party ON (
-			demoscene_partyseries.id = demoscene_party.party_series_id
+		LEFT JOIN parties_party ON (
+			parties_partyseries.id = parties_party.party_series_id
 			AND substring(party_dir.path from '/parties/(\\\\d+)/')
-				= cast(extract(year from demoscene_party.start_date_date) as varchar)
+				= cast(extract(year from parties_party.start_date_date) as varchar)
 		)
 		WHERE parties_root.path = '/parties/'
-		AND demoscene_partyexternallink.id IS NULL
+		AND parties_partyexternallink.id IS NULL
 		AND party_dir.is_deleted = 'f'
 		ORDER BY party_dir.path
 	''')
@@ -539,7 +539,7 @@ def parties_with_incomplete_dates(request):
 	parties = Party.objects.extra(
 		where=[
 			"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
-			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+			"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
 		params=[report_name]
 	).order_by('start_date_date')
@@ -557,7 +557,7 @@ def parties_with_no_location(request):
 		where=[
 			"woe_id IS NULL",
 			"is_online = 'f'",
-			"demoscene_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+			"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 		],
 		params=[report_name]
 	).order_by('start_date_date')

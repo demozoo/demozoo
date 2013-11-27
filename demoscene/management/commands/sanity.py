@@ -113,12 +113,12 @@ class Command(NoArgsCommand):
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
 		cursor.execute('''
-			UPDATE demoscene_party
+			UPDATE parties_party
 			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
 		cursor.execute('''
-			UPDATE demoscene_partyseries
+			UPDATE parties_partyseries
 			SET name = REGEXP_REPLACE(name, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
