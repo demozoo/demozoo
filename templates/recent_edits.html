@@ -11,7 +11,7 @@
 				<td class="timestamp">{{ edit.timestamp|date:"Y-m-d H:i:s" }}</td>
 				<td class="user"><strong>{{ edit.user }}</strong></td>
 				<td>
-					{{ edit }}
+					{{ edit.html_description }}
 				</td>
 			</tr>
 		{% endfor %}
