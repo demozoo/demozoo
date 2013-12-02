@@ -1,3 +1,5 @@
+import re
+
 from demoscene.models import Edit as OldEdit, Production, Releaser
 from parties.models import Party
 from editlog.models import Edit, EditedItem
@@ -103,4 +105,64 @@ class Command(NoArgsCommand):
 				item = old_edit.focus
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=releaser_content_type_id, role='scener', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'edit_scener_location':
+				match = re.match(r'Set location to (.*)', old_edit.description)
+				if match:
+					location = match.group(1)
+				else:
+					location = ''
+
+				edit = Edit.objects.create(
+					action_type='edit_scener_location',
+					user_id=old_edit.user_id, timestamp=old_edit.timestamp, admin_only=False,
+					detail=location
+				)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='scener', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'edit_scener_real_name':
+				edit = Edit.objects.create(
+					action_type='edit_scener_real_name',
+					user_id=old_edit.user_id, timestamp=old_edit.timestamp, admin_only=False,
+					detail=('set_real_name' if old_edit.description == "Set real name" else '')
+				)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='scener', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'edit_releaser_notes':
+				edit = Edit.objects.create(
+					action_type='edit_releaser_notes',
+					user_id=old_edit.user_id, timestamp=old_edit.timestamp, admin_only=False,
+				)
+
+				item = old_edit.focus
+				if item:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='group' if item.is_group else 'scener', name=item.name)
+				else:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
+
+			elif old_edit.action_type == 'add_nick':
+				match = re.match(r'Added nick \'(.*)\'$', old_edit.description)
+				if match:
+					nick = match.group(1)
+				else:
+					nick = ''
+
+				edit = Edit.objects.create(
+					action_type='add_nick',
+					user_id=old_edit.user_id, timestamp=old_edit.timestamp, admin_only=False,
+					detail=nick
+				)
+				item = old_edit.focus
+				if item:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='group' if item.is_group else 'scener', name=item.name)
+				else:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
 
