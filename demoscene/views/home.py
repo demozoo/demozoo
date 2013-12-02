@@ -1,5 +1,6 @@
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Production, Edit
+from demoscene.models import Releaser, Production
+from editlog.models import Edit
 
 
 def latest_activity(request):
@@ -27,7 +28,7 @@ def error_test(request):
 
 
 def recent_edits(request):
-	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
+	edits = Edit.objects.order_by('-timestamp').select_related('user').prefetch_related('edited_items')
 	edits_page = get_page(
 		edits,
 		request.GET.get('page', '1'))
