@@ -18,6 +18,10 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Added %(nick)s as a nick for %(releaser)s",
 		lambda self: {'nick': self.detail, 'releaser': releaser_for_edit_description(self)}
 	),
+	'edit_nick': (
+		"Edited %(releaser)s's nick %(detail)s",
+		lambda self: {'detail': self.detail, 'releaser': releaser_for_edit_description(self)}
+	),
 	'create_group': (
 		"Added group %(group)s",
 		lambda self: {'group': self.get_item('group')}
@@ -69,6 +73,14 @@ EDIT_DESCRIPTION_FORMATTERS = {
 	'releaser_edit_external_links': (
 		"%(detail)s on %(releaser)s",
 		lambda self: {'detail': self.detail, 'releaser': releaser_for_edit_description(self)}
+	),
+	'edit_membership': (
+		"Edited %(member)s's membership of %(group)s: %(detail)s",
+		lambda self: {'detail': self.detail, 'member': self.get_item('member'), 'group': self.get_item('group')}
+	),
+	'edit_subgroup': (
+		"Updated %(subgroup)s's status as a subgroup of %(supergroup)s: %(detail)s",
+		lambda self: {'detail': self.detail, 'subgroup': self.get_item('subgroup'), 'supergroup': self.get_item('supergroup')}
 	),
 }
 
