@@ -244,3 +244,91 @@ class Command(NoArgsCommand):
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=releaser_content_type_id, role='group', name=item.name if item else '(deleted)')
 
+			elif old_edit.action_type == 'add_screenshot':
+				match = re.match(r'Added (\d+) screenshots$', old_edit.description)
+				if match:
+					screenshot_count = match.group(1)
+				else:
+					screenshot_count = '1'
+
+				edit = import_edit(old_edit, screenshot_count)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
+
+			elif old_edit.action_type == 'delete_screenshot':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
+
+			elif old_edit.action_type == 'add_credit':
+				match = re.match(r'Added credit for (.*) on (.*): (.*)$', old_edit.description)
+				releaser = old_edit.focus2
+				if releaser:
+					role = ('group' if releaser.is_group else 'scener')
+				else:
+					role = 'releaser'
+
+				if match:
+					nick_name = match.group(1)
+					production_name = match.group(2)
+					credit_detail = match.group(3)
+				else:
+					production = old_edit.focus
+					nick_name = releaser.name if releaser else '(deleted)'
+					production_name = production.title if production else '(deleted)'
+					credit_detail = ''
+
+				edit = import_edit(old_edit, credit_detail)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=production_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role=role, name=nick_name)
+
+			elif old_edit.action_type == 'edit_credit':
+				match = re.match(r'Updated (.*)\'s credit on (.*): (.*)$', old_edit.description)
+				releaser = old_edit.focus2
+				if releaser:
+					role = ('group' if releaser.is_group else 'scener')
+				else:
+					role = 'releaser'
+
+				if match:
+					nick_name = match.group(1)
+					production_name = match.group(2)
+					credit_detail = match.group(3)
+				else:
+					production = old_edit.focus
+					nick_name = releaser.name if releaser else '(deleted)'
+					production_name = production.title if production else '(deleted)'
+					credit_detail = ''
+
+				edit = import_edit(old_edit, credit_detail)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=production_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role=role, name=nick_name)
+
+			elif old_edit.action_type == 'delete_credit':
+				match = re.match(r'Deleted (.*)\'s credit on (.*)', old_edit.description)
+				releaser = old_edit.focus2
+				if releaser:
+					role = ('group' if releaser.is_group else 'scener')
+				else:
+					role = 'releaser'
+
+				if match:
+					nick_name = match.group(1)
+					production_name = match.group(2)
+				else:
+					production = old_edit.focus
+					nick_name = releaser.name if releaser else '(deleted)'
+					production_name = production.title if production else '(deleted)'
+
+				edit = import_edit(old_edit)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=production_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role=role, name=nick_name)
+

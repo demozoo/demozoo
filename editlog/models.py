@@ -102,6 +102,26 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Converted %(group)s from a group to a scener",
 		lambda self: {'group': self.get_item('group')}
 	),
+	'add_screenshot': lambda self: (
+		("Added screenshot for %(production)s", lambda self: {'production': self.get_item('production')}) if self.detail == '1'
+		else ("Added %(screenshot_count)s screenshots for %(production)s", lambda self: {'production': self.get_item('production'), 'screenshot_count': self.detail})
+	),
+	'delete_screenshot': (
+		"Deleted screenshot for %(production)s",
+		lambda self: {'production': self.get_item('production')}
+	),
+	'add_credit': (
+		"Added credit for %(releaser)s on %(production)s: %(detail)s",
+		lambda self: {'detail': self.detail, 'releaser': releaser_for_edit_description(self), 'production': self.get_item('production')}
+	),
+	'edit_credit': (
+		"Updated %(releaser)s's credit on %(production)s: %(detail)s",
+		lambda self: {'detail': self.detail, 'releaser': releaser_for_edit_description(self), 'production': self.get_item('production')}
+	),
+	'delete_credit': (
+		"Deleted %(releaser)s's credit on %(production)s",
+		lambda self: {'releaser': releaser_for_edit_description(self), 'production': self.get_item('production')}
+	),
 }
 
 
