@@ -8,9 +8,12 @@ from django.core.management.base import NoArgsCommand
 from django.contrib.contenttypes.models import ContentType
 
 
-def import_edit(old_edit, detail=''):
+def import_edit(old_edit, detail='', action_type=None):
+	if not action_type:
+		action_type = old_edit.action_type
+
 	return Edit.objects.create(
-		action_type=old_edit.action_type,
+		action_type=action_type,
 		user_id=old_edit.user_id, timestamp=old_edit.timestamp, admin_only=False,
 		detail=detail
 	)
@@ -155,8 +158,25 @@ class Command(NoArgsCommand):
 				edit = import_edit(old_edit, detail)
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=releaser_content_type_id, role='member', name=member_name)
-				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
 					item_content_type_id=releaser_content_type_id, role='group', name=group_name)
+
+			elif old_edit.action_type == 'add_subgroup':
+				match = re.match(r'Added (.*) as a subgroup of (.*)$', old_edit.description)
+				if match:
+					subgroup_name = match.group(1)
+					supergroup_name = match.group(2)
+				else:
+					subgroup = old_edit.focus
+					supergroup = old_edit.focus2
+					subgroup_name = subgroup.name if subgroup else '(deleted)'
+					supergroup_name = supergroup.name if supergroup else '(deleted)'
+
+				edit = import_edit(old_edit, '')
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='subgroup', name=subgroup_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role='supergroup', name=supergroup_name)
 
 			elif old_edit.action_type == 'edit_subgroup':
 				match = re.match(r'Updated (.*)\'s status as a subgroup of (.*): (.*)$', old_edit.description)
@@ -174,6 +194,53 @@ class Command(NoArgsCommand):
 				edit = import_edit(old_edit, detail)
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=releaser_content_type_id, role='subgroup', name=subgroup_name)
-				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
 					item_content_type_id=releaser_content_type_id, role='supergroup', name=supergroup_name)
+
+			elif old_edit.action_type == 'add_membership':
+				match = re.match(r'Added (.*) as a member of (.*)$', old_edit.description)
+				if match:
+					member_name = match.group(1)
+					group_name = match.group(2)
+				else:
+					member = old_edit.focus
+					group = old_edit.focus2
+					member_name = member.name if member else '(deleted)'
+					group_name = group.name if group else '(deleted)'
+
+				edit = import_edit(old_edit, '')
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='member', name=member_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role='group', name=group_name)
+
+			elif old_edit.action_type == 'remove_membership':
+				match_member = re.match(r'Removed (.*) as a member of (.*)$', old_edit.description)
+				match_subgroup = re.match(r'Removed (.*) as a subgroup of (.*)$', old_edit.description)
+				if match_member:
+					member_name = match_member.group(1)
+					group_name = match_member.group(2)
+					action_type = 'remove_membership'
+				elif match_subgroup:
+					subgroup_name = match_subgroup.group(1)
+					supergroup_name = match_subgroup.group(2)
+					action_type = 'remove_subgroup'
+				else:
+					member = old_edit.focus
+					group = old_edit.focus2
+					member_name = member.name if member else '(deleted)'
+					group_name = group.name if group else '(deleted)'
+					action_type = 'remove_membership'
+
+				edit = import_edit(old_edit, '', action_type)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='member', name=member_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=releaser_content_type_id, role='group', name=group_name)
+
+			elif old_edit.action_type == 'convert_to_scener':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='group', name=item.name if item else '(deleted)')
 

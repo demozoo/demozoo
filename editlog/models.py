@@ -82,6 +82,26 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Updated %(subgroup)s's status as a subgroup of %(supergroup)s: %(detail)s",
 		lambda self: {'detail': self.detail, 'subgroup': self.get_item('subgroup'), 'supergroup': self.get_item('supergroup')}
 	),
+	'add_membership': (
+		"Added %(member)s as a member of %(group)s",
+		lambda self: {'member': self.get_item('member'), 'group': self.get_item('group')}
+	),
+	'add_subgroup': (
+		"Added %(subgroup)s as a member of %(supergroup)s",
+		lambda self: {'subgroup': self.get_item('subgroup'), 'supergroup': self.get_item('supergroup')}
+	),
+	'remove_membership': (
+		"Removed %(member)s as a member of %(group)s",
+		lambda self: {'member': self.get_item('member'), 'group': self.get_item('group')}
+	),
+	'remove_subgroup': (
+		"Removed %(subgroup)s as a member of %(supergroup)s",
+		lambda self: {'subgroup': self.get_item('subgroup'), 'supergroup': self.get_item('supergroup')}
+	),
+	'convert_to_scener': (
+		"Converted %(group)s from a group to a scener",
+		lambda self: {'group': self.get_item('group')}
+	),
 }
 
 
