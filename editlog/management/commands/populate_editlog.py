@@ -67,6 +67,12 @@ class Command(NoArgsCommand):
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
 
+			elif old_edit.action_type == 'edit_soundtracks':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
+
 			elif old_edit.action_type == 'create_group':
 				edit = import_edit(old_edit)
 				item = old_edit.focus
@@ -256,6 +262,30 @@ class Command(NoArgsCommand):
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
 
+			elif old_edit.action_type == 'production_add_tag':
+				match = re.match(r'Added tag \'(.*)\'$', old_edit.description)
+				if match:
+					tag = match.group(1)
+				else:
+					tag = ''
+
+				edit = import_edit(old_edit, tag)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
+
+			elif old_edit.action_type == 'production_remove_tag':
+				match = re.match(r'Removed tag \'(.*)\'$', old_edit.description)
+				if match:
+					tag = match.group(1)
+				else:
+					tag = ''
+
+				edit = import_edit(old_edit, tag)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
+
 			elif old_edit.action_type == 'delete_screenshot':
 				edit = import_edit(old_edit)
 				item = old_edit.focus
@@ -332,3 +362,13 @@ class Command(NoArgsCommand):
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
 					item_content_type_id=releaser_content_type_id, role=role, name=nick_name)
 
+			elif old_edit.action_type == 'delete_production':
+				match = re.match(r'Deleted production \'(.*)\'', old_edit.description)
+				if match:
+					title = match.group(1)
+				else:
+					title = '(unknown)'
+
+				edit = import_edit(old_edit)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=production_content_type_id, role='production', name=title)

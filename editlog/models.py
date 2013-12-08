@@ -30,6 +30,10 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		 "Added production %(production)s",
 		lambda self: {'production': self.get_item('production')}
 	),
+	'delete_production': (
+		 "Deleted production %(production)s",
+		lambda self: {'production': self.get_item('production')}
+	),
 	'create_scener': (
 		"Added scener %(scener)s",
 		lambda self: {'scener': self.get_item('scener')}
@@ -42,8 +46,20 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Edited core details of %(production)s: %(detail)s",
 		lambda self: {'production': self.get_item('production'), 'detail': self.detail}
 	),
+	'production_add_tag': (
+		"Added tag '%(tag)s' to %(production)s",
+		lambda self: {'production': self.get_item('production'), 'tag': self.detail}
+	),
+	'production_remove_tag': (
+		"Removed tag '%(tag)s' from %(production)s",
+		lambda self: {'production': self.get_item('production'), 'tag': self.detail}
+	),
 	'edit_production_notes': (
 		"Edited notes for production %(production)s",
+		lambda self: {'production': self.get_item('production')}
+	),
+	'edit_soundtracks': (
+		"Edited soundtrack details for %(production)s",
 		lambda self: {'production': self.get_item('production')}
 	),
 	'edit_releaser_notes': (
