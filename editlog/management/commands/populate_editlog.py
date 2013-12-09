@@ -304,6 +304,12 @@ class Command(NoArgsCommand):
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=releaser_content_type_id, role='group', name=item.name if item else '(deleted)')
 
+			elif old_edit.action_type == 'convert_to_group':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='scener', name=item.name if item else '(deleted)')
+
 			elif old_edit.action_type == 'add_screenshot':
 				match = re.match(r'Added (\d+) screenshots$', old_edit.description)
 				if match:

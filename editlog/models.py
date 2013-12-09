@@ -134,6 +134,10 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Converted %(group)s from a group to a scener",
 		lambda self: {'group': self.get_item('group')}
 	),
+	'convert_to_group': (
+		"Converted %(scener)s from a scener to a group",
+		lambda self: {'scener': self.get_item('scener')}
+	),
 	'add_screenshot': lambda self: (
 		("Added screenshot for %(production)s", lambda self: {'production': self.get_item('production')}) if self.detail == '1'
 		else ("Added %(screenshot_count)s screenshots for %(production)s", lambda self: {'production': self.get_item('production'), 'screenshot_count': self.detail})
