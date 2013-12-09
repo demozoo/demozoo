@@ -1,7 +1,7 @@
 import re
 
 from demoscene.models import Edit as OldEdit, Production, Releaser
-from parties.models import Party
+from parties.models import Party, PartySeries
 from editlog.models import Edit, EditedItem
 
 from django.core.management.base import NoArgsCommand
@@ -24,6 +24,7 @@ class Command(NoArgsCommand):
 		production_content_type_id = ContentType.objects.get_for_model(Production).id
 		releaser_content_type_id = ContentType.objects.get_for_model(Releaser).id
 		party_content_type_id = ContentType.objects.get_for_model(Party).id
+		party_series_content_type_id = ContentType.objects.get_for_model(PartySeries).id
 
 		for old_edit in OldEdit.objects.all():
 			if old_edit.action_type in ('production_edit_external_links', 'production_edit_download_links'):
@@ -437,3 +438,37 @@ class Command(NoArgsCommand):
 				edit = import_edit(old_edit)
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=production_content_type_id, role='production', name=title)
+
+			elif old_edit.action_type == 'create_party':
+				match = re.match(r'Added party \'(.*)\'', old_edit.description)
+				if match:
+					name = match.group(1)
+				else:
+					name = '(unknown)'
+
+				edit = import_edit(old_edit)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=party_content_type_id, role='party', name=name)
+
+			elif old_edit.action_type == 'edit_party':
+				item = old_edit.focus
+				if item and isinstance(item, PartySeries):
+					edit = import_edit(old_edit, old_edit.description, 'edit_party_series')
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=party_series_content_type_id, role='party_series', name=item.name if item else '(deleted)')
+				else:
+					edit = import_edit(old_edit, old_edit.description)
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=party_content_type_id, role='party', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'edit_party_notes':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=party_content_type_id, role='party', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'edit_party_series_notes':
+				edit = import_edit(old_edit)
+				item = old_edit.focus
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=party_series_content_type_id, role='party_series', name=item.name if item else '(deleted)')

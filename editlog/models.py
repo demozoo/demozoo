@@ -158,6 +158,26 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Deleted %(releaser)s's credit on %(production)s",
 		lambda self: {'releaser': releaser_for_edit_description(self), 'production': self.get_item('production')}
 	),
+	'create_party': (
+		"Added party '%(party)s'",
+		lambda self: {'party': self.get_item('party')}
+	),
+	'edit_party': (
+		"Updated party '%(party)s': %(detail)s",
+		lambda self: {'party': self.get_item('party'), 'detail': self.detail}
+	),
+	'edit_party_series': (
+		"Updated party series '%(party_series)s': %(detail)s",
+		lambda self: {'party_series': self.get_item('party_series'), 'detail': self.detail}
+	),
+	'edit_party_notes': (
+		"Edited notes for party %(party)s",
+		lambda self: {'party': self.get_item('party')}
+	),
+	'edit_party_series_notes': (
+		"Edited notes for party series %(party_series)s",
+		lambda self: {'party_series': self.get_item('party_series')}
+	),
 }
 
 
@@ -230,6 +250,8 @@ class EditedItem(models.Model):
 			url = reverse('production', args=[self.item_id])
 		elif self.role == 'party':
 			url = reverse('party', args=[self.item_id])
+		elif self.role == 'party_series':
+			url = reverse('party_series', args=[self.item_id])
 		elif self.role in ('scener', 'member'):
 			url = reverse('scener', args=[self.item_id])
 		elif self.role in ('group', 'subgroup', 'supergroup'):
