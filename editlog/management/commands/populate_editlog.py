@@ -1,7 +1,7 @@
 import re
 
 from demoscene.models import Edit as OldEdit, Production, Releaser
-from parties.models import Party, PartySeries
+from parties.models import Party, PartySeries, Competition
 from editlog.models import Edit, EditedItem
 
 from django.core.management.base import NoArgsCommand
@@ -25,6 +25,7 @@ class Command(NoArgsCommand):
 		releaser_content_type_id = ContentType.objects.get_for_model(Releaser).id
 		party_content_type_id = ContentType.objects.get_for_model(Party).id
 		party_series_content_type_id = ContentType.objects.get_for_model(PartySeries).id
+		competition_content_type_id = ContentType.objects.get_for_model(Competition).id
 
 		for old_edit in OldEdit.objects.all():
 			if old_edit.action_type in ('production_edit_external_links', 'production_edit_download_links'):
@@ -472,3 +473,34 @@ class Command(NoArgsCommand):
 				item = old_edit.focus
 				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 					item_content_type_id=party_series_content_type_id, role='party_series', name=item.name if item else '(deleted)')
+
+			elif old_edit.action_type == 'create_competition' or old_edit.action_type == 'create_competiton':
+				match = re.match(r'Added competition (.*)$', old_edit.description)
+				party = old_edit.focus2
+				if match:
+					compo_name = match.group(1)
+				else:
+					compo = old_edit.focus
+					compo_name = compo.name if compo else '(deleted)'
+
+				edit = import_edit(old_edit, '', 'create_competition')
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=competition_content_type_id, role='competition', name=compo_name)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus2_object_id,
+					item_content_type_id=party_content_type_id, role='party', name=party.name if party else '(deleted)')
+
+			elif old_edit.action_type == 'edit_competition':
+				compo = old_edit.focus
+				if compo:
+					compo_name = compo.name
+					party = compo.party
+				else:
+					compo_name = '(deleted)'
+					party = None
+
+				edit = import_edit(old_edit, old_edit.description)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=competition_content_type_id, role='competition', name=compo_name)
+				if party:
+					EditedItem.objects.create(edit=edit, item_id=party.id,
+						item_content_type_id=party_content_type_id, role='party', name=party.name)

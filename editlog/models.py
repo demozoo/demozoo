@@ -178,6 +178,14 @@ EDIT_DESCRIPTION_FORMATTERS = {
 		"Edited notes for party series %(party_series)s",
 		lambda self: {'party_series': self.get_item('party_series')}
 	),
+	'create_competition': (
+		"Added competition '%(competition)s' to %(party)s",
+		lambda self: {'competition': self.get_item('competition'), 'party': self.get_item('party')}
+	),
+	'edit_competition': (
+		"Updated competition '%(competition)s' on %(party)s: %(detail)s",
+		lambda self: {'competition': self.get_item('competition'), 'party': self.get_item('party'), 'detail': self.detail}
+	),
 }
 
 
@@ -250,6 +258,8 @@ class EditedItem(models.Model):
 			url = reverse('production', args=[self.item_id])
 		elif self.role == 'party':
 			url = reverse('party', args=[self.item_id])
+		elif self.role == 'competition':
+			url = reverse('competition', args=[self.item_id])
 		elif self.role == 'party_series':
 			url = reverse('party_series', args=[self.item_id])
 		elif self.role in ('scener', 'member'):
