@@ -15,16 +15,32 @@ def releaser_for_edit_description(self):
 
 EDIT_DESCRIPTION_FORMATTERS = {
 	'add_nick': (
-		"Added %(nick)s as a nick for %(releaser)s",
+		"Added '%(nick)s' as a nick for %(releaser)s",
 		lambda self: {'nick': self.detail, 'releaser': releaser_for_edit_description(self)}
 	),
 	'edit_nick': (
-		"Edited %(releaser)s's nick %(detail)s",
+		"Edited %(releaser)s's nick %(detail)s",  # 'detail' here includes both nick name and description of edit
 		lambda self: {'detail': self.detail, 'releaser': releaser_for_edit_description(self)}
+	),
+	'delete_nick': (
+		"Deleted %(releaser)s's nick '%(nick)s'",
+		lambda self: {'nick': self.detail, 'releaser': releaser_for_edit_description(self)}
+	),
+	'change_primary_nick': (
+		"Set %(releaser)s's primary nick to '%(nick)s'",
+		lambda self: {'nick': self.detail, 'releaser': releaser_for_edit_description(self)}
 	),
 	'create_group': (
 		"Added group %(group)s",
 		lambda self: {'group': self.get_item('group')}
+	),
+	'delete_group': (
+		"Deleted group %(group)s",
+		lambda self: {'group': self.get_item('group')}
+	),
+	'delete_scener': (
+		"Deleted scener %(scener)s",
+		lambda self: {'scener': self.get_item('scener')}
 	),
 	'create_production': (
 		 "Added production %(production)s",

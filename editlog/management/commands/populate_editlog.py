@@ -132,6 +132,38 @@ class Command(NoArgsCommand):
 					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
 
+			elif old_edit.action_type == 'change_primary_nick':
+				match = re.match(r'Set primary nick to \'(.*)\'$', old_edit.description)
+				if match:
+					nick = match.group(1)
+				else:
+					nick = ''
+
+				edit = import_edit(old_edit, nick)
+				item = old_edit.focus
+				if item:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='group' if item.is_group else 'scener', name=item.name)
+				else:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
+
+			elif old_edit.action_type == 'delete_nick':
+				match = re.match(r'Deleted nick \'(.*)\'$', old_edit.description)
+				if match:
+					nick = match.group(1)
+				else:
+					nick = ''
+
+				edit = import_edit(old_edit, nick)
+				item = old_edit.focus
+				if item:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='group' if item.is_group else 'scener', name=item.name)
+				else:
+					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
+
 			elif old_edit.action_type == 'edit_nick':
 				match = re.match(r'Edited nick (\'.*\': .*)$', old_edit.description)
 				if match:
@@ -147,6 +179,28 @@ class Command(NoArgsCommand):
 				else:
 					EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
 						item_content_type_id=releaser_content_type_id, role='releaser', name='(deleted)')
+
+			elif old_edit.action_type == 'delete_group':
+				match = re.match(r'Deleted group \'(.*)\'$', old_edit.description)
+				if match:
+					group_name = match.group(1)
+				else:
+					group_name = '(unknown)'
+
+				edit = import_edit(old_edit)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='group', name=group_name)
+
+			elif old_edit.action_type == 'delete_scener':
+				match = re.match(r'Deleted scener \'(.*)\'$', old_edit.description)
+				if match:
+					scener_name = match.group(1)
+				else:
+					scener_name = '(unknown)'
+
+				edit = import_edit(old_edit)
+				EditedItem.objects.create(edit=edit, item_id=old_edit.focus_object_id,
+					item_content_type_id=releaser_content_type_id, role='scener', name=scener_name)
 
 			elif old_edit.action_type == 'edit_membership':
 				match = re.match(r'Updated (.*)\'s membership of (.*): (.*)$', old_edit.description)
@@ -293,17 +347,22 @@ class Command(NoArgsCommand):
 					item_content_type_id=production_content_type_id, role='production', name=item.title if item else '(deleted)')
 
 			elif old_edit.action_type == 'add_credit':
-				match = re.match(r'Added credit for (.*) on (.*): (.*)$', old_edit.description)
+				match1 = re.match(r'Added credit for (.*) on (.*): (.*)$', old_edit.description)
+				match2 = re.match(r'Added credit for (.*) \((.*)\) on (.*)$', old_edit.description)
 				releaser = old_edit.focus2
 				if releaser:
 					role = ('group' if releaser.is_group else 'scener')
 				else:
 					role = 'releaser'
 
-				if match:
-					nick_name = match.group(1)
-					production_name = match.group(2)
-					credit_detail = match.group(3)
+				if match1:
+					nick_name = match1.group(1)
+					production_name = match1.group(2)
+					credit_detail = match1.group(3)
+				elif match2:
+					nick_name = match2.group(1)
+					credit_detail = match2.group(2)
+					production_name = match2.group(3)
 				else:
 					production = old_edit.focus
 					nick_name = releaser.name if releaser else '(deleted)'
