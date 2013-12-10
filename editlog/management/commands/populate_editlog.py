@@ -356,7 +356,7 @@ class Command(NoArgsCommand):
 
 			elif old_edit.action_type == 'add_credit':
 				match1 = re.match(r'Added credit for (.*) on (.*): (.*)$', old_edit.description)
-				match2 = re.match(r'Added credit for (.*) \((.*)\) on (.*)$', old_edit.description)
+				match2 = re.match(r'Added credit for ([^\(]+) \((.*)\) on (.*)$', old_edit.description)
 				releaser = old_edit.focus2
 				if releaser:
 					role = ('group' if releaser.is_group else 'scener')
