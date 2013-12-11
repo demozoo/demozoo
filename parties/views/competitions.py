@@ -28,7 +28,7 @@ def history(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 	return render(request, 'competitions/history.html', {
 		'competition': competition,
-		'edits': Edit.for_model(competition),
+		'edits': Edit.for_model(competition, request.user.is_staff),
 	})
 
 

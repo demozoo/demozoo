@@ -43,7 +43,7 @@ def history(request, production_id):
 		return HttpResponseRedirect(production.get_history_url())
 	return render(request, 'productions/history.html', {
 		'production': production,
-		'edits': Edit.for_model(production),
+		'edits': Edit.for_model(production, request.user.is_staff),
 	})
 
 

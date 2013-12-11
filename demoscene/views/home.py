@@ -28,6 +28,8 @@ def error_test(request):
 
 def recent_edits(request):
 	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
+	if not request.user.is_staff:
+		edits = edits.filter(admin_only=False)
 	edits_page = get_page(
 		edits,
 		request.GET.get('page', '1'))

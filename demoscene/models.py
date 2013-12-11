@@ -1154,9 +1154,13 @@ class Edit(models.Model):
 	admin_only = models.BooleanField(default=False)
 
 	@staticmethod
-	def for_model(model):
+	def for_model(model, is_admin=False):
 		model_type = ContentType.objects.get_for_model(model)
-		return Edit.objects.extra(where=["""(
+		edits = Edit.objects.all()
+		if not is_admin:
+			edits = edits.filter(admin_only=False)
+		edits = edits.extra(where=["""(
 			(focus_content_type_id = %s AND focus_object_id = %s)
 			OR (focus2_content_type_id = %s AND focus2_object_id = %s)
 		)"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')
+		return edits

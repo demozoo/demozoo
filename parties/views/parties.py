@@ -66,7 +66,7 @@ def history(request, party_id):
 	party = get_object_or_404(Party, id=party_id)
 	return render(request, 'parties/history.html', {
 		'party': party,
-		'edits': Edit.for_model(party),
+		'edits': Edit.for_model(party, request.user.is_staff),
 	})
 
 
@@ -82,7 +82,7 @@ def series_history(request, party_series_id):
 	party_series = get_object_or_404(PartySeries, id=party_series_id)
 	return render(request, 'parties/series_history.html', {
 		'party_series': party_series,
-		'edits': Edit.for_model(party_series),
+		'edits': Edit.for_model(party_series, request.user.is_staff),
 	})
 
 

@@ -59,7 +59,7 @@ def history(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	return render(request, 'groups/history.html', {
 		'group': group,
-		'edits': Edit.for_model(group),
+		'edits': Edit.for_model(group, request.user.is_staff),
 	})
 
 

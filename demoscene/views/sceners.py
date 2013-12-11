@@ -65,7 +65,7 @@ def history(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 	return render(request, 'sceners/history.html', {
 		'scener': scener,
-		'edits': Edit.for_model(scener),
+		'edits': Edit.for_model(scener, request.user.is_staff),
 	})
 
 
