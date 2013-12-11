@@ -28,6 +28,7 @@ urlpatterns = patterns('maintenance.views',
 	(r'^parties_with_no_location$', 'parties_with_no_location', {}, 'maintenance_parties_with_no_location'),
 	(r'^empty_releasers$', 'empty_releasers', {}, 'maintenance_empty_releasers'),
 	(r'^public_real_names$', 'public_real_names', {}, 'maintenance_public_real_names'),
+	(r'^prods_with_blurbs$', 'prods_with_blurbs', {}, 'maintenance_prods_with_blurbs'),
 
 	(r'^unresolved_screenshots$', 'unresolved_screenshots', {}, 'maintenance_unresolved_screenshots'),
 	(r'^archive_member/(\d+)/$', 'view_archive_member', {}, 'maintenance_view_archive_member'),

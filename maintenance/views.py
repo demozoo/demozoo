@@ -1,6 +1,6 @@
 from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink
+from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink, ProductionBlurb
 from parties.models import PartyExternalLink, Party
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
@@ -644,6 +644,16 @@ def public_real_names(request):
 		'title': 'Sceners with public real names',
 		'sceners': sceners,
 		'report_name': 'public_real_names',
+	})
+
+def prods_with_blurbs(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	blurbs = ProductionBlurb.objects.select_related('production')
+
+	return render(request, 'maintenance/prods_with_blurbs.html', {
+		'blurbs': blurbs,
 	})
 
 
