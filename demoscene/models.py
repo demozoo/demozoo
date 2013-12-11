@@ -1151,6 +1151,8 @@ class Edit(models.Model):
 	user = models.ForeignKey(User)
 	timestamp = models.DateTimeField(auto_now_add=True)
 
+	admin_only = models.BooleanField(default=False)
+
 	@staticmethod
 	def for_model(model):
 		model_type = ContentType.objects.get_for_model(model)

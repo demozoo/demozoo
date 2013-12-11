@@ -238,6 +238,8 @@ def add_blurb(request, production_id):
 			form.save()
 			production.has_bonafide_edits = True
 			production.save()
+			Edit.objects.create(action_type='add_production_blurb', focus=production,
+				description="Added blurb", user=request.user, admin_only=True)
 			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = ProductionBlurbForm(instance=blurb)
@@ -261,6 +263,8 @@ def edit_blurb(request, production_id, blurb_id):
 		form = ProductionBlurbForm(request.POST, instance=blurb)
 		if form.is_valid():
 			form.save()
+			Edit.objects.create(action_type='edit_production_blurb', focus=production,
+				description="Edited blurb", user=request.user, admin_only=True)
 			return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		form = ProductionBlurbForm(instance=blurb)
@@ -283,6 +287,8 @@ def delete_blurb(request, production_id, blurb_id):
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			blurb.delete()
+			Edit.objects.create(action_type='delete_production_blurb', focus=production,
+				description="Deleted blurb", user=request.user, admin_only=True)
 		return HttpResponseRedirect(production.get_absolute_url())
 	else:
 		return simple_ajax_confirmation(request,
