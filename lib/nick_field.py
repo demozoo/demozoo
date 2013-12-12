@@ -92,6 +92,7 @@ class NickWidget(forms.Widget):
 
 		search_html_output = [
 			self.search_widget.render(name + '_search', nick_lookup.search_term, attrs=attrs),
+			'<input type="submit" style="display: none;">', # extra submit button so that whenever browsers insist on pretending a button was pressed when actually the user submitted the form with the enter key, they'll choose this button rather than the 'lookup' one
 			self.lookup_widget.render(name + '_lookup', None, attrs=attrs)
 		]
 
