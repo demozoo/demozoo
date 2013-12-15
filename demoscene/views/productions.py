@@ -1,21 +1,25 @@
-from demoscene.shortcuts import *
-from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionLink, ProductionBlurb, Edit
-from demoscene.forms.production import *
-from demoscene.forms.common import CreditFormSet
-from taggit.models import Tag
+import datetime
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
-from django.core.exceptions import ValidationError
-import datetime
 from django.utils import simplejson as json
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.template import RequestContext
-from screenshots.tasks import capture_upload_for_processing
+
+from taggit.models import Tag
 from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
+from demoscene.shortcuts import *
+from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionBlurb, Edit
+from demoscene.forms.production import *
+from demoscene.forms.common import CreditFormSet
+
+from screenshots.tasks import capture_upload_for_processing
+from comments.models import ProductionComment
+from comments.forms import ProductionCommentForm
 
 def index(request, supertype):
 	queryset = Production.objects.filter(supertype=supertype).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
@@ -108,6 +112,12 @@ def show(request, production_id, edit_mode=False):
 	external_links = production.links.filter(is_download_link=False)
 	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
+	if request.user.is_authenticated():
+		comment = ProductionComment(production=production, user=request.user)
+		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+	else:
+		comment_form = None
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
@@ -124,6 +134,7 @@ def show(request, production_id, edit_mode=False):
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
+		'comment_form': comment_form,
 	})
 
 

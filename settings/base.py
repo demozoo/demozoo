@@ -122,6 +122,7 @@ INSTALLED_APPS = (
 	'mirror',
 	'screenshots',
 	'homepage',
+	'comments',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS

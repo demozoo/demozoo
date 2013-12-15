@@ -130,7 +130,11 @@
 	</div>
 
 	{% last_edited_by production %}
-	
+
+	{% if comment_form %}
+		{% include "comments/_production_comment_form.html" %}
+	{% endif %}
+
 	{% if request.user.is_staff and site_is_writeable %}
 		<ul class="maintenance_actions">
 			<li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>

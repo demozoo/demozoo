@@ -1,0 +1,9 @@
+<form action="" method="POST" class="comment_form">
+	{% csrf_token %}
+	<h2><label for="{{ comment_form.body.id_for_label }}">Add a comment</label></h2>
+	<div>
+		{{ comment_form.body }}
+		<p class="hint">No HTML or BBCode please. URLs will be link-ified</p>
+	</div>
+	<input type="submit" value="Post comment">
+</form>
