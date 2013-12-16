@@ -128,6 +128,7 @@ urlpatterns += patterns('demoscene.views',
 
 urlpatterns += patterns('',
 	(r'^', include('parties.urls')),
+	(r'^', include('comments.urls')),
 	(r'^search/', include('search.urls')),
 	(r'^maintenance/', include('maintenance.urls')),
 	(r'^pages/', include('pages.urls')),
