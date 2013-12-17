@@ -76,6 +76,22 @@ def prods_without_release_date(request):
 	})
 
 
+def prods_with_dead_amigascne_links(request):
+	report_name = 'prods_with_dead_amigascne_links'
+
+	productions = Production.objects.filter(links__parameter__contains='amigascne.org/old/') \
+		.extra(
+			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions with dead amigascne links',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+
 def prods_without_release_date_with_placement(request):
 	report_name = 'prods_without_release_date_with_placement'
 
