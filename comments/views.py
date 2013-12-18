@@ -14,7 +14,7 @@ def add_production_comment(request, production_id):
 		form = ProductionCommentForm(request.POST, instance=comment, prefix='comment')
 		if form.is_valid():
 			form.save()
-			return redirect(production.get_absolute_url())
+			return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
 	else:
 		form = ProductionCommentForm(instance=comment, prefix='comment')
 

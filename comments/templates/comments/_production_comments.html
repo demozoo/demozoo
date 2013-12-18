@@ -3,8 +3,9 @@
 		<div class="comments">
 			<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
 			{% for comment in comments %}
-				<div class="comment">
+				<div class="comment" id="comment-{{ comment.id }}">
 					<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
+					<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
 					<p>{{ comment.body }}</p>
 				</div>
 			{% endfor %}
