@@ -6,7 +6,7 @@
 				<div class="comment" id="comment-{{ comment.id }}">
 					<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
 					<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
-					<p>{{ comment.body }}</p>
+					<p>{{ comment.body|urlize|linebreaks }}</p>
 				</div>
 			{% endfor %}
 		</div>
