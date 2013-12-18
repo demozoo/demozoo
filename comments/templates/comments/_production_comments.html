@@ -1,18 +1,24 @@
-{% with production.get_comments as comments %}
-	{% if comments %}
-		<div class="comments">
-			<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
-			{% for comment in comments %}
-				<div class="comment" id="comment-{{ comment.id }}">
-					<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
-					<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
-					<p>{{ comment.body|urlize|linebreaks }}</p>
-				</div>
-			{% endfor %}
-		</div>
-	{% endif %}
-{% endwith %}
+<div class="comments_panel">
+	{% with production.get_comments as comments %}
+		{% if comments %}
+			<div class="comments">
+				<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
+				{% for comment in comments %}
+					<div class="comment" id="comment-{{ comment.id }}">
+						<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
+						<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
+						<p>{{ comment.body|urlize|linebreaks }}</p>
+					</div>
+				{% endfor %}
+			</div>
+		{% elif request.user.is_authenticated %}
+			<h3 class="comment_form_trigger">Be the first to comment on this production...</h3>
+		{% else %}
+			<h3><a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">Be the first to comment on this production...</a></h3>
+		{% endif %}
+	{% endwith %}
 
-{% if comment_form %}
-	{% include "comments/_production_comment_form.html" %}
-{% endif %}
+	{% if comment_form %}
+		{% include "comments/_production_comment_form.html" %}
+	{% endif %}
+</div>
