@@ -131,9 +131,7 @@
 
 	{% last_edited_by production %}
 
-	{% if comment_form %}
-		{% include "comments/_production_comment_form.html" %}
-	{% endif %}
+	{% include "comments/_production_comments.html" %}
 
 	{% if request.user.is_staff and site_is_writeable %}
 		<ul class="maintenance_actions">

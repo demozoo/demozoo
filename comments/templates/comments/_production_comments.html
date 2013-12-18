@@ -1,0 +1,17 @@
+{% with production.get_comments as comments %}
+	{% if comments %}
+		<div class="comments">
+			<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
+			{% for comment in comments %}
+				<div class="comment">
+					<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
+					<p>{{ comment.body }}</p>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endwith %}
+
+{% if comment_form %}
+	{% include "comments/_production_comment_form.html" %}
+{% endif %}
