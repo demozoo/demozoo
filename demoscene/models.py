@@ -871,6 +871,9 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def credits_for_listing(self):
 		return self.credits.select_related('nick__releaser').order_by('nick__name', 'category')
 
+	def get_comments(self):
+		return self.comments.select_related('user').order_by('created_at')
+
 	class Meta:
 		ordering = ['title']
 

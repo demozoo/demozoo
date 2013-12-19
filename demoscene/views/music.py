@@ -6,11 +6,20 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from read_only_mode import writeable_site_required
 
+from comments.models import ProductionComment
+from comments.forms import ProductionCommentForm
+
 
 def show(request, production_id, edit_mode=False):
 	production = get_object_or_404(Production, id=production_id)
 	if production.supertype != 'music':
 		return HttpResponseRedirect(production.get_absolute_url())
+
+	if request.user.is_authenticated():
+		comment = ProductionComment(production=production, user=request.user)
+		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+	else:
+		comment_form = None
 
 	return render(request, 'productions/show.html', {
 		'production': production,
@@ -25,6 +34,7 @@ def show(request, production_id, edit_mode=False):
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.all(),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
+		'comment_form': comment_form,
 	})
 
 

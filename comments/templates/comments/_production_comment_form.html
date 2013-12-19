@@ -1,0 +1,11 @@
+{% load url from future %}
+
+<form action="{% url 'add_production_comment' production.id %}" method="POST" class="comment_form">
+	{% csrf_token %}
+	<h2><label for="{{ comment_form.body.id_for_label }}">Add a comment</label></h2>
+	<div>
+		{{ comment_form.body }}
+		<p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
+	</div>
+	<input type="submit" value="Post comment">
+</form>
