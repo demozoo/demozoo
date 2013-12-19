@@ -1,3 +1,5 @@
+{% load url from future %}
+
 <div class="comments_panel">
 	{% with production.get_comments as comments %}
 		{% if comments %}
@@ -5,6 +7,11 @@
 				<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
 				{% for comment in comments %}
 					<div class="comment" id="comment-{{ comment.id }}">
+						{% if request.user.is_staff and site_is_writeable %}
+							<div class="admin_controls">
+								<a href="{% url 'edit_production_comment' production.id comment.id %}" class="open_in_lightbox">Edit</a>
+							</div>
+						{% endif %}
 						<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
 						<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
 						<p>{{ comment.body|urlize|linebreaks }}</p>
