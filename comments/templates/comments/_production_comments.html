@@ -11,6 +11,7 @@
 							{% if request.user.is_staff and site_is_writeable %}
 								<div class="admin_controls">
 									<a href="{% url 'edit_production_comment' production.id comment.id %}" class="open_in_lightbox">Edit</a>
+									| <a href="{% url 'delete_production_comment' production.id comment.id %}" class="open_in_lightbox">Delete</a>
 								</div>
 							{% endif %}
 							<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
