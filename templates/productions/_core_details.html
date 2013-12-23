@@ -16,10 +16,10 @@
 
 	<ul class="production_types">
 		{% for production_type in production.types.all %}
-			<li>{{ production_type.name }}</li>
+			<li class="signpost">{{ production_type.name }}</li>
 		{% endfor %}
 	</ul>
-	<div class="production_title">
+	<div class="production_title focus_title">
 		<h2>{{ production.title }}</h2>
 		{% if production.byline_string %}
 			<h3>

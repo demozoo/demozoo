@@ -221,12 +221,15 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		else:
 			return ('demoscene.views.sceners.show', [str(self.id)])
 
-	@models.permalink
 	def get_absolute_edit_url(self):
+		return self.get_absolute_url()
+
+	@models.permalink
+	def get_history_url(self):
 		if self.is_group:
-			return ('demoscene.views.groups.edit', [str(self.id)])
+			return ('demoscene.views.groups.history', [str(self.id)])
 		else:
-			return ('demoscene.views.sceners.edit', [str(self.id)])
+			return ('demoscene.views.sceners.history', [str(self.id)])
 
 	def productions(self):
 		return Production.objects.filter(author_nicks__releaser=self)

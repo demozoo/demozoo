@@ -10,6 +10,37 @@
 	}
 }
 
+.help_text {
+	font-size: 0.8em;
+	color: #444;
+}
+
+.hover_help {
+	display: inline-block;
+	position: relative;
+	width: 16px;
+	height: 16px;
+	background-image: url('/static/images/icons/information.png');
+	cursor: help;
+
+	.help_text {
+		position: absolute;
+		display: none;
+		bottom: 0px;
+		margin-bottom: 20px;
+		font-size: 0.8em;
+		width: 300px;
+		border: 1px solid #008;
+		padding: 4px;
+		background-color: #ddf;
+	}
+	&:hover .help_text,
+	&:focus .help_text {
+	display: block;
+	}
+}
+
+
 form.entry_form {
 	.field {
 		clear: both;

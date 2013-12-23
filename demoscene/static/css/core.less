@@ -1,3 +1,5 @@
+@import "variables.less";
+
 /* Reset */
 body {
 	margin: 0;
@@ -113,4 +115,66 @@ ul.errorlist {
 	margin: 1em;
 	padding: 0.5em;
 	background-color: #fbb;
+}
+
+/* Signposts: breadcrumb-like labels to give an idea of where you are in the site */
+.signpost {
+	background-color: @demozoo_lightblue;
+	color: white;
+	float: left;
+	padding: 4px 6px;
+	margin: 0 10px 10px 0;
+	width: 120px;
+	text-transform: uppercase;
+	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+}
+
+/* Main title for 'show' pages */
+.focus_title {
+	clear: both;
+	padding: 5px 0 10px 0;
+
+	h2 {
+		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+		font-size: 26pt;
+		padding-right: 8px;
+		display: inline;
+		line-height: 28pt;
+	}
+	h3 {
+		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+		font-size: 14pt;
+		display: inline;
+		letter-spacing: -1px;
+		line-height: 20pt;
+	}
+}
+
+/* Panels */
+.editable_chunk {
+	transition: background-color 0.6s;
+	-moz-transition: background-color 0.6s;
+	-webkit-transition: background-color 0.6s;
+	-o-transition: background-color 0.6s;
+}
+.editable_chunk.hover {
+	background-color: #edeeff;
+}
+
+.panel {
+	overflow: hidden; /* self-clear */
+
+	h3 {
+		background-color: @demozoo_lightgreen;
+		float: left;
+		font-weight: normal;
+		color: white;
+		font-size: 10pt;
+		text-transform: uppercase;
+		font-family: FabricaRegular, sans-serif;
+		padding: 6px;
+		border-right: 6px solid #eaeaea;
+		min-width: 150px;
+	}
 }

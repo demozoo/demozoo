@@ -1,0 +1,91 @@
+@import "../variables.less";
+
+.show_group {
+
+	#side_column {
+		float: left;
+		width: 30%;
+	}
+
+	#main_column {
+		float: left;
+		width: 70%;
+	}
+
+	.external_links_panel {
+		margin-bottom: 20px;
+
+		ul.external_links {
+			clear: both;
+		}
+	}
+
+	.alternative_nicks_panel {
+		ul {
+			clear: both;
+			padding-top: 8px;
+		}
+		padding-bottom: 8px;
+	}
+
+	.notes_panel {
+		border: 1px solid #eee;
+		margin-top: 8px;
+		margin-bottom: 20px;
+		padding-left: 8px;
+		padding-right: 8px;
+		color: #444;
+
+		.notes {
+			a:link {
+				text-decoration: none;
+				border-bottom: 1px solid #000088;
+			}
+			a:visited {
+				text-decoration: none;
+				border-bottom: 1px solid #880088;
+			}
+		}
+	}
+
+	ul.memberships {
+		margin-bottom: 8px;
+		clear: both;
+
+		li {
+			padding-left: 24px;
+			padding-top: 2px;
+			padding-bottom: 3px;
+			background-position: left center;
+			background-repeat: no-repeat;
+
+			a {
+				color: #008;
+			}
+
+			&.previous_membership a {
+				color: #bbe;
+			}
+
+			&.scener {
+				background-image: url(/static/images/icons/scener.png);
+				&.previous_membership {
+					background-image: url(/static/images/icons/scener_grey.png);
+				}
+			}
+			&.group {
+				background-image: url(/static/images/icons/group.png);
+				&.previous_membership {
+					background-image: url(/static/images/icons/group_grey.png);
+				}
+			}
+		}
+	}
+
+	.last_edited_by {
+		clear: both;
+		padding-top: 16px;
+		border-top: 1px dotted #ddd;
+	}
+
+}

@@ -520,15 +520,6 @@ ul.parties_in_series li.current {
 	background-repeat: no-repeat;
 }
 
-ul.nick_change_options {
-	list-style-type: disc;
-	margin-left: 3em;
-}
-
-ul.nick_change_options li {
-	margin-bottom: 1em;
-}
-
 
 /* latest activity page */
 .chart_set {

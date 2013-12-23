@@ -20,17 +20,7 @@ function replaceCreditsPanel(creditsHtml) {
 	initEditChunkHover(panel);
 }
 
-function initEditChunkHover(context) {
-	$('.edit_chunk', context).hover(function() {
-		$(this).closest('.editable_chunk').addClass('hover');
-	}, function() {
-		$(this).closest('.editable_chunk').removeClass('hover');
-	});
-}
-
 $(function() {
-	initEditChunkHover();
-
 	$('.tell_us_something_panel').each(function() {
 		var heading = $('.tell_us_something_title', this);
 		var list = $('.tell_us_something_options', this);
@@ -65,7 +55,7 @@ $(function() {
 					commentForm.find('textarea').focus();
 				});
 			}
-		})
+		});
 	});
 
 	if (location.hash.match(/\#comment-\d+/)) {

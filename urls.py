@@ -79,8 +79,6 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^groups/$', 'groups.index', {}, 'groups'),
 	(r'^groups/(\d+)/$', 'groups.show', {}, 'group'),
-	(r'^groups/(\d+)/edit/$', 'groups.edit', {}, 'edit_group'),
-	(r'^groups/(\d+)/done/$', 'groups.edit_done', {}, 'edit_group_done'),
 	(r'^groups/(\d+)/history/$', 'groups.history', {}, 'group_history'),
 
 	(r'^groups/new/$', 'groups.create', {}, 'new_group'),

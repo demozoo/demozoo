@@ -8,6 +8,7 @@
 
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/lightbox.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/production_core_details.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
@@ -18,11 +19,12 @@
 {% endblock %}
 
 {% block extra_js %}
-	<script src="/static/js/screenshot_carousel.js"></script>
-	<script src="/static/js/tags_panel.js"></script>
-	<script src="/static/js/credits_panel.js"></script>
 	<script src="/static/js/modal_workflow.js"></script>
-	<script src="/static/js/show_production.js"></script>
+	<script src="/static/js/components/editable_chunk.js"></script>
+	<script src="/static/js/components/screenshot_carousel.js"></script>
+	<script src="/static/js/components/tags_panel.js"></script>
+	<script src="/static/js/components/credits_panel.js"></script>
+	<script src="/static/js/pages/show_production.js"></script>
 {% endblock %}
 
 {% block body_class %}show_production{% endblock %}
