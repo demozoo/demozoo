@@ -27,6 +27,7 @@ def show(request, group_id):
 
 	return render(request, 'groups/show.html', {
 		'group': group,
+		'editing_nicks': (request.GET.get('editing') == 'nicks'),
 		'supergroupships': group.group_memberships.all().select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'memberships': group.member_memberships.filter(member__is_group=False).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
 		'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),

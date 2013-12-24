@@ -21,11 +21,17 @@
 	}
 
 	.alternative_nicks_panel {
-		ul {
+		ul.nicks {
 			clear: both;
 			padding-top: 8px;
 		}
 		padding-bottom: 8px;
+
+		&.hide_edit_controls {
+			.edit_nick, .add_nick {
+				display: none;
+			}
+		}
 	}
 
 	.notes_panel {

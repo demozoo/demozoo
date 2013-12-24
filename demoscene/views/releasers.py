@@ -169,7 +169,7 @@ def edit_nick(request, releaser_id, nick_id):
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 			form.log_edit(request.user)
-			return HttpResponseRedirect(releaser.get_absolute_edit_url())
+			return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
 	else:
 		form = nick_form_class(releaser, instance=nick, for_admin=request.user.is_staff)
 
@@ -201,7 +201,7 @@ def add_nick(request, releaser_id):
 			releaser.updated_at = datetime.datetime.now()
 			releaser.save()
 			form.log_creation(request.user)
-			return HttpResponseRedirect(releaser.get_absolute_edit_url())
+			return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
 	else:
 		form = nick_form_class(releaser, for_admin=request.user.is_staff)
 
@@ -232,7 +232,7 @@ def change_primary_nick(request, releaser_id):
 		releaser.save()
 		Edit.objects.create(action_type='change_primary_nick', focus=releaser,
 			description=(u"Set primary nick to '%s'" % nick.name), user=request.user)
-	return HttpResponseRedirect(releaser.get_absolute_edit_url())
+	return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
 
 
 @writeable_site_required
@@ -250,7 +250,7 @@ def delete_nick(request, releaser_id, nick_id):
 			releaser.save()
 			Edit.objects.create(action_type='delete_nick', focus=releaser,
 				description=(u"Deleted nick '%s'" % nick.name), user=request.user)
-		return HttpResponseRedirect(releaser.get_absolute_edit_url())
+		return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
 	else:
 		if nick.is_referenced():
 			prompt = """

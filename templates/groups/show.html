@@ -49,14 +49,14 @@
 
 	{% with group.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
-			<div class="panel alternative_nicks_panel">
+			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
 				<h3>Also known as</h3>
-				<ul>
+				<ul class="nicks">
 					{% for nick in alternative_nicks %}
 						<li>
 							<b>{{ nick.name }}</b> {% nick_variants nick %}
 							{% if site_is_writeable %}
-								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox">
+								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
@@ -64,7 +64,7 @@
 					{% endfor %}
 				</ul>
 				{% if site_is_writeable %}
-					<a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add open_in_lightbox">Add another name</a>
+					<a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
 				{% endif %}
 			</div>
 		{% endif %}
