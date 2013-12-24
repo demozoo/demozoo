@@ -20,19 +20,16 @@
 		}
 	}
 }
-/* if js enabled, only show edit controls when the 'editing' class is explicitly present on the panel */
-html.js .credits_panel {
+
+/* hide edit controls whenever javascript adds the hide_edit_controls class */
+.credits_panel.hide_edit_controls {
 	a.edit_credit, a.add_credit {
 		display: none;
 	}
+}
 
-	&.editing {
-		a.edit_credit, a.add_credit {
-			display: inline;
-		}
-
-		ul.credits li:hover {
-			background-color: #ddd;
-		}
+.credits_panel.editing {
+	ul.credits li:hover {
+		background-color: #ddd;
 	}
 }

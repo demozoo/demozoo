@@ -16,7 +16,7 @@ function replaceCreditsPanel(creditsHtml) {
 	var panel = $('#credits_panel');
 	applyGlobalBehaviours(panel);
 	initEditCreditLink(panel);
-	initCreditsPanel(panel);
+	initEditToggle(panel);
 	initEditChunkHover(panel);
 }
 

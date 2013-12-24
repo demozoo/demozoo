@@ -58,23 +58,13 @@
 	}
 }
 
-/* if js enabled, only show edit controls when the 'editing' class is explicitly present on the panel */
-html.js .tags_panel {
+/* hide edit controls whenever javascript adds the hide_edit_controls class */
+.tags_panel.hide_edit_controls {
 	ul.tags li form {
 		display: none;
 	}
 
 	form.add_tag {
 		display: none;
-	}
-
-	&.editing {
-		ul.tags li form {
-			display: block;
-		}
-
-		form.add_tag {
-			display: block;
-		}
 	}
 }
