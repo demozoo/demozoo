@@ -114,7 +114,7 @@
 			</div>
 		{% endif %}
 
-		<div class="panel members_panel">
+		<div class="panel members_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
 			<h3>Members</h3>
 			<ul class="memberships">
 				{% for membership in memberships %}
@@ -122,7 +122,7 @@
 						<a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
 						{% releaser_flag membership.member %}
 						{% if site_is_writeable %}
-							<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox">
+							<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
 								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 							</a>
 						{% endif %}
@@ -130,7 +130,7 @@
 				{% endfor %}
 			</ul>
 			{% if site_is_writeable %}
-				<a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox">Add member</a>
+				<a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox add_member">Add member</a>
 			{% endif %}
 		</div>
 

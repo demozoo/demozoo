@@ -30,6 +30,7 @@ def show(request, group_id):
 		'editing_nicks': (request.GET.get('editing') == 'nicks'),
 		'supergroupships': group.group_memberships.all().select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'memberships': group.member_memberships.filter(member__is_group=False).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
+		'editing_members': (request.GET.get('editing') == 'members'),
 		'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
 		'productions': group.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
@@ -86,7 +87,7 @@ def add_member(request, group_id):
 				description = u"Added %s as a member of %s" % (member.name, group.name)
 				Edit.objects.create(action_type='add_membership', focus=member, focus2=group,
 					description=description, user=request.user)
-			return HttpResponseRedirect(group.get_absolute_edit_url())
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
 	else:
 		form = GroupMembershipForm()
 	return render(request, 'groups/add_member.html', {
@@ -108,7 +109,7 @@ def remove_member(request, group_id, scener_id):
 			description = u"Removed %s as a member of %s" % (scener.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
 				description=description, user=request.user)
-		return HttpResponseRedirect(group.get_absolute_edit_url())
+		return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('group_remove_member', args=[group_id, scener_id]),
@@ -137,7 +138,7 @@ def edit_membership(request, group_id, membership_id):
 				group.save()
 				form.log_edit(request.user, member, group)
 
-			return HttpResponseRedirect(group.get_absolute_edit_url())
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
 	else:
 		form = GroupMembershipForm(initial={
 			'scener_nick': membership.member.primary_nick,

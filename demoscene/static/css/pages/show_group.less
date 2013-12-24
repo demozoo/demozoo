@@ -54,6 +54,22 @@
 		}
 	}
 
+	.members_panel {
+		&.hide_edit_controls {
+			.edit_membership, .add_member {
+				display: none;
+			}
+		}
+		&.editing {
+			ul.memberships li:hover {
+				background-color: #ddd;
+			}
+		}
+		ul.actions {
+			padding-right: 8px;
+		}
+	}
+
 	ul.memberships {
 		margin-bottom: 8px;
 		clear: both;
@@ -84,6 +100,10 @@
 				&.previous_membership {
 					background-image: url(/static/images/icons/group_grey.png);
 				}
+			}
+
+			a.edit_membership {
+				float: right;
 			}
 		}
 	}
