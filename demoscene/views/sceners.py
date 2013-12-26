@@ -23,8 +23,6 @@ def index(request):
 def show(request, scener_id, edit_mode=False):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 
-	edit_mode = edit_mode or sticky_editing_active(request.user)
-
 	user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
 
 	external_links = scener.external_links.select_related('releaser').defer('releaser__notes')
@@ -41,24 +39,9 @@ def show(request, scener_id, edit_mode=False):
 		'productions': scener.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'credits': scener.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
 		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
-		'editing': edit_mode,
 		'editing_as_admin': edit_mode and request.user.is_staff,
 		'user_has_real_name_access': user_has_real_name_access
 	})
-
-
-@writeable_site_required
-@login_required
-def edit(request, scener_id):
-	set_edit_mode_active(True, request.user)
-	return show(request, scener_id, edit_mode=True)
-
-
-@writeable_site_required
-def edit_done(request, scener_id):
-	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-	set_edit_mode_active(False, request.user)
-	return HttpResponseRedirect(scener.get_absolute_url())
 
 
 def history(request, scener_id):

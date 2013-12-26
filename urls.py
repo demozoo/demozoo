@@ -92,8 +92,6 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^sceners/$', 'sceners.index', {}, 'sceners'),
 	(r'^sceners/(\d+)/$', 'sceners.show', {}, 'scener'),
-	(r'^sceners/(\d+)/edit/$', 'sceners.edit', {}, 'edit_scener'),
-	(r'^sceners/(\d+)/done/$', 'sceners.edit_done', {}, 'edit_scener_done'),
 	(r'^sceners/(\d+)/history/$', 'sceners.history', {}, 'scener_history'),
 
 	(r'^sceners/new/$', 'sceners.create', {}, 'new_scener'),
