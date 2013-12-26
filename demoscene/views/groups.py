@@ -31,6 +31,7 @@ def show(request, group_id):
 		'supergroupships': group.group_memberships.all().select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'memberships': group.member_memberships.filter(member__is_group=False).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
 		'editing_members': (request.GET.get('editing') == 'members'),
+		'editing_subgroups': (request.GET.get('editing') == 'subgroups'),
 		'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
 		'productions': group.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'member_productions': group.member_productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
@@ -170,7 +171,7 @@ def add_subgroup(request, group_id):
 				description = u"Added %s as a subgroup of %s" % (member.name, group.name)
 				Edit.objects.create(action_type='add_subgroup', focus=member, focus2=group,
 					description=description, user=request.user)
-			return HttpResponseRedirect(group.get_absolute_edit_url())
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
 	else:
 		form = GroupSubgroupForm()
 	return render(request, 'groups/add_subgroup.html', {
@@ -192,7 +193,7 @@ def remove_subgroup(request, group_id, subgroup_id):
 			description = u"Removed %s as a subgroup of %s" % (subgroup.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=subgroup, focus2=group,
 				description=description, user=request.user)
-		return HttpResponseRedirect(group.get_absolute_edit_url())
+		return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('group_remove_subgroup', args=[group_id, subgroup_id]),
@@ -216,7 +217,7 @@ def edit_subgroup(request, group_id, membership_id):
 				group.updated_at = datetime.datetime.now()
 				group.save()
 				form.log_edit(request.user, member, group)
-			return HttpResponseRedirect(group.get_absolute_edit_url())
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
 	else:
 		form = GroupSubgroupForm(initial={
 			'subgroup_nick': membership.member.primary_nick,

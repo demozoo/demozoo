@@ -70,6 +70,22 @@
 		}
 	}
 
+	.subgroups_panel {
+		&.hide_edit_controls {
+			.edit_subgroup, .add_subgroup {
+				display: none;
+			}
+		}
+		&.editing {
+			ul.memberships li:hover {
+				background-color: #ddd;
+			}
+		}
+		ul.actions {
+			padding-right: 8px;
+		}
+	}
+
 	ul.memberships {
 		margin-bottom: 8px;
 		clear: both;
@@ -103,6 +119,9 @@
 			}
 
 			a.edit_membership {
+				float: right;
+			}
+			a.edit_subgroup {
 				float: right;
 			}
 		}

@@ -134,7 +134,7 @@
 			{% endif %}
 		</div>
 
-		<div class="panel subgroups_panel">
+		<div class="panel subgroups_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
 			<h3>Subgroups</h3>
 			<ul class="memberships">
 				{% for membership in subgroupships %}
@@ -142,7 +142,7 @@
 						<a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
 						{% releaser_flag membership.member %}
 						{% if site_is_writeable %}
-							<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox">
+							<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
 								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
 							</a>
 						{% endif %}
@@ -150,7 +150,7 @@
 				{% endfor %}
 			</ul>
 			{% if site_is_writeable %}
-				<a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox">Add subgroup</a>
+				<a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
 			{% endif %}
 		</div>
 	</div>
