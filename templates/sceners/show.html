@@ -5,9 +5,13 @@
 
 {% block html_title %}{{ scener.name_with_affiliations }} - Demozoo{% endblock %}
 
+{% block legacy_css %}{% endblock %}
+
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+
+	<link rel="stylesheet" href="/static/css/pages/show_scener.less" type="text/less" />
 {% endblock %}
 
 {% block extra_js %}
@@ -18,8 +22,16 @@
 {% block body_class %}show_scener{% endblock %}
 
 {% block base_main %}
-	<div class="panel">
+	<div class="editable_chunk">
 		<div class="signpost">Scener</div>
+
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li>
+					<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name">Edit</a>
+				</li>
+			</ul>
+		{% endif %}
 
 		<div class="focus_title scener_name">
 			<h2>{{ scener.name }}</h2>
@@ -28,36 +40,33 @@
 					<h3>- {{ nick_variants }}</h3>
 				{% endif %}
 			{% endwith %}
-			{% if site_is_writeable %}
-				<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="open_in_lightbox">
-					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
-				</a>
-			{% endif %}
 		</div>
+	</div>
 
-		{% with scener.alternative_nicks as alternative_nicks %}
-			{% if alternative_nicks %}
-				<h3>Also known as:</h3>
-				<ul>
+	{% with scener.alternative_nicks as alternative_nicks %}
+		{% if alternative_nicks %}
+			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+				<h3>Also known as</h3>
+				<ul class="nicks">
 					{% for nick in alternative_nicks %}
 						<li>
-							{{ nick.name }} {% nick_variants nick %}
+							<b>{{ nick.name }}</b> {% nick_variants nick %}
 							{% if site_is_writeable %}
-								<a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox">
+								<a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox edit_nick">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
 							{% endif %}
 						</li>
 					{% endfor %}
-					{% if site_is_writeable %}
-						<li class="add">
-							<a href="{% url 'releaser_add_nick' scener.id %}" class="open_in_lightbox">Add another name</a>
-						</li>
-					{% endif %}
 				</ul>
-			{% endif %}
-		{% endwith %}
-		
+				{% if site_is_writeable %}
+					<a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
+				{% endif %}
+			</div>
+		{% endif %}
+	{% endwith %}
+
+	<div>
 		{% if user_has_real_name_access %}
 			<p>
 				Real name:
@@ -94,17 +103,25 @@
 			{% endif %}
 		</p>
 
-		<div class="external_links_section">
-			<h3>External links:</h3>
-			<ul class="external_links">
-				{% for link in external_links %}
-					<li>{{ link.html_link|safe }}</li>
-				{% endfor %}
-				{% if site_is_writeable %}<li><a href="{% url 'releaser_edit_external_links' scener.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>{% endif %}
-			</ul>
-		</div>
 	</div>
-	
+
+	<div class="editable_chunk panel external_links_panel">
+		<h3>External links</h3>
+
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li>
+					<a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+				</li>
+			</ul>
+		{% endif %}
+		<ul class="external_links">
+			{% for link in external_links %}
+				<li>{{ link.html_link|safe }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+
 	{% if scener.notes or editing_as_admin %}
 		<div class="notes">
 			{% if editing_as_admin and site_is_writeable %}
@@ -119,8 +136,8 @@
 
 	<div id="side_column">
 		<div class="panel">
-			<h3>Member of:</h3>
-			<ul>
+			<h3>Member of</h3>
+			<ul class="memberships">
 				{% for membership in memberships %}
 					<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
 						<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
@@ -131,41 +148,40 @@
 						{% endif %}
 					</li>
 				{% endfor %}
-				{% if site_is_writeable %}
-					<li class="add">
-						<a href="{% url 'scener_add_group' scener.id %}" class="open_in_lightbox">Add group</a>
-					</li>
-				{% endif %}
 			</ul>
+			{% if site_is_writeable %}
+				<a href="{% url 'scener_add_group' scener.id %}" class="action_button icon add open_in_lightbox add_group">Add group</a>
+			{% endif %}
 		</div>
 	</div>
 	
 	<div id="main_column">
-		<div class="panel">
-			<h3 class="productions_header">Productions:</h3>
-			{% include "shared/production_listing.html" with show_screenshots=1 %}
-			
+		<div class="panel editable_chunk">
+			<h3 class="productions_header">Productions</h3>
 			{% if site_is_writeable %}
-				<ul>
-					<li class="add">
-						<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="open_in_lightbox">Add production</a>
+				<ul class="actions">
+					<li>
+						<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="action_button icon add open_in_lightbox edit_chunk">Add production</a>
 					</li>
 				</ul>
 			{% endif %}
+
+			{% include "shared/production_listing.html" with show_screenshots=1 %}
 		</div>
 
-		<div class="panel">
-			<h3 class="credits_header">Credited on:</h3>
+		<div class="panel editable_chunk">
+			<h3 class="credits_header">Credited on</h3>
+			{% if site_is_writeable %}
+				<ul class="actions">
+					<li>
+						<a href="{% url 'releaser_add_credit' scener.id %}" class="action_button icon add open_in_lightbox edit_chunk">Add credit</a>
+					</li>
+				</ul>
+			{% endif %}
+
 			{% with scener as releaser %}
 				{% include "shared/credited_production_listing.html" with show_screenshots=1 %}
 			{% endwith %}
-			{% if site_is_writeable %}
-				<ul>
-					<li class="add">
-						<a href="{% url 'releaser_add_credit' scener.id %}" class="open_in_lightbox">Add credit</a>
-					</li>
-				</ul>
-			{% endif %}
 		</div>
 	</div>
 
