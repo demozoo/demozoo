@@ -36,6 +36,7 @@ def show(request, scener_id, edit_mode=False):
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'external_links': external_links,
+		'editing_groups': (request.GET.get('editing') == 'groups'),
 		'productions': scener.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
 		'credits': scener.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
 		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
@@ -120,7 +121,7 @@ def add_group(request, scener_id):
 				description = u"Added %s as a member of %s" % (scener.name, group.name)
 				Edit.objects.create(action_type='add_membership', focus=scener, focus2=group,
 					description=description, user=request.user)
-			return HttpResponseRedirect(scener.get_absolute_edit_url())
+			return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
 	else:
 		form = ScenerMembershipForm()
 
@@ -143,7 +144,7 @@ def remove_group(request, scener_id, group_id):
 			description = u"Removed %s as a member of %s" % (scener.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
 				description=description, user=request.user)
-		return HttpResponseRedirect(scener.get_absolute_edit_url())
+		return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
 	else:
 		return simple_ajax_confirmation(request,
 			reverse('scener_remove_group', args=[scener_id, group_id]),
@@ -167,7 +168,7 @@ def edit_membership(request, scener_id, membership_id):
 				scener.updated_at = datetime.datetime.now()
 				scener.save()
 				form.log_edit(request.user, scener, group)
-			return HttpResponseRedirect(scener.get_absolute_edit_url())
+			return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
 	else:
 		form = ScenerMembershipForm(initial={
 			'group_nick': membership.group.primary_nick,
