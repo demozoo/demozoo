@@ -10,13 +10,16 @@
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
 {% endblock %}
 
+{% block extra_js %}
+	<script src="/static/js/components/notes_panel.js"></script>
+	<script src="/static/js/components/editable_chunk.js"></script>
+{% endblock %}
+
+{% block body_class %}show_scener{% endblock %}
+
 {% block base_main %}
 	<div class="panel">
-		<ul class="tabs">
-			<li class="active_tab">Scener</li>
-			<li><a href="{% url 'scener_history' scener.id %}">History</a></li>
-		</ul>
-	
+		<div class="signpost">Scener</div>
 		{% if site_is_writeable %}
 			<ul class="actions">
 				{% if editing %}
@@ -27,15 +30,20 @@
 			</ul>
 		{% endif %}
 
-		<h2>
-			{{ scener.name }} {% nick_variants scener.primary_nick %}
+		<div class="focus_title scener_name">
+			<h2>{{ scener.name }}</h2>
+			{% with scener.primary_nick.nick_variant_and_abbreviation_list as nick_variants %}
+				{% if nick_variants %}
+					<h3>- {{ nick_variants }}</h3>
+				{% endif %}
+			{% endwith %}
 			{% if editing and site_is_writeable %}
 				<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 				</a>
 			{% endif %}
-		</h2>
-		
+		</div>
+
 		{% with scener.alternative_nicks as alternative_nicks %}
 			{% if alternative_nicks or editing %}
 				<h3>Also known as:</h3>
@@ -179,7 +187,9 @@
 			</div>
 		{% endif %}
 	</div>
-	
+
+	{% last_edited_by scener %}
+
 	{% if editing_as_admin and site_is_writeable %}
 		<ul class="maintenance_actions">
 			{% if not scener.is_referenced %}
