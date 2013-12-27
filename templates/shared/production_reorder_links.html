@@ -1,0 +1,15 @@
+{% load urlsub %}
+<p>
+	Order by:
+	{% if order == 'title' %}
+		<strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Title</a></strong>
+	{% else %}
+		<a href="{% urlsub order='title' dir='asc' page=1 %}">Title</a>
+	{% endif %}
+	|
+	{% if order == 'date' %}
+		<strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Release date</a></strong>
+	{% else %}
+		<a href="{% urlsub order='date' dir='asc' page=1 %}">Release date</a>
+	{% endif %}
+</p>

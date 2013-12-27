@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load urlsub %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -17,20 +16,7 @@
 
 	<h2>{{ title }}</h2>
 
-	<p>
-		Order by:
-		{% if order == 'title' %}
-			<strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Title</a></strong>
-		{% else %}
-			<a href="{% urlsub order='title' dir='asc' page=1 %}">Title</a>
-		{% endif %}
-		|
-		{% if order == 'date' %}
-			<strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Release date</a></strong>
-		{% else %}
-			<a href="{% urlsub order='date' dir='asc' page=1 %}">Release date</a>
-		{% endif %}
-	</p>
+	{% include "shared/production_reorder_links.html" %}
 
 	<ul>
 		{% with production_page.object_list as productions %}
