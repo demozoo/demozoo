@@ -18,7 +18,12 @@
 					{% if prod.default_screenshot %}{% microthumb prod.default_screenshot %}{% endif %}
 				</td>
 			{% endif %}
-			<td class="icon icon_{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+			<td class="icon icon_{{ prod.supertype }}">
+				<div class="title"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></div>
+				{% if show_prod_types %}
+					<div class="prod_type">{{ prod.platforms_and_types_list }}</div>
+				{% endif %}
+			</td>
 			<td>{{ prod.release_date.short_format }}</td>
 			<td>{% byline prod %}</td>
 		</tr>

@@ -14,7 +14,7 @@ from comments.forms import ProductionCommentForm
 
 
 def index(request):
-	queryset = Production.objects.filter(supertype='music').select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	queryset = Production.objects.filter(supertype='music')
 
 	order = request.GET.get('order', 'date')
 	asc = request.GET.get('dir', 'desc') == 'asc'
@@ -29,6 +29,8 @@ def index(request):
 		if form.cleaned_data['production_type']:
 			prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
 			queryset = queryset.filter(types__in=prod_types)
+
+	queryset = queryset.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	production_page = get_page(
 		queryset,

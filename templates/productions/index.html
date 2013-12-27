@@ -25,7 +25,7 @@
 
 	<ul>
 		{% with production_page.object_list as productions %}
-			{% include "shared/production_listing.html" with show_screenshots=1 %}
+			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
 		{% endwith %}
 	</ul>
 	

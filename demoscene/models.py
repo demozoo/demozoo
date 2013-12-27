@@ -877,6 +877,22 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def get_comments(self):
 		return self.comments.select_related('user').order_by('created_at')
 
+	@property
+	def platforms_and_types_list(self):
+		if self.has_prefetched('platforms'):
+			platforms = ', '.join([platform.name for platform in sorted(self.platforms.all(), lambda p:p.name)])
+		else:
+			platforms = ', '.join([platform.name for platform in self.platforms.order_by('name')])
+
+		if self.has_prefetched('types'):
+			prod_types = ', '.join([typ.name for typ in sorted(self.types.all(), lambda t:t.name)])
+		else:
+			prod_types = ', '.join([typ.name for typ in self.types.order_by('name')])
+		if platforms and prod_types:
+			return "%s - %s" % (platforms, prod_types)
+		else:
+			return platforms or prod_types
+
 	class Meta:
 		ordering = ['title']
 
