@@ -10,6 +10,7 @@
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
 
 	<link rel="stylesheet" href="/static/css/pages/show_scener.less" type="text/less" />
 {% endblock %}
@@ -123,14 +124,15 @@
 	</div>
 
 	{% if scener.notes or request.user.is_staff %}
-		<div class="notes">
+		<div class="editable_chunk panel notes_panel">
 			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">
-					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
+					<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
 				</ul>
 			{% endif %}
-			{{ scener.notes|safe_markdown }}
-			<div style="clear: both;"></div>
+			<div class="notes">
+				{{ scener.notes|safe_markdown }}
+			</div>
 		</div>
 	{% endif %}
 

@@ -10,6 +10,7 @@
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
 
 	<link rel="stylesheet" href="/static/css/pages/show_group.less" type="text/less" />
 {% endblock %}
@@ -87,7 +88,7 @@
 		</ul>
 	</div>
 
-	{% if production.notes or request.user.is_staff %}
+	{% if group.notes or request.user.is_staff %}
 		<div class="editable_chunk panel notes_panel">
 			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">

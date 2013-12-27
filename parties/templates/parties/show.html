@@ -5,97 +5,120 @@
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
+{% block legacy_css %}{% endblock %}
+
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
+
+	<link rel="stylesheet" href="/static/parties/css/pages/show_party.less" type="text/less" />
 {% endblock %}
 
+{% block extra_js %}
+	<script src="/static/js/components/notes_panel.js"></script>
+	<script src="/static/js/components/editable_chunk.js"></script>
+{% endblock %}
+
+{% block body_class %}show_party{% endblock %}
+
 {% block base_main %}
-	<div class="panel">
-		<ul class="tabs">
-			<li class="active_tab">Party</li>
-			<li><a href="{% url 'party_history' party.id %}">History</a></li>
-		</ul>
-		<div class="party_details">
-			<h2>
-				{{ party.name }}{% if party.tagline %}: <span class="tagline">"{{ party.tagline }}"</span>{% endif %}
-				{% if site_is_writeable %}
-					<a href="{% url 'edit_party' party.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
-				{% endif %}
-			</h2>
-			{% date_range party.start_date party.end_date %}
-			
-			{% if party.website %}
-				<p><a href="{{ party.website }}">{{ party.website }}</a></p>
-			{% elif party.party_series.website %}
-				<p><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></p>
-			{% endif %}
-			
-			<p>
-				Location:
-				{% if party.is_online %}
-					Online <img src="/static/images/icons/computer.png" alt="" />
-				{% elif party.location %}
+	<div class="editable_chunk party_core_details">
+		<div class="signpost">Party</div>
+
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li>
+					<a href="{% url 'edit_party' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
+				</li>
+			</ul>
+		{% endif %}
+
+		<div class="focus_title party_name">
+			<h2>{{ party.name }}{% if party.tagline %}:{% endif %}</h2>
+			{% if party.tagline %}<h3>"{{ party.tagline }}"</h3>{% endif %}
+		</div>
+
+		<ul class="attributes">
+			<li>{% date_range party.start_date party.end_date %}</li>
+
+			{% if party.is_online %}
+				<li>Online <img src="/static/images/icons/computer.png" alt="" /></li>
+			{% elif party.location %}
+				<li>
 					{{ party.location }}
 					{% if party.country_code %}
 						<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
 					{% endif %}
-				{% else %}
-					<em>Not set</em>
-				{% endif %}
-			</p>
-			
-			{% if results_files %}
-				<h3>Results file:</h3>
-				<ul>
-					{% for file in results_files %}
-						<li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
-					{% endfor %}
-				</ul>
+				</li>
 			{% endif %}
-			
-			<div class="external_links_section">
-				<h3>External links:</h3>
-				<ul class="external_links">
-					{% for link in external_links %}
-						<li>{{ link.html_link|safe }}</li>
-					{% endfor %}
-					{% if site_is_writeable %}
-						<li><a href="{% url 'party_edit_external_links' party.id %}" class="edit open_in_lightbox focus_empty_input">Edit</a></li>
-					{% endif %}
-				</ul>
-			</div>
-			
-			{% if parties_in_series.count > 1 %}
-				<div>
-					Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:
-					<ul class="parties_in_series">
-						{% for party_in_series in parties_in_series %}
-							{% if party_in_series == party %}
-								<li class="current">{{ party_in_series.suffix }}</li>
-							{% else %}
-								<li>
-									<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
-								</li>
-							{% endif %}
-						{% endfor %}
-					</ul>
-				</div>
+
+			{% if party.website %}
+				<li><a href="{{ party.website }}">{{ party.website }}</a></li>
+			{% elif party.party_series.website %}
+				<li><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
 			{% endif %}
-		</div>
+		</ul>
 	</div>
-	
-	{% if party.notes or request.user.is_staff %}
-		<div class="notes">
-			{% if request.user.is_staff and site_is_writeable %}
-				<ul class="actions">
-					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
-				</ul>
-			{% endif %}
-			{{ party.notes|safe_markdown }}
-			<div style="clear: both;"></div>
+
+	{% if results_files %}
+		<div class="panel results_file_panel">
+			<h3>Results file</h3>
+			<ul class="results_files">
+				{% for file in results_files %}
+					<li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
+				{% endfor %}
+			</ul>
 		</div>
 	{% endif %}
+
+	<div class="editable_chunk panel external_links_panel">
+		<h3>External links</h3>
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li>
+					<a href="{% url 'party_edit_external_links' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+				</li>
+			</ul>
+		{% endif %}
+		<ul class="external_links">
+			{% for link in external_links %}
+				<li>{{ link.html_link|safe }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+	{% if parties_in_series.count > 1 %}
+		<div class="parties_in_series">
+			<b>Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:</b>
+			<ul>
+				{% for party_in_series in parties_in_series %}
+					{% if party_in_series == party %}
+						<li class="current">{{ party_in_series.suffix }}</li>
+					{% else %}
+						<li>
+							<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+
+	{% if party.notes or request.user.is_staff %}
+		<div class="editable_chunk panel notes_panel">
+			{% if request.user.is_staff and site_is_writeable %}
+				<ul class="actions">
+					<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			<div class="notes">
+				{{ party.notes|safe_markdown }}
+			</div>
+		</div>
+	{% endif %}
+
+	{% last_edited_by party %}
 
 	{% if invitations or user.is_authenticated %}
 		<div class="competition">
