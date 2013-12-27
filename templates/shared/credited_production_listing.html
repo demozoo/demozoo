@@ -39,13 +39,18 @@
 					</td>
 				{% endif %}
 				<td>
-					<a href="{{ production_with_credits.grouper.get_absolute_url }}">{{ production_with_credits.grouper.title }}</a>
-					-
-					{% for credit in nick_with_credits.list %}
-						{{ credit.description }}{% if not forloop.last %},{% endif %}
-					{% endfor %}
-					{% if nick_with_credits.grouper.name != releaser.name %}
-						<i>(as {{ nick_with_credits.grouper.name }})</i>
+					<div class="title">
+						<a href="{{ production_with_credits.grouper.get_absolute_url }}">{{ production_with_credits.grouper.title }}</a>
+						-
+						{% for credit in nick_with_credits.list %}
+							{{ credit.description }}{% if not forloop.last %},{% endif %}
+						{% endfor %}
+						{% if nick_with_credits.grouper.name != releaser.name %}
+							<i>(as {{ nick_with_credits.grouper.name }})</i>
+						{% endif %}
+					</div>
+					{% if show_prod_types %}
+						<div class="prod_type">{{ production_with_credits.grouper.platforms_and_types_list }}</div>
 					{% endif %}
 				</td>
 				<td>{{ production_with_credits.grouper.release_date.short_format }}</td>
