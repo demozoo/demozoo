@@ -2,7 +2,7 @@
 
 <table class="production_listing listing_with_screenshots result_table">
 	{% for result in placings %}
-		<tr>
+		<tr class="{% cycle 'odd' 'even' %}">
 			<td class="ranking">{{ result.ranking }}</td>
 			<td class="screenshot">
 				{% if result.production.default_screenshot %}{% microthumb result.production.default_screenshot %}{% endif %}

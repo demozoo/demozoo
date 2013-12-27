@@ -67,7 +67,7 @@
 
 		.competition {
 			clear: both;
-			padding-top: 10px;
+			margin-top: 10px;
 
 			h4 {
 				line-height: 32px;
@@ -77,11 +77,15 @@
 
 			.result_table {
 				width: 65%;
-				.ranking {width: 1%; text-align: right;}
+				border-spacing: 0;
+
+				tr.even {background-color: #eee;}
+
+				.ranking {width: 1%; text-align: right; padding-left: 8px;}
 				.screenshot {width: 1%; padding: 0 8px;}
 				.title {width: 50%; font-weight: bold;}
 				.byline {width: 30%;}
-				.score {width: 1%; text-align: right;}
+				.score {width: 1%; text-align: right; padding-right: 8px;}
 			}
 		}
 
