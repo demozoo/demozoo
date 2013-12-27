@@ -26,11 +26,8 @@ def index(request):
 		queryset,
 		request.GET.get('page', '1'))
 
-	return render(request, 'productions/index.html', {
-		'title': "Graphics",
+	return render(request, 'graphics/index.html', {
 		'order': order,
-		'add_item_url': reverse('new_graphics'),
-		'add_item_text': "New graphics",
 		'production_page': production_page,
 		'menu_section': "graphics",
 		'asc': asc,

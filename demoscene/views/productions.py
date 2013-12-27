@@ -34,10 +34,7 @@ def index(request):
 		request.GET.get('page', '1'))
 
 	return render(request, 'productions/index.html', {
-		'title': "Productions",
 		'order': order,
-		'add_item_url': reverse('new_production'),
-		'add_item_text': "New production",
 		'production_page': production_page,
 		'menu_section': "productions",
 		'asc': asc,
