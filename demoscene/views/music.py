@@ -16,8 +16,8 @@ from comments.forms import ProductionCommentForm
 def index(request):
 	queryset = Production.objects.filter(supertype='music').select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
-	order = request.GET.get('order', 'title')
-	asc = request.GET.get('dir', 'asc') == 'asc'
+	order = request.GET.get('order', 'date')
+	asc = request.GET.get('dir', 'desc') == 'asc'
 
 	queryset = apply_order(queryset, order, asc)
 

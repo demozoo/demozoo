@@ -24,8 +24,8 @@ from comments.forms import ProductionCommentForm
 def index(request):
 	queryset = Production.objects.filter(supertype='production').select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
-	order = request.GET.get('order', 'title')
-	asc = request.GET.get('dir', 'asc') == 'asc'
+	order = request.GET.get('order', 'date')
+	asc = request.GET.get('dir', 'desc') == 'asc'
 
 	queryset = apply_order(queryset, order, asc)
 
@@ -78,12 +78,18 @@ def tagged(request, tag_slug):
 
 
 def apply_order(queryset, order, asc):
-	if order == 'date':
-		return queryset.order_by('%srelease_date_date' % ('' if asc else '-'))
-	else:  # title
+	if order == 'title':
 		return queryset.extra(
 			select={'lower_title': 'lower(demoscene_production.title)'}
 		).order_by('%slower_title' % ('' if asc else '-'))
+	else:  # date
+		if asc:
+			return queryset.order_by('release_date_date')
+		else:
+			# fiddle order so that empty release dates end up at the end
+			return queryset.extra(
+				select={'order_date': "coalesce(demoscene_production.release_date_date, '1970-01-01')"}
+			).order_by('-order_date')
 
 
 def show(request, production_id, edit_mode=False):
