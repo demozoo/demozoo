@@ -148,15 +148,16 @@
 			{% endif %}
 
 			{% for compo, placings in competitions_with_placings %}
-				<div class="competition">
+				<div class="competition editable_chunk">
 					<a id="competition_{{ compo.id }}"></a>
-					<h4>{{ compo.name }}
-						{% if site_is_writeable %}
-							<a href="{% url 'competition_edit' compo.id %}">
-								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" />
-							</a>
-						{% endif %}
-					</h4>
+					{% if site_is_writeable %}
+						<ul class="actions">
+							<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+						</ul>
+					{% endif %}
+
+					<h4>{{ compo.name }}</h4>
+
 					{% if placings %}
 						{% include "shared/competition_results.html" %}
 					{% endif %}
