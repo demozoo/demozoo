@@ -57,7 +57,7 @@ def show(request, party_id):
 		'competitions_with_placings': competitions_with_placings,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
-		'parties_in_series': party.party_series.parties.select_related('party_series'),
+		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
 		'external_links': external_links,
 	})
 
