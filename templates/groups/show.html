@@ -166,7 +166,7 @@
 					</li>
 				</ul>
 			{% endif %}
-			{% include "shared/production_listing.html" with show_screenshots=1 %}
+			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
 			
 		</div>
 
@@ -174,7 +174,7 @@
 			<div class="panel">
 				<h3 class="member_productions_header">Member productions</h3>
 				{% with member_productions as productions %}
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
+					{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
 				{% endwith %}
 			</div>
 		{% endif %}
