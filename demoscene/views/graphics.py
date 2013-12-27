@@ -2,6 +2,8 @@ from demoscene.shortcuts import *
 from demoscene.models import Production, Byline
 from demoscene.forms.production import *
 
+from demoscene.views.productions import apply_order
+
 
 from django.contrib.auth.decorators import login_required
 from django.utils import simplejson as json
@@ -10,6 +12,29 @@ from read_only_mode import writeable_site_required
 
 from comments.models import ProductionComment
 from comments.forms import ProductionCommentForm
+
+
+def index(request):
+	queryset = Production.objects.filter(supertype='graphics').select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+
+	order = request.GET.get('order', 'title')
+	asc = request.GET.get('dir', 'asc') == 'asc'
+
+	queryset = apply_order(queryset, order, asc)
+
+	production_page = get_page(
+		queryset,
+		request.GET.get('page', '1'))
+
+	return render(request, 'productions/index.html', {
+		'title': "Graphics",
+		'order': order,
+		'add_item_url': reverse('new_graphics'),
+		'add_item_text': "New graphics",
+		'production_page': production_page,
+		'menu_section': "graphics",
+		'asc': asc,
+	})
 
 
 def show(request, production_id, edit_mode=False):

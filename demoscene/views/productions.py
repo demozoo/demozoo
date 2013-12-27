@@ -21,27 +21,11 @@ from screenshots.tasks import capture_upload_for_processing
 from comments.models import ProductionComment
 from comments.forms import ProductionCommentForm
 
-def index(request, supertype):
-	queryset = Production.objects.filter(supertype=supertype).select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+def index(request):
+	queryset = Production.objects.filter(supertype='production').select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
 
 	order = request.GET.get('order', 'title')
 	asc = request.GET.get('dir', 'asc') == 'asc'
-
-	if supertype == 'production':
-		title = "Productions"
-		add_item_url = reverse('new_production')
-		add_item_text = "New production"
-		menu_section = "productions"
-	elif supertype == 'graphics':
-		title = "Graphics"
-		add_item_url = reverse('new_graphics')
-		add_item_text = "New graphics"
-		menu_section = "graphics"
-	else:  # supertype == 'music'
-		title = "Music"
-		add_item_url = reverse('new_music')
-		add_item_text = "New music"
-		menu_section = "music"
 
 	queryset = apply_order(queryset, order, asc)
 
@@ -50,12 +34,12 @@ def index(request, supertype):
 		request.GET.get('page', '1'))
 
 	return render(request, 'productions/index.html', {
-		'title': title,
+		'title': "Productions",
 		'order': order,
-		'add_item_url': add_item_url,
-		'add_item_text': add_item_text,
+		'add_item_url': reverse('new_production'),
+		'add_item_text': "New production",
 		'production_page': production_page,
-		'menu_section': menu_section,
+		'menu_section': "productions",
 		'asc': asc,
 	})
 
