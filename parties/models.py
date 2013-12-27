@@ -252,6 +252,10 @@ class Competition(models.Model):
 	def get_absolute_url(self):
 		return ('parties.views.competitions.show', [str(self.id)])
 
+	@models.permalink
+	def get_history_url(self):
+		return ('parties.views.competitions.history', [str(self.id)])
+
 	class Meta:
 		ordering = ("party__name", "name")
 

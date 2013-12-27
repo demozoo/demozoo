@@ -6,14 +6,14 @@
 
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+
+	<link rel="stylesheet" href="/static/parties/css/pages/show_competition.less" type="text/less" />
 {% endblock %}
+
+{% block body_class %}show_competition{% endblock %}
 
 {% block base_main %}
 	<div class="panel">
-		<ul class="tabs">
-			<li class="active_tab">Competition</li>
-			<li><a href="{% url 'competition_history' competition.id %}">History</a></li>
-		</ul>
 		<div class="competition_details">
 			<h2>
 				{{ competition }}
@@ -44,4 +44,6 @@
 	</div>
 	
 	{% include "shared/competition_results.html" %}
+
+	{% last_edited_by competition %}
 {% endblock %}

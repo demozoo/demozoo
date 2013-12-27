@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load url from future %}
+{% load demoscene_tags %}
 
 {% block html_title %}Editing {{ competition.party.name }} {{ competition.name }} competition - Demozoo{% endblock %}
 
@@ -10,6 +11,8 @@
 {% endblock %}
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/parties/css/results_table.css"></script>
+
+	<link rel="stylesheet" href="/static/parties/css/pages/edit_competition.less" type="text/less" />
 {% endblock %}
 
 {% block extra_head %}
@@ -60,5 +63,7 @@
 <ul class="actions">
 	<li><a href="{% url 'party' competition.party.id %}" class="action_button icon done">Done</a></li>
 </ul>
+
+	{% last_edited_by competition %}
 
 {% endblock %}
