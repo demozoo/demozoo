@@ -122,9 +122,9 @@
 		</ul>
 	</div>
 
-	{% if scener.notes or editing_as_admin %}
+	{% if scener.notes or request.user.is_staff %}
 		<div class="notes">
-			{% if editing_as_admin and site_is_writeable %}
+			{% if request.user.is_staff and site_is_writeable %}
 				<ul class="actions">
 					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
 				</ul>
@@ -187,7 +187,7 @@
 
 	{% last_edited_by scener %}
 
-	{% if editing_as_admin and site_is_writeable %}
+	{% if request.user.is_staff and site_is_writeable %}
 		<ul class="maintenance_actions">
 			{% if not scener.is_referenced %}
 				<li><a href="{% url 'delete_releaser' scener.id %}" class="action_button icon delete open_in_lightbox">Delete scener</a></li>
