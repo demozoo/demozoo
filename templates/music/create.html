@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load query_string %}
+{% load urlsub %}
 {% load url from future %}
 
 {% block html_title %}New music - Demozoo{% endblock %}
@@ -18,8 +18,8 @@
 	<div class="form_title">
 		<h2>New music</h2>
 		<p>(see also:
-			<a href="{% url 'new_production' %}{% query_string "" "" %}" class="open_in_lightbox">New production</a>
-			| <a href="{% url 'new_graphics' %}{% query_string "" "" %}" class="open_in_lightbox">New graphics</a>)</p>
+			<a href="{% url 'new_production' %}{% urlsub %}" class="open_in_lightbox">New production</a>
+			| <a href="{% url 'new_graphics' %}{% urlsub %}" class="open_in_lightbox">New graphics</a>)</p>
 	</div>
 
 	<form action="{% url 'new_music' %}" method="post" class="entry_form production_create_form">
