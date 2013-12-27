@@ -16,6 +16,11 @@
 
 	<h2>Productions</h2>
 
+	<form action="{% url 'productions' %}" method="GET">
+		{{ form.as_p }}
+		<input type="submit" value="Find productions">
+	</form>
+
 	{% include "shared/production_reorder_links.html" %}
 
 	<ul>

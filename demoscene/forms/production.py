@@ -355,3 +355,7 @@ class ProductionInvitationPartyForm(forms.Form):
 
 ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
 	can_delete=True, extra=1)
+
+class ProductionIndexFilterForm(forms.Form):
+	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.featured_types(), empty_label='All types')
