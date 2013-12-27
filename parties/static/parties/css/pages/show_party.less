@@ -65,9 +65,44 @@
 	.results_panel {
 		margin-top: 20px;
 
+		ul.results_menu {
+			clear: both;
+			width: 35%;
+			float: left;
+			margin-top: 10px;
+
+			li {
+				width: 90%;
+				a {
+					display: block;
+					padding: 4px 8px;
+					border-left: 4px solid #fff;
+					color: #5e5f5f;
+					text-decoration: none;
+
+					&:hover {
+						border-left: 4px solid #ec5a64;
+					}
+				}
+			}
+
+			li.odd a {
+				background-color: #eee;
+				border-left: 4px solid #eee;
+
+				&:hover {
+					border-left: 4px solid #ec5a64;
+				}
+			}
+		}
+		.results_body {
+			float: left;
+			width: 65%;
+		}
+
 		.competition {
 			clear: both;
-			margin-top: 10px;
+			margin-bottom: 10px;
 
 			h4 {
 				line-height: 32px;
@@ -76,7 +111,7 @@
 			}
 
 			.result_table {
-				width: 65%;
+				width: 100%;
 				border-spacing: 0;
 
 				tr.even {background-color: #eee;}

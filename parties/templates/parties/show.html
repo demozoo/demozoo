@@ -139,30 +139,40 @@
 		<div class="panel results_panel">
 			<h3>Results</h3>
 
-			{% for compo, placings in competitions_with_placings %}
-				<div class="competition editable_chunk">
-					<a id="competition_{{ compo.id }}"></a>
-					{% if site_is_writeable %}
-						<ul class="actions">
-							<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
-						</ul>
-					{% endif %}
-
-					<h4>{{ compo.name }}</h4>
-
-					{% if placings %}
-						{% include "shared/competition_results.html" %}
-					{% endif %}
-				</div>
-			{% endfor %}
-
-			{% if site_is_writeable %}
-				<ul class="actions">
-					<li>
-						<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
-					</li>
+			{% if competitions_with_placings %}
+				<ul class="results_menu">
+					{% for compo, placings in competitions_with_placings %}
+						<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+					{% endfor %}
 				</ul>
 			{% endif %}
+
+			<div class="results_body">
+				{% for compo, placings in competitions_with_placings %}
+					<div class="competition editable_chunk">
+						<a id="competition_{{ compo.id }}"></a>
+						{% if site_is_writeable %}
+							<ul class="actions">
+								<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+							</ul>
+						{% endif %}
+
+						<h4>{{ compo.name }}</h4>
+
+						{% if placings %}
+							{% include "shared/competition_results.html" %}
+						{% endif %}
+					</div>
+				{% endfor %}
+
+				{% if site_is_writeable %}
+					<ul class="actions">
+						<li>
+							<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
+						</li>
+					</ul>
+				{% endif %}
+			</div>
 		</div>
 	{% endif %}
 
