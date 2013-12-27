@@ -1,0 +1,64 @@
+@import "../../../../../demoscene/static/css/variables.less";
+
+.show_party_series {
+	.external_links_panel {
+		margin-bottom: 20px;
+
+		ul.external_links {
+			padding-top: 8px;
+			padding-bottom: 8px;
+			clear: both;
+		}
+	}
+
+	ul.parties {
+		li {
+			float: left;
+			text-align: center;
+			width: 250px;
+			min-height: 185px;
+		}
+
+		li a {
+			display: block;
+			text-decoration: none;
+			color: inherit;
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+
+		li.no_thumb a {
+			padding-top: 100px;
+		}
+
+		li a:hover {
+			background-color: #eee;
+		}
+
+		li a:link h3 {
+			text-decoration: underline;
+		}
+
+		.thumbnail {
+			margin: auto;
+			margin-bottom: 10px;
+		}
+	}
+}
+
+.panel {
+	overflow: hidden; /* self-clear */
+
+	h3 {
+		background-color: @demozoo_lightgreen;
+		float: left;
+		font-weight: normal;
+		color: white;
+		font-size: 10pt;
+		text-transform: uppercase;
+		font-family: FabricaRegular, sans-serif;
+		padding: 6px;
+		border-right: 6px solid #eaeaea;
+		min-width: 150px;
+	}
+}

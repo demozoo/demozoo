@@ -5,48 +5,80 @@
 
 {% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
 
+{% block legacy_css %}{% endblock %}
+
 {% block body_class %}show_party_series{% endblock %}
 
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
+
+	<link rel="stylesheet" href="/static/parties/css/pages/show_series.less" type="text/less" />
+{% endblock %}
+
+{% block extra_js %}
+	<script src="/static/js/components/notes_panel.js"></script>
+	<script src="/static/js/components/editable_chunk.js"></script>
 {% endblock %}
 
 {% block base_main %}
-	<div class="panel">
-		<ul class="tabs">
-			<li class="active_tab">Party</li>
-			<li><a href="{% url 'party_series_history' party_series.id %}">History</a></li>
-		</ul>
+	<div class="editable_chunk">
+		<div class="signpost">Party</div>
 
 		{% if site_is_writeable %}
 			<ul class="actions">
-				<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
+				<li>
+					<a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
+				</li>
 			</ul>
 		{% endif %}
 
-		<h2>
-			{{ party_series.name }}
-			{% if site_is_writeable %}
-				<a href="{% url 'party_edit_series' party_series.id %}" class="open_in_lightbox"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit party" title="Edit party" /></a>
-			{% endif %}
-		</h2>
+		<div class="focus_title party_name">
+			<h2>{{ party_series.name }}</h2>
+		</div>
+
 		{% if party_series.has_any_external_links %}
-			<ul class="external_links">
-				{% if party_series.website %}<li><a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a></li>{% endif %}
-				{% if party_series.twitter_url %}<li><a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a></li>{% endif %}
-				{% if party_series.pouet_url %}<li><a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a></li>{% endif %}
-			</ul>
+			<div class="panel external_links_panel">
+				<h3>External links</h3>
+				<ul class="external_links">
+					{% if party_series.website %}<li><a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a></li>{% endif %}
+					{% if party_series.twitter_url %}<li><a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a></li>{% endif %}
+					{% if party_series.pouet_url %}<li><a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a></li>{% endif %}
+				</ul>
+			</div>
 		{% endif %}
-		{% if parties %}
-			<ul class="parties">
-				{% for party in parties %}
-					<li>
+
+	</div>
+
+	{% if party_series.notes or request.user.is_staff %}
+		<div class="editable_chunk panel notes_panel">
+			{% if request.user.is_staff and site_is_writeable %}
+				<ul class="actions">
+					<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
+				</ul>
+			{% endif %}
+			<div class="notes">
+				{{ party_series.notes|safe_markdown }}
+			</div>
+		</div>
+	{% endif %}
+
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
+		</ul>
+	{% endif %}
+	<div style="clear: both;"></div>
+
+	{% if parties %}
+		<ul class="parties">
+			{% for party in parties %}
+				{% with party.random_screenshot as pic %}
+					<li {% if not pic %}class="no_thumb"{% endif %}>
 						<a href="{{ party.get_absolute_url }}">
-							{% with party.random_screenshot as pic %}
-								{% if pic %}
-									{% thumbnail pic %}
-								{% endif %}
-							{% endwith %}
+							{% if pic %}
+								{% thumbnail pic %}
+							{% endif %}
 							<h3>{{ party.name }}</h3>
 							<div>{% date_range party.start_date party.end_date %}</div>
 							{% if party.is_online %}
@@ -64,22 +96,12 @@
 							{% endif %}
 						</a>
 					</li>
-				{% endfor %}
-			</ul>
-		{% endif %}
-
-		<div style="clear: both;"></div>
-	</div>
-	
-	{% if party_series.notes or request.user.is_staff %}
-		<div class="notes">
-			{% if request.user.is_staff and site_is_writeable %}
-				<ul class="actions">
-					<li><a class="action_button icon edit open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
-				</ul>
-			{% endif %}
-			{{ party_series.notes|safe_markdown }}
-			<div style="clear: both;"></div>
-		</div>
+				{% endwith %}
+			{% endfor %}
+		</ul>
 	{% endif %}
+
+	<div style="clear: both;"></div>
+
+	{% last_edited_by party_series %}
 {% endblock %}
