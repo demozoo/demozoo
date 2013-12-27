@@ -21,6 +21,15 @@ def index(request):
 
 	queryset = apply_order(queryset, order, asc)
 
+	form = MusicIndexFilterForm(request.GET)
+
+	if form.is_valid():
+		if form.cleaned_data['platform']:
+			queryset = queryset.filter(platforms=form.cleaned_data['platform'])
+		if form.cleaned_data['production_type']:
+			prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
+			queryset = queryset.filter(types__in=prod_types)
+
 	production_page = get_page(
 		queryset,
 		request.GET.get('page', '1'))
@@ -30,6 +39,7 @@ def index(request):
 		'production_page': production_page,
 		'menu_section': "music",
 		'asc': asc,
+		'form': form,
 	})
 
 

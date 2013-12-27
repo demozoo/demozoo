@@ -17,6 +17,11 @@
 
 	<h2>Music</h2>
 
+	<form action="{% url 'musics' %}" method="GET">
+		{{ form.as_p }}
+		<input type="submit" value="Find music">
+	</form>
+
 	{% include "shared/production_reorder_links.html" %}
 
 	<ul>

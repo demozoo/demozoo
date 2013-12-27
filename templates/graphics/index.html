@@ -17,6 +17,11 @@
 
 	<h2>Graphics</h2>
 
+	<form action="{% url 'graphics' %}" method="GET">
+		{{ form.as_p }}
+		<input type="submit" value="Find graphics">
+	</form>
+
 	{% include "shared/production_reorder_links.html" %}
 
 	<ul>
