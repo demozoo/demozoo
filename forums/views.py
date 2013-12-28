@@ -11,6 +11,7 @@ def index(request):
 	topics = Topic.objects.order_by('-last_post_at')
 
 	return render(request, 'forums/index.html', {
+		'menu_section': 'forums',
 		'topics': topics,
 	})
 
@@ -32,6 +33,7 @@ def new_topic(request):
 		form = NewTopicForm()
 
 	return render(request, 'forums/new_topic.html', {
+		'menu_section': 'forums',
 		'form': form,
 	})
 
@@ -40,6 +42,7 @@ def topic(request, topic_id):
 	posts = topic.posts.order_by('created_at')
 
 	return render(request, 'forums/topic.html', {
+		'menu_section': 'forums',
 		'topic': topic,
 		'posts': posts,
 		'form': ReplyForm(),
@@ -68,6 +71,7 @@ def topic_reply(request, topic_id):
 		form = ReplyForm(instance=post)
 
 	return render(request, 'forums/add_reply.html', {
+		'menu_section': 'forums',
 		'topic': topic,
 		'form': form,
 	})
