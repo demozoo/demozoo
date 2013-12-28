@@ -4,6 +4,7 @@
 
 {% block legacy_css %}{% endblock %}
 {% block extra_css %}
+	<link rel="stylesheet" href="/static/css/components/production_listing_filters.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 {% endblock %}
 
@@ -16,8 +17,10 @@
 
 	<h2>Productions</h2>
 
-	<form action="{% url 'productions' %}" method="GET">
-		{{ form.as_p }}
+	<form action="{% url 'productions' %}" method="GET" class="production_listing_filters">
+		<ul class="fields">
+			{{ form.as_ul }}
+		</ul>
 		<input type="submit" value="Find productions">
 	</form>
 
