@@ -36,6 +36,7 @@
 		<div class="forum_topics">
 			<h2>Latest discussions</h2>
 			{% include "forums/_topics.html" with topics=forum_topics %}
+			<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
 		</div>
 	{% endif %}
 
