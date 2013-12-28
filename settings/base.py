@@ -123,6 +123,7 @@ INSTALLED_APPS = (
 	'screenshots',
 	'homepage',
 	'comments',
+	'forums',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load demoscene_tags %}
+{% load url from future %}
+
+{% block html_title %}Discussions - Demozoo{% endblock %}
+
+{% block legacy_css %}{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/forums/css/pages/topic.less" type="text/less" />
+{% endblock %}
+
+{% block body_class %}show_topic{% endblock %}
+
+{% block base_main %}
+	<div class="signpost">Topic</div>
+
+	<div class="focus_title">
+		<h2>{{ topic.title }}</h2>
+	</div>
+
+	<div class="posts_panel">
+		<div class="posts">
+			{% for post in posts %}
+				<div class="post" id="post-{{ post.id }}">
+					<b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
+					<a href="{{ topic.get_absolute_url }}#post-{{ post.id }}">#</a>
+					<p>{{ post.body|urlize|linebreaks }}</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

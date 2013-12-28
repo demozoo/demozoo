@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load demoscene_tags %}
+{% load url from future %}
+
+{% block html_title %}Discussions - Demozoo{% endblock %}
+
+{% block legacy_css %}{% endblock %}
+
+{% block base_main %}
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'forums_new_topic' %}" class="action_button icon add open_in_lightbox">New topic</a></li>
+		</ul>
+	{% endif %}
+
+	<div class="focus_title">
+		<h2>Discussions</h2>
+	</div>
+	
+	<ul class="topics">
+		{% for topic in topics %}
+			<li>
+				<a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}
