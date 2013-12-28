@@ -23,6 +23,30 @@
 {% block body_class %}show_party{% endblock %}
 
 {% block base_main %}
+	<script>
+		$(function() {
+			var resultsPanel = $('.results_panel');
+			var resultsMenu = $('.results_menu');
+			var resultsMenuUl = $('.results_menu ul');
+
+			function setResultsPanelPosition() {
+				var resultsPanelY = resultsPanel.offset().top;
+				if ($(window).scrollTop() > resultsPanelY - 8) {
+					resultsPanel.addClass('fixed')
+					resultsMenuUl.css({
+						'width': resultsMenu.width() + 'px',
+						'max-height': $(window).height() - 64 + 'px'
+					});
+				} else {
+					resultsPanel.removeClass('fixed')
+				}
+			}
+
+			$(window).load(setResultsPanelPosition);
+			$(window).scroll(setResultsPanelPosition).resize(setResultsPanelPosition);
+		})
+	</script>
+
 	<div class="editable_chunk party_core_details">
 		<div class="signpost">Party</div>
 
@@ -139,13 +163,15 @@
 		<div class="panel results_panel">
 			<h3>Results</h3>
 
-			{% if competitions_with_placings %}
-				<ul class="results_menu">
-					{% for compo, placings in competitions_with_placings %}
-						<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
-					{% endfor %}
-				</ul>
-			{% endif %}
+			<div class="results_menu">
+				{% if competitions_with_placings %}
+					<ul>
+						{% for compo, placings in competitions_with_placings %}
+							<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+						{% endfor %}
+					</ul>
+				{% endif %}
+			</div>
 
 			<div class="results_body">
 				{% for compo, placings in competitions_with_placings %}

@@ -64,34 +64,43 @@
 
 	.results_panel {
 		margin-top: 20px;
+		position: relative;
 
-		ul.results_menu {
+		.results_menu {
 			clear: both;
 			width: 35%;
 			float: left;
 			margin-top: 10px;
 
-			li {
-				width: 90%;
-				a {
-					display: block;
-					padding: 4px 8px;
+			ul {
+				width: 100%;
+
+				li {
+					width: 90%;
+					a {
+						display: block;
+						padding: 4px 8px;
+						color: #5e5f5f;
+						text-decoration: none;
+					}
+				}
+
+				li.even a {
+					background-color: #fff;
 					border-left: 4px solid #fff;
-					color: #5e5f5f;
-					text-decoration: none;
 
 					&:hover {
 						border-left: 4px solid #ec5a64;
 					}
 				}
-			}
 
-			li.odd a {
-				background-color: #eee;
-				border-left: 4px solid #eee;
+				li.odd a {
+					background-color: #eee;
+					border-left: 4px solid #eee;
 
-				&:hover {
-					border-left: 4px solid #ec5a64;
+					&:hover {
+						border-left: 4px solid #ec5a64;
+					}
 				}
 			}
 		}
@@ -124,6 +133,18 @@
 			}
 		}
 
+	}
+
+	.results_panel.fixed {
+		h3 {
+			position: fixed;
+			top: 10px;
+		}
+		.results_menu ul {
+			position: fixed;
+			top: 48px;
+			overflow-y: auto;
+		}
 	}
 
 	.last_edited_by {
