@@ -72,6 +72,51 @@
 		}
 	}
 
+	.forum_topics {
+		clear: both;
+		padding-top: 24px;
+		width: 80%;
+		margin: auto;
+
+		h2 {
+			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+		}
+
+		.topics {
+			padding-top: 8px;
+			li {
+				a {
+					display: block;
+					padding: 8px;
+					text-decoration: none;
+					color: #222;
+				}
+				&.even {
+					background-color: #eee;
+					&:hover {
+						background-color: #ddd;
+					}
+				}
+				&.odd {
+					background-color: #fff;
+					&:hover {
+						background-color: #ddd;
+					}
+				}
+
+				.title {
+					font-size: 12pt;
+					font-weight: bold;
+				}
+				.meta {
+					color: #888;
+					font-size: 9pt;
+				}
+			}
+
+		}
+	}
+
 	.news {
 		clear: both;
 		margin-top: 24px;

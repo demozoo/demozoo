@@ -8,7 +8,7 @@ from forums.models import Topic, Post
 from forums.forms import NewTopicForm, ReplyForm
 
 def index(request):
-	topics = Topic.objects.order_by('-last_post_at')
+	topics = Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')
 
 	return render(request, 'forums/index.html', {
 		'menu_section': 'forums',
@@ -39,7 +39,7 @@ def new_topic(request):
 
 def topic(request, topic_id):
 	topic = get_object_or_404(Topic, id=topic_id)
-	posts = topic.posts.order_by('created_at')
+	posts = topic.posts.order_by('created_at').select_related('user')
 
 	return render(request, 'forums/topic.html', {
 		'menu_section': 'forums',

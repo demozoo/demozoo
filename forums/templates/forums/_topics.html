@@ -1,0 +1,15 @@
+<ul class="topics">
+	{% for topic in topics %}
+		<li class="{% cycle 'odd' 'even' %}">
+			<a href="{{ topic.get_absolute_url }}">
+				<div class="title">{{ topic.title }}</div>
+				<div class="meta">
+					Started at {{ topic.created_at|date:"H:i j F Y" }} by {{ topic.created_by_user.username }}.
+					{% if topic.reply_count %}
+						{{ topic.reply_count }} repl{{ topic.reply_count|pluralize:"y,ies" }} - last reply on {{ topic.last_post_at|date:"H:i j F Y" }} by {{ topic.last_post_by_user.username }}
+					{% endif %}
+				</div>
+			</a>
+		</li>
+	{% endfor %}
+</ul>

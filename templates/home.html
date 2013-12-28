@@ -32,6 +32,13 @@
 	</ul>
 	<div style="clear: both;"></div>
 
+	{% if forum_topics %}
+		<div class="forum_topics">
+			<h2>Latest discussions</h2>
+			{% include "forums/_topics.html" with topics=forum_topics %}
+		</div>
+	{% endif %}
+
 	<div class="news">
 		{% for story in news_stories %}
 			<div class="news_story">
