@@ -26,11 +26,13 @@
 
 	{% include "shared/production_reorder_links.html" %}
 
-	<ul>
-		{% with production_page.object_list as productions %}
+	{% with production_page.object_list as productions %}
+		{% if productions %}
 			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-		{% endwith %}
-	</ul>
+		{% else %}
+			<p style="text-align: center; font-style: italic;">No releases matching these criteria. Maybe you should make a demo about it...?</p>
+		{% endif %}
+	{% endwith %}
 	
 	{% with production_page as page %}
 		{% include "shared/pagination_links.html" %}
