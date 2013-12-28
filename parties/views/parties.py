@@ -38,14 +38,14 @@ def show(request, party_id):
 	competitions_with_placings = [
 		(
 			competition,
-			competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+			competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
 		)
 		for competition in party.competitions.order_by('name', 'id')
 	]
 
 	# Do not show an invitations section in the special case that all invitations are
 	# entries in a competition at this party (which probably means that it was an invitation compo)
-	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
 	if not non_competing_invitations:
 		invitations = Production.objects.none

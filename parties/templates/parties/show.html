@@ -154,7 +154,7 @@
 			{% endif %}
 
 			{% if invitations %}
-				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 %}
+				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 show_prod_types=1 %}
 			{% endif %}
 		</div>
 	{% endif %}
@@ -186,7 +186,7 @@
 						<h4>{{ compo.name }}</h4>
 
 						{% if placings %}
-							{% include "shared/competition_results.html" %}
+							{% include "shared/competition_results.html" with show_prod_types=1 %}
 						{% endif %}
 					</div>
 				{% endfor %}

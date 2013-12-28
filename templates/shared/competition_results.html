@@ -7,7 +7,12 @@
 			<td class="screenshot">
 				{% if result.production.default_screenshot %}{% microthumb result.production.default_screenshot %}{% endif %}
 			</td>
-			<td class="title"><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></td>
+			<td class="title">
+				<div class="title"><a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a></div>
+				{% if show_prod_types %}
+					<div class="prod_type">{{ result.production.platforms_and_types_list }}</div>
+				{% endif %}
+			</td>
 			<td class="byline">{% byline result.production %}</td>
 			<td class="score">{{ result.score }}</td>
 		</tr>
