@@ -53,11 +53,21 @@
 		{% if alternative_nicks %}
 			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
 				<h3>Also known as</h3>
+
+				{% if site_is_writeable and not user.is_authenticated %}
+					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+					<ul class="actions">
+						<li>
+							<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+						</li>
+					</ul>
+				{% endif %}
+
 				<ul class="nicks">
 					{% for nick in alternative_nicks %}
 						<li>
 							<b>{{ nick.name }}</b> {% nick_variants nick %}
-							{% if site_is_writeable %}
+							{% if site_is_writeable and user.is_authenticated %}
 								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
@@ -65,7 +75,7 @@
 						</li>
 					{% endfor %}
 				</ul>
-				{% if site_is_writeable %}
+				{% if site_is_writeable and user.is_authenticated %}
 					<a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
 				{% endif %}
 			</div>
@@ -118,12 +128,22 @@
 
 		<div class="panel members_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
 			<h3>Members</h3>
+
+			{% if site_is_writeable and not user.is_authenticated %}
+				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+				<ul class="actions">
+					<li>
+						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+					</li>
+				</ul>
+			{% endif %}
+
 			<ul class="memberships">
 				{% for membership in memberships %}
 					<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
 						<a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
 						{% releaser_flag membership.member %}
-						{% if site_is_writeable %}
+						{% if site_is_writeable and user.is_authenticated %}
 							<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
 								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 							</a>
@@ -131,19 +151,29 @@
 					</li>
 				{% endfor %}
 			</ul>
-			{% if site_is_writeable %}
+			{% if site_is_writeable and user.is_authenticated %}
 				<a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox add_member">Add member</a>
 			{% endif %}
 		</div>
 
 		<div class="panel subgroups_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
 			<h3>Subgroups</h3>
+
+			{% if site_is_writeable and not user.is_authenticated %}
+				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+				<ul class="actions">
+					<li>
+						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+					</li>
+				</ul>
+			{% endif %}
+
 			<ul class="memberships">
 				{% for membership in subgroupships %}
 					<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
 						<a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
 						{% releaser_flag membership.member %}
-						{% if site_is_writeable %}
+						{% if site_is_writeable and user.is_authenticated %}
 							<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
 								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
 							</a>
@@ -151,7 +181,7 @@
 					</li>
 				{% endfor %}
 			</ul>
-			{% if site_is_writeable %}
+			{% if site_is_writeable and user.is_authenticated %}
 				<a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
 			{% endif %}
 		</div>

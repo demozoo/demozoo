@@ -11,7 +11,7 @@ function initEditToggle(context) {
 		var panel = $(this);
 
 		var actions = $('<ul class="actions"></ul>');
-		var editButton = $('<a href="javascript:void(0);" class="action_button icon edit_chunk" title="Edit credits"></a>');
+		var editButton = $('<a href="javascript:void(0);" class="action_button icon edit_chunk"></a>');
 
 		function updateEditButtonState() {
 			if (panel.hasClass('editing')) {
