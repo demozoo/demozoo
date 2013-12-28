@@ -13,7 +13,7 @@
 {% block body_class %}show_topic{% endblock %}
 
 {% block base_main %}
-	<div class="signpost">Topic</div>
+	<a href="{% url 'forums' %}"><div class="signpost">Discussions</div></a>
 
 	<div class="focus_title">
 		<h2>{{ topic.title }}</h2>

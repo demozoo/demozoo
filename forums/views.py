@@ -20,7 +20,12 @@ def new_topic(request):
 	if request.POST:
 		form = NewTopicForm(request.POST)
 		if form.is_valid():
-			topic = Topic.objects.create(title=form.cleaned_data['title'], last_post_at=datetime.datetime.now())
+			topic = Topic.objects.create(
+				title=form.cleaned_data['title'],
+				created_by_user=request.user,
+				last_post_at=datetime.datetime.now(),
+				last_post_by_user=request.user
+			)
 			Post.objects.create(user=request.user, topic=topic, body=form.cleaned_data['body'])
 			return redirect(topic.get_absolute_url())
 	else:
@@ -51,6 +56,8 @@ def topic_reply(request, topic_id):
 		if form.is_valid():
 			form.save()
 			topic.last_post_at = post.created_at
+			topic.last_post_by_user = request.user
+			topic.reply_count = topic.posts.count() - 1
 			topic.save()
 			return redirect(topic.get_absolute_url() + ('#post-%d' % post.id))
 		else:
