@@ -58,12 +58,10 @@ def tagged(request, tag_slug):
 		tag = Tag.objects.get(slug=tag_slug)
 	except Tag.DoesNotExist:
 		tag = Tag(name=tag_slug)
-	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	order = request.GET.get('order', 'title')
 	asc = request.GET.get('dir', 'asc') == 'asc'
-
-	title = "Productions tagged '%s'" % tag.name
 
 	queryset = apply_order(queryset, order, asc)
 
@@ -71,8 +69,8 @@ def tagged(request, tag_slug):
 		queryset,
 		request.GET.get('page', '1'))
 
-	return render(request, 'productions/index.html', {
-		'title': title,
+	return render(request, 'productions/tagged.html', {
+		'tag_name': tag.name,
 		'production_page': production_page,
 		'order': order,
 		'asc': asc,

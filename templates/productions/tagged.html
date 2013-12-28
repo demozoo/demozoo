@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block html_title %}Productions - Demozoo{% endblock %}
+
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_production' %}" class="action_button icon add open_in_lightbox">New production</a></li>
+		</ul>
+	{% endif %}
+
+	<h2>Productions tagged '{{ tag_name }}'</h2>
+
+	{% include "shared/production_reorder_links.html" %}
+
+	<ul>
+		{% with production_page.object_list as productions %}
+			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
+		{% endwith %}
+	</ul>
+	
+	{% with production_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
+{% endblock %}
