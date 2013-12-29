@@ -19,6 +19,8 @@ AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 try:
 	from .local import *
 except ImportError:
