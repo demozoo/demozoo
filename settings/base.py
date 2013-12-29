@@ -16,6 +16,7 @@ ADMINS = (
 )
 SERVER_EMAIL = 'matt@west.co.tt'
 EMAIL_SUBJECT_PREFIX = '[Demozoo] '
+DEFAULT_FROM_EMAIL = 'matt@west.co.tt'
 
 MANAGERS = ADMINS
 
