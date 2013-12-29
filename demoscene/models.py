@@ -893,6 +893,18 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 		else:
 			return platforms or prod_types
 
+	def author_twitter_handle(self):
+		"""Return the Twitter account name (without the @) of the author of this
+		production, or failing that, the Twitter account of the group. Return None
+		if there are multiples."""
+		try:
+			return ReleaserExternalLink.objects.get(releaser__nicks__productions=self, link_class='TwitterAccount').parameter
+		except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
+			try:
+				return ReleaserExternalLink.objects.get(releaser__nicks__member_productions=self, link_class='TwitterAccount').parameter
+			except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
+				return None
+
 	class Meta:
 		ordering = ['title']
 
