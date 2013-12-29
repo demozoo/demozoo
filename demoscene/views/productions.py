@@ -369,6 +369,8 @@ def screenshots(request, production_id):
 @login_required
 def edit_screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
 	return render(request, 'productions/edit_screenshots.html', {
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
@@ -409,6 +411,9 @@ def add_screenshot(request, production_id):
 @login_required
 def delete_screenshot(request, production_id, screenshot_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+
 	screenshot = get_object_or_404(Screenshot, id=screenshot_id, production=production)
 	if request.method == 'POST':
 		if request.POST.get('yes'):

@@ -32,9 +32,11 @@
 				<li>
 					<a href="{% url 'production_add_screenshot' production.id %}" class="action_button icon add open_in_lightbox">Add screenshot</a>
 				</li>
-				<li>
-					<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
-				</li>
+				{% if request.user.is_staff %}
+					<li>
+						<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
+					</li>
+				{% endif %}
 			{% endif %}
 		</ul>
 	{% endif %}
