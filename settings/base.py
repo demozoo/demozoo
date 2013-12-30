@@ -37,6 +37,7 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = ['geonameslite.router.GeonamesLiteRouter']
+SOUTH_TESTS_MIGRATE = False  # if south attempts migrations during manage.py test, it chokes on the geonames database which is missing south_migrationhistory
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

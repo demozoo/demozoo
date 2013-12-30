@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    needed_by = (
+        ("parties", "0001_initial"),
+    )
+
     def forwards(self, orm):
         
         # Adding M2M table for field competitions on 'Directory'
