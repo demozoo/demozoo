@@ -1,0 +1,92 @@
+body, p, div, span, td
+{
+	font: 10pt arial, helvetica, sans-serif;
+}
+
+h1
+{
+	font: 16pt arial, helvetica, sans-serif;
+	text-align: center;
+}
+h2
+{
+	font: 12pt arial, helvetica, sans-serif;
+	font-weight: bold;
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	text-align: center;
+}
+h3
+{
+	font: 11pt arial, helvetica, sans-serif;
+	font-weight: bold;
+	text-align: left;
+	margin: 0pt;
+}
+input
+{
+	font: 8pt arial, helvetica, sans-serif;
+}
+
+ul
+{
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+}
+
+ul.credits
+{
+	font-size: 8pt;
+}
+
+.annotation
+{
+	font-size: 8pt;
+	font-style: italic;
+}
+
+.small
+{
+	font-size: 8pt;
+	margin-bottom: 4pt;
+}
+
+a:link, a:visited, a:active
+{
+	color: blue;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.nolink
+{
+	font-weight: bold;
+}
+
+a:hover
+{
+	color: navy;
+	text-decoration: underline;
+}
+
+.even
+{
+	background-color: #eeeeff
+}
+
+.odd
+{
+	background-color: #ffffdd
+}
+
+th
+{
+	text-align: left;
+	padding-left: 16pt;
+	font-size: 10pt;
+}
+
+.itemlist td
+{
+	height: 24px;
+}

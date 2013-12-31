@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>{% block html_title %}Demozoo{% endblock %}</title>
+		<meta name="description" content="{% block meta_description %}{% endblock %}" />
+		<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="/static/zxdemo/css/zxdemo.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="/static/zxdemo/js/topmenu.js" language="javascript1.5"></script>
+	</head>
+	<body onclick="hidemenu()">
+		<style type="text/css">
+		/* <![CDATA[[ */
+			.menu
+			{
+				background: #ddffff;
+				padding: 5px;
+				border: 1px solid gray;
+				position: absolute;
+				visibility: hidden;
+				z-index: 10
+			}
+		/* ]]> */
+		</style>
+		<table bgcolor="#dedeff" width="100%" border="0" cellpadding="0" cellspacing="0" summary="Top menu bar">
+			<col width="*" />
+			<col width="100" />
+			<col width="64" />
+			<col width="168" />
+			<tr>
+				<td bgcolor="#dedeff" valign="top"><table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="{$qr_artifact['url']}" width="256" height="64" border="0" alt="{$qr_artifact['alt_text']}" /></td><td><a href="/"><img src="/static/zxdemo/images/generic/mainlogo_short.gif" width="181" height="45" alt="Demotopia" border="0" align="top" /></a></td></tr></table></td>
+				<td bgcolor="#dedeff" align="right" valign="middle">
+					<script type="text/javascript" language="javascript1.5">
+						// <![CDATA[
+						document.write("$menujs");
+						// ]]>
+					</script>
+					<noscript>
+						<a href="/article_index.php">articles&nbsp;&raquo;</a><br />
+						<a href="/releases.php">releases&nbsp;&raquo;</a><br />
+						<a href="/partycalendar.php">parties&nbsp;&raquo;</a><br />
+						<a href="/scener_index_activity.php">sceners&nbsp;&raquo;</a>
+					</noscript>
+				</td>
+				<!-- spacer cell -->
+				<td bgcolor="#dedeff">&nbsp;</td>
+				<td bgcolor="#dedeff" align="center" valign="middle">
+					<form action="search.php" method="get">
+						<input name="search" type="text" size="15" value="$lastsearch" /><br />
+						<input type="submit" value="search" />
+					</form>
+				</td>
+			</tr>
+		</table>
+
+		{% block body %}{% endblock %}
+
+		<br />
+<div align="center" style="padding: 2pt; background-color: #ffffbb;">Grab the Demotopia newsfeed at <a href="http://www.zxdemo.org/rss.php">http://www.zxdemo.org/rss.php</a>. <em>Corrections, additions, new releases? <a href="m&#097;ilto&#058;gasman&#064;raww.org">Send them in</a>!</em></div>
+	</body>
+</html>
