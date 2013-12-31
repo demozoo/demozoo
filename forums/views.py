@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 
@@ -40,11 +41,19 @@ def new_topic(request):
 def topic(request, topic_id):
 	topic = get_object_or_404(Topic, id=topic_id)
 	posts = topic.posts.order_by('created_at').select_related('user')
+	paginator = Paginator(posts, 10)
+
+	page = request.GET.get('page')
+	try:
+		posts_page = paginator.page(page)
+	except (PageNotAnInteger, EmptyPage):
+		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+		posts_page = paginator.page(paginator.num_pages)
 
 	return render(request, 'forums/topic.html', {
 		'menu_section': 'forums',
 		'topic': topic,
-		'posts': posts,
+		'posts': posts_page,
 		'form': ReplyForm(),
 	})
 
