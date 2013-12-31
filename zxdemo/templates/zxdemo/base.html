@@ -29,7 +29,9 @@
 			<col width="64" />
 			<col width="168" />
 			<tr>
-				<td bgcolor="#dedeff" valign="top"><table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="{$qr_artifact['url']}" width="256" height="64" border="0" alt="{$qr_artifact['alt_text']}" /></td><td><a href="/"><img src="/static/zxdemo/images/generic/mainlogo_short.gif" width="181" height="45" alt="Demotopia" border="0" align="top" /></a></td></tr></table></td>
+				{% with corner_images|random as corner_image %}
+					<td bgcolor="#dedeff" valign="top"><table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="/static/zxdemo/images/artifact/{{ corner_image.src }}" width="256" height="64" border="0" alt="" title="Image credit: {{ corner_image.title }}" /></td><td><a href="/"><img src="/static/zxdemo/images/generic/mainlogo_short.gif" width="181" height="45" alt="Demotopia" border="0" align="top" /></a></td></tr></table></td>
+				{% endwith %}
 				<td bgcolor="#dedeff" align="right" valign="middle">
 					<script type="text/javascript" language="javascript1.5">
 						// <![CDATA[
