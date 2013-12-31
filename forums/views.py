@@ -8,6 +8,8 @@ import datetime
 from forums.models import Topic, Post
 from forums.forms import NewTopicForm, ReplyForm
 
+POSTS_PER_PAGE = 10
+
 def index(request):
 	topics = Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')
 
@@ -41,9 +43,32 @@ def new_topic(request):
 def topic(request, topic_id):
 	topic = get_object_or_404(Topic, id=topic_id)
 	posts = topic.posts.order_by('created_at').select_related('user')
-	paginator = Paginator(posts, 10)
+	paginator = Paginator(posts, POSTS_PER_PAGE)
 
 	page = request.GET.get('page')
+	try:
+		posts_page = paginator.page(page)
+	except (PageNotAnInteger, EmptyPage):
+		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+		posts_page = paginator.page(paginator.num_pages)
+
+	return render(request, 'forums/topic.html', {
+		'menu_section': 'forums',
+		'topic': topic,
+		'posts': posts_page,
+		'form': ReplyForm(),
+	})
+
+def post(request, post_id):
+	""" topic view but ensuring that we display the page that contains the given post """
+	post = get_object_or_404(Post, id=post_id)
+	topic = post.topic
+	posts = topic.posts.order_by('created_at').select_related('user')
+
+	post_offset = topic.posts.filter(created_at__lt=post.created_at).count()
+	paginator = Paginator(posts, POSTS_PER_PAGE)
+
+	page = (post_offset / POSTS_PER_PAGE) + 1
 	try:
 		posts_page = paginator.page(page)
 	except (PageNotAnInteger, EmptyPage):

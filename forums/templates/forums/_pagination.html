@@ -1,8 +1,10 @@
+{% load url from future %}
+
 {% if posts.paginator.num_pages > 1 %}
 	<ul class="pagination">
 		{% if posts.has_previous %}
 			<li>
-				<a href="?page={{ posts.previous_page_number }}" title="Previous page">&laquo;</a>
+				<a href="{% url 'forums_topic' topic.id %}?page={{ posts.previous_page_number }}" title="Previous page">&laquo;</a>
 			</li>
 		{% endif %}
 
@@ -10,13 +12,13 @@
 			{% if i == posts.number %}
 				<li class="current">{{ i }}</li>
 			{% else %}
-				<li><a href="?page={{ i }}">{{ i }}</a></li>
+				<li><a href="{% url 'forums_topic' topic.id %}?page={{ i }}">{{ i }}</a></li>
 			{% endif %}
 		{% endfor %}
 
 		{% if posts.has_next %}
 			<li>
-				<a href="?page={{ posts.next_page_number }}" title="Next page">&raquo;</a>
+				<a href="{% url 'forums_topic' topic.id %}?page={{ posts.next_page_number }}" title="Next page">&raquo;</a>
 			</li>
 		{% endif %}
 	</ul>

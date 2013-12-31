@@ -26,7 +26,7 @@
 			{% for post in posts %}
 				<div class="post" id="post-{{ post.id }}">
 					<b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
-					<a href="{{ topic.get_absolute_url }}#post-{{ post.id }}">#</a>
+					<a href="{{ post.get_absolute_url }}#post-{{ post.id }}">#</a>
 					<p>{{ post.body|urlize|linebreaks }}</p>
 				</div>
 			{% endfor %}
