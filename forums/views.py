@@ -8,7 +8,7 @@ import datetime
 from forums.models import Topic, Post
 from forums.forms import NewTopicForm, ReplyForm
 
-POSTS_PER_PAGE = 10
+POSTS_PER_PAGE = 50
 
 def index(request):
 	topics = Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')
