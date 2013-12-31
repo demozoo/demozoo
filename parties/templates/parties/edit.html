@@ -28,6 +28,7 @@
 		<div class="field">
 			{% field_label form.location %}
 			<div class="field_input">
+				{{ form.location.errors }}
 				{{ form.location }}<br>
 				{{ form.is_online }} <label for="id_is_online">Online</label>
 			</div>
