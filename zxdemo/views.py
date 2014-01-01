@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.db import connection
 
@@ -53,4 +53,12 @@ def home(request):
 		'latest_releases': latest_releases,
 		'latest_additions': latest_additions,
 		'news_items': news_items,
+	})
+
+
+def show_screenshot(request, screenshot_id):
+	screenshot = get_object_or_404(Screenshot, id=screenshot_id)
+	return render(request, 'zxdemo/show_screenshot.html', {
+		'screenshot': screenshot,
+		'production': screenshot.production,
 	})

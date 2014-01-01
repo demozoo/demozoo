@@ -18,8 +18,8 @@ function showmenu (menuid)
     }
 }
 
-function viewscreen(id,width,height) {
+function viewscreen(url, width, height) {
     width += 32;
     height += 56;
-    window.open('/screen_viewer.php?id='+id,'screenviewer','width='+width+',height='+height+',scrollbars=no,toolbar=no,status=no,menubar=no,null,null');
+    window.open(url, 'screenviewer', 'width='+width+',height='+height+',scrollbars=no,toolbar=no,status=no,menubar=no,null,null');
 }

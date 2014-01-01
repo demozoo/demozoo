@@ -1,12 +1,13 @@
 {% extends "zxdemo/base.html" %}
 {% load zxdemo_tags %}
+{% load url from future %}
 
 {% block meta_description %}Comprehensive resource covering past and present activity on the ZX Spectrum demo scene.{% endblock %}
 {% block meta_keywords %}zx spectrum speccy demo scene demoscene scener download information info party compo music gfx intros{% endblock %}
 
 {% block sidebar %}
 	<div style="margin-top: 8pt;">
-		<a href="/screen_viewer.php?id={{ random_screenshot.id }}" target="_blank" onclick="viewscreen({{ random_screenshot.id }}, {{ random_screenshot.standard_width }}, {{ random_screenshot.standard_height }}); return false;"><img src="{{ random_screenshot.standard_url }}" width="{% widthratio random_screenshot.standard_width 400 200 %}" height="{% widthratio random_screenshot.standard_height 400 200 %}" border="0" alt="[screenshot of {{ random_screenshot.production.title }}]" /></a>
+		<a href="{% url 'zxdemo_show_screenshot' random_screenshot.id %}" target="_blank" onclick="viewscreen(this.href, {{ random_screenshot.standard_width }}, {{ random_screenshot.standard_height }}); return false;"><img src="{{ random_screenshot.standard_url }}" width="{% widthratio random_screenshot.standard_width 400 200 %}" height="{% widthratio random_screenshot.standard_height 400 200 %}" border="0" alt="[screenshot of {{ random_screenshot.production.title }}]" /></a>
 	</div>
 
 	<div><a href="item.php?id={{ random_screenshot.production_id }}">{{ random_screenshot.production.title }}</a></div>
