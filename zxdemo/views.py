@@ -38,7 +38,7 @@ def home(request):
 	latest_releases = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False).order_by('-release_date_date').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 	latest_additions = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 
-	news_items = NewsItem.objects.order_by('-created_at').select_related('created_by_user')
+	news_items = NewsItem.objects.order_by('-created_at').select_related('created_by_user')[:8]
 
 	return render(request, 'zxdemo/home.html', {
 		'stats': {
