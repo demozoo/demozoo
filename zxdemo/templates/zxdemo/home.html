@@ -37,14 +37,14 @@
 			<col width="*" />
 			<tr><td bgcolor="#ffffbb">
 				<h3>{{ news.title }}</h3>
-		    </td></tr>
-		    <tr><td>
-		        {{ news.body|safe }}
-		    </td></tr>
-		    <tr><td bgcolor="#dedeff">
-		        <em><b>{{ news.author.username }}</b> - {{ news.created_at|date:"d / m / Y" }}</em>
-		    </td></tr>
-        </table><br />
+			</td></tr>
+			<tr><td>
+				{{ news.body|safe }}
+			</td></tr>
+			<tr><td bgcolor="#dedeff">
+				<em><b>{{ news.author.username }}</b> - {{ news.created_at|date:"d / m / Y" }}</em>
+			</td></tr>
+		</table><br />
 	{% endfor %}
 
 {% endblock %}
