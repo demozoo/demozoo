@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.db import connection
 
-from demoscene.models import Production
+from demoscene.models import Production, Screenshot
 from zxdemo.models import NewsItem
 
 def home(request):
@@ -35,6 +35,8 @@ def home(request):
 	)
 	releaser_count = cursor.fetchone()[0]
 
+	random_screenshot = Screenshot.objects.filter(production__platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('?')[0]
+
 	latest_releases = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False).order_by('-release_date_date').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 	latest_additions = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 
@@ -47,6 +49,7 @@ def home(request):
 			'graphics_count': Production.objects.filter(supertype='graphics', platforms__id__in=ZXDEMO_PLATFORM_IDS).count(),
 			'releaser_count': releaser_count,
 		},
+		'random_screenshot': random_screenshot,
 		'latest_releases': latest_releases,
 		'latest_additions': latest_additions,
 		'news_items': news_items,
