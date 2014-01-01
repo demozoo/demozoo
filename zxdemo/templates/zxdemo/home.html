@@ -23,5 +23,20 @@
 
 {% block body %}
 	<div align="center"><a href="/releases.php?filter=2">{{ stats.demo_count }}</a> demos - <a href="/releases.php?filter=1">{{ stats.music_count }}</a> musics - <a href="/releases.php?filter=4">{{ stats.graphics_count }}</a> graphics - <a href="/scener_index_name.php">{{ stats.releaser_count }}</a> sceners</div><br />
-	<h1>hello zxdemo world!</h1>
+
+	{% for news in news_items %}
+		<table width="100%" border="0" cellpadding="2" cellspacing="0" style="border: 1px solid #666666;">
+			<col width="*" />
+			<tr><td bgcolor="#ffffbb">
+				<h3>{{ news.title }}</h3>
+		    </td></tr>
+		    <tr><td>
+		        {{ news.body|safe }}
+		    </td></tr>
+		    <tr><td bgcolor="#dedeff">
+		        <em><b>{{ news.author.username }}</b> - {{ news.created_at|date:"d / m / Y" }}</em>
+		    </td></tr>
+        </table><br />
+	{% endfor %}
+
 {% endblock %}

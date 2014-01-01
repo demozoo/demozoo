@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import connection
 
 from demoscene.models import Production
+from zxdemo.models import NewsItem
 
 def home(request):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
@@ -37,6 +38,8 @@ def home(request):
 	latest_releases = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False).order_by('-release_date_date').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 	latest_additions = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
 
+	news_items = NewsItem.objects.order_by('-created_at').select_related('created_by_user')
+
 	return render(request, 'zxdemo/home.html', {
 		'stats': {
 			'demo_count': Production.objects.filter(supertype='production', platforms__id__in=ZXDEMO_PLATFORM_IDS).count(),
@@ -46,4 +49,5 @@ def home(request):
 		},
 		'latest_releases': latest_releases,
 		'latest_additions': latest_additions,
+		'news_items': news_items,
 	})
