@@ -9,6 +9,16 @@
 	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
 	<div style="margin-bottom: 4pt;"><strong>Latest additions</strong></div>
 	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_additions %}
+
+	<div class="small">
+		<strong>Spectrum Webring</strong><br />
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev5">&lt;&lt;</a>
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev">&lt;</a>
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;random">rand</a>
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;list">list</a>
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next">&gt;</a>
+		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next5">&gt;&gt;</a>
+	</div>
 {% endblock %}
 
 {% block body %}
