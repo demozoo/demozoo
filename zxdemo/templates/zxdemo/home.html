@@ -1,5 +1,4 @@
 {% extends "zxdemo/base.html" %}
-{% load zxdemo_tags %}
 
 {% block meta_description %}Comprehensive resource covering past and present activity on the ZX Spectrum demo scene.{% endblock %}
 {% block meta_keywords %}zx spectrum speccy demo scene demoscene scener download information info party compo music gfx intros{% endblock %}
@@ -7,11 +6,9 @@
 {% block sidebar %}
 	<a href="/releases.php"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
 	<div style="margin-bottom: 4pt;"><strong>Latest releases</strong></div>
-	{% for prod in latest_releases %}
-		<div align="left" class="small">
-			<img src="/static/zxdemo/images/icon/{% if prod.supertype == 'production' %}demo_new.gif{% elif prod.supertype == 'graphics' %}gfx_new.gif{% else %}music_new.gif{% endif %}" align="absmiddle" alt="[$itypename]" width="24" height="24" border="0" />
-			<a href="">{{ prod.title }}</a> - {% byline prod %}
-	{% endfor %}
+	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
+	<div style="margin-bottom: 4pt;"><strong>Latest additions</strong></div>
+	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_additions %}
 {% endblock %}
 
 {% block body %}

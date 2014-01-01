@@ -35,6 +35,7 @@ def home(request):
 	releaser_count = cursor.fetchone()[0]
 
 	latest_releases = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False).order_by('-release_date_date')[:10]
+	latest_additions = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at')[:10]
 
 	return render(request, 'zxdemo/home.html', {
 		'stats': {
@@ -44,4 +45,5 @@ def home(request):
 			'releaser_count': releaser_count,
 		},
 		'latest_releases': latest_releases,
+		'latest_additions': latest_releases,
 	})
