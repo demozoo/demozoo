@@ -1,0 +1,15 @@
+{% if unparsed_byline %}
+	{{ unparsed_byline }}
+{% else %}
+	{% for nick, releaser in authors %}
+		{% if not forloop.first %} and {% endif %}
+		<a href="{{ releaser.get_absolute_url }}">{{ nick }}</a>
+	{% endfor %}
+	{% if affiliations %}
+		/
+		{% for nick, releaser in affiliations %}
+			{% if not forloop.first %} ^ {% endif %}
+			<a href="{{ releaser.get_absolute_url }}">{{ nick }}</a>
+		{% endfor %}
+	{% endif %}
+{% endif %}
