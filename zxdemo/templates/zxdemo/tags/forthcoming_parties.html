@@ -1,0 +1,11 @@
+{% load zxdemo_tags %}
+
+{% for party in parties %}
+    <div><a href=\"/party.php?id={{ party.id }}\">{{ party.name }}</a></div>
+    {% if party.location %}
+        <div>{{ party.location }}</div>
+    {% elif party.is_online %}
+        <div>Online competition</div>
+    {% endif %}
+    <div>{% date_range party.start_date party.end_date %}</div>
+{% endfor %}

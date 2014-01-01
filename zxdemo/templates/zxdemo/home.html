@@ -12,6 +12,9 @@
 	<div><a href="item.php?id={{ random_screenshot.production_id }}">{{ random_screenshot.production.title }}</a></div>
 	<div class="annotation">{% byline random_screenshot.production %}</div>
 
+	<a href="/partycalendar.php"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />
+	{% forthcoming_parties %}
+
 	<a href="/releases.php"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
 	<div style="margin-bottom: 4pt;"><strong>Latest releases</strong></div>
 	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
