@@ -1,5 +1,6 @@
 {% extends "zxdemo/base.html" %}
 {% load url from future %}
+{% load zxdemo_tags %}
 
 {% block html_title %}Demotopia - {{ releaser.name }}{% endblock %}
 {% block meta_description %}Listing of Spectrum demoscene productions by {{ releaser.name }}{% endblock %}
@@ -40,5 +41,40 @@
 	<h1 align="center">Scener profile - {{ releaser.name }}</h1>
 	{% if releaser.location %}
 		<p align="center"><b>Location:</b> <img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /> {{ releaser.location }}</p>
+	{% endif %}
+
+	{% if releases_with_credits %}
+		<h2>Releases</h2>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+			<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
+			{% for release in releases_with_credits %}
+				<tr class="{% cycle 'odd' 'even' as rowcolour %}">
+					<td>{% production_type_icon release.production %}</td>
+					<td><a href="{% url 'zxdemo_production' release.production.id %}">{{ release.production.title }}</a></td>
+					<td>
+						{% for link in release.production.links.all %}
+							{% if link.is_download_link %}
+								<a href="{{ link.url }}">{% download_icon link %}</a>
+							{% endif %}
+						{% endfor %}
+						{% if release.production.supertype == 'graphics' %}
+							{% for screenshot in release.production.screenshots.all %}
+								<a href="{% url 'zxdemo_show_screenshot' screenshot.id %}" target="_blank" onclick="viewscreen(this.href, {{ screenshot.standard_width }}, {{ screenshot.standard_height }}); return false;"><img src="/static/zxdemo/images/icon/gfx_new.gif" border="0" width="24" height="24" alt="[View screenshot]" /></a>
+							{% endfor %}
+						{% endif %}
+					</td>
+					<td>{{ release.production.release_date_date|date:"Y" }}</td>
+					<td>{% byline release.production %}</td>
+				</tr>
+				{% if release.credits %}
+					<tr class="{{ rowcolour }}">
+						<td colspan="5" style="padding-left: 16pt"><i>- 
+							{% for credit in release.credits %}{{ credit.description }}{% if not forloop.last %},{% endif %}{% endfor %}</i>
+						</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+		</table>
+		<br />
 	{% endif %}
 {% endblock %}

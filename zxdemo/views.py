@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.db import connection
+from django.db.models import Q
 from django.http import Http404
 
-from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership
+from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership, Credit
 from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
 def home(request):
@@ -87,6 +88,8 @@ def production_redirect(request):
 
 
 def author(request, releaser_id):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+
 	try:
 		releaser = spectrum_releasers().get(id=releaser_id)
 	except Releaser.DoesNotExist:
@@ -105,10 +108,37 @@ def author(request, releaser_id):
 		releaser_table='T3'
 	)
 
+	release_author_filter = Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser)
+	releases = Production.objects.filter(
+		release_author_filter,
+		platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).order_by('release_date_date').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+
+	credits = Credit.objects.filter(
+		nick__releaser=releaser,
+		production__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).order_by('production__release_date_date', 'production__title', 'production__id').prefetch_related('production__links', 'production__screenshots', 'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser')
+
+	releases_by_id = {}
+	releases_with_credits = []
+	for prod in releases:
+		release_record = {'production': prod, 'credits': []}
+		releases_by_id[prod.id] = release_record
+		releases_with_credits.append(release_record)
+
+	non_releaser_credits = []
+	for credit in credits:
+		if credit.production_id in releases_by_id:
+			releases_by_id[credit.production_id]['credits'].append(credit)
+		else:
+			non_releaser_credits.append(credit)
+
 	return render(request, 'zxdemo/author.html', {
 		'releaser': releaser,
 		'member_memberships': member_memberships,
 		'group_memberships': group_memberships,
+		'releases_with_credits': releases_with_credits,
+		'non_releaser_credits': non_releaser_credits,
 	})
 
 def author_redirect(request):

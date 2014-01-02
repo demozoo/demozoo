@@ -3,7 +3,7 @@
 
 {% for prod in productions %}
 	<div align="left" class="small">
-		<img src="/static/zxdemo/images/icon/{% if prod.supertype == 'production' %}demo_new.gif{% elif prod.supertype == 'graphics' %}gfx_new.gif{% else %}music_new.gif{% endif %}" align="absmiddle" alt="[$itypename]" width="24" height="24" border="0" />
+		{% production_type_icon prod %}
 		<a href="{% url 'zxdemo_production' prod.id %}">{{ prod.title }}</a> - {% byline prod %}
 	</div>
 {% endfor %}

@@ -10,8 +10,8 @@ register = template.Library()
 def byline(production):
 	return {
 		'unparsed_byline': production.unparsed_byline,
-		'authors': [(nick, nick.releaser) for nick in production.author_nicks_with_authors()],
-		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks_with_groups()],
+		'authors': production.author_nicks.all(),
+		'affiliations': production.author_affiliation_nicks.all(),
 	}
 
 @register.inclusion_tag('zxdemo/tags/forthcoming_parties.html')
@@ -51,3 +51,13 @@ def download_icon(download):
 				break
 
 	return '<img src="/static/zxdemo/images/icon/%s" alt="" width="24" height="24" border="0" />' % icon_filename
+
+
+@register.simple_tag
+def production_type_icon(production):
+	if production.supertype == 'graphics':
+		return '<img src="/static/zxdemo/images/icon/gfx_new.gif" align="absmiddle" alt="[Graphics]" width="24" height="24" border="0" />'
+	elif production.supertype == 'music':
+		return '<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" width="24" height="24" border="0" />'
+	else:
+		return '<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" width="24" height="24" border="0" />'

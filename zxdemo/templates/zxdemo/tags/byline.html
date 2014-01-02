@@ -3,15 +3,15 @@
 {% if unparsed_byline %}
 	{{ unparsed_byline }}
 {% else %}
-	{% for nick, releaser in authors %}
+	{% for nick in authors %}
 		{% if not forloop.first %} and {% endif %}
-		<a href="{% url 'zxdemo_author' releaser.id %}">{{ nick }}</a>
+		<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
 	{% endfor %}
 	{% if affiliations %}
 		/
-		{% for nick, releaser in affiliations %}
+		{% for nick in affiliations %}
 			{% if not forloop.first %} ^ {% endif %}
-			<a href="{% url 'zxdemo_author' releaser.id %}">{{ nick }}</a>
+			<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
 		{% endfor %}
 	{% endif %}
 {% endif %}
