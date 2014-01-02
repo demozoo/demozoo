@@ -48,31 +48,22 @@
 		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
 			<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
 			{% for release in releases_with_credits %}
-				<tr class="{% cycle 'odd' 'even' as rowcolour %}">
-					<td>{% production_type_icon release.production %}</td>
-					<td><a href="{% url 'zxdemo_production' release.production.id %}">{{ release.production.title }}</a></td>
-					<td>
-						{% for link in release.production.links.all %}
-							{% if link.is_download_link %}
-								<a href="{{ link.url }}">{% download_icon link %}</a>
-							{% endif %}
-						{% endfor %}
-						{% if release.production.supertype == 'graphics' %}
-							{% for screenshot in release.production.screenshots.all %}
-								<a href="{% url 'zxdemo_show_screenshot' screenshot.id %}" target="_blank" onclick="viewscreen(this.href, {{ screenshot.standard_width }}, {{ screenshot.standard_height }}); return false;"><img src="/static/zxdemo/images/icon/gfx_new.gif" border="0" width="24" height="24" alt="[View screenshot]" /></a>
-							{% endfor %}
-						{% endif %}
-					</td>
-					<td>{{ release.production.release_date_date|date:"Y" }}</td>
-					<td>{% byline release.production %}</td>
-				</tr>
-				{% if release.credits %}
-					<tr class="{{ rowcolour }}">
-						<td colspan="5" style="padding-left: 16pt"><i>- 
-							{% for credit in release.credits %}{{ credit.description }}{% if not forloop.last %},{% endif %}{% endfor %}</i>
-						</td>
-					</tr>
-				{% endif %}
+				{% cycle 'odd' 'even' as rowcolour silent %}
+				{% include "zxdemo/include/production_listing_item.html" with production=release.production credits=release.credits %}
+			{% endfor %}
+		</table>
+		<br />
+	{% endif %}
+
+	{% if non_releaser_credits %}
+		<h2>Credits</h2>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+			<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
+			{% regroup non_releaser_credits by production as credits_by_production %}
+
+			{% for production_with_credits in credits_by_production %}
+				{% cycle 'odd' 'even' as rowcolour silent %}
+				{% include "zxdemo/include/production_listing_item.html" with production=production_with_credits.grouper credits=production_with_credits.list %}
 			{% endfor %}
 		</table>
 		<br />

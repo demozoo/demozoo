@@ -112,7 +112,7 @@ def author(request, releaser_id):
 	releases = Production.objects.filter(
 		release_author_filter,
 		platforms__id__in=ZXDEMO_PLATFORM_IDS
-	).order_by('release_date_date').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('release_date_date').distinct().prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	credits = Credit.objects.filter(
 		nick__releaser=releaser,

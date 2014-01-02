@@ -1,0 +1,28 @@
+{% load url from future %}
+{% load zxdemo_tags %}
+
+<tr class="{{ rowcolour }}">
+	<td>{% production_type_icon production %}</td>
+	<td><a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a></td>
+	<td>
+		{% for link in production.links.all %}
+			{% if link.is_download_link %}
+				<a href="{{ link.url }}">{% download_icon link %}</a>
+			{% endif %}
+		{% endfor %}
+		{% if production.supertype == 'graphics' %}
+			{% for screenshot in production.screenshots.all %}
+				<a href="{% url 'zxdemo_show_screenshot' screenshot.id %}" target="_blank" onclick="viewscreen(this.href, {{ screenshot.standard_width }}, {{ screenshot.standard_height }}); return false;"><img src="/static/zxdemo/images/icon/gfx_new.gif" border="0" width="24" height="24" alt="[View screenshot]" /></a>
+			{% endfor %}
+		{% endif %}
+	</td>
+	<td>{{ production.release_date_date|date:"Y" }}</td>
+	<td>{% byline production %}</td>
+</tr>
+{% if credits %}
+	<tr class="{{ rowcolour }}">
+		<td colspan="5" style="padding-left: 16pt"><i>- 
+			{% for credit in credits %}{{ credit.description }}{% if not forloop.last %}, {% endif %}{% endfor %}</i>
+		</td>
+	</tr>
+{% endif %}
