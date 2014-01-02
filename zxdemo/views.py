@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.db import connection
+from django.http import Http404
 
-from demoscene.models import Production, Screenshot, ProductionLink
-from zxdemo.models import NewsItem
-
-ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership
+from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
 def home(request):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	cursor = connection.cursor()
 	cursor.execute(
 		"""
@@ -65,6 +65,7 @@ def show_screenshot(request, screenshot_id):
 
 
 def production(request, production_id):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	production = get_object_or_404(Production, id=production_id, platforms__id__in=ZXDEMO_PLATFORM_IDS)
 
 	try:
@@ -83,3 +84,33 @@ def production(request, production_id):
 def production_redirect(request):
 	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=request.GET.get('id'))
 	return redirect('zxdemo_production', prod_link.production_id, permanent=True)
+
+
+def author(request, releaser_id):
+	try:
+		releaser = spectrum_releasers().get(id=releaser_id)
+	except Releaser.DoesNotExist:
+		raise Http404
+
+	if releaser.is_group:
+		member_memberships = filter_releasers_queryset_to_spectrum(
+			releaser.member_memberships.select_related('member'),
+			releaser_table='T3'
+		)
+	else:
+		member_memberships = Membership.objects.none()
+
+	group_memberships = filter_releasers_queryset_to_spectrum(
+		releaser.group_memberships.select_related('group'),
+		releaser_table='T3'
+	)
+
+	return render(request, 'zxdemo/author.html', {
+		'releaser': releaser,
+		'member_memberships': member_memberships,
+		'group_memberships': group_memberships,
+	})
+
+def author_redirect(request):
+	releaser_link = get_object_or_404(ReleaserExternalLink, link_class='ZxdemoAuthor', parameter=request.GET.get('id'))
+	return redirect('zxdemo_author', releaser_link.releaser_id, permanent=True)

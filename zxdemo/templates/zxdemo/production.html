@@ -2,6 +2,8 @@
 {% load zxdemo_tags humanize %}
 {% load url from future %}
 
+{% block html_title %}Demotopia - {{ production.title}}{% endblock %}
+
 {% block sidebar %}
 	{% if production.supertype == 'music' %}
 		<img src="/static/zxdemo/images/section/head_music.gif" alt="Music" width="224" height="42" /><br />
@@ -32,7 +34,7 @@
 			{% regroup credits by nick as nick_list %}
 			{% for nick_credits in nick_list %}
 				<li>
-					<a href="{{ nick_credits.grouper.releaser.get_absolute_url }}">{{ nick_credits.grouper }}</a>
+					<a href="{% url 'zxdemo_author' nick_credits.grouper.releaser_id %}">{{ nick_credits.grouper }}</a>
 					- <em>
 						{% for credit in nick_credits.list %}
 							{{ credit.description }}{% if not forloop.last %},{% endif %}

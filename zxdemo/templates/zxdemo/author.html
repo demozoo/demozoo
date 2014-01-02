@@ -1,0 +1,44 @@
+{% extends "zxdemo/base.html" %}
+{% load url from future %}
+
+{% block html_title %}Demotopia - {{ releaser.name }}{% endblock %}
+{% block meta_description %}Listing of Spectrum demoscene productions by {{ releaser.name }}{% endblock %}
+
+{% block sidebar %}
+	<img src="/static/zxdemo/images/section/head_sceners.gif" alt="Sceners" width="224" height="42" /><br />
+	<h2>{{ releaser.name }}</h2>
+
+	{% if member_memberships %}
+		<div><strong>Members:</strong></div>
+		<div align="left"><ul>
+			{% for membership in member_memberships %}
+				{% if membership.is_current %}
+					<li><a href="{% url 'zxdemo_author' membership.member_id %}">{{ membership.member.name }}</a></li>
+				{% else %}
+					<li><a href="{% url 'zxdemo_author' membership.member_id %}" style="text-decoration: line-through;">{{ membership.member.name }}</a> <span class="annotation">(former member)</span></li>
+				{% endif %}
+			{% endfor %}
+		</ul></div>
+	{% endif %}
+
+	{% if group_memberships %}
+		<div><strong>Member of:</strong></div>
+		<div align="left"><ul>
+			{% for membership in group_memberships %}
+				{% if membership.is_current %}
+					<li><a href="{% url 'zxdemo_author' membership.group_id %}">{{ membership.group.name }}</a></li>
+				{% else %}
+					<li><a href="{% url 'zxdemo_author' membership.group_id %}" style="text-decoration: line-through;">{{ membership.group.name }}</a> <span class="annotation">(former member)</span></li>
+				{% endif %}
+			{% endfor %}
+		</ul></div>
+	{% endif %}
+{% endblock %}
+
+{% block body %}
+	<br />
+	<h1 align="center">Scener profile - {{ releaser.name }}</h1>
+	{% if releaser.location %}
+		<p align="center"><b>Location:</b> <img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /> {{ releaser.location }}</p>
+	{% endif %}
+{% endblock %}

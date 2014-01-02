@@ -13,5 +13,8 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^productions/(\d+)/', 'production', {}, 'zxdemo_production'),
 	(r'^item.php', 'production_redirect', {}),
 
+	(r'^authors/(\d+)/', 'author', {}, 'zxdemo_author'),
+	(r'^author.php', 'author_redirect', {}),
+
 	(r'^admin/', include(admin.site.urls)),
 )
