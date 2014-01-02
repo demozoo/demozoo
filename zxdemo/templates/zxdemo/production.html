@@ -1,0 +1,75 @@
+{% extends "zxdemo/base.html" %}
+{% load zxdemo_tags humanize %}
+{% load url from future %}
+
+{% block sidebar %}
+	{% if production.supertype == 'music' %}
+		<img src="/static/zxdemo/images/section/head_music.gif" alt="Music" width="224" height="42" /><br />
+	{% elif production.supertype == 'graphics' %}
+		<img src="/static/zxdemo/images/section/head_graphics.gif" alt="Graphics" width="224" height="42" /><br />
+	{% elif production.supertype == 'production' %}
+		<img src="/static/zxdemo/images/section/head_demos.gif" alt="Demos" width="224" height="42" /><br />
+	{% else %}
+		<img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" /><br />
+	{% endif %}
+
+	<h2>{{ production.title }}</h2>
+	{% if production.release_date %}
+		<div style="margin-bottom: 8px">Release date: {{ production.release_date }}</div>
+	{% endif %}
+
+	{% for placing in competition_placings %}
+		{% if placing.ranking %}
+			<div align="left">{{ placing.ranking|ordinal }} at <a href="">{{ placing.competition.party.name }}</a> {{ placing.competition.name }} competition</div>
+		{% else %}
+			<div align="left">Presented at <a href="">{{ placing.competition.party.name }}</a></div>
+		{% endif %}
+	{% endfor %}
+
+	{% if credits %}
+		<div><strong>Full credits:</strong></div>
+		<div align="left"><ul class="credits">
+			{% regroup credits by nick as nick_list %}
+			{% for nick_credits in nick_list %}
+				<li>
+					<a href="{{ nick_credits.grouper.releaser.get_absolute_url }}">{{ nick_credits.grouper }}</a>
+					- <em>
+						{% for credit in nick_credits.list %}
+							{{ credit.description }}{% if not forloop.last %},{% endif %}
+						{% endfor %}
+					</em>
+				</li>
+			{% endfor %}
+		</ul></div>
+	{% endif %}
+
+{% endblock %}
+
+{% block body %}
+	<br />
+	<h1 align="center">{{ production.title }}</h1>
+	{% if production.byline_string or production.release_date_date %}
+		<div align="center">
+			{{ production.release_date_date|date:"Y" }}
+			{% byline production %}
+		</div>
+	{% endif %}
+
+	<table width="100%">
+		<col width="25%" /><col width="75%" />
+		<tr><td valign="middle">
+			{% if screenshot %}
+				<img src="{{ screenshot.standard_url }}" width="{{ screenshot.standard_width }}" height="{{ screenshot.standard_height }}" border="0" alt="[Screenshot - {{ production.title }}]" />
+			{% elif production.supertype != 'music' %}
+				<img src="/static/zxdemo/images/generic/noscreen.gif" width="288" height="224" border="0" alt="No screenshot yet..." />
+			{% endif %}
+		</td><td valign="middle">
+			{% for download in download_links %}
+				<div align="left" style="margin-left:20pt">
+					<a href="{{ download.url }}">{% download_icon download %}</a>
+					<a href="{{ download.url }}">Download{% if download.description %} ({{ download.description}}){% endif %}</a>
+				</div>
+			{% endfor %}
+		</td></tr>
+	</table>
+{% endblock %}

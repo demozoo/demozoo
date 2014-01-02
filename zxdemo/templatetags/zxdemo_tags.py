@@ -28,3 +28,26 @@ def date_range(start_date, end_date):
 		'start_date': start_date,
 		'end_date': end_date,
 	}
+
+
+DOWNLOAD_TYPE_ICONS = [
+	('soundtrack', 'track_new.gif'),
+	('VTX', 'chipmusic_new.gif'),
+	('TAP', 'tape_new.gif'),
+	('SCL', 'disc_new.gif'),
+	('custom TAP', 'specialtape_new.gif'),
+	('TZX', 'specialtape_new.gif'),
+	('DivX', 'video_new.gif'),
+	('Z80', 'z80.gif'),
+	('AY', 'ay.gif'),
+]
+@register.simple_tag
+def download_icon(download):
+	icon_filename = 'disc_new.gif'
+	if download.description:
+		for prefix, filename in DOWNLOAD_TYPE_ICONS:
+			if download.description.startswith(prefix):
+				icon_filename = filename
+				break
+
+	return '<img src="/static/zxdemo/images/icon/%s" alt="" width="24" height="24" border="0" />' % icon_filename

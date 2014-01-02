@@ -10,7 +10,7 @@
 		<a href="{% url 'zxdemo_show_screenshot' random_screenshot.id %}" target="_blank" onclick="viewscreen(this.href, {{ random_screenshot.standard_width }}, {{ random_screenshot.standard_height }}); return false;"><img src="{{ random_screenshot.standard_url }}" width="{% widthratio random_screenshot.standard_width 400 200 %}" height="{% widthratio random_screenshot.standard_height 400 200 %}" border="0" alt="[screenshot of {{ random_screenshot.production.title }}]" /></a>
 	</div>
 
-	<div><a href="item.php?id={{ random_screenshot.production_id }}">{{ random_screenshot.production.title }}</a></div>
+	<div><a href="{% url 'zxdemo_production' random_screenshot.production_id %}">{{ random_screenshot.production.title }}</a></div>
 	<div class="annotation">{% byline random_screenshot.production %}</div>
 
 	<a href="/partycalendar.php"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />

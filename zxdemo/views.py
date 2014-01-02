@@ -1,13 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.db import connection
 
-from demoscene.models import Production, Screenshot
+from demoscene.models import Production, Screenshot, ProductionLink
 from zxdemo.models import NewsItem
 
-def home(request):
-	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 
+def home(request):
 	cursor = connection.cursor()
 	cursor.execute(
 		"""
@@ -62,3 +62,24 @@ def show_screenshot(request, screenshot_id):
 		'screenshot': screenshot,
 		'production': screenshot.production,
 	})
+
+
+def production(request, production_id):
+	production = get_object_or_404(Production, id=production_id, platforms__id__in=ZXDEMO_PLATFORM_IDS)
+
+	try:
+		random_screenshot = production.screenshots.order_by('?')[0]
+	except IndexError:
+		random_screenshot = None
+
+	return render(request, 'zxdemo/production.html', {
+		'production': production,
+		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
+		'credits': production.credits_for_listing(),
+		'screenshot': random_screenshot,
+		'download_links': production.links.filter(is_download_link=True),
+	})
+
+def production_redirect(request):
+	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=request.GET.get('id'))
+	return redirect('zxdemo_production', prod_link.production_id, permanent=True)
