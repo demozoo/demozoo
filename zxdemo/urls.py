@@ -13,6 +13,9 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^productions/(\d+)/', 'production', {}, 'zxdemo_production'),
 	(r'^item.php', 'production_redirect', {}),
 
+	(r'^scener_index_name.php$', RedirectView.as_view(url='/authors')),
+	(r'^scener_index_activity.php$', RedirectView.as_view(url='/authors')),
+	(r'^authors/$', 'authors', {}, 'zxdemo_authors'),
 	(r'^authors/(\d+)/', 'author', {}, 'zxdemo_author'),
 	(r'^author.php', 'author_redirect', {}),
 

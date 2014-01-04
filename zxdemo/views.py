@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import connection
 from django.db.models import Q
 from django.http import Http404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership, Credit
 from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
@@ -85,6 +86,27 @@ def production(request, production_id):
 def production_redirect(request):
 	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=request.GET.get('id'))
 	return redirect('zxdemo_production', prod_link.production_id, permanent=True)
+
+
+def authors(request):
+	releasers = spectrum_releasers().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
+	count = request.GET.get('count', '50')
+	paginator = Paginator(releasers, int(count))
+	page = request.GET.get('page')
+	try:
+		releasers_page = paginator.page(page)
+	except PageNotAnInteger:
+		# If page is not an integer, deliver first page of results.
+		releasers_page = paginator.page(1)
+	except EmptyPage:
+		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+		releasers_page = paginator.page(paginator.num_pages)
+
+	return render(request, 'zxdemo/authors.html', {
+		'releasers': releasers_page,
+		'count': count,
+		'count_options': ['10', '25', '50', '75', '100', '150', '200'],
+	})
 
 
 def author(request, releaser_id):
