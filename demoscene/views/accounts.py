@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from demoscene.shortcuts import *
 from demoscene.forms.account import *
-from demoscene.models import AccountProfile
+from demoscene.models import AccountProfile, CaptchaQuestion
 from read_only_mode import writeable_site_required
 
 
@@ -18,7 +18,9 @@ def index(request):
 @writeable_site_required
 def signup(request):
 	if request.method == 'POST':
-		form = UserSignupForm(request.POST)
+		captcha = CaptchaQuestion.objects.get(id=request.session.get('captcha_id'))
+
+		form = UserSignupForm(request.POST, captcha=captcha)
 		if form.is_valid():
 			form.save()
 			user = authenticate(
@@ -29,7 +31,9 @@ def signup(request):
 			messages.success(request, 'Account created')
 			return redirect('home')
 	else:
-		form = UserSignupForm()
+		captcha = CaptchaQuestion.objects.order_by('?')[0]
+		request.session['captcha_id'] = captcha.id
+		form = UserSignupForm(captcha=captcha)
 	return render(request, 'accounts/signup.html', {
 		'form': form,
 	})
