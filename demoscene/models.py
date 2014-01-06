@@ -1201,7 +1201,7 @@ class Edit(models.Model):
 
 class CaptchaQuestion(models.Model):
 	question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
-	answer = models.CharField(max_length=255)
+	answer = models.CharField(max_length=255, help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)")
 
 	def __unicode__(self):
 		return self.question
