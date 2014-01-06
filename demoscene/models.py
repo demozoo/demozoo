@@ -1198,3 +1198,10 @@ class Edit(models.Model):
 			OR (focus2_content_type_id = %s AND focus2_object_id = %s)
 		)"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')
 		return edits
+
+class CaptchaQuestion(models.Model):
+	question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
+	answer = models.CharField(max_length=255)
+
+	def __unicode__(self):
+		return self.question
