@@ -91,8 +91,13 @@ def production_redirect(request):
 def authors(request):
 	releasers = spectrum_releasers().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
 	count = request.GET.get('count', '50')
+	letter = request.GET.get('letter', '')
+	if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+		releasers = releasers.filter(name__istartswith=letter)
+
 	paginator = Paginator(releasers, int(count))
 	page = request.GET.get('page')
+
 	try:
 		releasers_page = paginator.page(page)
 	except PageNotAnInteger:
@@ -105,6 +110,7 @@ def authors(request):
 	return render(request, 'zxdemo/authors.html', {
 		'releasers': releasers_page,
 		'count': count,
+		'letters': '#ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 		'count_options': ['10', '25', '50', '75', '100', '150', '200'],
 	})
 
