@@ -1,0 +1,19 @@
+{% extends "zxdemo/base.html" %}
+
+{% block html_title %}Demotopia - Browse releases{% endblock %}
+{% block meta_description %}A comprehensive list of productions created on the Spectrum demo scene.{% endblock %}
+{% block meta_keywords %}spectrum demo scene browse list releases demotopia zxdemo productions{% endblock %}
+
+{% block sidebar %}
+	<img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" /><br />
+{% endblock %}
+
+{% block body %}
+	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+		<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
+		{% for production in productions %}
+			{% cycle 'odd' 'even' as rowcolour silent %}
+			{% include "zxdemo/include/production_listing_item.html" %}
+		{% endfor %}
+	</table>
+{% endblock %}

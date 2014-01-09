@@ -66,6 +66,32 @@ def show_screenshot(request, screenshot_id):
 	})
 
 
+def productions(request):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+	productions = Production.objects.filter(
+		platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).extra(select={'lower_title': 'lower(demoscene_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	count = request.GET.get('count', '50')
+	letter = request.GET.get('letter', '')
+	if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+		productions = productions.filter(title__istartswith=letter)
+
+	paginator = Paginator(productions, int(count))
+	page = request.GET.get('page')
+
+	try:
+		productions_page = paginator.page(page)
+	except PageNotAnInteger:
+		# If page is not an integer, deliver first page of results.
+		productions_page = paginator.page(1)
+	except EmptyPage:
+		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+		productions_page = paginator.page(paginator.num_pages)
+
+	return render(request, 'zxdemo/productions.html', {
+		'productions': productions_page,
+	})
+
 def production(request, production_id):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	production = get_object_or_404(Production, id=production_id, platforms__id__in=ZXDEMO_PLATFORM_IDS)
