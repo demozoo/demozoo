@@ -17,29 +17,7 @@
 {% endblock %}
 
 {% block body %}
-	<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		{% for letter in letters %}
-			<col width="*" />
-		{% endfor %}
-		<tr>
-			{% for letter in letters %}
-				<td align="center" style="font-size: 16pt"><a href="{% urlsub page=1 letter=letter %}">{{ letter }}</a></td>
-			{% endfor %}
-		</tr>
-
-		<tr>
-			<td colspan="13" align="left">
-				{% if releasers.has_previous %}
-					<a href="{% urlsub page=releasers.previous_page_number %}">&laquo;&nbsp;back</a>
-				{% endif %}
-			</td>
-			<td colspan="14" align="right">
-				{% if releasers.has_next %}
-					<a href="{% urlsub page=releasers.next_page_number %}">next&nbsp;&raquo;</a>
-				{% endif %}
-			</td>
-		</tr>
-	</table>
+	{% include "zxdemo/include/alpha_pagination_links.html" with listing=releasers %}
 
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<col width="5%" /><col width="95%" />
@@ -56,20 +34,5 @@
 		{% endfor %}
 	</table>
 
-	<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<col width="50%" />
-		<col width="50%" />
-		<tr>
-			<td align="left">
-				{% if releasers.has_previous %}
-					<a href="{% urlsub page=releasers.previous_page_number %}">&laquo;&nbsp;back</a>
-				{% endif %}
-			</td>
-			<td align="right">
-				{% if releasers.has_next %}
-					<a href="{% urlsub page=releasers.next_page_number %}">next&nbsp;&raquo;</a>
-				{% endif %}
-			</td>
-		</tr>
-	</table>
+	{% include "zxdemo/include/prev_next_links.html" with listing=releasers %}
 {% endblock %}

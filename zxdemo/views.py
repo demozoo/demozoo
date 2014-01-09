@@ -90,6 +90,9 @@ def productions(request):
 
 	return render(request, 'zxdemo/productions.html', {
 		'productions': productions_page,
+		'count': count,
+		'letters': '#ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+		'count_options': ['10', '25', '50', '75', '100', '150', '200'],
 	})
 
 def production(request, production_id):
