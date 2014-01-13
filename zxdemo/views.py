@@ -71,6 +71,17 @@ def productions(request):
 	productions = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS
 	).extra(select={'lower_title': 'lower(demoscene_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+
+	supertypes = []
+	if request.GET.get('demos', '1'):
+		supertypes.append('production')
+	if request.GET.get('music', '1'):
+		supertypes.append('music')
+	if request.GET.get('graphics', '1'):
+		supertypes.append('graphics')
+
+	productions = productions.filter(supertype__in=supertypes)
+
 	count = request.GET.get('count', '50')
 	letter = request.GET.get('letter', '')
 	if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -93,6 +104,11 @@ def productions(request):
 		'count': count,
 		'letters': '#ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 		'count_options': ['10', '25', '50', '75', '100', '150', '200'],
+		'filters': {
+			'demos': 'production' in supertypes,
+			'graphics': 'graphics' in supertypes,
+			'music': 'music' in supertypes,
+		},
 	})
 
 def production(request, production_id):
