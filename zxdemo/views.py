@@ -81,6 +81,8 @@ def productions(request):
 		supertypes.append('graphics')
 
 	productions = productions.filter(supertype__in=supertypes)
+	if request.GET.get('noscreen'):
+		productions=productions.filter(screenshots__id__isnull=True)
 
 	count = request.GET.get('count', '50')
 	letter = request.GET.get('letter', '')
@@ -191,6 +193,10 @@ def author(request, releaser_id):
 		nick__releaser=releaser,
 		production__platforms__id__in=ZXDEMO_PLATFORM_IDS
 	).order_by('production__release_date_date', 'production__title', 'production__id').prefetch_related('production__links', 'production__screenshots', 'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser')
+
+	if request.GET.get('noscreen'):
+		releases=releases.exclude(supertype='music').filter(screenshots__id__isnull=True)
+		credits=credits.exclude(production__supertype='music').filter(production__screenshots__id__isnull=True)
 
 	releases_by_id = {}
 	releases_with_credits = []
