@@ -299,8 +299,6 @@ class Command(NoArgsCommand):
 				user.save()
 				profile = AccountProfile(
 					user = user,
-					edit_mode_active = False,
-					sticky_edit_mode = False,
 					demozoo0_id = row['id']
 				)
 				profile.save()

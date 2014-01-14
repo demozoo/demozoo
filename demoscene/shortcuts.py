@@ -85,24 +85,3 @@ def modal_workflow_confirmation(request, action_url, message, html_title=None):
 			'action_url': action_url,
 		}
 	)
-
-
-def sticky_editing_enabled(user):
-	if not user.is_authenticated():
-		return False
-	try:
-		profile = user.get_profile()
-	except AccountProfile.DoesNotExist:
-		return False
-	return profile.sticky_edit_mode
-
-
-def sticky_editing_active(user):
-	return sticky_editing_enabled(user) and user.get_profile().edit_mode_active
-
-
-def set_edit_mode_active(is_active, user):
-	if sticky_editing_enabled(user):
-		profile = user.get_profile()
-		profile.edit_mode_active = is_active
-		profile.save()
