@@ -1037,8 +1037,6 @@ class Screenshot(models.Model):
 
 class AccountProfile(models.Model):
 	user = models.ForeignKey(User, unique=True)
-	sticky_edit_mode = models.BooleanField(help_text="Stays in edit mode when browsing around, until you explicitly hit 'done'")
-	edit_mode_active = models.BooleanField(editable=False)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 	def __unicode__(self):

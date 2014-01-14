@@ -6,12 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from demoscene.models import AccountProfile
 
 
-class AccountPreferencesForm(forms.ModelForm):
-	class Meta:
-		model = AccountProfile
-		fields = ('sticky_edit_mode',)
-
-
 class UserSignupForm(UserCreationForm):
 	def __init__(self, *args, **kwargs):
 		self.captcha_question = kwargs.pop('captcha')
