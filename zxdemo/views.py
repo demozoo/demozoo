@@ -223,3 +223,9 @@ def author(request, releaser_id):
 def author_redirect(request):
 	releaser_link = get_object_or_404(ReleaserExternalLink, link_class='ZxdemoAuthor', parameter=request.GET.get('id'))
 	return redirect('zxdemo_author', releaser_link.releaser_id, permanent=True)
+
+
+def parties(request):
+	return render(request, 'zxdemo/parties.html', {
+
+	})
