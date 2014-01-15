@@ -271,6 +271,14 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 
 
 class ProductionExternalLinkForm(ExternalLinkForm):
+	def save(self, commit=True):
+		instance = super(ProductionExternalLinkForm, self).save(commit=False)
+		instance.is_download_link = False
+		if commit:
+			instance.validate_unique()
+			instance.save()
+		return instance
+
 	class Meta:
 		model = ProductionLink
 		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
