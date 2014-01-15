@@ -2,7 +2,7 @@ from django import forms
 from demoscene.models import Production, ProductionType, Platform, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
-from django.forms.models import inlineformset_factory, BaseModelFormSet
+from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
@@ -315,6 +315,7 @@ class SoundtrackLinkForm(forms.Form):
 			supertype='music',
 			types_to_set=[ProductionType.objects.get(internal_name='music')],
 		)
+		self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
 
 	def save(self, commit=True):
 		if not commit:
