@@ -112,7 +112,6 @@ INSTALLED_APPS = (
 	'taggit',
 	'compressor',
 	'djcelery',
-	'django_bcrypt',
 	'geonameslite',
 
 	'demoscene',
