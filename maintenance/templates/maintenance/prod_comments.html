@@ -1,0 +1,59 @@
+{% extends "maintenance/base.html" %}
+{% load demoscene_tags %}
+
+{% block html_title %}Production comments - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+	<link rel="stylesheet" href="/static/css/components/pagination.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	<h2>Production comments:</h2>
+
+	{% if comments.paginator.num_pages > 1 %}
+		<ul class="pagination">
+			{% if comments.has_previous %}
+				<li>
+					<a href="{% url 'maintenance_prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
+				</li>
+			{% endif %}
+
+			{% for i in comments.paginator.page_range %}
+				{% if i == comments.number %}
+					<li class="current">{{ i }}</li>
+				{% else %}
+					<li><a href="{% url 'maintenance_prod_comments' %}?page={{ i }}">{{ i }}</a></li>
+				{% endif %}
+			{% endfor %}
+
+			{% if comments.has_next %}
+				<li>
+					<a href="{% url 'maintenance_prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
+				</li>
+			{% endif %}
+		</ul>
+	{% endif %}
+
+	<div id="main_column">
+		<div class="panel report">
+			<table>
+				<col width="20%">
+				<col width="65%">
+				<col width="15%">
+				{% for comment in comments %}
+					<tr>
+						<td>
+							<b><a href="{{ comment.production.get_absolute_url }}">{{ comment.production.title }}</a></b><br>
+							by {% byline comment.production %}
+						</td>
+						<td>{{ comment.body|urlize|linebreaks }}</td>
+						<td><b>{{ comment.user.username }}</b><br>{{ comment.created_at|date:"H:i j F Y" }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+{% endblock %}

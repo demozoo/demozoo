@@ -1,16 +1,21 @@
-from demoscene.shortcuts import *
 from django.contrib.auth.decorators import login_required
+from django.db import connection, transaction
+from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from fuzzy_date import FuzzyDate
+from read_only_mode import writeable_site_required
+
+from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink, ProductionBlurb
+from comments.models import ProductionComment
 from parties.models import PartyExternalLink, Party
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from mirror.models import Download, ArchiveMember
 from screenshots.tasks import create_screenshot_from_production_link
-from django.db import connection, transaction
-from fuzzy_date import FuzzyDate
-from django.http import HttpResponse, HttpResponseRedirect
-from django.db.models import Q
-from read_only_mode import writeable_site_required
+
 
 
 def index(request):
@@ -670,6 +675,24 @@ def prods_with_blurbs(request):
 
 	return render(request, 'maintenance/prods_with_blurbs.html', {
 		'blurbs': blurbs,
+	})
+
+def prod_comments(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	comments = ProductionComment.objects.order_by('-created_at').select_related('user', 'production')
+	paginator = Paginator(comments, 100)
+
+	page = request.GET.get('page', 1)
+	try:
+		comments_page = paginator.page(page)
+	except (PageNotAnInteger, EmptyPage):
+		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+		comments_page = paginator.page(paginator.num_pages)
+
+	return render(request, 'maintenance/prod_comments.html', {
+		'comments': comments_page,
 	})
 
 
