@@ -1030,6 +1030,14 @@ class Screenshot(models.Model):
 
 		return (round(thumbnail_width * scale), round(thumbnail_height * scale))
 
+	def save(self, *args, **kwargs):
+		super(Screenshot, self).save(*args, **kwargs)
+
+		# If the production does not already have a default_screenshot, and this screenshot has
+		# a thumbnail available, set this as the default
+		if self.thumbnail_url and (self.production.default_screenshot_id is None):
+			self.production.default_screenshot = self
+			self.production.save()
 
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
