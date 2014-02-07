@@ -23,12 +23,15 @@ urlpatterns = patterns('',
 	(r'^account/login/$', 'django.contrib.auth.views.login', {}, 'log_in'),
 	(r'^account/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, 'log_out'),
 	(r'^account/signup/$', 'demoscene.views.accounts.signup', {}, 'user_signup'),
-	(r'^account/preferences/$', 'demoscene.views.accounts.preferences', {}, 'account_preferences'),
 	(r'^account/change_password/$', 'demoscene.views.accounts.change_password', {}, 'account_change_password'),
 	# forgotten password
 	(r'^account/forgotten_password/$', 'django.contrib.auth.views.password_reset', {'is_admin_site': False}, 'password_reset'),
 	(r'^account/forgotten_password/success/$', 'django.contrib.auth.views.password_reset_done', {}, 'password_reset_done'),
-	(r'^account/forgotten_password/confirm/(?P<uidb36>\w+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm', {}, 'password_reset_confirm'),
+	(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm', {}, 'password_reset_confirm'),
+
+	# temporary route for password reset emails sent prior to django 1.6
+	(r'^account/forgotten_password/confirm/(?P<uidb36>\w+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm_uidb36', {}),
+
 	(r'^account/forgotten_password/done/$', 'django.contrib.auth.views.password_reset_complete', {}, 'password_reset_complete'),
 
 )

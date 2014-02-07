@@ -1,5 +1,5 @@
 from django import template
-from django.core.urlresolvers import reverse
+from django.utils.html import format_html
 
 from demoscene.models import Releaser, Nick, Edit, Production
 
@@ -40,7 +40,7 @@ def byline(production):
 
 @register.simple_tag
 def field_label(field):
-	return field.label_tag(attrs = {'class': 'field_label'})
+	return format_html(u'<label for="{0}" class="field_label">{1}</label>', field.id_for_label, field.label)
 
 @register.inclusion_tag('shared/date_range.html')
 def date_range(start_date, end_date):

@@ -1,5 +1,5 @@
 from django import template
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 
 # {% spawningformset [sortable] formset %}
 # {% spawningform as form %}
@@ -116,7 +116,7 @@ class SpawningFormNode(template.Node):
 				li_class += ' sortable_item'
 
 			if 'DELETE' in form.fields:
-				delete_field = u'<span class="delete">%s %s</span>' % (form['DELETE'], form['DELETE'].label_tag())
+				delete_field = format_html(u'<span class="delete">{0} <label for="{1}">{2}</label></span>', str(form['DELETE']), form['DELETE'].id_for_label, form['DELETE'].label)
 			else:
 				delete_field = ''
 			output += [
@@ -132,7 +132,7 @@ class SpawningFormNode(template.Node):
 		form = formset.empty_form
 		context[self.form_var_name] = form
 		if 'DELETE' in form.fields:
-			delete_field = u'<span class="delete">%s %s</span>' % (form['DELETE'], form['DELETE'].label_tag())
+			delete_field = format_html(u'<span class="delete">{0} <label for="{1}">{2}</label></span>', str(form['DELETE']), form['DELETE'].id_for_label, form['DELETE'].label)
 		else:
 			delete_field = ''
 		li_class = 'spawned_form placeholder_form'

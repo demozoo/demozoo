@@ -103,19 +103,35 @@ def remove_member(request, group_id, scener_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 	if request.method == 'POST':
-		if request.POST.get('yes'):
+		deletion_type = request.POST.get('deletion_type')
+		if deletion_type == 'ex_member':
+			# set membership to is_current=False - do not delete
+			group.member_memberships.filter(member=scener).update(is_current=False)
+			group.updated_at = datetime.datetime.now()
+			group.save()
+			Edit.objects.create(action_type='edit_membership', focus=scener, focus2=group,
+				description=u"Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
+				user=request.user)
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+		elif deletion_type == 'full':
 			group.member_memberships.filter(member=scener).delete()
 			group.updated_at = datetime.datetime.now()
 			group.save()
 			description = u"Removed %s as a member of %s" % (scener.name, group.name)
 			Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
 				description=description, user=request.user)
-		return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+			return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+		else:
+			show_error_message = True
+
 	else:
-		return simple_ajax_confirmation(request,
-			reverse('group_remove_member', args=[group_id, scener_id]),
-			"Are you sure you want to remove %s from the group %s?" % (scener.name, group.name),
-			html_title="Removing %s from %s" % (scener.name, group.name))
+		show_error_message = False
+
+	return render(request, 'groups/remove_member.html', {
+		'group': group,
+		'scener': scener,
+		'show_error_message': show_error_message,
+	})
 
 
 @writeable_site_required

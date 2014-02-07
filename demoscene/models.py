@@ -1030,6 +1030,14 @@ class Screenshot(models.Model):
 
 		return (round(thumbnail_width * scale), round(thumbnail_height * scale))
 
+	def save(self, *args, **kwargs):
+		super(Screenshot, self).save(*args, **kwargs)
+
+		# If the production does not already have a default_screenshot, and this screenshot has
+		# a thumbnail available, set this as the default
+		if self.thumbnail_url and (self.production.default_screenshot_id is None):
+			self.production.default_screenshot = self
+			self.production.save()
 
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
@@ -1037,8 +1045,6 @@ class Screenshot(models.Model):
 
 class AccountProfile(models.Model):
 	user = models.ForeignKey(User, unique=True)
-	sticky_edit_mode = models.BooleanField(help_text="Stays in edit mode when browsing around, until you explicitly hit 'done'")
-	edit_mode_active = models.BooleanField(editable=False)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 	def __unicode__(self):
@@ -1198,3 +1204,10 @@ class Edit(models.Model):
 			OR (focus2_content_type_id = %s AND focus2_object_id = %s)
 		)"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')
 		return edits
+
+class CaptchaQuestion(models.Model):
+	question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
+	answer = models.CharField(max_length=255, help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)")
+
+	def __unicode__(self):
+		return self.question

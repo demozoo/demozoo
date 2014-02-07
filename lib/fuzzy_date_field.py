@@ -2,6 +2,7 @@ from django import forms
 from fuzzy_date import FuzzyDate
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 
 class FuzzyDateInput(forms.DateInput):
@@ -11,6 +12,10 @@ class FuzzyDateInput(forms.DateInput):
 
 class FuzzyDateField(forms.Field):
 	widget = FuzzyDateInput(format='%e %b %Y', attrs={'class': 'date'})
+
+	default_error_messages = {
+		'invalid': _('Enter a valid date.'),
+	}
 
 	def to_python(self, value):
 		"""

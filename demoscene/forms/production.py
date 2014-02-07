@@ -2,7 +2,7 @@ from django import forms
 from demoscene.models import Production, ProductionType, Platform, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
 from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
-from django.forms.models import inlineformset_factory, BaseModelFormSet
+from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
@@ -271,6 +271,14 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 
 
 class ProductionExternalLinkForm(ExternalLinkForm):
+	def save(self, commit=True):
+		instance = super(ProductionExternalLinkForm, self).save(commit=False)
+		instance.is_download_link = False
+		if commit:
+			instance.validate_unique()
+			instance.save()
+		return instance
+
 	class Meta:
 		model = ProductionLink
 		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
@@ -307,6 +315,7 @@ class SoundtrackLinkForm(forms.Form):
 			supertype='music',
 			types_to_set=[ProductionType.objects.get(internal_name='music')],
 		)
+		self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
 
 	def save(self, commit=True):
 		if not commit:

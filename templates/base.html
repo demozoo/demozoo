@@ -79,7 +79,6 @@
 							</div>
 							<div class="login_links">
 								<ul>
-									<li><a href="{% url 'account_preferences' %}">Preferences</a></li>
 									<li><a href="{% url 'account_change_password' %}">Change password</a></li>
 									{% if user.is_staff %}
 										<li><a href="{% url 'maintenance_index' %}">Maintenance</a></li>

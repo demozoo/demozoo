@@ -36,6 +36,7 @@ DATABASES = {
 	}
 }
 
+CONN_MAX_AGE = 600  # number of seconds database connections should persist for
 DATABASE_ROUTERS = ['geonameslite.router.GeonamesLiteRouter']
 SOUTH_TESTS_MIGRATE = False  # if south attempts migrations during manage.py test, it chokes on the geonames database which is missing south_migrationhistory
 
@@ -111,7 +112,6 @@ INSTALLED_APPS = (
 	'taggit',
 	'compressor',
 	'djcelery',
-	'django_bcrypt',
 	'geonameslite',
 
 	'demoscene',
