@@ -40,3 +40,4 @@ timelib==0.2.1
 tornado==2.1.1
 unidecode==0.04.14
 wsgiref==0.1.2
+bcrypt==1.0.2
