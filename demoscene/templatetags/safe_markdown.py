@@ -18,8 +18,9 @@ def safe_markdown(value, arg=''):
 		)
 	)
 
+test_md = markdown.Markdown(extensions=['autolink'])
 @register.filter(is_safe=True)
 def test_markdown(value, arg=''):
 	return mark_safe(
-		md.convert(value)
+		test_md.convert(value)
 	)
