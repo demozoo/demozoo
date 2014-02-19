@@ -17,3 +17,9 @@ def safe_markdown(value, arg=''):
 			md.convert(value)
 		)
 	)
+
+@register.filter(is_safe=True)
+def test_markdown(value, arg=''):
+	return mark_safe(
+		md.convert(value)
+	)
