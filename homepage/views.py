@@ -25,9 +25,6 @@ def home(request):
 
 
 def not_the_homepage(request):
-	return render(request, 'home.html', {
-		'banner': None,
-		'teasers': Teaser.objects.none(),
+	return render(request, 'not_the_homepage.html', {
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
-		'forum_topics': Topic.objects.none(),
 	})
