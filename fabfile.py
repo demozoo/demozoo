@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from fabric.api import *
 
-env.hosts = ['demozoo@web.dkev.org:5711']
+env.hosts = ['demozoo@matilda.demozoo.org']
 
 
 def deploy():
@@ -9,10 +9,10 @@ def deploy():
 	with cd('/home/demozoo/demozoo'):
 		run('git pull')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=settings.production')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --database=geonameslite --settings=settings.production')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.production')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --database=geonameslite --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.productionvm')
 		run('sudo supervisorctl restart demozoo')
 		run('sudo supervisorctl restart demozoo-celery')
 		run('sudo supervisorctl restart demozoo-celerybeat')
@@ -21,19 +21,19 @@ def deploy():
 def sanity():
 	"""Fix up data integrity errors"""
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=settings.productionvm')
 
 
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.productionvm')
 
 
 def bump_external_links():
 	"""Rescan external links for new 'recognised' sites"""
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=settings.production')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=settings.productionvm')
 
 
 def fetchdb():
