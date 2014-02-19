@@ -22,9 +22,3 @@ def home(request):
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
 		'forum_topics': Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5],
 	})
-
-
-def not_the_homepage(request):
-	return render(request, 'not_the_homepage.html', {
-		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
-	})

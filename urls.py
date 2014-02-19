@@ -16,7 +16,6 @@ urlpatterns = patterns('',
 	# (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
 	(r'^$', 'homepage.views.home', {}, 'home'),
-	(r'^not_the_homepage/$', 'homepage.views.not_the_homepage', {}, 'not_the_homepage'),
 
 	(r'^admin/', include(admin.site.urls)),
 
