@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load demoscene_tags %}
-{% load safe_markdown %}
 {% load url from future %}
 
 {% block body_class %}homepage{% endblock %}
@@ -13,7 +12,7 @@
 			<div class="news_story">
 				<h2>{{ story.title }}</h2>
 				<div class="date">{{ story.created_at|date:"d M Y" }}</div>
-				{{ story.text|safe_markdown }}
+				{{ story.text }}
 			</div>
 		{% endfor %}
 	</div>
