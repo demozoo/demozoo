@@ -30,3 +30,7 @@ body.unresolved_screenshots a.resolve {
 body.unresolved_screenshots a:hover.resolve {
 	background-color: #bbb;
 }
+
+.production_listing .title {
+	display: inline;
+}

@@ -97,6 +97,23 @@ def prods_with_dead_amigascne_links(request):
 	})
 
 
+def prods_without_platforms(request):
+	report_name = 'prods_without_platforms'
+
+	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
+		.exclude(types__name='Video') \
+		.extra(
+			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions without platforms',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+
 def prods_without_release_date_with_placement(request):
 	report_name = 'prods_without_release_date_with_placement'
 
