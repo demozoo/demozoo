@@ -98,7 +98,7 @@ def prods_with_dead_amigascne_links(request):
 
 
 def prods_with_dead_amiga_nvg_org_links(request):
-	report_name = 'prods_with_dead_amigascne_links'
+	report_name = 'prods_with_dead_amiga_nvg_org_links'
 
 	productions = Production.objects.filter(links__parameter__contains='amiga.nvg.org') \
 		.extra(
