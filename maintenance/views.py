@@ -106,7 +106,7 @@ def prods_with_dead_amiga_nvg_org_links(request):
 			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions with dead amigascne links',
+		'title': 'Productions with dead amiga.nvg.org links',
 		'productions': productions,
 		'mark_excludable': True,
 		'report_name': report_name,
