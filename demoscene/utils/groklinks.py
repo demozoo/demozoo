@@ -794,6 +794,7 @@ class YoutubeVideo(BaseUrl):
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
 	html_title_format = "%s on YouTube"
+	is_streaming_video = True
 
 
 class YoutubeUser(BaseUrl):
@@ -814,6 +815,7 @@ class VimeoVideo(BaseUrl):
 	html_link_class = "vimeo"
 	html_link_text = "Vimeo"
 	html_title_format = "%s on Vimeo"
+	is_streaming_video = True
 
 
 class DemosceneTvVideo(BaseUrl):
@@ -825,6 +827,7 @@ class DemosceneTvVideo(BaseUrl):
 	html_link_class = "demoscene_tv"
 	html_link_text = "Demoscene.tv"
 	html_title_format = "%s on Demoscene.tv"
+	is_streaming_video = True
 
 
 class CappedVideo(BaseUrl):
@@ -835,6 +838,7 @@ class CappedVideo(BaseUrl):
 	html_link_class = "capped"
 	html_link_text = "Capped.TV"
 	html_title_format = "%s on Capped.TV"
+	is_streaming_video = True
 
 
 class FacebookPage(BaseUrl):

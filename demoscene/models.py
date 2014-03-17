@@ -1169,6 +1169,10 @@ class ProductionLink(ExternalLink):
 	def is_zip_file(self):
 		return self.download_file_extension() == 'zip'
 
+	@property
+	def is_streaming_video(self):
+		return getattr(self.link, 'is_streaming_video', False)
+
 	class Meta:
 		unique_together = (
 			('link_class', 'parameter', 'production', 'is_download_link'),
