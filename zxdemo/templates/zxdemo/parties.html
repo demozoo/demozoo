@@ -12,4 +12,20 @@
 {% endblock %}
 
 {% block body %}
+	<h1>Party calendar</h1>
+	<table width="100%" border="0" cellpadding="6" cellspacing="0">
+		<col width="25%" /><col width="25%" /><col width="25%" /><col width="25%" />
+		{% regroup parties by start_date.date.year as year_list %}
+
+		{% for year in year_list %}
+			<tr>
+				<td valign="top" class="{% cycle 'even' 'odd' %}">
+					<h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
+					{% for party in year.list %}
+						<div style="margin-bottom: 4pt;"><a href="">{{ party.name }}</a></div>
+					{% endfor %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
 {% endblock %}

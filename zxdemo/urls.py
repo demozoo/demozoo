@@ -23,6 +23,7 @@ urlpatterns = patterns('zxdemo.views',
 
 	(r'^partycalendar.php$', RedirectView.as_view(url='/parties/')),
 	(r'^parties/$', 'parties', {}, 'zxdemo_parties'),
+	(r'^parties/(\d+)/$', 'parties_year', {}, 'zxdemo_parties_year'),
 
 	(r'^admin/', include(admin.site.urls)),
 )

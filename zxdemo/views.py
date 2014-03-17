@@ -6,6 +6,7 @@ from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership, Credit
+from parties.models import Party
 from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
 def home(request):
@@ -226,6 +227,44 @@ def author_redirect(request):
 
 
 def parties(request):
-	return render(request, 'zxdemo/parties.html', {
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 
+	parties_with_spectrum_entries = list(Party.objects.filter(
+		competitions__placings__production__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).distinct().values_list('id', flat=True))
+	parties_with_spectrum_invitations = list(Party.objects.filter(
+		invitations__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).distinct().values_list('id', flat=True))
+
+	parties = Party.objects.filter(
+		id__in=(parties_with_spectrum_entries + parties_with_spectrum_invitations)
+	).order_by('start_date_date')
+	return render(request, 'zxdemo/parties.html', {
+		'parties': parties,
+	})
+
+
+def parties_year(request, year):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+
+	parties_with_spectrum_entries = list(Party.objects.filter(
+		competitions__placings__production__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).distinct().values_list('id', flat=True))
+	parties_with_spectrum_invitations = list(Party.objects.filter(
+		invitations__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).distinct().values_list('id', flat=True))
+
+	parties = Party.objects.filter(
+		id__in=(parties_with_spectrum_entries + parties_with_spectrum_invitations),
+		start_date_date__year=year
+	).distinct().order_by('start_date_date')
+
+	all_years = Party.objects.filter(
+		id__in=(parties_with_spectrum_entries + parties_with_spectrum_invitations),
+	).dates('start_date_date', 'year')
+
+	return render(request, 'zxdemo/parties_year.html', {
+		'year': int(year),
+		'all_years': all_years,
+		'parties': parties,
 	})
