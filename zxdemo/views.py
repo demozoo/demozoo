@@ -268,3 +268,11 @@ def parties_year(request, year):
 		'all_years': all_years,
 		'parties': parties,
 	})
+
+
+def partycalendar_redirect(request):
+	year = request.GET.get('year')
+	if year:
+		return redirect('zxdemo_parties_year', year, permanent=True)
+	else:
+		return redirect('zxdemo_parties', permanent=True)
