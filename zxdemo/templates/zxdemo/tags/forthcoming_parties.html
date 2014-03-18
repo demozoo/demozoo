@@ -1,7 +1,7 @@
 {% load zxdemo_tags %}
 
 {% for party in parties %}
-    <div><a href=\"/party.php?id={{ party.id }}\">{{ party.name }}</a></div>
+    <div><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
     {% if party.location %}
         <div>{{ party.location }}</div>
     {% elif party.is_online %}

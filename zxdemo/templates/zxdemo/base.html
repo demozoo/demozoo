@@ -56,19 +56,21 @@
 			</tr>
 		</table>
 
-		<table border="0" cellpadding="0" cellspacing="0" width="100%" />
-			<col width="224" />
-			<col width="*" />
-			<tr>
-				<td bgcolor="#dedeff" valign="top" align="center" width="224">
-					{% block sidebar %}{% endblock %}
-				</td>
-				</td>
-				<td valign="top" style="padding: 6pt;">
-					{% block body %}{% endblock %}
-				</td>
-			</tr>
-		</table>
+		{% block outer_body %}
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" />
+				<col width="224" />
+				<col width="*" />
+				<tr>
+					<td bgcolor="#dedeff" valign="top" align="center" width="224">
+						{% block sidebar %}{% endblock %}
+					</td>
+					</td>
+					<td valign="top" style="padding: 6pt;">
+						{% block body %}{% endblock %}
+					</td>
+				</tr>
+			</table>
+		{% endblock %}
 
 		<br />
 		<div align="center" style="padding: 2pt; background-color: #ffffbb;">Grab the Demotopia newsfeed at <a href="http://www.zxdemo.org/rss.php">http://www.zxdemo.org/rss.php</a>. <em>Corrections, additions, new releases? <a href="m&#097;ilto&#058;gasman&#064;raww.org">Send them in</a>!</em></div>

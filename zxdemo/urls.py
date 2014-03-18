@@ -24,6 +24,7 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^partycalendar.php$', 'partycalendar_redirect'),
 	(r'^parties/$', 'parties', {}, 'zxdemo_parties'),
 	(r'^parties/(\d+)/$', 'parties_year', {}, 'zxdemo_parties_year'),
+	(r'^party/(\d+)/$', 'party', {}, 'zxdemo_party'),
 
 	(r'^admin/', include(admin.site.urls)),
 )

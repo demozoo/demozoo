@@ -28,7 +28,7 @@
 		<table width="100%" cellspacing="0" cellpadding="3" border="0">
 			<col width="30%" /><col width="70%" />
 			<tr>
-				<td><h2><a href="/party.php?id={$party['id']}">{{ party.name }}</a></h2></td>
+				<td><h2><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></h2></td>
 				<td><em>
 					{% if party.is_online %}
 						{% date_range party.start_date party.end_date %}; Online

@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+import math
+
 from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership, Credit
 from parties.models import Party
 from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
@@ -276,3 +278,44 @@ def partycalendar_redirect(request):
 		return redirect('zxdemo_parties_year', year, permanent=True)
 	else:
 		return redirect('zxdemo_parties', permanent=True)
+
+
+def party(request, party_id):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+	party = get_object_or_404(Party, id=party_id)
+
+	# all competitions with at least one Spectrum entry
+	competitions = party.competitions.filter(
+		placings__production__platforms__id__in=ZXDEMO_PLATFORM_IDS
+	).distinct().order_by('name', 'id')
+	competitions_with_placings = []
+
+	for competition in competitions:
+		placings = competition.placings.order_by('position', 'production__id').prefetch_related(
+			'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types'
+		).defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+
+		screenshots = Screenshot.objects.filter(
+			production__competition_placings__competition=competition,
+			production__platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('?')[:math.ceil(len(placings) / 6.0)]
+
+		competitions_with_placings.append(
+			(
+				competition, placings, screenshots,
+				any([placing.ranking for placing in placings]),
+				any([placing.score for placing in placings]),
+			)
+		)
+
+	# Do not show an invitations section in the special case that all invitations are
+	# entries in a competition at this party (which probably means that it was an invitation compo)
+	invitations = party.invitations.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
+	if not non_competing_invitations:
+		invitations = Production.objects.none
+
+	return render(request, 'zxdemo/party.html', {
+		'party': party,
+		'competitions_with_placings': competitions_with_placings,
+		'invitations': invitations,
+	})

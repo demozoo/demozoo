@@ -22,7 +22,7 @@
 				<td valign="top" class="{% cycle 'even' 'odd' %}">
 					<h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
 					{% for party in year.list %}
-						<div style="margin-bottom: 4pt;"><a href="">{{ party.name }}</a></div>
+						<div style="margin-bottom: 4pt;"><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
 					{% endfor %}
 				</td>
 			</tr>

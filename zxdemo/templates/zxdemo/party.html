@@ -1,0 +1,54 @@
+{% extends "zxdemo/base.html" %}
+{% load zxdemo_tags %}
+
+{% block html_title %}Demotopia - {{ party.name }}{% endblock %}
+{% block meta_description %}Spectrum compo results and reports from the {{ party.name }} demo party.{% endblock %}
+{% block meta_keywords %}spectrum speccy demo scene demoscene zx party calendar schedule dates compo competition{% endblock %}
+
+{% block outer_body %}
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" />
+		<col width="224" />
+		<col width="*" />
+		<tr>
+			<td bgcolor="#dedeff" valign="top" align="center" width="224">
+				<img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /><br />
+				<h2>{{ party.name }}</h2>
+			</td>
+			<td valign="top" width="100%">
+				<br />
+				<h1 align="center">{{ party.name }}</h1>
+				{% if party.location %}<h2>{{ party.location }}</h2>{% endif %}
+				<h2>{% date_range party.start_date party.end_date %}</h2>
+				<hr />
+			</td>
+		</tr>
+		{% for compo, placings, screenshots, has_rankings, has_scores in competitions_with_placings %}
+			<tr>
+				<td bgcolor="#dedeff" valign="top" align="center">
+					<h2 style="text-align: right; margin-right: 8pt;">{{ compo.name }}&nbsp;&raquo;</h2>
+					{% for screen in screenshots %}
+						{% include "zxdemo/include/screenshot_thumb.html" with screenshot=screen %}
+					{% endfor %}
+				</td>
+				<td valign="top">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+						{% if has_rankings and has_scores %}
+							<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
+						{% elif has_rankings %}
+							<col width="10%" /><col width="40%"><col width="15%" /><col width="35%" />
+						{% elif has_scores %}
+							<col width="40%"><col width="15%" /><col width="35%" /><col width="10%" />
+						{% else %}
+							<col width="45%"><col width="15%" /><col width="40%" />
+						{% endif %}
+						<?php
+							result_list($qr_results, $compo['placed'], $compo['voted']);
+						?>
+					</table>
+					<hr />
+				</td>
+			</tr>
+
+		{% endfor %}
+	</table>
+{% endblock %}
