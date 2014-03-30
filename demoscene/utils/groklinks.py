@@ -1007,6 +1007,26 @@ class SpotifyTrack(BaseUrl):
 	html_title_format = "%s on Spotify"
 
 
+class GithubAccount(BaseUrl):
+	canonical_format = "https://github.com/%s"
+	tests = [
+		regex_match(r'https?://github\.com/(\w+)', re.I),
+	]
+	html_link_class = "github"
+	html_link_text = "GitHub"
+	html_title_format = "%s on GitHub"
+
+
+class GithubRepo(BaseUrl):
+	canonical_format = "https://github.com/%s"
+	tests = [
+		regex_match(r'https?://github\.com/(\w+/\w+)', re.I),
+	]
+	html_link_class = "github"
+	html_link_text = "GitHub"
+	html_title_format = "%s on GitHub"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1017,6 +1037,7 @@ RELEASER_LINK_TYPES = [
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
+	GithubAccount, GithubRepo,
 	BaseUrl,
 ]
 
@@ -1027,7 +1048,7 @@ PRODUCTION_LINK_TYPES = [
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-	SceneOrgFile, UntergrundFile,
+	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
 	WikipediaPage,
 	SpeccyWikiPage,
 	BaseUrl,
@@ -1042,6 +1063,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
+	'GithubAccount', 'GithubRepo',
 ]
 
 PARTY_LINK_TYPES = [
