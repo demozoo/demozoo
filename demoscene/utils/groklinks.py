@@ -382,8 +382,8 @@ class SceneOrgFile(BaseUrl):
 	tests = [
 		file_dl_match,
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
+		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
