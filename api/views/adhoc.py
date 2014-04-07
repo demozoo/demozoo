@@ -91,7 +91,7 @@ def klubi_demoshow(request):
 			continue
 
 		# strip out types that are not really suitable for a demo show
-		interesting_types = [typ for typ in prod.types.all() if typ.name not in ('Diskmagazine', 'Tool')]
+		interesting_types = [typ for typ in prod.types.all() if typ.name not in ('Diskmagazine', 'Tool', 'Game')]
 
 		if len(interesting_types) == 0:
 			pass
