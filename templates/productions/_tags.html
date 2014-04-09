@@ -17,14 +17,16 @@
 
 	<ul class="tags">
 		{% for tag in tags %}
-			{% include "productions/_tag.html" %}
+			<li>
+				<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
+			</li>
 		{% endfor %}
 	</ul>
-	{% if site_is_writeable and user.is_authenticated %}
-		<form class="add_tag" action="{% url 'production_add_tag' production.id %}" method="post">
+	{% if tags_form %}
+		<form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">
 			{% csrf_token %}
-			<input type="text" name="tag_name" />
-			<input type="submit" value="Add" />
+			{{ tags_form.tags }}
+			<input type="submit" value="Update" />
 		</form>
 	{% endif %}
 </div>

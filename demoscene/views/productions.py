@@ -112,8 +112,10 @@ def show(request, production_id, edit_mode=False):
 	if request.user.is_authenticated():
 		comment = ProductionComment(production=production, user=request.user)
 		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+		tags_form = ProductionTagsForm(instance=production)
 	else:
 		comment_form = None
+		tags_form = None
 
 	return render(request, 'productions/show.html', {
 		'production': production,
@@ -132,6 +134,7 @@ def show(request, production_id, edit_mode=False):
 		'tags': production.tags.all(),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
+		'tags_form': tags_form,
 	})
 
 
@@ -622,51 +625,11 @@ def edit_soundtracks(request, production_id):
 
 @writeable_site_required
 @login_required
-def add_tag(request, production_id):
+def edit_tags(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	if request.method == 'POST':
-		tag_name = request.POST.get('tag_name', '').strip()
-		if tag_name:
-			# check whether it's already present
-			existing_tag = production.tags.filter(name=tag_name)
-			if not existing_tag:
-
-				production.tags.add(tag_name)
-				Edit.objects.create(action_type='production_add_tag', focus=production,
-					description=u"Added tag '%s'" % tag_name, user=request.user)
-
-				if request.is_ajax():
-					tag = production.tags.get(name=tag_name)
-					return render(request, 'productions/_tag.html', {
-						'production': production, 'tag': tag
-					})
-
-	if request.is_ajax():
-		raise Http404
-		# an arbitrary failure response so that it won't try to insert a
-		# tag based on the HTML we send back. Should probably be a 405 or something.
-		# Meh, whatever.
-	else:
-		return HttpResponseRedirect(production.get_absolute_url())
-
-
-@writeable_site_required
-@login_required
-def remove_tag(request, production_id, tag_id):
-	production = get_object_or_404(Production, id=production_id)
-	if request.method == 'POST':
-		try:
-			tag = production.tags.get(id=tag_id)
-			production.tags.remove(tag)
-			Edit.objects.create(action_type='production_remove_tag', focus=production,
-				description=u"Removed tag '%s'" % tag.name, user=request.user)
-		except Tag.DoesNotExist:
-			pass
-
-	if request.is_ajax():
-		return HttpResponse('OK', mimetype="text/plain")
-	else:
-		return HttpResponseRedirect(production.get_absolute_url())
+	form = ProductionTagsForm(request.POST, instance=production)
+	form.save()
+	return HttpResponseRedirect(production.get_absolute_url())
 
 
 def autocomplete(request):

@@ -253,6 +253,11 @@ class ProductionBlurbForm(forms.ModelForm):
 			'body': forms.Textarea(attrs={'class': 'short_notes'}),
 		}
 
+class ProductionTagsForm(forms.ModelForm):
+	class Meta:
+		model = Production
+		fields = ['tags']
+
 class ProductionDownloadLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
 		instance = super(ProductionDownloadLinkForm, self).save(commit=False)

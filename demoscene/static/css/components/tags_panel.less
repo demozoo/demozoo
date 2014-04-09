@@ -2,7 +2,7 @@
 .tags_panel {
 	ul.tags {
 		li {
-			float: left;
+			display: inline-block;
 			margin-right: 8px;
 			margin-top: 8px;
 			font-size: 10pt;
@@ -24,47 +24,25 @@
 					text-decoration: underline;
 				}
 			}
-
-			form {
-				float: right;
-			}
-
-			button {
-				background-image: url('/static/images/icons/delete_mini_button.png');
-				border: 2px solid #ddd;
-				background-color: transparent;
-				width: 18px;
-				height: 18px;
-				text-indent: -5000px;
-				cursor: pointer;
-			}
-
-			&:hover button {
-				border: 2px solid #ccc;
-			}
-
-			button:hover {
-				border-left: 2px solid #eee;
-				border-top: 2px solid #eee;
-				border-right: 2px solid #888;
-				border-bottom: 2px solid #888;
-			}
 		}
 	}
 
-	form.add_tag {
-		float: left;
-		padding-top: 4px;
+	form.tags_form {
+		#id_tags {
+			width: 400px;
+		}
 	}
 }
 
 /* hide edit controls whenever javascript adds the hide_edit_controls class */
 .tags_panel.hide_edit_controls {
-	ul.tags li form {
+	form.tags_form {
 		display: none;
 	}
+}
 
-	form.add_tag {
+.tags_panel.editing {
+	ul.tags {
 		display: none;
 	}
 }
