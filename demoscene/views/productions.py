@@ -627,8 +627,14 @@ def edit_soundtracks(request, production_id):
 @login_required
 def edit_tags(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	old_tags = set(production.tags.names())
 	form = ProductionTagsForm(request.POST, instance=production)
 	form.save()
+	new_tags = set(production.tags.names())
+	if new_tags != old_tags:
+		names_string = u', '.join(production.tags.names())
+		Edit.objects.create(action_type='production_edit_tags', focus=production,
+			description=u"Set tags to %s" % names_string, user=request.user)
 	return HttpResponseRedirect(production.get_absolute_url())
 
 
