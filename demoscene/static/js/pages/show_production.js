@@ -65,4 +65,6 @@ $(function() {
 	if (location.hash.match(/\#comment-\d+/)) {
 		$(location.hash).css({'background-color': '#dfd'}).animate({'backgroundColor': '#eee'}, 3000);
 	}
+
+	$('#id_tags').tagit();
 });
