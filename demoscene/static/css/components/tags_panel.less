@@ -2,26 +2,27 @@
 .tags_panel {
 	ul.tags {
 		li {
-			display: inline-block;
-			margin-right: 8px;
-			margin-top: 8px;
-			font-size: 10pt;
-
-			border: 1px solid #888;
-			background-color: #ddd;
-
-			&:hover {
-				background-color: #ccc;
-			}
-
 			a.tag_name {
+				margin: 2px 5px 2px 0;
+
 				text-decoration: none;
-				color: #444;
-				padding: 4px;
+				font-weight: bold;
+				font-family: Trebuchet MS, Helvetica, Arial, sans-serif;
+				font-size: 1.1em;
+				color: #3383bb;
+				padding: .2em .5em .2em .5em;
 				float: left;
 
+				border: 1px solid #cccccc;
+				background-color: #eeeeee;
+				-moz-border-radius: 6px;
+				-webkit-border-radius: 6px;
+				-khtml-border-radius: 6px;
+				border-radius: 6px;
+
 				&:hover {
-					text-decoration: underline;
+					text-decoration: none;
+					background-color: #ddd;
 				}
 			}
 		}
