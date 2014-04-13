@@ -271,7 +271,7 @@ def edit_string_for_tags(tags):
 class TagitTagWidget(forms.TextInput):
 	def render(self, name, value, attrs=None):
 		if value is not None and not isinstance(value, (str, unicode)):
-			value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
+			value = edit_string_for_tags([o.tag for o in value.select_related("tag").order_by('tag__name')])
 		return super(TagitTagWidget, self).render(name, value, attrs)
 
 class ProductionTagsForm(forms.ModelForm):
