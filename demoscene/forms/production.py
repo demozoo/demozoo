@@ -253,10 +253,35 @@ class ProductionBlurbForm(forms.ModelForm):
 			'body': forms.Textarea(attrs={'class': 'short_notes'}),
 		}
 
+
+def edit_string_for_tags(tags):
+	"""
+	A version of taggit.utils.edit_string_for_tags that doesn't quote tags containing spaces,
+	to match the js tag-it library's behaviour
+	"""
+	names = []
+	for tag in tags:
+		name = tag.name
+		if ',' in name:
+			names.append('"%s"' % name)
+		else:
+			names.append(name)
+	return ', '.join(sorted(names))
+
+class TagitTagWidget(forms.TextInput):
+	def render(self, name, value, attrs=None):
+		if value is not None and not isinstance(value, (str, unicode)):
+			value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
+		return super(TagitTagWidget, self).render(name, value, attrs)
+
 class ProductionTagsForm(forms.ModelForm):
 	class Meta:
 		model = Production
 		fields = ['tags']
+		widgets = {
+			'tags': TagitTagWidget()
+		}
+
 
 class ProductionDownloadLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
