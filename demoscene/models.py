@@ -1219,7 +1219,7 @@ class CaptchaQuestion(models.Model):
 
 class TagDescription(models.Model):
 	tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description')
-	description = models.TextField(help_text="HTML is allowed")
+	description = models.TextField(help_text="HTML is allowed. Keep this to a couple of sentences at most - it's used in tooltips as well as the tag listing page")
 
 	def __unicode__(self):
 		return self.tag.name
