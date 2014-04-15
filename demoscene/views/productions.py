@@ -646,18 +646,38 @@ def add_tag(request, production_id):
 
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		tag_name = request.POST.get('tag_name', '').strip()
-		if tag_name:
-			# check whether it's already present
-			existing_tag = production.tags.filter(name=tag_name)
-			if not existing_tag:
-				production.tags.add(tag_name)
-				Edit.objects.create(action_type='production_add_tag', focus=production,
-					description=u"Added tag '%s'" % tag_name, user=request.user)
+		tag_name = request.POST.get('tag_name')
+		# check whether it's already present
+		existing_tag = production.tags.filter(name=tag_name)
+		if not existing_tag:
+			production.tags.add(tag_name)
+			Edit.objects.create(action_type='production_add_tag', focus=production,
+				description=u"Added tag '%s'" % tag_name, user=request.user)
 
 	return render(request, 'productions/_tags_list.html', {
 		'tags': production.tags.order_by('name'),
 	})
+
+
+@writeable_site_required
+@login_required
+def remove_tag(request, production_id):
+
+	# Only used in AJAX calls.
+
+	production = get_object_or_404(Production, id=production_id)
+	if request.method == 'POST':
+		tag_name = request.POST.get('tag_name')
+		existing_tag = production.tags.filter(name=tag_name)
+		if existing_tag:
+			production.tags.remove(tag_name)
+			Edit.objects.create(action_type='production_remove_tag', focus=production,
+				description=u"Removed tag '%s'" % tag_name, user=request.user)
+
+	return render(request, 'productions/_tags_list.html', {
+		'tags': production.tags.order_by('name'),
+	})
+
 
 def autocomplete(request):
 	query = request.GET.get('term')

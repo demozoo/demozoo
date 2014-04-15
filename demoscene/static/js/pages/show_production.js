@@ -68,6 +68,7 @@ $(function() {
 
 	var editTagsUrl = $('form.tags_form').attr('action');
 	var addTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/add_tag/');
+	var removeTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/remove_tag/');
 
 	$('#id_tags').tagit({
 		'afterTagAdded': function(event, data) {
@@ -78,6 +79,16 @@ $(function() {
 			}, function(response) {
 				$('ul.tags').html(response);
 			});
+		},
+		'afterTagRemoved': function(event, data) {
+			$.post(removeTagUrl, {
+				'csrfmiddlewaretoken': $.cookie('csrftoken'),
+				'tag_name': data.tagLabel
+			}, function(response) {
+				$('ul.tags').html(response);
+			});
 		}
 	});
+
+	$('form.tags_form input:submit').remove();
 });
