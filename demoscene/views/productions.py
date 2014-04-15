@@ -54,12 +54,12 @@ def index(request):
 	})
 
 
-def tagged(request, tag_slug):
+def tagged(request, tag_name):
 	try:
-		tag = Tag.objects.get(slug=tag_slug)
+		tag = Tag.objects.get(name=tag_name)
 	except Tag.DoesNotExist:
-		tag = Tag(name=tag_slug)
-	queryset = Production.objects.filter(tags__slug=tag_slug).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+		tag = Tag(name=tag_name)
+	queryset = Production.objects.filter(tags__name=tag_name).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	order = request.GET.get('order', 'title')
 	asc = request.GET.get('dir', 'asc') == 'asc'
