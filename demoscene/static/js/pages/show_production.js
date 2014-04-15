@@ -87,6 +87,9 @@ $(function() {
 			}, function(response) {
 				$('ul.tags').html(response);
 			});
+		},
+		'autocomplete': {
+			'source': '/productions/autocomplete_tags/'
 		}
 	});
 

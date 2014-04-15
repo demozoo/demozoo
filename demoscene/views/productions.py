@@ -679,6 +679,11 @@ def remove_tag(request, production_id):
 	})
 
 
+def autocomplete_tags(request):
+	tags = Tag.objects.filter(name__istartswith=request.GET.get('term')).order_by('name').values_list('name', flat=True)
+	return HttpResponse(json.dumps(list(tags)), mimetype="text/javascript")
+
+
 def autocomplete(request):
 	query = request.GET.get('term')
 	productions = Production.objects.filter(title__istartswith=query).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
