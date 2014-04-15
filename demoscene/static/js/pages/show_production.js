@@ -91,4 +91,7 @@ $(function() {
 	});
 
 	$('form.tags_form input:submit').remove();
+	$('.tags_panel').on('panelEditEnable', function() {
+		$('form.tags_form li.tagit-new input').focus();
+	});
 });
