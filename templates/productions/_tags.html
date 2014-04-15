@@ -15,13 +15,7 @@
 		</ul>
 	{% endif %}
 
-	<ul class="tags">
-		{% for tag in tags %}
-			<li>
-				<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
-			</li>
-		{% endfor %}
-	</ul>
+	{% include "productions/_tags_list.html" %}
 	{% if tags_form %}
 		<form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">
 			{% csrf_token %}

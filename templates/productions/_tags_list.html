@@ -1,0 +1,9 @@
+{% load url from future %}
+
+<ul class="tags">
+	{% for tag in tags %}
+		<li>
+			<a class="tag_name" href="{% url 'productions_tagged' tag.slug %}">{{ tag }}</a>
+		</li>
+	{% endfor %}
+</ul>

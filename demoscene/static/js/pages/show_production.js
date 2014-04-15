@@ -66,5 +66,18 @@ $(function() {
 		$(location.hash).css({'background-color': '#dfd'}).animate({'backgroundColor': '#eee'}, 3000);
 	}
 
-	$('#id_tags').tagit();
+	var editTagsUrl = $('form.tags_form').attr('action');
+	var addTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/add_tag/');
+
+	$('#id_tags').tagit({
+		'afterTagAdded': function(event, data) {
+			if (data.duringInitialization) return;
+			$.post(addTagUrl, {
+				'csrfmiddlewaretoken': $.cookie('csrftoken'),
+				'tag_name': data.tagLabel
+			}, function(response) {
+				$('ul.tags').html(response);
+			});
+		}
+	});
 });
