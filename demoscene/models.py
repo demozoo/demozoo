@@ -1215,3 +1215,11 @@ class CaptchaQuestion(models.Model):
 
 	def __unicode__(self):
 		return self.question
+
+
+class TagDescription(models.Model):
+	tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description')
+	description = models.TextField(help_text="HTML is allowed")
+
+	def __unicode__(self):
+		return self.tag.name

@@ -71,7 +71,7 @@ def tagged(request, tag_name):
 		request.GET.get('page', '1'))
 
 	return render(request, 'productions/tagged.html', {
-		'tag_name': tag.name,
+		'tag': tag,
 		'production_page': production_page,
 		'order': order,
 		'asc': asc,
