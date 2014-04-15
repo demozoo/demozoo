@@ -15,13 +15,11 @@
 		</ul>
 	{% endif %}
 
+	<h2>Productions tagged '{{ tag.name }}'</h2>
 	{% if tag.description %}
-		<h2>{{ tag.name }}</h2>
 		<div class="notes">
 			{{ tag.description.description|safe_markdown }}
 		</div>
-	{% else %}
-		<h2>Productions tagged '{{ tag.name }}'</h2>
 	{% endif %}
 
 	{% include "shared/production_reorder_links.html" %}
