@@ -77,7 +77,7 @@ def show(request, production_id, edit_mode=False):
 		'external_links': production.links.filter(is_download_link=False),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
-		'tags': production.tags.all(),
+		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
 		'tags_form': tags_form,
