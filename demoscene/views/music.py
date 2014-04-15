@@ -53,8 +53,10 @@ def show(request, production_id, edit_mode=False):
 	if request.user.is_authenticated():
 		comment = ProductionComment(production=production, user=request.user)
 		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+		tags_form = ProductionTagsForm(instance=production)
 	else:
 		comment_form = None
+		tags_form = None
 
 	return render(request, 'productions/show.html', {
 		'production': production,
@@ -70,6 +72,7 @@ def show(request, production_id, edit_mode=False):
 		'tags': production.tags.all(),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
+		'tags_form': tags_form,
 	})
 
 
