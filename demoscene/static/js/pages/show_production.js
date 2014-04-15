@@ -97,4 +97,22 @@ $(function() {
 	$('.tags_panel').on('panelEditEnable', function() {
 		$('form.tags_form li.tagit-new input').focus();
 	});
+	$('.tags_panel a.tag_name').each(function() {
+		var tag = this;
+		var description = $(tag).data('description');
+		if (description) {
+			tagOffset = $(tag).offset()
+			var descriptionElem = $('<div class="tag_description"></div>').html(description).css({
+				'position': 'absolute',
+				'top': (tagOffset.top + 32) + 'px',
+				'left': (tagOffset.left - 300) + 'px'
+			}).hide();
+			$('body').append(descriptionElem);
+			$(tag).hover(function() {
+				descriptionElem.show();
+			}, function() {
+				descriptionElem.hide();
+			})
+		}
+	})
 });
