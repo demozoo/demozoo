@@ -1,14 +1,17 @@
 from django import forms
-from demoscene.models import Production, ProductionType, Platform, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
-from fuzzy_date_field import FuzzyDateField
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
+
+from demoscene.models import Production, ProductionType, Platform, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
+from demoscene.utils.party_field import PartyField
+from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
+from demoscene.utils.text import slugify_tag
+
+from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
-from demoscene.utils.party_field import PartyField
 from production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
-from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 
 
 def readable_list(list):
@@ -254,33 +257,13 @@ class ProductionBlurbForm(forms.ModelForm):
 		}
 
 
-def edit_string_for_tags(tags):
-	"""
-	A version of taggit.utils.edit_string_for_tags that doesn't quote tags containing spaces,
-	to match the js tag-it library's behaviour
-	"""
-	names = []
-	for tag in tags:
-		name = tag.name
-		if ',' in name:
-			names.append('"%s"' % name)
-		else:
-			names.append(name)
-	return ', '.join(sorted(names))
-
-class TagitTagWidget(forms.TextInput):
-	def render(self, name, value, attrs=None):
-		if value is not None and not isinstance(value, (str, unicode)):
-			value = edit_string_for_tags([o.tag for o in value.select_related("tag").order_by('tag__name')])
-		return super(TagitTagWidget, self).render(name, value, attrs)
-
 class ProductionTagsForm(forms.ModelForm):
+	def clean_tags(self):
+		return [slugify_tag(name) for name in self.cleaned_data['tags']]
+
 	class Meta:
 		model = Production
 		fields = ['tags']
-		widgets = {
-			'tags': TagitTagWidget()
-		}
 
 
 class ProductionDownloadLinkForm(ExternalLinkForm):

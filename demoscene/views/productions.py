@@ -16,6 +16,7 @@ from demoscene.shortcuts import *
 from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionBlurb, Edit
 from demoscene.forms.production import *
 from demoscene.forms.common import CreditFormSet
+from demoscene.utils.text import slugify_tag
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import ProductionComment
@@ -646,7 +647,7 @@ def add_tag(request, production_id):
 
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		tag_name = request.POST.get('tag_name')
+		tag_name = slugify_tag(request.POST.get('tag_name'))
 		# check whether it's already present
 		existing_tag = production.tags.filter(name=tag_name)
 		if not existing_tag:
@@ -667,7 +668,7 @@ def remove_tag(request, production_id):
 
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		tag_name = request.POST.get('tag_name')
+		tag_name = slugify_tag(request.POST.get('tag_name'))
 		existing_tag = production.tags.filter(name=tag_name)
 		if existing_tag:
 			production.tags.remove(tag_name)
