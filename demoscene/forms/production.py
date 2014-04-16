@@ -267,7 +267,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 		exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
 
 ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink,
-	form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=1)
+	form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=2)
 
 
 class ProductionExternalLinkForm(ExternalLinkForm):
