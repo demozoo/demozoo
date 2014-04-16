@@ -40,6 +40,10 @@ $(function() {
 				}
 			});
 		}
+		list.find('a').click(function() {
+			list.slideUp('fast');
+			dropdownLink.removeClass('active');
+		});
 	});
 	initEditCreditLink();
 
