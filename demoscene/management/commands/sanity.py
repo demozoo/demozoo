@@ -1,9 +1,11 @@
 from demoscene.models import Releaser, Nick, NickVariant
 from parties.models import Competition, ResultsFile
-from sceneorg.models import Directory
+# from sceneorg.models import Directory
+from taggit.models import Tag
 
 from django.core.management.base import NoArgsCommand
 from django.db import connection, transaction
+from django.db.models import Count
 
 
 class Command(NoArgsCommand):
@@ -123,9 +125,10 @@ class Command(NoArgsCommand):
 			WHERE name LIKE ' %%' OR name LIKE '%% '
 		''')
 
-		print "Recursively marking children of deleted scene.org dirs as deleted"
-		for dir in Directory.objects.filter(is_deleted=True):
-			dir.mark_deleted()
+		# skip this. it takes ages.
+		# print "Recursively marking children of deleted scene.org dirs as deleted"
+		# for dir in Directory.objects.filter(is_deleted=True):
+		#	dir.mark_deleted()
 
 		print "Converting invitation competitions to party invitation relations"
 		invitation_compos = Competition.objects.filter(name__istartswith='invitation').select_related('party')
@@ -148,6 +151,11 @@ class Command(NoArgsCommand):
 				results_file.text
 			except UnicodeDecodeError:
 				print "Error on /parties/%d/results_file/%d/ - cannot decode as %r" % (results_file.party_id, results_file.id, results_file.encoding)
+			except IOError:
+				pass  # ignore files that aren't on disk (which probably means this is a local dev instance with a live db)
+
+		print "Deleting unused tags"
+		Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 
 		transaction.commit_unless_managed()
 
