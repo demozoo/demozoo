@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.utils import simplejson as json
 from django.db import transaction
+from django.db.models import Count
 from django.template.loader import render_to_string
 from django.template import RequestContext
 
@@ -636,6 +637,9 @@ def edit_tags(request, production_id):
 		names_string = u', '.join(production.tags.names())
 		Edit.objects.create(action_type='production_edit_tags', focus=production,
 			description=u"Set tags to %s" % names_string, user=request.user)
+
+		# delete any tags that are now unused
+		Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 	return HttpResponseRedirect(production.get_absolute_url())
 
 
@@ -674,6 +678,9 @@ def remove_tag(request, production_id):
 			production.tags.remove(tag_name)
 			Edit.objects.create(action_type='production_remove_tag', focus=production,
 				description=u"Removed tag '%s'" % tag_name, user=request.user)
+			if not existing_tag[0].taggit_taggeditem_items.count():
+				# no more items use this tag - delete it
+				existing_tag[0].delete()
 
 	return render(request, 'productions/_tags_list.html', {
 		'tags': production.tags.order_by('name'),
