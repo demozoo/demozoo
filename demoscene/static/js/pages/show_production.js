@@ -101,7 +101,9 @@ $(function() {
 		var tag = this;
 		var description = $(tag).data('description');
 		if (description) {
-			tagOffset = $(tag).offset()
+			var hideDescriptionTimeout;
+
+			tagOffset = $(tag).offset();
 			var descriptionElem = $('<div class="tag_description"></div>').html(description).css({
 				'position': 'absolute',
 				'top': (tagOffset.top + 32) + 'px',
@@ -109,10 +111,21 @@ $(function() {
 			}).hide();
 			$('body').append(descriptionElem);
 			$(tag).hover(function() {
+				$('.tag_description').hide(); /* hide all other tag descriptions */
 				descriptionElem.show();
+				clearTimeout(hideDescriptionTimeout);
 			}, function() {
-				descriptionElem.hide();
-			})
+				hideDescriptionTimeout = setTimeout(function() {
+					descriptionElem.hide();
+				}, 750);
+			});
+			descriptionElem.hover(function() {
+				clearTimeout(hideDescriptionTimeout);
+			}, function() {
+				hideDescriptionTimeout = setTimeout(function() {
+					descriptionElem.hide();
+				}, 750);
+			});
 		}
-	})
+	});
 });
