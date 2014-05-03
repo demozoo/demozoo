@@ -1,9 +1,10 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
 from demoscene.shortcuts import get_object_or_404, render, redirect
-from demoscene.models import Edit, Platform, ProductionType, Production
+from demoscene.models import Edit, ProductionType, Production
 from parties.models import Competition, CompetitionPlacing
 from parties.forms import CompetitionForm
+from platforms.models import Platform
 from demoscene.utils import result_parser
 
 from django.utils import simplejson as json

@@ -1,5 +1,7 @@
+from __future__ import absolute_import
+
 from demoscene.shortcuts import *
-from demoscene.models import Platform
+from platforms.models import Platform
 
 def index(request):
 	platforms = Platform.objects.order_by('name')

@@ -116,6 +116,7 @@ INSTALLED_APPS = (
 
 	'demoscene',
 	'parties',
+	'platforms',
 	'search',
 	'dataexchange',
 	'maintenance',

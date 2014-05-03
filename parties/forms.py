@@ -1,7 +1,8 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
-from demoscene.models import Platform, ProductionType, Edit
+from demoscene.models import ProductionType, Edit
+from platforms.models import Platform
 from parties.models import Party, PartySeries, Competition, PartyExternalLink
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from fuzzy_date_field import FuzzyDateField

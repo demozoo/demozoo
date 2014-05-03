@@ -7,6 +7,7 @@ import re
 from django.contrib.auth.models import User
 from demoscene.models import *
 from parties.models import *
+from platforms.models import Platform
 from dataexchange import demozoo0
 import datetime
 

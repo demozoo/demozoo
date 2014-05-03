@@ -3,8 +3,9 @@ from __future__ import absolute_import  # ensure that 'from parties.foo' imports
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.http import HttpResponse
-from demoscene.models import Production, Platform, ProductionType, Edit
+from demoscene.models import Production, ProductionType, Edit
 from parties.models import Competition, CompetitionPlacing
+from platforms.models import Platform
 from demoscene.utils.nick_search import NickSelection
 from django.contrib.auth.decorators import login_required
 from django.db.models import F

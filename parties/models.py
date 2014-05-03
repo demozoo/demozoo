@@ -221,7 +221,7 @@ class Competition(models.Model):
 	name = models.CharField(max_length=255)
 	shown_date_date = models.DateField(null=True, blank=True)
 	shown_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
-	platform = models.ForeignKey('demoscene.Platform', blank=True, null=True)
+	platform = models.ForeignKey('platforms.Platform', blank=True, null=True)
 	production_type = models.ForeignKey('demoscene.ProductionType', blank=True, null=True)
 
 	def results(self):

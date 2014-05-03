@@ -47,7 +47,6 @@ class ProductionTypeAdmin(TreeAdmin):
 	pass
 
 admin.site.register(ProductionType, ProductionTypeAdmin)
-admin.site.register(Platform)
 admin.site.register(Production,
 	inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
 	raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
