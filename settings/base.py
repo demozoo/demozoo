@@ -210,3 +210,8 @@ MEDIA_ROOT = os.path.join(FILEROOT, 'media')
 
 # Read-only mode
 SITE_IS_WRITEABLE = True
+
+# Whether to attempt image conversion using the pygame.image library
+# for image formats that PIL doesn't support. Means that we can support
+# LBM files, but is a total arse to install...
+USE_PYGAME_IMAGE_CONVERSION = False

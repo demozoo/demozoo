@@ -20,6 +20,8 @@ BROKER_URL = 'redis://localhost:4803/0'
 
 ALLOWED_HOSTS = ['localhost', 'dev.demozoo.org']
 
+USE_PYGAME_IMAGE_CONVERSION = True
+
 try:
 	from .local import *
 except ImportError:
