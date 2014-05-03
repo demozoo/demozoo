@@ -121,15 +121,12 @@ urlpatterns += patterns('demoscene.views',
 
 	(r'^nicks/match/$', 'nicks.match', {}),
 	(r'^nicks/byline_match/$', 'nicks.byline_match', {}),
-
-	(r'^platforms/$', 'platforms.index', {}, 'platforms'),
-	(r'^platforms/(\d+)/$', 'platforms.show', {}, 'platform'),
-
 )
 
 urlpatterns += patterns('',
 	(r'^', include('parties.urls')),
 	(r'^', include('comments.urls')),
+	(r'^platforms/', include('platforms.urls')),
 	(r'^search/', include('search.urls')),
 	(r'^maintenance/', include('maintenance.urls')),
 	(r'^pages/', include('pages.urls')),
