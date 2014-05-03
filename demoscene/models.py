@@ -720,6 +720,9 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
 
+	def can_have_pack_members(self):
+		return any([typ.internal_name == 'pack' for typ in self.types.all()])
+
 	def _get_release_date(self):
 		if self.release_date_date and self.release_date_precision:
 			return FuzzyDate(self.release_date_date, self.release_date_precision)
@@ -961,6 +964,18 @@ class SoundtrackLink(models.Model):
 
 	def __unicode__(self):
 		return "%s on %s" % (self.soundtrack, self.production)
+
+	class Meta:
+		ordering = ['position']
+
+
+class PackMember(models.Model):
+	pack = models.ForeignKey(Production, related_name='pack_members')
+	member = models.ForeignKey(Production, related_name='packed_in')
+	position = models.IntegerField()
+
+	def __unicode__(self):
+		return "%s packed in %s" % (self.member, self.pack)
 
 	class Meta:
 		ordering = ['position']

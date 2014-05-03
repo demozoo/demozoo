@@ -115,8 +115,25 @@
 
 	{% include "productions/_notes.html" %}
 
-	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks %}hidden{% endif %}">
+	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members %}hidden{% endif %}">
 		{% include "productions/_credits.html" %}
+
+		{% if production.can_have_pack_members %}
+			<div class="pack_contents_panel panel editable_chunk">
+				<h3>Pack contents</h3>
+
+				{% if site_is_writeable %}
+					<ul class="actions">
+						<li>
+							<a href="{# url 'production_edit_soundtracks' production.id #}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents">Edit</a>
+						</li>
+					</ul>
+				{% endif %}
+
+				{% include "shared/production_listing.html" with productions=pack_members %}
+
+			</div>
+		{% endif %}
 
 		{% if featured_in_productions %}
 			<div class="featured_in_panel panel">

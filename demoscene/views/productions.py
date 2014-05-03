@@ -119,6 +119,14 @@ def show(request, production_id, edit_mode=False):
 		comment_form = None
 		tags_form = None
 
+	if production.can_have_pack_members():
+		pack_members = [
+			link.member for link in
+			production.pack_members.select_related('member').prefetch_related('member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser')
+		]
+	else:
+		pack_members = None
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
@@ -135,6 +143,7 @@ def show(request, production_id, edit_mode=False):
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
+		'pack_members': pack_members,
 		'comment_form': comment_form,
 		'tags_form': tags_form,
 	})
