@@ -125,7 +125,7 @@
 				{% if site_is_writeable %}
 					<ul class="actions">
 						<li>
-							<a href="{# url 'production_edit_soundtracks' production.id #}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents">Edit</a>
+							<a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents">Edit</a>
 						</li>
 					</ul>
 				{% endif %}

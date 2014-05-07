@@ -636,6 +636,40 @@ def edit_soundtracks(request, production_id):
 
 @writeable_site_required
 @login_required
+def edit_pack_contents(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	if request.method == 'POST':
+		formset = PackMemberFormset(request.POST, instance=production)
+		if formset.is_valid():
+			def form_order_key(form):
+				if form.is_valid():
+					return form.cleaned_data['ORDER'] or 9999
+				else:
+					return 9999
+
+			sorted_forms = sorted(formset.forms, key=form_order_key)
+			for (i, form) in enumerate(sorted_forms):
+				form.instance.position = i + 1
+			formset.save()
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+			production.save()
+			for stl in production.pack_members.all():
+				stl.member.has_bonafide_edits = True
+				stl.member.save()
+			Edit.objects.create(action_type='edit_pack_contents', focus=production,
+				description=(u"Edited pack contents of %s" % production.title), user=request.user)
+			return HttpResponseRedirect(production.get_absolute_url())
+	else:
+		formset = PackMemberFormset(instance=production)
+	return render(request, 'productions/edit_pack_contents.html', {
+		'production': production,
+		'formset': formset,
+	})
+
+
+@writeable_site_required
+@login_required
 def edit_tags(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	old_tags = set(production.tags.names())

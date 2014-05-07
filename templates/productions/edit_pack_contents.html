@@ -1,0 +1,33 @@
+{% extends base_template_with_ajax_option %}
+{% load spawning_formset %}
+{% load url from future %}
+
+{% block html_title %}Editing pack contents for {{ production.title }} - Demozoo{% endblock %}
+
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+	{% include "shared/editor_js.html" %}
+	<script>
+		$(function() {
+			applyEditControls($('form.pack_contents_form'));
+		})
+	</script>
+{% endblock %}
+
+{% block base_main %}
+	<h2>Editing pack contents for {{ production.title }}:</h2>
+
+	<form action="{% url 'production_edit_pack_contents' production.id %}" method="post" class="entry_form pack_contents_form">
+		{% csrf_token %}
+		
+		{% spawningformset sortable formset %}
+			{% spawningform as form %}
+				{{ form.ORDER }}{{ form.member }}{{ form.id }}{{ form.pack }}
+			{% endspawningform %}
+		{% endspawningformset %}
+		
+		<div class="field">
+			<input type="submit" />
+		</div>
+	</form>
+{% endblock %}

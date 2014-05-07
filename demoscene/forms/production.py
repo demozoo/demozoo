@@ -2,7 +2,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 
-from demoscene.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, Edit
+from demoscene.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, Edit, PackMember
 from platforms.models import Platform
 from demoscene.utils.party_field import PartyField
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
@@ -371,6 +371,55 @@ ProductionSoundtrackLinkFormset = formset_factory(SoundtrackLinkForm,
 	formset=BaseProductionSoundtrackLinkFormSet,
 	can_delete=True, can_order=True, extra=1)
 ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == 'production'][0]
+
+
+class PackMemberForm(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.instance = kwargs.pop('instance', PackMember())
+		super(PackMemberForm, self).__init__(*args, **kwargs)
+		self.fields['member'] = ProductionField(
+			initial=self.instance.member_id,
+			# supertype='production',  # add this if we require pack members to be productions (not music or gfx)
+		)
+		self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
+
+	def save(self, commit=True):
+		if not commit:
+			raise Exception("we don't support saving PackMemberForm with commit = False. Sorry!")
+
+		self.instance.member = self.cleaned_data['member'].commit()
+		self.instance.save()
+		return self.instance
+
+	def has_changed(self):
+		return True  # force all objects to be saved so that ordering (done out of form) takes effect
+
+
+class BasePackMemberFormSet(BaseModelFormSet):
+	def __init__(self, data=None, files=None, instance=None, prefix=None):
+		self.model = PackMember
+		if instance is None:
+			self.instance = Production()
+		else:
+			self.instance = instance
+		qs = self.instance.pack_members.order_by('position')
+		super(BasePackMemberFormSet, self).__init__(data, files, prefix=prefix, queryset=qs)
+
+	def validate_unique(self):
+		# PackMemberForm has no unique constraints,
+		# so don't try to rummage around in its non-existent metaclass to find some
+		return
+
+	def _construct_form(self, i, **kwargs):
+		# ensure foreign key to pack is set
+		form = super(BasePackMemberFormSet, self)._construct_form(i, **kwargs)
+		form.instance.pack = self.instance
+		return form
+
+PackMemberFormset = formset_factory(PackMemberForm,
+	formset=BasePackMemberFormSet,
+	can_delete=True, can_order=True, extra=1)
+PackMemberFormset.fk = [f for f in PackMember._meta.fields if f.name == 'pack'][0]
 
 
 class ProductionInvitationPartyForm(forms.Form):
