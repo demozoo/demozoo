@@ -144,6 +144,10 @@ def show(request, production_id, edit_mode=False):
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'pack_members': pack_members,
+		'packed_in_productions': [
+			pack_member.pack for pack_member in
+			production.packed_in.select_related('pack', 'pack__default_screenshot').order_by('pack__release_date_date')
+		],
 		'comment_form': comment_form,
 		'tags_form': tags_form,
 	})

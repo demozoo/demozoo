@@ -135,6 +135,15 @@
 			</div>
 		{% endif %}
 
+		{% if packed_in_productions %}
+			<div class="packed_in_panel panel">
+				<h3>Packed in:</h3>
+				{% with packed_in_productions as productions %}
+					{% include "shared/production_listing.html" with show_screenshots=1 %}
+				{% endwith %}
+			</div>
+		{% endif %}
+
 		{% if featured_in_productions %}
 			<div class="featured_in_panel panel">
 				<h3>Featured in:</h3>
