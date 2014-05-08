@@ -272,6 +272,16 @@ class AsciiarenaArtist(BaseUrl):
 	html_title_format = "%s on AsciiArena"
 
 
+class AsciiarenaCrew(BaseUrl):
+	canonical_format = "http://www.asciiarena.com/info_crew.php?crew=%s&sort_by=filename"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_crew\.php', 'crew', re.I),
+	]
+	html_link_class = "asciiarena"
+	html_link_text = "AsciiArena"
+	html_title_format = "%s on AsciiArena"
+
+
 class AsciiarenaRelease(BaseUrl):
 	canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
 	tests = [
@@ -1030,7 +1040,7 @@ class GithubRepo(BaseUrl):
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
-	MobygamesDeveloper, AsciiarenaArtist, PouetGroup,
+	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
 	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
 	GooglePlusPage, SoundcloudUser, YoutubeUser,
