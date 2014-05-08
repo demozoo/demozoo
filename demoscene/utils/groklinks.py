@@ -817,6 +817,16 @@ class YoutubeUser(BaseUrl):
 	html_title_format = "%s on YouTube"
 
 
+class YoutubeChannel(BaseUrl):
+	canonical_format = "http://www.youtube.com/channel/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?youtube\.com/channel/([^\/\?]+)', re.I),
+	]
+	html_link_class = "youtube"
+	html_link_text = "YouTube"
+	html_title_format = "%s on YouTube"
+
+
 class VimeoVideo(BaseUrl):
 	canonical_format = "http://vimeo.com/%s"
 	tests = [
@@ -1043,7 +1053,7 @@ RELEASER_LINK_TYPES = [
 	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
 	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
-	GooglePlusPage, SoundcloudUser, YoutubeUser,
+	GooglePlusPage, SoundcloudUser, YoutubeUser, YoutubeChannel,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
@@ -1079,7 +1089,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 PARTY_LINK_TYPES = [
 	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-	PushnpopParty, KestraBitworldParty,
+	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
 	FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
 	BaseUrl,
 ]
