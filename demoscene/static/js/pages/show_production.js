@@ -67,31 +67,33 @@ $(function() {
 	}
 
 	var editTagsUrl = $('form.tags_form').attr('action');
-	var addTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/add_tag/');
-	var removeTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/remove_tag/');
+	if (editTagsUrl) {
+		var addTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/add_tag/');
+		var removeTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/remove_tag/');
 
-	$('#id_tags').tagit({
-		'afterTagAdded': function(event, data) {
-			if (data.duringInitialization) return;
-			$.post(addTagUrl, {
-				'csrfmiddlewaretoken': $.cookie('csrftoken'),
-				'tag_name': data.tagLabel
-			}, function(response) {
-				$('ul.tags').html(response);
-			});
-		},
-		'afterTagRemoved': function(event, data) {
-			$.post(removeTagUrl, {
-				'csrfmiddlewaretoken': $.cookie('csrftoken'),
-				'tag_name': data.tagLabel
-			}, function(response) {
-				$('ul.tags').html(response);
-			});
-		},
-		'autocomplete': {
-			'source': '/productions/autocomplete_tags/'
-		}
-	});
+		$('#id_tags').tagit({
+			'afterTagAdded': function(event, data) {
+				if (data.duringInitialization) return;
+				$.post(addTagUrl, {
+					'csrfmiddlewaretoken': $.cookie('csrftoken'),
+					'tag_name': data.tagLabel
+				}, function(response) {
+					$('ul.tags').html(response);
+				});
+			},
+			'afterTagRemoved': function(event, data) {
+				$.post(removeTagUrl, {
+					'csrfmiddlewaretoken': $.cookie('csrftoken'),
+					'tag_name': data.tagLabel
+				}, function(response) {
+					$('ul.tags').html(response);
+				});
+			},
+			'autocomplete': {
+				'source': '/productions/autocomplete_tags/'
+			}
+		});
+	}
 
 	$('form.tags_form input:submit').remove();
 	$('.tags_panel').on('panelEditEnable', function() {
