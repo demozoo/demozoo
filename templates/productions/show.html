@@ -115,7 +115,7 @@
 
 	{% include "productions/_notes.html" %}
 
-	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members %}hidden{% endif %}">
+	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
 		{% include "productions/_credits.html" %}
 
 		{% if production.can_have_pack_members %}
