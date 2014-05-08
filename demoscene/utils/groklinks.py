@@ -882,6 +882,16 @@ class GooglePlusPage(BaseUrl):
 	html_title_format = "%s on Google+"
 
 
+class GooglePlusEvent(BaseUrl):
+	canonical_format = "https://plus.google.com/u/0/events/%s"
+	tests = [
+		regex_match(r'https?://plus\.google\.com/u/0/events/(\w+)', re.I),
+	]
+	html_link_class = "googleplus"
+	html_link_text = "Google+"
+	html_title_format = "%s on Google+"
+
+
 class SoundcloudUser(BaseUrl):
 	canonical_format = "http://soundcloud.com/%s/"
 	tests = [
@@ -1091,8 +1101,8 @@ PARTY_LINK_TYPES = [
 	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
 	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
-	FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
-	BaseUrl,
+	FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
+	SpeccyWikiPage, BaseUrl,
 ]
 
 
