@@ -86,12 +86,12 @@ def apply_order(queryset, order, asc):
 		).order_by('%slower_title' % ('' if asc else '-'))
 	else:  # date
 		if asc:
-			return queryset.order_by('release_date_date')
+			return queryset.order_by('release_date_date', 'title')
 		else:
 			# fiddle order so that empty release dates end up at the end
 			return queryset.extra(
 				select={'order_date': "coalesce(demoscene_production.release_date_date, '1970-01-01')"}
-			).order_by('-order_date')
+			).order_by('-order_date', '-title')
 
 
 def show(request, production_id, edit_mode=False):
