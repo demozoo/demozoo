@@ -799,7 +799,8 @@ class YoutubeVideo(BaseUrl):
 	canonical_format = "http://www.youtube.com/watch?v=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?youtube\.com/watch', 'v', re.I),
-		regex_match(r'https?://(?:www\.)?youtube.com/embed/([^/]+)', re.I),
+		regex_match(r'https?://(?:www\.)?youtube\.com/embed/([^/]+)', re.I),
+		regex_match(r'https?://(?:www\.)?youtu\.be/([^/]+)', re.I),
 	]
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
