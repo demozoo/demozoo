@@ -58,4 +58,4 @@ admin.site.register(Nick, inlines=[NickVariantInline], raw_id_fields=['releaser'
 	search_fields=['variants__name'])
 admin.site.register(AccountProfile)
 admin.site.register(CaptchaQuestion)
-admin.site.register(TagDescription)
+admin.site.register(TagDescription, ordering=['tag__name'])
