@@ -60,10 +60,14 @@ function applyEditControls(context) {
 		
 		var titleField = $('input.title_field', this);
 		titleField.autocomplete({
+			'html': true,
 			'source': function(request, response) {
 				$.getJSON('/productions/autocomplete/',
 					{'term': request.term, 'supertype': titleField.attr('data-supertype')},
 					function(data) {
+						for (var i = 0; i < data.length; i++) {
+							data[i].label = '<div class="autosuggest_result ' + data[i].supertype + '">' + htmlEncode(data[i].label) + '</div>';
+						}
 						response(data);
 					});
 			},
