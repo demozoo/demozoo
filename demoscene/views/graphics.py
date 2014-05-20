@@ -70,7 +70,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'credits': production.credits.order_by('nick__name', 'category'),
+		'credits': production.credits_for_listing(),
 		'screenshots': screenshots,
 		'screenshots_json': screenshots_json,
 		'download_links': production.links.filter(is_download_link=True),

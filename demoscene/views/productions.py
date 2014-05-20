@@ -529,7 +529,9 @@ def add_credit(request, production_id):
 def edit_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
 	nick = get_object_or_404(Nick, id=nick_id)
-	credits = production.credits.filter(nick=nick)
+	credits = production.credits.filter(nick=nick).extra(
+		select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
+	).order_by('category_order')
 	if request.method == 'POST':
 		nick_form = ProductionCreditedNickForm(request.POST, nick=nick)
 		credit_formset = CreditFormSet(request.POST, queryset=credits, prefix="credit")

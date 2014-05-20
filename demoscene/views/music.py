@@ -62,7 +62,7 @@ def show(request, production_id, edit_mode=False):
 		'production': production,
 		'download_links': production.links.filter(is_download_link=True),
 		'external_links': production.links.filter(is_download_link=False),
-		'credits': production.credits.select_related('nick__releaser').order_by('nick__name', 'category'),
+		'credits': production.credits_for_listing(),
 		'featured_in_productions': [
 			appearance.production for appearance in
 			production.appearances_as_soundtrack.select_related('production', 'production__default_screenshot').order_by('production__release_date_date')

@@ -772,7 +772,9 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 		}
 
 	def credits_for_listing(self):
-		return self.credits.select_related('nick__releaser').order_by('nick__name', 'category')
+		return self.credits.select_related('nick__releaser').extra(
+			select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
+		).order_by('nick__name', 'category_order')
 
 	def get_comments(self):
 		return self.comments.select_related('user').order_by('created_at')
@@ -868,6 +870,7 @@ class Credit(models.Model):
 		('Code', 'Code'),
 		('Graphics', 'Graphics'),
 		('Music', 'Music'),
+		('Text', 'Text'),
 		('Other', 'Other')
 	]
 
