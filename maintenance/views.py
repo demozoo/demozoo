@@ -746,6 +746,7 @@ def credits_to_move_to_text(request):
 		AND (
 			production_id IN (SELECT production_id FROM demoscene_production_types where productiontype_id = 5)
 			OR role ILIKE '%%text%%'
+			OR role ILIKE '%%lyric%%'
 		)
 		AND demoscene_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 	''', [report_name])
