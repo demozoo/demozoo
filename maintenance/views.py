@@ -728,6 +728,35 @@ def prod_comments(request):
 		'comments': comments_page,
 	})
 
+def credits_to_move_to_text(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	report_name = 'credits_to_move_to_text'
+
+	credits = Credit.objects.raw('''
+		SELECT
+			demoscene_credit.*,
+			demoscene_production.title,
+			demoscene_nick.name AS nick_name
+		FROM demoscene_credit
+		INNER JOIN demoscene_production ON demoscene_credit.production_id = demoscene_production.id
+		INNER JOIN demoscene_nick ON demoscene_credit.nick_id = demoscene_nick.id
+		WHERE category = 'Other'
+		AND (
+			production_id IN (SELECT production_id FROM demoscene_production_types where productiontype_id = 5)
+			OR role ILIKE '%%text%%'
+		)
+		AND demoscene_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+	''', [report_name])
+
+	return render(request, 'maintenance/credits_to_move_to_text.html', {
+		'title': 'Credits that probably need to be moved to the Text category',
+		'credits': credits,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
 
 @writeable_site_required
 def fix_release_dates(request):

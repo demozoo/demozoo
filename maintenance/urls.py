@@ -33,6 +33,7 @@ urlpatterns = patterns('maintenance.views',
 	(r'^public_real_names$', 'public_real_names', {}, 'maintenance_public_real_names'),
 	(r'^prods_with_blurbs$', 'prods_with_blurbs', {}, 'maintenance_prods_with_blurbs'),
 	(r'^prod_comments$', 'prod_comments', {}, 'maintenance_prod_comments'),
+	(r'^credits_to_move_to_text$', 'credits_to_move_to_text', {}, 'maintenance_credits_to_move_to_text'),
 
 	(r'^unresolved_screenshots$', 'unresolved_screenshots', {}, 'maintenance_unresolved_screenshots'),
 	(r'^archive_member/(\d+)/$', 'view_archive_member', {}, 'maintenance_view_archive_member'),
