@@ -11,7 +11,7 @@ import datetime
 from read_only_mode import writeable_site_required
 
 from comments.models import Comment
-from comments.forms import ProductionCommentForm
+from comments.forms import CommentForm
 
 
 def index(request):
@@ -62,7 +62,7 @@ def show(request, production_id, edit_mode=False):
 
 	if request.user.is_authenticated():
 		comment = Comment(commentable=production, user=request.user)
-		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+		comment_form = CommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:
 		comment_form = None

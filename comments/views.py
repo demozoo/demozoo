@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from read_only_mode import writeable_site_required
 
 from comments.models import Comment
-from comments.forms import ProductionCommentForm
+from comments.forms import CommentForm
 from demoscene.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
 
@@ -17,12 +17,12 @@ def add_production_comment(request, production_id):
 	comment = Comment(commentable=production, user=request.user)
 
 	if request.POST:
-		form = ProductionCommentForm(request.POST, instance=comment, prefix='comment')
+		form = CommentForm(request.POST, instance=comment, prefix='comment')
 		if form.is_valid():
 			form.save()
 			return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
 	else:
-		form = ProductionCommentForm(instance=comment, prefix='comment')
+		form = CommentForm(instance=comment, prefix='comment')
 
 	return render(request, 'comments/add_production_comment.html', {
 		'production': production,
@@ -42,12 +42,12 @@ def edit_production_comment(request, production_id, comment_id):
 		return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
 
 	if request.POST:
-		form = ProductionCommentForm(request.POST, instance=comment, prefix='comment')
+		form = CommentForm(request.POST, instance=comment, prefix='comment')
 		if form.is_valid():
 			form.save()
 			return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
 	else:
-		form = ProductionCommentForm(instance=comment, prefix='comment')
+		form = CommentForm(instance=comment, prefix='comment')
 
 	return render(request, 'comments/edit_production_comment.html', {
 		'production': production,

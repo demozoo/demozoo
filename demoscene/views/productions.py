@@ -21,7 +21,7 @@ from demoscene.utils.text import slugify_tag
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
-from comments.forms import ProductionCommentForm
+from comments.forms import CommentForm
 
 def index(request):
 	queryset = Production.objects.filter(supertype='production')
@@ -113,7 +113,7 @@ def show(request, production_id, edit_mode=False):
 
 	if request.user.is_authenticated():
 		comment = Comment(commentable=production, user=request.user)
-		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
+		comment_form = CommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:
 		comment_form = None
