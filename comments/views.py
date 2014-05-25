@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.contrib.contenttypes.models import ContentType
 
 from read_only_mode import writeable_site_required
 
@@ -13,7 +14,7 @@ from demoscene.shortcuts import simple_ajax_confirmation
 @login_required
 def add_production_comment(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	comment = ProductionComment(production=production, user=request.user)
+	comment = ProductionComment(commentable=production, user=request.user)
 
 	if request.POST:
 		form = ProductionCommentForm(request.POST, instance=comment, prefix='comment')
@@ -31,8 +32,11 @@ def add_production_comment(request, production_id):
 @writeable_site_required
 @login_required
 def edit_production_comment(request, production_id, comment_id):
+	production_type = ContentType.objects.get_for_model(Production)
+
 	production = get_object_or_404(Production, id=production_id)
-	comment = get_object_or_404(ProductionComment, id=comment_id, production=production)
+	comment = get_object_or_404(ProductionComment,
+		id=comment_id, content_type=production_type, object_id=production_id)
 
 	if not request.user.is_staff:
 		return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
@@ -54,8 +58,11 @@ def edit_production_comment(request, production_id, comment_id):
 @writeable_site_required
 @login_required
 def delete_production_comment(request, production_id, comment_id):
+	production_type = ContentType.objects.get_for_model(Production)
+
 	production = get_object_or_404(Production, id=production_id)
-	comment = get_object_or_404(ProductionComment, id=comment_id, production=production)
+	comment = get_object_or_404(ProductionComment,
+		id=comment_id, content_type=production_type, object_id=production_id)
 
 	if not request.user.is_staff:
 		return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))

@@ -51,7 +51,7 @@ def show(request, production_id, edit_mode=False):
 		return HttpResponseRedirect(production.get_absolute_url())
 
 	if request.user.is_authenticated():
-		comment = ProductionComment(production=production, user=request.user)
+		comment = ProductionComment(commentable=production, user=request.user)
 		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:

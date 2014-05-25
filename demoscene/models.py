@@ -1,22 +1,24 @@
 from django.db import models
 from django.db.models import Q
-
-import re
-import datetime
-from fuzzy_date import FuzzyDate
 from django.contrib.auth.models import User
 from django.utils.encoding import StrAndUnicode
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
-from strip_markup import strip_markup
-from demoscene.utils import groklinks
-from prefetch_snooping import ModelWithPrefetchSnooping
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
+import re
+import datetime
 
 from treebeard.mp_tree import MP_Node
 from taggit.managers import TaggableManager
 from unidecode import unidecode
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+
+from fuzzy_date import FuzzyDate
+from strip_markup import strip_markup
+from prefetch_snooping import ModelWithPrefetchSnooping
+from demoscene.utils import groklinks
+from comments.models import Commentable
 
 
 DATE_PRECISION_CHOICES = [
@@ -565,7 +567,7 @@ SUPERTYPE_CHOICES = (
 )
 
 
-class Production(ModelWithPrefetchSnooping, models.Model):
+class Production(ModelWithPrefetchSnooping, Commentable):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES)
@@ -775,9 +777,6 @@ class Production(ModelWithPrefetchSnooping, models.Model):
 		return self.credits.select_related('nick__releaser').extra(
 			select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
 		).order_by('nick__name', 'category_order')
-
-	def get_comments(self):
-		return self.comments.select_related('user').order_by('created_at')
 
 	@property
 	def platforms_and_types_list(self):

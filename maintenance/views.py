@@ -3,6 +3,7 @@ from django.db import connection, transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.contenttypes.models import ContentType
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -714,7 +715,9 @@ def prod_comments(request):
 	if not request.user.is_staff:
 		return redirect('home')
 
-	comments = ProductionComment.objects.order_by('-created_at').select_related('user', 'production')
+	production_type = ContentType.objects.get_for_model(Production)
+
+	comments = ProductionComment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
 	paginator = Paginator(comments, 100)
 
 	page = request.GET.get('page', 1)
