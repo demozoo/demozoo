@@ -10,7 +10,7 @@ from django.utils import simplejson as json
 import datetime
 from read_only_mode import writeable_site_required
 
-from comments.models import ProductionComment
+from comments.models import Comment
 from comments.forms import ProductionCommentForm
 
 
@@ -61,7 +61,7 @@ def show(request, production_id, edit_mode=False):
 	])
 
 	if request.user.is_authenticated():
-		comment = ProductionComment(commentable=production, user=request.user)
+		comment = Comment(commentable=production, user=request.user)
 		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:

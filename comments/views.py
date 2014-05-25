@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from read_only_mode import writeable_site_required
 
-from comments.models import ProductionComment
+from comments.models import Comment
 from comments.forms import ProductionCommentForm
 from demoscene.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
@@ -14,7 +14,7 @@ from demoscene.shortcuts import simple_ajax_confirmation
 @login_required
 def add_production_comment(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	comment = ProductionComment(commentable=production, user=request.user)
+	comment = Comment(commentable=production, user=request.user)
 
 	if request.POST:
 		form = ProductionCommentForm(request.POST, instance=comment, prefix='comment')
@@ -35,7 +35,7 @@ def edit_production_comment(request, production_id, comment_id):
 	production_type = ContentType.objects.get_for_model(Production)
 
 	production = get_object_or_404(Production, id=production_id)
-	comment = get_object_or_404(ProductionComment,
+	comment = get_object_or_404(Comment,
 		id=comment_id, content_type=production_type, object_id=production_id)
 
 	if not request.user.is_staff:
@@ -61,7 +61,7 @@ def delete_production_comment(request, production_id, comment_id):
 	production_type = ContentType.objects.get_for_model(Production)
 
 	production = get_object_or_404(Production, id=production_id)
-	comment = get_object_or_404(ProductionComment,
+	comment = get_object_or_404(Comment,
 		id=comment_id, content_type=production_type, object_id=production_id)
 
 	if not request.user.is_staff:

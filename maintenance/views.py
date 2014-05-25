@@ -10,7 +10,7 @@ from read_only_mode import writeable_site_required
 
 from demoscene.shortcuts import *
 from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink, ProductionBlurb
-from comments.models import ProductionComment
+from comments.models import Comment
 from parties.models import PartyExternalLink, Party
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
@@ -717,7 +717,7 @@ def prod_comments(request):
 
 	production_type = ContentType.objects.get_for_model(Production)
 
-	comments = ProductionComment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
+	comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
 	paginator = Paginator(comments, 100)
 
 	page = request.GET.get('page', 1)

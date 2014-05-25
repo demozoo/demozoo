@@ -20,7 +20,7 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
 
 from screenshots.tasks import capture_upload_for_processing
-from comments.models import ProductionComment
+from comments.models import Comment
 from comments.forms import ProductionCommentForm
 
 def index(request):
@@ -112,7 +112,7 @@ def show(request, production_id, edit_mode=False):
 	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
 	if request.user.is_authenticated():
-		comment = ProductionComment(commentable=production, user=request.user)
+		comment = Comment(commentable=production, user=request.user)
 		comment_form = ProductionCommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:

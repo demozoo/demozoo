@@ -4,8 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 
-class ProductionComment(models.Model):
-	user = models.ForeignKey(User, related_name='production_comments')
+class Comment(models.Model):
+	user = models.ForeignKey(User, related_name='comments')
 	content_type = models.ForeignKey(ContentType)
 	object_id = models.PositiveIntegerField()
 	commentable = generic.GenericForeignKey('content_type', 'object_id')
@@ -16,7 +16,7 @@ class ProductionComment(models.Model):
 
 
 class Commentable(models.Model):
-	comments = generic.GenericRelation(ProductionComment)
+	comments = generic.GenericRelation(Comment)
 
 	def get_comments(self):
 		return self.comments.select_related('user').order_by('created_at')
