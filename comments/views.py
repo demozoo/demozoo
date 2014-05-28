@@ -13,14 +13,14 @@ from demoscene.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
 
 
-class AddProductionCommentView(TemplateView):
+class AddCommentView(TemplateView):
 	@method_decorator(writeable_site_required)
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):
-		production_id = self.args[0]
-		self.production = get_object_or_404(Production, id=production_id)
-		self.comment = Comment(commentable=self.production, user=request.user)
-		return super(AddProductionCommentView, self).dispatch(request, *args, **kwargs)
+		commentable_id = self.args[0]
+		self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
+		self.comment = Comment(commentable=self.commentable, user=request.user)
+		return super(AddCommentView, self).dispatch(request, *args, **kwargs)
 
 	def get(self, request, *args, **kwargs):
 		self.form = CommentForm(instance=self.comment, prefix='comment')
@@ -32,37 +32,41 @@ class AddProductionCommentView(TemplateView):
 		if self.form.is_valid():
 			self.form.save()
 			return redirect(
-				self.production.get_absolute_url() + ('#comment-%d' % self.comment.id)
+				self.commentable.get_absolute_url() + ('#comment-%d' % self.comment.id)
 			)
 		else:
 			context = self.get_context_data()
 			return self.render_to_response(context)
 
 	def get_context_data(self, **kwargs):
-		context = super(AddProductionCommentView, self).get_context_data(**kwargs)
-		context['production'] = self.production
+		context = super(AddCommentView, self).get_context_data(**kwargs)
+		context[self.commentable_context_name] = self.commentable
+		context['commentable'] = self.commentable
 		context['comment_form'] = self.form
 		return context
 
+class AddProductionCommentView(AddCommentView):
+	commentable_model = Production
+	commentable_context_name = 'production'
 	template_name = 'comments/add_production_comment.html'
 
 
-class EditProductionCommentView(TemplateView):
+class EditCommentView(TemplateView):
 	@method_decorator(writeable_site_required)
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):
-		production_id = self.args[0]
+		commentable_id = self.args[0]
 		comment_id = self.args[1]
 
-		production_type = ContentType.objects.get_for_model(Production)
-		self.production = get_object_or_404(Production, id=production_id)
+		commentable_type = ContentType.objects.get_for_model(self.commentable_model)
+		self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
 		self.comment = get_object_or_404(Comment,
-			id=comment_id, content_type=production_type, object_id=production_id)
+			id=comment_id, content_type=commentable_type, object_id=commentable_id)
 
 		if not request.user.is_staff:
 			return redirect(self.comment.get_absolute_url())
 
-		return super(EditProductionCommentView, self).dispatch(request, *args, **kwargs)
+		return super(EditCommentView, self).dispatch(request, *args, **kwargs)
 
 	def get(self, request, *args, **kwargs):
 		self.form = CommentForm(instance=self.comment, prefix='comment')
@@ -79,41 +83,54 @@ class EditProductionCommentView(TemplateView):
 			return self.render_to_response(context)
 
 	def get_context_data(self, **kwargs):
-		context = super(EditProductionCommentView, self).get_context_data(**kwargs)
-		context['production'] = self.production
+		context = super(EditCommentView, self).get_context_data(**kwargs)
+		context[self.commentable_context_name] = self.commentable
+		context['commentable'] = self.commentable
 		context['comment'] = self.comment
 		context['comment_form'] = self.form
 		return context
 
+class EditProductionCommentView(EditCommentView):
+	commentable_model = Production
+	commentable_context_name = 'production'
 	template_name = 'comments/edit_production_comment.html'
 
 
-class DeleteProductionCommentView(View):
+class DeleteCommentView(View):
 	@method_decorator(writeable_site_required)
 	@method_decorator(login_required)
 	def dispatch(self, request, *args, **kwargs):
-		production_id = self.args[0]
+		commentable_id = self.args[0]
 		comment_id = self.args[1]
 
-		production_type = ContentType.objects.get_for_model(Production)
-		self.production = get_object_or_404(Production, id=production_id)
+		commentable_type = ContentType.objects.get_for_model(self.commentable_model)
+		self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
 		self.comment = get_object_or_404(Comment,
-			id=comment_id, content_type=production_type, object_id=production_id)
+			id=comment_id, content_type=commentable_type, object_id=commentable_id)
 
 		if not request.user.is_staff:
 			return redirect(self.comment.get_absolute_url())
 
-		return super(DeleteProductionCommentView, self).dispatch(request, *args, **kwargs)
+		return super(DeleteCommentView, self).dispatch(request, *args, **kwargs)
 
 	def get(self, request, *args, **kwargs):
+		commentable_name = self.get_commentable_name(self.commentable)
 		return simple_ajax_confirmation(request,
-			reverse('delete_production_comment', args=[self.production.id, self.comment.id]),
+			reverse(self.url_name, args=[self.commentable.id, self.comment.id]),
 			"Are you sure you want to delete this comment?",
-			html_title="Deleting comment on %s" % self.production.title)
+			html_title="Deleting comment on %s" % commentable_name)
 
 	def post(self, request, *args, **kwargs):
 		if request.POST.get('yes'):
 			self.comment.delete()
-			return redirect(self.production.get_absolute_url())
+			return redirect(self.commentable.get_absolute_url())
 		else:
 			return redirect(self.comment.get_absolute_url())
+
+class DeleteProductionCommentView(DeleteCommentView):
+	commentable_model = Production
+	commentable_context_name = 'production'
+	url_name = 'delete_production_comment'
+
+	def get_commentable_name(self, production):
+		return production.title
