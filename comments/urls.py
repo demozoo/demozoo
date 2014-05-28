@@ -1,7 +1,9 @@
-from django.conf.urls import *
+from django.conf.urls import url
 
-urlpatterns = patterns('comments.views',
-	(r'^productions/(\d+)/comments/new/$', 'add_production_comment', {}, 'add_production_comment'),
-	(r'^productions/(\d+)/comments/(\d+)/edit/$', 'edit_production_comment', {}, 'edit_production_comment'),
-	(r'^productions/(\d+)/comments/(\d+)/delete/$', 'delete_production_comment', {}, 'delete_production_comment'),
-)
+from comments.views import AddProductionCommentView, edit_production_comment, delete_production_comment
+
+urlpatterns = [
+	url(r'^productions/(\d+)/comments/new/$', AddProductionCommentView.as_view(), name='add_production_comment'),
+	url(r'^productions/(\d+)/comments/(\d+)/edit/$', edit_production_comment, name='edit_production_comment'),
+	url(r'^productions/(\d+)/comments/(\d+)/delete/$', delete_production_comment, name='delete_production_comment'),
+]

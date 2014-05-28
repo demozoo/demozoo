@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
 from read_only_mode import writeable_site_required
 
@@ -10,24 +12,40 @@ from comments.forms import CommentForm
 from demoscene.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
 
-@writeable_site_required
-@login_required
-def add_production_comment(request, production_id):
-	production = get_object_or_404(Production, id=production_id)
-	comment = Comment(commentable=production, user=request.user)
 
-	if request.POST:
-		form = CommentForm(request.POST, instance=comment, prefix='comment')
-		if form.is_valid():
-			form.save()
-			return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
-	else:
-		form = CommentForm(instance=comment, prefix='comment')
+class AddProductionCommentView(TemplateView):
+	@method_decorator(writeable_site_required)
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		production_id = self.args[0]
+		self.production = get_object_or_404(Production, id=production_id)
+		self.comment = Comment(commentable=self.production, user=request.user)
+		return super(AddProductionCommentView, self).dispatch(request, *args, **kwargs)
 
-	return render(request, 'comments/add_production_comment.html', {
-		'production': production,
-		'comment_form': form,
-	})
+	def get(self, request, *args, **kwargs):
+		self.form = CommentForm(instance=self.comment, prefix='comment')
+		context = self.get_context_data()
+		return self.render_to_response(context)
+
+	def post(self, request, *args, **kwargs):
+		self.form = CommentForm(request.POST, instance=self.comment, prefix='comment')
+		if self.form.is_valid():
+			self.form.save()
+			return redirect(
+				self.production.get_absolute_url() + ('#comment-%d' % self.comment.id)
+			)
+		else:
+			context = self.get_context_data()
+			return self.render_to_response(context)
+
+	def get_context_data(self, **kwargs):
+		context = super(AddProductionCommentView, self).get_context_data(**kwargs)
+		context['production'] = self.production
+		context['comment_form'] = self.form
+		return context
+
+	template_name = 'comments/add_production_comment.html'
+
 
 @writeable_site_required
 @login_required
