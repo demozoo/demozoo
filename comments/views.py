@@ -47,31 +47,49 @@ class AddProductionCommentView(TemplateView):
 	template_name = 'comments/add_production_comment.html'
 
 
-@writeable_site_required
-@login_required
-def edit_production_comment(request, production_id, comment_id):
-	production_type = ContentType.objects.get_for_model(Production)
+class EditProductionCommentView(TemplateView):
+	@method_decorator(writeable_site_required)
+	@method_decorator(login_required)
+	def dispatch(self, request, *args, **kwargs):
+		production_id = self.args[0]
+		comment_id = self.args[1]
 
-	production = get_object_or_404(Production, id=production_id)
-	comment = get_object_or_404(Comment,
-		id=comment_id, content_type=production_type, object_id=production_id)
+		production_type = ContentType.objects.get_for_model(Production)
+		self.production = get_object_or_404(Production, id=production_id)
+		self.comment = get_object_or_404(Comment,
+			id=comment_id, content_type=production_type, object_id=production_id)
 
-	if not request.user.is_staff:
-		return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
+		if not request.user.is_staff:
+			return redirect(self.get_redirect_url())
 
-	if request.POST:
-		form = CommentForm(request.POST, instance=comment, prefix='comment')
-		if form.is_valid():
-			form.save()
-			return redirect(production.get_absolute_url() + ('#comment-%d' % comment.id))
-	else:
-		form = CommentForm(instance=comment, prefix='comment')
+		return super(EditProductionCommentView, self).dispatch(request, *args, **kwargs)
 
-	return render(request, 'comments/edit_production_comment.html', {
-		'production': production,
-		'comment': comment,
-		'comment_form': form,
-	})
+	def get(self, request, *args, **kwargs):
+		self.form = CommentForm(instance=self.comment, prefix='comment')
+		context = self.get_context_data()
+		return self.render_to_response(context)
+
+	def post(self, request, *args, **kwargs):
+		self.form = CommentForm(request.POST, instance=self.comment, prefix='comment')
+		if self.form.is_valid():
+			self.form.save()
+			return redirect(self.get_redirect_url())
+		else:
+			context = self.get_context_data()
+			return self.render_to_response(context)
+
+	def get_redirect_url(self):
+		return self.production.get_absolute_url() + ('#comment-%d' % self.comment.id)
+
+	def get_context_data(self, **kwargs):
+		context = super(EditProductionCommentView, self).get_context_data(**kwargs)
+		context['production'] = self.production
+		context['comment'] = self.comment
+		context['comment_form'] = self.form
+		return context
+
+	template_name = 'comments/edit_production_comment.html'
+
 
 @writeable_site_required
 @login_required
