@@ -14,6 +14,9 @@ class Comment(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
+	def get_absolute_url(self):
+		return self.commentable.get_absolute_url() + ('#comment-%d' % self.id)
+
 
 class Commentable(models.Model):
 	comments = generic.GenericRelation(Comment)
