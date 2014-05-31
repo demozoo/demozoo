@@ -30,22 +30,41 @@
 			var resultsPanel = $('.results_panel');
 			var resultsMenu = $('.results_menu');
 			var resultsMenuUl = $('.results_menu ul');
+			var resultsMenuColumn = $('.results_menu_column');
+
+			var resultsPanelY, menuWidth, maxResultsMenuY;
+
+			function reflow() {
+				resultsPanelY = resultsMenuColumn.offset().top;
+				resultsMenu.css({
+					'width': resultsMenuColumn.width() + 'px'
+				});
+				resultsMenuUl.css({
+					'max-height': $(window).height() - 64 + 'px'
+				});
+				var resultsPanelBottom = resultsPanelY + resultsPanel.height();
+				maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
+
+				setResultsPanelPosition();
+			}
+			reflow();
 
 			function setResultsPanelPosition() {
-				var resultsPanelY = resultsPanel.offset().top;
-				if ($(window).scrollTop() > resultsPanelY - 8) {
-					resultsPanel.addClass('fixed')
-					resultsMenuUl.css({
-						'width': resultsMenu.width() + 'px',
-						'max-height': $(window).height() - 64 + 'px'
+				var scrollPos = $(window).scrollTop();
+
+				if (scrollPos <= resultsPanelY) {
+					resultsPanel.removeClass('fixed bottom');
+				} else if (scrollPos <= maxResultsMenuY - 10) {
+					resultsPanel.removeClass('bottom').addClass('fixed');
+					resultsMenu.css({
+						'width': menuWidth + 'px'
 					});
 				} else {
-					resultsPanel.removeClass('fixed')
+					resultsPanel.removeClass('fixed').addClass('bottom');
 				}
 			}
 
-			$(window).load(setResultsPanelPosition);
-			$(window).scroll(setResultsPanelPosition).resize(setResultsPanelPosition);
+			$(window).scroll(setResultsPanelPosition).load(reflow).resize(reflow);
 		})
 	</script>
 
@@ -163,16 +182,17 @@
 
 	{% if competitions_with_placings or user.is_authenticated %}
 		<div class="panel results_panel">
-			<h3>Results</h3>
-
-			<div class="results_menu">
-				{% if competitions_with_placings %}
-					<ul>
-						{% for compo, placings in competitions_with_placings %}
-							<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
-						{% endfor %}
-					</ul>
-				{% endif %}
+			<div class="results_menu_column">
+				<div class="results_menu">
+					<h3>Results</h3>
+					{% if competitions_with_placings %}
+						<ul>
+							{% for compo, placings in competitions_with_placings %}
+								<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
 			</div>
 
 			<div class="results_body">

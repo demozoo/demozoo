@@ -63,16 +63,24 @@
 	}
 
 	.results_panel {
-		margin-top: 20px;
+		margin-top: 10px;
+		clear: both;
 		position: relative;
 
-		.results_menu {
-			clear: both;
+		.results_menu_column {
 			width: 35%;
+			height: 10px; /* force column to take up space even when content is
+				taken out of the flow */
 			float: left;
-			margin-top: 10px;
+		}
+
+		.results_menu {
+			position: absolute;
+			padding-top: 10px;
 
 			ul {
+				clear: both;
+				padding-top: 10px;
 				width: 100%;
 
 				li {
@@ -107,6 +115,7 @@
 		.results_body {
 			float: left;
 			width: 65%;
+			padding-top: 42px;
 		}
 
 		.competition {
@@ -139,14 +148,18 @@
 	}
 
 	.results_panel.fixed {
-		h3 {
+		.results_menu {
 			position: fixed;
-			top: 10px;
-		}
-		.results_menu ul {
-			position: fixed;
-			top: 48px;
+			top: 0;
 			overflow-y: auto;
+		}
+	}
+
+	.results_panel.bottom {
+		.results_menu {
+			position: abolute;
+			bottom: 0;
+			top: auto;
 		}
 	}
 
