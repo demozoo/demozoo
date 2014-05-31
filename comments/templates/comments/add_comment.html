@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block html_title %}Adding comment for {{ commentable_name }} - Demozoo{% endblock %}
+
+{% block base_main %}
+	<h2>Adding a comment for {{ commentable_name }}</h2>
+	{% include "comments/_comment_form.html" %}
+{% endblock %}

@@ -42,13 +42,20 @@ class AddCommentView(TemplateView):
 		context = super(AddCommentView, self).get_context_data(**kwargs)
 		context[self.commentable_context_name] = self.commentable
 		context['commentable'] = self.commentable
+		context['commentable_name'] = self.get_commentable_name(self.commentable)
 		context['comment_form'] = self.form
+		context['submit_action'] = self.submit_action
 		return context
+
+	template_name = 'comments/add_comment.html'
 
 class AddProductionCommentView(AddCommentView):
 	commentable_model = Production
 	commentable_context_name = 'production'
-	template_name = 'comments/add_production_comment.html'
+	submit_action = 'add_production_comment'
+
+	def get_commentable_name(self, production):
+		return production.title
 
 
 class EditCommentView(TemplateView):

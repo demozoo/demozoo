@@ -1,5 +1,7 @@
 {% load url from future %}
 
+{% comment %}Expects to receive vars: submit_action, commentable, comment_form{% endcomment %}
+
 <form action="{% url submit_action commentable.id %}" method="POST" class="comment_form">
 	{% csrf_token %}
 	<h2><label for="{{ comment_form.body.id_for_label }}">Add a comment</label></h2>
