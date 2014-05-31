@@ -40,7 +40,6 @@ class AddCommentView(TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(AddCommentView, self).get_context_data(**kwargs)
-		context[self.commentable_context_name] = self.commentable
 		context['commentable'] = self.commentable
 		context['commentable_name'] = self.get_commentable_name(self.commentable)
 		context['comment_form'] = self.form
@@ -51,7 +50,6 @@ class AddCommentView(TemplateView):
 
 class AddProductionCommentView(AddCommentView):
 	commentable_model = Production
-	commentable_context_name = 'production'
 	submit_action = 'add_production_comment'
 
 	def get_commentable_name(self, production):
