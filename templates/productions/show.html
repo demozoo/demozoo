@@ -175,7 +175,7 @@
 
 	{% last_edited_by production %}
 
-	{% include "comments/_production_comments.html" %}
+	{% include "comments/_comments.html" with commentable=production edit_action='edit_production_comment' delete_action='delete_production_comment' no_comments_message='Be the first to comment on this production...' add_action='add_production_comment' %}
 
 	{% if request.user.is_staff and site_is_writeable %}
 		<ul class="maintenance_actions">

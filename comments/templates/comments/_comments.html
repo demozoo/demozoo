@@ -1,6 +1,6 @@
 {% load url from future %}
 
-{% with production.get_comments as comments %}
+{% with commentable.get_comments as comments %}
 	{% if comments or site_is_writeable %}
 		<div class="comments_panel">
 			{% if comments %}
@@ -10,8 +10,8 @@
 						<div class="comment" id="comment-{{ comment.id }}">
 							{% if request.user.is_staff and site_is_writeable %}
 								<div class="admin_controls">
-									<a href="{% url 'edit_production_comment' production.id comment.id %}" class="open_in_lightbox">Edit</a>
-									| <a href="{% url 'delete_production_comment' production.id comment.id %}" class="open_in_lightbox">Delete</a>
+									<a href="{% url edit_action commentable.id comment.id %}" class="open_in_lightbox">Edit</a>
+									| <a href="{% url delete_action commentable.id comment.id %}" class="open_in_lightbox">Delete</a>
 								</div>
 							{% endif %}
 							<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
@@ -21,12 +21,12 @@
 					{% endfor %}
 				</div>
 			{% elif request.user.is_authenticated and site_is_writeable %}
-				<h3 class="comment_form_trigger">Be the first to comment on this production...</h3>
+				<h3 class="comment_form_trigger">{{ no_comments_message }}</h3>
 			{% else %}
-				<h3><a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">Be the first to comment on this production...</a></h3>
+				<h3><a href="{% url 'log_in' %}?next={{ commentable.get_absolute_url|urlencode }}">{{ no_comments_message }}</a></h3>
 			{% endif %}
 			{% if comment_form and site_is_writeable %}
-				{% include "comments/_comment_form.html" with commentable=production submit_action='add_production_comment' %}
+				{% include "comments/_comment_form.html" with submit_action=add_action %}
 			{% endif %}
 		</div>
 	{% endif %}

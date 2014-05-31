@@ -89,16 +89,21 @@ class EditCommentView(TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(EditCommentView, self).get_context_data(**kwargs)
-		context[self.commentable_context_name] = self.commentable
 		context['commentable'] = self.commentable
+		context['commentable_name'] = self.get_commentable_name(self.commentable)
 		context['comment'] = self.comment
 		context['comment_form'] = self.form
+		context['submit_action'] = self.submit_action
 		return context
+
+	template_name = 'comments/edit_comment.html'
 
 class EditProductionCommentView(EditCommentView):
 	commentable_model = Production
-	commentable_context_name = 'production'
-	template_name = 'comments/edit_production_comment.html'
+	submit_action = 'edit_production_comment'
+
+	def get_commentable_name(self, production):
+		return production.title
 
 
 class DeleteCommentView(View):
