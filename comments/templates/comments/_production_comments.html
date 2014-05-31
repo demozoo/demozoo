@@ -26,7 +26,7 @@
 				<h3><a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">Be the first to comment on this production...</a></h3>
 			{% endif %}
 			{% if comment_form and site_is_writeable %}
-				{% include "comments/_production_comment_form.html" %}
+				{% include "comments/_comment_form.html" with commentable=production submit_action='add_production_comment' %}
 			{% endif %}
 		</div>
 	{% endif %}

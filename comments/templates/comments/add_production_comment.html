@@ -4,5 +4,5 @@
 
 {% block base_main %}
 	<h2>Adding a comment for {{ production.title }}</h2>
-	{% include "comments/_production_comment_form.html" %}
+	{% include "comments/_comment_form.html" with commentable=production submit_action='add_production_comment' %}
 {% endblock %}
