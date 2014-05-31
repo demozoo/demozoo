@@ -12,6 +12,7 @@ from unidecode import unidecode
 
 from demoscene.models import DATE_PRECISION_CHOICES, Production, Screenshot, ExternalLink
 from demoscene.utils import groklinks
+from comments.models import Commentable
 
 
 class PartySeries(models.Model):
@@ -61,7 +62,7 @@ class PartySeriesDemozoo0Reference(models.Model):
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 
-class Party(models.Model):
+class Party(Commentable):
 	party_series = models.ForeignKey(PartySeries, related_name='parties')
 	name = models.CharField(max_length=255, unique=True)
 	tagline = models.CharField(max_length=255, blank=True)

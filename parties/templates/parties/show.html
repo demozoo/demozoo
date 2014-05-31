@@ -11,12 +11,14 @@
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
 	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/comments_panel.less" type="text/less" />
 
 	<link rel="stylesheet" href="/static/parties/css/pages/show_party.less" type="text/less" />
 {% endblock %}
 
 {% block extra_js %}
 	<script src="/static/js/components/notes_panel.js"></script>
+	<script src="/static/js/components/comments_panel.js"></script>
 	<script src="/static/js/components/editable_chunk.js"></script>
 {% endblock %}
 
@@ -203,4 +205,6 @@
 	{% endif %}
 
 	{% last_edited_by party %}
+
+	{% include "comments/_comments.html" with commentable=party edit_action='edit_party_comment' delete_action='delete_party_comment' no_comments_message='Be the first to comment on this party...' add_action='add_party_comment' %}
 {% endblock %}

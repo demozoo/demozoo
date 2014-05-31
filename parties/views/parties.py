@@ -5,6 +5,8 @@ from demoscene.models import Production, Edit
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
 from parties.forms import *
 from read_only_mode import writeable_site_required
+from comments.models import Comment
+from comments.forms import CommentForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -52,6 +54,12 @@ def show(request, party_id):
 
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
+	if request.user.is_authenticated():
+		comment = Comment(commentable=party, user=request.user)
+		comment_form = CommentForm(instance=comment, prefix="comment")
+	else:
+		comment_form = None
+
 	return render(request, 'parties/show.html', {
 		'party': party,
 		'competitions_with_placings': competitions_with_placings,
@@ -59,6 +67,7 @@ def show(request, party_id):
 		'invitations': invitations,
 		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
 		'external_links': external_links,
+		'comment_form': comment_form,
 	})
 
 
