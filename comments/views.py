@@ -11,6 +11,7 @@ from comments.models import Comment
 from comments.forms import CommentForm
 from demoscene.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
+from parties.models import Party
 
 
 class AddCommentView(TemplateView):
@@ -54,6 +55,13 @@ class AddProductionCommentView(AddCommentView):
 
 	def get_commentable_name(self, production):
 		return production.title
+
+class AddPartyCommentView(AddCommentView):
+	commentable_model = Party
+	submit_action = 'add_party_comment'
+
+	def get_commentable_name(self, party):
+		return party.name
 
 
 class EditCommentView(TemplateView):
@@ -105,6 +113,13 @@ class EditProductionCommentView(EditCommentView):
 	def get_commentable_name(self, production):
 		return production.title
 
+class EditPartyCommentView(EditCommentView):
+	commentable_model = Party
+	submit_action = 'edit_party_comment'
+
+	def get_commentable_name(self, party):
+		return party.name
+
 
 class DeleteCommentView(View):
 	@method_decorator(writeable_site_required)
@@ -144,3 +159,11 @@ class DeleteProductionCommentView(DeleteCommentView):
 
 	def get_commentable_name(self, production):
 		return production.title
+
+class DeletePartyCommentView(DeleteCommentView):
+	commentable_model = Party
+	commentable_context_name = 'party'
+	url_name = 'delete_party_comment'
+
+	def get_commentable_name(self, party):
+		return party.name
