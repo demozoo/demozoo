@@ -15,7 +15,7 @@
 								</div>
 							{% endif %}
 							<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
-							<a href="{{ production.get_absolute_url }}#comment-{{ comment.id }}">#</a>
+							<a href="{{ comment.get_absolute_url }}">#</a>
 							<p>{{ comment.body|urlize|linebreaks }}</p>
 						</div>
 					{% endfor %}
