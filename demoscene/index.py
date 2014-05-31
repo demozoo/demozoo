@@ -5,7 +5,7 @@ from parties.models import *
 
 
 class ProductionIndexer(Indexer):
-	fields = [('asciified_title', 1000), 'tags_string', 'plaintext_notes']
+	fields = [('asciified_title', 1000), 'tags_string', 'indexed_notes']
 space.add_index(Production, ProductionIndexer, attach_as='indexer')
 
 

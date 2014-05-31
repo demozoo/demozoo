@@ -587,6 +587,9 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	default_screenshot = models.ForeignKey('Screenshot', null=True, blank=True, related_name='+', editable=False,
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the production if screenshot is deleted
 		help_text="Screenshot to use alongside this production in listings - randomly assigned by script")
+	include_notes_in_search = models.BooleanField(default=True,
+		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
+
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
@@ -749,6 +752,10 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@property
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
+
+	@property
+	def indexed_notes(self):
+		return self.plaintext_notes if self.include_notes_in_search else ''
 
 	@property
 	def tags_string(self):
