@@ -118,7 +118,6 @@ INSTALLED_APPS = (
 	'parties',
 	'platforms',
 	'search',
-	'dataexchange',
 	'maintenance',
 	'pages',
 	'sceneorg',
