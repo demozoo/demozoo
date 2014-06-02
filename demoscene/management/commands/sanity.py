@@ -76,12 +76,12 @@ class Command(NoArgsCommand):
 		print "Truncating fuzzy dates to first of the month / first of January"
 		cursor = connection.cursor()
 		cursor.execute('''
-			UPDATE demoscene_production
+			UPDATE productions_production
 			SET release_date_date = date_trunc('month', release_date_date)
 			WHERE release_date_precision = 'm'
 		''')
 		cursor.execute('''
-			UPDATE demoscene_production
+			UPDATE productions_production
 			SET release_date_date = date_trunc('year', release_date_date)
 			WHERE release_date_precision = 'y'
 		''')
@@ -95,7 +95,7 @@ class Command(NoArgsCommand):
 
 		print "Stripping leading / trailing spaces from names and titles"
 		cursor.execute('''
-			UPDATE demoscene_production
+			UPDATE productions_production
 			SET title = REGEXP_REPLACE(title, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
 			WHERE title LIKE ' %%' OR title LIKE '%% '
 		''')

@@ -2,7 +2,8 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 
-from demoscene.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, Edit, PackMember
+from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember
+from demoscene.models import Edit
 from platforms.models import Platform
 from demoscene.utils.party_field import PartyField
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet

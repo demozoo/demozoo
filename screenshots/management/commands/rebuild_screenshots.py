@@ -1,5 +1,5 @@
 from django.core.management.base import NoArgsCommand
-from demoscene.models import Screenshot
+from productions.models import Screenshot
 from screenshots.tasks import rebuild_screenshot
 
 # Recreate and re-upload files for screenshots that are still in the original format/location,

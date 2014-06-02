@@ -4,8 +4,9 @@ from django.db.models import Q, Count
 from django.http import HttpResponse
 from django.contrib import messages
 
-from demoscene.models import Production, ProductionLink, Edit
+from demoscene.models import Edit
 from parties.models import Party, Competition
+from productions.models import Production, ProductionLink
 from sceneorg.models import Directory, File
 from django.contrib.auth.models import User
 from read_only_mode import writeable_site_required
@@ -122,7 +123,7 @@ def compofiles(request):
 	directories = Directory.objects.raw('''
 		SELECT
 			sceneorg_directory.id, sceneorg_directory.path,
-			COUNT(DISTINCT sceneorg_file.id) - COUNT(DISTINCT demoscene_productionlink.parameter) AS unmatched_count
+			COUNT(DISTINCT sceneorg_file.id) - COUNT(DISTINCT productions_productionlink.parameter) AS unmatched_count
 		FROM
 			sceneorg_directory_competitions
 			INNER JOIN sceneorg_directory ON (
@@ -135,8 +136,8 @@ def compofiles(request):
 				AND sceneorg_file.path NOT LIKE '%%/files.lst'
 				AND sceneorg_file.path NOT LIKE '%%.diz'
 			)
-			LEFT JOIN demoscene_productionlink ON (
-				sceneorg_file.path = demoscene_productionlink.parameter AND demoscene_productionlink.link_class = 'SceneOrgFile')
+			LEFT JOIN productions_productionlink ON (
+				sceneorg_file.path = productions_productionlink.parameter AND productions_productionlink.link_class = 'SceneOrgFile')
 		WHERE
 			sceneorg_directory.is_deleted = 'f'
 		GROUP BY
@@ -182,12 +183,12 @@ def compofile_directory(request, directory_id):
 	files = File.objects.raw('''
 		SELECT
 			sceneorg_file.id, sceneorg_file.path,
-			demoscene_productionlink.production_id
+			productions_productionlink.production_id
 		FROM
 			sceneorg_file
-			LEFT JOIN demoscene_productionlink ON (
-				sceneorg_file.path = demoscene_productionlink.parameter
-				AND demoscene_productionlink.link_class = 'SceneOrgFile'
+			LEFT JOIN productions_productionlink ON (
+				sceneorg_file.path = productions_productionlink.parameter
+				AND productions_productionlink.link_class = 'SceneOrgFile'
 			)
 		WHERE
 			sceneorg_file.directory_id = %s

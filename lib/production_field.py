@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.encoding import StrAndUnicode
-from demoscene.models import Production, ProductionType
+from productions.models import Production, ProductionType
 import datetime
 from byline_field import BylineField, BylineWidget
 from production_type_field import ProductionTypeChoiceField

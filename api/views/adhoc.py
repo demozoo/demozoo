@@ -1,6 +1,6 @@
 from django.utils import simplejson
 from django.http import HttpResponse
-from demoscene.models import Credit, Production
+from productions.models import Credit, Production
 
 from itertools import groupby
 import datetime
@@ -10,19 +10,19 @@ def pouet_credits(request):
 	# Retrieve productions with Pouet IDs with credits for releasers who have Pouet user IDs
 	credits = Credit.objects.raw('''
 		SELECT
-			demoscene_credit.id,
-			demoscene_productionlink.parameter AS pouet_prod_id,
+			productions_credit.id,
+			productions_productionlink.parameter AS pouet_prod_id,
 			demoscene_releaserexternallink.parameter AS pouet_user_id,
-			demoscene_credit.category,
-			demoscene_credit.role
+			productions_credit.category,
+			productions_credit.role
 		FROM
-			demoscene_credit
-			INNER JOIN demoscene_productionlink ON (
-				demoscene_credit.production_id = demoscene_productionlink.production_id
-				AND demoscene_productionlink.link_class = 'PouetProduction'
+			productions_credit
+			INNER JOIN productions_productionlink ON (
+				productions_credit.production_id = productions_productionlink.production_id
+				AND productions_productionlink.link_class = 'PouetProduction'
 			)
 			INNER JOIN demoscene_nick ON (
-				demoscene_credit.nick_id = demoscene_nick.id
+				productions_credit.nick_id = demoscene_nick.id
 			)
 			INNER JOIN demoscene_releaserexternallink ON (
 				demoscene_nick.releaser_id = demoscene_releaserexternallink.releaser_id

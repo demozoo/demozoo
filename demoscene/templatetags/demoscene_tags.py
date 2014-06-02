@@ -1,7 +1,8 @@
 from django import template
 from django.utils.html import format_html
 
-from demoscene.models import Releaser, Nick, Edit, Production
+from demoscene.models import Releaser, Nick, Edit
+from productions.models import Production
 
 register = template.Library()
 

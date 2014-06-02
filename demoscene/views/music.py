@@ -1,5 +1,7 @@
+from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
+
 from demoscene.shortcuts import *
-from demoscene.models import Production, Byline
+from productions.models import ProductionType, Production, Byline
 from demoscene.forms.production import *
 
 from demoscene.views.productions import apply_order

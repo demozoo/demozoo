@@ -9,7 +9,7 @@ from read_only_mode import writeable_site_required
 
 from comments.models import Comment
 from comments.forms import CommentForm
-from demoscene.models import Production
+from productions.models import Production
 from demoscene.shortcuts import simple_ajax_confirmation
 from parties.models import Party
 

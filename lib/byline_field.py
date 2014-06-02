@@ -1,5 +1,5 @@
 from django import forms
-from demoscene.models import Byline
+from productions.models import Byline
 from submit_button_field import SubmitButtonInput
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError

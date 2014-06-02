@@ -1,5 +1,8 @@
+from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
+
 from demoscene.shortcuts import *
-from demoscene.models import Releaser, Production, Nick, Credit, Edit
+from demoscene.models import Releaser, Nick, Edit
+from productions.models import Production, Credit
 from demoscene.forms.releaser import *
 from demoscene.forms.common import CreditFormSet
 from django.contrib.auth.decorators import login_required

@@ -1,7 +1,8 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
 from demoscene.shortcuts import *
-from demoscene.models import Production, Edit
+from demoscene.models import Edit
+from productions.models import Production
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
 from parties.forms import *
 from read_only_mode import writeable_site_required

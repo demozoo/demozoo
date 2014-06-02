@@ -13,7 +13,7 @@ from boto.s3.key import Key
 from django.conf import settings
 from mirror.models import Download
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
-from demoscene.models import Production
+from productions.models import Production
 
 user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 max_size = 10485760

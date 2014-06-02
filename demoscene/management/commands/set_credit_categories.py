@@ -1,4 +1,4 @@
-from demoscene.models import Credit
+from productions.models import Credit
 from django.core.management.base import NoArgsCommand
 import re
 

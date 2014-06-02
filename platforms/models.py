@@ -39,25 +39,25 @@ class Platform(ModelWithThumbnails):
 					SELECT
 						demoscene_releaser.id AS group_id,
 						demoscene_releaser.name AS group_name,
-						demoscene_production.release_date_date AS release_date
+						productions_production.release_date_date AS release_date
 					FROM
-						demoscene_production
-						INNER JOIN demoscene_production_platforms ON (
-							demoscene_production.id = demoscene_production_platforms.production_id
-							AND demoscene_production_platforms.platform_id = %s
+						productions_production
+						INNER JOIN productions_production_platforms ON (
+							productions_production.id = productions_production_platforms.production_id
+							AND productions_production_platforms.platform_id = %s
 						)
-						INNER JOIN demoscene_production_author_nicks ON (
-							demoscene_production.id = demoscene_production_author_nicks.production_id
+						INNER JOIN productions_production_author_nicks ON (
+							productions_production.id = productions_production_author_nicks.production_id
 						)
 						INNER JOIN demoscene_nick ON (
-							demoscene_production_author_nicks.nick_id = demoscene_nick.id
+							productions_production_author_nicks.nick_id = demoscene_nick.id
 						)
 						INNER JOIN demoscene_releaser ON (
 							demoscene_nick.releaser_id = demoscene_releaser.id
 							AND is_group = 't'
 						)
 					WHERE
-						demoscene_production.release_date_date IS NOT NULL
+						productions_production.release_date_date IS NOT NULL
 
 					UNION
 
@@ -65,25 +65,25 @@ class Platform(ModelWithThumbnails):
 					SELECT
 						demoscene_releaser.id AS group_id,
 						demoscene_releaser.name AS group_name,
-						demoscene_production.release_date_date AS release_date
+						productions_production.release_date_date AS release_date
 					FROM
-						demoscene_production
-						INNER JOIN demoscene_production_platforms ON (
-							demoscene_production.id = demoscene_production_platforms.production_id
-							AND demoscene_production_platforms.platform_id = %s
+						productions_production
+						INNER JOIN productions_production_platforms ON (
+							productions_production.id = productions_production_platforms.production_id
+							AND productions_production_platforms.platform_id = %s
 						)
-						INNER JOIN demoscene_production_author_affiliation_nicks ON (
-							demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id
+						INNER JOIN productions_production_author_affiliation_nicks ON (
+							productions_production.id = productions_production_author_affiliation_nicks.production_id
 						)
 						INNER JOIN demoscene_nick ON (
-							demoscene_production_author_affiliation_nicks.nick_id = demoscene_nick.id
+							productions_production_author_affiliation_nicks.nick_id = demoscene_nick.id
 						)
 						INNER JOIN demoscene_releaser ON (
 							demoscene_nick.releaser_id = demoscene_releaser.id
 							AND is_group = 't'
 						)
 					WHERE
-						demoscene_production.release_date_date IS NOT NULL
+						productions_production.release_date_date IS NOT NULL
 
 				) AS grps
 

@@ -1,3 +1,5 @@
+from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
+
 import datetime
 
 from django.contrib import messages
@@ -14,10 +16,11 @@ from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import *
-from demoscene.models import Production, Byline, Credit, Nick, Screenshot, ProductionBlurb, Edit
+from demoscene.models import Nick, Edit
 from demoscene.forms.production import *
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
+from productions.models import Production, Byline, Credit, Screenshot, ProductionBlurb
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
@@ -82,7 +85,7 @@ def tagged(request, tag_name):
 def apply_order(queryset, order, asc):
 	if order == 'title':
 		return queryset.extra(
-			select={'lower_title': 'lower(demoscene_production.title)'}
+			select={'lower_title': 'lower(productions_production.title)'}
 		).order_by('%slower_title' % ('' if asc else '-'))
 	else:  # date
 		if asc:
@@ -90,7 +93,7 @@ def apply_order(queryset, order, asc):
 		else:
 			# fiddle order so that empty release dates end up at the end
 			return queryset.extra(
-				select={'order_date': "coalesce(demoscene_production.release_date_date, '1970-01-01')"}
+				select={'order_date': "coalesce(productions_production.release_date_date, '1970-01-01')"}
 			).order_by('-order_date', '-title')
 
 
