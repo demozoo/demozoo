@@ -11,7 +11,7 @@ from demoscene.utils.text import slugify_tag
 
 from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
-from byline_field import BylineField
+from productions.fields.byline_field import BylineField
 from productions.fields.production_field import ProductionField
 from productions.fields.production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
 
