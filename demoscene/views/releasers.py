@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-from demoscene.shortcuts import get_object_or_404, HttpResponseRedirect, render, simple_ajax_confirmation, reverse, simple_ajax_form
+from django.shortcuts import get_object_or_404
+from demoscene.shortcuts import HttpResponseRedirect, render, simple_ajax_confirmation, reverse, simple_ajax_form
 from demoscene.models import Releaser, Nick, Edit
 from productions.models import Production, Credit
 from demoscene.forms.releaser import ReleaserCreditForm, ReleaserEditNotesForm, GroupNickForm, ScenerNickForm, ReleaserExternalLinkFormSet

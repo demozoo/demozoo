@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-from demoscene.shortcuts import get_page, render, get_object_or_404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from demoscene.shortcuts import get_page, render, HttpResponseRedirect
 from demoscene.models import Edit
 from productions.models import ProductionType, Production, Byline
 from productions.forms import MusicIndexFilterForm, ProductionTagsForm, CreateMusicForm, ProductionDownloadLinkFormSet

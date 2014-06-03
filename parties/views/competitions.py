@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
-from demoscene.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404
+from demoscene.shortcuts import render, redirect
 from demoscene.models import Edit
 from productions.models import ProductionType, Production
 from parties.models import Competition, CompetitionPlacing

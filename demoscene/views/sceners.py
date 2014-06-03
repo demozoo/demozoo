@@ -1,4 +1,6 @@
-from demoscene.shortcuts import get_page, render, get_object_or_404, simple_ajax_form, HttpResponseRedirect, reverse, simple_ajax_confirmation
+from django.shortcuts import get_object_or_404
+
+from demoscene.shortcuts import get_page, render, simple_ajax_form, HttpResponseRedirect, reverse, simple_ajax_confirmation
 from demoscene.models import Releaser, Nick, Membership, Edit
 from demoscene.forms.releaser import ScenerEditLocationForm, ScenerEditRealNameForm, CreateScenerForm, ScenerMembershipForm
 
