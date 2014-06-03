@@ -1,9 +1,8 @@
 from djapian import space, Indexer, CompositeIndexer
 
-# FIXME: import * is really bad
-from demoscene.models import *
-from parties.models import *
-from productions.models import *
+from demoscene.models import Releaser
+from parties.models import Party
+from productions.models import Production
 
 
 class ProductionIndexer(Indexer):

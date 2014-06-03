@@ -3,9 +3,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
 from django.contrib import messages
-from demoscene.shortcuts import *
-from demoscene.forms.account import *
-from demoscene.models import AccountProfile, CaptchaQuestion
+from demoscene.shortcuts import render, redirect, reverse
+from demoscene.forms.account import UserSignupForm
+from demoscene.models import CaptchaQuestion
 from read_only_mode import writeable_site_required
 
 

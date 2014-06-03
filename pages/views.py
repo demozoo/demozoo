@@ -1,4 +1,4 @@
-from demoscene.shortcuts import *
+from demoscene.shortcuts import get_object_or_404, render
 from pages.models import Page
 
 def page(request, slug):

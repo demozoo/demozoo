@@ -4,7 +4,7 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.utils import simplejson as json
 from django.db import transaction
 from django.db.models import Count
@@ -15,12 +15,12 @@ from taggit.models import Tag
 from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
-from demoscene.shortcuts import *
+from demoscene.shortcuts import get_page, render, get_object_or_404, HttpResponseRedirect, simple_ajax_form, reverse, simple_ajax_confirmation, modal_workflow_confirmation
 from demoscene.models import Nick, Edit
-from productions.forms import *
+from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
-from productions.models import Production, Byline, Credit, Screenshot, ProductionBlurb
+from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment

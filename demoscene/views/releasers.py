@@ -1,9 +1,9 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-from demoscene.shortcuts import *
+from demoscene.shortcuts import get_object_or_404, HttpResponseRedirect, render, simple_ajax_confirmation, reverse, simple_ajax_form
 from demoscene.models import Releaser, Nick, Edit
 from productions.models import Production, Credit
-from demoscene.forms.releaser import *
+from demoscene.forms.releaser import ReleaserCreditForm, ReleaserEditNotesForm, GroupNickForm, ScenerNickForm, ReleaserExternalLinkFormSet
 from demoscene.forms.common import CreditFormSet
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -274,7 +274,7 @@ def delete_nick(request, releaser_id, nick_id):
 def delete(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	if not request.user.is_staff:
-		return HttpResponseRedirect(scener.get_absolute_edit_url())
+		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 

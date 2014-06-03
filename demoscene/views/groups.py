@@ -1,6 +1,6 @@
-from demoscene.shortcuts import *
+from demoscene.shortcuts import get_page, render, get_object_or_404, HttpResponseRedirect, reverse, simple_ajax_confirmation
 from demoscene.models import Releaser, Nick, Membership, Edit
-from demoscene.forms.releaser import *
+from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 
 from django.contrib.auth.decorators import login_required
 import datetime

@@ -1,6 +1,6 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-from demoscene.shortcuts import *
+from demoscene.shortcuts import render, redirect, get_page
 from demoscene.models import Releaser, Edit
 from productions.models import Production
 

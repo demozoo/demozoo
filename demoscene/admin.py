@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from demoscene.models import *
+from demoscene.models import Membership, Nick, NickVariant, Releaser, AccountProfile, CaptchaQuestion, TagDescription
 
 
 class MemberOfInline(admin.TabularInline):

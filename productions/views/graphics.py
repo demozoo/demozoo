@@ -1,8 +1,9 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-from demoscene.shortcuts import *
+from demoscene.shortcuts import get_page, render, get_object_or_404, HttpResponseRedirect
+from demoscene.models import Edit
 from productions.models import ProductionType, Production, Byline
-from productions.forms import *
+from productions.forms import GraphicsIndexFilterForm, ProductionTagsForm, CreateGraphicsForm, ProductionDownloadLinkFormSet
 
 from productions.views.productions import apply_order
 

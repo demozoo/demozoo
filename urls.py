@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns, include
 
 # Admin backend
 from django.contrib import admin

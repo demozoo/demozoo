@@ -1,4 +1,4 @@
-from demoscene.shortcuts import *
+from demoscene.shortcuts import render, get_object_or_404
 from platforms.models import Platform
 
 def index(request):

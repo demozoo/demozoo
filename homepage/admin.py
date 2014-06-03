@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from homepage.models import *
+from homepage.models import Banner, Teaser, NewsStory
 
 
 admin.site.register(Banner, list_display=('title', 'show_for_anonymous_users', 'show_for_logged_in_users', 'created_at'))

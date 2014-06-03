@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns
 
 urlpatterns = patterns('forums.views',
 	(r'^$', 'index', {}, 'forums'),
