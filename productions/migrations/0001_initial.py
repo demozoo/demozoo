@@ -58,12 +58,17 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # UNRENAME ALL THE THINGS
         db.rename_table('productions_productiontype', 'demoscene_productiontype')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='platform').update(app_label='demoscene')
+
+        # Fixing up contenttypes has to be done manually, because there's no way to get
+        # south to include contenttypes in the frozen ORM when running
+        # ./manage.py migrate productions zero
+
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='platform').update(app_label='demoscene')
 
         db.rename_table('productions_production', 'demoscene_production')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='production').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='production').update(app_label='demoscene')
 
         db.rename_table('productions_production_platforms', 'demoscene_production_platforms')
         db.rename_table('productions_production_types', 'demoscene_production_types')
@@ -71,32 +76,32 @@ class Migration(SchemaMigration):
         db.rename_table('productions_production_author_affiliation_nicks', 'demoscene_production_author_affiliation_nicks')
 
         db.rename_table('productions_productiondemozoo0platform', 'demoscene_productiondemozoo0platform')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productiondemozoo0platform').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productiondemozoo0platform').update(app_label='demoscene')
 
         db.rename_table('productions_productionblurb', 'demoscene_productionblurb')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productionblurb').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productionblurb').update(app_label='demoscene')
 
         db.rename_table('productions_credit', 'demoscene_credit')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='credit').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='credit').update(app_label='demoscene')
 
         db.rename_table('productions_screenshot', 'demoscene_screenshot')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='screenshot').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='screenshot').update(app_label='demoscene')
 
         db.rename_table('productions_soundtracklink', 'demoscene_soundtracklink')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='soundtracklink').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='soundtracklink').update(app_label='demoscene')
 
         db.rename_table('productions_packmember', 'demoscene_packmember')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='packmember').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='packmember').update(app_label='demoscene')
 
         db.rename_table('productions_productionlink', 'demoscene_productionlink')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productionlink').update(app_label='demoscene')
+        #if not db.dry_run:
+        #    orm['contenttypes.contenttype'].objects.filter(app_label='productions', model='productionlink').update(app_label='demoscene')
 
 
     models = {
