@@ -4,7 +4,7 @@ from django.utils.encoding import StrAndUnicode
 from productions.models import Production, ProductionType
 import datetime
 from byline_field import BylineField, BylineWidget
-from production_type_field import ProductionTypeChoiceField
+from productions.fields.production_type_field import ProductionTypeChoiceField
 
 
 # A value encapsulating the state of the ProductionWidget.

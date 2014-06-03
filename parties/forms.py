@@ -8,7 +8,7 @@ from parties.models import Party, PartySeries, Competition, PartyExternalLink
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from fuzzy_date_field import FuzzyDateField
 from form_with_location import ModelFormWithLocation
-from production_type_field import ProductionTypeChoiceField
+from productions.fields.production_type_field import ProductionTypeChoiceField
 from production_field import ProductionField
 
 

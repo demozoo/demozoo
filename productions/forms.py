@@ -13,7 +13,7 @@ from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
 from byline_field import BylineField
 from production_field import ProductionField
-from production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
+from productions.fields.production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
 
 
 def readable_list(list):
