@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404
-from demoscene.shortcuts import get_page, render, HttpResponseRedirect, reverse, simple_ajax_confirmation
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+from demoscene.shortcuts import get_page, render, simple_ajax_confirmation
 from demoscene.models import Releaser, Nick, Membership, Edit
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 
