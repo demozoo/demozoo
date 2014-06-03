@@ -194,11 +194,11 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@models.permalink
 	def get_absolute_url(self):
 		if self.supertype == 'music':
-			return ('demoscene.views.music.show', [str(self.id)])
+			return ('music', [str(self.id)])
 		elif self.supertype == 'graphics':
-			return ('demoscene.views.graphics.show', [str(self.id)])
+			return ('graphic', [str(self.id)])
 		else:
-			return ('demoscene.views.productions.show', [str(self.id)])
+			return ('production', [str(self.id)])
 
 	def get_absolute_edit_url(self):
 		return self.get_absolute_url()
@@ -215,11 +215,11 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@models.permalink
 	def get_history_url(self):
 		if self.supertype == 'music':
-			return ('demoscene.views.music.history', [str(self.id)])
+			return ('music_history', [str(self.id)])
 		elif self.supertype == 'graphics':
-			return ('demoscene.views.graphics.history', [str(self.id)])
+			return ('graphics_history', [str(self.id)])
 		else:
-			return ('demoscene.views.productions.history', [str(self.id)])
+			return ('production_history', [str(self.id)])
 
 	def can_have_screenshots(self):
 		return (self.supertype != 'music')

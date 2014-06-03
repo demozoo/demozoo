@@ -1,6 +1,6 @@
 from django.conf.urls import patterns
 
-urlpatterns = patterns('demoscene.views',
+urlpatterns = patterns('productions.views',
 	(r'^productions/$', 'productions.index', {}, 'productions'),
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/history/$', 'productions.history', {}, 'production_history'),
