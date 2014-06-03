@@ -2,7 +2,7 @@ from __future__ import absolute_import  # ensure that 'from productions.* import
 
 from demoscene.shortcuts import *
 from productions.models import ProductionType, Production, Byline
-from demoscene.forms.production import *
+from productions.forms import *
 
 from productions.views.productions import apply_order
 

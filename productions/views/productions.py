@@ -17,7 +17,7 @@ from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import *
 from demoscene.models import Nick, Edit
-from demoscene.forms.production import *
+from productions.forms import *
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
 from productions.models import Production, Byline, Credit, Screenshot, ProductionBlurb
