@@ -69,33 +69,6 @@ class File(models.Model):
 			raise FileTooBig("Cannot fetch files larger than 64Kb")
 		return buffer(file_content)
 
-	def fetch(self):
-		file_content = self.fetched_data()
-		sha1 = hashlib.sha1(file_content).hexdigest()
-
-		# if most recent download for this file has the same SHA1 sum, return that (and update
-		# the downloaded_at timestamp) rather than creating a new one
-		try:
-			last_download = self.downloads.order_by('-downloaded_at')[0]
-			if last_download.sha1 == sha1:
-				last_download.downloaded_at = datetime.datetime.now()
-				last_download.save()
-				return last_download
-		except IndexError:
-			pass
-
-		download = FileDownload(file=self, downloaded_at=datetime.datetime.now(),
-			data=file_content, sha1=sha1)
-		download.save()
-		return download
-
 	@property
 	def web_url(self):
 		return "https://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
-
-
-class FileDownload(models.Model):
-	file = models.ForeignKey(File, related_name='downloads')
-	downloaded_at = models.DateTimeField()
-	data = BlobField(blank=True, null=True)
-	sha1 = models.CharField(max_length=40)
