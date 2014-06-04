@@ -4,11 +4,11 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect, render
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
-from demoscene.shortcuts import redirect, render
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
 from parties.models import PartyExternalLink, Party

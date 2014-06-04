@@ -1,5 +1,4 @@
-from django.shortcuts import get_object_or_404
-from demoscene.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from platforms.models import Platform
 
 def index(request):

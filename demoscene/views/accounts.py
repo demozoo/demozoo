@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.shortcuts import render, redirect
 
-from demoscene.shortcuts import render, redirect
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
 from read_only_mode import writeable_site_required
