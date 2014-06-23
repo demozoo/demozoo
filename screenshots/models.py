@@ -10,8 +10,8 @@ from screenshots.processing import get_thumbnail_sizing_params
 
 # file extensions that we are able to convert to web-usable images
 USABLE_IMAGE_FILE_EXTENSIONS = [
-	'bmp', 'gif', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx', 'png', 'tga', 'tif',
-	'tiff', 'xbm', 'xpm',
+	'bmp', 'gif', 'iff', 'iff24', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx',
+	'png', 'tga', 'tif', 'tiff', 'xbm', 'xpm',
 ]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
