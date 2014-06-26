@@ -416,20 +416,20 @@ class SceneOrgFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+#			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+#			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+#			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 		if not self.param.startswith('/mirrors/'):
 			links += [
 				'<li><a class="country_no" href="%s">no</a></li>' % escape(self.no_url),
-				'<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
+				# '<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
 			]
-			if not self.param.startswith('/resources/'):
-				links += [
-					'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
-				]
+			#if not self.param.startswith('/resources/'):
+			#	links += [
+			#		'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
+			#	]
 		if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
 			links += [
 				'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
@@ -443,7 +443,7 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def download_url(self):
-		return self.de_http_url
+		return self.nl_url
 
 	@property
 	def no_url(self):
@@ -507,10 +507,10 @@ class AmigascneFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -565,10 +565,10 @@ class PaduaOrgFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
