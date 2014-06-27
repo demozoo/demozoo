@@ -16,7 +16,7 @@ def home(request):
 	except IndexError:
 		banner = None
 
-	return render(request, 'home.html', {
+	return render(request, 'homepage/home.html', {
 		'banner': banner,
 		'teasers': teasers,
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
