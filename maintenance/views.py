@@ -362,11 +362,13 @@ def duplicate_external_links(request):
 			FROM productions_production
 			INNER JOIN productions_productionlink ON (
 				productions_production.id = productions_productionlink.production_id
-				AND productions_productionlink.link_class = %s)
+				AND productions_productionlink.link_class = %s
+				AND productions_productionlink.is_download_link = 'f')
 			INNER JOIN productions_productionlink AS other_link ON (
 				productions_productionlink.link_class = other_link.link_class
 				AND productions_productionlink.parameter = other_link.parameter
 				AND productions_productionlink.id <> other_link.id
+				AND productions_productionlink.is_download_link = 'f'
 			)
 			ORDER BY productions_productionlink.parameter
 		''', [link_class])
