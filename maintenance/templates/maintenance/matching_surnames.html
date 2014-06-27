@@ -2,6 +2,7 @@
 {% load demoscene_tags %}
 
 {% block html_title %}{{ title }}{% endblock %}
+{% block legacy_css %}{% endblock %}
 
 {% block body_class %}maintenance_report{% endblock %}
 
@@ -13,7 +14,7 @@
 		<div class="panel report">
 			{% for name in name_list %}
 				<h3>{{ name.grouper }}</h3>
-				<ul style="margin-bottom: 0.5em; border-bottom: 1px solid #ccc;">
+				<ul class="releaser_list" style="margin-bottom: 0.5em; border-bottom: 1px solid #ccc;">
 					{% for releaser in name.list %}
 						<li class="scener">
 							{% scener_with_affiliations releaser %}
