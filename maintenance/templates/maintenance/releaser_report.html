@@ -1,6 +1,7 @@
 {% extends "maintenance/base.html" %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
+{% block legacy_css %}{% endblock %}
 
 {% block body_class %}maintenance_report{% endblock %}
 
@@ -8,7 +9,7 @@
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
 		<div class="panel report" data-report-name="{{ report_name }}">
-			<ul>
+			<ul class="releaser_list">
 				{% for releaser in releasers %}
 					<li class="{% if releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}excludable{% endif %}" data-record-id="{{ releaser.id }}">
 						<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
