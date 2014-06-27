@@ -3,9 +3,9 @@
 
 {% block html_title %}New topic - Demozoo{% endblock %}
 
-{% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
 {% endblock %}
 
 {% block base_main %}
@@ -21,6 +21,8 @@
 				{{ field }}
 			{% endfor %}
 		</div>
-		<input type="submit" value="Create topic">
+		<div style="clear: both;">
+			<input type="submit" value="Create topic">
+		</div>
 	</form>
 {% endblock %}
