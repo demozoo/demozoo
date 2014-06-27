@@ -27,7 +27,9 @@ def sanity():
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
+		run('sudo supervisorctl stop demozoo-djapian')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.productionvm')
+		run('sudo supervisorctl start demozoo-djapian')
 
 
 def bump_external_links():
