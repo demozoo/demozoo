@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block html_title %}Adding comment for {{ commentable_name }} - Demozoo{% endblock %}
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
 	<h2>Adding a comment for {{ commentable_name }}</h2>
