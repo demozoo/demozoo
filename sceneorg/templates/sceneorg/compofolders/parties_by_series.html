@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load url from future %}
 
+{% block legacy_css %}{% endblock %}
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+	<link rel="stylesheet" href="/static/sceneorg/css/pages/parties_by_series.less" type="text/less" />
 {% endblock %}
 
 {% block base_main %}
