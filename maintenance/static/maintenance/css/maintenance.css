@@ -26,21 +26,6 @@ body.maintenance_report .exclude_button {
 	padding: 16px;
 }
 
-.releaser_list li {
-	padding-left: 24px;
-	padding-top: 2px;
-	padding-bottom: 3px;
-	background-position: left 2px;
-	background-repeat: no-repeat;
-}
-.releaser_list li.group {
-	background-image: url(/static/images/icons/group.png);
-}
-
-.releaser_list li.scener {
-	background-image: url(/static/images/icons/scener.png);
-}
-
 body.unresolved_screenshots a.resolve {
 	color: #001;
 	text-decoration: none;
