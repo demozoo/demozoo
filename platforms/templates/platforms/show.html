@@ -3,9 +3,11 @@
 {% load url from future %}
 
 {% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
+{% block legacy_css %}{% endblock %}
 
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+	<link rel="stylesheet" href="/static/platforms/css/pages/show_platform.less" type="text/less" />
 {% endblock %}
 
 {% block base_main %}
@@ -24,7 +26,7 @@
 		{% if active_groups %}
 			<div class="panel">
 				<h3>Groups active on {{ platform.name }}...</h3>
-				<ul>
+				<ul class="releaser_list">
 					{% for group in active_groups %}
 						<li class="group">
 							<a href="{% url 'group' group.id %}">{{ group.name }}</a>
