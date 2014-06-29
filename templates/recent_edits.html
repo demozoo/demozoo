@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 
 {% block html_title %}Recent edits - Demozoo{% endblock %}
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<style>
+		table.history {
+			margin-top: 1em;
+		}
+
+		table.history .timestamp {
+			white-space: nowrap;
+			padding-right: 1em;
+		}
+
+		table.history .user {
+			white-space: nowrap;
+			padding-right: 1em;
+		}
+	</style>
+{% endblock %}
 
 {% block base_main %}
 	<h2>Recent edits</h2>
