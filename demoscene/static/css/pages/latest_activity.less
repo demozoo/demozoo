@@ -1,0 +1,39 @@
+.chart_set {
+	clear: both;
+}
+
+.chart {
+	width: 280px;
+	padding: 10px;
+	margin: 5px;
+	float: left;
+	border: 1px solid #888;
+}
+
+.chart h2 {
+	font-size: 14pt;
+	margin-bottom: 4px;
+}
+
+ul.production_list {
+	li {
+		padding-left: 24px;
+		padding-top: 2px;
+		padding-bottom: 3px;
+		background-position: left 2px;
+		background-repeat: no-repeat;
+
+		&.production {
+			background-image: url(/static/images/icons/disk.png);
+		}
+		&.music {
+			background-image: url(/static/images/icons/music.png);
+		}
+		&.graphics {
+			background-image: url(/static/images/icons/palette.png);
+		}
+		a {
+			color: #008;
+		}
+	}
+}
