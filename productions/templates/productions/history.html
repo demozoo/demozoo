@@ -2,9 +2,14 @@
 {% load demoscene_tags %}
 
 {% block html_title %}{{ production.title }} edit history - Demozoo{% endblock %}
+{% block legacy_css %}{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/components/tabs.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
-	<div class="panel">
+	<div class="tabbed_panel">
 		<ul class="tabs">
 			<li><a href="{{ production.get_absolute_url }}">Production</a></li>
 			<li class="active_tab">History</li>
