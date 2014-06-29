@@ -40,6 +40,7 @@ urlpatterns += patterns('demoscene.views',
 	(r'^latest_activity/$', 'home.latest_activity', {}, 'latest_activity'),
 
 	(r'^error/$', 'home.error_test', {}, 'error_test'),
+	(r'^404/$', 'home.page_not_found_test', {}, 'page_not_found_test'),
 	(r'^edits/$', 'home.recent_edits', {}, 'recent_edits'),
 
 	(r'^groups/$', 'groups.index', {}, 'groups'),

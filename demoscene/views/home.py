@@ -30,6 +30,10 @@ def error_test(request):
 		return redirect('home')
 
 
+def page_not_found_test(request):
+	return render(request, '404.html')
+
+
 def recent_edits(request):
 	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
 	if not request.user.is_staff:
