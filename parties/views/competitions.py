@@ -48,7 +48,7 @@ def edit(request, competition_id):
 			competition.shown_date = competition_form.cleaned_data['shown_date']
 			competition_form.save()
 			competition_form.log_edit(request.user)
-			return redirect('competition_edit', args=[competition.id])
+			return redirect('competition_edit', competition.id)
 	else:
 		competition_form = CompetitionForm(instance=competition, initial={
 			'shown_date': competition.shown_date,
@@ -86,7 +86,7 @@ def edit(request, competition_id):
 @login_required
 def import_text(request, competition_id):
 	if not request.user.is_staff:
-		return redirect('competition_edit', args=[competition_id])
+		return redirect('competition_edit', competition_id)
 
 	competition = get_object_or_404(Competition, id=competition_id)
 
@@ -104,7 +104,7 @@ def import_text(request, competition_id):
 		elif format == 'wuhu':
 			rows = result_parser.wuhu(request.POST['results'])
 		else:
-			return redirect('competition_edit', args=[competition_id])
+			return redirect('competition_edit', competition_id)
 
 		for placing, title, byline, score in rows:
 			if not title:
@@ -142,7 +142,7 @@ def import_text(request, competition_id):
 			Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
 				description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
 
-		return redirect('competition_edit', args=[competition_id])
+		return redirect('competition_edit', competition_id)
 	else:
 		return render(request, 'competitions/import_text.html', {
 			'competition': competition,

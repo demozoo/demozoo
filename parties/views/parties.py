@@ -111,7 +111,7 @@ def create(request):
 				return HttpResponse('OK: %s' % party.get_absolute_url(), mimetype='text/plain')
 			else:
 				messages.success(request, 'Party added')
-				return redirect('party', args=[party.id])
+				return redirect('party', party.id)
 	else:
 		form = PartyForm(initial={
 			'name': request.GET.get('name'),
@@ -145,7 +145,7 @@ def edit(request, party_id):
 				party.party_series.save()
 
 			messages.success(request, 'Party updated')
-			return redirect('party', args=[party.id])
+			return redirect('party', party.id)
 	else:
 		form = EditPartyForm(instance=party, initial={
 			'start_date': party.start_date,
@@ -264,7 +264,7 @@ def add_competition(request, party_id):
 			# party.updated_at = datetime.datetime.now()
 			# party.save()
 			if request.POST.get('enter_results'):
-				return redirect('competition_edit', args=[competition.id])
+				return redirect('competition_edit', competition.id)
 			else:
 				return HttpResponseRedirect(party.get_absolute_url())
 	else:
@@ -336,4 +336,4 @@ def edit_invitations(request, party_id):
 @writeable_site_required
 @login_required
 def edit_competition(request, party_id, competition_id):
-	return redirect('competition_edit', args=[competition_id])
+	return redirect('competition_edit', competition_id)
