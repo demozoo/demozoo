@@ -37,7 +37,7 @@
 		<div class="col span_1_of_3">
 			{% if forum_topics %}
 				<div class="forum_topics">
-					<h2>Latest discussions</h2>
+					<a href="{% url 'forums' %}"><h3 class="section_heading">Discussions</h3></a>
 					{% include "forums/_topics.html" with topics=forum_topics %}
 					<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
 				</div>
