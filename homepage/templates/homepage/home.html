@@ -6,40 +6,48 @@
 {% block body_class %}homepage{% endblock %}
 
 {% block extra_css %}
+	<link rel="stylesheet" href="/static/css/responsivegrid/col.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/responsivegrid/3cols.css" type="text/css" />
 	<link rel="stylesheet" href="/static/homepage/css/pages/home.less" type="text/less" />
 {% endblock %}
 
 {% block base_main %}
-	{% if banner %}
-		<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
-			<h1>{{ banner.title }}</h1>
-			{{ banner.text|safe_markdown }}
-		</a>
-	{% endif %}
+	<div class="section group">
+		<div class="col span_2_of_3">
+			{% if banner %}
+				<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
+					<h1>{{ banner.title }}</h1>
+					{{ banner.text|safe_markdown }}
+				</a>
+			{% endif %}
 
-	<div style="clear: both;"></div>
+			<div style="clear: both;"></div>
 
-	{% if forum_topics %}
-		<div class="forum_topics">
-			<h2>Latest discussions</h2>
-			{% include "forums/_topics.html" with topics=forum_topics %}
-			<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
-		</div>
-	{% endif %}
-
-	<div class="news">
-		{% for story in news_stories %}
-			<div class="news_story">
-				<h2>{{ story.title }}</h2>
-				<div class="date">{{ story.created_at|date:"d M Y" }}</div>
-				{{ story.text|safe_markdown }}
+			<div class="news">
+				{% for story in news_stories %}
+					<div class="news_story">
+						<h2>{{ story.title }}</h2>
+						<div class="date">{{ story.created_at|date:"d M Y" }}</div>
+						{{ story.text|safe_markdown }}
+					</div>
+				{% endfor %}
 			</div>
-		{% endfor %}
-	</div>
+		</div>
 
-	{% site_stats %}
-	<p>
-		<a href="{% url 'latest_activity' %}">Latest activity</a>
-		| <a href="{% url 'recent_edits' %}">Recent edits</a>
-	</p>
+		<div class="col span_1_of_3">
+			{% if forum_topics %}
+				<div class="forum_topics">
+					<h2>Latest discussions</h2>
+					{% include "forums/_topics.html" with topics=forum_topics %}
+					<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
+				</div>
+			{% endif %}
+
+			{% site_stats %}
+			<p>
+				<a href="{% url 'latest_activity' %}">Latest activity</a>
+				| <a href="{% url 'recent_edits' %}">Recent edits</a>
+			</p>
+		</div>
+	</div>
 {% endblock %}
