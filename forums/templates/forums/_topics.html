@@ -3,12 +3,22 @@
 		<li class="{% cycle 'odd' 'even' %}">
 			<a href="{{ topic.get_absolute_url }}">
 				<div class="title">{{ topic.title }}</div>
-				<div class="meta">
-					Started at {{ topic.created_at|date:"H:i j F Y" }} by {{ topic.created_by_user.username }}.
-					{% if topic.reply_count %}
-						{{ topic.reply_count }} repl{{ topic.reply_count|pluralize:"y,ies" }} - last reply on {{ topic.last_post_at|date:"H:i j F Y" }} by {{ topic.last_post_by_user.username }}
-					{% endif %}
-				</div>
+				{% if show_full_meta %}
+					<div class="meta">
+						Started at {{ topic.created_at|date:"H:i j F Y" }} by {{ topic.created_by_user.username }}.
+						{% if topic.reply_count %}
+							{{ topic.reply_count }} repl{{ topic.reply_count|pluralize:"y,ies" }} - last reply on {{ topic.last_post_at|date:"H:i j F Y" }} by {{ topic.last_post_by_user.username }}
+						{% endif %}
+					</div>
+				{% else %}
+					<div class="meta">
+						{% if topic.reply_count %}
+							last post at {{ topic.last_post_at|date:"H:i j F Y" }} by {{ topic.last_post_by_user.username }}
+						{% else %}
+							posted at {{ topic.created_at|date:"H:i j F Y" }} by {{ topic.created_by_user.username }}
+						{% endif %}
+					</div>
+				{% endif %}
 			</a>
 		</li>
 	{% endfor %}
