@@ -3,16 +3,17 @@
 	.banner {
 		display: block;
 		width: 100%;
-		border-radius: 8px;
-		height: 350px;
+		height: 0;
+		padding-bottom: 40%; /* relative to element width */
 		position: relative;
 		background-position: center;
 		background-repeat: no-repeat;
+		background-size: 100%;
 
 		h1 {
 			position: absolute;
-			top: 180px;
-			right: 100px;
+			top: 50%;
+			right: 6%;
 			font-size: 28pt;
 			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
 			background-color: rgba(32, 32, 32, 0.6);
@@ -23,12 +24,12 @@
 
 		p {
 			position: absolute;
-			top: 250px;
-			right: 100px;
+			top: 68%;
+			right: 6%;
 			font-size: 12pt;
 			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
 			background-color: rgba(32, 32, 32, 0.6);
-			line-height: 1em;
+			line-height: 1.2em;
 			padding: 8px;
 			color: white;
 		}
@@ -107,24 +108,34 @@
 
 }
 
-
-
 /* Small-screen versions */
+@media screen and (max-width: 1081px) {
+	.homepage .banner {
+		.banner_text {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+		}
+		h1 {
+			position: static;
+			text-align: right;
+			padding-right: 6%;
+			width: auto;
+			font-size: 20pt;
+		}
+		p {
+			position: static;
+			width: auto;
+			margin: 0;
+			font-size: 11pt;
+		}
+	}
+}
+
 @media screen and (max-width: 601px) {
 	.homepage .banner {
-		height: 175px;
-		background-size: 100%;
-
 		h1 {
-			top: 60px;
-			right: 30px;
 			font-size: 18pt;
-		}
-
-		p {
-			top: 80px;
-			right: 30px;
-			font-size: 10pt;
 		}
 	}
 }
