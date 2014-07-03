@@ -45,23 +45,26 @@
 				</div>
 			{% endif %}
 
-			<h3 class="section_heading">New releases</h3>
-			<ul class="new_releases">
-				{% for prod in latest_releases %}
-					<li>
-						<a href="{{ prod.get_absolute_url }}">
-							{% thumbnail prod.default_screenshot %}
-							<div class="title">{{ prod.title }}</div>
-							<div class="byline">by {{ prod.byline }}</div>
-							<div class="platforms_and_types">
-								{{ prod.platforms.all|join:" / " }}
-								{% if prod.platforms.count and prod.types.count %} - {% endif %}
-								{{ prod.types.all|join:" / " }}
-							</div>
-						</a>
-					</li>
-				{% endfor %}
-			</ul>
+			<div class="new_releases">
+				<h3 class="section_heading">New releases</h3>
+				<ul>
+					{% for prod in latest_releases %}
+						<li>
+							<a href="{{ prod.get_absolute_url }}">
+								{% thumbnail prod.default_screenshot %}
+								<div class="title">{{ prod.title }}</div>
+								<div class="byline">by {{ prod.byline }}</div>
+								<div class="platforms_and_types">
+									{{ prod.platforms.all|join:" / " }}
+									{% if prod.platforms.count and prod.types.count %} - {% endif %}
+									{{ prod.types.all|join:" / " }}
+								</div>
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+				<div class="more"><a href="{% url 'productions' %}">More releases</a></div>
+			</div>
 
 			{% site_stats %}
 			<p>
