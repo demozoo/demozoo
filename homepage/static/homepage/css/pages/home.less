@@ -36,6 +36,7 @@
 	}
 
 	.forum_topics {
+		margin-bottom: 20px;
 		.topics {
 			clear: both;
 			padding-top: 8px;
@@ -104,6 +105,54 @@
 
 		}
 
+	}
+
+	ul.new_releases {
+		clear: both;
+		padding-top: 8px;
+		li {
+			padding-top: 4px;
+
+			a {
+				display: block;
+				overflow: hidden;
+				text-decoration: none;
+				color: inherit;
+				border-radius: 2px;
+				&:hover {
+					background-color: #eee;
+				}
+			}
+
+			.thumbnail {
+				border-radius: 2px;
+				float: left;
+				width: 133px;
+				margin-right: 8px;
+				padding: 4px;
+				background-color: #bbb;
+				img {
+					display: block;
+					margin: auto;
+				}
+			}
+			.title {
+				font-weight: bold;
+				font-size: 11pt;
+				color: #444;
+				padding-top: 4px;
+			}
+			.byline {
+				color: #666;
+				margin-top: 0.5em;
+				font-size: 9pt;
+			}
+			.platforms_and_types {
+				color: #888;
+				margin-top: 0.5em;
+				font-size: 9pt;
+			}
+		}
 	}
 
 }

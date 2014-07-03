@@ -45,6 +45,24 @@
 				</div>
 			{% endif %}
 
+			<h3 class="section_heading">New releases</h3>
+			<ul class="new_releases">
+				{% for prod in latest_releases %}
+					<li>
+						<a href="{{ prod.get_absolute_url }}">
+							{% thumbnail prod.default_screenshot %}
+							<div class="title">{{ prod.title }}</div>
+							<div class="byline">by {{ prod.byline }}</div>
+							<div class="platforms_and_types">
+								{{ prod.platforms.all|join:" / " }}
+								{% if prod.platforms.count and prod.types.count %} - {% endif %}
+								{{ prod.types.all|join:" / " }}
+							</div>
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+
 			{% site_stats %}
 			<p>
 				<a href="{% url 'latest_activity' %}">Latest activity</a>
