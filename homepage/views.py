@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.contrib.contenttypes.models import ContentType
 
 from homepage.models import Banner, NewsStory
 from forums.models import Topic
 from productions.models import Production
+from comments.models import Comment
 
 def home(request):
 	if request.user.is_authenticated():
@@ -18,9 +20,18 @@ def home(request):
 		'author_nicks', 'author_affiliation_nicks', 'platforms', 'types'
 	).order_by('-release_date_date', '-created_at')[:5]
 
+	comments = Comment.objects.filter(
+		content_type=ContentType.objects.get_for_model(Production)
+	).select_related(
+		'user'
+	).prefetch_related(
+		'commentable'
+	).order_by('-created_at')[:5]
+
 	return render(request, 'homepage/home.html', {
 		'banner': banner,
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
 		'forum_topics': Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5],
 		'latest_releases': latest_releases,
+		'comments': comments,
 	})

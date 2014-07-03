@@ -84,7 +84,7 @@ def microthumb(screenshot):
 	return thumbnail_params_for_size(screenshot, 48, 36)
 
 
-@register.inclusion_tag('shared/site_stats.html')
+@register.assignment_tag
 def site_stats():
 	return {
 		'production_count': Production.objects.filter(supertype='production').count(),
