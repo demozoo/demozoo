@@ -3,15 +3,23 @@
 {% if unparsed_byline %}
 	{{ unparsed_byline }}
 {% else %}
-	{% for nick in authors %}
+	{% for nick, is_spectrum in authors %}
 		{% if not forloop.first %} and {% endif %}
-		<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+		{% if is_spectrum %}
+			<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+		{% else %}
+			{{ nick }}
+		{% endif %}
 	{% endfor %}
 	{% if affiliations %}
 		/
-		{% for nick in affiliations %}
+		{% for nick, is_spectrum in affiliations %}
 			{% if not forloop.first %} ^ {% endif %}
-			<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+			{% if is_spectrum %}
+				<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+			{% else %}
+				{{ nick }}
+			{% endif %}
 		{% endfor %}
 	{% endif %}
 {% endif %}

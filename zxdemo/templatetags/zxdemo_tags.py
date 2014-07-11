@@ -1,17 +1,32 @@
 from django import template
+from django.conf import settings
 from django.db.models import Q
 
+from zxdemo.models import spectrum_releasers
 from parties.models import Party
 import datetime
 
 register = template.Library()
 
-@register.inclusion_tag('zxdemo/tags/byline.html')
-def byline(production):
+@register.inclusion_tag('zxdemo/tags/byline.html', takes_context=True)
+def byline(context, production, check_spectrum=False):
+	if check_spectrum:
+		try:
+			spectrum_releaser_ids = context['spectrum_releaser_ids']
+		except KeyError:
+			spectrum_releaser_ids = set(spectrum_releasers().values_list('id', flat=True))
+			context['spectrum_releaser_ids'] = spectrum_releaser_ids
+
+		authors = [(nick, nick.releaser_id in spectrum_releaser_ids) for nick in production.author_nicks.all()]
+		affiliations = [(nick, nick.releaser_id in spectrum_releaser_ids) for nick in production.author_affiliation_nicks.all()]
+	else:
+		authors = [(author, True) for author in production.author_nicks.all()]
+		affiliations = [(affiliation, True) for affiliation in production.author_affiliation_nicks.all()]
+
 	return {
 		'unparsed_byline': production.unparsed_byline,
-		'authors': production.author_nicks.all(),
-		'affiliations': production.author_affiliation_nicks.all(),
+		'authors': authors,
+		'affiliations': affiliations,
 	}
 
 @register.inclusion_tag('zxdemo/tags/forthcoming_parties.html')
@@ -61,3 +76,8 @@ def production_type_icon(production):
 		return '<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" width="24" height="24" border="0" />'
 	else:
 		return '<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" width="24" height="24" border="0" />'
+
+
+@register.filter
+def is_spectrum_production(production):
+	return any([(platform.id in settings.ZXDEMO_PLATFORM_IDS) for platform in production.platforms.all()])

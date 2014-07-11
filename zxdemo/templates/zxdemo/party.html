@@ -11,7 +11,7 @@
 		<col width="*" />
 		<tr>
 			<td bgcolor="#dedeff" valign="top" align="center" width="224">
-				<img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /><br />
+				<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
 				<h2>{{ party.name }}</h2>
 			</td>
 			<td valign="top" width="100%">
@@ -41,9 +41,33 @@
 						{% else %}
 							<col width="45%"><col width="15%" /><col width="40%" />
 						{% endif %}
-						<?php
-							result_list($qr_results, $compo['placed'], $compo['voted']);
-						?>
+						{% for placing in placings %}
+							<tr class="{% cycle 'odd' 'even' %}">
+								{% if has_rankings %}
+									<td align="right" style="padding-right: 6pt;">{{ placing.ranking }}</td>
+								{% endif %}
+								<td>
+									{% if placing.production|is_spectrum_production %}
+										<a href="{% url 'zxdemo_production' placing.production.id %}">{{ placing.production.title }}</a>
+									{% else %}
+										{{ placing.production.title }}
+									{% endif %}
+								</td>
+								<td>
+									{% if placing.production|is_spectrum_production %}
+										{% include "zxdemo/include/production_listing_item_links.html" with production=placing.production %}
+									{% endif %}
+								</td>
+								<td>
+									{% if placing.production|is_spectrum_production %}
+										{% byline placing.production %}
+									{% else %}
+										{% byline placing.production check_spectrum=1 %}
+									{% endif %}
+								</td>
+								<td align="right">{{ placing.score }}</td>
+							</tr>
+						{% endfor %}
 					</table>
 					<hr />
 				</td>
