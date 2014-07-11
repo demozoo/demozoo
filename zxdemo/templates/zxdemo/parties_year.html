@@ -6,7 +6,7 @@
 {% block meta_keywords %}spectrum speccy demo scene demoscene zx party calendar schedule dates compo competition{% endblock %}
 
 {% block sidebar %}
-	<img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /><br />
+	<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
 	<div style="margin-bottom: 8px"><strong>Forthcoming parties:</strong></div>
 	{% forthcoming_parties %}
 {% endblock %}
