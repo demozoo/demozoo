@@ -1,13 +1,15 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
-from demoscene.models import Platform, ProductionType, Edit
+from demoscene.models import Edit
+from productions.models import ProductionType
+from platforms.models import Platform
 from parties.models import Party, PartySeries, Competition, PartyExternalLink
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from fuzzy_date_field import FuzzyDateField
 from form_with_location import ModelFormWithLocation
-from production_type_field import ProductionTypeChoiceField
-from production_field import ProductionField
+from productions.fields.production_type_field import ProductionTypeChoiceField
+from productions.fields.production_field import ProductionField
 
 
 class PartyForm(ModelFormWithLocation):

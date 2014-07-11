@@ -21,14 +21,6 @@
 			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
 		{% endcompress %}
 
-		{% comment %} --- LEGACY CSS (new pages should override this with an empty block) --- {% endcomment %}
-		{% block legacy_css %}
-			{% compress css %}
-				<link rel="stylesheet" href="/static/css/demozoo.css" type="text/css" />
-			{% endcompress %}
-			{% include "shared/editor_css.html" %}
-		{% endblock %}
-
 		{% compress css %}
 			{% block extra_css %}{% endblock %}
 		{% endcompress %}

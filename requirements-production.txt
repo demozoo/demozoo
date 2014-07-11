@@ -1,6 +1,6 @@
 BeautifulSoup==3.2.0
 Django==1.6.1
-Markdown==2.0.3
+Markdown==2.4
 Pillow==2.2.2
 South==0.8.3
 boto==2.8.0
@@ -17,3 +17,4 @@ timelib==0.2.1
 django-gevent-deploy==1.0
 gevent==0.13.8
 unidecode==0.04.14
+bcrypt==1.0.2

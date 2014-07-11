@@ -272,6 +272,16 @@ class AsciiarenaArtist(BaseUrl):
 	html_title_format = "%s on AsciiArena"
 
 
+class AsciiarenaCrew(BaseUrl):
+	canonical_format = "http://www.asciiarena.com/info_crew.php?crew=%s&sort_by=filename"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_crew\.php', 'crew', re.I),
+	]
+	html_link_class = "asciiarena"
+	html_link_text = "AsciiArena"
+	html_title_format = "%s on AsciiArena"
+
+
 class AsciiarenaRelease(BaseUrl):
 	canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
 	tests = [
@@ -382,8 +392,8 @@ class SceneOrgFile(BaseUrl):
 	tests = [
 		file_dl_match,
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
+		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
+		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
@@ -406,20 +416,20 @@ class SceneOrgFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+#			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+#			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+#			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 		if not self.param.startswith('/mirrors/'):
 			links += [
 				'<li><a class="country_no" href="%s">no</a></li>' % escape(self.no_url),
-				'<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
+				# '<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
 			]
-			if not self.param.startswith('/resources/'):
-				links += [
-					'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
-				]
+			#if not self.param.startswith('/resources/'):
+			#	links += [
+			#		'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
+			#	]
 		if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
 			links += [
 				'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
@@ -433,7 +443,7 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def download_url(self):
-		return self.de_http_url
+		return self.nl_url
 
 	@property
 	def no_url(self):
@@ -497,10 +507,10 @@ class AmigascneFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -555,10 +565,10 @@ class PaduaOrgFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us/http</a></li>' % escape(self.us_http_url),
+			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
+			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
+			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
+			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -789,17 +799,29 @@ class YoutubeVideo(BaseUrl):
 	canonical_format = "http://www.youtube.com/watch?v=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?youtube\.com/watch', 'v', re.I),
-		regex_match(r'https?://(?:www\.)?youtube.com/embed/([^/]+)', re.I),
+		regex_match(r'https?://(?:www\.)?youtube\.com/embed/([^/]+)', re.I),
+		regex_match(r'https?://(?:www\.)?youtu\.be/([^/]+)', re.I),
 	]
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
 	html_title_format = "%s on YouTube"
+	is_streaming_video = True
 
 
 class YoutubeUser(BaseUrl):
 	canonical_format = "http://www.youtube.com/user/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)', re.I),
+	]
+	html_link_class = "youtube"
+	html_link_text = "YouTube"
+	html_title_format = "%s on YouTube"
+
+
+class YoutubeChannel(BaseUrl):
+	canonical_format = "http://www.youtube.com/channel/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?youtube\.com/channel/([^\/\?]+)', re.I),
 	]
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
@@ -814,6 +836,7 @@ class VimeoVideo(BaseUrl):
 	html_link_class = "vimeo"
 	html_link_text = "Vimeo"
 	html_title_format = "%s on Vimeo"
+	is_streaming_video = True
 
 
 class DemosceneTvVideo(BaseUrl):
@@ -825,6 +848,7 @@ class DemosceneTvVideo(BaseUrl):
 	html_link_class = "demoscene_tv"
 	html_link_text = "Demoscene.tv"
 	html_title_format = "%s on Demoscene.tv"
+	is_streaming_video = True
 
 
 class CappedVideo(BaseUrl):
@@ -835,6 +859,7 @@ class CappedVideo(BaseUrl):
 	html_link_class = "capped"
 	html_link_text = "Capped.TV"
 	html_title_format = "%s on Capped.TV"
+	is_streaming_video = True
 
 
 class FacebookPage(BaseUrl):
@@ -851,6 +876,16 @@ class GooglePlusPage(BaseUrl):
 	canonical_format = "https://plus.google.com/%s/"
 	tests = [
 		regex_match(r'https?://plus\.google\.com/(\d+)', re.I),
+	]
+	html_link_class = "googleplus"
+	html_link_text = "Google+"
+	html_title_format = "%s on Google+"
+
+
+class GooglePlusEvent(BaseUrl):
+	canonical_format = "https://plus.google.com/u/0/events/%s"
+	tests = [
+		regex_match(r'https?://plus\.google\.com/u/0/events/(\w+)', re.I),
 	]
 	html_link_class = "googleplus"
 	html_link_text = "Google+"
@@ -1003,16 +1038,37 @@ class SpotifyTrack(BaseUrl):
 	html_title_format = "%s on Spotify"
 
 
+class GithubAccount(BaseUrl):
+	canonical_format = "https://github.com/%s"
+	tests = [
+		regex_match(r'https?://github\.com/(\w+)', re.I),
+	]
+	html_link_class = "github"
+	html_link_text = "GitHub"
+	html_title_format = "%s on GitHub"
+
+
+class GithubRepo(BaseUrl):
+	canonical_format = "https://github.com/%s"
+	tests = [
+		regex_match(r'https?://github\.com/(\w+/\w+)', re.I),
+	]
+	html_link_class = "github"
+	html_link_text = "GitHub"
+	html_title_format = "%s on GitHub"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
-	MobygamesDeveloper, AsciiarenaArtist, PouetGroup,
+	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
 	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
-	GooglePlusPage, SoundcloudUser, YoutubeUser,
+	GooglePlusPage, SoundcloudUser, YoutubeUser, YoutubeChannel,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
+	GithubAccount, GithubRepo,
 	BaseUrl,
 ]
 
@@ -1023,7 +1079,7 @@ PRODUCTION_LINK_TYPES = [
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-	SceneOrgFile, UntergrundFile,
+	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
 	WikipediaPage,
 	SpeccyWikiPage,
 	BaseUrl,
@@ -1038,14 +1094,15 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
+	'GithubAccount', 'GithubRepo',
 ]
 
 PARTY_LINK_TYPES = [
 	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
-	PushnpopParty, KestraBitworldParty,
-	FacebookPage, GooglePlusPage, LanyrdEvent, WikipediaPage, SpeccyWikiPage,
-	BaseUrl,
+	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
+	FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
+	SpeccyWikiPage, BaseUrl,
 ]
 
 

@@ -1,16 +1,18 @@
-from django.contrib.auth.decorators import login_required
-from django.db import connection, transaction
+from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect, render
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
-from demoscene.shortcuts import *
-from demoscene.models import Production, Nick, Credit, Releaser, Membership, ReleaserExternalLink, ProductionLink, ProductionBlurb
-from comments.models import ProductionComment
+from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
+from comments.models import Comment
 from parties.models import PartyExternalLink, Party
+from productions.models import Production, Credit, ProductionLink, ProductionBlurb
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from mirror.models import Download, ArchiveMember
@@ -31,7 +33,7 @@ def prods_without_screenshots(request):
 		.filter(screenshots__id__isnull=True) \
 		.exclude(supertype='music') \
 		.extra(
-			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
@@ -46,16 +48,16 @@ def prods_without_external_links(request):
 	report_name = 'prods_without_external_links'
 
 	productions = Production.objects.raw('''
-		SELECT demoscene_production.*
-		FROM demoscene_production
-		LEFT JOIN demoscene_productionlink ON (
-			demoscene_production.id = demoscene_productionlink.production_id
-			AND demoscene_productionlink.is_download_link = 'f'
+		SELECT productions_production.*
+		FROM productions_production
+		LEFT JOIN productions_productionlink ON (
+			productions_production.id = productions_productionlink.production_id
+			AND productions_productionlink.is_download_link = 'f'
 		)
-		WHERE demoscene_production.supertype = 'production'
-		AND demoscene_productionlink.id IS NULL
-		AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY demoscene_production.title
+		WHERE productions_production.supertype = 'production'
+		AND productions_productionlink.id IS NULL
+		AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		ORDER BY productions_production.title
 	''', [report_name])
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without external links',
@@ -70,7 +72,7 @@ def prods_without_release_date(request):
 
 	productions = Production.objects.filter(release_date_date__isnull=True) \
 		.extra(
-			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
@@ -86,7 +88,7 @@ def prods_with_dead_amigascne_links(request):
 
 	productions = Production.objects.filter(links__parameter__contains='amigascne.org/old/') \
 		.extra(
-			where=['demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
 	return render(request, 'maintenance/production_report.html', {
@@ -97,24 +99,57 @@ def prods_with_dead_amigascne_links(request):
 	})
 
 
+def prods_with_dead_amiga_nvg_org_links(request):
+	report_name = 'prods_with_dead_amiga_nvg_org_links'
+
+	productions = Production.objects.filter(links__parameter__contains='amiga.nvg.org') \
+		.extra(
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions with dead amiga.nvg.org links',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+
+def prods_without_platforms(request):
+	report_name = 'prods_without_platforms'
+
+	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
+		.exclude(types__name='Video') \
+		.extra(
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Productions without platforms',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+
 def prods_without_release_date_with_placement(request):
 	report_name = 'prods_without_release_date_with_placement'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT ON (demoscene_production.id)
-			demoscene_production.*,
+		SELECT DISTINCT ON (productions_production.id)
+			productions_production.*,
 			parties_party.end_date_date AS suggested_release_date_date,
 			parties_party.end_date_precision AS suggested_release_date_precision,
 			parties_party.name AS release_detail
 		FROM
-			demoscene_production
-			INNER JOIN parties_competitionplacing ON (demoscene_production.id = parties_competitionplacing.production_id)
+			productions_production
+			INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
 			INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
 			INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
 		WHERE
-			demoscene_production.release_date_date IS NULL
-			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY demoscene_production.id, parties_party.end_date_date
+			productions_production.release_date_date IS NULL
+			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		ORDER BY productions_production.id, parties_party.end_date_date
 	''', [report_name])
 
 	productions = list(productions)
@@ -138,9 +173,9 @@ def prod_soundtracks_without_release_date(request):
 			production.release_date_precision AS suggested_release_date_precision,
 			production.title AS release_detail
 		FROM
-			demoscene_production AS soundtrack
-			INNER JOIN demoscene_soundtracklink ON (soundtrack.id = demoscene_soundtracklink.soundtrack_id)
-			INNER JOIN demoscene_production AS production ON (demoscene_soundtracklink.production_id = production.id)
+			productions_production AS soundtrack
+			INNER JOIN productions_soundtracklink ON (soundtrack.id = productions_soundtracklink.soundtrack_id)
+			INNER JOIN productions_production AS production ON (productions_soundtracklink.production_id = production.id)
 		WHERE
 			soundtrack.release_date_date IS NULL
 			AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
@@ -208,8 +243,8 @@ def prods_with_release_date_outside_party(request):
 
 	productions = Production.objects.raw('''
 		SELECT * FROM (
-			SELECT DISTINCT ON (demoscene_production.id)
-				demoscene_production.*,
+			SELECT DISTINCT ON (productions_production.id)
+				productions_production.*,
 				parties_party.start_date_date AS party_start_date,
 				parties_party.end_date_date AS party_end_date,
 				parties_party.end_date_date AS suggested_release_date_date,
@@ -217,14 +252,14 @@ def prods_with_release_date_outside_party(request):
 				parties_party.name AS release_detail,
 				parties_party.end_date_precision AS party_end_date_precision
 			FROM
-				demoscene_production
-				INNER JOIN parties_competitionplacing ON (demoscene_production.id = parties_competitionplacing.production_id)
+				productions_production
+				INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
 				INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
 				INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
 			WHERE
-				demoscene_production.release_date_date IS NOT NULL
-				AND demoscene_production.release_date_precision = 'd'
-			ORDER BY demoscene_production.id, parties_party.end_date_date
+				productions_production.release_date_date IS NOT NULL
+				AND productions_production.release_date_precision = 'd'
+			ORDER BY productions_production.id, parties_party.end_date_date
 		) AS releases
 		WHERE
 			releases.party_end_date_precision = 'd'
@@ -250,13 +285,13 @@ def prods_with_same_named_credits(request):
 	report_name = 'prods_with_same_named_credits'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT demoscene_production.*
-		FROM demoscene_production
-		INNER JOIN demoscene_credit ON (demoscene_production.id = demoscene_credit.production_id)
-		INNER JOIN demoscene_nick ON (demoscene_credit.nick_id = demoscene_nick.id)
+		SELECT DISTINCT productions_production.*
+		FROM productions_production
+		INNER JOIN productions_credit ON (productions_production.id = productions_credit.production_id)
+		INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
 		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
-		INNER JOIN demoscene_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = demoscene_production.id)
-		AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		INNER JOIN productions_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id)
+		AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 	''', [report_name])
 
 	return render(request, 'maintenance/production_report.html', {
@@ -271,17 +306,17 @@ def same_named_prods_by_same_releaser(request):
 	report_name = 'same_named_prods_by_same_releaser'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT demoscene_production.*, LOWER(demoscene_production.title) AS lower_title
-		FROM demoscene_production
-		INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
-		INNER JOIN demoscene_nick ON (demoscene_production_author_nicks.nick_id = demoscene_nick.id)
+		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		FROM productions_production
+		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
 		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-		INNER JOIN demoscene_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-		INNER JOIN demoscene_production AS other_production ON (other_authorship.production_id = other_production.id)
+		INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
+		INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
 		WHERE
-			demoscene_production.title <> '?'
-			AND demoscene_production.id <> other_production.id AND LOWER(demoscene_production.title) = LOWER(other_production.title)
-			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+			productions_production.title <> '?'
+			AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
+			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
 		ORDER BY lower_title
 	''', [report_name])
 
@@ -297,18 +332,18 @@ def same_named_prods_without_special_chars(request):
 	report_name = 'same_named_prods_without_special_chars'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT demoscene_production.*, LOWER(demoscene_production.title) AS lower_title
-		FROM demoscene_production
-		INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
-		INNER JOIN demoscene_nick ON (demoscene_production_author_nicks.nick_id = demoscene_nick.id)
+		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		FROM productions_production
+		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
 		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-		INNER JOIN demoscene_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-		INNER JOIN demoscene_production AS other_production ON (other_authorship.production_id = other_production.id)
+		INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
+		INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
 		WHERE
-			demoscene_production.title <> '?'
-			AND demoscene_production.id <> other_production.id
-			AND LOWER(REGEXP_REPLACE(demoscene_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
-			AND demoscene_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+			productions_production.title <> '?'
+			AND productions_production.id <> other_production.id
+			AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
+			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
 		ORDER BY lower_title
 	''')
 
@@ -323,17 +358,19 @@ def same_named_prods_without_special_chars(request):
 def duplicate_external_links(request):
 	def prod_duplicates_by_link_class(link_class):
 		return Production.objects.raw('''
-			SELECT DISTINCT demoscene_production.*, demoscene_productionlink.parameter
-			FROM demoscene_production
-			INNER JOIN demoscene_productionlink ON (
-				demoscene_production.id = demoscene_productionlink.production_id
-				AND demoscene_productionlink.link_class = %s)
-			INNER JOIN demoscene_productionlink AS other_link ON (
-				demoscene_productionlink.link_class = other_link.link_class
-				AND demoscene_productionlink.parameter = other_link.parameter
-				AND demoscene_productionlink.id <> other_link.id
+			SELECT DISTINCT productions_production.*, productions_productionlink.parameter
+			FROM productions_production
+			INNER JOIN productions_productionlink ON (
+				productions_production.id = productions_productionlink.production_id
+				AND productions_productionlink.link_class = %s
+				AND productions_productionlink.is_download_link = 'f')
+			INNER JOIN productions_productionlink AS other_link ON (
+				productions_productionlink.link_class = other_link.link_class
+				AND productions_productionlink.parameter = other_link.parameter
+				AND productions_productionlink.id <> other_link.id
+				AND productions_productionlink.is_download_link = 'f'
 			)
-			ORDER BY demoscene_productionlink.parameter
+			ORDER BY productions_productionlink.parameter
 		''', [link_class])
 
 	def releaser_duplicates_by_link_class(link_class):
@@ -413,14 +450,14 @@ def implied_memberships(request):
 		SELECT
 			member.id, member.is_group, member.name,
 			grp.id, grp.name,
-			demoscene_production.id, demoscene_production.supertype, demoscene_production.title
+			productions_production.id, productions_production.supertype, productions_production.title
 		FROM
-			demoscene_production
-			INNER JOIN demoscene_production_author_nicks ON (demoscene_production.id = demoscene_production_author_nicks.production_id)
-			INNER JOIN demoscene_nick AS author_nick ON (demoscene_production_author_nicks.nick_id = author_nick.id)
+			productions_production
+			INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+			INNER JOIN demoscene_nick AS author_nick ON (productions_production_author_nicks.nick_id = author_nick.id)
 			INNER JOIN demoscene_releaser AS member ON (author_nick.releaser_id = member.id)
-			INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production.id = demoscene_production_author_affiliation_nicks.production_id)
-			INNER JOIN demoscene_nick AS group_nick ON (demoscene_production_author_affiliation_nicks.nick_id = group_nick.id)
+			INNER JOIN productions_production_author_affiliation_nicks ON (productions_production.id = productions_production_author_affiliation_nicks.production_id)
+			INNER JOIN demoscene_nick AS group_nick ON (productions_production_author_affiliation_nicks.nick_id = group_nick.id)
 			INNER JOIN demoscene_releaser AS grp ON (group_nick.releaser_id = grp.id)
 			LEFT JOIN demoscene_membership ON (
 				member.id = demoscene_membership.member_id
@@ -428,7 +465,7 @@ def implied_memberships(request):
 		WHERE
 			demoscene_membership.id IS NULL
 		ORDER BY
-			grp.name, grp.id, member.name, member.id, demoscene_production.title
+			grp.name, grp.id, member.name, member.id, productions_production.title
 	""")
 	records = [
 		{
@@ -610,13 +647,13 @@ def empty_releasers(request):
 		AND (
 			SELECT COUNT (demoscene_nick.id)
 			FROM demoscene_nick
-			LEFT JOIN demoscene_production_author_nicks ON (demoscene_nick.id = demoscene_production_author_nicks.nick_id)
-			LEFT JOIN demoscene_production_author_affiliation_nicks ON (demoscene_nick.id = demoscene_production_author_affiliation_nicks.nick_id)
-			LEFT JOIN demoscene_credit ON (demoscene_nick.id = demoscene_credit.nick_id)
+			LEFT JOIN productions_production_author_nicks ON (demoscene_nick.id = productions_production_author_nicks.nick_id)
+			LEFT JOIN productions_production_author_affiliation_nicks ON (demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id)
+			LEFT JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
 			WHERE demoscene_nick.releaser_id = demoscene_releaser.id
-			AND (demoscene_production_author_nicks.nick_id IS NOT NULL
-			OR demoscene_production_author_affiliation_nicks.nick_id IS NOT NULL
-			OR demoscene_credit.nick_id IS NOT NULL)
+			AND (productions_production_author_nicks.nick_id IS NOT NULL
+			OR productions_production_author_affiliation_nicks.nick_id IS NOT NULL
+			OR productions_credit.nick_id IS NOT NULL)
 		) = 0
 		AND demoscene_releaser.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		ORDER BY demoscene_releaser.name
@@ -681,7 +718,9 @@ def prod_comments(request):
 	if not request.user.is_staff:
 		return redirect('home')
 
-	comments = ProductionComment.objects.order_by('-created_at').select_related('user', 'production')
+	production_type = ContentType.objects.get_for_model(Production)
+
+	comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
 	paginator = Paginator(comments, 100)
 
 	page = request.GET.get('page', 1)
@@ -693,6 +732,36 @@ def prod_comments(request):
 
 	return render(request, 'maintenance/prod_comments.html', {
 		'comments': comments_page,
+	})
+
+def credits_to_move_to_text(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	report_name = 'credits_to_move_to_text'
+
+	credits = Credit.objects.raw('''
+		SELECT
+			productions_credit.*,
+			productions_production.title,
+			demoscene_nick.name AS nick_name
+		FROM productions_credit
+		INNER JOIN productions_production ON productions_credit.production_id = productions_production.id
+		INNER JOIN demoscene_nick ON productions_credit.nick_id = demoscene_nick.id
+		WHERE category = 'Other'
+		AND (
+			production_id IN (SELECT production_id FROM productions_production_types where productiontype_id = 5)
+			OR role ILIKE '%%text%%'
+			OR role ILIKE '%%lyric%%'
+		)
+		AND productions_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+	''', [report_name])
+
+	return render(request, 'maintenance/credits_to_move_to_text.html', {
+		'title': 'Credits that probably need to be moved to the Text category',
+		'credits': credits,
+		'mark_excludable': True,
+		'report_name': report_name,
 	})
 
 

@@ -1,14 +1,17 @@
-from django.db import models
+from django.conf import settings
+
 from PIL import Image
 import StringIO
-import pygame
+
+if settings.USE_PYGAME_IMAGE_CONVERSION:
+	import pygame
 
 from screenshots.processing import get_thumbnail_sizing_params
 
 # file extensions that we are able to convert to web-usable images
 USABLE_IMAGE_FILE_EXTENSIONS = [
-	'bmp', 'gif', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx', 'png', 'tga', 'tif',
-	'tiff', 'xbm', 'xpm',
+	'bmp', 'gif', 'iff', 'iff24', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx',
+	'png', 'tga', 'tif', 'tiff', 'xbm', 'xpm',
 ]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
@@ -37,14 +40,17 @@ class PILConvertibleImage(object):
 			self.image = Image.open(source_file)  # raises IOError if image can't be identified
 			opened_with_pil = True
 		except IOError:
-			# try pygame instead
-			try:
-				source_file.seek(0)
-				surface = pygame.image.load(source_file, name_hint)
-				# export as RGBA and import back into PIL
-				self.image = Image.fromstring('RGBA', surface.get_size(), pygame.image.tostring(surface, 'RGBA'))
-			except pygame.error:
-				raise IOError("Image format is not supported")
+			if settings.USE_PYGAME_IMAGE_CONVERSION:
+				# try pygame instead
+				try:
+					source_file.seek(0)
+					surface = pygame.image.load(source_file, name_hint)
+					# export as RGBA and import back into PIL
+					self.image = Image.fromstring('RGBA', surface.get_size(), pygame.image.tostring(surface, 'RGBA'))
+				except pygame.error:
+					raise IOError("Image format is not supported")
+			else:
+				raise
 
 		if opened_with_pil and self.image.format not in PIL_READABLE_FORMATS:
 			raise IOError("Image format is not supported")

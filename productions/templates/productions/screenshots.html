@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load demoscene_tags %}
+
+{% block html_title %}Screenshots for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/productions/css/components/production_core_details.less" type="text/less" />
+
+	<link rel="stylesheet" href="/static/productions/css/pages/production_screenshots.less" type="text/less" />
+{% endblock %}
+
+{% block body_class %}show_production{% endblock %}
+
+{% block base_main %}
+	{% include "productions/_core_details.html" with show_back_button=1 %}
+
+	{% for pic in screenshots %}
+		{% if pic.original_url %}
+			<a href="{{ pic.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
+				<img src="{{ pic.standard_url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
+			</a>
+		{% endif %}
+	{% endfor %}
+
+{% endblock %}

@@ -1,5 +1,9 @@
-from demoscene.shortcuts import *
-from demoscene.models import Releaser, Production, Edit
+from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
+from django.shortcuts import redirect, render
+
+from demoscene.shortcuts import get_page
+from demoscene.models import Releaser, Edit
+from productions.models import Production
 
 
 def latest_activity(request):
@@ -24,6 +28,10 @@ def error_test(request):
 		raise Exception("This is a test of the emergency broadcast system.")
 	else:
 		return redirect('home')
+
+
+def page_not_found_test(request):
+	return render(request, '404.html')
 
 
 def recent_edits(request):

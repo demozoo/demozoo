@@ -1,4 +1,4 @@
-from demoscene.models import Production
+from productions.models import Production
 import re
 from string import replace
 from fuzzy_date import FuzzyDate

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/search/css/pages/search.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
 	<h2>Search</h2>
@@ -20,7 +23,7 @@
 			<div class="search_results">
 				<h3>Exact name matches</h3>
 				{% if name_results %}
-					<ul>
+					<ul class="search_results_listing">
 						{% for result in name_results %}
 							{% if result.instance.search_result_template %}
 								{% include result.instance.search_result_template %}
@@ -39,7 +42,7 @@
 			<div class="search_results">
 				<h3>Other matches</h3>
 				{% if page.object_list %}
-					<ul>
+					<ul class="search_results_listing">
 						{% with 1 as show_snippet %}
 							{% for result in page.object_list %}
 								{% if result.instance.search_result_template %}

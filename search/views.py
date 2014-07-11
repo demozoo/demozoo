@@ -1,11 +1,12 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.utils import simplejson
+from django.shortcuts import render
 
 from unidecode import unidecode
 
 from search.forms import SearchForm
-from demoscene.shortcuts import render, get_page
+from demoscene.shortcuts import get_page
 from demoscene.index import name_indexer, name_indexer_with_real_names
 
 def search(request):

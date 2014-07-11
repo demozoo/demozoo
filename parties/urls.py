@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns
 
 urlpatterns = patterns('parties.views',
 	(r'^parties/$', 'parties.index', {}, 'parties'),

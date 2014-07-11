@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from demoscene.models import Edit, Credit
+from demoscene.models import Edit
+from productions.models import Credit
 from django.forms.models import modelformset_factory
 from django.core.exceptions import ValidationError
 

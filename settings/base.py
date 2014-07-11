@@ -28,6 +28,7 @@ DATABASES = {
 		'PASSWORD': '',                  # Not used with sqlite3.
 		'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
 		'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+		'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for
 	},
 	'geonameslite': {
 		'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -36,7 +37,6 @@ DATABASES = {
 	}
 }
 
-CONN_MAX_AGE = 600  # number of seconds database connections should persist for
 DATABASE_ROUTERS = ['geonameslite.router.GeonamesLiteRouter']
 SOUTH_TESTS_MIGRATE = False  # if south attempts migrations during manage.py test, it chokes on the geonames database which is missing south_migrationhistory
 
@@ -116,8 +116,9 @@ INSTALLED_APPS = (
 
 	'demoscene',
 	'parties',
+	'platforms',
+	'productions',
 	'search',
-	'dataexchange',
 	'maintenance',
 	'pages',
 	'sceneorg',
@@ -211,3 +212,8 @@ MEDIA_ROOT = os.path.join(FILEROOT, 'media')
 
 # Read-only mode
 SITE_IS_WRITEABLE = True
+
+# Whether to attempt image conversion using the pygame.image library
+# for image formats that PIL doesn't support. Means that we can support
+# LBM files, but is a total arse to install...
+USE_PYGAME_IMAGE_CONVERSION = False

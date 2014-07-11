@@ -107,11 +107,3 @@ def update_dir_records(dir, files, mark_deletions=True):
 	dir.save()
 
 	return new_file_count
-
-
-@task(rate_limit='6/m', ignore_result=True)
-def fetch_sceneorg_file(file_id):
-	try:
-		File.objects.get(id=file_id).fetch()
-	except FileTooBig:
-		pass

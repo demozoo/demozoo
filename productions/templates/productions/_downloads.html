@@ -1,0 +1,19 @@
+{% load url from future %}
+
+<div class="editable_chunk panel downloads_panel">
+	<h3>Downloads</h3>
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li>
+				<a href="{% url 'production_edit_download_links' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit download links">Edit</a>
+			</li>
+		</ul>
+	{% endif %}
+	<ul class="download_links">
+		{% for link in download_links %}
+			<li class="download_link {{ link.html_link_class }}">
+				{{ link.as_download_link|safe }}
+			</li>
+		{% endfor %}
+	</ul>
+</div>

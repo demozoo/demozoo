@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block html_title %}Music - Demozoo{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/productions/css/components/production_listing_filters.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+{% endblock %}
+
+{% block base_main %}
+	{% if site_is_writeable %}
+		<ul class="actions">
+			<li><a href="{% url 'new_music' %}" class="action_button icon add open_in_lightbox">New music</a></li>
+		</ul>
+	{% endif %}
+
+	<h2>Music</h2>
+
+	<form action="{% url 'musics' %}" method="GET" class="production_listing_filters">
+		<ul class="fields">
+			{{ form.as_ul }}
+		</ul>
+		<input type="submit" value="Find music">
+	</form>
+
+	{% include "shared/production_reorder_links.html" %}
+
+	{% with production_page.object_list as productions %}
+		{% if productions %}
+			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
+		{% else %}
+			<p style="text-align: center; font-style: italic;">No releases matching these criteria. Maybe you should make a demo about it...?</p>
+		{% endif %}
+	{% endwith %}
+	
+	{% with production_page as page %}
+		{% include "shared/pagination_links.html" %}
+	{% endwith %}
+{% endblock %}
