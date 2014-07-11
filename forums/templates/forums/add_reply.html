@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block html_title %}Replying to topic '{{ topic.title }}' - Demozoo{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
 	<h2>Replying to topic '{{ topic.title }}'</h2>

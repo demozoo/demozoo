@@ -20,6 +20,10 @@ body.maintenance_report .exclude_button {
 
 .report {
 	margin-bottom: 1em;
+	margin-left: 16px;
+	margin-top: 16px;
+	border: 1px solid #ccc;
+	padding: 16px;
 }
 
 body.unresolved_screenshots a.resolve {
@@ -29,4 +33,8 @@ body.unresolved_screenshots a.resolve {
 
 body.unresolved_screenshots a:hover.resolve {
 	background-color: #bbb;
+}
+
+.production_listing .title {
+	display: inline;
 }

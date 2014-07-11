@@ -16,7 +16,9 @@ GEVENT_ADDR_PORT = "localhost:4801"
 
 BROKER_URL = 'redis://localhost:6379/0'
 
-ALLOWED_HOSTS = ['localhost', 'demozoo.org', '46.4.213.51']
+ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'matilda.demozoo.org', '46.4.213.51']
+
+USE_PYGAME_IMAGE_CONVERSION = True
 
 try:
 	from .local import *

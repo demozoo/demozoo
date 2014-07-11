@@ -3,6 +3,9 @@
 {% load url from future %}
 
 {% block html_title %}Sceners - Demozoo{% endblock %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
 	<h2>Sceners</h2>
@@ -13,7 +16,7 @@
 		</ul>
 	{% endif %}
 	
-	<ul>
+	<ul class="releaser_list">
 		{% for nick in nick_page.object_list %}
 			<li class="scener">
 				{% scener_with_affiliations nick %}

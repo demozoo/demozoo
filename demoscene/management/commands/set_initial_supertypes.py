@@ -1,4 +1,4 @@
-from demoscene.models import Production
+from productions.models import Production
 from django.core.management.base import NoArgsCommand
 
 class Command(NoArgsCommand):

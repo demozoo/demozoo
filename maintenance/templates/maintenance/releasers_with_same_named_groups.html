@@ -8,7 +8,7 @@
 {% block base_main %}
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
-		<ul>
+		<ul class="releaser_list">
 			{% for releaser in releasers %}
 				<li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
 					<a href="/{% if releaser.is_group %}groups{% else %}sceners{% endif %}/{{ releaser.id }}/">{{ releaser.name }}</a>

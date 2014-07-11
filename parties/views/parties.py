@@ -1,10 +1,14 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
-from demoscene.shortcuts import *
-from demoscene.models import Production, Edit
+from django.shortcuts import get_object_or_404, redirect, render
+from demoscene.shortcuts import simple_ajax_form
+from demoscene.models import Edit
+from productions.models import Production
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
-from parties.forms import *
+from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset
 from read_only_mode import writeable_site_required
+from comments.models import Comment
+from comments.forms import CommentForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -52,6 +56,12 @@ def show(request, party_id):
 
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
+	if request.user.is_authenticated():
+		comment = Comment(commentable=party, user=request.user)
+		comment_form = CommentForm(instance=comment, prefix="comment")
+	else:
+		comment_form = None
+
 	return render(request, 'parties/show.html', {
 		'party': party,
 		'competitions_with_placings': competitions_with_placings,
@@ -59,6 +69,7 @@ def show(request, party_id):
 		'invitations': invitations,
 		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
 		'external_links': external_links,
+		'comment_form': comment_form,
 	})
 
 
@@ -100,7 +111,7 @@ def create(request):
 				return HttpResponse('OK: %s' % party.get_absolute_url(), mimetype='text/plain')
 			else:
 				messages.success(request, 'Party added')
-				return redirect('party', args=[party.id])
+				return redirect('party', party.id)
 	else:
 		form = PartyForm(initial={
 			'name': request.GET.get('name'),
@@ -134,7 +145,7 @@ def edit(request, party_id):
 				party.party_series.save()
 
 			messages.success(request, 'Party updated')
-			return redirect('party', args=[party.id])
+			return redirect('party', party.id)
 	else:
 		form = EditPartyForm(instance=party, initial={
 			'start_date': party.start_date,
@@ -253,7 +264,7 @@ def add_competition(request, party_id):
 			# party.updated_at = datetime.datetime.now()
 			# party.save()
 			if request.POST.get('enter_results'):
-				return redirect('competition_edit', args=[competition.id])
+				return redirect('competition_edit', competition.id)
 			else:
 				return HttpResponseRedirect(party.get_absolute_url())
 	else:
@@ -325,4 +336,4 @@ def edit_invitations(request, party_id):
 @writeable_site_required
 @login_required
 def edit_competition(request, party_id, competition_id):
-	return redirect('competition_edit', args=[competition_id])
+	return redirect('competition_edit', competition_id)

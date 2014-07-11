@@ -6,7 +6,7 @@ import urllib2
 import cStringIO
 import zipfile
 
-from demoscene.models import Screenshot, ProductionLink
+from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3
 from mirror.actions import fetch_url, FileTooBig

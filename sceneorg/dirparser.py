@@ -42,11 +42,13 @@ def get_dir_listing(f):
 		if not line or line == "\n":
 			break
 
-		m = re.match(r'(.)[rwsx-]{9} +\d+ \w+ +\w+ +(\d+) \w{3} +\d+ +\d\d:?\d\d (.*)', line)
+		m = re.match(r'(.)[rwsx-]{9}\+? +\d+ +\w+ +\w+ +(\d+) \w{3} +\d+ +\d\d:?\d\d (.*)', line)
 		if m:
 			node_type, file_size, filename = m.groups(0)
 			if node_type == '-':
 				entries.append((filename, False, file_size))
+			elif node_type == 'l':
+				entries.append((filename.split(' ')[0], False, None))
 			elif node_type == 'd':
 				entries.append((filename, True, None))
 		else:

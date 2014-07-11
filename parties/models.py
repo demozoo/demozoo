@@ -10,8 +10,10 @@ from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
 from unidecode import unidecode
 
-from demoscene.models import DATE_PRECISION_CHOICES, Production, Screenshot, ExternalLink
+from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink
 from demoscene.utils import groklinks
+from comments.models import Commentable
+from productions.models import Production, Screenshot
 
 
 class PartySeries(models.Model):
@@ -61,7 +63,7 @@ class PartySeriesDemozoo0Reference(models.Model):
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 
-class Party(models.Model):
+class Party(Commentable):
 	party_series = models.ForeignKey(PartySeries, related_name='parties')
 	name = models.CharField(max_length=255, unique=True)
 	tagline = models.CharField(max_length=255, blank=True)
@@ -83,7 +85,7 @@ class Party(models.Model):
 
 	sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
 
-	invitations = models.ManyToManyField('demoscene.Production', related_name='invitation_parties', blank=True)
+	invitations = models.ManyToManyField('productions.Production', related_name='invitation_parties', blank=True)
 
 	search_result_template = 'search/results/party.html'
 
@@ -221,8 +223,8 @@ class Competition(models.Model):
 	name = models.CharField(max_length=255)
 	shown_date_date = models.DateField(null=True, blank=True)
 	shown_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
-	platform = models.ForeignKey('demoscene.Platform', blank=True, null=True)
-	production_type = models.ForeignKey('demoscene.ProductionType', blank=True, null=True)
+	platform = models.ForeignKey('platforms.Platform', blank=True, null=True)
+	production_type = models.ForeignKey('productions.ProductionType', blank=True, null=True)
 
 	def results(self):
 		return self.placings.order_by('position')
@@ -262,7 +264,7 @@ class Competition(models.Model):
 
 class CompetitionPlacing(models.Model):
 	competition = models.ForeignKey(Competition, related_name='placings')
-	production = models.ForeignKey('demoscene.Production', related_name='competition_placings')
+	production = models.ForeignKey('productions.Production', related_name='competition_placings')
 	ranking = models.CharField(max_length=32, blank=True)
 	position = models.IntegerField()
 	score = models.CharField(max_length=32, blank=True)

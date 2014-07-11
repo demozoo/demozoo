@@ -1,8 +1,8 @@
 from django import forms
 
-from comments.models import ProductionComment
+from comments.models import Comment
 
-class ProductionCommentForm(forms.ModelForm):
+class CommentForm(forms.ModelForm):
 	class Meta:
-		model = ProductionComment
+		model = Comment
 		fields = ['body']

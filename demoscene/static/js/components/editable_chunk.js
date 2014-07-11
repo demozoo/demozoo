@@ -17,9 +17,11 @@ function initEditToggle(context) {
 			if (panel.hasClass('editing')) {
 				panel.removeClass('hide_edit_controls');
 				editButton.removeClass('edit').addClass('done').text('Done');
+				panel.trigger('panelEditEnable')
 			} else {
 				panel.addClass('hide_edit_controls');
 				editButton.removeClass('done').addClass('edit').text('Edit');
+				panel.trigger('panelEditDisable')
 			}
 		}
 		updateEditButtonState();

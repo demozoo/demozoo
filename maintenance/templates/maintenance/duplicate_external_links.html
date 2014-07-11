@@ -2,11 +2,12 @@
 
 {% block html_title %}Duplicate external links - Demozoo{% endblock %}
 
-{% block body_class %}maintenance_report{% endblock %}
-
 {% block extra_css %}
+	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
 	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 {% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
 	<div id="main_column">
@@ -20,7 +21,7 @@
 		{% for column, releasers in releaser_dupes.items %}
 			<h2>Releasers matching by {{ column }}:</h2>
 			<div class="panel report">
-				<ul>
+				<ul class="releaser_list">
 					{% for releaser in releasers %}
 						<li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
 							<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>

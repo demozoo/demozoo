@@ -1,6 +1,6 @@
 from django.db import models
 
-from demoscene.models import random_path
+from demoscene.utils.files import random_path
 
 
 class Banner(models.Model):

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load demoscene_tags %}
 {% load url from future %}
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
+	<link rel="stylesheet" href="/static/css/pages/latest_activity.less" type="text/less" />
+{% endblock %}
 
 {% block base_main %}
 	<h2>Latest activity</h2>
@@ -9,7 +13,7 @@
 	<div class="chart_set">
 		<div class="chart">
 			<h2>Latest added productions</h2>
-			<ul>
+			<ul class="production_list">
 				{% for production in latest_added_productions %}
 					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 				{% endfor %}
@@ -17,7 +21,7 @@
 		</div>
 		<div class="chart">
 			<h2>Latest updated productions</h2>
-			<ul>
+			<ul class="production_list">
 				{% for production in latest_updated_productions %}
 					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
 				{% endfor %}
@@ -28,7 +32,7 @@
 	<div class="chart_set">
 		<div class="chart">
 			<h2>Latest added sceners</h2>
-			<ul>
+			<ul class="releaser_list">
 				{% for scener in latest_added_sceners %}
 					<li class="scener">{% scener_with_affiliations scener %}</li>
 				{% endfor %}
@@ -36,7 +40,7 @@
 		</div>
 		<div class="chart">
 			<h2>Latest updated sceners</h2>
-			<ul>
+			<ul class="releaser_list">
 				{% for scener in latest_updated_sceners %}
 					<li class="scener">{% scener_with_affiliations scener %}</li>
 				{% endfor %}
@@ -47,7 +51,7 @@
 	<div class="chart_set">
 		<div class="chart">
 			<h2>Latest added groups</h2>
-			<ul>
+			<ul class="releaser_list">
 				{% for group in latest_added_groups %}
 					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
 				{% endfor %}
@@ -55,7 +59,7 @@
 		</div>
 		<div class="chart">
 			<h2>Latest updated groups</h2>
-			<ul>
+			<ul class="releaser_list">
 				{% for group in latest_updated_groups %}
 					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
 				{% endfor %}

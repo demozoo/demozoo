@@ -127,8 +127,12 @@ class NickForm(forms.ModelForm):
 		exclude.remove('releaser')  # allow checking against the missing attribute
 		try:
 			self.instance.validate_unique(exclude=exclude)
-		except ValidationError:
-			self._update_errors({'__all__': [u'This nick cannot be added, as it duplicates an existing one.']})
+		except ValidationError, e:
+			# replace the standard model validation error message
+			# ("Nick with this Releaser and Name already exists.")
+			# with one more meaningful for this form
+			e.error_dict['__all__'] = [u'This nick cannot be added, as it duplicates an existing one.']
+			self._update_errors(e)
 
 	def save(self, commit=True):
 		instance = super(NickForm, self).save(commit=False)
