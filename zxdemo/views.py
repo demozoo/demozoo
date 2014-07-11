@@ -303,8 +303,6 @@ def party(request, party_id):
 		competitions_with_placings.append(
 			(
 				competition, placings, screenshots,
-				any([placing.ranking for placing in placings]),
-				any([placing.score for placing in placings]),
 			)
 		)
 

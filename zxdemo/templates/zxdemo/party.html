@@ -22,7 +22,36 @@
 				<hr />
 			</td>
 		</tr>
-		{% for compo, placings, screenshots, has_rankings, has_scores in competitions_with_placings %}
+		{% if invitations %}
+			<tr>
+				<td bgcolor="#dedeff" valign="top" align="center">
+					<h2 style="text-align: right; margin-right: 8pt;" id="invitations">Invitation{{ invitations|length|pluralize }}&nbsp;&raquo;</h2>
+				</td>
+				<td valign="top">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+						<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
+						{% for production in invitations %}
+							<tr class="{% cycle 'odd' 'even' %}">
+								<td align="right" style="padding-right: 6pt;"></td>
+								<td>
+									<a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a>
+								</td>
+								<td>
+									{% include "zxdemo/include/production_listing_item_links.html" %}
+								</td>
+								<td>
+									{% byline production %}
+								</td>
+								<td align="right">{{ placing.score }}</td>
+							</tr>
+						{% endfor %}
+					</table>
+					<hr />
+				</td>
+			</tr>
+		{% endif %}
+
+		{% for compo, placings, screenshots in competitions_with_placings %}
 			<tr>
 				<td bgcolor="#dedeff" valign="top" align="center">
 					<h2 style="text-align: right; margin-right: 8pt;" id="competition-{{ compo.id }}">{{ compo.name }}&nbsp;&raquo;</h2>
@@ -32,20 +61,10 @@
 				</td>
 				<td valign="top">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-						{% if has_rankings and has_scores %}
-							<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
-						{% elif has_rankings %}
-							<col width="10%" /><col width="40%"><col width="15%" /><col width="35%" />
-						{% elif has_scores %}
-							<col width="40%"><col width="15%" /><col width="35%" /><col width="10%" />
-						{% else %}
-							<col width="45%"><col width="15%" /><col width="40%" />
-						{% endif %}
+						<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
 						{% for placing in placings %}
 							<tr class="{% cycle 'odd' 'even' %}">
-								{% if has_rankings %}
-									<td align="right" style="padding-right: 6pt;">{{ placing.ranking }}</td>
-								{% endif %}
+								<td align="right" style="padding-right: 6pt;">{{ placing.ranking }}</td>
 								<td>
 									{% if placing.production|is_spectrum_production %}
 										<a href="{% url 'zxdemo_production' placing.production.id %}">{{ placing.production.title }}</a>
