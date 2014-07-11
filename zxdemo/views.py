@@ -318,3 +318,9 @@ def party(request, party_id):
 		'competitions_with_placings': competitions_with_placings,
 		'invitations': invitations,
 	})
+
+
+def rss(request):
+	return render(request, 'zxdemo/rss.xml', {
+		'news_items': NewsItem.objects.order_by('-created_at').select_related('author')[:8]
+	}, content_type='text/xml')
