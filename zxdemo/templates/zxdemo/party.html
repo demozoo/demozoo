@@ -25,7 +25,7 @@
 		{% for compo, placings, screenshots, has_rankings, has_scores in competitions_with_placings %}
 			<tr>
 				<td bgcolor="#dedeff" valign="top" align="center">
-					<h2 style="text-align: right; margin-right: 8pt;">{{ compo.name }}&nbsp;&raquo;</h2>
+					<h2 style="text-align: right; margin-right: 8pt;" id="competition-{{ compo.id }}">{{ compo.name }}&nbsp;&raquo;</h2>
 					{% for screen in screenshots %}
 						{% include "zxdemo/include/screenshot_thumb.html" with screenshot=screen %}
 					{% endfor %}

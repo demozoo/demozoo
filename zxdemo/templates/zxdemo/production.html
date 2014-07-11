@@ -22,9 +22,9 @@
 
 	{% for placing in competition_placings %}
 		{% if placing.ranking %}
-			<div align="left">{{ placing.ranking|ordinal }} at <a href="">{{ placing.competition.party.name }}</a> {{ placing.competition.name }} competition</div>
+			<div align="left">{{ placing.ranking|ordinal }} at <a href="{% url 'zxdemo_party' placing.competition.party.id %}#competition-{{ placing.competition.id }}">{{ placing.competition.party.name }}</a> {{ placing.competition.name }} competition</div>
 		{% else %}
-			<div align="left">Presented at <a href="">{{ placing.competition.party.name }}</a></div>
+			<div align="left">Presented at <a href="{% url 'zxdemo_party' placing.competition.party.id %}#competition-{{ placing.competition.id }}">{{ placing.competition.party.name }}</a></div>
 		{% endif %}
 	{% endfor %}
 
