@@ -7,7 +7,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import math
 
-from demoscene.models import Production, Screenshot, ProductionLink, Releaser, ReleaserExternalLink, Membership, Credit
+from demoscene.models import Releaser, ReleaserExternalLink, Membership
+from productions.models import Production, Screenshot, ProductionLink, Credit
 from parties.models import Party
 from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
@@ -19,22 +20,22 @@ def home(request):
 			SELECT COUNT(DISTINCT demoscene_nick.releaser_id)
 			FROM demoscene_nick
 			WHERE demoscene_nick.id IN (
-				SELECT DISTINCT demoscene_production_author_nicks.nick_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_production_author_nicks ON (demoscene_production_platforms.production_id = demoscene_production_author_nicks.production_id)
-				WHERE demoscene_production_platforms.platform_id IN (%s)
+				SELECT DISTINCT productions_production_author_nicks.nick_id
+				FROM productions_production_platforms
+				INNER JOIN productions_production_author_nicks ON (productions_production_platforms.production_id = productions_production_author_nicks.production_id)
+				WHERE productions_production_platforms.platform_id IN (%s)
 			)
 			OR demoscene_nick.id IN (
-				SELECT DISTINCT demoscene_production_author_affiliation_nicks.nick_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production_platforms.production_id = demoscene_production_author_affiliation_nicks.production_id)
-				WHERE demoscene_production_platforms.platform_id IN (%s)
+				SELECT DISTINCT productions_production_author_affiliation_nicks.nick_id
+				FROM productions_production_platforms
+				INNER JOIN productions_production_author_affiliation_nicks ON (productions_production_platforms.production_id = productions_production_author_affiliation_nicks.production_id)
+				WHERE productions_production_platforms.platform_id IN (%s)
 			)
 			OR demoscene_nick.id IN (
-				SELECT DISTINCT demoscene_credit.nick_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_credit ON (demoscene_production_platforms.production_id = demoscene_credit.production_id)
-				WHERE demoscene_production_platforms.platform_id IN (%s)
+				SELECT DISTINCT productions_credit.nick_id
+				FROM productions_production_platforms
+				INNER JOIN productions_credit ON (productions_production_platforms.production_id = productions_credit.production_id)
+				WHERE productions_production_platforms.platform_id IN (%s)
 			)
 		""", [tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS)]
 	)
@@ -73,7 +74,7 @@ def productions(request):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	productions = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS
-	).extra(select={'lower_title': 'lower(demoscene_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	supertypes = []
 	if request.GET.get('demos', '1'):

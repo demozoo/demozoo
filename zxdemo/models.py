@@ -21,24 +21,24 @@ def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_re
 			"""
 			%(releaser_table)s.id IN (
 				SELECT DISTINCT demoscene_nick.releaser_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_production_author_nicks ON (demoscene_production_platforms.production_id = demoscene_production_author_nicks.production_id)
-				INNER JOIN demoscene_nick ON (demoscene_production_author_nicks.nick_id = demoscene_nick.id)
-				WHERE demoscene_production_platforms.platform_id IN (%%s)
+				FROM productions_production_platforms
+				INNER JOIN productions_production_author_nicks ON (productions_production_platforms.production_id = productions_production_author_nicks.production_id)
+				INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
+				WHERE productions_production_platforms.platform_id IN (%%s)
 			)
 			OR %(releaser_table)s.id IN (
 				SELECT DISTINCT demoscene_nick.releaser_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_production_author_affiliation_nicks ON (demoscene_production_platforms.production_id = demoscene_production_author_affiliation_nicks.production_id)
-				INNER JOIN demoscene_nick ON (demoscene_production_author_affiliation_nicks.nick_id = demoscene_nick.id)
-				WHERE demoscene_production_platforms.platform_id IN (%%s)
+				FROM productions_production_platforms
+				INNER JOIN productions_production_author_affiliation_nicks ON (productions_production_platforms.production_id = productions_production_author_affiliation_nicks.production_id)
+				INNER JOIN demoscene_nick ON (productions_production_author_affiliation_nicks.nick_id = demoscene_nick.id)
+				WHERE productions_production_platforms.platform_id IN (%%s)
 			)
 			OR %(releaser_table)s.id IN (
 				SELECT DISTINCT demoscene_nick.releaser_id
-				FROM demoscene_production_platforms
-				INNER JOIN demoscene_credit ON (demoscene_production_platforms.production_id = demoscene_credit.production_id)
-				INNER JOIN demoscene_nick ON (demoscene_credit.nick_id = demoscene_nick.id)
-				WHERE demoscene_production_platforms.platform_id IN (%%s)
+				FROM productions_production_platforms
+				INNER JOIN productions_credit ON (productions_production_platforms.production_id = productions_credit.production_id)
+				INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
+				WHERE productions_production_platforms.platform_id IN (%%s)
 			)
 			""" % {'releaser_table': releaser_table}
 		],
