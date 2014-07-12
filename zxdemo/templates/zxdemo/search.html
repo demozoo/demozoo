@@ -1,0 +1,16 @@
+{% extends "zxdemo/base.html" %}
+{% load zxdemo_tags %}
+
+{% block html_title %}Demotopia - Search results{% endblock %}
+
+{% block outer_body %}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" />
+        <col width="224" />
+        <col width="*" />
+        <tr>
+            <td bgcolor="#dedeff" valign="top" align="center" width="224">&nbsp;</td>
+            <td width="100%"><br /><h2>Search results for {{ search_term }}:</h2></td>
+        </tr>
+        {% include "zxdemo/include/search/demos.html" %}
+    </table>
+{% endblock %}

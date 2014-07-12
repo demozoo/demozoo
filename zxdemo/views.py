@@ -344,3 +344,63 @@ def rss(request):
 	return render(request, 'zxdemo/rss.xml', {
 		'news_items': NewsItem.objects.order_by('-created_at').select_related('author')[:8]
 	}, content_type='text/xml')
+
+
+def search(request):
+	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
+
+	search_term = request.GET.get('search', '')
+
+	try:
+		demoskip = int(request.GET.get('demoskip', 0))
+	except ValueError:
+		demoskip = 0
+
+	try:
+		musicskip = int(request.GET.get('musicskip', 0))
+	except ValueError:
+		musicskip = 0
+
+	try:
+		gfxskip = int(request.GET.get('gfxskip', 0))
+	except ValueError:
+		gfxskip = 0
+
+	try:
+		scenerskip = int(request.GET.get('scenerskip', 0))
+	except ValueError:
+		scenerskip = 0
+
+	feature = request.GET.get('feature')
+
+	demos = Production.objects.filter(
+		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='production',
+		title__icontains=search_term
+	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+
+	demos = list(demos[demoskip:demoskip+11])
+	if len(demos) == 11:
+		demos = demos[:10]
+		demos_next_link = reverse('zxdemo_search') + (
+			'?feature=demos&demoskip=%d&musicskip=%d&gfxskip=%d&scenerskip=%d' % (
+				max(0, demoskip + 10), musicskip, gfxskip, scenerskip
+			)
+		)
+	else:
+		demos_next_link = None
+
+	if demoskip > 0:
+		demos_prev_link = reverse('zxdemo_search') + (
+			'?feature=demos&demoskip=%d&musicskip=%d&gfxskip=%d&scenerskip=%d' % (
+				max(0, demoskip - 10), musicskip, gfxskip, scenerskip
+			)
+		)
+	else:
+		demos_prev_link = None
+
+	return render(request, 'zxdemo/search.html', {
+		'search_term': search_term,
+		'demos': demos,
+		'demos_prev_link': demos_prev_link,
+		'demos_next_link': demos_next_link,
+	})

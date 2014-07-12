@@ -47,8 +47,8 @@
 				<!-- spacer cell -->
 				<td bgcolor="#dedeff">&nbsp;</td>
 				<td bgcolor="#dedeff" align="center" valign="middle">
-					<form action="search.php" method="get">
-						<input name="search" type="text" size="15" value="$lastsearch" /><br />
+					<form action="{% url 'zxdemo_search' %}" method="get">
+						<input name="search" type="text" size="15" value="{{ search_term }}" /><br />
 						<input type="submit" value="search" />
 					</form>
 				</td>

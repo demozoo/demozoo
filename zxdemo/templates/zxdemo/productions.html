@@ -78,14 +78,6 @@
 
 {% block body %}
 	{% include "zxdemo/include/alpha_pagination_links.html" with listing=productions %}
-
-	<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-		<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
-		{% for production in productions %}
-			{% cycle 'odd' 'even' as rowcolour silent %}
-			{% include "zxdemo/include/production_listing_item.html" %}
-		{% endfor %}
-	</table>
-
+	{% include "zxdemo/include/production_listing.html" %}
 	{% include "zxdemo/include/prev_next_links.html" with listing=productions %}
 {% endblock %}
