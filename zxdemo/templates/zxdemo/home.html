@@ -13,10 +13,10 @@
 	<div><a href="{% url 'zxdemo_production' random_screenshot.production_id %}">{{ random_screenshot.production.title }}</a></div>
 	<div class="annotation">{% byline random_screenshot.production %}</div>
 
-	<a href="/partycalendar.php"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />
+	<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />
 	{% forthcoming_parties %}
 
-	<a href="/releases.php"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
+	<a href="{% url 'zxdemo_productions' %}"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
 	<div style="margin-bottom: 4pt;"><strong>Latest releases</strong></div>
 	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
 	<div style="margin-bottom: 4pt;"><strong>Latest additions</strong></div>
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block body %}
-	<div align="center"><a href="{% url 'zxdemo_productions' %}?graphics=&amp;music=">{{ stats.demo_count }}</a> demos - <a href="{% url 'zxdemo_productions' %}?demos=&amp;graphics=">{{ stats.music_count }}</a> musics - <a href="{% url 'zxdemo_productions' %}?demos=&amp;music=">{{ stats.graphics_count }}</a> graphics - <a href="/scener_index_name.php">{{ stats.releaser_count }}</a> sceners</div><br />
+	<div align="center"><a href="{% url 'zxdemo_productions' %}?graphics=&amp;music=">{{ stats.demo_count }}</a> demos - <a href="{% url 'zxdemo_productions' %}?demos=&amp;graphics=">{{ stats.music_count }}</a> musics - <a href="{% url 'zxdemo_productions' %}?demos=&amp;music=">{{ stats.graphics_count }}</a> graphics - <a href="{% url 'zxdemo_authors' %}">{{ stats.releaser_count }}</a> sceners</div><br />
 
 	{% for news in news_items %}
 		<table width="100%" border="0" cellpadding="2" cellspacing="0" style="border: 1px solid #666666;">
