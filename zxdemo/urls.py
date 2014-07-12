@@ -26,7 +26,8 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^parties/(\d+)/$', 'parties_year', {}, 'zxdemo_parties_year'),
 	(r'^party/(\d+)/$', 'party', {}, 'zxdemo_party'),
 
-	(r'^rss.php$', 'rss', {}, 'zxdemo_rss'),
+	(r'^rss.php$', 'rss', {}),
+	(r'^rss/$', 'rss', {}, 'zxdemo_rss'),
 
 	(r'^admin/', include(admin.site.urls)),
 )
