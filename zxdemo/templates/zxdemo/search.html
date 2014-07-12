@@ -11,6 +11,12 @@
             <td bgcolor="#dedeff" valign="top" align="center" width="224">&nbsp;</td>
             <td width="100%"><br /><h2>Search results for {{ search_term }}:</h2></td>
         </tr>
-        {% include "zxdemo/include/search/demos.html" %}
+        {% if feature == 'music' %}
+            {% include "zxdemo/include/search/music.html" %}
+            {% include "zxdemo/include/search/demos.html" %}
+        {% else %}
+            {% include "zxdemo/include/search/demos.html" %}
+            {% include "zxdemo/include/search/music.html" %}
+        {% endif %}
     </table>
 {% endblock %}

@@ -7,6 +7,7 @@ from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import math
+import urllib
 
 from demoscene.models import Releaser, ReleaserExternalLink, Membership
 from productions.models import Production, Screenshot, ProductionLink, Credit
@@ -373,6 +374,15 @@ def search(request):
 
 	feature = request.GET.get('feature')
 
+	base_url_params = {
+		'search': search_term,
+		'feature': feature,
+		'musicskip': musicskip,
+		'demoskip': demoskip,
+		'gfxskip': gfxskip,
+		'scenerskip': scenerskip,
+	}
+
 	demos = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='production',
 		title__icontains=search_term
@@ -381,26 +391,58 @@ def search(request):
 	demos = list(demos[demoskip:demoskip+11])
 	if len(demos) == 11:
 		demos = demos[:10]
-		demos_next_link = reverse('zxdemo_search') + (
-			'?feature=demos&demoskip=%d&musicskip=%d&gfxskip=%d&scenerskip=%d' % (
-				max(0, demoskip + 10), musicskip, gfxskip, scenerskip
-			)
-		)
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'demos', 'demoskip': demoskip + 10
+		})
+		demos_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
 	else:
 		demos_next_link = None
 
 	if demoskip > 0:
-		demos_prev_link = reverse('zxdemo_search') + (
-			'?feature=demos&demoskip=%d&musicskip=%d&gfxskip=%d&scenerskip=%d' % (
-				max(0, demoskip - 10), musicskip, gfxskip, scenerskip
-			)
-		)
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'demos', 'demoskip': max(0, demoskip - 10)
+		})
+		demos_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
 	else:
 		demos_prev_link = None
 
+
+	musics = Production.objects.filter(
+		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='music',
+		title__icontains=search_term
+	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+
+	musics = list(musics[musicskip:musicskip+11])
+	if len(musics) == 11:
+		musics = musics[:10]
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'music', 'musicskip': musicskip + 10
+		})
+		musics_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		musics_next_link = None
+
+	if musicskip > 0:
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'music', 'musicskip': max(0, musicskip - 10)
+		})
+		musics_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		musics_prev_link = None
+
 	return render(request, 'zxdemo/search.html', {
 		'search_term': search_term,
+		'feature': feature,
+
 		'demos': demos,
 		'demos_prev_link': demos_prev_link,
 		'demos_next_link': demos_next_link,
+
+		'musics': musics,
+		'musics_prev_link': musics_prev_link,
+		'musics_next_link': musics_next_link,
 	})
