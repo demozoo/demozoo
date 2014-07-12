@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.db import connection
@@ -116,6 +117,25 @@ def productions(request):
 			'music': 'music' in supertypes,
 		},
 	})
+
+def releases_redirect(request):
+	type_filter = int(request.GET.get('filter') or 7)
+	url_vars = []
+
+	if not (type_filter & 1):
+		url_vars.append('music=')
+
+	if not (type_filter & 2):
+		url_vars.append('demos=')
+
+	if not (type_filter & 4):
+		url_vars.append('graphics=')
+
+	url = reverse('zxdemo_productions')
+	if url_vars:
+		url += '?' + '&'.join(url_vars)
+
+	return redirect(url, permanent=True)
 
 def production(request, production_id):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS

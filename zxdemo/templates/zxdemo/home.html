@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block body %}
-	<div align="center"><a href="/releases.php?filter=2">{{ stats.demo_count }}</a> demos - <a href="/releases.php?filter=1">{{ stats.music_count }}</a> musics - <a href="/releases.php?filter=4">{{ stats.graphics_count }}</a> graphics - <a href="/scener_index_name.php">{{ stats.releaser_count }}</a> sceners</div><br />
+	<div align="center"><a href="{% url 'zxdemo_productions' %}?graphics=&amp;music=">{{ stats.demo_count }}</a> demos - <a href="{% url 'zxdemo_productions' %}?demos=&amp;graphics=">{{ stats.music_count }}</a> musics - <a href="{% url 'zxdemo_productions' %}?demos=&amp;music=">{{ stats.graphics_count }}</a> graphics - <a href="/scener_index_name.php">{{ stats.releaser_count }}</a> sceners</div><br />
 
 	{% for news in news_items %}
 		<table width="100%" border="0" cellpadding="2" cellspacing="0" style="border: 1px solid #666666;">

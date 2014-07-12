@@ -11,7 +11,7 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^screens/(\d+)/$', 'show_screenshot', {}, 'zxdemo_show_screenshot'),
 
 	(r'^productions/$', 'productions', {}, 'zxdemo_productions'),
-	(r'^releases.php$', RedirectView.as_view(url='/productions/')),
+	(r'^releases.php$', 'releases_redirect'),
 	(r'^productions/(\d+)/$', 'production', {}, 'zxdemo_production'),
 	(r'^item.php$', 'production_redirect', {}),
 
