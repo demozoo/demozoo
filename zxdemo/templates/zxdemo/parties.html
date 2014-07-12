@@ -17,14 +17,19 @@
 		<col width="25%" /><col width="25%" /><col width="25%" /><col width="25%" />
 		{% regroup parties by start_date.date.year as year_list %}
 
-		{% for year in year_list %}
+		{% cycle 'even' 'odd' as cellcolour silent %}
+		{% for year_row in year_list|in_groups_of:4 %}
 			<tr>
-				<td valign="top" class="{% cycle 'even' 'odd' %}">
-					<h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
-					{% for party in year.list %}
-						<div style="margin-bottom: 4pt;"><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
-					{% endfor %}
-				</td>
+				{% for year in year_row %}
+					{% cycle cellcolour %}
+					<td valign="top" class="{{ cellcolour }}">
+						<h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
+						{% for party in year.list %}
+							<div style="margin-bottom: 4pt;"><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
+						{% endfor %}
+					</td>
+				{% endfor %}
+				{% cycle cellcolour %}
 			</tr>
 		{% endfor %}
 	</table>

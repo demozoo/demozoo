@@ -81,3 +81,8 @@ def production_type_icon(production):
 @register.filter
 def is_spectrum_production(production):
 	return any([(platform.id in settings.ZXDEMO_PLATFORM_IDS) for platform in production.platforms.all()])
+
+
+@register.filter
+def in_groups_of(items, count):
+	return [items[i:i+count] for i in range(0, len(items), count)]
