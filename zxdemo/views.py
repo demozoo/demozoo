@@ -434,6 +434,32 @@ def search(request):
 	else:
 		musics_prev_link = None
 
+
+	graphics = Production.objects.filter(
+		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='graphics',
+		title__icontains=search_term
+	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+
+	graphics = list(graphics[gfxskip:gfxskip+11])
+	if len(graphics) == 11:
+		graphics = graphics[:10]
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'graphics', 'gfxskip': gfxskip + 10
+		})
+		graphics_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		graphics_next_link = None
+
+	if gfxskip > 0:
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'graphics', 'gfxskip': max(0, gfxskip - 10)
+		})
+		graphics_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		graphics_prev_link = None
+
 	return render(request, 'zxdemo/search.html', {
 		'search_term': search_term,
 		'feature': feature,
@@ -445,4 +471,8 @@ def search(request):
 		'musics': musics,
 		'musics_prev_link': musics_prev_link,
 		'musics_next_link': musics_next_link,
+
+		'graphics': graphics,
+		'graphics_prev_link': graphics_prev_link,
+		'graphics_next_link': graphics_next_link,
 	})

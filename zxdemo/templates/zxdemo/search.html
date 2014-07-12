@@ -14,9 +14,15 @@
         {% if feature == 'music' %}
             {% include "zxdemo/include/search/music.html" %}
             {% include "zxdemo/include/search/demos.html" %}
+            {% include "zxdemo/include/search/graphics.html" %}
+        {% elif feature == 'graphics' %}
+            {% include "zxdemo/include/search/graphics.html" %}
+            {% include "zxdemo/include/search/demos.html" %}
+            {% include "zxdemo/include/search/music.html" %}
         {% else %}
             {% include "zxdemo/include/search/demos.html" %}
             {% include "zxdemo/include/search/music.html" %}
+            {% include "zxdemo/include/search/graphics.html" %}
         {% endif %}
     </table>
 {% endblock %}
