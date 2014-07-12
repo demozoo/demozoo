@@ -15,14 +15,22 @@
             {% include "zxdemo/include/search/music.html" %}
             {% include "zxdemo/include/search/demos.html" %}
             {% include "zxdemo/include/search/graphics.html" %}
+            {% include "zxdemo/include/search/sceners.html" %}
         {% elif feature == 'graphics' %}
             {% include "zxdemo/include/search/graphics.html" %}
             {% include "zxdemo/include/search/demos.html" %}
             {% include "zxdemo/include/search/music.html" %}
+            {% include "zxdemo/include/search/sceners.html" %}
+        {% elif feature == 'sceners' %}
+            {% include "zxdemo/include/search/sceners.html" %}
+            {% include "zxdemo/include/search/demos.html" %}
+            {% include "zxdemo/include/search/music.html" %}
+            {% include "zxdemo/include/search/graphics.html" %}
         {% else %}
             {% include "zxdemo/include/search/demos.html" %}
             {% include "zxdemo/include/search/music.html" %}
             {% include "zxdemo/include/search/graphics.html" %}
+            {% include "zxdemo/include/search/sceners.html" %}
         {% endif %}
     </table>
 {% endblock %}

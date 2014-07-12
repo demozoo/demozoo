@@ -460,6 +460,32 @@ def search(request):
 	else:
 		graphics_prev_link = None
 
+
+	sceners = spectrum_releasers().filter(
+		nicks__name__icontains=search_term
+	).distinct().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
+
+	sceners = list(sceners[scenerskip:scenerskip+11])
+	if len(sceners) == 11:
+		sceners = sceners[:10]
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'sceners', 'scenerskip': scenerskip + 10
+		})
+		sceners_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		sceners_next_link = None
+
+	if scenerskip > 0:
+		url_params = base_url_params.copy()
+		url_params.update({
+			'feature': 'sceners', 'scenerskip': max(0, scenerskip - 10)
+		})
+		sceners_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+	else:
+		sceners_prev_link = None
+
+
 	return render(request, 'zxdemo/search.html', {
 		'search_term': search_term,
 		'feature': feature,
@@ -475,4 +501,8 @@ def search(request):
 		'graphics': graphics,
 		'graphics_prev_link': graphics_prev_link,
 		'graphics_next_link': graphics_next_link,
+
+		'sceners': sceners,
+		'sceners_prev_link': sceners_prev_link,
+		'sceners_next_link': sceners_next_link,
 	})

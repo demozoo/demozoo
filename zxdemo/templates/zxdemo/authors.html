@@ -18,21 +18,6 @@
 
 {% block body %}
 	{% include "zxdemo/include/alpha_pagination_links.html" with listing=releasers %}
-
-	<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<col width="5%" /><col width="95%" />
-		<tr><th></th><th>name</th>
-		{% for releaser in releasers %}
-			<tr class="{% cycle 'odd' 'even' %}">
-				{% if releaser.country_code %}
-					<td height="22"><img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /></td>
-				{% else %}
-					<td height="22"></td>
-				{% endif %}
-				<td height="22"><a href="{% url 'zxdemo_author' releaser.id %}">{{ releaser.name }}</a></td>
-			</tr>
-		{% endfor %}
-	</table>
-
+	{% include "zxdemo/include/releaser_listing.html" %}
 	{% include "zxdemo/include/prev_next_links.html" with listing=releasers %}
 {% endblock %}
