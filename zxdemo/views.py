@@ -513,3 +513,16 @@ def articles(request):
 	return render(request, 'zxdemo/articles.html', {
 		'articles': articles,
 	})
+
+
+def article(request, zxdemo_id):
+	article = get_object_or_404(Article, zxdemo_id = zxdemo_id)
+	articles = Article.objects.order_by('created_at')
+	return render(request, 'zxdemo/article.html', {
+		'article': article,
+		'articles': articles,
+	})
+
+
+def article_redirect(request):
+	return redirect('zxdemo_article', request.GET.get('id'))
