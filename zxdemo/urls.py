@@ -25,6 +25,7 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^parties/$', 'parties', {}, 'zxdemo_parties'),
 	(r'^parties/(\d+)/$', 'parties_year', {}, 'zxdemo_parties_year'),
 	(r'^party/(\d+)/$', 'party', {}, 'zxdemo_party'),
+	(r'^party.php$', 'party_redirect', {}),
 
 	(r'^rss.php$', 'rss', {}),
 	(r'^rss/$', 'rss', {}, 'zxdemo_rss'),

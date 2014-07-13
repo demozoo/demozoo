@@ -11,7 +11,7 @@ import urllib
 
 from demoscene.models import Releaser, ReleaserExternalLink, Membership
 from productions.models import Production, Screenshot, ProductionLink, Credit
-from parties.models import Party
+from parties.models import Party, PartyExternalLink
 from zxdemo.models import NewsItem, Article, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
 def home(request):
@@ -339,6 +339,11 @@ def party(request, party_id):
 		'competitions_with_placings': competitions_with_placings,
 		'invitations': invitations,
 	})
+
+
+def party_redirect(request):
+	party_link = get_object_or_404(PartyExternalLink, link_class='ZxdemoParty', parameter=request.GET.get('id'))
+	return redirect('zxdemo_party', party_link.party_id, permanent=True)
 
 
 def rss(request):
