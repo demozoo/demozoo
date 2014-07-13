@@ -48,7 +48,7 @@
 {% endblock %}
 
 {% block body %}
-	<br />
+	<p align="right" style="margin-top: 0"><a href="http://demozoo.org/productions/{{ production.id }}/">{{ production.title }} on Demozoo&nbsp;&raquo;</a></p>
 	<h1 align="center">{{ production.title }}</h1>
 	{% if production.byline_string or production.release_date_date %}
 		<div align="center">

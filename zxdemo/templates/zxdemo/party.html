@@ -15,7 +15,7 @@
 				<h2>{{ party.name }}</h2>
 			</td>
 			<td valign="top" width="100%">
-				<br />
+				<p align="right" style="margin-top: 6px"><a href="http://demozoo.org/parties/{{ party.id }}/">{{ party.name }} on Demozoo&nbsp;&raquo;</a></p>
 				<h1 align="center">{{ party.name }}</h1>
 				{% if party.location %}<h2>{{ party.location }}</h2>{% endif %}
 				<h2>{% date_range party.start_date party.end_date %}</h2>

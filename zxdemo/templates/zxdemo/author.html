@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% block body %}
-	<br />
+	<p align="right" style="margin-top: 0"><a href="http://demozoo.org/{% if releaser.is_group %}groups{% else %}sceners{% endif %}/{{ releaser.id }}/">{{ releaser.name }} on Demozoo&nbsp;&raquo;</a></p>
 	<h1 align="center">Scener profile - {{ releaser.name }}</h1>
 	{% if releaser.location %}
 		<p align="center"><b>Location:</b> <img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /> {{ releaser.location }}</p>
