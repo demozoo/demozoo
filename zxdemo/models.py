@@ -13,6 +13,16 @@ class NewsItem(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class Article(models.Model):
+	zxdemo_id = models.IntegerField()
+	created_at = models.DateTimeField()
+	title = models.CharField(max_length=255)
+	summary = models.TextField()
+	content = models.TextField()
+
+	def __unicode__(self):
+		return self.title
+
 
 def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_releaser'):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
