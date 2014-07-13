@@ -32,5 +32,8 @@ urlpatterns = patterns('zxdemo.views',
 	(r'^search/$', 'search', {}, 'zxdemo_search'),
 	(r'^search.php$', RedirectView.as_view(url='/search/', query_string=True)),
 
+	(r'^articles/$', 'articles', {}, 'zxdemo_articles'),
+	(r'^article_index.php$', RedirectView.as_view(url='/articles/')),
+
 	(r'^admin/', include(admin.site.urls)),
 )

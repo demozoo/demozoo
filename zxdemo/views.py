@@ -12,7 +12,7 @@ import urllib
 from demoscene.models import Releaser, ReleaserExternalLink, Membership
 from productions.models import Production, Screenshot, ProductionLink, Credit
 from parties.models import Party
-from zxdemo.models import NewsItem, spectrum_releasers, filter_releasers_queryset_to_spectrum
+from zxdemo.models import NewsItem, Article, spectrum_releasers, filter_releasers_queryset_to_spectrum
 
 def home(request):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
@@ -505,4 +505,11 @@ def search(request):
 		'sceners': sceners,
 		'sceners_prev_link': sceners_prev_link,
 		'sceners_next_link': sceners_next_link,
+	})
+
+
+def articles(request):
+	articles = Article.objects.order_by('created_at')
+	return render(request, 'zxdemo/articles.html', {
+		'articles': articles,
 	})

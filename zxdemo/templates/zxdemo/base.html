@@ -39,7 +39,7 @@
 					<td bgcolor="#dedeff" valign="top"><table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="/static/zxdemo/images/artifact/{{ corner_image.src }}" width="256" height="64" border="0" alt="" title="Image credit: {{ corner_image.title }}" /></td><td><a href="/"><img src="/static/zxdemo/images/generic/mainlogo_short.gif" width="181" height="45" alt="Demotopia" border="0" align="top" /></a></td></tr></table></td>
 				{% endwith %}
 				<td bgcolor="#dedeff" align="right" valign="middle">
-					<a href="/article_index.php">articles&nbsp;&raquo;</a><br />
+					<a href="{% url 'zxdemo_articles' %}">articles&nbsp;&raquo;</a><br />
 					<a href="{% url 'zxdemo_productions' %}">releases&nbsp;&raquo;</a><br />
 					<a href="{% url 'zxdemo_parties' %}">parties&nbsp;&raquo;</a><br />
 					<a href="{% url 'zxdemo_authors' %}">sceners&nbsp;&raquo;</a>
