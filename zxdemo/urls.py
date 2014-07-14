@@ -41,3 +41,5 @@ urlpatterns = patterns('zxdemo.views',
 
 	(r'^admin/', include(admin.site.urls)),
 )
+
+handler404 = 'zxdemo.views.page_not_found'

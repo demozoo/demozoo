@@ -531,3 +531,7 @@ def article(request, zxdemo_id):
 
 def article_redirect(request):
 	return redirect('zxdemo_article', request.GET.get('id'))
+
+
+def page_not_found(request):
+	return render('zxdemo/404.html')
