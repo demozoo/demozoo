@@ -1,0 +1,27 @@
+{% if start_date.precision != end_date.precision %}
+	{{ start_date.explicit_format }} - {{ end_date.explicit_format }}
+{% elif start_date.precision == 'y' %}
+	{% if start_date.date.year != end_date.date.year %}
+		{{ start_date.date|date:"Y" }} - {{ end_date.date|date:"Y" }}
+	{% else %}
+		{{ start_date.date|date:"Y" }}
+	{% endif %}
+{% elif start_date.precision == 'm' %}
+	{% if start_date.date.year != end_date.date.year %}
+		{{ start_date.date|date:"F Y" }} - {{ end_date.date|date:"F Y" }}
+	{% elif start_date.date.month != end_date.date.month %}
+		{{ start_date.date|date:"F" }} - {{ end_date.date|date:"F Y" }}
+	{% else %}
+		{{ start_date.date|date:"F Y" }}
+	{% endif %}
+{% else %}
+	{% if start_date.date.year != end_date.date.year %}
+		{{ start_date.date|date:"jS F Y" }} - {{ end_date.date|date:"jS F Y" }}
+	{% elif start_date.date.month != end_date.date.month %}
+		{{ start_date.date|date:"jS F" }} - {{ end_date.date|date:"jS F Y" }}
+	{% elif start_date.date.day != end_date.date.day %}
+		{{ start_date.date|date:"jS" }} - {{ end_date.date|date:"jS F Y" }}
+	{% else %}
+		{{ start_date.date|date:"jS F Y" }}
+	{% endif %}
+{% endif %}

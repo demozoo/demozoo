@@ -1,0 +1,83 @@
+{% extends "zxdemo/base.html" %}
+{% load urlsub %}
+
+{% block html_title %}Demotopia - Browse releases{% endblock %}
+{% block meta_description %}A comprehensive list of productions created on the Spectrum demo scene.{% endblock %}
+{% block meta_keywords %}spectrum demo scene browse list releases demotopia zxdemo productions{% endblock %}
+
+{% block sidebar %}
+	<img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" /><br />
+	<form action="{% url 'zxdemo_productions' %}" method="get">
+		<input type="hidden" name="music" value="{% if filters.music %}1{% endif %}" />
+		<input type="hidden" name="graphics" value="{% if filters.graphics %}1{% endif %}" />
+		<input type="hidden" name="demos" value="{% if filters.demos %}1{% endif %}" />
+		Show <select name="count" onchange="this.form.submit()">
+			{% for i in count_options %}
+				<option value="{{ i }}" {% if i == count %}selected="yes"{% endif %}>{{ i }}</option>
+			{% endfor %}
+		</select> results per page <noscript><input type="submit" name="go" value="go" /></noscript>
+	</form>
+
+	<div>Include:</div>
+	<table width="50%" align="center">
+		<tr>
+			{% if filters.music %}
+				<td>
+					<a href="{% urlsub page=1 music='' %}"><img src="/static/zxdemo/images/generic/music_on.gif" width="32" height="32" alt="[*]" border="0" align="middle" /></a>
+				</td>
+				<td>
+					<a href="{% urlsub page=1 music='' %}">music</a>
+				</td>
+			{% else %}
+				<td>
+					<a href="{% urlsub page=1 music=1 %}"><img src="/static/zxdemo/images/generic/music_off.gif" width="32" height="32" alt="[ ]" border="0" align="middle" />
+				</td>
+				<td>
+					<a href="{% urlsub page=1 music=1 %}">music</a>
+				</td>
+			{% endif %}
+		</tr>
+
+		<tr>
+			{% if filters.graphics %}
+				<td>
+					<a href="{% urlsub page=1 graphics='' %}"><img src="/static/zxdemo/images/generic/gfx_on.gif" width="32" height="32" alt="[*]" border="0" align="middle" /></a>
+				</td>
+				<td>
+					<a href="{% urlsub page=1 graphics='' %}">gfx</a>
+				</td>
+			{% else %}
+				<td>
+					<a href="{% urlsub page=1 graphics=1 %}"><img src="/static/zxdemo/images/generic/gfx_off.gif" width="32" height="32" alt="[ ]" border="0" align="middle" />
+				</td>
+				<td>
+					<a href="{% urlsub page=1 graphics=1 %}">gfx</a>
+				</td>
+			{% endif %}
+		</tr>
+
+		<tr>
+			{% if filters.demos %}
+				<td>
+					<a href="{% urlsub page=1 demos='' %}"><img src="/static/zxdemo/images/generic/demos_on.gif" width="32" height="32" alt="[*]" border="0" align="middle" /></a>
+				</td>
+				<td>
+					<a href="{% urlsub page=1 demos='' %}">demos</a>
+				</td>
+			{% else %}
+				<td>
+					<a href="{% urlsub page=1 demos=1 %}"><img src="/static/zxdemo/images/generic/demos_off.gif" width="32" height="32" alt="[ ]" border="0" align="middle" />
+				</td>
+				<td>
+					<a href="{% urlsub page=1 demos=1 %}">demos</a>
+				</td>
+			{% endif %}
+		</tr>
+	</table>
+{% endblock %}
+
+{% block body %}
+	{% include "zxdemo/include/alpha_pagination_links.html" with listing=productions %}
+	{% include "zxdemo/include/production_listing.html" %}
+	{% include "zxdemo/include/prev_next_links.html" with listing=productions %}
+{% endblock %}

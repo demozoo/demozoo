@@ -1,0 +1,9 @@
+{% load zxdemo_tags %}
+{% load url from future %}
+
+{% for prod in productions %}
+	<div align="left" class="small">
+		{% production_type_icon prod %}
+		<a href="{% url 'zxdemo_production' prod.id %}">{{ prod.title }}</a> - {% byline prod %}
+	</div>
+{% endfor %}
