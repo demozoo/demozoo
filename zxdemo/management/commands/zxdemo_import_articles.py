@@ -19,9 +19,9 @@ class Command(NoArgsCommand):
 
 		for article in soup.findAll('article'):
 			id = int(article.find('id').string)
-			title = article.find('title').string or ''
-			summary = article.find('summary').string
-			content = article.find('content').string
+			title = unicode(article.find('title').string or '')
+			summary = unicode(article.find('summary').string)
+			content = unicode(article.find('content').string)
 			created_at = parse(article.find('pubdate').text)
 
 			Article.objects.create(title=title, summary=summary, content=content, created_at=created_at, zxdemo_id=id)

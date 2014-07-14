@@ -19,8 +19,8 @@ class Command(NoArgsCommand):
 		soup = BeautifulSoup(page, fromEncoding="ISO-8859-1", convertEntities=BeautifulSoup.HTML_ENTITIES)
 
 		for news_item in soup.findAll('news_item'):
-			title = news_item.find('title').string or ''
-			body = news_item.find('article').string
+			title = unicode(news_item.find('title').string or '')
+			body = unicode(news_item.find('article').string)
 			created_at = parse(news_item.find('date').text)
 
 			NewsItem.objects.create(title=title, body=body, created_at=created_at, author=gasman)
