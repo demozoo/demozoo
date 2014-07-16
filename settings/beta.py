@@ -16,7 +16,7 @@ AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
 
 GEVENT_ADDR_PORT = "localhost:4820"
 
-ALLOWED_HOSTS = ['beta.demozoo.org']
+ALLOWED_HOSTS = ['beta.demozoo.org', 'localhost']
 
 USE_PYGAME_IMAGE_CONVERSION = True
 
