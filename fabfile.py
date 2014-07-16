@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from fabric.api import env, cd, run, get, local
 
-env.hosts = ['demozoo@matilda.demozoo.org']
+env.hosts = ['demozoo@kazooie.demozoo.org']
 
 
 def deploy():
@@ -14,6 +14,7 @@ def deploy():
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.productionvm')
 		run('sudo supervisorctl restart demozoo')
+		run('sudo supervisorctl restart zxdemo')
 		run('sudo supervisorctl restart demozoo-celery')
 		run('sudo supervisorctl restart demozoo-celerybeat')
 

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>{% block html_title %}Demotopia{% endblock %}</title>
+		<meta name="description" content="{% block meta_description %}{% endblock %}" />
+		<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link href="/static/zxdemo/css/zxdemo.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" language="javascript1.5">
+			function viewscreen(url, width, height) {
+				width += 32;
+				height += 56;
+				window.open(url, 'screenviewer', 'width='+width+',height='+height+',scrollbars=no,toolbar=no,status=no,menubar=no,null,null');
+			}
+		</script>
+	</head>
+	<body onclick="hidemenu()">
+		<style type="text/css">
+		/* <![CDATA[[ */
+			.menu
+			{
+				background: #ddffff;
+				padding: 5px;
+				border: 1px solid gray;
+				position: absolute;
+				visibility: hidden;
+				z-index: 10
+			}
+		/* ]]> */
+		</style>
+		<table bgcolor="#dedeff" width="100%" border="0" cellpadding="0" cellspacing="0" summary="Top menu bar">
+			<col width="*" />
+			<col width="100" />
+			<col width="64" />
+			<col width="168" />
+			<tr>
+				{% with corner_images|random as corner_image %}
+					<td bgcolor="#dedeff" valign="top"><table border="0" cellpadding="0" cellspacing="0"><tr><td><img src="/static/zxdemo/images/artifact/{{ corner_image.src }}" width="256" height="64" border="0" alt="" title="Image credit: {{ corner_image.title }}" /></td><td><a href="/"><img src="/static/zxdemo/images/generic/mainlogo_short.gif" width="181" height="45" alt="Demotopia" border="0" align="top" /></a></td></tr></table></td>
+				{% endwith %}
+				<td bgcolor="#dedeff" align="right" valign="middle">
+					<a href="{% url 'zxdemo_articles' %}">articles&nbsp;&raquo;</a><br />
+					<a href="{% url 'zxdemo_productions' %}">releases&nbsp;&raquo;</a><br />
+					<a href="{% url 'zxdemo_parties' %}">parties&nbsp;&raquo;</a><br />
+					<a href="{% url 'zxdemo_authors' %}">sceners&nbsp;&raquo;</a>
+				</td>
+				<!-- spacer cell -->
+				<td bgcolor="#dedeff">&nbsp;</td>
+				<td bgcolor="#dedeff" align="center" valign="middle">
+					<form action="{% url 'zxdemo_search' %}" method="get">
+						<input name="search" type="text" size="15" value="{{ search_term }}" /><br />
+						<input type="submit" value="search" />
+					</form>
+				</td>
+			</tr>
+		</table>
+
+		{% block outer_body %}
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" />
+				<col width="224" />
+				<col width="*" />
+				<tr>
+					<td bgcolor="#dedeff" valign="top" align="center" width="224">
+						{% block sidebar %}{% endblock %}
+					</td>
+					</td>
+					<td valign="top" style="padding: 6pt;">
+						{% block body %}{% endblock %}
+					</td>
+				</tr>
+			</table>
+		{% endblock %}
+
+		<br />
+		<div align="center" style="line-height: 1.5em; padding: 4px; background-color: #ffffbb;">
+			A <a href="m&#097;ilto&#058;gasman&#064;raww.org">Gasman</a> production, brought to you by the Demozoo network. <em>Corrections, additions, new releases? Submit them to <a href="http://demozoo.org/">the main Demozoo site</a>!</em><br />
+			Grab the Demotopia newsfeed at: <a href="http://www.zxdemo.org/rss/">http://www.zxdemo.org/rss/</a>
+		</div>
+	</body>
+</html>

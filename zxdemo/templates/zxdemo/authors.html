@@ -1,0 +1,23 @@
+{% extends "zxdemo/base.html" %}
+{% load urlsub %}
+{% load url from future %}
+
+{% block html_title %}Demotopia - Sceners{% endblock %}
+{% block meta_description %}Listing of people and groups from the Spectrum demoscene.{% endblock %}
+
+{% block sidebar %}
+	<img src="/static/zxdemo/images/section/head_sceners.gif" alt="Sceners" width="224" height="42" /><br />
+	<form action="{% url 'zxdemo_authors' %}" method="get">
+		Show <select name="count" onchange="this.form.submit()">
+			{% for i in count_options %}
+				<option value="{{ i }}" {% if i == count %}selected="yes"{% endif %}>{{ i }}</option>
+			{% endfor %}
+		</select> results per page <noscript><input type="submit" name="go" value="go" /></noscript>
+	</form>
+{% endblock %}
+
+{% block body %}
+	{% include "zxdemo/include/alpha_pagination_links.html" with listing=releasers %}
+	{% include "zxdemo/include/releaser_listing.html" %}
+	{% include "zxdemo/include/prev_next_links.html" with listing=releasers %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "zxdemo/base.html" %}
+{% load url from future %}
+
+{% block html_title %}Demotopia - Sceners{% endblock %}
+{% block meta_description %}Listing of people and groups from the Spectrum demoscene.{% endblock %}
+
+{% block sidebar %}
+	<img src="/static/zxdemo/images/section/head_articles.gif" alt="Articles" width="224" height="42" />
+	{% for a in articles %}
+		{% if a.zxdemo_id == article.zxdemo_id %}
+			<div><strong>{{ a.title }}</strong></div>
+		{% else %}
+			<div><a href="{% url 'zxdemo_article' a.zxdemo_id %}">{{ a.title }}</a></div>
+		{% endif %}
+		<div class="annotation">{{ a.created_at|date:"Y-m-d" }}</div><br />
+	{% endfor %}
+{% endblock %}
+
+{% block body %}
+	{{ article.content|safe }}
+{% endblock %}

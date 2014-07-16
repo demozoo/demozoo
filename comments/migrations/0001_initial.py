@@ -10,6 +10,9 @@ class Migration(SchemaMigration):
     depends_on = (
         ("demoscene", "0103_add_admin_only_flag_to_edits"),
     )
+    needed_by = (
+        ("productions", "0001_initial"),
+    )
 
     def forwards(self, orm):
         # Adding model 'ProductionComment'
