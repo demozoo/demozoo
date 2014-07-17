@@ -24,7 +24,9 @@ def index(request):
 
 
 def show(request, group_id):
-	group = get_object_or_404(Releaser, is_group=True, id=group_id)
+	group = get_object_or_404(Releaser, id=group_id)
+	if not group.is_group:
+		return HttpResponseRedirect(group.get_absolute_url())
 
 	external_links = group.external_links.select_related('releaser').defer('releaser__notes')
 	external_links = sorted(external_links, key=lambda obj: obj.sort_key)

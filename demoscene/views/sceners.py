@@ -25,7 +25,9 @@ def index(request):
 
 
 def show(request, scener_id, edit_mode=False):
-	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+	scener = get_object_or_404(Releaser, id=scener_id)
+	if scener.is_group:
+		return HttpResponseRedirect(scener.get_absolute_url())
 
 	user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
 
