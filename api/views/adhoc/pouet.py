@@ -3,7 +3,8 @@ from itertools import groupby
 from django.http import HttpResponse
 from django.utils import simplejson
 
-from productions.models import Credit
+from demoscene.models import ReleaserExternalLink
+from productions.models import Credit, ProductionLink
 
 
 def credits(request):
@@ -45,3 +46,39 @@ def credits(request):
 	]
 
 	return HttpResponse(simplejson.dumps(credits_json), mimetype="text/javascript")
+
+
+def prod_demozoo_ids_by_pouet_id(request):
+	links = ProductionLink.objects.filter(link_class='PouetProduction')
+	links_json = [
+		{'pouet_id': link.parameter, 'demozoo_id': link.production_id}
+		for link in links
+	]
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+
+
+def prod_demozoo_ids_by_zxdemo_id(request):
+	links = ProductionLink.objects.filter(link_class='ZxdemoItem')
+	links_json = [
+		{'zxdemo_id': link.parameter, 'demozoo_id': link.production_id}
+		for link in links
+	]
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+
+
+def group_demozoo_ids_by_pouet_id(request):
+	links = ReleaserExternalLink.objects.filter(link_class='PouetGroup')
+	links_json = [
+		{'pouet_id': link.parameter, 'demozoo_id': link.releaser_id}
+		for link in links
+	]
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+
+
+def group_demozoo_ids_by_zxdemo_id(request):
+	links = ReleaserExternalLink.objects.filter(link_class='ZxdemoAuthor')
+	links_json = [
+		{'zxdemo_id': link.parameter, 'demozoo_id': link.releaser_id}
+		for link in links
+	]
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
