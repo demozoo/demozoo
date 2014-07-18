@@ -5,6 +5,7 @@ from django.utils import simplejson
 
 from demoscene.models import ReleaserExternalLink
 from productions.models import Credit, ProductionLink
+from parties.models import PartyExternalLink
 
 
 def credits(request):
@@ -79,6 +80,27 @@ def group_demozoo_ids_by_zxdemo_id(request):
 	links = ReleaserExternalLink.objects.filter(link_class='ZxdemoAuthor')
 	links_json = [
 		{'zxdemo_id': link.parameter, 'demozoo_id': link.releaser_id}
+		for link in links
+	]
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+
+
+def party_demozoo_ids_by_pouet_id(request):
+	links = PartyExternalLink.objects.filter(link_class='PouetParty')
+	links_json = []
+	for link in links:
+		party_id, year = link.parameter.split('/')
+		links_json.append({
+			'pouet_id': party_id, 'year': year,
+			'demozoo_id': link.party_id
+		})
+	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+
+
+def party_demozoo_ids_by_zxdemo_id(request):
+	links = PartyExternalLink.objects.filter(link_class='ZxdemoParty')
+	links_json = [
+		{'zxdemo_id': link.parameter, 'demozoo_id': link.party_id}
 		for link in links
 	]
 	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
