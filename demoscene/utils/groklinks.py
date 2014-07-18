@@ -862,6 +862,16 @@ class CappedVideo(BaseUrl):
 	is_streaming_video = True
 
 
+class DhsVideoDbVideo(BaseUrl):
+	canonical_format = "http://dhs.nu/video.php?ID=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?dhs\.nu/video.php', 'ID', re.I),
+	]
+	html_link_class = "dhs_videodb"
+	html_link_text = "DHS VideoDB"
+	html_title_format = "%s on DHS VideoDB"
+
+
 class FacebookPage(BaseUrl):
 	canonical_format = "http://www.facebook.com/%s"
 	tests = [
@@ -1074,7 +1084,7 @@ RELEASER_LINK_TYPES = [
 
 PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
-	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
+	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
 	AsciiarenaRelease, KestraBitworldRelease,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
