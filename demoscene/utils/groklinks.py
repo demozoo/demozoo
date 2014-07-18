@@ -1101,7 +1101,7 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 
 PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
-	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
+	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
 	'GithubAccount', 'GithubRepo',
