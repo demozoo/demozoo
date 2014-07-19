@@ -1167,6 +1167,16 @@ class InternetArchivePage(BaseUrl):
 	html_title_format = "%s on the Internet Archive"
 
 
+class WaybackMachinePage(BaseUrl):
+	canonical_format = "https://web.archive.org/web/%s"
+	tests = [
+		regex_match(r'https?://web\.archive.org/web/(.+)', re.I),
+	]
+	html_link_class = "waybackmachine"
+	html_link_text = "Wayback Machine"
+	html_title_format = "%s on the Wayback Machine"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1179,7 +1189,7 @@ RELEASER_LINK_TYPES = [
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage,
 	ZxArtArtist, ZxArtMusician, InternetArchivePage,
-	BaseUrl,
+	WaybackMachinePage, BaseUrl,
 ]
 
 PRODUCTION_LINK_TYPES = [
@@ -1192,7 +1202,7 @@ PRODUCTION_LINK_TYPES = [
 	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
 	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
-	BaseUrl,
+	WaybackMachinePage, BaseUrl,
 ]
 
 PRODUCTION_DOWNLOAD_LINK_TYPES = [
@@ -1205,7 +1215,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
 	'GithubAccount', 'GithubRepo', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage',
+	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
 ]
 
 PARTY_LINK_TYPES = [
@@ -1213,7 +1223,7 @@ PARTY_LINK_TYPES = [
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
 	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
 	FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
-	SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, BaseUrl,
+	SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
 ]
 
 
