@@ -1157,6 +1157,16 @@ class GithubRepo(BaseUrl):
 	html_title_format = "%s on GitHub"
 
 
+class InternetArchivePage(BaseUrl):
+	canonical_format = "https://archive.org/details/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?archive.org/details/(.+)', re.I),
+	]
+	html_link_class = "internetarchive"
+	html_link_text = "Internet Archive"
+	html_title_format = "%s on the Internet Archive"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1168,7 +1178,7 @@ RELEASER_LINK_TYPES = [
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage,
-	ZxArtArtist, ZxArtMusician,
+	ZxArtArtist, ZxArtMusician, InternetArchivePage,
 	BaseUrl,
 ]
 
@@ -1181,7 +1191,7 @@ PRODUCTION_LINK_TYPES = [
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
-	DiscogsRelease, ZxArtPicture, ZxArtMusic,
+	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
 	BaseUrl,
 ]
 
@@ -1195,7 +1205,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
 	'GithubAccount', 'GithubRepo', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-	'ZxArtPicture', 'ZxArtMusic',
+	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage',
 ]
 
 PARTY_LINK_TYPES = [
