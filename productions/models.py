@@ -93,7 +93,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	include_notes_in_search = models.BooleanField(default=True,
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
-	sortable_title = models.CharField(max_length=255, blank=True, null=True)
+	sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
