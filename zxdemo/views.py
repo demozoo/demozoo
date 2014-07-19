@@ -76,7 +76,7 @@ def productions(request):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	productions = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	supertypes = []
 	if request.GET.get('demos', '1'):
@@ -391,7 +391,7 @@ def search(request):
 	demos = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='production',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	demos = list(demos[demoskip:demoskip+11])
 	if len(demos) == 11:
@@ -417,7 +417,7 @@ def search(request):
 	musics = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='music',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	musics = list(musics[musicskip:musicskip+11])
 	if len(musics) == 11:
@@ -443,7 +443,7 @@ def search(request):
 	graphics = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='graphics',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	graphics = list(graphics[gfxskip:gfxskip+11])
 	if len(graphics) == 11:

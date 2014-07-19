@@ -306,7 +306,7 @@ def same_named_prods_by_same_releaser(request):
 	report_name = 'same_named_prods_by_same_releaser'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		SELECT DISTINCT productions_production.*
 		FROM productions_production
 		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
 		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
@@ -317,7 +317,7 @@ def same_named_prods_by_same_releaser(request):
 			productions_production.title <> '?'
 			AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY lower_title
+		ORDER BY productions_production.sortable_title
 	''', [report_name])
 
 	return render(request, 'maintenance/production_report.html', {
@@ -332,7 +332,7 @@ def same_named_prods_without_special_chars(request):
 	report_name = 'same_named_prods_without_special_chars'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		SELECT DISTINCT productions_production.*
 		FROM productions_production
 		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
 		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
@@ -344,7 +344,7 @@ def same_named_prods_without_special_chars(request):
 			AND productions_production.id <> other_production.id
 			AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY lower_title
+		ORDER BY productions_production.sortable_title
 	''')
 
 	return render(request, 'maintenance/production_report.html', {

@@ -86,9 +86,7 @@ def tagged(request, tag_name):
 
 def apply_order(queryset, order, asc):
 	if order == 'title':
-		return queryset.extra(
-			select={'lower_title': 'lower(productions_production.title)'}
-		).order_by('%slower_title' % ('' if asc else '-'))
+		return queryset.order_by('%ssortable_title' % ('' if asc else '-'))
 	else:  # date
 		if asc:
 			return queryset.order_by('release_date_date', 'title')
