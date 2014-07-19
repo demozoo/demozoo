@@ -13,9 +13,11 @@ def slugify_tag(value):
 
 
 def generate_sort_key(s):
-	# strip accents and punctuation
-	s = ''.join(c for c in unicodedata.normalize('NFD', s)
-		if not unicodedata.combining(c) and unicodedata.category(c)[0] != 'P')
+	# strip accents
+	s = ''.join(c for c in unicodedata.normalize('NFD', s) if not unicodedata.combining(c))
+
+	# replace punctuation with spaces
+	s = ''.join((' ' if unicodedata.category(c)[0] == 'P' else c) for c in s)
 
 	# condense multiple spaces to single space; strip leading/trailing space; downcase
 	s = re.sub(r'\s+', ' ', s).strip().lower()
