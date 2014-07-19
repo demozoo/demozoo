@@ -17,7 +17,8 @@ def generate_sort_key(s):
 	s = ''.join(c for c in unicodedata.normalize('NFD', s)
 		if not unicodedata.combining(c) and unicodedata.category(c)[0] != 'P')
 
-	s = s.strip().lower()
+	# condense multiple spaces to single space; strip leading/trailing space; downcase
+	s = re.sub(r'\s+', ' ', s).strip().lower()
 
 	# pad numbers with leading zeros
 	s = re.sub(r'\d+', lambda m: '%09d' % (int(m.group(0))), s)
