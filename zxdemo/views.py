@@ -120,7 +120,11 @@ def productions(request):
 	})
 
 def releases_redirect(request):
-	type_filter = int(request.GET.get('filter') or 7)
+	try:
+		type_filter = int(request.GET.get('filter') or 7)
+	except (ValueError, UnicodeEncodeError):
+		type_filter = 7
+
 	url_vars = []
 
 	if not (type_filter & 1):
@@ -295,7 +299,11 @@ def parties_year(request, year):
 
 
 def partycalendar_redirect(request):
-	year = request.GET.get('year')
+	try:
+		year = int(request.GET.get('year'))
+	except (ValueError, UnicodeEncodeError):
+		year = None
+
 	if year:
 		return redirect('zxdemo_parties_year', year, permanent=True)
 	else:
@@ -530,7 +538,10 @@ def article(request, zxdemo_id):
 
 
 def article_redirect(request):
-	return redirect('zxdemo_article', request.GET.get('id'))
+	try:
+		return redirect('zxdemo_article', int(request.GET.get('id')))
+	except (ValueError, UnicodeEncodeError):
+		raise Http404
 
 
 def page_not_found(request):
