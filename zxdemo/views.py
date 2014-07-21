@@ -301,7 +301,7 @@ def parties_year(request, year):
 def partycalendar_redirect(request):
 	try:
 		year = int(request.GET.get('year'))
-	except (ValueError, UnicodeEncodeError):
+	except (ValueError, TypeError, UnicodeEncodeError):
 		year = None
 
 	if year:
