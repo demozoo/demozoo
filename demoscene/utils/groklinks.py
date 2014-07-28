@@ -954,7 +954,7 @@ class DiscogsRelease(DiscogsEntry):
 
 	def __unicode__(self):
 		(id, slug) = self.param.split('/')
-		return u"http://www.discogs.com/%s/release/%s" % (id, slug)
+		return u"http://www.discogs.com/%s/release/%s" % (slug, id)
 
 
 class ModarchiveMember(BaseUrl):
