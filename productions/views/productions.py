@@ -67,8 +67,8 @@ def tagged(request, tag_name):
 		tag = Tag(name=tag_name)
 	queryset = Production.objects.filter(tags__name=tag_name).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-	order = request.GET.get('order', 'title')
-	asc = request.GET.get('dir', 'asc') == 'asc'
+	order = request.GET.get('order', 'date')
+	asc = request.GET.get('dir', 'desc') == 'asc'
 
 	queryset = apply_order(queryset, order, asc)
 
