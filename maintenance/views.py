@@ -11,7 +11,7 @@ from read_only_mode import writeable_site_required
 
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
-from parties.models import PartyExternalLink, Party
+from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
@@ -834,3 +834,12 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 		production_link.save()
 		create_screenshot_from_production_link.delay(productionlink_id)
 	return HttpResponse('OK', mimetype='text/plain')
+
+
+def results_with_no_encoding(request):
+	results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
+
+	return render(request, 'maintenance/results_with_no_encoding.html', {
+		'title': 'Results files with unknown character encoding',
+		'results_files': results_files,
+	})

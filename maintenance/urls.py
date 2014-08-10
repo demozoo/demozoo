@@ -41,6 +41,7 @@ urlpatterns = patterns('maintenance.views',
 	# parties
 	(r'^parties_with_incomplete_dates$', 'parties_with_incomplete_dates', {}, 'maintenance_parties_with_incomplete_dates'),
 	(r'^parties_with_no_location$', 'parties_with_no_location', {}, 'maintenance_parties_with_no_location'),
+	(r'^results_with_no_encoding$', 'results_with_no_encoding', {}, 'maintenance_results_with_no_encoding'),
 
 	(r'^exclude$', 'exclude', {}, 'maintenance_exclude'),
 
