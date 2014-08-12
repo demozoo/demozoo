@@ -818,6 +818,8 @@ def add_sceneorg_link_to_party(request):
 
 
 def view_archive_member(request, archive_member_id):
+	if not request.user.is_staff:
+		return redirect('home')
 	member = ArchiveMember.objects.get(id=archive_member_id)
 	buf = member.fetch_from_zip()
 	return HttpResponse(buf, mimetype=member.guess_mime_type())
@@ -825,6 +827,8 @@ def view_archive_member(request, archive_member_id):
 
 @writeable_site_required
 def resolve_screenshot(request, productionlink_id, archive_member_id):
+	if not request.user.is_staff:
+		return redirect('home')
 	production_link = ProductionLink.objects.get(id=productionlink_id)
 	archive_member = ArchiveMember.objects.get(id=archive_member_id)
 
@@ -837,6 +841,8 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 
 
 def results_with_no_encoding(request):
+	if not request.user.is_staff:
+		return redirect('home')
 	results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
 
 	return render(request, 'maintenance/results_with_no_encoding.html', {
@@ -857,6 +863,8 @@ ENCODING_OPTIONS = [
 ]
 
 def fix_results_file_encoding(request, results_file_id):
+	if not request.user.is_staff:
+		return redirect('home')
 	results_file = get_object_or_404(ResultsFile, id=results_file_id)
 	if request.POST:
 		encoding = request.POST['encoding']
