@@ -35,6 +35,18 @@
 
 {% block base_main %}
 	<h2>{{ party.name }} - {{ results_file.filename }}</h2>
+	<hr>
+	{% if encoding_is_valid %}
+		<ul class="actions">
+			<li>
+				<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="POST">
+					{% csrf_token %}
+					<input type="hidden" name="encoding" value="{{ encoding }}">
+					<input type="submit" value="Accept this encoding" class="action_button icon done">
+				</form>
+			</li>
+		</ul>
+	{% endif %}
 	<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="GET">
 		<div>
 			<label for="encoding">Encoding</label>
@@ -50,15 +62,10 @@
 			<input type="submit" id="preview_encoding" value="Preview">
 		</div>
 	</form>
-	{% if encoding_is_valid %}
-		<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="POST">
-			{% csrf_token %}
-			<input type="hidden" name="encoding" value="{{ encoding }}">
-			<input type="submit" value="Accept this encoding">
-		</form>
-	{% else %}
+	{% if not encoding_is_valid %}
 		<p><strong>The chosen encoding is not valid for this file</strong></p>
 	{% endif %}
+	<hr>
 	<table class="text_file">
 		{% for is_ascii, is_valid, line in file_lines %}
 			<tr {% if not is_valid %}class="bad_encoding"{% elif not is_ascii %}class="non_ascii"{% endif %}><td>{{ line }}</td></tr>
