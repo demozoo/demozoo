@@ -1,0 +1,67 @@
+{% extends "maintenance/base.html" %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+	<style>
+		table.text_file {
+			font-family: dejavu_sans_monobook, monospace;
+			white-space: pre;
+			border-collapse: collapse;
+			border-spacing: 0;
+			line-height: 1em;
+		}
+		table.text_file tr.bad_encoding {
+			background-color: #fcc;
+		}
+		table.text_file tr.non_ascii {
+			background-color: yellow;
+		}
+	</style>
+{% endblock %}
+{% block extra_js %}
+	<script type="text/javascript">
+		$(function() {
+			$('#encoding').change(function() {
+				this.form.submit();
+			});
+			$('#preview_encoding').hide();
+		});
+	</script>
+{% endblock %}
+
+{% block base_main %}
+	<h2>{{ party.name }} - {{ results_file.filename }}</h2>
+	<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="GET">
+		<div>
+			<label for="encoding">Encoding</label>
+			<select id="encoding" name="encoding">
+				{% for label, optgroup in encoding_options %}
+					<optgroup label="{{ label }}">
+						{% for value, label in optgroup %}
+							<option value="{{ value }}" {% if value == encoding %}selected="selected"{% endif %}>{{ label }}</option>
+						{% endfor %}
+					</optgroup>
+				{% endfor %}
+			</select>
+			<input type="submit" id="preview_encoding" value="Preview">
+		</div>
+	</form>
+	{% if encoding_is_valid %}
+		<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="POST">
+			{% csrf_token %}
+			<input type="hidden" name="encoding" value="{{ encoding }}">
+			<input type="submit" value="Accept this encoding">
+		</form>
+	{% else %}
+		<p><strong>The chosen encoding is not valid for this file</strong></p>
+	{% endif %}
+	<table class="text_file">
+		{% for is_ascii, is_valid, line in file_lines %}
+			<tr {% if not is_valid %}class="bad_encoding"{% elif not is_ascii %}class="non_ascii"{% endif %}><td>{{ line }}</td></tr>
+		{% endfor %}
+	</table>
+{% endblock %}

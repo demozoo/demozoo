@@ -6,7 +6,6 @@
 
 {% block extra_css %}
 	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
-	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
 {% endblock %}
 
 {% block base_main %}
@@ -14,7 +13,11 @@
 	<div id="main_column">
 		<ul>
 			{% for file in results_files %}
-				<li>{{ file.party.name }} - {{ file.filename }}</li>
+				<li>
+					<a href="{% url 'maintenance_fix_results_file_encoding' file.id %}">
+						{{ file.party.name }} - {{ file.filename }}
+					</a>
+				</li>
 			{% endfor %}
 		</ul>
 	</div>

@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -842,4 +842,60 @@ def results_with_no_encoding(request):
 	return render(request, 'maintenance/results_with_no_encoding.html', {
 		'title': 'Results files with unknown character encoding',
 		'results_files': results_files,
+	})
+
+ENCODING_OPTIONS = [
+	('Common encodings', [
+		('iso-8859-1', 'Western (ISO-8859-1)'),
+		('cp437', 'MS-DOS (CP437)'),
+	]),
+	('Obscure encodings', [
+		('big5', 'Chinese Traditional (Big5)'),
+		('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
+		('iso-8859-6', 'Arabic (ISO-8859-6)'),
+	]),
+]
+
+def fix_results_file_encoding(request, results_file_id):
+	results_file = get_object_or_404(ResultsFile, id=results_file_id)
+	if request.POST:
+		encoding = request.POST['encoding']
+	else:
+		encoding = request.GET.get('encoding', 'iso-8859-1')
+
+	# check that the encoding is one that we recognise
+	try:
+		''.decode(encoding)
+	except LookupError:
+		encoding = 'iso-8859-1'
+
+	file_lines = []
+	encoding_is_valid = True
+
+	for line in results_file.file:
+		try:
+			line.decode('ascii')
+			is_ascii = True
+		except UnicodeDecodeError:
+			is_ascii = False
+
+		try:
+			decoded_line = line.decode(encoding)
+			file_lines.append((is_ascii, True, decoded_line))
+		except UnicodeDecodeError:
+			encoding_is_valid = False
+			file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
+
+	if request.POST:
+		if encoding_is_valid:
+			results_file.encoding = encoding
+			results_file.save()
+		return redirect('maintenance_results_with_no_encoding')
+	return render(request, 'maintenance/fix_results_file_encoding.html', {
+		'results_file': results_file,
+		'party': results_file.party,
+		'file_lines': file_lines,
+		'encoding_is_valid': encoding_is_valid,
+		'encoding': encoding,
+		'encoding_options': ENCODING_OPTIONS,
 	})
