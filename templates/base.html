@@ -86,7 +86,9 @@
 								<form action="{% url 'log_in' %}" method="post">
 									{% csrf_token %}
 									{{ global_login_form.as_p }}
-									<input type="hidden" name="next" value="{{ request.path }}">
+									{% block login_next_field %}
+										<input type="hidden" name="next" value="{{ request.path }}">
+									{% endblock %}
 									<input type="submit" value="Log in" />
 								</form>
 								<ul>

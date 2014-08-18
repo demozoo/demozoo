@@ -67,8 +67,8 @@ def tagged(request, tag_name):
 		tag = Tag(name=tag_name)
 	queryset = Production.objects.filter(tags__name=tag_name).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-	order = request.GET.get('order', 'title')
-	asc = request.GET.get('dir', 'asc') == 'asc'
+	order = request.GET.get('order', 'date')
+	asc = request.GET.get('dir', 'desc') == 'asc'
 
 	queryset = apply_order(queryset, order, asc)
 
@@ -86,9 +86,7 @@ def tagged(request, tag_name):
 
 def apply_order(queryset, order, asc):
 	if order == 'title':
-		return queryset.extra(
-			select={'lower_title': 'lower(productions_production.title)'}
-		).order_by('%slower_title' % ('' if asc else '-'))
+		return queryset.order_by('%ssortable_title' % ('' if asc else '-'))
 	else:  # date
 		if asc:
 			return queryset.order_by('release_date_date', 'title')

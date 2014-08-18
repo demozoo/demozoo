@@ -4,14 +4,14 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
-from parties.models import PartyExternalLink, Party
+from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
@@ -306,7 +306,7 @@ def same_named_prods_by_same_releaser(request):
 	report_name = 'same_named_prods_by_same_releaser'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		SELECT DISTINCT productions_production.*
 		FROM productions_production
 		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
 		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
@@ -317,7 +317,7 @@ def same_named_prods_by_same_releaser(request):
 			productions_production.title <> '?'
 			AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY lower_title
+		ORDER BY productions_production.sortable_title
 	''', [report_name])
 
 	return render(request, 'maintenance/production_report.html', {
@@ -332,7 +332,7 @@ def same_named_prods_without_special_chars(request):
 	report_name = 'same_named_prods_without_special_chars'
 
 	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*, LOWER(productions_production.title) AS lower_title
+		SELECT DISTINCT productions_production.*
 		FROM productions_production
 		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
 		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
@@ -344,7 +344,7 @@ def same_named_prods_without_special_chars(request):
 			AND productions_production.id <> other_production.id
 			AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY lower_title
+		ORDER BY productions_production.sortable_title
 	''')
 
 	return render(request, 'maintenance/production_report.html', {
@@ -818,6 +818,8 @@ def add_sceneorg_link_to_party(request):
 
 
 def view_archive_member(request, archive_member_id):
+	if not request.user.is_staff:
+		return redirect('home')
 	member = ArchiveMember.objects.get(id=archive_member_id)
 	buf = member.fetch_from_zip()
 	return HttpResponse(buf, mimetype=member.guess_mime_type())
@@ -825,6 +827,8 @@ def view_archive_member(request, archive_member_id):
 
 @writeable_site_required
 def resolve_screenshot(request, productionlink_id, archive_member_id):
+	if not request.user.is_staff:
+		return redirect('home')
 	production_link = ProductionLink.objects.get(id=productionlink_id)
 	archive_member = ArchiveMember.objects.get(id=archive_member_id)
 
@@ -834,3 +838,139 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 		production_link.save()
 		create_screenshot_from_production_link.delay(productionlink_id)
 	return HttpResponse('OK', mimetype='text/plain')
+
+
+def results_with_no_encoding(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
+
+	return render(request, 'maintenance/results_with_no_encoding.html', {
+		'title': 'Results files with unknown character encoding',
+		'results_files': results_files,
+	})
+
+ENCODING_OPTIONS = [
+	('Common encodings', [
+		('iso-8859-1', 'Western (ISO-8859-1)'),
+		('iso-8859-2', 'Central European (ISO-8859-2)'),
+		('iso-8859-3', 'South European (ISO-8859-3)'),
+		('iso-8859-4', 'Baltic (ISO-8859-4)'),
+		('iso-8859-5', 'Cyrillic (ISO-8859-5)'),
+		('cp437', 'MS-DOS (CP437)'),
+		('cp866', 'MS-DOS Cyrillic (CP866)'),
+		('koi8_r', 'Cyrillic Russian (KOI8-R)'),
+		('koi8_u', 'Cyrillic Ukrainian (KOI8-U)'),
+		('windows-1250', 'Central European (Windows-1250)'),
+		('windows-1251', 'Cyrillic (Windows-1251)'),
+		('windows-1252', 'Western (Windows-1252)'),
+	]),
+	('Obscure encodings', [
+		('big5', 'Chinese Traditional (Big5)'),
+		('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
+		('cp737', 'MS-DOS Greek (CP737)'),
+		('cp775', 'MS-DOS Baltic Rim (CP775)'),
+		('cp850', 'MS-DOS Latin 1 (CP850)'),
+		('cp852', 'MS-DOS Latin 2 (CP852)'),
+		('cp855', 'MS-DOS Cyrillic (CP855)'),
+		('cp856', 'Hebrew (CP856)'),
+		('cp857', 'MS-DOS Turkish (CP857)'),
+		('cp860', 'MS-DOS Portuguese (CP860)'),
+		('cp861', 'MS-DOS Icelandic (CP861)'),
+		('cp862', 'MS-DOS Hebrew (CP862)'),
+		('cp863', 'MS-DOS French Canada (CP863)'),
+		('cp864', 'Arabic (CP864)'),
+		('cp865', 'MS-DOS Nordic (CP865)'),
+		('cp869', 'MS-DOS Greek 2 (CP869)'),
+		('cp874', 'Thai (CP874)'),
+		('cp932', 'Japanese (CP932)'),
+		('cp949', 'Korean (CP949)'),
+		('cp950', 'Chinese Traditional (CP949)'),
+		('cp1006', 'Urdu (CP1006)'),
+		('euc_jp', 'Japanese (EUC-JP)'),
+		('euc_jis_2004', 'Japanese (EUC-JIS-2004)'),
+		('euc_jisx0213', 'Japanese (EUC-JIS-X-0213)'),
+		('euc_kr', 'Korean (EUC-KR)'),
+		('gb2312', 'Chinese Simplified (GB 2312)'),
+		('gbk', 'Chinese Simplified (GBK)'),
+		('gb18030', 'Chinese Simplified (GB 18030)'),
+		('hz', 'Chinese Simplified (HZ)'),
+		('iso-2022-jp', 'Japanese (ISO-2022-JP)'),
+		('iso-2022-jp-1', 'Japanese (ISO-2022-JP-1)'),
+		('iso-2022-jp-2', 'Japanese (ISO-2022-JP-2)'),
+		('iso-2022-jp-2004', 'Japanese (ISO-2022-JP-2004)'),
+		('iso-2022-jp-3', 'Japanese (ISO-2022-JP-3)'),
+		('iso-2022-jp-ext', 'Japanese (ISO-2022-JP-EXT)'),
+		('iso-2022-kr', 'Korean (ISO-2022-KR)'),
+		('iso-8859-6', 'Arabic (ISO-8859-6)'),
+		('iso-8859-7', 'Greek (ISO-8859-7)'),
+		('iso-8859-8', 'Hebrew (ISO-8859-8)'),
+		('iso-8859-9', 'Turkish (ISO-8859-9)'),
+		('iso-8859-10', 'Nordic (ISO-8859-10)'),
+		('iso-8859-13', 'Baltic (ISO-8859-13)'),
+		('iso-8859-14', 'Celtic (ISO-8859-14)'),
+		('iso-8859-15', 'Western (ISO-8859-15)'),
+		('johab', 'Korean (Johab)'),
+		('mac_cyrillic', 'Cyrillic (Macintosh)'),
+		('mac_greek', 'Greek (Macintosh)'),
+		('mac_iceland', 'Icelandic (Macintosh)'),
+		('mac_latin2', 'Central European (Macintosh)'),
+		('mac_roman', 'Western (Macintosh)'),
+		('mac_turkish', 'Turkish (Macintosh)'),
+		('shift_jis', 'Japanese (Shift_JIS)'),
+		('shift_jis_2004', 'Japanese (Shift_JIS_2004)'),
+		('shift_jisx0213', 'Japanese (Shift_JIS_X_0213)'),
+		('windows-1253', 'Greek (Windows-1253)'),
+		('windows-1254', 'Turkish (Windows-1254)'),
+		('windows-1255', 'Hebrew (Windows-1255)'),
+		('windows-1256', 'Arabic (Windows-1256)'),
+		('windows-1257', 'Baltic (Windows-1257)'),
+		('windows-1258', 'Vietnamese (Windows-1258)'),
+	]),
+]
+
+def fix_results_file_encoding(request, results_file_id):
+	if not request.user.is_staff:
+		return redirect('home')
+	results_file = get_object_or_404(ResultsFile, id=results_file_id)
+	if request.POST:
+		encoding = request.POST['encoding']
+	else:
+		encoding = request.GET.get('encoding', 'iso-8859-1')
+
+	# check that the encoding is one that we recognise
+	try:
+		''.decode(encoding)
+	except LookupError:
+		encoding = 'iso-8859-1'
+
+	file_lines = []
+	encoding_is_valid = True
+
+	for line in results_file.file:
+		try:
+			line.decode('ascii')
+			is_ascii = True
+		except UnicodeDecodeError:
+			is_ascii = False
+
+		try:
+			decoded_line = line.decode(encoding)
+			file_lines.append((is_ascii, True, decoded_line))
+		except UnicodeDecodeError:
+			encoding_is_valid = False
+			file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
+
+	if request.POST:
+		if encoding_is_valid:
+			results_file.encoding = encoding
+			results_file.save()
+		return redirect('maintenance_results_with_no_encoding')
+	return render(request, 'maintenance/fix_results_file_encoding.html', {
+		'results_file': results_file,
+		'party': results_file.party,
+		'file_lines': file_lines,
+		'encoding_is_valid': encoding_is_valid,
+		'encoding': encoding,
+		'encoding_options': ENCODING_OPTIONS,
+	})

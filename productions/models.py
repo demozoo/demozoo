@@ -12,6 +12,7 @@ from strip_markup import strip_markup
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
 from demoscene.utils import groklinks
+from demoscene.utils.text import generate_sort_key
 
 
 SUPERTYPE_CHOICES = (
@@ -92,6 +93,8 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	include_notes_in_search = models.BooleanField(default=True,
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
+	sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
@@ -118,6 +121,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 			self.supertype = self.inferred_supertype
 		if self.title:
 			self.title = self.title.strip()
+			self.sortable_title = generate_sort_key(self.title)
 		return super(Production, self).save(*args, **kwargs)
 
 	def __unicode__(self):

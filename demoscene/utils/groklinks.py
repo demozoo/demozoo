@@ -862,6 +862,16 @@ class CappedVideo(BaseUrl):
 	is_streaming_video = True
 
 
+class DhsVideoDbVideo(BaseUrl):
+	canonical_format = "http://dhs.nu/video.php?ID=%s"
+	tests = [
+		querystring_match(r'https?://(?:www\.)?dhs\.nu/video.php', 'ID', re.I),
+	]
+	html_link_class = "dhs_videodb"
+	html_link_text = "DHS VideoDB"
+	html_title_format = "%s on DHS VideoDB"
+
+
 class FacebookPage(BaseUrl):
 	canonical_format = "http://www.facebook.com/%s"
 	tests = [
@@ -912,24 +922,39 @@ class SoundcloudTrack(BaseUrl):
 	html_title_format = "%s on SoundCloud"
 
 
-class DiscogsArtist(BaseUrl):
+class DiscogsEntry(BaseUrl):  # for use as an abstract superclass
+	html_link_class = "discogs"
+	html_link_text = "Discogs"
+	html_title_format = "%s on Discogs"
+
+
+class DiscogsArtist(DiscogsEntry):
 	canonical_format = "http://www.discogs.com/artist/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
 	]
-	html_link_class = "discogs"
-	html_link_text = "Discogs"
-	html_title_format = "%s on Discogs"
 
 
-class DiscogsLabel(BaseUrl):
+class DiscogsLabel(DiscogsEntry):
 	canonical_format = "http://www.discogs.com/label/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
 	]
-	html_link_class = "discogs"
-	html_link_text = "Discogs"
-	html_title_format = "%s on Discogs"
+
+
+class DiscogsRelease(DiscogsEntry):
+	def match_discogs_release(urlstring, url):
+		regex = re.compile(r'https?://(?:www\.)?discogs\.com/([^\/]+)/release/(\d+)', re.I)
+		match = regex.match(urlstring)
+		if match:
+			slug, id = match.groups()
+			return "%s/%s" % (id, slug)
+
+	tests = [match_discogs_release]
+
+	def __unicode__(self):
+		(id, slug) = self.param.split('/')
+		return u"http://www.discogs.com/%s/release/%s" % (slug, id)
 
 
 class ModarchiveMember(BaseUrl):
@@ -974,6 +999,16 @@ class SpeccyWikiPage(BaseUrl):
 	html_title_format = "%s on SpeccyWiki"
 
 
+class AtarimaniaPage(BaseUrl):
+	canonical_format = "http://www.atarimania.com/%s.html"
+	tests = [
+		regex_match(r'https?://(?:www\.)?atarimania.com/(.+)\.html', re.I),
+	]
+	html_link_class = "atarimania"
+	html_link_text = "Atarimania"
+	html_title_format = "%s on Atarimania"
+
+
 class PushnpopEntry(BaseUrl):  # for use as an abstract superclass
 	html_link_class = "pushnpop"
 	html_link_text = "Push'n'Pop"
@@ -1008,14 +1043,78 @@ class PushnpopProfile(PushnpopEntry):
 	]
 
 
-class HallOfLightArtist(BaseUrl):
+class ZxArtEntry(BaseUrl):  # for use as an abstract superclass
+	html_link_class = "zxart"
+	html_link_text = "ZXArt"
+	html_title_format = "%s on ZXArt"
+
+
+class ZxArtArtist(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class ZxArtMusician(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class ZxArtPicture(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class ZxArtMusic(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class ZxArtPartyGraphics(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/parties/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/pati/([^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class ZxArtPartyMusic(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/music/parties/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/parties/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/pati/([^\/]+/[^\/]+)/', re.I),
+	]
+
+
+class HallOfLightEntry(BaseUrl):  # for use as an abstract superclass
+	html_link_class = "hall_of_light"
+	html_link_text = "Hall Of Light"
+	html_title_format = "%s on Hall Of Light"
+
+
+class HallOfLightGame(HallOfLightEntry):
+	canonical_format = "http://hol.abime.net/%s"
+	tests = [
+		regex_match(r'https?://hol\.abime\.net/(\d+)', re.I),
+	]
+
+
+class HallOfLightArtist(HallOfLightEntry):
 	canonical_format = "http://hol.abime.net/hol_search.php?N_ref_artist=%s"
 	tests = [
 		querystring_match(r'https?://hol\.abime\.net/hol_search\.php', 'N_ref_artist', re.I),
 	]
-	html_link_class = "hall_of_light"
-	html_link_text = "Hall Of Light"
-	html_title_format = "%s on Hall Of Light"
 
 
 class SpotifyArtist(BaseUrl):
@@ -1058,6 +1157,26 @@ class GithubRepo(BaseUrl):
 	html_title_format = "%s on GitHub"
 
 
+class InternetArchivePage(BaseUrl):
+	canonical_format = "https://archive.org/details/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?archive.org/details/(.+)', re.I),
+	]
+	html_link_class = "internetarchive"
+	html_link_text = "Internet Archive"
+	html_title_format = "%s on the Internet Archive"
+
+
+class WaybackMachinePage(BaseUrl):
+	canonical_format = "https://web.archive.org/web/%s"
+	tests = [
+		regex_match(r'https?://web\.archive.org/web/(.+)', re.I),
+	]
+	html_link_class = "waybackmachine"
+	html_link_text = "Wayback Machine"
+	html_title_format = "%s on the Wayback Machine"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1068,21 +1187,22 @@ RELEASER_LINK_TYPES = [
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
-	GithubAccount, GithubRepo,
-	BaseUrl,
+	GithubAccount, GithubRepo, AtarimaniaPage,
+	ZxArtArtist, ZxArtMusician, InternetArchivePage,
+	WaybackMachinePage, BaseUrl,
 ]
 
 PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
-	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo,
+	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
 	AsciiarenaRelease, KestraBitworldRelease,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
-	WikipediaPage,
-	SpeccyWikiPage,
-	BaseUrl,
+	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
+	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
+	WaybackMachinePage, BaseUrl,
 ]
 
 PRODUCTION_DOWNLOAD_LINK_TYPES = [
@@ -1091,10 +1211,11 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 
 PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
-	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'AsciiarenaRelease', 'ScenesatTrack',
+	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
-	'GithubAccount', 'GithubRepo',
+	'GithubAccount', 'GithubRepo', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
+	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
 ]
 
 PARTY_LINK_TYPES = [
@@ -1102,7 +1223,7 @@ PARTY_LINK_TYPES = [
 	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
 	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
 	FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
-	SpeccyWikiPage, BaseUrl,
+	SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
 ]
 
 

@@ -76,7 +76,7 @@ def productions(request):
 	ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
 	productions = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	supertypes = []
 	if request.GET.get('demos', '1'):
@@ -120,7 +120,11 @@ def productions(request):
 	})
 
 def releases_redirect(request):
-	type_filter = int(request.GET.get('filter') or 7)
+	try:
+		type_filter = int(request.GET.get('filter') or 7)
+	except (ValueError, UnicodeEncodeError):
+		type_filter = 7
+
 	url_vars = []
 
 	if not (type_filter & 1):
@@ -295,7 +299,11 @@ def parties_year(request, year):
 
 
 def partycalendar_redirect(request):
-	year = request.GET.get('year')
+	try:
+		year = int(request.GET.get('year'))
+	except (ValueError, TypeError, UnicodeEncodeError):
+		year = None
+
 	if year:
 		return redirect('zxdemo_parties_year', year, permanent=True)
 	else:
@@ -391,7 +399,7 @@ def search(request):
 	demos = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='production',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	demos = list(demos[demoskip:demoskip+11])
 	if len(demos) == 11:
@@ -417,7 +425,7 @@ def search(request):
 	musics = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='music',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	musics = list(musics[musicskip:musicskip+11])
 	if len(musics) == 11:
@@ -443,7 +451,7 @@ def search(request):
 	graphics = Production.objects.filter(
 		platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='graphics',
 		title__icontains=search_term
-	).extra(select={'lower_title': 'lower(productions_production.title)'}).order_by('lower_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+	).order_by('sortable_title').prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
 
 	graphics = list(graphics[gfxskip:gfxskip+11])
 	if len(graphics) == 11:
@@ -530,7 +538,10 @@ def article(request, zxdemo_id):
 
 
 def article_redirect(request):
-	return redirect('zxdemo_article', request.GET.get('id'))
+	try:
+		return redirect('zxdemo_article', int(request.GET.get('id')))
+	except (ValueError, UnicodeEncodeError):
+		raise Http404
 
 
 def page_not_found(request):

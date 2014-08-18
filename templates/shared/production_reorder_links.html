@@ -4,7 +4,7 @@
 	{% if order == 'date' %}
 		<strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Release date</a></strong>
 	{% else %}
-		<a href="{% urlsub order='date' dir='asc' page=1 %}">Release date</a>
+		<a href="{% urlsub order='date' dir='desc' page=1 %}">Release date</a>
 	{% endif %}
 	|
 	{% if order == 'title' %}
