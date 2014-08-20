@@ -78,6 +78,33 @@
 				</ul>
 			</div>
 
+			<div class="new_additions">
+				<h3 class="section_heading">New in the archive</h3>
+				<ul>
+					{% for prod in latest_additions %}
+						<li>
+							<a href="{{ prod.get_absolute_url }}">
+								<div class="title">{{ prod.title }}</div>
+								<div class="byline">by {{ prod.byline }}</div>
+								<div class="platforms_and_types">
+									{% if prod.release_date %}
+										{{ prod.release_date.date.year }}
+										{% if prod.platforms.count or prod.types.count %} - {% endif %}
+									{% endif %}
+									{{ prod.platforms.all|join:" / " }}
+									{% if prod.platforms.count and prod.types.count %} - {% endif %}
+									{{ prod.types.all|join:" / " }}
+								</div>
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+				<p class="more">
+					<a href="{% url 'latest_activity' %}">Latest activity</a>
+					| <a href="{% url 'recent_edits' %}">Recent edits</a>
+				</p>
+			</div>
+
 			<div class="now_serving">
 				<h3 class="section_heading">Now serving</h3>
 				{% site_stats as stats %}
@@ -88,10 +115,6 @@
 					<li>{{ stats.group_count }} group{{ stats.group_count|pluralize }}</li>
 					<li>{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</li>
 				</ul>
-				<p class="more">
-					<a href="{% url 'latest_activity' %}">Latest activity</a>
-					| <a href="{% url 'recent_edits' %}">Recent edits</a>
-				</p>
 			</div>
 		</div>
 	</div>

@@ -1,5 +1,8 @@
+import datetime
+
 from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from homepage.models import Banner, NewsStory
 from forums.models import Topic
@@ -20,6 +23,13 @@ def home(request):
 		'author_nicks', 'author_affiliation_nicks', 'platforms', 'types'
 	).order_by('-release_date_date', '-created_at')[:5]
 
+	one_year_ago = datetime.datetime.now() - datetime.timedelta(365)
+	latest_additions = Production.objects.exclude(
+		release_date_date__gte=one_year_ago
+	).prefetch_related(
+		'author_nicks', 'author_affiliation_nicks', 'platforms', 'types'
+	).order_by('-created_at')[:5]
+
 	comments = Comment.objects.filter(
 		content_type=ContentType.objects.get_for_model(Production)
 	).select_related(
@@ -33,5 +43,6 @@ def home(request):
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
 		'forum_topics': Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5],
 		'latest_releases': latest_releases,
+		'latest_additions': latest_additions,
 		'comments': comments,
 	})

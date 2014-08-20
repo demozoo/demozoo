@@ -107,14 +107,11 @@
 
 	}
 
-	.new_releases {
-		margin-bottom: 20px;
+	.new_releases, .new_additions {
 		ul {
 			clear: both;
 			padding-top: 8px;
 			li {
-				padding-top: 4px;
-
 				a {
 					display: block;
 					overflow: hidden;
@@ -125,40 +122,71 @@
 						background-color: #eee;
 					}
 				}
-
-				.thumbnail {
-					border-radius: 2px;
-					float: left;
-					width: 133px;
-					margin-right: 8px;
-					padding: 4px;
-					background-color: #bbb;
-					img {
-						display: block;
-						margin: auto;
-					}
-				}
 				.title {
 					font-weight: bold;
 					font-size: 11pt;
 					color: #444;
-					padding-top: 4px;
 				}
 				.byline {
 					color: #666;
-					margin-top: 0.5em;
 					font-size: 9pt;
 				}
 				.platforms_and_types {
+					font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+					text-transform: uppercase;
 					color: #888;
 					margin-top: 0.5em;
 					font-size: 9pt;
 				}
 			}
 		}
-
 		.more {
 			text-align: right;
+		}
+	}
+
+	.new_releases {
+		li {
+			padding-top: 4px;
+		}
+		.thumbnail {
+			border-radius: 2px;
+			float: left;
+			width: 133px;
+			margin-right: 8px;
+			padding: 4px;
+			background-color: #bbb;
+			img {
+				display: block;
+				margin: auto;
+			}
+		}
+		.title {
+			padding-top: 4px;
+		}
+		.byline {
+			margin-top: 0.5em;
+		}
+	}
+
+	.new_additions {
+		li {
+			border-bottom: 1px dotted #ccc;
+			a {
+				padding: 4px;
+				.title {
+					float: left;
+					padding-right: 6px;
+				}
+				.byline {
+					margin-top: 0.2em;
+					float: left;
+					padding-bottom: 0.3em;
+				}
+				.platforms_and_types {
+					clear: both;
+				}
+			}
 		}
 	}
 
