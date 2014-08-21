@@ -1140,7 +1140,7 @@ class SpotifyTrack(BaseUrl):
 class GithubAccount(BaseUrl):
 	canonical_format = "https://github.com/%s"
 	tests = [
-		regex_match(r'https?://github\.com/(\w+)/?$', re.I),
+		regex_match(r'https?://github\.com/([^\/]+)/?$', re.I),
 	]
 	html_link_class = "github"
 	html_link_text = "GitHub"
@@ -1150,7 +1150,7 @@ class GithubAccount(BaseUrl):
 class GithubRepo(BaseUrl):
 	canonical_format = "https://github.com/%s"
 	tests = [
-		regex_match(r'https?://github\.com/(\w+/\w+)/?$', re.I),
+		regex_match(r'https?://github\.com/([^\/]+/[^\/]+)/?$', re.I),
 	]
 	html_link_class = "github"
 	html_link_text = "GitHub"
