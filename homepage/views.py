@@ -8,6 +8,7 @@ from homepage.models import Banner, NewsStory
 from forums.models import Topic
 from productions.models import Production
 from comments.models import Comment
+from parties.models import Party
 
 def home(request):
 	if request.user.is_authenticated():
@@ -38,6 +39,10 @@ def home(request):
 		'commentable'
 	).order_by('-created_at')[:5]
 
+	upcoming_parties = Party.objects.filter(
+		start_date_date__gt=datetime.datetime.now()
+	).order_by('start_date_date')[:8]
+
 	return render(request, 'homepage/home.html', {
 		'banner': banner,
 		'news_stories': NewsStory.objects.order_by('-created_at')[:6],
@@ -45,4 +50,5 @@ def home(request):
 		'latest_releases': latest_releases,
 		'latest_additions': latest_additions,
 		'comments': comments,
+		'upcoming_parties': upcoming_parties,
 	})

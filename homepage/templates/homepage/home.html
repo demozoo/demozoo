@@ -25,6 +25,29 @@
 
 			<div style="clear: both;"></div>
 
+			{% if upcoming_parties %}
+				<div class="upcoming_parties">
+					<h3>Upcoming parties...</h3>
+					<ul>
+						{% for party in upcoming_parties %}
+							<li>
+								<a href="{% url 'party' party.id %}">
+									<span class="name">
+										{% if party.is_online %}
+											<img src="/static/images/icons/computer.png" alt="[Online]" title="Online" />
+										{% elif party.country_code %}
+											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" title="{{ party.location }}" />
+										{% endif %}
+										{{ party.name }}
+									</span>
+									{% date_range party.start_date party.end_date %}
+								</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			{% endif %}
+
 			<div class="news">
 				{% for story in news_stories %}
 					<div class="news_story">
