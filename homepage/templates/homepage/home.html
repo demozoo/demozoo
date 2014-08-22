@@ -34,6 +34,18 @@
 					</div>
 				{% endfor %}
 			</div>
+
+			<div class="now_serving">
+				<h3>Now serving...</h3>
+				{% site_stats as stats %}
+				<ul>
+					<li class="productions">{{ stats.production_count }} production{{ stats.production_count|pluralize }}</li>
+					<li class="graphics">{{ stats.graphics_count }} graphics</li>
+					<li class="music">{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</li>
+					<li class="groups">{{ stats.group_count }} group{{ stats.group_count|pluralize }}</li>
+					<li class="sceners">{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</li>
+				</ul>
+			</div>
 		</div>
 
 		<div class="col span_1_of_3">
@@ -103,18 +115,6 @@
 					<a href="{% url 'latest_activity' %}">Latest activity</a>
 					| <a href="{% url 'recent_edits' %}">Recent edits</a>
 				</p>
-			</div>
-
-			<div class="now_serving">
-				<h3 class="section_heading">Now serving</h3>
-				{% site_stats as stats %}
-				<ul>
-					<li>{{ stats.production_count }} production{{ stats.production_count|pluralize }}</li>
-					<li>{{ stats.graphics_count }} graphics</li>
-					<li>{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</li>
-					<li>{{ stats.group_count }} group{{ stats.group_count|pluralize }}</li>
-					<li>{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</li>
-				</ul>
 			</div>
 		</div>
 	</div>

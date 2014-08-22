@@ -208,14 +208,39 @@
 	}
 
 	.now_serving {
-		ul {
-			clear: both;
-			list-style-type: disc;
-			margin-left: 2em;
-			padding-top: 8px;
+		h3 {
+			margin-top: 8px;
+			padding-right: 24px;
 		}
-		.more {
-			text-align: right;
+		ul {
+			list-style-type: none;
+			padding: 8px 0 0 0;
+			text-align: center;
+
+			li {
+				display: inline;
+				white-space: nowrap;
+				padding: 4px 12px 4px 22px;
+				line-height: 24px;
+				background-repeat: no-repeat;
+				background-position: left 3px;
+
+				&.productions {
+					background-image: url(/static/images/icons/disk.png);
+				}
+				&.graphics {
+					background-image: url(/static/images/icons/palette.png);
+				}
+				&.music {
+					background-image: url(/static/images/icons/music.png);
+				}
+				&.groups {
+					background-image: url(/static/images/icons/group.png);
+				}
+				&.sceners {
+					background-image: url(/static/images/icons/scener.png);
+				}
+			}
 		}
 	}
 
