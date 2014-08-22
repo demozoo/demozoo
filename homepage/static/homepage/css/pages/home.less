@@ -220,24 +220,33 @@
 			li {
 				display: inline;
 				white-space: nowrap;
-				padding: 4px 12px 4px 22px;
 				line-height: 24px;
-				background-repeat: no-repeat;
-				background-position: left 3px;
+				padding-right: 12px;
 
-				&.productions {
+				a {
+					padding: 4px 0 4px 22px;
+					background-repeat: no-repeat;
+					background-position: left 3px;
+					text-decoration: none;
+					color: #444;
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+
+				&.productions a {
 					background-image: url(/static/images/icons/disk.png);
 				}
-				&.graphics {
+				&.graphics a {
 					background-image: url(/static/images/icons/palette.png);
 				}
-				&.music {
+				&.music a {
 					background-image: url(/static/images/icons/music.png);
 				}
-				&.groups {
+				&.groups a {
 					background-image: url(/static/images/icons/group.png);
 				}
-				&.sceners {
+				&.sceners a {
 					background-image: url(/static/images/icons/scener.png);
 				}
 			}

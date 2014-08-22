@@ -39,11 +39,11 @@
 				<h3>Now serving...</h3>
 				{% site_stats as stats %}
 				<ul>
-					<li class="productions">{{ stats.production_count }} production{{ stats.production_count|pluralize }}</li>
-					<li class="graphics">{{ stats.graphics_count }} graphics</li>
-					<li class="music">{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</li>
-					<li class="groups">{{ stats.group_count }} group{{ stats.group_count|pluralize }}</li>
-					<li class="sceners">{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</li>
+					<li class="productions"><a href="{% url 'productions' %}">{{ stats.production_count }} production{{ stats.production_count|pluralize }}</a></li>
+					<li class="graphics"><a href="{% url 'graphics' %}">{{ stats.graphics_count }} graphics</a></li>
+					<li class="music"><a href="{% url 'musics' %}">{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</a></li>
+					<li class="groups"><a href="{% url 'groups' %}">{{ stats.group_count }} group{{ stats.group_count|pluralize }}</a></li>
+					<li class="sceners"><a href="{% url 'sceners' %}">{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</a></li>
 				</ul>
 			</div>
 		</div>
