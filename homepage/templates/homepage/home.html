@@ -28,8 +28,8 @@
 			<div class="news">
 				{% for story in news_stories %}
 					<div class="news_story">
-						<h2>{{ story.title }}</h2>
 						<div class="date">{{ story.created_at|date:"d M Y" }}</div>
+						<h2>{{ story.title }}</h2>
 						{{ story.text|safe_markdown }}
 					</div>
 				{% endfor %}
