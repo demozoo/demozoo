@@ -263,10 +263,8 @@ def add_competition(request, party_id):
 			# TODO: party updated_at datestamps
 			# party.updated_at = datetime.datetime.now()
 			# party.save()
-			if request.POST.get('enter_results'):
-				return redirect('competition_edit', competition.id)
-			else:
-				return HttpResponseRedirect(party.get_absolute_url())
+
+			return redirect('competition_edit', competition.id)
 	else:
 		form = CompetitionForm(instance=competition, initial={
 			'shown_date': party.default_competition_date(),
