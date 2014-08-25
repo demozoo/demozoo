@@ -54,6 +54,8 @@ def show(request, party_id):
 	if not non_competing_invitations:
 		invitations = Production.objects.none
 
+	releases = party.releases.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
 	if request.user.is_authenticated():
@@ -67,6 +69,7 @@ def show(request, party_id):
 		'competitions_with_placings': competitions_with_placings,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
+		'releases': releases,
 		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
 		'external_links': external_links,
 		'comment_form': comment_form,
