@@ -209,3 +209,10 @@ class PartyInvitationForm(forms.Form):
 
 PartyInvitationFormset = formset_factory(PartyInvitationForm,
 	can_delete=True, extra=1)
+
+
+class PartyReleaseForm(forms.Form):
+	production = ProductionField()
+
+PartyReleaseFormset = formset_factory(PartyReleaseForm,
+	can_delete=True, extra=1)
