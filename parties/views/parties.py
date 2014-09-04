@@ -5,7 +5,7 @@ from demoscene.shortcuts import simple_ajax_form
 from demoscene.models import Edit
 from productions.models import Production
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
-from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset
+from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset
 from read_only_mode import writeable_site_required
 from comments.models import Comment
 from comments.forms import CommentForm
@@ -54,6 +54,8 @@ def show(request, party_id):
 	if not non_competing_invitations:
 		invitations = Production.objects.none
 
+	releases = party.releases.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
 	if request.user.is_authenticated():
@@ -67,6 +69,7 @@ def show(request, party_id):
 		'competitions_with_placings': competitions_with_placings,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
+		'releases': releases,
 		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
 		'external_links': external_links,
 		'comment_form': comment_form,
@@ -326,6 +329,38 @@ def edit_invitations(request, party_id):
 	else:
 		formset = PartyInvitationFormset(initial=initial_forms)
 	return render(request, 'parties/edit_invitations.html', {
+		'party': party,
+		'formset': formset,
+	})
+
+
+@writeable_site_required
+@login_required
+def edit_releases(request, party_id):
+	party = get_object_or_404(Party, id=party_id)
+	initial_forms = [
+		{'production': production}
+		for production in party.releases.all()
+	]
+
+	if request.method == 'POST':
+		formset = PartyReleaseFormset(request.POST, initial=initial_forms)
+		if formset.is_valid():
+			releases = [prod_form.cleaned_data['production'].commit()
+				for prod_form in formset.forms
+				if prod_form not in formset.deleted_forms]
+			party.releases = releases
+
+			if formset.has_changed():
+				release_titles = [prod.title for prod in releases] or ['none']
+				release_titles = ", ".join(release_titles)
+				Edit.objects.create(action_type='edit_party_releases', focus=party,
+					description=u"Set releases to %s" % release_titles, user=request.user)
+
+			return HttpResponseRedirect(party.get_absolute_url())
+	else:
+		formset = PartyReleaseFormset(initial=initial_forms)
+	return render(request, 'parties/edit_releases.html', {
 		'party': party,
 		'formset': formset,
 	})

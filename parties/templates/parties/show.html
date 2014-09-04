@@ -178,6 +178,21 @@
 		</div>
 	{% endif %}
 
+	{% if releases or user.is_authenticated %}
+		<div class="panel releases_panel editable_chunk">
+			<h3>Releases</h3>
+			{% if site_is_writeable %}
+				<ul class="actions">
+					<li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit releases</a></li>
+				</ul>
+			{% endif %}
+
+			{% if releases %}
+				{% include "shared/production_listing.html" with productions=releases show_screenshots=1 show_prod_types=1 %}
+			{% endif %}
+		</div>
+	{% endif %}
+
 	{% if competitions_with_placings or user.is_authenticated %}
 		<div class="panel results_panel">
 			<div class="results_menu_column">

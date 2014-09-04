@@ -144,6 +144,7 @@ def show(request, production_id, edit_mode=False):
 		],
 		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
+		'release_parties': production.release_parties.order_by('start_date_date'),
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'pack_members': pack_members,

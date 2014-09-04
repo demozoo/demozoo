@@ -33,8 +33,15 @@
 	{% endfor %}
 
 	<ul class="attributes">
-		{% if production.release_date %}
-			<li>Released {{ production.release_date }}</li>
+		{% if production.release_date and release_parties|length == 1 %}
+			<li>Released {{ production.release_date }} at <a href="{{ release_parties.0.get_absolute_url }}">{{ release_parties.0.name }}</a></li>
+		{% else %}
+			{% if production.release_date %}
+				<li>Released {{ production.release_date }}</li>
+			{% endif %}
+			{% for party in release_parties %}
+				<li>Released at <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
+			{% endfor %}
 		{% endif %}
 
 		{% for placing in competition_placings %}
