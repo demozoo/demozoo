@@ -35,6 +35,7 @@
 
 {% block base_main %}
 	<h2>{{ party.name }} - {{ results_file.filename }}</h2>
+	<p><strong>Instructions:</strong> Look through the file for any lines highlighted in yellow - these are lines containing non-ASCII characters, which need a human to figure out the correct encoding. If there are dodgy accented characters or missing letters, try a different encoding from the dropdown. If it all looks good, click 'Accept this encoding'.</p>
 	<hr>
 	{% if encoding_is_valid %}
 		<ul class="actions">
