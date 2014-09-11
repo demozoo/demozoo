@@ -173,6 +173,8 @@ AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
 
 INTERNAL_IPS = ('127.0.0.1',)
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
 # COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATIC_ROOT
