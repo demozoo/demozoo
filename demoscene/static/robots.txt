@@ -1,0 +1,6 @@
+User-agent: Slurp
+Disallow: /search/
+Crawl-delay: 120
+
+User-agent: *
+Disallow: /search/
