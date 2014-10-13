@@ -21,10 +21,10 @@ ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'matilda.demozoo.org', '46.4.213.51
 USE_PYGAME_IMAGE_CONVERSION = True
 
 # django-compressor offline compression
-COMPRESS_OFFLINE = True
-COMPRESS_OFFLINE_CONTEXT = {
-	'base_template_with_ajax_option': 'base.html'
-}
+#COMPRESS_OFFLINE = True
+#COMPRESS_OFFLINE_CONTEXT = {
+#	'base_template_with_ajax_option': 'base.html'
+#}
 
 try:
 	from .local import *
