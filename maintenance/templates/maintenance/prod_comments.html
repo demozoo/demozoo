@@ -1,13 +1,15 @@
 {% extends "maintenance/base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 
 {% block html_title %}Production comments - Demozoo{% endblock %}
 
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
-	<link rel="stylesheet" href="/static/css/components/pagination.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+		<link rel="stylesheet" href="/static/css/components/pagination.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

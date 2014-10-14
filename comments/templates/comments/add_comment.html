@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load compress %}
 
 {% block html_title %}Adding comment for {{ commentable_name }} - Demozoo{% endblock %}
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

@@ -21,10 +21,8 @@
 			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
 		{% endcompress %}
 
-		{% compress css %}
-			{% block extra_css %}{% endblock %}
-		{% endcompress %}
-		
+		{% block extra_css %}{% endblock %}
+
 		{% compress js %}
 			<script src="/static/js/lib/modernizr.js"></script>
 			<script src="/static/js/jquery-1.7.1.js"></script>
@@ -40,10 +38,9 @@
 			<script src="/static/js/lightbox.js"></script>
 			<script src="/static/js/demozoo.js"></script>
 		{% endcompress %}
-		{% compress js %}
-			{% block extra_js %}{% endblock %}
-		{% endcompress %}
-		
+
+		{% block extra_js %}{% endblock %}
+
 		{% block extra_head %}{% endblock %}
 	</head>
 	<body lang="en" class="{% block body_class %}default{% endblock %}">

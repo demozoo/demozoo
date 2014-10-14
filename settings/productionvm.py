@@ -23,7 +23,8 @@ USE_PYGAME_IMAGE_CONVERSION = True
 # django-compressor offline compression
 #COMPRESS_OFFLINE = True
 #COMPRESS_OFFLINE_CONTEXT = {
-#	'base_template_with_ajax_option': 'base.html'
+#	'base_template_with_ajax_option': 'base.html',
+#	'site_is_writeable': True,
 #}
 
 try:

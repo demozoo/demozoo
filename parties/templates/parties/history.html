@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 {% load url from future %}
 
 {% block html_title %}{{ party.name }} edit history - Demozoo{% endblock %}
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/components/tabs.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/components/tabs.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

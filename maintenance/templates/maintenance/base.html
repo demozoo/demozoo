@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+{% load compress %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
-	<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
+		<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+	{% endcompress %}
 {% endblock %}
 {% block extra_js %}
-	<script src="/static/maintenance/js/maintenance.js"></script>
+	{% compress js %}<script src="/static/maintenance/js/maintenance.js"></script>{% endcompress %}
 {% endblock %}

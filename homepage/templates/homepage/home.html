@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 {% load safe_markdown %}
 {% load url from future %}
 
 {% block body_class %}homepage{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/pages/home.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/css/pages/home.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

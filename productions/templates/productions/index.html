@@ -1,10 +1,13 @@
 {% extends "base.html" %}
+{% load compress %}
 
 {% block html_title %}Productions - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/productions/css/components/production_listing_filters.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/productions/css/components/production_listing_filters.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

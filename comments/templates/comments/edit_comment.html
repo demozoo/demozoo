@@ -1,9 +1,10 @@
 {% extends base_template_with_ajax_option %}
 {% load url from future %}
+{% load compress %}
 
 {% block html_title %}Editing comment for {{ commentable_name }} - Demozoo{% endblock %}
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

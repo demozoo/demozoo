@@ -1,13 +1,15 @@
 {% extends "base.html" %}
-{% load safe_markdown %}
+{% load safe_markdown compress %}
 {% load url from future %}
 
 {% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
-	<link rel="stylesheet" href="/static/platforms/css/pages/show_platform.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/releaser_listing.less" type="text/less" />
+		<link rel="stylesheet" href="/static/platforms/css/pages/show_platform.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

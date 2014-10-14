@@ -1,31 +1,35 @@
 {% extends "base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 {% load url from future %}
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/jquery.tagit.css" type="text/less" />
-	<link rel="stylesheet" href="/static/productions/css/components/production_core_details.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
-	<link rel="stylesheet" href="/static/productions/css/components/tags_panel.less" type="text/less" />
-	<link rel="stylesheet" href="/static/productions/css/components/credits_panel.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/comments_panel.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/jquery.tagit.css" type="text/less" />
+		<link rel="stylesheet" href="/static/productions/css/components/production_core_details.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+		<link rel="stylesheet" href="/static/productions/css/components/tags_panel.less" type="text/less" />
+		<link rel="stylesheet" href="/static/productions/css/components/credits_panel.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/comments_panel.less" type="text/less" />
 
-	<link rel="stylesheet" href="/static/productions/css/pages/show_production.less" type="text/less" />
+		<link rel="stylesheet" href="/static/productions/css/pages/show_production.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block extra_js %}
-	<script src="/static/js/modal_workflow.js"></script>
-	<script src="/static/js/tag-it.js"></script>
-	<script src="/static/js/components/editable_chunk.js"></script>
-	<script src="/static/productions/js/components/screenshot_carousel.js"></script>
-	<script src="/static/js/components/notes_panel.js"></script>
-	<script src="/static/js/components/comments_panel.js"></script>
-	<script src="/static/productions/js/pages/show_production.js"></script>
+	{% compress js %}
+		<script src="/static/js/modal_workflow.js"></script>
+		<script src="/static/js/tag-it.js"></script>
+		<script src="/static/js/components/editable_chunk.js"></script>
+		<script src="/static/productions/js/components/screenshot_carousel.js"></script>
+		<script src="/static/js/components/notes_panel.js"></script>
+		<script src="/static/js/components/comments_panel.js"></script>
+		<script src="/static/productions/js/pages/show_production.js"></script>
+	{% endcompress %}
 {% endblock %}
 
 {% block extra_head %}
