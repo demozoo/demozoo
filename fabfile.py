@@ -13,7 +13,7 @@ def deploy():
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --database=geonameslite --settings=settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.productionvm')
-#		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=settings.productionvm')
 		run('sudo supervisorctl restart demozoo')
 		run('sudo supervisorctl restart zxdemo')
 		run('sudo supervisorctl restart demozoo-celery')
