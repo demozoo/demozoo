@@ -9,6 +9,7 @@ class Migration(SchemaMigration):
 
     depends_on = (
         ('demoscene', '0111_move_production_models_away'),
+        ('productions', '0001_initial'),
     )
 
     def forwards(self, orm):
