@@ -10,5 +10,4 @@ ROOT_URLCONF = 'zxdemo.urls'
 
 ZXDEMO_PLATFORM_IDS = [2]
 
-GEVENT_ADDR_PORT = "localhost:4810"
 ALLOWED_HOSTS = ['zxdemo.org', 'www2.zxdemo.org', 'localhost']
