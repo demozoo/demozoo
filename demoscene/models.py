@@ -534,7 +534,7 @@ class ExternalLink(models.Model):
 
 	def _set_url(self, urlstring):
 		if urlstring:
-			self.link = groklinks.grok_link_by_types(urlstring, self.link_types)
+			self.link = groklinks.grok_link_by_types(urlstring.strip(), self.link_types)
 			if self.link:
 				self.link_class = self.link.__class__.__name__
 				self.parameter = self.link.param
