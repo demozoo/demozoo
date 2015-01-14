@@ -9,5 +9,5 @@ class CompetitionPlacingInline(admin.TabularInline):
 
 
 admin.site.register(PartySeries)
-admin.site.register(Party, raw_id_fields=['invitations'])
+admin.site.register(Party, raw_id_fields=['invitations', 'releases'])
 admin.site.register(Competition, inlines=[CompetitionPlacingInline], list_select_related=True)
