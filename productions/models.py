@@ -537,3 +537,6 @@ class ProductionLink(ExternalLink):
 			('link_class', 'parameter', 'production', 'is_download_link'),
 		)
 		ordering = ['link_class']
+		index_together = [
+			['link_class', 'parameter']
+		]
