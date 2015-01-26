@@ -83,11 +83,11 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		# OR the author is a SUBGROUP of this group (regardless of whether this parent group is named as an affiliation).
 		from productions.models import Production
 
-		subgroup_ids = self.member_memberships.filter(member__is_group=True).values_list('member_id', flat=True)
+		subgroup_nick_ids = list(Nick.objects.filter(releaser__is_group=True, releaser__group_memberships__group=self).values_list('id', flat=True))
 
 		return Production.objects.filter(
-			Q(author_affiliation_nicks__releaser=self)
-			| Q(author_nicks__releaser__in=subgroup_ids)
+			Q(author_affiliation_nicks__in=list(self.nicks.all()))
+			| Q(author_nicks__in=subgroup_nick_ids)
 		).distinct()
 
 	def credits(self):
