@@ -1,15 +1,18 @@
-from django.conf import settings
-
 from PIL import Image
 from recoil import RecoilImage
 import StringIO
 
 from screenshots.processing import get_thumbnail_sizing_params
 
-# file extensions that we are able to convert to web-usable images
+# file extensions that we are able to convert to web-usable images.
+# (RECOIL supports many more, but we won't list them all as some of them have quite
+# generic extensions, like .max, and that's likely to introduce false positives
+# when looking for possible image files in zipfiles)
 USABLE_IMAGE_FILE_EXTENSIONS = [
 	'bmp', 'gif', 'iff', 'iff24', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx',
 	'png', 'tga', 'tif', 'tiff', 'xbm', 'xpm',
+	'msp', 'neo', 'pac', 'pc1', 'pc2', 'pc3', 'pi1', 'pi2', 'pi3', 'rgb', 'scr',
+	'tny', 'tn1', 'tn2', 'tn3',
 ]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
