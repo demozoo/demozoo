@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from fabric.api import env, cd, run, get, local
 
-env.hosts = ['demozoo@kazooie.demozoo.org']
+env.hosts = ['demozoo@www1.demozoo.org']
 
 
 def deploy():
