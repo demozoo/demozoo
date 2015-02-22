@@ -14,8 +14,6 @@ BROKER_URL = 'redis://localhost:6379/0'
 
 ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'matilda.demozoo.org', '46.4.213.51']
 
-USE_PYGAME_IMAGE_CONVERSION = True
-
 # django-compressor offline compression
 COMPRESS_OFFLINE = True
 COMPRESS_OFFLINE_CONTEXT = {

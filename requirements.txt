@@ -13,9 +13,7 @@ django-debug-toolbar==1.0
 django-taggit==0.11.2
 django-treebeard==2.0b1
 psycopg2==2.5.3
-# we require edge version of pygame (current releases don't install cleanly),
-# but including it in requirements.txt causes it to be refetched on every deploy:
-# hg+http://bitbucket.org/pygame/pygame
+pyrecoil==0.1.1
 redis==2.7.2
 scrubber==1.6.1
 timelib==0.2.1
