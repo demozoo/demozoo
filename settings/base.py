@@ -193,11 +193,11 @@ CELERYD_CONCURRENCY = 2
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
-	"fetch-new-sceneorg-files": {
-		"task": "sceneorg.tasks.fetch_new_sceneorg_files",
-		"schedule": timedelta(hours=4),
-		"args": ('/', 1)
-	},
+#	"fetch-new-sceneorg-files": {
+#		"task": "sceneorg.tasks.fetch_new_sceneorg_files",
+#		"schedule": timedelta(hours=4),
+#		"args": ('/', 1)
+#	},
 	"fetch-all-sceneorg-files": {
 		"task": "sceneorg.tasks.scan_dir_listing",
 		"schedule": timedelta(days=8),
