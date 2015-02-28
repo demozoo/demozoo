@@ -1118,9 +1118,9 @@ class HallOfLightArtist(HallOfLightEntry):
 
 
 class SpotifyArtist(BaseUrl):
-	canonical_format = "http://open.spotify.com/artist/%s"
+	canonical_format = "https://play.spotify.com/artist/%s"
 	tests = [
-		regex_match(r'https?://open\.spotify\.com/artist/(\w+)', re.I),
+		regex_match(r'https?://(?:open|play)\.spotify\.com/artist/(\w+)', re.I),
 	]
 	html_link_class = "spotify"
 	html_link_text = "Spotify"
@@ -1130,7 +1130,7 @@ class SpotifyArtist(BaseUrl):
 class SpotifyTrack(BaseUrl):
 	canonical_format = "https://play.spotify.com/track/%s"
 	tests = [
-		regex_match(r'https?://play\.spotify\.com/track/(\w+)', re.I),
+		regex_match(r'https?://(?:open|play)\.spotify\.com/track/(\w+)', re.I),
 	]
 	html_link_class = "spotify"
 	html_link_text = "Spotify"
