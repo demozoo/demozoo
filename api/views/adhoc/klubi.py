@@ -19,7 +19,7 @@ def demoshow(request):
 		release_date_date__gte=start_date, release_date_date__lt=end_date,
 	).exclude(release_date_precision='y').prefetch_related(
 		'types', 'platforms',
-		'author_nicks', 'author_affiliation_nicks',
+		'author_nicks', 'author_affiliation_nicks', 'links',
 	).order_by('release_date_date')
 
 	# put videos (wilds) into a separate list after the main one
@@ -46,7 +46,7 @@ def demoshow(request):
 	response = HttpResponse(mimetype='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
-		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL', 'Video URL'
+		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
 	])
 	for prod in exe_prods + video_prods:
 		platforms = sorted(prod.platforms.all(), key=lambda p:p.name)
@@ -59,7 +59,8 @@ def demoshow(request):
 			', '.join([typ.name for typ in prod_types]).encode('utf-8'),
 			', '.join([platform.name for platform in platforms]).encode('utf-8'),
 			' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]).encode('utf-8'),
-			' / '.join([link.download_url for link in prod.links.all() if link.is_streaming_video]).encode('utf-8'),
+			' / '.join([link.url for link in prod.links.all() if link.is_streaming_video]).encode('utf-8'),
+			' / '.join([link.url for link in prod.links.all() if link.link_class == 'PouetProduction']).encode('utf-8'),
 		])
 
 	return response
