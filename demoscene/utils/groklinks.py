@@ -15,15 +15,24 @@ class BaseUrl():
 	canonical_format = "%s"
 
 	@classmethod
-	def extract_param(cls, *args):
+	def extract_param(cls, urlstring, url):
+		"""
+		Test whether 'urlstring' is a URL format that we recognise. If so, return a
+		parameter (e.g. an item ID, or a file path) that captures the relevant unique
+		information in this URL. If not, return None.
+		"""
 		for test in cls.tests:
-			m = test(*args)
+			m = test(urlstring, url)
 			if m != None:
 				return m
 
 	@classmethod
-	def match(cls, *args):
-		param = cls.extract_param(*args)
+	def match(cls, urlstring, url):
+		"""
+		Test whether 'urlstring' is a URL format that we recognise. If so, return an
+		instance of this link class. If not, return None.
+		"""
+		param = cls.extract_param(urlstring, url)
 		if param != None:
 			return cls(param)
 
@@ -59,6 +68,10 @@ class BaseUrl():
 
 
 def regex_match(pattern, flags=None):
+	"""
+	Build a function that tests a URL against the given regexp, and, if it matches,
+	returns the first captured (bracketed) expression from it.
+	"""
 	regex = re.compile(pattern, flags)
 
 	def match_fn(urlstring, url):
@@ -68,7 +81,26 @@ def regex_match(pattern, flags=None):
 	return match_fn
 
 
+def urldecoded_regex_match(pattern, flags=None):
+	"""
+	Build a function that tests a URL against the given regexp, and, if it matches,
+	returns a URL-decoded version of the first captured (bracketed) expression from it.
+	"""
+	regex = re.compile(pattern, flags)
+
+	def match_fn(urlstring, url):
+		m = regex.match(urlstring)
+		if m:
+			return urllib.unquote(m.group(1))
+	return match_fn
+
+
 def querystring_match(pattern, varname, flags=None, othervars={}):
+	"""
+	Build a function that tests a URL against the regexp 'pattern'. If it matches,
+	AND all of the query parameters in 'othervars' match, return the query parameter
+	named by 'varname'.
+	"""
 	regex = re.compile(pattern, flags)
 
 	def match_fn(urlstring, url):
@@ -392,22 +424,27 @@ class SceneOrgFile(BaseUrl):
 	tests = [
 		file_dl_match,
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
-		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
-		regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
-		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
-		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
-		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
-		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
-		regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
-		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
-		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
-		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
-		regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
-		regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://files\.scene\.org/view(/.*)', re.I),
+		urldecoded_regex_match(r'https?://files\.scene\.org/get\:\w+\-\w+(/.*)', re.I),
+		urldecoded_regex_match(r'http://archive\.scene\.org/pub(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
+		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
+		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
+		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I),
+		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I),
 	]
 
 	def __unicode__(self):
-		return u"https://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://files.scene.org/view%s" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
@@ -415,7 +452,8 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def mirror_links(self):
 		links = [
-			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a class="country_nl" href="%s">nl/ftp</a></li>' % escape(self.nl_url),
+			'<li><a class="country_nl" href="%s">nl/http</a></li>' % escape(self.nl_http_url),
 #			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
 #			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
 #			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
@@ -424,22 +462,28 @@ class SceneOrgFile(BaseUrl):
 		if not self.param.startswith('/mirrors/'):
 			links += [
 				'<li><a class="country_no" href="%s">no</a></li>' % escape(self.no_url),
+				'<li><a class="country_pl" href="%s">pl/ftp</a></li>' % escape(self.pl_ftp_url),
+				'<li><a class="country_pl" href="%s">pl/http</a></li>' % escape(self.pl_http_url),
 				# '<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
 			]
 			#if not self.param.startswith('/resources/'):
 			#	links += [
 			#		'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
 			#	]
-		if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
-			links += [
-				'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
-			]
+		#if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
+		#	links += [
+		#		'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
+		#	]
 
 		return links
 
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def nl_http_url(self):
+		return "http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def download_url(self):
@@ -476,6 +520,14 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def hu_url(self):
 		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def pl_ftp_url(self):
+		return "ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def pl_http_url(self):
+		return "http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
 		mirrors_html = ' '.join(self.mirror_links)
@@ -1228,6 +1280,10 @@ PARTY_LINK_TYPES = [
 
 
 def grok_link_by_types(urlstring, link_types):
+	"""
+	Try to turn urlstring into a link object by matching it against each of the link types in
+	the link_type list. If none of them match, return None.
+	"""
 	url = urlparse.urlparse(urlstring)
 	for link_type in link_types:
 		link = link_type.match(urlstring, url)
