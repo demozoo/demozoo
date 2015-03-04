@@ -816,22 +816,25 @@ class BreaksAmigaParty(BaseUrl):
 
 class SceneOrgFolder(BaseUrl):
 	tests = [
+		urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*/)', re.I),
 		querystring_match(r'https?://(?:www\.)?scene\.org/dir\.php', 'dir', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*/)$', re.I),
-		regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*/)$', re.I),
-		regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*/)$', re.I),
+		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*/)', re.I),
+		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*/)', re.I),
 	]
 
 	def __unicode__(self):
-		return u"https://www.scene.org/dir.php?dir=%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://files.scene.org/browse%s" % urllib.quote(self.param.encode('iso-8859-1'))
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
