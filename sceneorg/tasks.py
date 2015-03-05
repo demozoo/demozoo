@@ -1,6 +1,6 @@
 from celery.task import task
 from sceneorg.models import Directory, File, FileTooBig
-from sceneorg.scraper import scrape_dir, scrape_new_files_dir
+from sceneorg.scraper import scrape_dir
 from sceneorg.dirparser import parse_all_dirs
 from demoscene.tasks import find_sceneorg_results_files
 import datetime
@@ -22,7 +22,7 @@ def fetch_sceneorg_dir(path, days=None, async=True):
 		dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now())
 
 	if days:
-		files = scrape_new_files_dir(dir.new_files_url(days))
+		raise Exception('scene.org has no "last X days" view right now :-(')
 	else:
 		files = scrape_dir(dir.web_url)
 
