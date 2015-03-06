@@ -68,8 +68,9 @@ class ProductionExternalLinkSerializer(serializers.ModelSerializer):
 
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	author_nicks = NickSummarySerializer(many=True, read_only=True)
-	links = ProductionExternalLinkSerializer(many=True, read_only=True)
+	download_links = ProductionExternalLinkSerializer(many=True, read_only=True)
+	external_links = ProductionExternalLinkSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Production
-		fields = ['url', 'id', 'title', 'author_nicks', 'links']
+		fields = ['url', 'id', 'title', 'author_nicks', 'download_links', 'external_links']

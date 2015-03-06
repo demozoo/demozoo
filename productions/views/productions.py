@@ -111,9 +111,6 @@ def show(request, production_id, edit_mode=False):
 		for pic in screenshots
 	])
 
-	external_links = production.links.filter(is_download_link=False)
-	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
-
 	if request.user.is_authenticated():
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
@@ -136,8 +133,8 @@ def show(request, production_id, edit_mode=False):
 		'credits': production.credits_for_listing(),
 		'screenshots': screenshots,
 		'screenshots_json': screenshots_json,
-		'download_links': production.links.filter(is_download_link=True),
-		'external_links': external_links,
+		'download_links': production.download_links,
+		'external_links': production.external_links,
 		'soundtracks': [
 			link.soundtrack for link in
 			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')

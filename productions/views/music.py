@@ -66,8 +66,8 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
-		'download_links': production.links.filter(is_download_link=True),
-		'external_links': production.links.filter(is_download_link=False),
+		'download_links': production.download_links,
+		'external_links': production.external_links,
 		'credits': production.credits_for_listing(),
 		'featured_in_productions': [
 			appearance.production for appearance in
