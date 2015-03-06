@@ -329,7 +329,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		return self.links.filter(is_download_link=True)
 
 	class Meta:
-		ordering = ['title']
+		ordering = ['sortable_title']
 
 
 # encapsulates list of authors and affiliations

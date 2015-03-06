@@ -11,6 +11,11 @@ class NickSerializer(serializers.ModelSerializer):
 		model = Nick
 		fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
 
+class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Releaser
+		fields = ['url', 'id', 'name', 'is_group']
+
 class ReleaserSummarySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
@@ -77,6 +82,11 @@ class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
 		model = ProductionType
 		fields = ['url', 'id', 'name', 'supertype']
 
+class ProductionTypeSummarySerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = ProductionType
+		fields = ['url', 'id', 'name']
+
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
@@ -99,6 +109,16 @@ class ProductionCreditSerializer(serializers.ModelSerializer):
 		model = Credit
 		fields = ['nick', 'category', 'role']
 
+class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
+	author_nicks = AuthorNickSerializer(many=True, read_only=True)
+	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
+	platforms = PlatformSerializer(many=True, read_only=True)
+	types = ProductionTypeSummarySerializer(many=True, read_only=True)
+
+	class Meta:
+		model = Production
+		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types']
+
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
@@ -110,4 +130,4 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Production
-		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'platforms', 'types', 'credits', 'download_links', 'external_links']
+		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types', 'credits', 'download_links', 'external_links']
