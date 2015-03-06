@@ -6,6 +6,7 @@ from api.views import generic
 router = routers.DefaultRouter()
 router.register(r'productions', generic.ProductionViewSet)
 router.register(r'releasers', generic.ReleaserViewSet)
+router.register(r'platforms', generic.PlatformViewSet)
 
 
 urlpatterns = patterns('api.views',

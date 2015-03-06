@@ -1,21 +1,21 @@
 from rest_framework import viewsets
 
 from demoscene.models import Releaser
+from platforms.models import Platform
 from productions.models import Production
-from api.serializers import ProductionSerializer, ReleaserSerializer
+from api.serializers import ProductionSerializer, ReleaserSerializer, PlatformSerializer
 
 
 class ProductionViewSet(viewsets.ModelViewSet):
-	"""
-	API endpoint that allows users to be viewed or edited.
-	"""
 	queryset = Production.objects.all()
 	serializer_class = ProductionSerializer
 
 
+class PlatformViewSet(viewsets.ModelViewSet):
+	queryset = Platform.objects.all()
+	serializer_class = PlatformSerializer
+
+
 class ReleaserViewSet(viewsets.ModelViewSet):
-	"""
-	API endpoint that allows users to be viewed or edited.
-	"""
 	queryset = Releaser.objects.all()
 	serializer_class = ReleaserSerializer
