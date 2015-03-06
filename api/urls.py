@@ -5,6 +5,7 @@ from api.views import generic
 
 router = routers.DefaultRouter()
 router.register(r'productions', generic.ProductionViewSet)
+router.register(r'production_types', generic.ProductionTypeViewSet)
 router.register(r'releasers', generic.ReleaserViewSet)
 router.register(r'platforms', generic.PlatformViewSet)
 

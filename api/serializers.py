@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
 from platforms.models import Platform
-from productions.models import Production, ProductionLink, Credit
+from productions.models import Production, ProductionLink, Credit, ProductionType
 
 
 class NickSerializer(serializers.ModelSerializer):
@@ -72,6 +72,11 @@ class PlatformSerializer(serializers.HyperlinkedModelSerializer):
 		model = Platform
 		fields = ['url', 'id', 'name']
 
+class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = ProductionType
+		fields = ['url', 'id', 'name', 'supertype']
+
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
@@ -95,13 +100,14 @@ class ProductionCreditSerializer(serializers.ModelSerializer):
 		fields = ['nick', 'category', 'role']
 
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
-	platforms = PlatformSerializer(many=True, read_only=True)
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
+	platforms = PlatformSerializer(many=True, read_only=True)
+	types = ProductionTypeSerializer(many=True, read_only=True)
 	credits = ProductionCreditSerializer(many=True, read_only=True)
 	download_links = ProductionExternalLinkSerializer(many=True, read_only=True)
 	external_links = ProductionExternalLinkSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Production
-		fields = ['url', 'id', 'title', 'platforms', 'author_nicks', 'author_affiliation_nicks', 'credits', 'download_links', 'external_links']
+		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'platforms', 'types', 'credits', 'download_links', 'external_links']
