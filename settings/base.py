@@ -113,6 +113,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'geonameslite',
+	'rest_framework',
 
 	'demoscene',
 	'parties',
@@ -211,6 +212,13 @@ CELERYBEAT_SCHEDULE = {
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
+
+REST_FRAMEWORK = {
+	# do not support any authentication mechanism; anonymous read-only access only.
+	'DEFAULT_AUTHENTICATION_CLASSES': [],
+	'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+	'PAGINATE_BY': 100
+}
 
 # Read-only mode
 SITE_IS_WRITEABLE = True

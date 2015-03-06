@@ -1,4 +1,12 @@
-from django.conf.urls import patterns
+from django.conf.urls import patterns, url, include
+
+from rest_framework import routers
+from api.views import generic
+
+router = routers.DefaultRouter()
+router.register(r'productions', generic.ProductionViewSet)
+router.register(r'releasers', generic.ReleaserViewSet)
+
 
 urlpatterns = patterns('api.views',
 	(r'^adhoc/pouet-credits/$', 'adhoc.pouet.credits', {}),
@@ -13,3 +21,7 @@ urlpatterns = patterns('api.views',
 	(r'^adhoc/klubi/demoshow-prods/$', 'adhoc.klubi.demoshow', {}),
 	(r'^adhoc/scenesat/monthly-releases/$', 'adhoc.scenesat.monthly', {}),
 )
+
+urlpatterns += [
+	url(r'^v1/', include(router.urls)),
+]
