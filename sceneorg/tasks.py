@@ -1,43 +1,96 @@
 from celery.task import task
-from sceneorg.models import Directory, File, FileTooBig
+from sceneorg.models import Directory, File
 from sceneorg.scraper import scrape_dir
 from sceneorg.dirparser import parse_all_dirs
 from demoscene.tasks import find_sceneorg_results_files
 import datetime
 import time
+import urllib2
+import json
+
+user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 
 
 @task(time_limit=3600, ignore_result=True)
-def fetch_new_sceneorg_files(path, days=1):
-	new_file_count = fetch_sceneorg_dir(path=path, days=days, async=False)
+def fetch_new_sceneorg_files(days=1):
+	url = "https://files.scene.org/api/adhoc/latest-files/?days=%d" % days
+
+	new_file_count = 0
+
+	while True:
+		req = urllib2.Request(url, None, {'User-Agent': user_agent})
+		page = urllib2.urlopen(req)
+		response = json.loads(page.read())
+		page.close()
+
+		if not response.get('success'):
+			break
+
+		for item in response['files']:
+			path_components = item['fullPath'].split('/')[1:]
+			dirs = path_components[:-1]
+
+			path = '/'
+			current_dir = Directory.objects.get_or_create(
+				path='/', defaults={'last_seen_at': datetime.datetime.now()})
+
+			for d in dirs:
+				last_dir = current_dir
+				path += d + '/'
+
+				try:
+					current_dir = Directory.objects.get(path=path)
+					current_dir.last_seen_at = datetime.datetime.now()
+					current_dir.is_deleted = False
+					current_dir.save()
+				except Directory.DoesNotExist:
+					current_dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now(), parent=last_dir)
+
+			path += path_components[-1]
+
+			try:
+				f = File.objects.get(path=path)
+				f.last_seen_at = datetime.datetime.now()
+				f.is_deleted = False
+				f.size = item['size']
+				f.save()
+			except File.DoesNotExist:
+				File.objects.create(
+					path=path, last_seen_at=datetime.datetime.now(), directory=current_dir,
+					size=item['size'])
+				new_file_count += 1
+
+		url = response.get('nextPageURL')
+		if url:
+			time.sleep(1)
+		else:
+			break
 
 	if new_file_count > 0:
 		find_sceneorg_results_files()
 
+# files.scene.org frontend scraper - no longer used
 @task(rate_limit='6/m', ignore_result=True)
-def fetch_sceneorg_dir(path, days=None, async=True):
+def fetch_sceneorg_dir(path, async=True):
 	try:
 		dir = Directory.objects.get(path=path)
 	except Directory.DoesNotExist:
 		dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now())
 
-	if days:
-		raise Exception('scene.org has no "last X days" view right now :-(')
-	else:
-		files = scrape_dir(dir.web_url)
+	files = scrape_dir(dir.web_url)
 
 	# Mark previously-seen-but-now-absent files as deleted, unless we're viewing the 'new files' page
-	new_file_count = update_dir_records(dir, files, mark_deletions=(not days))
+	new_file_count = update_dir_records(dir, files, mark_deletions=True)
 
 	# recursively fetch subdirs
 	for (filename, is_dir, file_size) in files:
 		if is_dir:
 			subpath = path + filename + '/'
 			if async:
-				fetch_sceneorg_dir.delay(path=subpath, days=days)
+				fetch_sceneorg_dir.delay(path=subpath)
 			else:
 				time.sleep(3)
-				new_file_count += fetch_sceneorg_dir(path=subpath, days=days, async=False)
+				new_file_count += fetch_sceneorg_dir(path=subpath, async=False)
 
 	return new_file_count
 
