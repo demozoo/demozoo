@@ -1232,6 +1232,16 @@ class WaybackMachinePage(BaseUrl):
 	html_title_format = "%s on the Wayback Machine"
 
 
+class StonishDisk(BaseUrl):
+	canonical_format = "http://stonish.net/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)', re.I),
+	]
+	html_link_class = "stonish"
+	html_link_text = "Stonish"
+	html_title_format = "%s on Stonish"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1250,7 +1260,7 @@ RELEASER_LINK_TYPES = [
 PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
-	AsciiarenaRelease, KestraBitworldRelease,
+	AsciiarenaRelease, KestraBitworldRelease, StonishDisk,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
@@ -1268,7 +1278,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
-	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack',
+	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
 ]
