@@ -1212,6 +1212,28 @@ class GithubRepo(BaseUrl):
 	html_title_format = "%s on GitHub"
 
 
+class GithubDirectory(BaseUrl):
+	def __unicode__(self):
+		params = self.param.split('/')
+		user, repo = params[0:2]
+		dirs = '/'.join(params[2:])
+		return u"http://github.com/%s/%s/tree/%s" % (user, repo, dirs)
+
+	regex = re.compile(r'https?://github\.com/([^\/]+)/([^\/]+)/tree/(.+)$', re.I)
+
+	def github_dir_match(urlstring, url):
+		m = GithubDirectory.regex.match(urlstring)
+		if m:
+			return "%s/%s/%s" % (m.group(1), m.group(2), m.group(3))
+
+	tests = [
+		github_dir_match,
+	]
+	html_link_class = "github"
+	html_link_text = "GitHub"
+	html_title_format = "%s on GitHub"
+
+
 class InternetArchivePage(BaseUrl):
 	canonical_format = "https://archive.org/details/%s"
 	tests = [
@@ -1264,7 +1286,7 @@ PRODUCTION_LINK_TYPES = [
 	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo,
+	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
 	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
 	WaybackMachinePage, BaseUrl,
@@ -1279,7 +1301,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
-	'GithubAccount', 'GithubRepo', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
+	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
 ]
 
