@@ -26,7 +26,7 @@ class Directory(models.Model):
 
 	@property
 	def web_url(self):
-		return "https://www.scene.org/dir.php?dir=%s" % urllib.quote(self.path.encode("utf-8"))
+		return "https://files.scene.org/browse%s" % urllib.quote(self.path.encode("utf-8"))
 
 	def new_files_url(self, days):
 		return "https://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
@@ -72,4 +72,4 @@ class File(models.Model):
 
 	@property
 	def web_url(self):
-		return "https://www.scene.org/file.php?file=%s&fileinfo" % urllib.quote(self.path.encode("utf-8"))
+		return "https://files.scene.org/browse%s" % urllib.quote(self.path.encode("utf-8"))

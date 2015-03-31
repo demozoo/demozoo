@@ -1,21 +1,25 @@
 {% extends "base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 {% load safe_markdown %}
 {% load url from future %}
 
 {% block html_title %}{{ scener.name_with_affiliations }} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/external_links.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/components/notes_panel.less" type="text/less" />
 
-	<link rel="stylesheet" href="/static/css/pages/show_scener.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/pages/show_scener.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block extra_js %}
-	<script src="/static/js/components/notes_panel.js"></script>
-	<script src="/static/js/components/editable_chunk.js"></script>
+	{% compress js %}
+		<script src="/static/js/components/notes_panel.js"></script>
+		<script src="/static/js/components/editable_chunk.js"></script>
+	{% endcompress %}
 {% endblock %}
 
 {% block body_class %}show_scener{% endblock %}

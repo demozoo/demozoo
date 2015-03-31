@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(DataMigration):
 
+    depends_on = (
+        ('productions', '0005_replace_title_index_with_sortable_title'),
+    )
+
     def forwards(self, orm):
         for compo in orm['parties.competition'].objects.filter(name__iexact='None').prefetch_related('placings'):
             has_immovable_entry = False

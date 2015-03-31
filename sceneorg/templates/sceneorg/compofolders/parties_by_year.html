@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load compress %}
 {% load url from future %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

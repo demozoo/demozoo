@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags compress %}
 
 {% block html_title %}New account - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/pages/signup.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/pages/signup.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block body_class %}signup{% endblock %}

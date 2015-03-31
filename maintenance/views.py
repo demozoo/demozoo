@@ -630,33 +630,51 @@ def parties_with_no_location(request):
 def empty_releasers(request):
 	report_name = 'empty_releasers'
 	releasers = Releaser.objects.raw('''
-		SELECT
-			demoscene_releaser.*
+		SELECT id, is_group, name
 		FROM demoscene_releaser
-		LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
-		LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
-		LEFT JOIN demoscene_nick AS differentiated_nick ON (
-			demoscene_releaser.id = differentiated_nick.releaser_id
-			AND differentiated_nick.differentiator <> ''
-		)
 		WHERE
-		demoscene_releaser.notes = ''
-		AND groups.group_id IS NULL
-		AND members.member_id IS NULL
-		AND differentiated_nick.id IS NULL
-		AND (
-			SELECT COUNT (demoscene_nick.id)
-			FROM demoscene_nick
+		notes = ''
+		AND id IN ( -- must belong to no groups
+			SELECT demoscene_releaser.id
+			FROM demoscene_releaser
+			LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
+			GROUP BY demoscene_releaser.id
+			HAVING COUNT(group_id) = 0
+		)
+		AND id IN ( -- must have no members
+			SELECT demoscene_releaser.id
+			FROM demoscene_releaser
+			LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
+			GROUP BY demoscene_releaser.id
+			HAVING COUNT(member_id) = 0
+		)
+		AND id IN ( -- must have no releases as author
+			SELECT demoscene_releaser.id
+			FROM demoscene_releaser
+			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
 			LEFT JOIN productions_production_author_nicks ON (demoscene_nick.id = productions_production_author_nicks.nick_id)
+			GROUP BY demoscene_releaser.id
+			HAVING COUNT(production_id) = 0
+		)
+		AND id IN ( -- must have no releases as author affiliation
+			SELECT demoscene_releaser.id
+			FROM demoscene_releaser
+			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
 			LEFT JOIN productions_production_author_affiliation_nicks ON (demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id)
+			GROUP BY demoscene_releaser.id
+			HAVING COUNT(production_id) = 0
+		)
+		AND id IN ( -- must have no credits
+			SELECT demoscene_releaser.id
+			FROM demoscene_releaser
+			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
 			LEFT JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
-			WHERE demoscene_nick.releaser_id = demoscene_releaser.id
-			AND (productions_production_author_nicks.nick_id IS NOT NULL
-			OR productions_production_author_affiliation_nicks.nick_id IS NOT NULL
-			OR productions_credit.nick_id IS NOT NULL)
-		) = 0
-		AND demoscene_releaser.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY demoscene_releaser.name
+			GROUP BY demoscene_releaser.id
+			HAVING COUNT(production_id) = 0
+		)
+		AND id NOT IN (SELECT releaser_id FROM demoscene_nick where differentiator <> '')
+		AND id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		ORDER BY LOWER(name)
 	''', [report_name])
 
 	return render(request, 'maintenance/releaser_report.html', {

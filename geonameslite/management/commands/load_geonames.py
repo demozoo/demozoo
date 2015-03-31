@@ -136,7 +136,11 @@ class Command(NoArgsCommand):
 				if feature_class not in ('P', 'A'):
 					continue
 				if country_code:
-					admin1_dic = self.countries[country_code].get(admin1_code)
+					try:
+						admin1_dic = self.countries[country_code].get(admin1_code)
+					except KeyError:  # someone's probably left in an entry for a non-existent country like Serbia and Montenegro. Whoopee.
+						continue
+
 					if admin1_dic:
 						admin1_id = admin1_dic['geonameid']
 						admin2_id = admin1_dic['admins2'].get(admin2_code)

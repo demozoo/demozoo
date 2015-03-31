@@ -83,11 +83,11 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 		# OR the author is a SUBGROUP of this group (regardless of whether this parent group is named as an affiliation).
 		from productions.models import Production
 
-		subgroup_ids = self.member_memberships.filter(member__is_group=True).values_list('member_id', flat=True)
+		subgroup_nick_ids = list(Nick.objects.filter(releaser__is_group=True, releaser__group_memberships__group=self).values_list('id', flat=True))
 
 		return Production.objects.filter(
-			Q(author_affiliation_nicks__releaser=self)
-			| Q(author_nicks__releaser__in=subgroup_ids)
+			Q(author_affiliation_nicks__in=list(self.nicks.all()))
+			| Q(author_nicks__in=subgroup_nick_ids)
 		).distinct()
 
 	def credits(self):
@@ -534,7 +534,7 @@ class ExternalLink(models.Model):
 
 	def _set_url(self, urlstring):
 		if urlstring:
-			self.link = groklinks.grok_link_by_types(urlstring, self.link_types)
+			self.link = groklinks.grok_link_by_types(urlstring.strip(), self.link_types)
 			if self.link:
 				self.link_class = self.link.__class__.__name__
 				self.parameter = self.link.param
@@ -604,6 +604,13 @@ class Edit(models.Model):
 			OR (focus2_content_type_id = %s AND focus2_object_id = %s)
 		)"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')
 		return edits
+
+	class Meta:
+		index_together = [
+			['focus_content_type', 'focus_object_id'],
+			['focus2_content_type', 'focus2_object_id'],
+		]
+
 
 class CaptchaQuestion(models.Model):
 	question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")

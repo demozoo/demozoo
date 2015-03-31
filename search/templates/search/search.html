@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load compress %}
 
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/search/css/pages/search.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/search/css/pages/search.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

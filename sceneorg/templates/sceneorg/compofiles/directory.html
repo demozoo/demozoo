@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% load compress %}
 {% load url from future %}
 
 {% block html_title %}scene.org file matching for {{ directory.path }} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
+	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
 {% endblock %}
 
 {% block extra_js %}
-	{% if site_is_writeable %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endif %}
+	{% if site_is_writeable %}{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}{% endif %}
 {% endblock %}
 
 {% block base_main %}

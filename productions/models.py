@@ -319,8 +319,17 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 			except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
 				return None
 
+	@property
+	def external_links(self):
+		external_links = self.links.filter(is_download_link=False)
+		return sorted(external_links, key=lambda obj: obj.sort_key)
+
+	@property
+	def download_links(self):
+		return self.links.filter(is_download_link=True)
+
 	class Meta:
-		ordering = ['title']
+		ordering = ['sortable_title']
 
 
 # encapsulates list of authors and affiliations
@@ -537,3 +546,6 @@ class ProductionLink(ExternalLink):
 			('link_class', 'parameter', 'production', 'is_download_link'),
 		)
 		ordering = ['link_class']
+		index_together = [
+			['link_class', 'parameter']
+		]

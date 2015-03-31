@@ -113,6 +113,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'geonameslite',
+	'rest_framework',
 
 	'demoscene',
 	'parties',
@@ -195,8 +196,8 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
 	"fetch-new-sceneorg-files": {
 		"task": "sceneorg.tasks.fetch_new_sceneorg_files",
-		"schedule": timedelta(hours=4),
-		"args": ('/', 1)
+		"schedule": timedelta(hours=1),
+		"args": (1,)
 	},
 	"fetch-all-sceneorg-files": {
 		"task": "sceneorg.tasks.scan_dir_listing",
@@ -212,10 +213,12 @@ CELERYBEAT_SCHEDULE = {
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
 
+REST_FRAMEWORK = {
+	# do not support any authentication mechanism; anonymous read-only access only.
+	'DEFAULT_AUTHENTICATION_CLASSES': [],
+	'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+	'PAGINATE_BY': 100
+}
+
 # Read-only mode
 SITE_IS_WRITEABLE = True
-
-# Whether to attempt image conversion using the pygame.image library
-# for image formats that PIL doesn't support. Means that we can support
-# LBM files, but is a total arse to install...
-USE_PYGAME_IMAGE_CONVERSION = False

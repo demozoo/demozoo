@@ -1,11 +1,14 @@
 {% extends base_template_with_ajax_option %}
+{% load compress %}
 {% load url from future %}
 
 {% block html_title %}Removing {{ scener.name }} as a member of {{ group.name }} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-	<link rel="stylesheet" href="/static/css/pages/group_remove_member.less" type="text/less" />
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/pages/group_remove_member.less" type="text/less" />
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}

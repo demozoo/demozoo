@@ -53,10 +53,7 @@ def date_range(start_date, end_date):
 
 @register.inclusion_tag('shared/last_edited_by.html', takes_context=True)
 def last_edited_by(context, item):
-	try:
-		edit = Edit.for_model(item, is_admin=context['request'].user.is_staff).order_by('-timestamp')[0]
-	except IndexError:
-		edit = None
+	edit = Edit.for_model(item, is_admin=context['request'].user.is_staff).order_by('-timestamp').first()
 	return {
 		'edit': edit,
 		'item': item,

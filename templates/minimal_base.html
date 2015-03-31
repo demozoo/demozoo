@@ -4,9 +4,7 @@
 <html>
 	<head>
 		<title>{% block html_title %}Demozoo{% endblock %}</title>
-		{% compress css %}
-			{% block extra_css %}{% endblock %}
-		{% endcompress %}
+		{% block extra_css %}{% endblock %}
 		{% block extra_head %}{% endblock %}
 	</head>
 	<body class="{% block body_class %}default{% endblock %}">
