@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 	(r'^$', 'homepage.views.home', {}, 'home'),
 	(r'^news/new/$', 'homepage.views.add_news', {}, 'add_news'),
 	(r'^news/(\d+)/edit/$', 'homepage.views.edit_news', {}, 'edit_news'),
+	(r'^news/(\d+)/delete/$', 'homepage.views.delete_news', {}, 'delete_news'),
 
 	(r'^admin/', include(admin.site.urls)),
 
