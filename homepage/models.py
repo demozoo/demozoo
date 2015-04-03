@@ -25,6 +25,9 @@ class Banner(models.Model):
 class NewsStory(models.Model):
 	title = models.CharField(max_length=255)
 	text = models.TextField()
+	image = models.ForeignKey('NewsImage', null=True, blank=True, related_name='+',
+		on_delete=models.SET_NULL,  # don't want deletion to cascade to the news story if image is deleted
+	)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,3 +36,17 @@ class NewsStory(models.Model):
 
 	class Meta:
 		verbose_name_plural = 'News stories'
+
+
+class NewsImage(models.Model):
+	image = models.ImageField(
+		upload_to=(lambda i, f: random_path('news_images', f)),
+		width_field='image_width', height_field='image_height',
+		help_text='Recommended size: 100x100')
+	image_width = models.IntegerField(editable=False)
+	image_height = models.IntegerField(editable=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __unicode__(self):
+		return self.image.name

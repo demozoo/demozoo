@@ -9,6 +9,7 @@
 	{% compress css %}
 		<link rel="stylesheet" href="/static/css/responsivegrid/col.css" type="text/css" />
 		<link rel="stylesheet" href="/static/css/responsivegrid/3cols.css" type="text/css" />
+		<link rel="stylesheet" href="/static/css/responsivegrid/6cols.css" type="text/css" />
 		<link rel="stylesheet" href="/static/homepage/css/pages/home.less" type="text/less" />
 	{% endcompress %}
 {% endblock %}
@@ -60,17 +61,26 @@
 					<div style="clear: both;"></div>
 				{% endif %}
 				{% for story in news_stories %}
-					<div class="news_story">
-						{% if perms.homepage.change_newsstory and site_is_writeable %}
-							<ul class="actions">
-								<li>
-									<a href="{% url 'edit_news' story.id %}" class="action_button icon edit">Edit</a>
-								</li>
-							</ul>
-						{% endif %}
-						<div class="date">{{ story.created_at|date:"d M Y" }}</div>
-						<h2>{{ story.title }}</h2>
-						{{ story.text|safe_markdown }}
+					<div class="news_story section group">
+						<div class="story_image col span_1_of_6">
+							{% if story.image %}
+								<img src="{{ story.image.image.url }}" width="100">
+							{% else %}
+								<img src="/static/images/news.png" width="100">
+							{% endif %}
+						</div>
+						<div class="col span_5_of_6">
+							{% if perms.homepage.change_newsstory and site_is_writeable %}
+								<ul class="actions">
+									<li>
+										<a href="{% url 'edit_news' story.id %}" class="action_button icon edit">Edit</a>
+									</li>
+								</ul>
+							{% endif %}
+							<div class="date">{{ story.created_at|date:"d M Y" }}</div>
+							<h2>{{ story.title }}</h2>
+							{{ story.text|safe_markdown }}
+						</div>
 					</div>
 				{% endfor %}
 			</div>
