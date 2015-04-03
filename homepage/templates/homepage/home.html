@@ -51,7 +51,7 @@
 			{% endif %}
 
 			<div class="news">
-				{% if perms.homepage.add_newsstory %}
+				{% if perms.homepage.add_newsstory and site_is_writeable %}
 					<ul class="actions">
 						<li>
 							<a href="{% url 'add_news' %}" class="action_button icon add">Add news</a>
@@ -61,7 +61,7 @@
 				{% endif %}
 				{% for story in news_stories %}
 					<div class="news_story">
-						{% if perms.homepage.change_newsstory %}
+						{% if perms.homepage.change_newsstory and site_is_writeable %}
 							<ul class="actions">
 								<li>
 									<a href="{% url 'edit_news' story.id %}" class="action_button icon edit">Edit</a>

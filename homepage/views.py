@@ -4,6 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
 
+from read_only_mode import writeable_site_required
+
 from forums.models import Topic
 from productions.models import Production
 from comments.models import Comment
@@ -56,6 +58,7 @@ def home(request):
 	})
 
 
+@writeable_site_required
 def add_news(request):
 	if not request.user.has_perm('homepage.add_newsstory'):
 		return redirect('home')
@@ -74,6 +77,7 @@ def add_news(request):
 	})
 
 
+@writeable_site_required
 def edit_news(request, news_story_id):
 	if not request.user.has_perm('homepage.change_newsstory'):
 		return redirect('home')
