@@ -56,6 +56,24 @@ def home(request):
 	})
 
 
+def add_news(request):
+	if not request.user.has_perm('homepage.add_newsstory'):
+		return redirect('home')
+
+	if request.method == 'POST':
+		form = NewsStoryForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, "News story added")
+			return redirect('home')
+	else:
+		form = NewsStoryForm()
+
+	return render(request, 'homepage/add_news.html', {
+		'form': form,
+	})
+
+
 def edit_news(request, news_story_id):
 	if not request.user.has_perm('homepage.change_newsstory'):
 		return redirect('home')

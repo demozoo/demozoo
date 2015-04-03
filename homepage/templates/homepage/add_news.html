@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block html_title %}Add news - Demozoo{% endblock %}
+
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
+{% block base_main %}
+	<h1>Add news item</h1>
+	<form action="{% url 'add_news' %}" class="entry_form" method="POST">
+		{% csrf_token %}
+		{% include "shared/form_field.html" with field=form.title %}
+		{% include "shared/form_field.html" with field=form.text %}
+		<div class="field">
+			<input type="submit" value="Add news item" />
+		</div>
+	</form>
+{% endblock %}

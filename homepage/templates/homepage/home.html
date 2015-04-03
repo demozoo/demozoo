@@ -51,6 +51,14 @@
 			{% endif %}
 
 			<div class="news">
+				{% if perms.homepage.add_newsstory %}
+					<ul class="actions">
+						<li>
+							<a href="{% url 'add_news' %}" class="action_button icon add">Add news</a>
+						</li>
+					</ul>
+					<div style="clear: both;"></div>
+				{% endif %}
 				{% for story in news_stories %}
 					<div class="news_story">
 						{% if perms.homepage.change_newsstory %}
