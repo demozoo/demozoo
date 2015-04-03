@@ -53,6 +53,13 @@
 			<div class="news">
 				{% for story in news_stories %}
 					<div class="news_story">
+						{% if perms.homepage.change_newsstory %}
+							<ul class="actions">
+								<li>
+									<a href="{% url 'edit_news' story.id %}" class="action_button icon edit">Edit</a>
+								</li>
+							</ul>
+						{% endif %}
 						<div class="date">{{ story.created_at|date:"d M Y" }}</div>
 						<h2>{{ story.title }}</h2>
 						{{ story.text|safe_markdown }}

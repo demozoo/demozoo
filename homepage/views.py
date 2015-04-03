@@ -1,14 +1,16 @@
 import datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
+from django.contrib import messages
 
-from homepage.models import Banner, NewsStory
 from forums.models import Topic
 from productions.models import Production
 from comments.models import Comment
 from parties.models import Party
+
+from homepage.models import Banner, NewsStory
+from homepage.forms import NewsStoryForm
 
 def home(request):
 	if request.user.is_authenticated():
@@ -51,4 +53,24 @@ def home(request):
 		'latest_additions': latest_additions,
 		'comments': comments,
 		'upcoming_parties': upcoming_parties,
+	})
+
+
+def edit_news(request, news_story_id):
+	if not request.user.has_perm('homepage.change_newsstory'):
+		return redirect('home')
+
+	news_story = get_object_or_404(NewsStory, id=news_story_id)
+	if request.method == 'POST':
+		form = NewsStoryForm(request.POST, instance=news_story)
+		if form.is_valid():
+			form.save()
+			messages.success(request, "News story updated")
+			return redirect('home')
+	else:
+		form = NewsStoryForm(instance=news_story)
+
+	return render(request, 'homepage/edit_news.html', {
+		'news_story': news_story,
+		'form': form,
 	})

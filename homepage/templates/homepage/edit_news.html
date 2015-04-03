@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block html_title %}Edit news - Demozoo{% endblock %}
+
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
+{% block base_main %}
+	<h1>Edit news item</h1>
+	<form action="{% url 'edit_news' news_story.id %}" class="entry_form" method="POST">
+		{% csrf_token %}
+		{% include "shared/form_field.html" with field=form.title %}
+		{% include "shared/form_field.html" with field=form.text %}
+		<div class="field">
+			<input type="submit" value="Update" />
+		</div>
+	</form>
+{% endblock %}
