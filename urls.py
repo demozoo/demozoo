@@ -15,11 +15,6 @@ urlpatterns = patterns('',
 	# to INSTALLED_APPS to enable admin documentation:
 	# (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-	(r'^$', 'homepage.views.home.home', {}, 'home'),
-	(r'^news/new/$', 'homepage.views.news.add_news', {}, 'add_news'),
-	(r'^news/(\d+)/edit/$', 'homepage.views.news.edit_news', {}, 'edit_news'),
-	(r'^news/(\d+)/delete/$', 'homepage.views.news.delete_news', {}, 'delete_news'),
-
 	(r'^admin/', include(admin.site.urls)),
 
 	(r'^account/$', 'demoscene.views.accounts.index', {}, 'account_index'),
@@ -88,6 +83,7 @@ urlpatterns += patterns('demoscene.views',
 )
 
 urlpatterns += patterns('',
+	(r'^', include('homepage.urls')),
 	(r'^', include('parties.urls')),
 	(r'^', include('comments.urls')),
 	(r'^', include('productions.urls')),
