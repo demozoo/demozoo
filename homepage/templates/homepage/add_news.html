@@ -8,10 +8,9 @@
 
 {% block base_main %}
 	<h1>Add news item</h1>
-	<form action="{% url 'add_news' %}" class="entry_form" method="POST">
+	<form action="{% url 'add_news' %}" class="entry_form" method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
-		{% include "shared/form_field.html" with field=form.title %}
-		{% include "shared/form_field.html" with field=form.text %}
+		{% include "homepage/_news_form.html" %}
 		<div class="field">
 			<input type="submit" value="Add news item" />
 		</div>

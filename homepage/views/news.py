@@ -6,7 +6,7 @@ from read_only_mode import writeable_site_required
 
 from demoscene.shortcuts import simple_ajax_confirmation
 
-from homepage.forms import NewsStoryForm
+from homepage.forms import NewsStoryForm, NewsImageForm
 from homepage.models import NewsStory
 
 @writeable_site_required
@@ -14,17 +14,30 @@ def add_news(request):
 	if not request.user.has_perm('homepage.add_newsstory'):
 		return redirect('home')
 
+	news_story = NewsStory()
+
 	if request.method == 'POST':
-		form = NewsStoryForm(request.POST)
+		news_form_data = request.POST
+
+		image_form = NewsImageForm(request.POST, request.FILES, prefix='news_image')
+		if image_form.is_valid() and image_form.cleaned_data['image']:
+			news_image = image_form.save()
+
+			news_form_data = news_form_data.copy()
+			news_form_data.update(image=news_image.id)
+			news_story.image = news_image
+
+		form = NewsStoryForm(news_form_data, instance=news_story)
 		if form.is_valid():
 			form.save()
 			messages.success(request, "News story added")
 			return redirect('home')
 	else:
-		form = NewsStoryForm()
+		form = NewsStoryForm(instance=news_story)
 
 	return render(request, 'homepage/add_news.html', {
 		'form': form,
+		'image_form': NewsImageForm(prefix='news_image')
 	})
 
 
@@ -35,7 +48,18 @@ def edit_news(request, news_story_id):
 
 	news_story = get_object_or_404(NewsStory, id=news_story_id)
 	if request.method == 'POST':
-		form = NewsStoryForm(request.POST, instance=news_story)
+
+		news_form_data = request.POST
+
+		image_form = NewsImageForm(request.POST, request.FILES, prefix='news_image')
+		if image_form.is_valid() and image_form.cleaned_data['image']:
+			news_image = image_form.save()
+
+			news_form_data = news_form_data.copy()
+			news_form_data.update(image=news_image.id)
+			news_story.image = news_image
+
+		form = NewsStoryForm(news_form_data, instance=news_story)
 		if form.is_valid():
 			form.save()
 			messages.success(request, "News story updated")
@@ -46,6 +70,7 @@ def edit_news(request, news_story_id):
 	return render(request, 'homepage/edit_news.html', {
 		'news_story': news_story,
 		'form': form,
+		'image_form': NewsImageForm(prefix='news_image')
 	})
 
 

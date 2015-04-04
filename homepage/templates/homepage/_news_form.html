@@ -1,0 +1,35 @@
+{% load demoscene_tags %}
+
+{% include "shared/form_field.html" with field=form.title %}
+
+<div class="field">
+	{% field_label form.image %}
+	<div class="field_input">
+		{{ form.image.errors }}
+		{{ form.image }}
+
+		{% with form.instance.image as image %}
+			<img id="image-preview" src="{{ image.image.url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<button id="clear-image" type="button">clear</button>
+		{% endwith %}
+
+		<div>
+			Upload new:
+			{{ image_form.image }}
+			<div class="help_text">{{ image_form.image.help_text }}</div>
+		</div>
+	</div>
+</div>
+
+{% include "shared/form_field.html" with field=form.text %}
+
+
+<script>
+	$(function() {
+		$('#clear-image').click(function() {
+			$('#id_image').val('');
+			$('#id_news_image-image').val('');
+			$('#image-preview').hide();
+		});
+	})
+</script>
