@@ -48,5 +48,10 @@ class NewsImage(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
+	# method for displaying image in admin listings
+	def image_tag(self):
+		return '<img src="%s" width="100" />' % self.image.url
+	image_tag.allow_tags = True
+
 	def __unicode__(self):
 		return self.image.name
