@@ -3,11 +3,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 
 from read_only_mode import writeable_site_required
+from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import simple_ajax_confirmation
 
 from homepage.forms import NewsStoryForm, NewsImageForm
-from homepage.models import NewsStory
+from homepage.models import NewsStory, NewsImage
 
 @writeable_site_required
 def add_news(request):
@@ -35,7 +36,7 @@ def add_news(request):
 	else:
 		form = NewsStoryForm(instance=news_story)
 
-	return render(request, 'homepage/add_news.html', {
+	return render(request, 'homepage/news/add_news.html', {
 		'form': form,
 		'image_form': NewsImageForm(prefix='news_image')
 	})
@@ -67,7 +68,7 @@ def edit_news(request, news_story_id):
 	else:
 		form = NewsStoryForm(instance=news_story)
 
-	return render(request, 'homepage/edit_news.html', {
+	return render(request, 'homepage/news/edit_news.html', {
 		'news_story': news_story,
 		'form': form,
 		'image_form': NewsImageForm(prefix='news_image')
@@ -93,3 +94,13 @@ def delete_news(request, news_story_id):
 			reverse('delete_news', args=[news_story_id]),
 			"Are you sure you want to delete this news story?",
 			html_title="Deleting news story: %s" % news_story.title)
+
+
+def browse_images(request):
+	if not request.user.has_perm('homepage.change_newsstory'):
+		return redirect('home')
+	images = NewsImage.objects.order_by('created_at')
+
+	return render_modal_workflow(request, 'homepage/news/browse_images.html', None, {
+		'images': images,
+	})

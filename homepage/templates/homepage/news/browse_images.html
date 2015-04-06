@@ -1,0 +1,15 @@
+{% extends base_template_with_ajax_option %}
+
+{% block html_title %}Choose news - Demozoo{% endblock %}
+
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
+{% block base_main %}
+	<ul>
+		{% for image in images %}
+			<li style="float: left; padding: 5px;"><img src="{{ image.image.url }}" width="100" alt=""></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

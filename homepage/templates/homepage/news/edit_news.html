@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
+{% load compress %}
 
 {% block html_title %}Edit news - Demozoo{% endblock %}
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}
+{% endblock %}
+
+{% block extra_js %}
+	{% compress js %}
+		<script src="/static/js/modal_workflow.js"></script>
+	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}
@@ -15,7 +22,7 @@
 	<h1>Edit news item</h1>
 	<form action="{% url 'edit_news' news_story.id %}" class="entry_form" method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
-		{% include "homepage/_news_form.html" %}
+		{% include "homepage/news/_news_form.html" %}
 		<div class="field">
 			<input type="submit" value="Update" />
 		</div>

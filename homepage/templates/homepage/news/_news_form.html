@@ -10,6 +10,7 @@
 
 		{% with form.instance.image as image %}
 			<img id="image-preview" src="{{ image.image.url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
 			<button id="clear-image" type="button">clear</button>
 		{% endwith %}
 
@@ -31,5 +32,13 @@
 			$('#id_news_image-image').val('');
 			$('#image-preview').hide();
 		});
+		$('#choose-image').click(function() {
+			ModalWorkflow({
+				'url': $(this).data('url'),
+				'responses': {
+					'creditsUpdated': null/* replaceCreditsPanel */
+				}
+			});
+		})
 	})
 </script>

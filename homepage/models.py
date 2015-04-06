@@ -50,7 +50,7 @@ class NewsImage(models.Model):
 
 	# method for displaying image in admin listings
 	def image_tag(self):
-		return '<img src="%s" width="100" />' % self.image.url
+		return '<img src="%s" width="100" alt="" />' % self.image.url
 	image_tag.allow_tags = True
 
 	def __unicode__(self):
