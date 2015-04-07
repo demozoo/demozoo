@@ -5,7 +5,7 @@ from homepage.models import NewsStory, NewsImage
 class NewsStoryForm(forms.ModelForm):
 	class Meta:
 		model = NewsStory
-		fields = ['title', 'image', 'text']
+		fields = ['title', 'image', 'text', 'is_public']
 		widgets = {
 			'image': forms.HiddenInput()
 		}

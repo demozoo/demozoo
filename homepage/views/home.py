@@ -43,9 +43,14 @@ def home(request):
 		start_date_date__gt=datetime.datetime.now()
 	).order_by('start_date_date')[:8]
 
+	if request.user.is_staff:
+		news_stories = NewsStory.objects.select_related('image').order_by('-created_at')[:6]
+	else:
+		news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')[:6]
+
 	return render(request, 'homepage/home.html', {
 		'banner': banner,
-		'news_stories': NewsStory.objects.select_related('image').order_by('-created_at')[:6],
+		'news_stories': news_stories,
 		'forum_topics': Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5],
 		'latest_releases': latest_releases,
 		'latest_additions': latest_additions,

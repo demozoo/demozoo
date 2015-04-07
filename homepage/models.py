@@ -28,6 +28,7 @@ class NewsStory(models.Model):
 	image = models.ForeignKey('NewsImage', null=True, blank=True, related_name='+',
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the news story if image is deleted
 	)
+	is_public = models.BooleanField(blank=True, default=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 

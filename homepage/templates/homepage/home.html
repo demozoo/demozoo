@@ -61,7 +61,7 @@
 					<div style="clear: both;"></div>
 				{% endif %}
 				{% for story in news_stories %}
-					<div class="news_story section group">
+					<div class="news_story section group {% if not story.is_public %}private{% endif %}">
 						<div class="story_image col span_1_of_6">
 							{% if story.image %}
 								<img src="{{ story.image.image.url }}" width="100" alt="">
