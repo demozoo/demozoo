@@ -128,18 +128,6 @@
 				<div class="more"><a href="{% url 'productions' %}">More releases</a></div>
 			</div>
 
-			<div class="comments">
-				<h3 class="section_heading">Comments</h3>
-				<ul>
-					{% for comment in comments %}
-						<li>
-							<q>{{ comment.body|truncatechars:140 }}</q>
-							- <b>{{ comment.user.username }}</b> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a>
-						</li>
-					{% endfor %}
-				</ul>
-			</div>
-
 			<div class="new_additions">
 				<h3 class="section_heading">New in the archive</h3>
 				<ul>
@@ -165,6 +153,18 @@
 					<a href="{% url 'latest_activity' %}">Latest activity</a>
 					| <a href="{% url 'recent_edits' %}">Recent edits</a>
 				</p>
+			</div>
+
+			<div class="comments">
+				<h3 class="section_heading">Comments</h3>
+				<ul>
+					{% for comment in comments %}
+						<li>
+							<q>{{ comment.body|truncatechars:140 }}</q>
+							- <b>{{ comment.user.username }}</b> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a>
+						</li>
+					{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>
