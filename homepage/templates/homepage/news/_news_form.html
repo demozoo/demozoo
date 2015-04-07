@@ -36,7 +36,11 @@
 			ModalWorkflow({
 				'url': $(this).data('url'),
 				'responses': {
-					'creditsUpdated': null/* replaceCreditsPanel */
+					'imageChosen': function(data) {
+						$('#id_image').val(data.id);
+						$('#id_news_image-image').val('');
+						$('#image-preview').show().attr({'src': data.url});
+					}
 				}
 			});
 		})

@@ -101,6 +101,10 @@ def browse_images(request):
 		return redirect('home')
 	images = NewsImage.objects.order_by('created_at')
 
-	return render_modal_workflow(request, 'homepage/news/browse_images.html', None, {
-		'images': images,
-	})
+	return render_modal_workflow(
+		request,
+		'homepage/news/browse_images.html', 'homepage/news/browse_images.js',
+		{
+			'images': images,
+		}
+	)
