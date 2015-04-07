@@ -116,6 +116,10 @@
 		.news_story {
 			padding-top: 24px;
 
+			.story_image img {
+				max-width: 100%;
+			}
+
 			h2 {
 				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
 				float: left;
@@ -318,9 +322,17 @@
 }
 
 @media screen and (max-width: 601px) {
-	.homepage .banner {
-		h1 {
-			font-size: 18pt;
+	.homepage {
+		.banner {
+			h1 {
+				font-size: 18pt;
+			}
+		}
+
+		.news {
+			.news_story .story_image {
+				display: none;
+			}
 		}
 	}
 }
