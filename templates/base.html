@@ -121,7 +121,14 @@
 				{% block base_main %}{% endblock %}
 				<div style="clear: both;"></div>
 			</div>
-			<div id="site_footer"></div>
+			<div id="site_footer">
+				<ul>
+					<li>&copy; {% now "Y" %} Demozoo staff and contributors</li><!--
+					srsly. do we still need these CSS hacks in 2015?!?
+					--><li>Kindly hosted by <a href="https://zetta.io/">zetta.io</a></li><!--
+					--><li><a href="https://github.com/demozoo/demozoo">Get the source</a></li>
+				</ul>
+			</div>
 		</div>
 	</body>
 </html>

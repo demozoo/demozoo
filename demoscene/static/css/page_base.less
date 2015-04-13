@@ -214,7 +214,22 @@ html {
 
 #site_footer {
 	clear: both;
-	padding-bottom: 36px;
+	border: 10px solid white;
+	background-color: #e8e8e8;
+	text-align: center;
+
+	li {
+		line-height: 3em;
+		font-size: 0.8em;
+		padding: 0 10px;
+		margin: 0;
+		border-left: 1px solid #888;
+		display: inline;
+		&:first-child {
+			border-left: none;
+			padding-left: 0;
+		}
+	}
 }
 
 
