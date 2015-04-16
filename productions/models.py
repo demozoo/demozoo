@@ -73,7 +73,7 @@ class ProductionType(MP_Node):
 class Production(ModelWithPrefetchSnooping, Commentable):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
-	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES)
+	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
 	types = models.ManyToManyField('ProductionType', related_name='productions')
 	author_nicks = models.ManyToManyField('demoscene.Nick', related_name='productions', blank=True)
 	author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True, null=True)
@@ -330,6 +330,9 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	class Meta:
 		ordering = ['sortable_title']
+		index_together = [
+			['release_date_date', 'created_at']
+		]
 
 
 # encapsulates list of authors and affiliations

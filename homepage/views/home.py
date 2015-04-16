@@ -10,6 +10,7 @@ from productions.models import Production
 
 from homepage.models import Banner, NewsStory
 
+
 def home(request):
 	if request.user.is_authenticated():
 		banner = Banner.objects.filter(show_for_logged_in_users=True).order_by('-created_at').select_related('banner_image').first()
@@ -18,6 +19,9 @@ def home(request):
 
 	latest_releases = Production.objects.filter(
 		default_screenshot__isnull=False, release_date_date__isnull=False
+	).only(
+		'id', 'title', 'release_date_date', 'release_date_precision', 'supertype',
+		'default_screenshot'
 	).select_related(
 		'default_screenshot'
 	).prefetch_related(

@@ -23,7 +23,7 @@ DATE_PRECISION_CHOICES = [
 
 class Releaser(ModelWithPrefetchSnooping, models.Model):
 	name = models.CharField(max_length=255)
-	is_group = models.BooleanField()
+	is_group = models.BooleanField(db_index=True)
 	notes = models.TextField(blank=True)
 
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
