@@ -4,11 +4,6 @@ from demoscene.utils.files import random_path
 
 
 class Banner(models.Model):
-	image = models.ImageField(
-		upload_to=(lambda i, f: random_path('homepage_banners', f)),
-		width_field='image_width', height_field='image_height')
-	image_width = models.IntegerField(editable=False)
-	image_height = models.IntegerField(editable=False)
 	banner_image = models.ForeignKey('BannerImage', null=True, blank=True, related_name='+',
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the banner if image is deleted
 	)
