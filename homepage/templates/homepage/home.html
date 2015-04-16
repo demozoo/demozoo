@@ -18,7 +18,7 @@
 	<div class="section group">
 		<div class="col span_2_of_3">
 			{% if banner %}
-				<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.image.url }}');">
+				<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
 					<div class="banner_text">
 						<h1>{{ banner.title }}</h1>
 						{{ banner.text|safe_markdown }}

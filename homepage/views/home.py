@@ -12,9 +12,9 @@ from homepage.models import Banner, NewsStory
 
 def home(request):
 	if request.user.is_authenticated():
-		banner = Banner.objects.filter(show_for_logged_in_users=True).order_by('-created_at').first()
+		banner = Banner.objects.filter(show_for_logged_in_users=True).order_by('-created_at').select_related('banner_image').first()
 	else:
-		banner = Banner.objects.filter(show_for_anonymous_users=True).order_by('-created_at').first()
+		banner = Banner.objects.filter(show_for_anonymous_users=True).order_by('-created_at').select_related('banner_image').first()
 
 	latest_releases = Production.objects.filter(
 		default_screenshot__isnull=False, release_date_date__isnull=False
