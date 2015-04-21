@@ -7,4 +7,6 @@ urlpatterns = patterns('homepage.views',
 	(r'^news/(\d+)/edit/$', 'news.edit_news', {}, 'edit_news'),
 	(r'^news/(\d+)/delete/$', 'news.delete_news', {}, 'delete_news'),
 	(r'^news/browse_images/$', 'news.browse_images', {}, 'news_images_browse'),
+
+	(r'^banners/$', 'banners.index', {}, 'banners_index'),
 )

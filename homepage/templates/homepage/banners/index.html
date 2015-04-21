@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load safe_markdown compress %}
+
+{% block html_title %}Homepage banners - Demozoo{% endblock %}
+
+{% block extra_css %}
+	{% compress css %}
+		<link rel="stylesheet" href="/static/homepage/css/components/banner.less" type="text/less" />
+		<link rel="stylesheet" href="/static/homepage/css/pages/home.less" type="text/less" />
+	{% endcompress %}
+{% endblock %}
+
+{% block base_main %}
+	<h1>Banners</h1>
+	<br />
+	<table width="100%">
+
+		<tr>
+			<th></th>
+			<th>Show for anon</th>
+			<th>Show for logged-in</th>
+		</tr>
+		{% for banner in banners %}
+			<tr>
+				<td style="width: 600px;">
+					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
+						<div class="banner_text">
+							<h1>{{ banner.title }}</h1>
+							{{ banner.text|safe_markdown }}
+						</div>
+					</a>
+				</td>
+				<td align="center">
+					{% if banner.show_for_anonymous_users %}
+						<img src="/static/images/icons/tick.png" alt="Yes">
+					{% endif %}
+				</td>
+				<td align="center">
+					{% if banner.show_for_logged_in_users %}
+						<img src="/static/images/icons/tick.png" alt="Yes">
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}
