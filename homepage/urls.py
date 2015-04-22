@@ -10,4 +10,5 @@ urlpatterns = patterns('homepage.views',
 
 	(r'^banners/$', 'banners.index', {}, 'banners_index'),
 	(r'^banners/new/$', 'banners.add_banner', {}, 'add_banner'),
+	(r'^banners/(\d+)/edit/$', 'banners.edit_banner', {}, 'edit_banner'),
 )

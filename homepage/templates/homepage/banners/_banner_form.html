@@ -7,7 +7,7 @@
 		{{ form.banner_image }}
 
 		{% with form.instance.banner_image as image %}
-			<img id="image-preview" src="{{ image.image.url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<img id="image-preview" src="{{ image.image.url }}" width="600" alt="" {% if not image %}style="display: none;"{% endif %}>
 			<button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
 			<button id="clear-image" type="button">clear</button>
 		{% endwith %}
