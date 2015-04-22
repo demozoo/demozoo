@@ -1,7 +1,10 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 
 from read_only_mode import writeable_site_required
+
+from demoscene.shortcuts import simple_ajax_confirmation
 
 from homepage.forms import BannerForm, BannerImageForm
 from homepage.models import Banner
@@ -81,3 +84,24 @@ def edit_banner(request, banner_id):
 		'form': form,
 		'image_form': BannerImageForm(prefix='bannerimageform')
 	})
+
+
+@writeable_site_required
+def delete_banner(request, banner_id):
+	if not request.user.has_perm('homepage.delete_banner'):
+		return redirect('home')
+
+	banner = get_object_or_404(Banner, id=banner_id)
+
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			banner.delete()
+			messages.success(request, "Banner deleted")
+			return redirect('home')
+		else:
+			return redirect('edit_banner', banner_id)
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('delete_banner', args=[banner_id]),
+			"Are you sure you want to delete this banner?",
+			html_title="Deleting banner: %s" % banner.title)
