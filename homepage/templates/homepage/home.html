@@ -18,14 +18,24 @@
 {% block base_main %}
 	<div class="section group">
 		<div class="col span_2_of_3">
-			{% if banner %}
-				<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
-					<div class="banner_text">
-						<h1>{{ banner.title }}</h1>
-						{{ banner.text|safe_markdown }}
-					</div>
-				</a>
-			{% endif %}
+			<div class="banner_wrapper">
+				{% if perms.homepage.add_banner and site_is_writeable %}
+					<ul class="actions">
+						<li>
+							<a href="{% url 'banners_index' %}" class="action_button icon edit" title="Edit banner">Edit</a>
+						</li>
+					</ul>
+					<div style="clear: both;"></div>
+				{% endif %}
+				{% if banner %}
+					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
+						<div class="banner_text">
+							<h1>{{ banner.title }}</h1>
+							{{ banner.text|safe_markdown }}
+						</div>
+					</a>
+				{% endif %}
+			</div>
 
 			<div style="clear: both;"></div>
 
