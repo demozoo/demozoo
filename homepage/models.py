@@ -9,7 +9,7 @@ class Banner(models.Model):
 	)
 	title = models.CharField(max_length=255)
 	text = models.TextField(blank=True)
-	url = models.CharField(max_length=255)
+	url = models.CharField(max_length=255, verbose_name="URL")
 
 	show_for_anonymous_users = models.BooleanField(default=True)
 	show_for_logged_in_users = models.BooleanField(default=True)
@@ -23,7 +23,8 @@ class Banner(models.Model):
 class BannerImage(models.Model):
 	image = models.ImageField(
 		upload_to=(lambda i, f: random_path('homepage_banners', f)),
-		width_field='image_width', height_field='image_height')
+		width_field='image_width', height_field='image_height',
+		help_text='Will be cropped to 2.5 : 1 aspect ratio. Recommended size: 832x333')
 	image_width = models.IntegerField(editable=False)
 	image_height = models.IntegerField(editable=False)
 	created_at = models.DateTimeField(auto_now_add=True)
