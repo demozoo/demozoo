@@ -100,7 +100,7 @@ def delete_news(request, news_story_id):
 def browse_images(request):
 	if not request.user.has_perm('homepage.change_newsstory'):
 		return redirect('home')
-	images = NewsImage.objects.order_by('created_at')
+	images = NewsImage.objects.order_by('-created_at')
 
 	return render_modal_workflow(
 		request,

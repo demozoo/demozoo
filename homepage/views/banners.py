@@ -3,11 +3,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 
 from read_only_mode import writeable_site_required
+from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import simple_ajax_confirmation
 
 from homepage.forms import BannerForm, BannerImageForm
-from homepage.models import Banner
+from homepage.models import Banner, BannerImage
 
 
 def index(request):
@@ -105,3 +106,17 @@ def delete_banner(request, banner_id):
 			reverse('delete_banner', args=[banner_id]),
 			"Are you sure you want to delete this banner?",
 			html_title="Deleting banner: %s" % banner.title)
+
+
+def browse_images(request):
+	if not request.user.has_perm('homepage.change_banner'):
+		return redirect('home')
+	images = BannerImage.objects.order_by('-created_at')
+
+	return render_modal_workflow(
+		request,
+		'homepage/banners/browse_images.html', 'homepage/banners/browse_images.js',
+		{
+			'images': images,
+		}
+	)

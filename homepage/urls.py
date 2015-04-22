@@ -12,4 +12,5 @@ urlpatterns = patterns('homepage.views',
 	(r'^banners/new/$', 'banners.add_banner', {}, 'add_banner'),
 	(r'^banners/(\d+)/edit/$', 'banners.edit_banner', {}, 'edit_banner'),
 	(r'^banners/(\d+)/delete/$', 'banners.delete_banner', {}, 'delete_banner'),
+	(r'^banners/browse_images/$', 'banners.browse_images', {}, 'banner_images_browse'),
 )
