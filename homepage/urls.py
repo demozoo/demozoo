@@ -9,4 +9,5 @@ urlpatterns = patterns('homepage.views',
 	(r'^news/browse_images/$', 'news.browse_images', {}, 'news_images_browse'),
 
 	(r'^banners/$', 'banners.index', {}, 'banners_index'),
+	(r'^banners/new/$', 'banners.add_banner', {}, 'add_banner'),
 )

@@ -12,9 +12,14 @@
 
 {% block base_main %}
 	<h1>Banners</h1>
-	<br />
-	<table width="100%">
 
+	<ul class="actions">
+		<li>
+			<a href="{% url 'add_banner' %}" class="action_button icon add">Add new banner</a>
+		</li>
+	</ul>
+
+	<table width="100%">
 		<tr>
 			<th></th>
 			<th>Show for anon</th>

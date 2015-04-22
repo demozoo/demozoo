@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load compress %}
+
+{% block html_title %}Add banner - Demozoo{% endblock %}
+
+{% block extra_head %}
+	{% include "shared/editor_css.html" %}
+{% endblock %}
+
+{% block extra_js %}
+	{% compress js %}
+		<script src="/static/js/modal_workflow.js"></script>
+	{% endcompress %}
+{% endblock %}
+
+{% block base_main %}
+	<h1>Add banner</h1>
+	<form action="{% url 'add_banner' %}" class="entry_form" method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		{% include "homepage/banners/_banner_form.html" %}
+		<div class="field">
+			<input type="submit" value="Add banner" />
+		</div>
+	</form>
+{% endblock %}

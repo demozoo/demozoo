@@ -1,0 +1,49 @@
+{% load demoscene_tags %}
+
+<div class="field">
+	{% field_label form.banner_image %}
+	<div class="field_input">
+		{{ form.banner_image.errors }}
+		{{ form.banner_image }}
+
+		{% with form.instance.banner_image as image %}
+			<img id="image-preview" src="{{ image.image.url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
+			<button id="clear-image" type="button">clear</button>
+		{% endwith %}
+
+		<div>
+			Upload new:
+			{{ image_form.image }}
+			<div class="help_text">{{ image_form.image.help_text }}</div>
+		</div>
+	</div>
+</div>
+
+{% include "shared/form_field.html" with field=form.title %}
+{% include "shared/form_field.html" with field=form.text %}
+{% include "shared/form_field.html" with field=form.url %}
+{% include "shared/form_field.html" with field=form.show_for_anonymous_users %}
+{% include "shared/form_field.html" with field=form.show_for_logged_in_users %}
+
+<script>
+	$(function() {
+		$('#clear-image').click(function() {
+			$('#id_banner_image').val('');
+			$('#id_bannerimageform-image').val('');
+			$('#image-preview').hide();
+		});
+		$('#choose-image').click(function() {
+			ModalWorkflow({
+				'url': $(this).data('url'),
+				'responses': {
+					'imageChosen': function(data) {
+						$('#id_banner_image').val(data.id);
+						$('#id_bannerimageform-image').val('');
+						$('#image-preview').show().attr({'src': data.url});
+					}
+				}
+			});
+		})
+	})
+</script>

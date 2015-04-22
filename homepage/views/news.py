@@ -10,6 +10,7 @@ from demoscene.shortcuts import simple_ajax_confirmation
 from homepage.forms import NewsStoryForm, NewsImageForm
 from homepage.models import NewsStory, NewsImage
 
+
 @writeable_site_required
 def add_news(request):
 	if not request.user.has_perm('homepage.add_newsstory'):
