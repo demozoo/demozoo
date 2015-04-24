@@ -1,16 +1,18 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
+import json
+import datetime
+
 from django.shortcuts import get_object_or_404
-from django.utils import simplejson
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.db.models import F
+
 from demoscene.models import Edit
 from productions.models import Production, ProductionType
 from parties.models import Competition, CompetitionPlacing
 from platforms.models import Platform
 from demoscene.utils.nick_search import NickSelection
-from django.contrib.auth.decorators import login_required
-from django.db.models import F
-import datetime
 from read_only_mode import writeable_site_required
 
 
@@ -75,7 +77,7 @@ def handle_production(prod_data, competition):
 def add_placing(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 	if request.method == 'POST':
-		data = simplejson.loads(request.body)
+		data = json.loads(request.body)
 
 		# move existing placings to accommodate new entry at the stated position
 		competition.placings.filter(position__gte=data['position']).update(position=F('position') + 1)
@@ -94,7 +96,7 @@ def add_placing(request, competition_id):
 		Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
 			description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
 
-		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
+		return HttpResponse(json.dumps(placing.json_data), mimetype="text/javascript")
 
 
 @writeable_site_required
@@ -103,7 +105,7 @@ def update_placing(request, placing_id):
 	placing = get_object_or_404(CompetitionPlacing, id=placing_id)
 	competition = placing.competition
 	if request.method == 'POST':
-		data = simplejson.loads(request.body)
+		data = json.loads(request.body)
 
 		# move existing placings to accommodate new entry at the stated position
 		if int(data['position']) > placing.position:  # increasing position - move others down
@@ -122,7 +124,7 @@ def update_placing(request, placing_id):
 		placing.score = data['score']
 		placing.save()
 
-		return HttpResponse(simplejson.dumps(placing.json_data), mimetype="text/javascript")
+		return HttpResponse(json.dumps(placing.json_data), mimetype="text/javascript")
 
 
 @writeable_site_required

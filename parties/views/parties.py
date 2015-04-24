@@ -1,6 +1,13 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
+import json
+import re
+
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+
 from demoscene.shortcuts import simple_ajax_form
 from demoscene.models import Edit
 from productions.models import Production
@@ -9,13 +16,6 @@ from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExt
 from read_only_mode import writeable_site_required
 from comments.models import Comment
 from comments.forms import CommentForm
-
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import simplejson as json
-
-import re
 
 
 def index(request):

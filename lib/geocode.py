@@ -1,6 +1,7 @@
 from django.conf import settings
-import urllib, urllib2  # yay, let's arbitrarily split useful functions across two meaninglessly-named libraries!
-from django.utils import simplejson as json
+import urllib
+import urllib2  # yay, let's arbitrarily split useful functions across two meaninglessly-named libraries!
+import json
 import re
 
 strip_nonalpha = re.compile(r'[^\w\-\ \,\.]', re.UNICODE)

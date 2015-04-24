@@ -1,18 +1,18 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
+import json
+import datetime
+
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+
 from demoscene.shortcuts import get_page
 from demoscene.models import Edit
 from productions.models import ProductionType, Production, Byline
 from productions.forms import GraphicsIndexFilterForm, ProductionTagsForm, CreateGraphicsForm, ProductionDownloadLinkFormSet
-
 from productions.views.productions import apply_order
 
-
-from django.contrib.auth.decorators import login_required
-from django.utils import simplejson as json
-import datetime
 from read_only_mode import writeable_site_required
 
 from comments.models import Comment

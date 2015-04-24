@@ -1,5 +1,6 @@
+import json
+
 from django.http import HttpResponse
-from django.utils import simplejson
 
 from demoscene.models import ReleaserExternalLink
 from productions.models import ProductionLink
@@ -12,7 +13,7 @@ def prod_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.production_id}
 		for link in links
 	]
-	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
 
 
 def group_demozoo_ids_by_zxdemo_id(request):
@@ -21,7 +22,7 @@ def group_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.releaser_id}
 		for link in links
 	]
-	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
 
 
 def party_demozoo_ids_by_zxdemo_id(request):
@@ -30,4 +31,4 @@ def party_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.party_id}
 		for link in links
 	]
-	return HttpResponse(simplejson.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")

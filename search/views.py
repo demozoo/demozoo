@@ -1,6 +1,7 @@
+import json
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from django.utils import simplejson
 from django.shortcuts import render
 
 from unidecode import unidecode
@@ -9,6 +10,7 @@ from search.forms import SearchForm
 from demoscene.shortcuts import get_page
 from demoscene.index import name_indexer, name_indexer_with_real_names
 
+
 def search(request):
 	form = SearchForm(request.GET)
 	if form.is_valid():
@@ -16,7 +18,7 @@ def search(request):
 
 		has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
 		(name_results, results, resultset) = form.search(with_real_names=has_real_name_access)
-		
+
 		if len(name_results) == 1 and len(results) == 0:
 			messages.success(request, "One match found for '%s'" % query)
 			return HttpResponseRedirect(name_results[0].instance.get_absolute_url())
@@ -34,6 +36,7 @@ def search(request):
 		'resultset': resultset,
 	})
 
+
 def live_search(request):
 	query = request.GET.get('q')
 	if query:
@@ -44,4 +47,4 @@ def live_search(request):
 	else:
 		results = []
 
-	return HttpResponse(simplejson.dumps(results), mimetype="text/javascript")
+	return HttpResponse(json.dumps(results), mimetype="text/javascript")

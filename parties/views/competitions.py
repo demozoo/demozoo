@@ -1,7 +1,12 @@
 from __future__ import absolute_import  # ensure that 'from parties.foo' imports find the top-level parties module, not parties.views.parties
 
+import json
+import datetime
+
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 
 from demoscene.models import Edit
 from productions.models import ProductionType, Production
@@ -10,10 +15,6 @@ from parties.forms import CompetitionForm
 from platforms.models import Platform
 from demoscene.utils import result_parser
 
-from django.utils import simplejson as json
-from django.contrib.auth.decorators import login_required
-from django.db.models import Max
-import datetime
 from read_only_mode import writeable_site_required
 
 

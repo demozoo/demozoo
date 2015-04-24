@@ -1,11 +1,11 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
+import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import simplejson as json
 from django.db import transaction
 from django.db.models import Count
 from django.template.loader import render_to_string
@@ -27,6 +27,7 @@ from productions.models import Production, ProductionType, Byline, Credit, Scree
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
 from comments.forms import CommentForm
+
 
 def index(request):
 	queryset = Production.objects.filter(supertype='production')

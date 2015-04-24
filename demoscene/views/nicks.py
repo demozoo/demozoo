@@ -1,7 +1,8 @@
+import json
+
 from demoscene.utils.nick_search import NickSearch, BylineSearch
 from demoscene.models import NickVariant
 from django.http import HttpResponse
-from django.utils import simplejson as json
 
 
 def match(request):
