@@ -138,3 +138,10 @@ class TestReleaserGroups(TestCase):
 		with self.assertNumQueries(0):
 			yerzmyey_groups = sorted([group.name for group in yerzmyey.current_groups()])
 			self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
+
+	def test_members(self):
+		# should include subgroups and ex-members
+		raww_arse = Releaser.objects.get(name="Raww Arse")
+		with self.assertNumQueries(1):
+			raww_arse_members = sorted([member.name for member in raww_arse.members()])
+			self.assertEqual(raww_arse_members, ["Gasman", "Papaya Dezign", "Yerzmyey"])
