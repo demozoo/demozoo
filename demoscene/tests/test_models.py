@@ -186,3 +186,8 @@ class TestReleaserNicks(TestCase):
 
 		papaya_dezign = Releaser.objects.get(name="Papaya Dezign")
 		self.assertFalse(papaya_dezign.abbreviation)
+
+	def test_alternative_nicks(self):
+		gasman = Releaser.objects.get(name="Gasman")
+		gasman_nicks = sorted([nick.name for nick in gasman.alternative_nicks])
+		self.assertEqual(gasman_nicks, ["Shingebis"])
