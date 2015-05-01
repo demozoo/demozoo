@@ -166,3 +166,16 @@ class TestReleaserString(TestCase):
 		laesq = Releaser.objects.get(name="LaesQ")
 		# do not abbreviate groups that don't have abbreviations (duh)
 		self.assertEqual(laesq.name_with_affiliations(), "LaesQ / Papaya Dezign ^ RA")
+
+
+class TestReleaserPrimaryNick(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def test_get_primary_nick(self):
+		gasman = Releaser.objects.get(name="Gasman")
+		self.assertEqual(gasman.primary_nick, Nick.objects.get(name="Gasman"))
+
+	def test_primary_nick_should_use_prefetch_cache(self):
+		gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks').first()
+		with self.assertNumQueries(0):
+			self.assertEqual(gasman.primary_nick.name, "Gasman")
