@@ -67,11 +67,8 @@ class TestReleaserProductions(TestCase):
 
 	def test_get_productions(self):
 		gasman = Releaser.objects.get(name="Gasman")
-		gasman_productions = gasman.productions().order_by('title')
-		self.assertEqual(
-			list(gasman_productions.values_list('title', flat=True)),
-			["Madrielle", "Mooncheese"]
-		)
+		gasman_productions = sorted([prod.title for prod in gasman.productions()])
+		self.assertEqual(gasman_productions, ["Madrielle", "Mooncheese"])
 
 	def test_get_member_productions(self):
 		raww_arse = Releaser.objects.get(name="Raww Arse")
@@ -91,7 +88,9 @@ class TestReleaserProductions(TestCase):
 		fakeprod.author_nicks.add(fakescener.nicks.first())
 		fakeprod.author_affiliation_nicks.add(raww_arse.nicks.first())
 
-		raww_arse_member_prods = raww_arse.member_productions().order_by('title')
+		raww_arse_member_prods = sorted(
+			[prod.title for prod in raww_arse.member_productions()]
+		)
 
 		# "Fakeprod" should be returned because it is authored by "Fakescener / Raww Arse",
 		#     even though Fakescener is not actually a member of Raww Arse
@@ -99,7 +98,7 @@ class TestReleaserProductions(TestCase):
 		# "Laesq24 Giftro" should be returned because it is by Papaya Dezign,
 		#     a subgroup of Raww Arse, even though the byline doesn't mention Raww Arse
 		self.assertEqual(
-			list(raww_arse_member_prods.values_list('title', flat=True)),
+			raww_arse_member_prods,
 			["Fakeprod", "Laesq24 Giftro", "Madrielle"]
 		)
 
@@ -109,9 +108,12 @@ class TestReleaserCredits(TestCase):
 
 	def test_get_credits(self):
 		gasman = Releaser.objects.get(name="Gasman")
-		gasman_credits = gasman.credits().order_by('production__title')
+		gasman_credits = sorted([
+			(credit.production.title, credit.category)
+			for credit in gasman.credits()
+		])
 		self.assertEqual(
-			list(gasman_credits.values_list('production__title', 'category')),
+			gasman_credits,
 			[("Pondlife", "Code")]
 		)
 
