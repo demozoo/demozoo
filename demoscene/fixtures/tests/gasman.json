@@ -28,11 +28,31 @@
 	},
 
 	{
+		"pk": 2,
+		"model": "demoscene.releaser",
+		"fields": {
+			"name": "Raww Arse",
+			"is_group": true,
+			"created_at": "2014-01-01",
+			"updated_at": "2014-01-01"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "demoscene.nick",
+		"fields": {
+			"releaser": 2,
+			"name": "Raww Arse"
+		}
+	},
+
+	{
 		"pk": 1,
 		"model": "productions.production",
 		"fields": {
 			"title": "Madrielle",
 			"author_nicks": [1],
+			"author_affiliation_nicks": [3],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}

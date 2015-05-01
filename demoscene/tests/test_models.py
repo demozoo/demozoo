@@ -72,3 +72,11 @@ class TestReleaserProductions(TestCase):
 			list(gasman_productions.values_list('title', flat=True)),
 			["Madrielle", "Mooncheese"]
 		)
+
+	def test_get_member_productions(self):
+		raww_arse = Releaser.objects.get(name="Raww Arse")
+		raww_arse_member_prods = raww_arse.member_productions().order_by('title')
+		self.assertEqual(
+			list(raww_arse_member_prods.values_list('title', flat=True)),
+			["Madrielle"]
+		)
