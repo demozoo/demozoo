@@ -130,3 +130,9 @@ class TestReleaserGroups(TestCase):
 		yerzmyey = Releaser.objects.get(name="Yerzmyey")
 		yerzmyey_groups = sorted([group.name for group in yerzmyey.current_groups()])
 		self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
+
+	def test_current_groups_should_use_prefetch_cache(self):
+		yerzmyey = Releaser.objects.filter(name="Yerzmyey").prefetch_related('group_memberships__group').first()
+		with self.assertNumQueries(0):
+			yerzmyey_groups = sorted([group.name for group in yerzmyey.current_groups()])
+			self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
