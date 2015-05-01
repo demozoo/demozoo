@@ -102,3 +102,15 @@ class TestReleaserProductions(TestCase):
 			list(raww_arse_member_prods.values_list('title', flat=True)),
 			["Fakeprod", "Laesq24 Giftro", "Madrielle"]
 		)
+
+
+class TestReleaserCredits(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def test_get_credits(self):
+		gasman = Releaser.objects.get(name="Gasman")
+		gasman_credits = gasman.credits().order_by('production__title')
+		self.assertEqual(
+			list(gasman_credits.values_list('production__title', 'category')),
+			[("Pondlife", "Code")]
+		)
