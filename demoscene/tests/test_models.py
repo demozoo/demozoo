@@ -168,7 +168,7 @@ class TestReleaserString(TestCase):
 		self.assertEqual(laesq.name_with_affiliations(), "LaesQ / Papaya Dezign ^ RA")
 
 
-class TestReleaserPrimaryNick(TestCase):
+class TestReleaserNicks(TestCase):
 	fixtures = ['tests/gasman.json']
 
 	def test_get_primary_nick(self):
@@ -179,3 +179,10 @@ class TestReleaserPrimaryNick(TestCase):
 		gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks').first()
 		with self.assertNumQueries(0):
 			self.assertEqual(gasman.primary_nick.name, "Gasman")
+
+	def test_abbreviation(self):
+		raww_arse = Releaser.objects.get(name="Raww Arse")
+		self.assertEqual(raww_arse.abbreviation, "RA")
+
+		papaya_dezign = Releaser.objects.get(name="Papaya Dezign")
+		self.assertFalse(papaya_dezign.abbreviation)
