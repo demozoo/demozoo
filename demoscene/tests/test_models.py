@@ -114,3 +114,17 @@ class TestReleaserCredits(TestCase):
 			list(gasman_credits.values_list('production__title', 'category')),
 			[("Pondlife", "Code")]
 		)
+
+
+class TestReleaserGroups(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def test_get_groups(self):
+		yerzmyey = Releaser.objects.get(name="Yerzmyey")
+		yerzmyey_groups = sorted([group.name for group in yerzmyey.groups()])
+		self.assertEqual(yerzmyey_groups, ["Hooy-Program", "Raww Arse"])
+
+	def test_get_current_groups(self):
+		yerzmyey = Releaser.objects.get(name="Yerzmyey")
+		yerzmyey_groups = sorted([group.name for group in yerzmyey.current_groups()])
+		self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
