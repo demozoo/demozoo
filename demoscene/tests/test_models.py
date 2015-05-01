@@ -144,4 +144,25 @@ class TestReleaserGroups(TestCase):
 		raww_arse = Releaser.objects.get(name="Raww Arse")
 		with self.assertNumQueries(1):
 			raww_arse_members = sorted([member.name for member in raww_arse.members()])
-			self.assertEqual(raww_arse_members, ["Gasman", "Papaya Dezign", "Yerzmyey"])
+			self.assertEqual(
+				raww_arse_members,
+				["Gasman", "LaesQ", "Papaya Dezign", "Yerzmyey"]
+			)
+
+
+class TestReleaserString(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def test_name_with_affiliations(self):
+		yerzmyey = Releaser.objects.get(name="Yerzmyey")
+		# groups list should not contain ex-groups;
+		# this one is short enough to not need abbreviation
+		self.assertEqual(yerzmyey.name_with_affiliations(), "Yerzmyey / Hooy-Program")
+
+		gasman = Releaser.objects.get(name="Gasman")
+		# groups list in full is >=20 chars, so abbreviate
+		self.assertEqual(gasman.name_with_affiliations(), "Gasman / H-Prg ^ RA")
+
+		laesq = Releaser.objects.get(name="LaesQ")
+		# do not abbreviate groups that don't have abbreviations (duh)
+		self.assertEqual(laesq.name_with_affiliations(), "LaesQ / Papaya Dezign ^ RA")
