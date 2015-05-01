@@ -63,32 +63,11 @@ class TestReleaser(TestCase):
 
 
 class TestReleaserProductions(TestCase):
-	def setUp(self):
-		self.gasman = Releaser.objects.create(
-			name="Gasman",
-			is_group=False,
-			updated_at=datetime.datetime.now()
-		)
-		self.gasman_nick = self.gasman.nicks.get(name="Gasman")
-		self.shingebis_nick = Nick.objects.create(
-			releaser=self.gasman,
-			name="Shingebis"
-		)
-
-		self.madrielle = Production.objects.create(
-			title="Madrielle",
-			updated_at=datetime.datetime.now()
-		)
-		self.madrielle.author_nicks.add(self.gasman_nick)
-
-		self.mooncheese = Production.objects.create(
-			title="Mooncheese",
-			updated_at=datetime.datetime.now()
-		)
-		self.mooncheese.author_nicks.add(self.shingebis_nick)
+	fixtures = ['tests/gasman.json']
 
 	def test_get_productions(self):
-		gasman_productions = self.gasman.productions().order_by('title')
+		gasman = Releaser.objects.get(name="Gasman")
+		gasman_productions = gasman.productions().order_by('title')
 		self.assertEqual(
 			list(gasman_productions.values_list('title', flat=True)),
 			["Madrielle", "Mooncheese"]
