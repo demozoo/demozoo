@@ -13,18 +13,12 @@
 	{
 		"pk": 1,
 		"model": "demoscene.nick",
-		"fields": {
-			"releaser": 1,
-			"name": "Gasman"
-		}
+		"fields": {"releaser": 1, "name": "Gasman"}
 	},
 	{
 		"pk": 2,
 		"model": "demoscene.nick",
-		"fields": {
-			"releaser": 1,
-			"name": "Shingebis"
-		}
+		"fields": {"releaser": 1, "name": "Shingebis"}
 	},
 
 	{
@@ -40,10 +34,34 @@
 	{
 		"pk": 3,
 		"model": "demoscene.nick",
+		"fields": {"releaser": 2, "name": "Raww Arse"}
+	},
+
+	{
+		"pk": 3,
+		"model": "demoscene.releaser",
 		"fields": {
-			"releaser": 2,
-			"name": "Raww Arse"
+			"name": "Papaya Dezign",
+			"is_group": true,
+			"created_at": "2014-01-01",
+			"updated_at": "2014-01-01"
 		}
+	},
+	{
+		"pk": 4,
+		"model": "demoscene.nick",
+		"fields": {"releaser": 3, "name": "Papaya Dezign"}
+	},
+
+	{
+		"pk": 1,
+		"model": "demoscene.membership",
+		"fields": {"member": 1, "group": 2}
+	},
+	{
+		"pk": 2,
+		"model": "demoscene.membership",
+		"fields": {"member": 3, "group": 2}
 	},
 
 	{
@@ -63,6 +81,16 @@
 		"fields": {
 			"title": "Mooncheese",
 			"author_nicks": [2],
+			"created_at": "2014-01-01",
+			"updated_at": "2014-01-01"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "productions.production",
+		"fields": {
+			"title": "Laesq24 Giftro",
+			"author_nicks": [4],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}

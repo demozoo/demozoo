@@ -75,8 +75,30 @@ class TestReleaserProductions(TestCase):
 
 	def test_get_member_productions(self):
 		raww_arse = Releaser.objects.get(name="Raww Arse")
+
+		# Create a fake prod credited to Fakescener / Raww Arse,
+		# to check that prods can still be returned as member prods
+		# even if the author is not actually a member of the group
+		fakescener = Releaser.objects.create(
+			name="Fakescener",
+			is_group=False,
+			updated_at=datetime.datetime.now()  # FIXME: having to pass updated_at is silly
+		)
+		fakeprod = Production.objects.create(
+			title="Fakeprod",
+			updated_at=datetime.datetime.now()
+		)
+		fakeprod.author_nicks.add(fakescener.nicks.first())
+		fakeprod.author_affiliation_nicks.add(raww_arse.nicks.first())
+
 		raww_arse_member_prods = raww_arse.member_productions().order_by('title')
+
+		# "Fakeprod" should be returned because it is authored by "Fakescener / Raww Arse",
+		#     even though Fakescener is not actually a member of Raww Arse
+		# "Madrielle" should be returned because it is authored by "Gasman / Raww Arse"
+		# "Laesq24 Giftro" should be returned because it is by Papaya Dezign,
+		#     a subgroup of Raww Arse, even though the byline doesn't mention Raww Arse
 		self.assertEqual(
 			list(raww_arse_member_prods.values_list('title', flat=True)),
-			["Madrielle"]
+			["Fakeprod", "Laesq24 Giftro", "Madrielle"]
 		)
