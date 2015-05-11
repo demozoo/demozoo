@@ -44,6 +44,14 @@ class FuzzyDate():
 		else:
 			return self.date.strftime("%e %B %Y")
 
+	def numeric_format(self):
+		if self.precision == 'y':
+			return self.date.strftime("%Y")
+		elif self.precision == 'm':
+			return self.date.strftime("%Y-%m")
+		else:
+			return self.date.strftime("%Y-%m-%d")
+
 	# Returns true if the 'other' date matches this one
 	# as far as the precision of the two dates go. Always
 	# returns true for None, because None denotes a date which
