@@ -13,6 +13,7 @@ django-debug-toolbar==1.0
 django-taggit==0.11.2
 django-treebeard==2.0b1
 djangorestframework==3.0.5
+djangorestframework-jsonp==1.0.0
 psycopg2==2.5.3
 pyrecoil==0.1.1
 redis==2.7.2

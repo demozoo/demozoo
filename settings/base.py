@@ -217,6 +217,11 @@ REST_FRAMEWORK = {
 	# do not support any authentication mechanism; anonymous read-only access only.
 	'DEFAULT_AUTHENTICATION_CLASSES': [],
 	'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+	'DEFAULT_RENDERER_CLASSES': [
+		'rest_framework.renderers.JSONRenderer',
+		'rest_framework.renderers.BrowsableAPIRenderer',
+		'rest_framework_jsonp.renderers.JSONPRenderer',
+	],
 	'PAGINATE_BY': 100
 }
 
