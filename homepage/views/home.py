@@ -44,7 +44,7 @@ def home(request):
 	).order_by('-created_at')[:5]
 
 	upcoming_parties = Party.objects.filter(
-		start_date_date__gt=datetime.datetime.now()
+		end_date_date__gt=datetime.datetime.now()
 	).order_by('start_date_date')[:8]
 
 	if request.user.is_staff:
