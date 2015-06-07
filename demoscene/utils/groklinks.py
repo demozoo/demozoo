@@ -1115,40 +1115,40 @@ class ZxArtArtist(ZxArtEntry):
 class ZxArtMusician(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+)/?', re.I),
 	]
 
 
 class ZxArtPicture(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
 	]
 
 
 class ZxArtMusic(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
 	]
 
 
 class ZxArtPartyGraphics(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/parties/([^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/pati/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/parties/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/pati/([^\/]+/[^\/]+)/?', re.I),
 	]
 
 
 class ZxArtPartyMusic(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/music/parties/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/parties/([^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/pati/([^\/]+/[^\/]+)/', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/parties/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/pati/([^\/]+/[^\/]+)/?', re.I),
 	]
 
 
