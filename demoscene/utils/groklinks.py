@@ -1265,7 +1265,7 @@ class StonishDisk(BaseUrl):
 
 
 class ZxTunesArtist(BaseUrl):
-	canonical_format = "http://zxtunes.com/author.php?id=%s"
+	canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
 	tests = [
 		querystring_match(r'http://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
 	]
