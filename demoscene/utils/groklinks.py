@@ -1264,6 +1264,16 @@ class StonishDisk(BaseUrl):
 	html_title_format = "%s on Stonish"
 
 
+class ZxTunesArtist(BaseUrl):
+	canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
+	tests = [
+		querystring_match(r'http://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
+	]
+	html_link_class = "zxtunes"
+	html_link_text = "ZXTunes"
+	html_title_format = "%s on ZXTunes"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
@@ -1275,7 +1285,7 @@ RELEASER_LINK_TYPES = [
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage,
-	ZxArtArtist, ZxArtMusician, InternetArchivePage,
+	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
 	WaybackMachinePage, BaseUrl,
 ]
 
