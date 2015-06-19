@@ -1,13 +1,15 @@
+from itertools import groupby
+import datetime
+
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
 from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation
 from demoscene.models import Releaser, Nick, Membership, Edit
 from demoscene.forms.releaser import ScenerEditLocationForm, ScenerEditRealNameForm, CreateScenerForm, ScenerMembershipForm
 
-from django.contrib.auth.decorators import login_required
-import datetime
 from read_only_mode import writeable_site_required
 
 
@@ -39,12 +41,38 @@ def show(request, scener_id, edit_mode=False):
 
 	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
+	credits = scener.credits().select_related('nick', 'production__default_screenshot')\
+		.prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types')\
+		.defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')\
+		.order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id')
+
+	# reorganise credits queryset into a list of
+	# (production, [ (nick, [credits_for_that_nick]) ]) records
+	credits_by_production = groupby(credits, lambda credit: credit.production)
+	# credits_by_production = list of (production, [credits]) records
+
+	credits_by_production_nick = []
+	for (production, credits) in credits_by_production:
+		for (nick, credits) in groupby(credits, lambda credit: credit.nick):
+			record = (production, nick, list(credits))
+			credits_by_production_nick.append(record)
+
+	production_ids = [production.id for production, credits, nick in credits_by_production_nick]
+
+	productions = scener.productions().select_related('default_screenshot')\
+		.exclude(id__in=production_ids)\
+		.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')\
+		.defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes')\
+		.order_by('-release_date_date', '-title')
+
+	credits_with_prods = credits_by_production_nick + [(prod, None, None) for prod in productions]
+	credits_with_prods.sort(key=lambda item: item[0].release_date_date, reverse=True)
+
 	return render(request, 'sceners/show.html', {
 		'scener': scener,
 		'external_links': external_links,
 		'editing_groups': (request.GET.get('editing') == 'groups'),
-		'productions': scener.productions().select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', '-title'),
-		'credits': scener.credits().select_related('nick', 'production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes').order_by('-production__release_date_date', 'production__title', 'production__id', 'nick__name', 'nick__id'),
+		'credits': credits_with_prods,
 		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
 		'user_has_real_name_access': user_has_real_name_access
 	})
