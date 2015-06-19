@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags releaser_tags compress %}
 {% load safe_markdown %}
 {% load url from future %}
 
@@ -190,9 +190,7 @@
 				</ul>
 			{% endif %}
 
-			{% with scener as releaser %}
-				{% include "shared/credited_production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-			{% endwith %}
+			{% combined_releases scener %}
 		</div>
 	</div>
 
