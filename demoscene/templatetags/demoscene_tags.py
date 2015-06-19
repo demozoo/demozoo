@@ -1,4 +1,5 @@
 from django import template
+from django.template.defaultfilters import date as date_format
 from django.utils.html import format_html
 
 from demoscene.models import Releaser, Nick, Edit
@@ -48,12 +49,31 @@ def field_label(field):
 	return format_html(u'<label for="{0}" class="field_label">{1}</label>', field.id_for_label, field.label)
 
 
-@register.inclusion_tag('shared/date_range.html')
+@register.simple_tag
 def date_range(start_date, end_date):
-	return {
-		'start_date': start_date,
-		'end_date': end_date,
-	}
+	if start_date.precision != end_date.precision:
+		return "%s - %s" % (start_date.explicit_format(), end_date.explicit_format())
+	elif start_date.precision == 'y':
+		if start_date.date.year != end_date.date.year:
+			return "%s - %s" % (date_format(start_date.date, arg="Y"), date_format(end_date.date, arg="Y"))
+		else:
+			return date_format(start_date.date, arg="Y")
+	elif start_date.precision == 'm':
+		if start_date.date.year != end_date.date.year:
+			return "%s - %s" % (date_format(start_date.date, arg="F Y"), date_format(end_date.date, arg="F Y"))
+		elif start_date.date.month != end_date.date.month:
+			return "%s - %s" % (date_format(start_date.date, arg="F"), date_format(end_date.date, arg="F Y"))
+		else:
+			return date_format(start_date.date, arg="F Y")
+	else:
+		if start_date.date.year != end_date.date.year:
+			return "%s - %s" % (date_format(start_date.date, arg="jS F Y"), date_format(end_date.date, arg="jS F Y"))
+		elif start_date.date.month != end_date.date.month:
+			return "%s - %s" % (date_format(start_date.date, arg="jS F"), date_format(end_date.date, arg="jS F Y"))
+		elif start_date.date.day != end_date.date.day:
+			return "%s - %s" % (date_format(start_date.date, arg="jS"), date_format(end_date.date, arg="jS F Y"))
+		else:
+			return date_format(start_date.date, arg="jS F Y")
 
 
 @register.inclusion_tag('shared/last_edited_by.html', takes_context=True)
