@@ -102,8 +102,8 @@
 				{% endfor %}
 			</div>
 
-			<div class="now_serving">
-				<h3>Now serving...</h3>
+			<div class="now_serving block">
+				<h3 class="block_heading">Now serving</h3>
 				{% site_stats as stats %}
 				<ul>
 					<li class="productions"><a href="{% url 'productions' %}">{{ stats.production_count }} production{{ stats.production_count|pluralize }}</a></li>
