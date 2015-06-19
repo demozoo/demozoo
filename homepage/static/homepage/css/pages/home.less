@@ -82,14 +82,11 @@
 
 			h2 {
 				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-				float: left;
 				line-height: 1.3em;
-				margin-bottom: 8px;
 			}
 
 			.date {
-				float: right;
-				padding-left: 8px;
+				text-align: center;
 				text-transform: uppercase;
 				font-weight: bold;
 				color: #888;
@@ -97,6 +94,7 @@
 
 			p {
 				clear: both;
+				margin-top: 0;
 			}
 
 			&.private {
@@ -285,7 +283,12 @@
 
 		.news {
 			.news_story .story_image {
-				display: none;
+				img {
+					display: none;
+				}
+				.date {
+					text-align: left;
+				}
 			}
 		}
 	}
