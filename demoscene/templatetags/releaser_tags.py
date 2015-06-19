@@ -33,7 +33,7 @@ def combined_releases(releaser):
 		.order_by('-release_date_date', '-title')
 
 	credits_with_prods = credits_by_production_nick + [(prod, None, None) for prod in productions]
-	credits_with_prods.sort(key=lambda item: item[0].release_date_date, reverse=True)
+	credits_with_prods.sort(key=lambda item: (item[0].release_date_date is None, item[0].release_date_date), reverse=True)
 
 	return {
 		'releaser': releaser,
