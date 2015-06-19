@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags releaser_tags compress %}
 {% load safe_markdown %}
 {% load url from future %}
 
@@ -199,33 +199,18 @@
 					</li>
 				</ul>
 			{% endif %}
-			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-			
+			{% combined_releases group %}
 		</div>
 
 		{% if member_productions %}
 			<div class="panel">
 				<h3 class="member_productions_header">Member productions</h3>
+
 				{% with member_productions as productions %}
 					{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
 				{% endwith %}
 			</div>
 		{% endif %}
-		
-		<div class="panel editable_chunk">
-			<h3 class="credits_header">Credited on</h3>
-			{% if site_is_writeable %}
-				<ul class="actions">
-					<li>
-						<a href="{% url 'releaser_add_credit' group.id %}" class="action_button icon add open_in_lightbox edit_chunk">Add credit</a>
-					</li>
-				</ul>
-			{% endif %}
-
-			{% with group as releaser %}
-				{% include "shared/credited_production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-			{% endwith %}
-		</div>
 	</div>
 
 	{% last_edited_by group %}

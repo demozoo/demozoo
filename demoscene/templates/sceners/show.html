@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags releaser_tags compress %}
 {% load safe_markdown %}
 {% load url from future %}
 
@@ -190,22 +190,7 @@
 				</ul>
 			{% endif %}
 
-			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-		</div>
-
-		<div class="panel editable_chunk">
-			<h3 class="credits_header">Credited on</h3>
-			{% if site_is_writeable %}
-				<ul class="actions">
-					<li>
-						<a href="{% url 'releaser_add_credit' scener.id %}" class="action_button icon add open_in_lightbox edit_chunk">Add credit</a>
-					</li>
-				</ul>
-			{% endif %}
-
-			{% with scener as releaser %}
-				{% include "shared/credited_production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-			{% endwith %}
+			{% combined_releases scener %}
 		</div>
 	</div>
 

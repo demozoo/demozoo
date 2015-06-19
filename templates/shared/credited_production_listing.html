@@ -12,59 +12,43 @@
 		<col width="10%" />
 		<col width="40%" />
 	{% endif %}
-	{% regroup credits by production as credits_by_production %}
 
-	{% for production_with_credits in credits_by_production %}
-		{% comment %}
-			production_with_credits is a structure of
-				{'grouper': production, 'list': credits}
-			Need to regroup this credits list further by nick, so that a production with
-			multiple credits to the same scener under different nicks appears multiple times
-			in the list
-		{% endcomment %}
-		{% regroup production_with_credits.list by nick as production_credits_by_nick %}
-
-		{% for nick_with_credits in production_credits_by_nick %}
-			{% comment %}
-				nick_with_credits is a structure of
-					{'grouper': nick, 'list': credits}
-			{% endcomment %}
-
-			<tr>
-				{% if show_screenshots %}
-					<td>
-						{% if production_with_credits.grouper.default_screenshot %}
-							{% microthumb production_with_credits.grouper.default_screenshot %}
-						{% endif %}
-					</td>
-				{% endif %}
+	{% for production, nick, credits in credits %}
+		<tr>
+			{% if show_screenshots %}
 				<td>
-					<div class="title">
-						<a href="{{ production_with_credits.grouper.get_absolute_url }}">{{ production_with_credits.grouper.title }}</a>
-						-
-						{% for credit in nick_with_credits.list %}
-							{{ credit.description }}{% if not forloop.last %},{% endif %}
-						{% endfor %}
-						{% if nick_with_credits.grouper.name != releaser.name %}
-							<i>(as {{ nick_with_credits.grouper.name }})</i>
-						{% endif %}
-					</div>
-					{% if show_prod_types %}
-						<div class="prod_type">{{ production_with_credits.grouper.platforms_and_types_list }}</div>
+					{% if production.default_screenshot %}
+						{% microthumb production.default_screenshot %}
 					{% endif %}
 				</td>
-				<td>{{ production_with_credits.grouper.release_date.short_format }}</td>
-				<td>{% byline production_with_credits.grouper %}</td>
-
-				{% if editing and site_is_writeable %}
-					<td>
-						<a href="{% url 'releaser_edit_credit' nick_with_credits.grouper.releaser_id nick_with_credits.grouper.id production_with_credits.grouper.id %}" class="open_in_lightbox">
-							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-						</a>
-					</td>
+			{% endif %}
+			<td class="icon icon_{{ production.supertype }}">
+				<div class="title">
+					<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+					{% if credits %}
+						-
+						{% for credit in credits %}
+							{{ credit.description }}{% if not forloop.last %},{% endif %}
+						{% endfor %}
+						{% if nick.name != releaser.name %}
+							<i>(as {{ nick.name }})</i>
+						{% endif %}
+					{% endif %}
+				</div>
+				{% if show_prod_types %}
+					<div class="prod_type">{{ production.platforms_and_types_list }}</div>
 				{% endif %}
-			</tr>
-		{% endfor %}
+			</td>
+			<td>{{ production.release_date.short_format }}</td>
+			<td>{% byline production %}</td>
 
+			{% if editing and site_is_writeable %}
+				<td>
+					<a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
+						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+					</a>
+				</td>
+			{% endif %}
+		</tr>
 	{% endfor %}
 </table>
