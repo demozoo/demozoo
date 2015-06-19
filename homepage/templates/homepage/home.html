@@ -120,7 +120,7 @@
 				<div class="forum_topics block">
 					<a href="{% url 'forums' %}"><h3 class="block_heading">Discussions</h3></a>
 					{% include "forums/_topics.html" with topics=forum_topics %}
-					<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
+					<p class="more"><a href="{% url 'forums' %}">All discussions</a></p>
 				</div>
 			{% endif %}
 
@@ -142,7 +142,7 @@
 						</li>
 					{% endfor %}
 				</ul>
-				<div class="more"><a href="{% url 'productions' %}">More releases</a></div>
+				<p class="more"><a href="{% url 'productions' %}">More releases</a></p>
 			</div>
 
 			<div class="new_additions block">
