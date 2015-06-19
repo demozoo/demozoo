@@ -43,9 +43,17 @@ def home(request):
 		'commentable'
 	).order_by('-created_at')[:5]
 
+	today = datetime.date.today()
+	try:
+		three_months_time = today.replace(day=1, month=today.month+3)
+	except ValueError:
+		three_months_time = today.replace(day=1, month=today.month-9, year=today.year+1)
+
 	upcoming_parties = Party.objects.filter(
-		end_date_date__gte=datetime.date.today()
-	).order_by('start_date_date')[:8]
+		end_date_date__gte=today, start_date_date__lt=three_months_time
+	).exclude(
+		start_date_precision='y'
+	).order_by('start_date_date')
 
 	if request.user.is_staff:
 		news_stories = NewsStory.objects.select_related('image').order_by('-created_at')[:6]

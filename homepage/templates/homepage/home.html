@@ -40,25 +40,30 @@
 			<div style="clear: both;"></div>
 
 			{% if upcoming_parties %}
-				<div class="upcoming_parties">
-					<h3>Upcoming parties...</h3>
-					<ul>
-						{% for party in upcoming_parties %}
-							<li>
-								<a href="{% url 'party' party.id %}">
-									<span class="name">
-										{% if party.is_online %}
-											<img src="/static/images/icons/computer.png" alt="[Online]" title="Online" />
-										{% elif party.country_code %}
-											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" title="{{ party.location }}" />
-										{% endif %}
-										{{ party.name }}
-									</span>
-									{% date_range party.start_date party.end_date %}
-								</a>
-							</li>
+				<div class="upcoming_parties block">
+					<h3 class="block_heading">Upcoming parties</h3>
+					{% regroup upcoming_parties by start_date.date.month as month_list %}
+					<table>
+						{% for month in month_list %}
+							<tr>
+								<th>{{ month.list.0.start_date.date|date:"F" }}</th>
+								<td>
+									{% for party in month.list %}
+										<li>
+											<a href="{% url 'party' party.id %}" title="{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
+												{% if party.is_online %}
+													<img src="/static/images/icons/computer.png" alt="[Online]" />
+												{% elif party.country_code %}
+													<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
+												{% endif %}
+												{{ party.name }}
+											</a>
+										</li>
+									{% endfor %}
+								</td>
+							</tr>
 						{% endfor %}
-					</ul>
+					</table>
 				</div>
 			{% endif %}
 

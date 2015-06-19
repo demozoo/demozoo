@@ -1,32 +1,41 @@
 .homepage {
 
 	.upcoming_parties {
-		clear: both;
-		margin-top: 10px;
-		background-color: #eee;
-		padding: 4px;
-		h3 {
-			display: inline;
-		}
-		ul {
-			display: inline;
-		}
-		li {
-			padding-left: 16px;
-			background-repeat: no-repeat;
-			background-position: left center;
-			background-image: url(/static/images/icons/mini_bullet.png);
-			display: inline;
+		table {
+			clear: both;
+			padding-top: 10px;
+
+			tr {
+				padding-bottom: 5px;
+			}
+			th {
+				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+				vertical-align: top;
+				padding-bottom: 5px;
+				line-height: 1.5em;
+			}
+			td {
+				vertical-align: top;
+				padding-bottom: 5px;
+				line-height: 1.5em;
+
+				li {
+					padding-left: 16px;
+					background-repeat: no-repeat;
+					background-position: left center;
+					display: block;
+					float: left;
+				}
+
+			}
 		}
 		a {
 			text-decoration: none;
 			color: #444;
+			font-weight: bold;
 			&:hover {
 				text-decoration: underline;
 			}
-		}
-		.name {
-			font-weight: bold;
 		}
 	}
 
