@@ -111,15 +111,15 @@
 
 		<div class="col span_1_of_3">
 			{% if forum_topics %}
-				<div class="forum_topics">
-					<a href="{% url 'forums' %}"><h3 class="section_heading">Discussions</h3></a>
+				<div class="forum_topics block">
+					<a href="{% url 'forums' %}"><h3 class="block_heading">Discussions</h3></a>
 					{% include "forums/_topics.html" with topics=forum_topics %}
 					<div class="more"><a href="{% url 'forums' %}">All discussions</a></div>
 				</div>
 			{% endif %}
 
-			<div class="new_releases">
-				<h3 class="section_heading">New releases</h3>
+			<div class="new_releases block">
+				<h3 class="block_heading">New releases</h3>
 				<ul>
 					{% for prod in latest_releases %}
 						<li>
@@ -139,8 +139,8 @@
 				<div class="more"><a href="{% url 'productions' %}">More releases</a></div>
 			</div>
 
-			<div class="new_additions">
-				<h3 class="section_heading">New in the archive</h3>
+			<div class="new_additions block">
+				<h3 class="block_heading">New in the archive</h3>
 				<ul>
 					{% for prod in latest_additions %}
 						<li>
@@ -166,8 +166,8 @@
 				</p>
 			</div>
 
-			<div class="comments">
-				<h3 class="section_heading">Comments</h3>
+			<div class="comments block">
+				<h3 class="block_heading">Comments</h3>
 				<ul>
 					{% for comment in comments %}
 						<li>
