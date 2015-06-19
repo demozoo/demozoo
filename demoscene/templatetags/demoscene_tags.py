@@ -6,19 +6,20 @@ from productions.models import Production
 
 register = template.Library()
 
+
 @register.inclusion_tag('shared/nick_variants.html')
 def nick_variants(nick):
 	return {'variants': nick.nick_variant_and_abbreviation_list}
+
 
 @register.inclusion_tag('shared/scener_with_affiliations.html')
 def scener_with_affiliations(releaser_or_nick):
 	if isinstance(releaser_or_nick, Nick):
 		releaser = releaser_or_nick.releaser
-	else: # assume a Releaser
+	else:  # assume a Releaser
 		releaser = releaser_or_nick
-		name = releaser_or_nick.name
 	groups = releaser.current_groups()
-	
+
 	return {
 		'name': releaser_or_nick.name,
 		'releaser': releaser,
@@ -27,9 +28,11 @@ def scener_with_affiliations(releaser_or_nick):
 		'abbreviate_groups': (sum([len(group.name) for group in groups]) >= 20),
 	}
 
+
 @register.inclusion_tag('shared/releaser_flag.html')
 def releaser_flag(releaser):
 	return {'releaser': releaser}
+
 
 @register.inclusion_tag('shared/byline.html')
 def byline(production):
@@ -39,9 +42,11 @@ def byline(production):
 		'affiliations': [(nick, nick.releaser) for nick in production.author_affiliation_nicks_with_groups()],
 	}
 
+
 @register.simple_tag
 def field_label(field):
 	return format_html(u'<label for="{0}" class="field_label">{1}</label>', field.id_for_label, field.label)
+
 
 @register.inclusion_tag('shared/date_range.html')
 def date_range(start_date, end_date):
@@ -58,6 +63,7 @@ def last_edited_by(context, item):
 		'edit': edit,
 		'item': item,
 	}
+
 
 def thumbnail_params_for_size(screenshot, target_width, target_height):
 	width, height = screenshot.thumb_dimensions_to_fit(target_width, target_height)
