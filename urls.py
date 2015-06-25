@@ -94,4 +94,5 @@ urlpatterns += patterns('',
 	(r'^sceneorg/', include('sceneorg.urls')),
 	(r'^forums/', include('forums.urls')),
 	(r'^api/', include('api.urls')),
+	(r'^users/', include('users.urls')),
 )

@@ -588,7 +588,7 @@ class Edit(models.Model):
 	focus2 = generic.GenericForeignKey('focus2_content_type', 'focus2_object_id')
 
 	description = models.TextField()
-	user = models.ForeignKey(User)
+	user = models.ForeignKey(User, related_name='edits')
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	admin_only = models.BooleanField(default=False)

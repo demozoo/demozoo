@@ -129,6 +129,7 @@ INSTALLED_APPS = (
 	'comments',
 	'forums',
 	'zxdemo',
+	'users',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
