@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load compress %}
+
+{% block html_title %}Users - Demozoo{% endblock %}
+
+{% block base_main %}
+	<h2>Users</h2>
+
+	<ul>
+		{% for user in users %}
+			<li><a href="{% url 'user' user.id %}">{{ user.username }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

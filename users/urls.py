@@ -1,9 +1,9 @@
 from django.conf.urls import url
 from django.views.generic import RedirectView
 
-from users.views import show
+from users.views import show, index
 
 urlpatterns = [
-	url(r'^$', RedirectView.as_view(pattern_name='home')),
+	url(r'^$', index, {}, 'users_index'),
 	url(r'^(\d+)/$', show, {}, 'user'),
 ]

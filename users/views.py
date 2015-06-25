@@ -1,7 +1,17 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 
 from demoscene.shortcuts import get_page
+
+
+def index(request):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	users = User.objects.order_by('username')
+	return render(request, 'users/index.html', {
+		'users': users,
+	})
 
 
 def show(request, user_id):
