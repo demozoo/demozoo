@@ -49,8 +49,8 @@ def demoshow(request):
 		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
 	])
 	for prod in exe_prods + video_prods:
-		platforms = sorted(prod.platforms.all(), key=lambda p:p.name)
-		prod_types = sorted(prod.types.all(), key=lambda t:t.name)
+		platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
+		prod_types = sorted(prod.types.all(), key=lambda t: t.name)
 		csvfile.writerow([
 			(u'http://demozoo.org' + prod.get_absolute_url()).encode('utf-8'),
 			prod.title.encode('utf-8'),
@@ -58,9 +58,9 @@ def demoshow(request):
 			prod.release_date,
 			', '.join([typ.name for typ in prod_types]).encode('utf-8'),
 			', '.join([platform.name for platform in platforms]).encode('utf-8'),
-			' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]).encode('utf-8'),
-			' / '.join([link.url for link in prod.links.all() if link.is_streaming_video]).encode('utf-8'),
-			' / '.join([link.url for link in prod.links.all() if link.link_class == 'PouetProduction']).encode('utf-8'),
+			' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]),
+			' / '.join([link.url for link in prod.links.all() if link.is_streaming_video]),
+			' / '.join([link.url for link in prod.links.all() if link.link_class == 'PouetProduction']),
 		])
 
 	return response
