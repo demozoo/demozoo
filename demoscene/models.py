@@ -412,8 +412,8 @@ class NickVariant(models.Model):
 		groups_only = kwargs.get('groups_only', False)
 		sceners_only = kwargs.get('sceners_only', False)
 
-		groups = [name.lower() for name in kwargs.get('groups', [])]
-		members = [name.lower() for name in kwargs.get('members', [])]
+		groups = [name.lower() for name in kwargs.get('group_names', [])]
+		members = [name.lower() for name in kwargs.get('member_names', [])]
 
 		if query:
 			if exact:

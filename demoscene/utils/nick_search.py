@@ -67,7 +67,7 @@ class NickSearch():
 		nick_variants = NickVariant.autocompletion_search(
 			search_term, exact=True,
 			sceners_only=sceners_only, groups_only=groups_only,
-			groups=group_names, members=member_names)
+			group_names=group_names, member_names=member_names)
 
 		self.suggestions = []
 
@@ -182,7 +182,7 @@ class BylineSearch():
 				autocompletion = NickVariant.autocomplete(
 					affiliation_names[-1],
 					significant_whitespace=False,
-					groups_only=True, members=[name.strip() for name in author_names])
+					groups_only=True, member_names=[name.strip() for name in author_names])
 				affiliation_names[-1] += autocompletion
 				self.search_term += autocompletion
 			elif author_names:
