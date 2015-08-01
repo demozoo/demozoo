@@ -60,6 +60,7 @@ class NickSelection():
 class NickSearch():
 	def __init__(self, search_term, selection=None,
 		sceners_only=False, groups_only=False,
+		group_ids=[],
 		group_names=[], member_names=[]):
 
 		self.search_term = search_term
@@ -67,6 +68,7 @@ class NickSearch():
 		nick_variants = NickVariant.autocompletion_search(
 			search_term, exact=True,
 			sceners_only=sceners_only, groups_only=groups_only,
+			group_ids=group_ids,
 			group_names=group_names, member_names=member_names)
 
 		self.suggestions = []

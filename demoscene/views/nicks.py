@@ -10,12 +10,16 @@ def match(request):
 	autocomplete = request.GET.get('autocomplete', False)
 	sceners_only = request.GET.get('sceners_only', False)
 	groups_only = request.GET.get('groups_only', False)
+	group_ids = request.GET.get('group_ids')
 
 	# irritating workaround for not being able to pass an "omit this parameter" value to jquery
 	if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
 		autocomplete = False
 
 	filters = {}  # also doubles up as options to pass to NickSearch
+
+	if group_ids:
+		filters['group_ids'] = group_ids.split(',')
 	if sceners_only:
 		filters['sceners_only'] = True
 	elif groups_only:
