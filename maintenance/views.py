@@ -368,7 +368,7 @@ def duplicate_external_links(request):
 				productions_productionlink.link_class = other_link.link_class
 				AND productions_productionlink.parameter = other_link.parameter
 				AND productions_productionlink.id <> other_link.id
-				AND productions_productionlink.is_download_link = 'f'
+				AND other_link.is_download_link = 'f'
 			)
 			ORDER BY productions_productionlink.parameter
 		''', [link_class])
