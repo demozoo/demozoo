@@ -412,8 +412,9 @@ class NickVariant(models.Model):
 		groups_only = kwargs.get('groups_only', False)
 		sceners_only = kwargs.get('sceners_only', False)
 
-		groups = [name.lower() for name in kwargs.get('group_names', [])]
-		members = [name.lower() for name in kwargs.get('member_names', [])]
+		group_ids = kwargs.get('group_ids', [])
+		group_names = [name.lower() for name in kwargs.get('group_names', [])]
+		member_names = [name.lower() for name in kwargs.get('member_names', [])]
 
 		if query:
 			if exact:
@@ -426,65 +427,68 @@ class NickVariant(models.Model):
 			elif sceners_only:
 				nick_variants = nick_variants.filter(nick__releaser__is_group=False)
 			else:
-				# nasty hack to ensure that we're joining on releaser, for the 'groups' subquery
+				# nasty hack to ensure that we're joining on releaser, for the 'group_names' subquery
 				nick_variants = nick_variants.filter(nick__releaser__is_group__in=[True, False])
 
-			if groups:
-				nick_variants = nick_variants.extra(
-					select=SortedDict([
-						('score', '''
-							SELECT COUNT(*) FROM demoscene_membership
-							INNER JOIN demoscene_releaser AS demogroup ON (demoscene_membership.group_id = demogroup.id)
-							INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
-							INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
-							WHERE demoscene_membership.member_id = demoscene_releaser.id
-							AND LOWER(group_nickvariant.name) IN %s
-						'''),
-						('is_exact_match', '''
-							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
-						'''),
-						('is_primary_nickvariant', '''
-							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
-						'''),
-					]),
-					select_params=(tuple(groups), query),
-					order_by=('-score', '-is_exact_match', '-is_primary_nickvariant', 'name')
-				)
-			elif members:
-				nick_variants = nick_variants.extra(
-					select=SortedDict([
-						('score', '''
-							SELECT COUNT(*) FROM demoscene_membership
-							INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
-							INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
-							INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
-							WHERE demoscene_membership.group_id = demoscene_releaser.id
-							AND LOWER(member_nickvariant.name) IN %s
-						'''),
-						('is_exact_match', '''
-							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
-						'''),
-						('is_primary_nickvariant', '''
-							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
-						'''),
-					]),
-					select_params=(tuple(members), query),
-					order_by=('-score', '-is_exact_match', '-is_primary_nickvariant', 'name')
-				)
+			if group_ids:
+				# Add a 'score' field that prioritises releasers that are members of any of the specified groups
+				select = SortedDict([
+					('score', '''
+						SELECT COUNT(*) FROM demoscene_membership
+						WHERE demoscene_membership.member_id = demoscene_releaser.id
+						AND demoscene_membership.group_id IN %s
+					'''),
+				])
+				select_params = [tuple(group_ids)]
+			elif group_names:
+				# Add a 'score' field that prioritises releasers that are members of a group with one of the given names
+				select = SortedDict([
+					('score', '''
+						SELECT COUNT(*) FROM demoscene_membership
+						INNER JOIN demoscene_releaser AS demogroup ON (demoscene_membership.group_id = demogroup.id)
+						INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
+						INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
+						WHERE demoscene_membership.member_id = demoscene_releaser.id
+						AND LOWER(group_nickvariant.name) IN %s
+					'''),
+				])
+				select_params = [tuple(group_names)]
+			elif member_names:
+				# Add a 'score' field that prioritises groups that have members with one of the given names
+				select = SortedDict([
+					('score', '''
+						SELECT COUNT(*) FROM demoscene_membership
+						INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
+						INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
+						INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
+						WHERE demoscene_membership.group_id = demoscene_releaser.id
+						AND LOWER(member_nickvariant.name) IN %s
+					'''),
+				])
+				select_params = [tuple(member_names)]
 			else:
-				nick_variants = nick_variants.extra(
-					select=SortedDict([
-						('score', '0'),
-						('is_exact_match', '''
-							CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
-						'''),
-						('is_primary_nickvariant', '''
-							CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
-						'''),
-					]),
-					select_params=(query,),
-					order_by=('-is_exact_match', '-is_primary_nickvariant', 'name')
-				)
+				select = SortedDict([
+					('score', '0'),
+				])
+				select_params = []
+
+			# Add an 'is_exact_match' column to the results - true if the query matches the result exactly
+			select['is_exact_match'] = '''
+				CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
+			'''
+			select_params.append(query)
+
+			# Add an 'is_primary_nickvariant' column to the results - true if the matched nick variant is the nick's primary one
+			select['is_primary_nickvariant'] = '''
+				CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
+			'''
+
+			nick_variants = nick_variants.extra(
+				select=select,
+				select_params=select_params,
+				order_by=('-score', '-is_exact_match', '-is_primary_nickvariant', 'name')
+			)
+
 			if limit:
 				nick_variants = nick_variants[:limit]
 
