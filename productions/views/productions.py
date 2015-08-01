@@ -484,7 +484,7 @@ def create(request):
 def add_credit(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
-		nick_form = ProductionCreditedNickForm(request.POST)
+		nick_form = ProductionCreditedNickForm(request.POST, production=production)
 		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
 		if nick_form.is_valid() and credit_formset.is_valid():
 			credits = credit_formset.save(commit=False)
@@ -507,7 +507,7 @@ def add_credit(request, production_id):
 
 			return render_credits_update(request, production)
 	else:
-		nick_form = ProductionCreditedNickForm()
+		nick_form = ProductionCreditedNickForm(production=production)
 		credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
 	if request.is_ajax():
@@ -535,7 +535,7 @@ def edit_credit(request, production_id, nick_id):
 		select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
 	).order_by('category_order')
 	if request.method == 'POST':
-		nick_form = ProductionCreditedNickForm(request.POST, nick=nick)
+		nick_form = ProductionCreditedNickForm(request.POST, nick=nick, production=production)
 		credit_formset = CreditFormSet(request.POST, queryset=credits, prefix="credit")
 		if nick_form.is_valid() and credit_formset.is_valid():
 			updated_credits = credit_formset.save(commit=False)
@@ -564,7 +564,7 @@ def edit_credit(request, production_id, nick_id):
 
 			return render_credits_update(request, production)
 	else:
-		nick_form = ProductionCreditedNickForm(nick=nick)
+		nick_form = ProductionCreditedNickForm(nick=nick, production=production)
 		credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 
 	if request.is_ajax():

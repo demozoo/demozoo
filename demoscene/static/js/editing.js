@@ -117,7 +117,9 @@ function applyEditControls(context) {
 		var searchParams = {};
 		if (nickField.hasClass('sceners_only')) searchParams['sceners_only'] = true;
 		if (nickField.hasClass('groups_only')) searchParams['groups_only'] = true;
-		
+		var groupIds = nickField.data('group_ids');
+		if (groupIds) searchParams['group_ids'] = groupIds;
+
 		$('.nick_search input:submit', nickFieldElement).hide();
 		var searchField = $('.nick_search input:text', nickFieldElement);
 		var searchFieldElement = searchField.get(0);

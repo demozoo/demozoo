@@ -305,11 +305,22 @@ ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionCreditedNickForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		nick = kwargs.pop('nick', None)
+		production = kwargs.pop('production', None)
+
+		if production:
+			# get the list of groups who made the production, and tell the NickField to
+			# prioritise members of those groups
+			authoring_groups = [
+				group_nick.releaser for group_nick in production.author_nicks.filter(releaser__is_group=True)
+			]
+		else:
+			authoring_groups = []
+
 		super(ProductionCreditedNickForm, self).__init__(*args, **kwargs)
 		if nick:
-			self.fields['nick'] = NickField(initial=nick)
+			self.fields['nick'] = NickField(initial=nick, prefer_members_of=authoring_groups)
 		else:
-			self.fields['nick'] = NickField()
+			self.fields['nick'] = NickField(prefer_members_of=authoring_groups)
 
 
 # An individual form row in the 'edit soundtrack details' form.

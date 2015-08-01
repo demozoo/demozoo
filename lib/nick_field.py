@@ -13,37 +13,47 @@ class NickLookup():
 	def __init__(self,
 		search_term=None, autoaccept=False,
 		nick_selection=None,
-		sceners_only=False, groups_only=False):
+		sceners_only=False, groups_only=False, prefer_members_of=None):
 
 		self.search_term = search_term  # the search term being looked up
 		self.autoaccept = autoaccept  # whether we should continue upon successfully resolving a nick,
 			# as opposed to re-showing the form
 		self.nick_selection = nick_selection
 
+		if prefer_members_of:
+			group_ids = [group.id for group in prefer_members_of]
+		else:
+			group_ids = []
+
 		nick_search = NickSearch(search_term,
 			sceners_only=sceners_only,
-			groups_only=groups_only)
+			groups_only=groups_only,
+			group_ids=group_ids)
 		self.matched_nick_field = MatchedNickField(nick_search, None)
 
 	@staticmethod
-	def from_value(value, sceners_only=False, groups_only=False):
+	def from_value(value, sceners_only=False, groups_only=False, prefer_members_of=None):
 		# value can be:
 		# a Nick
 		# None
 		# an existing NickLookup
 		if not value:
-			return NickLookup(sceners_only=sceners_only, groups_only=groups_only)
+			return NickLookup(
+				sceners_only=sceners_only, groups_only=groups_only,
+				prefer_members_of=prefer_members_of)
 		elif isinstance(value, NickLookup):
 			return NickLookup(
 				search_term=value.search_term,
 				autoaccept=value.autoaccept,
 				nick_selection=value.nick_selection,
-				sceners_only=sceners_only, groups_only=groups_only)
+				sceners_only=sceners_only, groups_only=groups_only,
+				prefer_members_of=prefer_members_of)
 		elif isinstance(value, Nick):
 			return NickLookup(
 				search_term=value.name,
 				nick_selection=NickSelection(value.id, value.name),
-				sceners_only=sceners_only, groups_only=groups_only)
+				sceners_only=sceners_only, groups_only=groups_only,
+				prefer_members_of=prefer_members_of)
 		else:
 			raise Exception("Don't know how to handle %s as a nick lookup" % repr(value))
 
@@ -57,9 +67,10 @@ class NickLookup():
 
 
 class NickWidget(forms.Widget):
-	def __init__(self, attrs=None, sceners_only=False, groups_only=False):
+	def __init__(self, attrs=None, sceners_only=False, groups_only=False, prefer_members_of=None):
 		self.sceners_only = sceners_only
 		self.groups_only = groups_only
+		self.prefer_members_of = prefer_members_of
 		self.search_widget = forms.TextInput(attrs=attrs)
 		self.lookup_widget = SubmitButtonInput(button_text='Find name')
 		super(NickWidget, self).__init__(attrs=attrs)
@@ -74,7 +85,8 @@ class NickWidget(forms.Widget):
 		nick_lookup = NickLookup(
 			search_term=search_term,
 			autoaccept=not explicit_lookup_requested,
-			sceners_only=self.sceners_only, groups_only=self.groups_only)
+			sceners_only=self.sceners_only, groups_only=self.groups_only,
+			prefer_members_of=self.prefer_members_of)
 
 		if not explicit_lookup_requested:
 			nick_lookup.nick_selection = nick_lookup.matched_nick_field.widget.value_from_datadict(data, files, name + '_match')
@@ -88,7 +100,9 @@ class NickWidget(forms.Widget):
 	id_for_label = classmethod(id_for_label)
 
 	def render(self, name, value, attrs=None):
-		nick_lookup = NickLookup.from_value(value, sceners_only=self.sceners_only, groups_only=self.groups_only)
+		nick_lookup = NickLookup.from_value(value,
+			sceners_only=self.sceners_only, groups_only=self.groups_only,
+			prefer_members_of=self.prefer_members_of)
 
 		search_html_output = [
 			self.search_widget.render(name + '_search', nick_lookup.search_term, attrs=attrs),
@@ -108,11 +122,16 @@ class NickWidget(forms.Widget):
 		else:
 			root_classname = u'nick_field'
 
+		if self.prefer_members_of:
+			root_attrs = u' data-group_ids="%s"' % u','.join([str(group.id) for group in self.prefer_members_of])
+		else:
+			root_attrs = u''
+
 		output = [
 			u'<div class="nick_search">' + u''.join(search_html_output) + u'</div>',
 			u'<div class="nick_match_container">' + matched_nick_html + u'</div>'
 		]
-		return mark_safe(u'<div class="' + root_classname + u'">' + u''.join(output) + u'</div>')
+		return mark_safe(u'<div class="' + root_classname + u'"' + root_attrs + u'>' + u''.join(output) + u'</div>')
 
 	def _has_changed(self, initial, data):
 		initial = NickLookup.from_value(initial)
@@ -121,17 +140,18 @@ class NickWidget(forms.Widget):
 
 
 class NickField(forms.Field):
-	def __init__(self, sceners_only=False, groups_only=False, *args, **kwargs):
+	def __init__(self, sceners_only=False, groups_only=False, prefer_members_of=None, *args, **kwargs):
 		self.sceners_only = sceners_only
 		self.groups_only = groups_only
-		self.widget = NickWidget(sceners_only=sceners_only, groups_only=groups_only)
+		self.prefer_members_of = prefer_members_of
+		self.widget = NickWidget(sceners_only=sceners_only, groups_only=groups_only, prefer_members_of=prefer_members_of)
 		super(NickField, self).__init__(*args, **kwargs)
 
 	def clean(self, value):
 		if not value:
 			return super(NickField, self).clean(value)
 		else:
-			nick_lookup = NickLookup.from_value(value, sceners_only=self.sceners_only, groups_only=self.groups_only)
+			nick_lookup = NickLookup.from_value(value, sceners_only=self.sceners_only, groups_only=self.groups_only, prefer_members_of=self.prefer_members_of)
 
 			clean_nick_selection = nick_lookup.matched_nick_field.clean(nick_lookup.nick_selection)
 			if clean_nick_selection and nick_lookup.autoaccept:
