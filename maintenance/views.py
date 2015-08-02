@@ -12,7 +12,7 @@ from read_only_mode import writeable_site_required
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
 from parties.models import PartyExternalLink, Party, ResultsFile
-from productions.models import Production, Credit, ProductionLink, ProductionBlurb
+from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
 from mirror.models import Download, ArchiveMember
@@ -991,4 +991,27 @@ def fix_results_file_encoding(request, results_file_id):
 		'encoding_is_valid': encoding_is_valid,
 		'encoding': encoding,
 		'encoding_options': ENCODING_OPTIONS,
+	})
+
+
+def tiny_intros_without_download_links(request):
+	report_name = 'tiny_intros_without_download_links'
+
+	prod_types = list(ProductionType.objects.filter(name__in=[
+		'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
+	]))
+
+	intros = Production.objects.filter(supertype='production', types__in=prod_types)
+	intros_with_download_links = intros.filter(links__is_download_link=True).distinct().values_list('id', flat=True)
+
+	productions = intros.exclude(id__in=intros_with_download_links) \
+		.extra(
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Tiny intros without download links',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
 	})

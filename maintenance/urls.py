@@ -8,6 +8,7 @@ urlpatterns = patterns('maintenance.views',
 	(r'^prods_with_dead_amiga_nvg_org_links$', 'prods_with_dead_amiga_nvg_org_links', {}, 'maintenance_prods_with_dead_amiga_nvg_org_links'),
 	(r'^prods_without_platforms$', 'prods_without_platforms', {}, 'maintenance_prods_without_platforms'),
 	(r'^prods_with_blurbs$', 'prods_with_blurbs', {}, 'maintenance_prods_with_blurbs'),
+	(r'^tiny_intros_without_download_links$', 'tiny_intros_without_download_links', {}, 'maintenance_tiny_intros_without_download_links'),
 	(r'^prod_comments$', 'prod_comments', {}, 'maintenance_prod_comments'),
 
 	# release dates
