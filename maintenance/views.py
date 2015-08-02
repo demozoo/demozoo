@@ -1015,3 +1015,24 @@ def tiny_intros_without_download_links(request):
 		'mark_excludable': True,
 		'report_name': report_name,
 	})
+
+
+def tiny_intros_without_screenshots(request):
+	report_name = 'tiny_intros_without_screenshots'
+
+	prod_types = list(ProductionType.objects.filter(name__in=[
+		'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
+	]))
+
+	productions = Production.objects.filter(supertype='production', types__in=prod_types) \
+		.filter(screenshots__id__isnull=True) \
+		.extra(
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'Tiny intros without download links',
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
