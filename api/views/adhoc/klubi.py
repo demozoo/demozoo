@@ -24,7 +24,6 @@ def demoshow(request):
 
 	# put videos (wilds) into a separate list after the main one
 	exe_prods = []
-	video_prods = []
 
 	for prod in prods:
 		if prod.types.count() == 0:
@@ -33,22 +32,19 @@ def demoshow(request):
 			continue
 
 		# strip out types that are not really suitable for a demo show
-		interesting_types = [typ for typ in prod.types.all() if typ.name not in ('Diskmagazine', 'Tool', 'Game')]
+		interesting_types = [typ for typ in prod.types.all() if typ.name not in ('Diskmagazine', 'Tool', 'Game', 'Video', 'Pack', 'Musicdisk', 'Chip Music Pack')]
 
 		if len(interesting_types) == 0:
-			pass
+			continue
 
-		elif len(interesting_types) == 1 and interesting_types[0].name == 'Video':
-			video_prods.append(prod)
-		else:
-			exe_prods.append(prod)
+		exe_prods.append(prod)
 
 	response = HttpResponse(mimetype='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
 		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
 	])
-	for prod in exe_prods + video_prods:
+	for prod in exe_prods:
 		platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
 		prod_types = sorted(prod.types.all(), key=lambda t: t.name)
 		csvfile.writerow([
