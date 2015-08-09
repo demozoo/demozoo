@@ -20,6 +20,7 @@ def demoshow(request):
 	).exclude(release_date_precision='y').prefetch_related(
 		'types', 'platforms',
 		'author_nicks', 'author_affiliation_nicks', 'links',
+		'competition_placings__competition__party', 'release_parties',
 	).order_by('release_date_date')
 
 	# put videos (wilds) into a separate list after the main one
@@ -42,7 +43,7 @@ def demoshow(request):
 	response = HttpResponse(mimetype='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
-		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
+		'Demozoo URL', 'Title', 'By', 'Release date', 'Party', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
 	])
 	for prod in exe_prods:
 		platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
@@ -52,6 +53,7 @@ def demoshow(request):
 			prod.title.encode('utf-8'),
 			prod.byline_string.encode('utf-8'),
 			prod.release_date,
+			', '.join([placing.competition.party.name for placing in prod.competition_placings.all()] + [party.name for party in prod.release_parties.all()]).encode('utf-8'),
 			', '.join([typ.name for typ in prod_types]).encode('utf-8'),
 			', '.join([platform.name for platform in platforms]).encode('utf-8'),
 			' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]),
