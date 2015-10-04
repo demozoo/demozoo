@@ -1,4 +1,4 @@
-function initScreenshotCarousel(carouselItems) {
+function initCarousel(carouselItems) {
 	if (carouselItems.length < 2) return;
 	var panel = $('.screenshots_panel');
 
