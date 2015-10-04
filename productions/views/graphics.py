@@ -56,15 +56,6 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'graphics':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	screenshots = production.screenshots.order_by('id')
-	screenshots_json = json.dumps([
-		{
-			'original_url': pic.original_url, 'src': pic.standard_url,
-			'width': pic.standard_width, 'height': pic.standard_height
-		}
-		for pic in screenshots
-	])
-
 	if request.user.is_authenticated():
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
@@ -76,8 +67,6 @@ def show(request, production_id, edit_mode=False):
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits_for_listing(),
-		'screenshots': screenshots,
-		'screenshots_json': screenshots_json,
 		'download_links': production.download_links,
 		'external_links': production.external_links,
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),

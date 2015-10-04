@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags production_tags compress %}
 {% load url from future %}
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -63,13 +63,7 @@
 	{% endif %}
 
 	<div class="mainstage">
-		{% if production.can_have_screenshots %}
-			{% include "productions/_screenshots.html" %}
-		{% else %}
-			<div class="panel screenshots_panel">
-				<div class="no_screenshot music"></div>
-			</div>
-		{% endif %}
+		{% carousel production %}
 
 		<div class="right">
 			{% if download_links %}

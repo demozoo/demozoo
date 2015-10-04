@@ -1,4 +1,5 @@
-function initScreenshotCarousel(screenshots) {
+function initScreenshotCarousel(carouselItems) {
+	if (carouselItems.length < 2) return;
 	var panel = $('.screenshots_panel');
 
 	var leftScreenshot = $('a.screenshot', panel);
@@ -15,10 +16,12 @@ function initScreenshotCarousel(screenshots) {
 
 	var hasPreloadedAllImages = false;
 	function preloadAllImages() {
-		for (var i = 0; i < screenshots.length; i++) {
-			var src = screenshots[i].src;
-			var img = new Image();
-			img.src = src;
+		for (var i = 0; i < carouselItems.length; i++) {
+			if (carouselItems[i].type == 'screenshot') {
+				var src = carouselItems[i].data['standard_url'];
+				var img = new Image();
+				img.src = src;
+			}
 		}
 		hasPreloadedAllImages = true;
 	}
@@ -27,19 +30,19 @@ function initScreenshotCarousel(screenshots) {
 
 	function setLeftScreenshot(screenshot) {
 		leftScreenshot.attr({'href': screenshot['original_url']});
-		leftImg.attr({'src': screenshot.src, 'width': screenshot.width, 'height': screenshot.height});
+		leftImg.attr({'src': screenshot['standard_url'], 'width': screenshot['standard_width'], 'height': screenshot['standard_height']});
 	}
 	function setRightScreenshot(screenshot) {
 		rightScreenshot.attr({'href': screenshot['original_url']});
-		rightImg.attr({'src': screenshot.src, 'width': screenshot.width, 'height': screenshot.height});
+		rightImg.attr({'src': screenshot['standard_url'], 'width': screenshot['standard_width'], 'height': screenshot['standard_height']});
 	}
 
 	$('.next', viewport).click(function() {
 		if (!hasPreloadedAllImages) preloadAllImages();
 
-		setLeftScreenshot(screenshots[currentIndex]);
-		currentIndex = (currentIndex + 1) % screenshots.length;
-		setRightScreenshot(screenshots[currentIndex]);
+		setLeftScreenshot(carouselItems[currentIndex].data);
+		currentIndex = (currentIndex + 1) % carouselItems.length;
+		setRightScreenshot(carouselItems[currentIndex].data);
 		tray.stop().css({'left': '0'}).animate({'left': '-400px'});
 
 		return false;
@@ -48,9 +51,9 @@ function initScreenshotCarousel(screenshots) {
 	$('.prev', viewport).click(function() {
 		if (!hasPreloadedAllImages) preloadAllImages();
 
-		setRightScreenshot(screenshots[currentIndex]);
-		currentIndex = (currentIndex + screenshots.length - 1) % screenshots.length;
-		setLeftScreenshot(screenshots[currentIndex]);
+		setRightScreenshot(carouselItems[currentIndex].data);
+		currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
+		setLeftScreenshot(carouselItems[currentIndex].data);
 		tray.stop().css({'left': '-400px'}).animate({'left': '0'});
 
 		return false;

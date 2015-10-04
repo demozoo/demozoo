@@ -23,6 +23,7 @@ from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, Pro
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
 from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb
+from productions.carousel import get_carousel_items
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
@@ -103,15 +104,6 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'production':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	screenshots = production.screenshots.order_by('id')
-	screenshots_json = json.dumps([
-		{
-			'original_url': pic.original_url, 'src': pic.standard_url,
-			'width': pic.standard_width, 'height': pic.standard_height
-		}
-		for pic in screenshots
-	])
-
 	if request.user.is_authenticated():
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
@@ -132,8 +124,7 @@ def show(request, production_id, edit_mode=False):
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
 		'credits': production.credits_for_listing(),
-		'screenshots': screenshots,
-		'screenshots_json': screenshots_json,
+
 		'download_links': production.download_links,
 		'external_links': production.external_links,
 		'soundtracks': [
@@ -279,6 +270,7 @@ def add_blurb(request, production_id):
 		'action_url': reverse('production_add_blurb', args=[production.id]),
 	})
 
+
 @writeable_site_required
 @login_required
 def edit_blurb(request, production_id, blurb_id):
@@ -303,6 +295,7 @@ def edit_blurb(request, production_id, blurb_id):
 		'blurb': blurb,
 		'action_url': reverse('production_edit_blurb', args=[production.id, blurb.id]),
 	})
+
 
 @writeable_site_required
 @login_required
@@ -791,6 +784,7 @@ def delete(request, production_id):
 			"Are you sure you want to delete '%s'?" % production.title,
 			html_title="Deleting %s" % production.title)
 
+
 def render_credits_update(request, production):
 	if request.is_ajax():
 		credits_html = render_to_string('productions/_credits.html', {
@@ -806,3 +800,8 @@ def render_credits_update(request, production):
 	else:
 		return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 
+
+def carousel(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	carousel_json = json.dumps(get_carousel_items(production))
+	return HttpResponse(carousel_json, content_type='text/javascript')

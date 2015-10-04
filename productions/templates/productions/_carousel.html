@@ -1,0 +1,50 @@
+{% load url from future %}
+{% load demoscene_tags %}
+
+<div class="panel screenshots_panel">
+	{% if initial_screenshot %}
+		<a href="{{ initial_screenshot.data.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
+			{% if initial_screenshot.is_processing %}
+				<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
+			{% else %}
+				<img src="{{ initial_screenshot.data.standard_url }}" width="{{ initial_screenshot.data.standard_width }}" height="{{ initial_screenshot.data.standard_height }}" alt="" />
+			{% endif %}
+		</a>
+	{% elif production.can_have_screenshots %}
+		<div class="no_screenshot">
+			<p>
+				No screenshot yet!
+				{% if site_is_writeable %}
+					<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
+				{% endif %}
+			</p>
+		</div>
+	{% else %}
+		<div class="no_screenshot music"></div>
+	{% endif %}
+
+	{% if show_all_screenshots_link or show_add_screenshot_link or show_manage_screenshots_link %}
+		<ul class="actions">
+			{% if show_all_screenshots_link %}
+				<li class="all_screenshots">
+					<a class="action_button" href="{% url 'production_screenshots' production.id %}">All screenshots</a>
+				</li>
+			{% endif %}
+			{% if show_add_screenshot_link %}
+				<li>
+					<a href="{% url 'production_add_screenshot' production.id %}" class="action_button icon add open_in_lightbox">Add screenshot</a>
+				</li>
+			{% endif %}
+			{% if show_manage_screenshots_link %}
+				<li>
+					<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
+				</li>
+			{% endif %}
+		</ul>
+	{% endif %}
+	<div style="clear: both;"></div>
+</div>
+
+<script>
+	initScreenshotCarousel({{ carousel_data|safe }});
+</script>
