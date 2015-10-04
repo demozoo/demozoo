@@ -1,6 +1,9 @@
 from __future__ import with_statement
 from fabric.api import env, cd, run, get, local
 
+from settings.dev import DATABASES
+db_username = DATABASES['default']['USER']
+
 env.hosts = ['demozoo@www1.demozoo.org']
 
 
@@ -45,22 +48,23 @@ def fetchdb():
 	run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
 	get('/tmp/demozoo-fetchdb.sql.gz', '/tmp/demozoo-fetchdb.sql.gz')
 	run('rm /tmp/demozoo-fetchdb.sql.gz')
-	local('dropdb -Upostgres demozoo')
-	local('createdb -Upostgres demozoo')
-	local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -Upostgres demozoo')
+	local('dropdb -U%s demozoo' % db_username)
+	local('createdb -U%s demozoo' % db_username)
+	local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -U%s demozoo' % db_username)
 	local('rm /tmp/demozoo-fetchdb.sql.gz')
+
 
 def exportdb():
 	"""Dump the live DB with personal info redacted"""
 	run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
 	get('/tmp/demozoo-fetchdb.sql.gz', '/tmp/demozoo-fetchdb.sql.gz')
 	run('rm /tmp/demozoo-fetchdb.sql.gz')
-	local('createdb -Upostgres demozoo_dump')
-	local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -Upostgres demozoo_dump')
+	local('createdb -U%s demozoo_dump' % db_username)
+	local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -U%s demozoo_dump' % db_username)
 	local('rm /tmp/demozoo-fetchdb.sql.gz')
-	local("""psql -Upostgres demozoo_dump -c "UPDATE auth_user SET email='', password='!', first_name='', last_name='';" """)
-	local("""psql -Upostgres demozoo_dump -c "UPDATE demoscene_releaser SET first_name='' WHERE show_first_name='f';" """)
-	local("""psql -Upostgres demozoo_dump -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';" """)
-	local("""psql -Upostgres demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session; DROP TABLE djapian_change;" """)
+	local("""psql -U%s demozoo_dump -c "UPDATE auth_user SET email='', password='!', first_name='', last_name='';" """ % db_username)
+	local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET first_name='' WHERE show_first_name='f';" """ % db_username)
+	local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';" """ % db_username)
+	local("""psql -U%s demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session; DROP TABLE djapian_change;" """ % db_username)
 	local('pg_dump -Z1 -cf demozoo-export.sql.gz demozoo_dump')
 	#local('dropdb -Upostgres demozoo_dump')
