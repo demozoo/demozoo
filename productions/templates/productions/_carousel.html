@@ -2,26 +2,28 @@
 {% load demoscene_tags %}
 
 <div class="panel screenshots_panel">
-	{% if initial_screenshot %}
-		<a href="{{ initial_screenshot.data.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
-			{% if initial_screenshot.is_processing %}
-				<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
-			{% else %}
-				<img src="{{ initial_screenshot.data.standard_url }}" width="{{ initial_screenshot.data.standard_width }}" height="{{ initial_screenshot.data.standard_height }}" alt="" />
-			{% endif %}
-		</a>
-	{% elif production.can_have_screenshots %}
-		<div class="no_screenshot">
-			<p>
-				No screenshot yet!
-				{% if site_is_writeable %}
-					<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
+	<div class="carousel">
+		{% if initial_screenshot %}
+			<a href="{{ initial_screenshot.data.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
+				{% if initial_screenshot.is_processing %}
+					<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
+				{% else %}
+					<img src="{{ initial_screenshot.data.standard_url }}" width="{{ initial_screenshot.data.standard_width }}" height="{{ initial_screenshot.data.standard_height }}" alt="" />
 				{% endif %}
-			</p>
-		</div>
-	{% else %}
-		<div class="no_screenshot music"></div>
-	{% endif %}
+			</a>
+		{% elif production.can_have_screenshots %}
+			<div class="no_screenshot">
+				<p>
+					No screenshot yet!
+					{% if site_is_writeable %}
+						<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
+					{% endif %}
+				</p>
+			</div>
+		{% else %}
+			<div class="no_screenshot music"></div>
+		{% endif %}
+	</div>
 
 	{% if show_all_screenshots_link or show_add_screenshot_link or show_manage_screenshots_link %}
 		<ul class="actions">
@@ -46,5 +48,5 @@
 </div>
 
 <script>
-	initCarousel({{ carousel_data|safe }});
+	$('.carousel').carousel({{ carousel_data|safe }});
 </script>

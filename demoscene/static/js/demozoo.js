@@ -2,19 +2,8 @@ function htmlEncode(str) {
 	return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 }
 
-function applyGlobalBehaviours(context) {
-	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
-
-	$('a.open_in_lightbox', context).click(function(e) {
-		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
-			/* probably means they want to open it in a new window, so let them... */
-			return true;
-		}
-		var focusEmptyInput = $(this).hasClass('focus_empty_input');
-		Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
-		return false;
-	});
-	$('a.open_image_in_lightbox', context).click(function(e) {
+$.fn.openImageInLightbox = function() {
+	this.click(function(e) {
 		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
 			/* probably means they want to open it in a new window, so let them... */
 			return true;
@@ -44,11 +33,11 @@ function applyGlobalBehaviours(context) {
 			maxImageWidth = browserWidth - 64;
 			maxImageHeight = browserHeight - 64;
 			
-			fullWidth = Math.min(imageWidth, maxImageWidth)
-			fullHeight = Math.min(imageHeight, maxImageHeight)
+			fullWidth = Math.min(imageWidth, maxImageWidth);
+			fullHeight = Math.min(imageHeight, maxImageHeight);
 			
-			heightAtFullWidth = (fullWidth * imageHeight/imageWidth)
-			widthAtFullHeight = (fullHeight * imageWidth/imageHeight)
+			heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
+			widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
 			
 			if (heightAtFullWidth <= maxImageHeight) {
 				finalWidth = fullWidth;
@@ -78,7 +67,7 @@ function applyGlobalBehaviours(context) {
 			
 			screenshotImg.get(0).src = screenshot.src;
 			screenshotWrapper.append(screenshotImg);
-		}
+		};
 		
 		screenshot.src = this.href;
 		
@@ -98,12 +87,27 @@ function applyGlobalBehaviours(context) {
 		$(window).keydown(checkForEscape);
 		
 		return false;
-	})
+	});
+};
+
+function applyGlobalBehaviours(context) {
+	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
+
+	$('a.open_in_lightbox', context).click(function(e) {
+		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+			/* probably means they want to open it in a new window, so let them... */
+			return true;
+		}
+		var focusEmptyInput = $(this).hasClass('focus_empty_input');
+		Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
+		return false;
+	});
+	$('a.open_image_in_lightbox', context).openImageInLightbox();
 	$('form.open_in_lightbox', context).submit(function() {
 		/* only use this for forms with method="get"! */
 		Lightbox.openUrl(this.action + '?' + $(this).serialize(), applyGlobalBehaviours);
 		return false;
-	})
+	});
 
 	$('.microthumb', context).thumbPreview();
 }
