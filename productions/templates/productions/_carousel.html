@@ -4,13 +4,15 @@
 <div class="panel screenshots_panel">
 	<div class="carousel">
 		{% if initial_screenshot %}
-			<a href="{{ initial_screenshot.data.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
-				{% if initial_screenshot.is_processing %}
+			{% if initial_screenshot.is_processing %}
+				<div class="screenshot">
 					<img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" />
-				{% else %}
+				</div>
+			{% else %}
+				<a href="{{ initial_screenshot.data.original_url }}" target="_blank" class="screenshot">
 					<img src="{{ initial_screenshot.data.standard_url }}" width="{{ initial_screenshot.data.standard_width }}" height="{{ initial_screenshot.data.standard_height }}" alt="" />
-				{% endif %}
-			</a>
+				</a>
+			{% endif %}
 		{% elif production.can_have_screenshots %}
 			<div class="no_screenshot">
 				<p>

@@ -5,7 +5,7 @@ def get_carousel_items(production):
 		{
 			'type': 'screenshot',
 			'id': 'screenshot-%d' % screenshot.id,
-			'is_processing': screenshot.original_url is None,
+			'is_processing': not screenshot.original_url,
 			'data': {
 				'original_url': screenshot.original_url,
 				'standard_url': screenshot.standard_url,
