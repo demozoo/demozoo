@@ -28,14 +28,37 @@
 		};
 
 		var carouselItems = [];
-		for (var i = 0; i < carouselData.length; i++) {
-			itemType = itemTypes[carouselData[i].type];
-			carouselItems[i] = new itemType(carouselData[i]);
-		}
+		var currentId = null;
+		var currentIndex = 0;
 
 		var viewport = this;
 		viewport.html('<div class="viewport"><div class="tray"></div></div>');
 		var tray = $('.tray', viewport);
+		var currentBucket = $('<div class="bucket"></div>');
+		tray.append(currentBucket);
+
+		function loadData(carouselData) {
+			carouselItems = [];
+
+			var foundCurrentId = false;
+
+			for (var i = 0; i < carouselData.length; i++) {
+				itemType = itemTypes[carouselData[i].type];
+				carouselItems[i] = new itemType(carouselData[i]);
+				if (currentId == carouselData[i].id) {
+					foundCurrentId = true;
+					currentIndex = i;
+				}
+			}
+
+			if (!foundCurrentId) {
+				currentIndex = 0;
+				currentId = carouselData[0].id;
+			}
+
+			carouselItems[currentIndex].draw(currentBucket);
+		}
+		loadData(carouselData);
 
 		var hasPreloadedAllImages = false;
 		function preloadAllImages() {
@@ -44,11 +67,6 @@
 			}
 			hasPreloadedAllImages = true;
 		}
-
-		var currentIndex = 0;
-		var currentItem = $('<div class="carousel_item"></div>');
-		tray.append(currentItem);
-		carouselItems[currentIndex].draw(currentItem);
 
 		if (carouselItems.length > 1) {
 			var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
@@ -61,12 +79,13 @@
 				if (!hasPreloadedAllImages) preloadAllImages();
 
 				currentIndex = (currentIndex + 1) % carouselItems.length;
-				var newItem = $('<div class="carousel_item"></div>');
-				tray.append(newItem);
-				carouselItems[currentIndex].draw(newItem);
+				var currentItem = carouselItems[currentIndex];
+				var oldBucket = currentBucket;
+				currentBucket = $('<div class="bucket"></div>');
+				tray.append(currentBucket);
+				currentItem.draw(currentBucket);
 				tray.animate({'left': '-400px'}, function() {
-					currentItem.remove();
-					currentItem = newItem;
+					oldBucket.remove();
 					tray.css({'left': 0});
 				});
 
@@ -78,13 +97,14 @@
 				if (!hasPreloadedAllImages) preloadAllImages();
 
 				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
-				var newItem = $('<div class="carousel_item"></div>');
+				var currentItem = carouselItems[currentIndex];
+				var newBucket = $('<div class="bucket"></div>');
 				tray.css({'left': '-400px'});
-				tray.prepend(newItem);
-				carouselItems[currentIndex].draw(newItem);
+				tray.prepend(newBucket);
+				currentItem.draw(newBucket);
 				tray.animate({'left': '0'}, function() {
-					currentItem.remove();
-					currentItem = newItem;
+					currentBucket.remove();
+					currentBucket = newBucket;
 				});
 
 				return false;
