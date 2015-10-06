@@ -34,13 +34,8 @@
 		}
 
 		var viewport = this;
-		viewport.html('<div class="viewport"><div class="tray"><div class="carousel_left"></div><div class="carousel_right"></div></div></div>');
+		viewport.html('<div class="viewport"><div class="tray"></div></div>');
 		var tray = $('.tray', viewport);
-
-		var leftItem = $('.carousel_left');
-		carouselItems[0].draw(leftItem);
-
-		var rightItem = $('.carousel_right');
 
 		var hasPreloadedAllImages = false;
 		function preloadAllImages() {
@@ -51,6 +46,9 @@
 		}
 
 		var currentIndex = 0;
+		var currentItem = $('<div class="carousel_item"></div>');
+		tray.append(currentItem);
+		carouselItems[currentIndex].draw(currentItem);
 
 		if (carouselItems.length > 1) {
 			var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
@@ -59,23 +57,35 @@
 			viewport.append(nextLink);
 
 			nextLink.click(function() {
+				tray.stop(true, true);
 				if (!hasPreloadedAllImages) preloadAllImages();
 
-				carouselItems[currentIndex].draw(leftItem);
 				currentIndex = (currentIndex + 1) % carouselItems.length;
-				carouselItems[currentIndex].draw(rightItem);
-				tray.stop().css({'left': '0'}).animate({'left': '-400px'});
+				var newItem = $('<div class="carousel_item"></div>');
+				tray.append(newItem);
+				carouselItems[currentIndex].draw(newItem);
+				tray.animate({'left': '-400px'}, function() {
+					currentItem.remove();
+					currentItem = newItem;
+					tray.css({'left': 0});
+				});
 
 				return false;
 			});
 
 			prevLink.click(function() {
+				tray.stop(true, true);
 				if (!hasPreloadedAllImages) preloadAllImages();
 
-				carouselItems[currentIndex].draw(rightItem);
 				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
-				carouselItems[currentIndex].draw(leftItem);
-				tray.stop().css({'left': '-400px'}).animate({'left': '0'});
+				var newItem = $('<div class="carousel_item"></div>');
+				tray.css({'left': '-400px'});
+				tray.prepend(newItem);
+				carouselItems[currentIndex].draw(newItem);
+				tray.animate({'left': '0'}, function() {
+					currentItem.remove();
+					currentItem = newItem;
+				});
 
 				return false;
 			});
