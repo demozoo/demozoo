@@ -1,9 +1,10 @@
 (function($) {
-	$.fn.carousel = function(carouselData) {
+	$.fn.carousel = function(carouselData, reloadUrl) {
 		if (carouselData.length === 0) return;
 
 		function Screenshot(fullData) {
 			this.isProcessing = fullData['is_processing'];
+			this.id = fullData['id'];
 			this.data = fullData.data;
 		}
 		Screenshot.prototype.preload = function() {
@@ -37,10 +38,14 @@
 		var currentBucket = $('<div class="bucket"></div>');
 		tray.append(currentBucket);
 
+		var hasPreloadedAllImages = false;
+
 		function loadData(carouselData) {
 			carouselItems = [];
+			hasPreloadedAllImages = false;
 
 			var foundCurrentId = false;
+			var needReload = false;
 
 			for (var i = 0; i < carouselData.length; i++) {
 				itemType = itemTypes[carouselData[i].type];
@@ -48,6 +53,9 @@
 				if (currentId == carouselData[i].id) {
 					foundCurrentId = true;
 					currentIndex = i;
+				}
+				if (carouselData[i]['is_processing']) {
+					needReload = true;
 				}
 			}
 
@@ -57,10 +65,15 @@
 			}
 
 			carouselItems[currentIndex].draw(currentBucket);
+
+			if (needReload) {
+				setTimeout(function() {
+					$.getJSON(reloadUrl, loadData);
+				}, 5000);
+			}
 		}
 		loadData(carouselData);
 
-		var hasPreloadedAllImages = false;
 		function preloadAllImages() {
 			for (var i = 0; i < carouselItems.length; i++) {
 				carouselItems[i].preload();
@@ -80,6 +93,7 @@
 
 				currentIndex = (currentIndex + 1) % carouselItems.length;
 				var currentItem = carouselItems[currentIndex];
+				currentId = currentItem.id;
 				var oldBucket = currentBucket;
 				currentBucket = $('<div class="bucket"></div>');
 				tray.append(currentBucket);
@@ -98,6 +112,7 @@
 
 				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
 				var currentItem = carouselItems[currentIndex];
+				currentId = currentItem.id;
 				var newBucket = $('<div class="bucket"></div>');
 				tray.css({'left': '-400px'});
 				tray.prepend(newBucket);

@@ -4,7 +4,7 @@ urlpatterns = patterns('productions.views',
 	(r'^productions/$', 'productions.index', {}, 'productions'),
 	(r'^productions/(\d+)/$', 'productions.show', {}, 'production'),
 	(r'^productions/(\d+)/history/$', 'productions.history', {}, 'production_history'),
-	(r'^productions/(\d+)/carousel.$', 'productions.carousel', {}, 'production_carousel'),
+	(r'^productions/(\d+)/carousel/$', 'productions.carousel', {}, 'production_carousel'),
 
 	(r'^music/$', 'music.index', {}, 'musics'),
 	(r'^music/(\d+)/$', 'music.show', {}, 'music'),

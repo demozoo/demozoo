@@ -50,5 +50,5 @@
 </div>
 
 <script>
-	$('.carousel').carousel({{ carousel_data|safe }});
+	$('.carousel').carousel({{ carousel_data|safe }}, "{% url 'production_carousel' production.id %}");
 </script>
