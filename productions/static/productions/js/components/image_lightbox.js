@@ -27,24 +27,41 @@
 				var imageWidth = screenshot.width || 480;
 				var imageHeight = screenshot.height || 340;
 				
-				maxImageWidth = browserWidth - 64;
-				maxImageHeight = browserHeight - 64;
-				
-				fullWidth = Math.min(imageWidth, maxImageWidth);
-				fullHeight = Math.min(imageHeight, maxImageHeight);
-				
-				heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
-				widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
-				
-				if (heightAtFullWidth <= maxImageHeight) {
-					finalWidth = fullWidth;
-					finalHeight = Math.round(heightAtFullWidth);
+				var maxImageWidth = browserWidth - 64;
+				var maxImageHeight = browserHeight - 64;
+
+				var finalWidth, finalHeight;
+
+				if (
+					imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
+					imageHeight <= 300 && maxImageHeight >= imageHeight * 2
+				) {
+					/* show image at double size */
+					finalWidth = imageWidth * 2;
+					finalHeight = imageHeight * 2;
+					renderStyle = 'pixelated';
 				} else {
-					finalWidth = Math.round(widthAtFullHeight);
-					finalHeight = fullHeight;
+					var fullWidth = Math.min(imageWidth, maxImageWidth);
+					var fullHeight = Math.min(imageHeight, maxImageHeight);
+
+					var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
+					var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
+
+					if (heightAtFullWidth <= maxImageHeight) {
+						finalWidth = fullWidth;
+						finalHeight = Math.round(heightAtFullWidth);
+					} else {
+						finalWidth = Math.round(widthAtFullHeight);
+						finalHeight = fullHeight;
+					}
+					renderStyle = 'auto';
 				}
-				
-				screenshotImg.attr({'width': finalWidth, 'height': finalHeight});
+
+				screenshotImg.attr({
+					'width': finalWidth, 'height': finalHeight
+				}).css({
+					'image-rendering': renderStyle
+				});
 				screenshotWrapper.css({
 					'left': (browserWidth - (finalWidth + 32)) / 2 + 'px',
 					'top': (browserHeight - (finalHeight + 32)) / 2 + 'px',
