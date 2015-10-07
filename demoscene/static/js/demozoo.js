@@ -14,7 +14,6 @@ function applyGlobalBehaviours(context) {
 		Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
 		return false;
 	});
-	$('a.open_image_in_lightbox', context).openImageInLightbox();
 	$('form.open_in_lightbox', context).submit(function() {
 		/* only use this for forms with method="get"! */
 		Lightbox.openUrl(this.action + '?' + $(this).serialize(), applyGlobalBehaviours);
