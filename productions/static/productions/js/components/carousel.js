@@ -24,8 +24,53 @@
 			}
 		};
 
+		function Mosaic(fullData) {
+			this.isProcessing = fullData['is_processing'];
+			this.id = fullData['id'];
+			this.data = fullData.data;
+		}
+
 		var itemTypes = {
-			'screenshot': Screenshot
+			'screenshot': Screenshot,
+			'mosaic': Mosaic
+		};
+		Mosaic.prototype.preload = function() {
+			for (var i = 0; i < this.data.length; i++) {
+				var src = this.data[i]['standard_url'];
+				var img = new Image();
+				img.src = src;
+			}
+		};
+		Mosaic.prototype.draw = function(container) {
+			/* use the largest screenshot dimension as the mosaic size;
+			each tile will be half this in each direction, padded as necessary.
+			If all screenshots are equal size (hopefully the most common case),
+			no padding will be needed. */
+			var width = 0, height = 0, i;
+			for (i = 0; i < this.data.length; i++) {
+				width = Math.max(width, this.data[i]['standard_width']);
+				height = Math.max(height, this.data[i]['standard_height']);
+			}
+			var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
+			for (i = 0; i < this.data.length; i++) {
+				var imgData = this.data[i];
+				var tile = $('<a class="tile"></a>').attr({
+					'href': imgData['original_url']
+				}).css({
+					'width': width/2 + 'px',
+					'height': height/2 + 'px',
+					'line-height': height/2 + 'px'
+				});
+				tile.openImageInLightbox();
+				var img = $('<img>').attr({
+					'src': imgData['standard_url'],
+					'width': imgData['standard_width'] / 2,
+					'height': imgData['standard_height'] / 2
+				});
+				tile.append(img);
+				mosaic.append(tile);
+			}
+			container.html(mosaic);
 		};
 
 		var carouselItems = [];
