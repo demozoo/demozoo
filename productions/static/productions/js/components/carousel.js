@@ -29,6 +29,7 @@
 		};
 
 		var carouselItems = [];
+		var carouselItemsById = {};
 		var currentId = null;
 		var currentIndex = 0;
 
@@ -42,14 +43,21 @@
 
 		function loadData(carouselData) {
 			carouselItems = [];
+			var newCarouselItemsById = {};
 			hasPreloadedAllImages = false;
 
 			var foundCurrentId = false;
 			var needReload = false;
 
 			for (var i = 0; i < carouselData.length; i++) {
-				itemType = itemTypes[carouselData[i].type];
-				carouselItems[i] = new itemType(carouselData[i]);
+				var carouselItem = carouselItemsById[carouselData[i].id];
+				if (!carouselItem || carouselItem.isProcessing) {
+					itemType = itemTypes[carouselData[i].type];
+					carouselItem = new itemType(carouselData[i]);
+				}
+				carouselItems[i] = carouselItem;
+				newCarouselItemsById[carouselData[i].id] = carouselItem;
+
 				if (currentId == carouselData[i].id) {
 					foundCurrentId = true;
 					currentIndex = i;
@@ -65,6 +73,7 @@
 			}
 
 			carouselItems[currentIndex].draw(currentBucket);
+			carouselItemsById = newCarouselItemsById;
 
 			if (needReload) {
 				setTimeout(function() {
