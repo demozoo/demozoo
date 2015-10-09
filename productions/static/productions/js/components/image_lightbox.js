@@ -30,7 +30,7 @@
 				var maxImageWidth = browserWidth - 64;
 				var maxImageHeight = browserHeight - 64;
 
-				var finalWidth, finalHeight;
+				var finalWidth, finalHeight, pixelated;
 
 				if (
 					imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
@@ -39,7 +39,7 @@
 					/* show image at double size */
 					finalWidth = imageWidth * 2;
 					finalHeight = imageHeight * 2;
-					renderStyle = 'pixelated';
+					pixelated = true;
 				} else {
 					var fullWidth = Math.min(imageWidth, maxImageWidth);
 					var fullHeight = Math.min(imageHeight, maxImageHeight);
@@ -54,13 +54,11 @@
 						finalWidth = Math.round(widthAtFullHeight);
 						finalHeight = fullHeight;
 					}
-					renderStyle = 'auto';
+					pixelated = false;
 				}
 
 				screenshotImg.attr({
-					'width': finalWidth, 'height': finalHeight
-				}).css({
-					'image-rendering': renderStyle
+					'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
 				});
 				screenshotWrapper.css({
 					'left': (browserWidth - (finalWidth + 32)) / 2 + 'px',
