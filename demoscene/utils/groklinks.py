@@ -1317,6 +1317,8 @@ PRODUCTION_LINK_TYPES = [
 	WaybackMachinePage, BaseUrl,
 ]
 
+EMBEDDABLE_PRODUCTION_LINK_TYPES = [pl for pl in PRODUCTION_LINK_TYPES if hasattr(pl, 'oembed_base_url')]
+
 PRODUCTION_DOWNLOAD_LINK_TYPES = [
 	'AmigascneFile', 'SceneOrgFile', 'UntergrundFile', 'PaduaOrgFile', 'ModlandFile'
 ]
