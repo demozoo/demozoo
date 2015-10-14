@@ -65,6 +65,16 @@ class BaseUrl():
 		# in cases where the 'master' URL is not a direct download (e.g. scene.org)
 		return str(self)
 
+	def get_oembed_url(self, max_width=None, max_height=None):
+		if self.oembed_base_url:
+			params = {'url': str(self)}
+			if self.oembed_add_format_parameter:
+				params['format'] = 'json'
+			if max_width:
+				params['maxwidth'] = max_width
+			if max_height:
+				params['maxheight'] = max_height
+			return "%s?%s" % (self.oembed_base_url, urllib.urlencode(params))
 
 
 def regex_match(pattern, flags=None):
@@ -862,6 +872,8 @@ class YoutubeVideo(BaseUrl):
 	html_title_format = "%s on YouTube"
 	is_streaming_video = True
 
+	oembed_base_url = "http://www.youtube.com/oembed"
+	oembed_add_format_parameter = True
 
 class YoutubeUser(BaseUrl):
 	canonical_format = "http://www.youtube.com/user/%s"
@@ -892,6 +904,9 @@ class VimeoVideo(BaseUrl):
 	html_link_text = "Vimeo"
 	html_title_format = "%s on Vimeo"
 	is_streaming_video = True
+
+	oembed_base_url = "https://vimeo.com/api/oembed.json"
+	oembed_add_format_parameter = False
 
 
 class DemosceneTvVideo(BaseUrl):

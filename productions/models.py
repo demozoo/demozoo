@@ -2,6 +2,10 @@ from django.db import models
 from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
+import urllib2
+import json
+import datetime
+
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
@@ -502,6 +506,13 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
+	oembed_data = models.TextField(blank=True, editable=False)
+	oembed_thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
+	oembed_thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
+	oembed_thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+	oembed_last_fetch_time = models.DateTimeField(null=True, blank=True, editable=False)
+	oembed_last_error_time = models.DateTimeField(null=True, blank=True, editable=False)
+
 	link_types = groklinks.PRODUCTION_LINK_TYPES
 
 	def save(self, *args, **kwargs):
@@ -543,6 +554,27 @@ class ProductionLink(ExternalLink):
 	@property
 	def is_streaming_video(self):
 		return getattr(self.link, 'is_streaming_video', False)
+
+	def fetch_oembed_data(self):
+		oembed_url = self.link.get_oembed_url()
+		if not oembed_url:
+			return
+		oembed_thumbnail_url = self.link.get_oembed_url(max_width=400, max_height=300)
+
+		response = urllib2.urlopen(oembed_thumbnail_url)
+		response_data = response.read()
+		response.close()
+		oembed_data = json.loads(response_data)
+		self.oembed_thumbnail_url = oembed_data['thumbnail_url']
+		self.oembed_thumbnail_width = oembed_data['thumbnail_width']
+		self.oembed_thumbnail_height = oembed_data['thumbnail_height']
+
+		response = urllib2.urlopen(oembed_url)
+		response_data = response.read()
+		response.close()
+		self.oembed_data = response_data
+		self.oembed_last_fetch_time = datetime.datetime.now()
+		self.save()
 
 	class Meta:
 		unique_together = (
