@@ -30,10 +30,6 @@
 			this.data = fullData.data;
 		}
 
-		var itemTypes = {
-			'screenshot': Screenshot,
-			'mosaic': Mosaic
-		};
 		Mosaic.prototype.preload = function() {
 			for (var i = 0; i < this.data.length; i++) {
 				var src = this.data[i]['standard_url'];
@@ -71,6 +67,38 @@
 				mosaic.append(tile);
 			}
 			container.html(mosaic);
+		};
+
+		function Video(fullData) {
+			this.isProcessing = fullData['is_processing'];
+			this.id = fullData['id'];
+			this.data = fullData.data;
+		}
+		Video.prototype.preload = function() {
+			for (var i = 0; i < this.data.length; i++) {
+				var src = this.data['thumbnail_url'];
+				var img = new Image();
+				img.src = src;
+			}
+		};
+		Video.prototype.draw = function(container) {
+			var link = $('<a class="video"><div class="play"></div></a>').attr({'href': this.data['url']});
+			var img = $('<img>').attr({'src': this.data['thumbnail_url'], 'width': this.data['thumbnail_width'], 'height': this.data['thumbnail_height']});
+			link.prepend(img);
+			container.html(link);
+
+			link.click(function() {
+				var lightbox = MediaLightbox(function(maxWidth, maxHeight) {
+					return [640, 480];
+				});
+				return false;
+			});
+		};
+
+		var itemTypes = {
+			'screenshot': Screenshot,
+			'mosaic': Mosaic,
+			'video': Video
 		};
 
 		var carouselItems = [];

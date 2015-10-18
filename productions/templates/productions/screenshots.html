@@ -14,10 +14,12 @@
 
 {% block extra_js %}
 	{% compress js %}
-		<script src="/static/productions/js/components/image_lightbox.js"></script>
+		<script src="/static/productions/js/components/media_lightbox.js"></script>
 	{% endcompress %}
 	<script>
-		$('a.open_image_in_lightbox', context).openImageInLightbox();
+		$(function() {
+			$('a.open_image_in_lightbox').openImageInLightbox();
+		});
 	</script>
 {% endblock %}
 
