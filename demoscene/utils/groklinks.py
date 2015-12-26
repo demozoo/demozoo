@@ -254,6 +254,16 @@ class NectarineSong(BaseUrl):
 	html_title_format = "%s on Nectarine Demoscene Radio"
 
 
+class NectarineGroup(BaseUrl):
+	canonical_format = "https://www.scenemusic.net/demovibes/group/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/group/(\d+)', re.I),
+	]
+	html_link_class = "nectarine"
+	html_link_text = "Nectarine"
+	html_title_format = "%s on Nectarine Demoscene Radio"
+
+
 class BitjamAuthor(BaseUrl):
 	canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1"
 	tests = [
@@ -1311,7 +1321,7 @@ class ZxTunesArtist(BaseUrl):
 
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
-	CsdbScener, CsdbGroup, NectarineArtist, BitjamAuthor, ArtcityArtist,
+	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
 	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
 	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
