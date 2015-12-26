@@ -13,12 +13,12 @@ external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 class Command(NoArgsCommand):
 	def handle_noargs(self, **options):
 		for model in external_link_models:
-			for link in model.objects.filter(link_class__in=['BaseUrl', 'SceneOrgFile']):
+			for link in model.objects.filter(link_class__in=['BaseUrl', 'UntergrundFile', 'SceneOrgFile']):
 				original_link_class = link.link_class
-				if link.link_class == 'BaseUrl':
-					link.url = link.url
-				else:
+				if link.link_class == 'SceneOrgFile':
 					link.url = link.link.nl_url
+				else:
+					link.url = link.url
 				if link.link_class != original_link_class:
 					print "%s ID %s bumped to %s" % (model.__name__, link.id, link.link_class)
 					try:

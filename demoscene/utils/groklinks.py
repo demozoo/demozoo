@@ -742,6 +742,16 @@ class ModlandFile(BaseUrl):
 		)
 
 
+class FujiologyFile(BaseUrl):
+	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
+	tests = [
+		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
+	]
+	html_link_class = "fujiology"
+	html_link_text = "Fujiology"
+	html_title_format = "%s on the Fujiology Archive"
+
+
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
 	tests = [
@@ -1341,7 +1351,7 @@ PRODUCTION_LINK_TYPES = [
 	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
-	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
+	SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
 	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
 	WaybackMachinePage, BaseUrl,
@@ -1350,7 +1360,7 @@ PRODUCTION_LINK_TYPES = [
 EMBEDDABLE_PRODUCTION_LINK_TYPES = [pl for pl in PRODUCTION_LINK_TYPES if hasattr(pl, 'oembed_base_url')]
 
 PRODUCTION_DOWNLOAD_LINK_TYPES = [
-	'AmigascneFile', 'SceneOrgFile', 'UntergrundFile', 'PaduaOrgFile', 'ModlandFile'
+	'AmigascneFile', 'SceneOrgFile', 'FujiologyFile', 'UntergrundFile', 'PaduaOrgFile', 'ModlandFile'
 ]
 
 PRODUCTION_EXTERNAL_LINK_TYPES = [
