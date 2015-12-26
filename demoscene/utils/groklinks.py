@@ -982,6 +982,16 @@ class SoundcloudUser(BaseUrl):
 	html_title_format = "%s on SoundCloud"
 
 
+class HearthisUser(BaseUrl):
+	canonical_format = "https://hearthis.at/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+)', re.I),
+	]
+	html_link_class = "hearthis"
+	html_link_text = "hearthis.at"
+	html_title_format = "%s on hearthis.at"
+
+
 class SoundcloudTrack(BaseUrl):
 	canonical_format = "http://soundcloud.com/%s"
 	tests = [
@@ -990,6 +1000,16 @@ class SoundcloudTrack(BaseUrl):
 	html_link_class = "soundcloud"
 	html_link_text = "SoundCloud"
 	html_title_format = "%s on SoundCloud"
+
+
+class HearthisTrack(BaseUrl):
+	canonical_format = "https://hearthis.at/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+/[^\/]+)', re.I),
+	]
+	html_link_class = "hearthis"
+	html_link_text = "hearthis.at"
+	html_title_format = "%s on hearthis.at"
 
 
 class DiscogsEntry(BaseUrl):  # for use as an abstract superclass
@@ -1295,7 +1315,7 @@ RELEASER_LINK_TYPES = [
 	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
 	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
-	GooglePlusPage, SoundcloudUser, YoutubeUser, YoutubeChannel,
+	GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
@@ -1308,7 +1328,7 @@ PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
 	AsciiarenaRelease, KestraBitworldRelease, StonishDisk,
-	ScenesatTrack, ModlandFile, SoundcloudTrack, CsdbMusic, NectarineSong,
+	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
@@ -1326,7 +1346,7 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
-	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'NectarineSong', 'KestraBitworldRelease',
+	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
