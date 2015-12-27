@@ -555,7 +555,7 @@ class ProductionLink(ExternalLink):
 	def is_streaming_video(self):
 		return getattr(self.link, 'is_streaming_video', False)
 
-	def fetch_oembed_data(self):
+	def fetch_embed_data(self):
 		oembed_url = self.link.get_oembed_url()
 		if not oembed_url:
 			return

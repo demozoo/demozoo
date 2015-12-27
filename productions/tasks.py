@@ -5,7 +5,7 @@ from productions.models import ProductionLink
 
 
 @task(rate_limit='12/m', ignore_result=True)
-def fetch_production_link_oembed_data(productionlink_id):
+def fetch_production_link_embed_data(productionlink_id):
 	try:
 		production_link = ProductionLink.objects.get(id=productionlink_id)
 	except ProductionLink.DoesNotExist:
@@ -19,7 +19,7 @@ def fetch_production_link_oembed_data(productionlink_id):
 		return
 
 	try:
-		production_link.fetch_oembed_data()
+		production_link.fetch_embed_data()
 	except:
 		production_link.embed_data_last_error_time = datetime.datetime.now()
 		production_link.save()

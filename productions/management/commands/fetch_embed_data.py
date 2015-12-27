@@ -5,7 +5,7 @@ import datetime
 from demoscene.utils.groklinks import EMBEDDABLE_PRODUCTION_LINK_TYPES
 
 from productions.models import ProductionLink
-from productions.tasks import fetch_production_link_oembed_data
+from productions.tasks import fetch_production_link_embed_data
 
 
 class Command(NoArgsCommand):
@@ -23,5 +23,5 @@ class Command(NoArgsCommand):
 		).order_by('-embed_data_last_fetch_time')
 
 		for prod_link in prod_links:
-			print "fetching oembed data for %s" % prod_link.link
-			fetch_production_link_oembed_data.delay(prod_link.id)
+			print "fetching embed data for %s" % prod_link.link
+			fetch_production_link_embed_data.delay(prod_link.id)
