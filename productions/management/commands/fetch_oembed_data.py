@@ -13,14 +13,14 @@ class Command(NoArgsCommand):
 		link_types = [cls.__name__ for cls in EMBEDDABLE_PRODUCTION_LINK_TYPES]
 		last_month = datetime.date.today() - datetime.timedelta(days=30)
 
-		# order by oembed_last_fetch_time desc to fetch null ones (never fetched) first
+		# order by embed_data_last_fetch_time desc to fetch null ones (never fetched) first
 		prod_links = ProductionLink.objects.filter(
 			link_class__in=link_types
 		).exclude(
-			oembed_last_fetch_time__gt=last_month
+			embed_data_last_fetch_time__gt=last_month
 		).exclude(
-			oembed_last_error_time__gt=last_month
-		).order_by('-oembed_last_fetch_time')
+			embed_data_last_error_time__gt=last_month
+		).order_by('-embed_data_last_fetch_time')
 
 		for prod_link in prod_links:
 			print "fetching oembed data for %s" % prod_link.link

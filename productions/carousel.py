@@ -15,18 +15,18 @@ def get_mosaic_data(processed_screenshots):
 
 
 def get_video_data(video):
-	if video.oembed_thumbnail_width > 400 or video.oembed_thumbnail_height > 300:
-		scale_factor = min(400.0 / video.oembed_thumbnail_width, 300.0 / video.oembed_thumbnail_height)
-		width = round(video.oembed_thumbnail_width * scale_factor)
-		height = round(video.oembed_thumbnail_height * scale_factor)
+	if video.thumbnail_width > 400 or video.thumbnail_height > 300:
+		scale_factor = min(400.0 / video.thumbnail_width, 300.0 / video.thumbnail_height)
+		width = round(video.thumbnail_width * scale_factor)
+		height = round(video.thumbnail_height * scale_factor)
 	else:
-		width = video.oembed_thumbnail_width
-		height = video.oembed_thumbnail_height
+		width = video.thumbnail_width
+		height = video.thumbnail_height
 
 	return {
 		'url': str(video.link),
 		'oembed_data': json.loads(video.oembed_data),
-		'thumbnail_url': video.oembed_thumbnail_url,
+		'thumbnail_url': video.thumbnail_url,
 		'thumbnail_width': width,
 		'thumbnail_height': height
 	}
@@ -36,7 +36,7 @@ def get_carousel_items(production):
 	screenshots = production.screenshots.order_by('id')
 	processed_screenshots = [s for s in screenshots if s.original_url]
 
-	embeddable_videos = production.links.filter(link_class__in=['YoutubeVideo', 'VimeoVideo'], oembed_last_fetch_time__isnull=False)
+	embeddable_videos = production.links.filter(link_class__in=['YoutubeVideo', 'VimeoVideo']).exclude(thumbnail_url='')
 
 	carousel_data = [
 		{

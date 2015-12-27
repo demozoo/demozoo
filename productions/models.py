@@ -507,11 +507,11 @@ class ProductionLink(ExternalLink):
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
 	oembed_data = models.TextField(blank=True, editable=False)
-	oembed_thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
-	oembed_thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
-	oembed_thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
-	oembed_last_fetch_time = models.DateTimeField(null=True, blank=True, editable=False)
-	oembed_last_error_time = models.DateTimeField(null=True, blank=True, editable=False)
+	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
+	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
+	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+	embed_data_last_fetch_time = models.DateTimeField(null=True, blank=True, editable=False)
+	embed_data_last_error_time = models.DateTimeField(null=True, blank=True, editable=False)
 
 	link_types = groklinks.PRODUCTION_LINK_TYPES
 
@@ -565,15 +565,15 @@ class ProductionLink(ExternalLink):
 		response_data = response.read()
 		response.close()
 		oembed_data = json.loads(response_data)
-		self.oembed_thumbnail_url = oembed_data['thumbnail_url']
-		self.oembed_thumbnail_width = oembed_data['thumbnail_width']
-		self.oembed_thumbnail_height = oembed_data['thumbnail_height']
+		self.thumbnail_url = oembed_data['thumbnail_url']
+		self.thumbnail_width = oembed_data['thumbnail_width']
+		self.thumbnail_height = oembed_data['thumbnail_height']
 
 		response = urllib2.urlopen(oembed_url)
 		response_data = response.read()
 		response.close()
 		self.oembed_data = response_data
-		self.oembed_last_fetch_time = datetime.datetime.now()
+		self.embed_data_last_fetch_time = datetime.datetime.now()
 		self.save()
 
 	class Meta:

@@ -13,13 +13,13 @@ def fetch_production_link_oembed_data(productionlink_id):
 		return
 
 	last_month = datetime.date.today() - datetime.timedelta(days=30)
-	if production_link.oembed_last_fetch_time and production_link.oembed_last_fetch_time > last_month:
+	if production_link.embed_data_last_fetch_time and production_link.embed_data_last_fetch_time > last_month:
 		return
-	if production_link.oembed_last_error_time and production_link.oembed_last_error_time > last_month:
+	if production_link.embed_data_last_error_time and production_link.embed_data_last_error_time > last_month:
 		return
 
 	try:
 		production_link.fetch_oembed_data()
 	except:
-		production_link.oembed_last_error_time = datetime.datetime.now()
+		production_link.embed_data_last_error_time = datetime.datetime.now()
 		production_link.save()
