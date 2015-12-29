@@ -12,7 +12,7 @@ def fetch_production_link_embed_data(productionlink_id):
 		# guess it was deleted in the meantime, then.
 		return
 
-	last_month = datetime.date.today() - datetime.timedelta(days=30)
+	last_month = datetime.datetime.now() - datetime.timedelta(days=30)
 	if production_link.embed_data_last_fetch_time and production_link.embed_data_last_fetch_time > last_month:
 		return
 	if production_link.embed_data_last_error_time and production_link.embed_data_last_error_time > last_month:
