@@ -2,8 +2,6 @@ from django.db import models
 from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
-import urllib2
-import json
 import datetime
 
 from taggit.managers import TaggableManager
@@ -506,10 +504,11 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 
-	oembed_data = models.TextField(blank=True, editable=False)
 	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
 	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+	video_width = models.IntegerField(null=True, blank=True, editable=False)
+	video_height = models.IntegerField(null=True, blank=True, editable=False)
 	embed_data_last_fetch_time = models.DateTimeField(null=True, blank=True, editable=False)
 	embed_data_last_error_time = models.DateTimeField(null=True, blank=True, editable=False)
 
@@ -556,25 +555,15 @@ class ProductionLink(ExternalLink):
 		return getattr(self.link, 'is_streaming_video', False)
 
 	def fetch_embed_data(self):
-		oembed_url = self.link.get_oembed_url()
-		if not oembed_url:
-			return
-		oembed_thumbnail_url = self.link.get_oembed_url(max_width=400, max_height=300)
-
-		response = urllib2.urlopen(oembed_thumbnail_url)
-		response_data = response.read()
-		response.close()
-		oembed_data = json.loads(response_data)
-		self.thumbnail_url = oembed_data['thumbnail_url']
-		self.thumbnail_width = oembed_data['thumbnail_width']
-		self.thumbnail_height = oembed_data['thumbnail_height']
-
-		response = urllib2.urlopen(oembed_url)
-		response_data = response.read()
-		response.close()
-		self.oembed_data = response_data
-		self.embed_data_last_fetch_time = datetime.datetime.now()
-		self.save()
+		embed_data = self.link.get_embed_data()
+		if embed_data is not None:
+			self.thumbnail_url = embed_data['thumbnail_url']
+			self.thumbnail_width = embed_data['thumbnail_width']
+			self.thumbnail_height = embed_data['thumbnail_height']
+			self.video_width = embed_data['video_width']
+			self.video_height = embed_data['video_height']
+			self.embed_data_last_fetch_time = datetime.datetime.now()
+			self.save()
 
 	class Meta:
 		unique_together = (

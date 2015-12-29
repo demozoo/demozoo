@@ -2,6 +2,11 @@
 import re
 import urlparse
 import urllib
+import urllib2
+import json
+
+from BeautifulSoup import BeautifulSoup
+
 from django.utils.html import escape
 
 
@@ -75,6 +80,9 @@ class BaseUrl():
 			if max_height:
 				params['maxheight'] = max_height
 			return "%s?%s" % (self.oembed_base_url, urllib.urlencode(params))
+
+	def get_embed_data(self):
+		return None
 
 
 def regex_match(pattern, flags=None):
@@ -895,6 +903,29 @@ class YoutubeVideo(BaseUrl):
 	oembed_base_url = "http://www.youtube.com/oembed"
 	oembed_add_format_parameter = True
 
+	def get_embed_data(self):
+		embed_data = {}
+
+		url = str(self)
+		response = urllib2.urlopen(url)
+		response_data = response.read()
+		response.close()
+		soup = BeautifulSoup(response_data)
+		embed_data['video_width'] = int(soup.find('meta', {'property': 'og:video:width'})['content'])
+		embed_data['video_height'] = int(soup.find('meta', {'property': 'og:video:height'})['content'])
+
+		oembed_thumbnail_url = self.get_oembed_url(max_width=400, max_height=300)
+		response = urllib2.urlopen(oembed_thumbnail_url)
+		response_data = response.read()
+		response.close()
+		oembed_data = json.loads(response_data)
+		embed_data['thumbnail_url'] = oembed_data['thumbnail_url']
+		embed_data['thumbnail_width'] = oembed_data['thumbnail_width']
+		embed_data['thumbnail_height'] = oembed_data['thumbnail_height']
+
+		return embed_data
+
+
 class YoutubeUser(BaseUrl):
 	canonical_format = "http://www.youtube.com/user/%s"
 	tests = [
@@ -927,6 +958,27 @@ class VimeoVideo(BaseUrl):
 
 	oembed_base_url = "https://vimeo.com/api/oembed.json"
 	oembed_add_format_parameter = False
+
+	def get_embed_data(self):
+		embed_data = {}
+
+		oembed_thumbnail_url = self.get_oembed_url(max_width=400, max_height=300)
+		response = urllib2.urlopen(oembed_thumbnail_url)
+		response_data = response.read()
+		response.close()
+		oembed_data = json.loads(response_data)
+		embed_data['thumbnail_url'] = oembed_data['thumbnail_url']
+		embed_data['thumbnail_width'] = oembed_data['thumbnail_width']
+		embed_data['thumbnail_height'] = oembed_data['thumbnail_height']
+
+		oembed_url = self.get_oembed_url()
+		response = urllib2.urlopen(oembed_url)
+		response_data = response.read()
+		response.close()
+		embed_data['video_width'] = oembed_data['width']
+		embed_data['video_height'] = oembed_data['height']
+
+		return embed_data
 
 
 class DemosceneTvVideo(BaseUrl):
