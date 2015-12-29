@@ -53,7 +53,7 @@ def get_carousel_items(production):
 		for screenshot in screenshots
 	]
 
-	if embeddable_videos:
+	if embeddable_videos and False:
 		video = embeddable_videos[0]
 		carousel_data.insert(0, {
 			'type': 'video',
