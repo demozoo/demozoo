@@ -56,11 +56,15 @@ def get_carousel_items(production):
 
 	if embeddable_videos:
 		video = embeddable_videos[0]
+		video_data = get_video_data(video)
+		if len(processed_screenshots) >= 4:
+			video_data['mosaic'] = get_mosaic_data(processed_screenshots)
+
 		carousel_data.insert(0, {
 			'type': 'video',
 			'id': 'video-%d' % video.id,
 			'is_processing': False,
-			'data': get_video_data(video)
+			'data': video_data,
 		})
 	elif len(processed_screenshots) >= 4:
 		carousel_data.insert(0, {
