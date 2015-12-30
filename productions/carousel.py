@@ -1,5 +1,4 @@
 import random
-import json
 
 
 def get_mosaic_data(processed_screenshots):
@@ -25,7 +24,9 @@ def get_video_data(video):
 
 	return {
 		'url': str(video.link),
-		'oembed_data': json.loads(video.oembed_data),
+		'video_width': video.video_width,
+		'video_height': video.video_height,
+		'embed_code': video.link.get_embed_html(video.video_width, video.video_height),
 		'thumbnail_url': video.thumbnail_url,
 		'thumbnail_width': width,
 		'thumbnail_height': height
@@ -53,7 +54,7 @@ def get_carousel_items(production):
 		for screenshot in screenshots
 	]
 
-	if embeddable_videos and False:
+	if embeddable_videos:
 		video = embeddable_videos[0]
 		carousel_data.insert(0, {
 			'type': 'video',
