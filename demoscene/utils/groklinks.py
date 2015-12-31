@@ -7,7 +7,7 @@ import json
 
 from BeautifulSoup import BeautifulSoup
 
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 
 
 class BaseUrl():
@@ -925,6 +925,13 @@ class YoutubeVideo(BaseUrl):
 
 		return embed_data
 
+	def get_embed_html(self, width, height):
+		embed_url = "http://www.youtube.com/embed/%s?autoplay=1" % self.param
+		return format_html(
+			"""<iframe width="{}" height="{}" src="{}" frameborder="0" allowfullscreen></iframe>""",
+			width, height, embed_url
+		)
+
 
 class YoutubeUser(BaseUrl):
 	canonical_format = "http://www.youtube.com/user/%s"
@@ -975,10 +982,18 @@ class VimeoVideo(BaseUrl):
 		response = urllib2.urlopen(oembed_url)
 		response_data = response.read()
 		response.close()
+		oembed_data = json.loads(response_data)
 		embed_data['video_width'] = oembed_data['width']
 		embed_data['video_height'] = oembed_data['height']
 
 		return embed_data
+
+	def get_embed_html(self, width, height):
+		embed_url = "https://player.vimeo.com/video/%s?autoplay=1" % self.param
+		return format_html(
+			"""<iframe width="{}" height="{}" src="{}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""",
+			width, height, embed_url
+		)
 
 
 class DemosceneTvVideo(BaseUrl):

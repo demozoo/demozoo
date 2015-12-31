@@ -24,6 +24,40 @@
 			}
 		};
 
+		function buildMosaic(items, addLinks) {
+			var width = 0, height = 0, i;
+			for (i = 0; i < items.length; i++) {
+				width = Math.max(width, items[i]['standard_width']);
+				height = Math.max(height, items[i]['standard_height']);
+			}
+			var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
+			for (i = 0; i < items.length; i++) {
+				var imgData = items[i];
+				var tile;
+				if (addLinks) {
+					tile = $('<a class="tile"></a>').attr({
+						'href': imgData['original_url']
+					});
+					tile.openImageInLightbox();
+				} else {
+					tile = $('<div class="tile"></div>');
+				}
+				tile.css({
+					'width': width/2 + 'px',
+					'height': height/2 + 'px',
+					'line-height': height/2 + 'px'
+				});
+				var img = $('<img>').attr({
+					'src': imgData['standard_url'],
+					'width': imgData['standard_width'] / 2,
+					'height': imgData['standard_height'] / 2
+				});
+				tile.append(img);
+				mosaic.append(tile);
+			}
+			return mosaic;
+		}
+
 		function Mosaic(fullData) {
 			this.isProcessing = fullData['is_processing'];
 			this.id = fullData['id'];
@@ -42,30 +76,7 @@
 			each tile will be half this in each direction, padded as necessary.
 			If all screenshots are equal size (hopefully the most common case),
 			no padding will be needed. */
-			var width = 0, height = 0, i;
-			for (i = 0; i < this.data.length; i++) {
-				width = Math.max(width, this.data[i]['standard_width']);
-				height = Math.max(height, this.data[i]['standard_height']);
-			}
-			var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
-			for (i = 0; i < this.data.length; i++) {
-				var imgData = this.data[i];
-				var tile = $('<a class="tile"></a>').attr({
-					'href': imgData['original_url']
-				}).css({
-					'width': width/2 + 'px',
-					'height': height/2 + 'px',
-					'line-height': height/2 + 'px'
-				});
-				tile.openImageInLightbox();
-				var img = $('<img>').attr({
-					'src': imgData['standard_url'],
-					'width': imgData['standard_width'] / 2,
-					'height': imgData['standard_height'] / 2
-				});
-				tile.append(img);
-				mosaic.append(tile);
-			}
+			var mosaic = buildMosaic(this.data, true);
 			container.html(mosaic);
 		};
 
@@ -82,15 +93,47 @@
 			}
 		};
 		Video.prototype.draw = function(container) {
+			var videoData = this.data;
+
 			var link = $('<a class="video"><div class="play"></div></a>').attr({'href': this.data['url']});
-			var img = $('<img>').attr({'src': this.data['thumbnail_url'], 'width': this.data['thumbnail_width'], 'height': this.data['thumbnail_height']});
+			var img;
+			if (videoData['mosaic']) {
+				img = buildMosaic(videoData['mosaic'], false);
+			} else {
+				img = $('<img>').attr({
+					'src': this.data['thumbnail_url'],
+					'width': this.data['thumbnail_width'],
+					'height': this.data['thumbnail_height']
+				});
+			}
 			link.prepend(img);
 			container.html(link);
 
 			link.click(function() {
+				var videoElement = $(videoData['embed_code']);
 				var lightbox = MediaLightbox(function(maxWidth, maxHeight) {
-					return [640, 480];
+					var videoWidth = videoData['video_width'];
+					var videoHeight = videoData['video_height'];
+
+					var fullWidth = Math.min(videoWidth, maxWidth);
+					var fullHeight = Math.min(videoHeight, maxHeight);
+
+					var heightAtFullWidth = (fullWidth * videoHeight/videoWidth);
+					var widthAtFullHeight = (fullHeight * videoWidth/videoHeight);
+
+					if (heightAtFullWidth <= maxHeight) {
+						finalWidth = fullWidth;
+						finalHeight = Math.round(heightAtFullWidth);
+					} else {
+						finalWidth = Math.round(widthAtFullHeight);
+						finalHeight = fullHeight;
+					}
+
+					videoElement.attr('width', finalWidth);
+					videoElement.attr('height', finalHeight);
+					return [finalWidth, finalHeight];
 				});
+				lightbox.mediaWrapper.append(videoElement);
 				return false;
 			});
 		};

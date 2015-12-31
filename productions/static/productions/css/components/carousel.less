@@ -77,20 +77,24 @@
 		}
 	}
 
-	.video .play {
-		width: 128px;
-		height: 96px;
-		background-color: rgba(32, 32, 32, 0.6);
-		background-image: url(/static/images/play.png);
-		background-repeat: no-repeat;
-		background-position: center;
-		border-radius: 3px;
-		position: absolute;
-		top: 102px;
-		left: 136px;
+	.video {
+		position: relative;
 
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.6);
+		.play {
+			width: 128px;
+			height: 96px;
+			background-color: rgba(32, 32, 32, 0.6);
+			background-image: url(/static/images/play.png);
+			background-repeat: no-repeat;
+			background-position: center;
+			border-radius: 3px;
+			position: absolute;
+			top: 102px;
+			left: 136px;
+
+			&:hover {
+				background-color: rgba(0, 0, 0, 0.6);
+			}
 		}
 	}
 
