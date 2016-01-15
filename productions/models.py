@@ -514,6 +514,15 @@ class ProductionLink(ExternalLink):
 
 	link_types = groklinks.PRODUCTION_LINK_TYPES
 
+	def __init__(self, *args, **kwargs):
+		super(ProductionLink, self).__init__(*args, **kwargs)
+		if self.pk:
+			self._original_link_class = self.link_class
+			self._original_parameter = self.parameter
+		else:
+			self._original_link_class = None
+			self._original_link_class = None
+
 	def save(self, *args, **kwargs):
 		# certain link types are marked as always download links, or always external links,
 		# regardless of where they are entered -
@@ -523,7 +532,29 @@ class ProductionLink(ExternalLink):
 		elif self.link_class in groklinks.PRODUCTION_EXTERNAL_LINK_TYPES:
 			self.is_download_link = False
 
+		should_fetch_embed_data = False
+
+		if self._original_link_class != self.link_class or self._original_parameter != self.parameter:
+			# link has changed - remove old embed data
+			self.thumbnail_url = ''
+			self.thumbnail_width = None
+			self.thumbnail_height = None
+			self.video_width = None
+			self.video_height = None
+			self.embed_data_last_fetch_time = None
+			self.embed_data_last_error_time = None
+
+			if self.link.supports_embed_data:
+				should_fetch_embed_data = True
+
+			self._original_link_class = self.link_class
+			self._original_parameter = self.parameter
+
 		super(ProductionLink, self).save(*args, **kwargs)
+
+		if should_fetch_embed_data:
+			from productions.tasks import fetch_production_link_embed_data
+			fetch_production_link_embed_data.delay(self.pk)
 
 	def html_link(self):
 		return self.link.as_html(self.production.title)

@@ -81,6 +81,8 @@ class BaseUrl():
 				params['maxheight'] = max_height
 			return "%s?%s" % (self.oembed_base_url, urllib.urlencode(params))
 
+	supports_embed_data = False
+
 	def get_embed_data(self):
 		return None
 
@@ -903,6 +905,8 @@ class YoutubeVideo(BaseUrl):
 	oembed_base_url = "http://www.youtube.com/oembed"
 	oembed_add_format_parameter = True
 
+	supports_embed_data = True
+
 	def get_embed_data(self):
 		embed_data = {}
 
@@ -965,6 +969,8 @@ class VimeoVideo(BaseUrl):
 
 	oembed_base_url = "https://vimeo.com/api/oembed.json"
 	oembed_add_format_parameter = False
+
+	supports_embed_data = True
 
 	def get_embed_data(self):
 		embed_data = {}
