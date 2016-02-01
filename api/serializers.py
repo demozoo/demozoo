@@ -145,14 +145,18 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 
 
 class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
 	platforms = PlatformSerializer(many=True, read_only=True)
 	types = ProductionTypeSummarySerializer(many=True, read_only=True)
 
+	def get_demozoo_url(self, production):
+		return settings.BASE_URL + production.get_absolute_url()
+
 	class Meta:
 		model = Production
-		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types']
+		fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types']
 
 
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
