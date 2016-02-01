@@ -226,5 +226,7 @@ REST_FRAMEWORK = {
 	'PAGINATE_BY': 100
 }
 
+BASE_URL = 'http://demozoo.org'
+
 # Read-only mode
 SITE_IS_WRITEABLE = True

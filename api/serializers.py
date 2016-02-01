@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework import serializers
 
 from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
@@ -7,34 +9,42 @@ from productions.models import Production, ProductionLink, Credit, ProductionTyp
 
 class NickSerializer(serializers.ModelSerializer):
 	variants = serializers.StringRelatedField(many=True)
+
 	class Meta:
 		model = Nick
 		fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
+
 
 class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
 		fields = ['url', 'id', 'name', 'is_group']
 
+
 class ReleaserSummarySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
 		fields = ['url', 'id', 'name']
 
+
 class GroupMembershipSerializer(serializers.ModelSerializer):
 	group = ReleaserSummarySerializer(read_only=True)
+
 	class Meta:
 		model = Membership
 		fields = ['group', 'is_current']
 
+
 class MemberMembershipSerializer(serializers.ModelSerializer):
 	member = ReleaserSummarySerializer(read_only=True)
+
 	class Meta:
 		model = Membership
 		fields = ['member', 'is_current']
 
+
 class SubgroupMembershipSerializer(serializers.ModelSerializer):
-	subgroup = serializers.SerializerMethodField()
+	subgroup = serializers.SerializerMethodField(read_only=True)
 
 	def get_subgroup(self, membership):
 		return ReleaserSummarySerializer(instance=membership.member, context=self.context).data
@@ -43,17 +53,23 @@ class SubgroupMembershipSerializer(serializers.ModelSerializer):
 		model = Membership
 		fields = ['subgroup', 'is_current']
 
+
 class ReleaserExternalLinkSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ReleaserExternalLink
 		fields = ['link_class', 'url']
 
+
 class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	nicks = NickSerializer(many=True, read_only=True)
-	member_of = serializers.SerializerMethodField('get_group_memberships')
-	members = serializers.SerializerMethodField()
-	subgroups = serializers.SerializerMethodField()
+	member_of = serializers.SerializerMethodField('get_group_memberships', read_only=True)
+	members = serializers.SerializerMethodField(read_only=True)
+	subgroups = serializers.SerializerMethodField(read_only=True)
 	external_links = ReleaserExternalLinkSerializer(many=True, read_only=True)
+
+	def get_demozoo_url(self, releaser):
+		return settings.BASE_URL + releaser.get_absolute_url()
 
 	def get_group_memberships(self, releaser):
 		memberships = releaser.group_memberships.select_related('group')
@@ -69,7 +85,7 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Releaser
-		fields = ['url', 'id', 'name', 'is_group', 'nicks', 'member_of', 'members', 'subgroups', 'external_links']
+		fields = ['url', 'demozoo_url', 'id', 'name', 'is_group', 'nicks', 'member_of', 'members', 'subgroups', 'external_links']
 
 
 class PlatformSerializer(serializers.HyperlinkedModelSerializer):
@@ -77,37 +93,46 @@ class PlatformSerializer(serializers.HyperlinkedModelSerializer):
 		model = Platform
 		fields = ['url', 'id', 'name']
 
+
 class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = ProductionType
 		fields = ['url', 'id', 'name', 'supertype']
+
 
 class ProductionTypeSummarySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = ProductionType
 		fields = ['url', 'id', 'name']
 
+
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
 		fields = ['url', 'id', 'name', 'is_group']
 
+
 class AuthorNickSerializer(serializers.ModelSerializer):
 	releaser = AuthorSerializer(read_only=True)
+
 	class Meta:
 		model = Nick
 		fields = ['name', 'abbreviation', 'releaser']
+
 
 class ProductionExternalLinkSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ProductionLink
 		fields = ['link_class', 'url']
 
+
 class ProductionCreditSerializer(serializers.ModelSerializer):
 	nick = AuthorNickSerializer(read_only=True)
+
 	class Meta:
 		model = Credit
 		fields = ['nick', 'category', 'role']
+
 
 class ScreenshotSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -117,6 +142,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 			'standard_url', 'standard_width', 'standard_height',
 			'thumbnail_url', 'thumbnail_width', 'thumbnail_height',
 		]
+
 
 class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
@@ -128,7 +154,9 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
 		model = Production
 		fields = ['url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types']
 
+
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
 	platforms = PlatformSerializer(many=True, read_only=True)
@@ -138,8 +166,11 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	external_links = ProductionExternalLinkSerializer(many=True, read_only=True)
 	screenshots = ScreenshotSerializer(many=True, read_only=True)
 
+	def get_demozoo_url(self, production):
+		return settings.BASE_URL + production.get_absolute_url()
+
 	class Meta:
 		model = Production
 		fields = [
-			'url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types',
+			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types',
 			'credits', 'download_links', 'external_links', 'screenshots']
