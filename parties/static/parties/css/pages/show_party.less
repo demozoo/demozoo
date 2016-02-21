@@ -194,3 +194,28 @@
 		min-width: 150px;
 	}
 }
+
+@media screen and (max-width: 600px) {
+	.show_party {
+		.results_panel {
+			.results_menu_column {
+				float: none;
+				height: auto;
+				width: 100%;
+			}
+			.results_body {
+				float: none;
+				width: 100%;
+			}
+			.results_menu {
+				position: static;
+				width: 100% !important;
+			}
+		}
+		.results_panel.fixed {
+			.results_menu {
+				position: static;
+			}
+		}
+	}
+}
