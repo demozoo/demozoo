@@ -24,15 +24,15 @@
 
 	<form action="{% url 'new_music' %}" method="post" class="entry_form production_create_form">
 		{% csrf_token %}
-		
+
 		{% with form.title as field %}
 			{% include "shared/form_field.html" %}
 		{% endwith %}
-		
+
 		{% with form.byline as field %}
 			{% include "shared/form_field.html" %}
 		{% endwith %}
-		
+
 		{% with form.release_date as field %}
 			{% include "shared/form_field.html" %}
 		{% endwith %}
@@ -40,14 +40,14 @@
 		{% with form.type as field %}
 			{% include "shared/form_field.html" %}
 		{% endwith %}
-		
+
 		{% with form.platform as field %}
 			{% include "shared/form_field.html" %}
 		{% endwith %}
-		
+
 		{% include "shared/production_download_formset.html" %}
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" Value="Add new music"/>
 		</div>
 	</form>
 {% endblock %}
