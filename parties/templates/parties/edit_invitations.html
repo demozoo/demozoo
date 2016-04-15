@@ -21,15 +21,15 @@
 
 	<form action="{% url 'party_edit_invitations' party.id %}" method="post" class="entry_form party_invitation_form">
 		{% csrf_token %}
-		
+
 		{% spawningformset formset %}
 			{% spawningform as form %}
 				{{ form.production }}
 			{% endspawningform %}
 		{% endspawningformset %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" Value="Submit invitation edit"/>
 		</div>
 	</form>
 {% endblock %}

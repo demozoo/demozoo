@@ -14,20 +14,20 @@
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}:</h2>
+	<h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}</h2>
 
 	<form action="{% url 'group_edit_subgroup' group.id membership.id %}" method="post" class="entry_form edit_subgroup_form">
 		{% csrf_token %}
-		
+
 		{% for field in form.visible_fields %}
 			{% include "shared/form_field.html" %}
 		{% endfor %}
 		{% for field in form.hidden_fields %}
 			{{ field }}
 		{% endfor %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" value="Submit edit"/>
 		</div>
 	</form>
 

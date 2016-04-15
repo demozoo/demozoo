@@ -22,11 +22,11 @@
 
 	<form action="{% url 'production_add_credit' production.id %}" method="post" class="entry_form add_credit_form">
 		{% csrf_token %}
-		
+
 		{% include "productions/credit_form.html" %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" Value="Add credit"/>
 		</div>
 	</form>
 {% endblock %}

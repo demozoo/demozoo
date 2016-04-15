@@ -19,15 +19,15 @@
 
 	<form action="{% url 'production_edit_pack_contents' production.id %}" method="post" class="entry_form pack_contents_form">
 		{% csrf_token %}
-		
+
 		{% spawningformset sortable formset %}
 			{% spawningform as form %}
 				{{ form.ORDER }}{{ form.member }}{{ form.id }}{{ form.pack }}
 			{% endspawningform %}
 		{% endspawningformset %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" Value="Submit edit"/>
 		</div>
 	</form>
 {% endblock %}
