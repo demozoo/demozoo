@@ -1,7 +1,6 @@
 from .base import *
 
 DATABASES['default']['USER'] = 'demozoo'
-DATABASES['geonameslite']['USER'] = 'demozoo'
 
 DEBUG = False
 EMAIL_HOST = 'localhost'
