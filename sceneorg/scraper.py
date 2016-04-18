@@ -1,11 +1,11 @@
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
-user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
+from django.conf import settings
 
 
 def scrape_dir(url):
-	req = urllib2.Request(url, None, {'User-Agent': user_agent})
+	req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
 	page = urllib2.urlopen(req)
 	soup = BeautifulSoup(page)
 

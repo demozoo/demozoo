@@ -227,6 +227,9 @@ REST_FRAMEWORK = {
 }
 
 BASE_URL = 'http://demozoo.org'
+HTTP_USER_AGENT = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
+
+GEOCODER_URL = 'http://geocoder.demozoo.org/'
 
 # Read-only mode
 SITE_IS_WRITEABLE = True

@@ -8,7 +8,7 @@ import time
 import urllib2
 import json
 
-user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
+from django.conf import settings
 
 
 @task(time_limit=3600, ignore_result=True)
@@ -18,7 +18,7 @@ def fetch_new_sceneorg_files(days=1):
 	new_file_count = 0
 
 	while True:
-		req = urllib2.Request(url, None, {'User-Agent': user_agent})
+		req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
 		page = urllib2.urlopen(req)
 		response = json.loads(page.read())
 		page.close()

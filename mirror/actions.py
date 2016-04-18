@@ -15,7 +15,6 @@ from mirror.models import Download
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from productions.models import Production
 
-user_agent = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 max_size = 10485760
 mirror_bucket_name = 'mirror.demozoo.org'
 
@@ -36,7 +35,7 @@ class FileTooBig(Exception):
 def fetch_origin_url(url):
 	# fetch file from the given URL (any protocol supported by urllib2),
 	# throwing FileTooBig if it exceeds max_size
-	req = urllib2.Request(url, None, {'User-Agent': user_agent})
+	req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
 	f = urllib2.urlopen(req, None, 10)
 
 	content_length = f.info().get('Content-Length')
