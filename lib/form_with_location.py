@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 
 def find_locality(query):
 	req = urllib2.Request(
-		"%s?%s" % (settings.GEOCODER_URL, urllib.urlencode({'q': query})),
+		"%s?%s" % (settings.GEOCODER_URL, urllib.urlencode({'q': query.encode('utf-8')})),
 		None,
 		{'User-Agent': settings.HTTP_USER_AGENT}
 	)
