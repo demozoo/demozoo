@@ -21,6 +21,10 @@ apt-get install -y libffi-dev
 # xapian (search engine)
 apt-get install -y python-xapian
 
+# node.js / lessc
+curl -sL https://deb.nodesource.com/setup_4.x | bash -
+apt-get install -y nodejs
+npm install -g less
 
 # virtualenvwrapper
 pip install virtualenvwrapper
