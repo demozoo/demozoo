@@ -66,4 +66,4 @@ def exportdb():
 	local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';" """ % db_username)
 	local("""psql -U%s demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session; DROP TABLE djapian_change;" """ % db_username)
 	local('pg_dump -Z1 -cf demozoo-export.sql.gz demozoo_dump')
-	#local('dropdb -Upostgres demozoo_dump')
+	#local('dropdb -U%s demozoo_dump' % db_username)
