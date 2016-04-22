@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import datetime
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -10,7 +12,7 @@ from parties.models import PartySeries, Party
 from comments.models import Comment
 
 
-class TestCommentUrl(TestCase):
+class TestCommentModel(TestCase):
 	def setUp(self):
 		self.user = User.objects.create(username='bob')
 		self.production = Production.objects.create(
@@ -19,7 +21,14 @@ class TestCommentUrl(TestCase):
 		self.production_comment = Comment.objects.create(
 			user=self.user,
 			commentable=self.production,
-			body="He is not an atomic playboy."
+			body="He is not an atomic playboy.",
+			created_at=datetime.datetime(2014, 1, 1)
+		)
+		self.second_production_comment = Comment.objects.create(
+			user=self.user,
+			commentable=self.production,
+			body="On second thoughts, maybe he is.",
+			created_at=datetime.datetime(2014, 1, 2)
 		)
 		self.party_series = PartySeries.objects.create(name="InerciaDemoparty")
 		self.party = Party.objects.create(

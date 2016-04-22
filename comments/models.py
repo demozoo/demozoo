@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
+import datetime
+
 
 class Comment(models.Model):
 	user = models.ForeignKey(User, related_name='comments')
@@ -11,8 +13,16 @@ class Comment(models.Model):
 	commentable = generic.GenericForeignKey('content_type', 'object_id')
 
 	body = models.TextField()
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
+	created_at = models.DateTimeField()
+	updated_at = models.DateTimeField()
+
+	def save(self, *args, **kwargs):
+		if self.created_at is None:
+			self.created_at = datetime.datetime.now()
+
+		self.updated_at = datetime.datetime.now()
+
+		super(Comment, self).save(*args, **kwargs)
 
 	def get_absolute_url(self):
 		return self.commentable.get_absolute_url() + ('#comment-%d' % self.id)
