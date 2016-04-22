@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import datetime
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -17,7 +15,6 @@ class TestCommentUrl(TestCase):
 		self.user = User.objects.create(username='bob')
 		self.production = Production.objects.create(
 			title="Second Reality",
-			updated_at=datetime.datetime.now()  # FIXME: having to pass updated_at is silly
 		)
 		self.production_comment = Comment.objects.create(
 			user=self.user,

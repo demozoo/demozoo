@@ -121,9 +121,17 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	def save(self, *args, **kwargs):
 		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
+
+		# populate sortable_title from title
 		if self.title:
 			self.title = self.title.strip()
 			self.sortable_title = generate_sort_key(self.title)
+
+		# auto-populate updated_at; this will only happen on creation
+		# because it's a non-null field at the db level
+		if self.updated_at is None:
+			self.updated_at = datetime.datetime.now()
+
 		return super(Production, self).save(*args, **kwargs)
 
 	def __unicode__(self):

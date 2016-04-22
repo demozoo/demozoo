@@ -13,12 +13,10 @@ class TestReleaser(TestCase):
 		self.gasman = Releaser.objects.create(
 			name="Gasman",
 			is_group=False,
-			updated_at=datetime.datetime.now()  # FIXME: having to pass updated_at is silly
 		)
 		self.hooy_program = Releaser.objects.create(
 			name="Hooy-Program",
 			is_group=True,
-			updated_at=datetime.datetime.now()
 		)
 
 	def test_releaser_nick_creation(self):
@@ -79,11 +77,9 @@ class TestReleaserProductions(TestCase):
 		fakescener = Releaser.objects.create(
 			name="Fakescener",
 			is_group=False,
-			updated_at=datetime.datetime.now()  # FIXME: having to pass updated_at is silly
 		)
 		fakeprod = Production.objects.create(
 			title="Fakeprod",
-			updated_at=datetime.datetime.now()
 		)
 		fakeprod.author_nicks.add(fakescener.nicks.first())
 		fakeprod.author_affiliation_nicks.add(raww_arse.nicks.first())

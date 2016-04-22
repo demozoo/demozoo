@@ -47,8 +47,14 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	updated_at = models.DateTimeField()
 
 	def save(self, *args, **kwargs):
-		# ensure that a Nick with matching name exists for this releaser
+		# auto-populate updated_at; this will only happen on creation
+		# because it's a non-null field at the db level
+		if self.updated_at is None:
+			self.updated_at = datetime.datetime.now()
+
 		super(Releaser, self).save(*args, **kwargs)  # Call the "real" save() method
+
+		# ensure that a Nick with matching name exists for this releaser
 		nick, created = Nick.objects.get_or_create(releaser=self, name=self.name)
 
 	def __unicode__(self):
