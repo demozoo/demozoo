@@ -13,6 +13,10 @@ from productions.models import Production
 
 class CommentTestCase(TestCase):
 	def setUp(self):
+		self.admin = User.objects.create_user(username='admin', password='password')
+		self.admin.is_staff = True
+		self.admin.save()
+
 		self.user = User.objects.create_user(username='bob the commenter', password='password')
 		self.production = Production.objects.create(
 			title="Second Reality",
@@ -49,3 +53,6 @@ class CommentTestCase(TestCase):
 
 	def login(self):
 		self.client.login(username='bob the commenter', password='password')
+
+	def login_as_admin(self):
+		self.client.login(username='admin', password='password')

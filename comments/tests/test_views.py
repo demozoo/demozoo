@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
+from comments.models import Comment
+
 from .utils import CommentTestCase
 
 
@@ -17,6 +19,8 @@ class TestShowComments(CommentTestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "Be the first to comment on this production...")
 
+
+class TestAddComment(CommentTestCase):
 	def test_add_comment_requires_login(self):
 		url = '/productions/%d/comments/new/' % self.uncommented_production.id
 		response = self.client.get(url)
@@ -58,4 +62,69 @@ class TestShowComments(CommentTestCase):
 
 		comments = self.uncommented_production.get_comments()
 		self.assertEqual(comments.count(), 0)
+		self.assertEqual(response.status_code, 200)
+
+
+class TestEditComment(CommentTestCase):
+	def test_cannot_edit_comment_as_anonymous_user(self):
+		url = '/productions/%d/comments/%d/edit/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertRedirects(response, '/account/login/?next=%s' % url)
+
+	def test_cannot_edit_comment_as_non_admin(self):
+		self.login()
+		url = '/productions/%d/comments/%d/edit/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertRedirects(response, '/productions/%d/#comment-%d' % (
+			self.production.id, self.production_comment.id
+		))
+
+	def test_show_edit_production_comment_form(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/edit/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "<h2>Editing comment for Second Reality</h2>")
+		self.assertContains(response, "He is not an atomic playboy.")
+
+	def test_show_edit_party_comment_form(self):
+		self.login_as_admin()
+		url = '/parties/%d/comments/%d/edit/' % (
+			self.party.id, self.party_comment.id
+		)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "<h2>Editing comment for InerciaDemoparty 2005</h2>")
+		self.assertContains(response, "I forgot to come.")
+
+	def test_edit_comment(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/edit/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.post(url, {
+			'comment-body': "He is still not an atomic playboy."
+		})
+		self.assertRedirects(response, '/productions/%d/#comment-%d' % (
+			self.production.id, self.production_comment.id
+		))
+		updated_comment = Comment.objects.get(id=self.production_comment.id)
+		self.assertEqual(updated_comment.body, "He is still not an atomic playboy.")
+
+	def test_cannot_edit_empty_comment(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/edit/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.post(url, {
+			'comment-body': ""
+		})
+		non_updated_comment = Comment.objects.get(id=self.production_comment.id)
+		self.assertEqual(non_updated_comment.body, "He is not an atomic playboy.")
 		self.assertEqual(response.status_code, 200)
