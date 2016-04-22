@@ -17,10 +17,9 @@ class Comment(models.Model):
 	updated_at = models.DateTimeField()
 
 	def save(self, *args, **kwargs):
-		if self.created_at is None:
-			self.created_at = datetime.datetime.now()
-
 		self.updated_at = datetime.datetime.now()
+		if self.created_at is None:
+			self.created_at = self.updated_at
 
 		super(Comment, self).save(*args, **kwargs)
 
