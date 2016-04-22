@@ -128,3 +128,68 @@ class TestEditComment(CommentTestCase):
 		non_updated_comment = Comment.objects.get(id=self.production_comment.id)
 		self.assertEqual(non_updated_comment.body, "He is not an atomic playboy.")
 		self.assertEqual(response.status_code, 200)
+
+
+class TestDeleteComment(CommentTestCase):
+	def test_cannot_delete_comment_as_anonymous_user(self):
+		url = '/productions/%d/comments/%d/delete/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertRedirects(response, '/account/login/?next=%s' % url)
+
+	def test_cannot_delete_comment_as_non_admin(self):
+		self.login()
+		url = '/productions/%d/comments/%d/delete/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertRedirects(response, '/productions/%d/#comment-%d' % (
+			self.production.id, self.production_comment.id
+		))
+
+	def test_show_delete_production_comment_confirmation(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/delete/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Are you sure you want to delete this comment?")
+		self.assertContains(response, "Deleting comment on Second Reality")
+
+	def test_show_edit_party_comment_form(self):
+		self.login_as_admin()
+		url = '/parties/%d/comments/%d/delete/' % (
+			self.party.id, self.party_comment.id
+		)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Are you sure you want to delete this comment?")
+		self.assertContains(response, "Deleting comment on InerciaDemoparty 2005")
+
+	def test_delete_comment(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/delete/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.post(url, {
+			'yes': 'yes',
+		})
+		comments = self.production.get_comments()
+		self.assertEqual(comments.count(), 1)
+		self.assertRedirects(response, '/productions/%d/' % self.production.id)
+
+	def test_decline_delete_comment(self):
+		self.login_as_admin()
+		url = '/productions/%d/comments/%d/delete/' % (
+			self.production.id, self.production_comment.id
+		)
+		response = self.client.post(url, {
+			'no': 'no',
+		})
+		comments = self.production.get_comments()
+		self.assertEqual(comments.count(), 2)
+		self.assertRedirects(response, '/productions/%d/#comment-%d' % (
+			self.production.id, self.production_comment.id
+		))
