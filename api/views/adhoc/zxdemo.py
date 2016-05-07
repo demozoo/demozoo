@@ -13,7 +13,7 @@ def prod_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.production_id}
 		for link in links
 	]
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def group_demozoo_ids_by_zxdemo_id(request):
@@ -22,7 +22,7 @@ def group_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.releaser_id}
 		for link in links
 	]
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def party_demozoo_ids_by_zxdemo_id(request):
@@ -31,4 +31,4 @@ def party_demozoo_ids_by_zxdemo_id(request):
 		{'zxdemo_id': int(link.parameter), 'demozoo_id': link.party_id}
 		for link in links
 	]
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")
