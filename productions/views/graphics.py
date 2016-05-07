@@ -102,7 +102,7 @@ def create(request):
 		download_link_formset = ProductionDownloadLinkFormSet(request.POST, instance=production)
 		if form.is_valid() and download_link_formset.is_valid():
 			form.save()
-			download_link_formset.save()
+			download_link_formset.save_ignoring_uniqueness()
 			form.log_creation(request.user)
 			return HttpResponseRedirect(production.get_absolute_url())
 	else:
