@@ -46,7 +46,7 @@ def credits(request):
 		for ((prod_id, user_id), creds) in groupby(credits, lambda c: (c.pouet_prod_id, c.pouet_user_id))
 	]
 
-	return HttpResponse(json.dumps(credits_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(credits_json), content_type="text/javascript")
 
 
 def prod_demozoo_ids_by_pouet_id(request):
@@ -55,7 +55,7 @@ def prod_demozoo_ids_by_pouet_id(request):
 		{'pouet_id': int(link.parameter), 'demozoo_id': link.production_id}
 		for link in links
 	]
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def group_demozoo_ids_by_pouet_id(request):
@@ -64,7 +64,7 @@ def group_demozoo_ids_by_pouet_id(request):
 		{'pouet_id': int(link.parameter), 'demozoo_id': link.releaser_id}
 		for link in links
 	]
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def party_demozoo_ids_by_pouet_id(request):
@@ -76,4 +76,4 @@ def party_demozoo_ids_by_pouet_id(request):
 			'pouet_id': int(party_id), 'year': int(year),
 			'demozoo_id': link.party_id
 		})
-	return HttpResponse(json.dumps(links_json), mimetype="text/javascript")
+	return HttpResponse(json.dumps(links_json), content_type="text/javascript")

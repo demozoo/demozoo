@@ -201,6 +201,46 @@
 			"nick": 1,
 			"category": "Code"
 		}
-	}
+	},
 
+	{
+		"pk": 1,
+		"model": "parties.partyseries",
+		"fields": {
+			"name": "Forever"
+		}
+	},
+
+	{
+		"pk": 1,
+		"model": "parties.party",
+		"fields": {
+			"party_series": 1,
+			"name": "Forever 2e3",
+			"start_date_date": "2000-03-17",
+			"start_date_precision": "d",
+			"end_date_date": "2000-03-19",
+			"end_date_precision": "d"
+		}
+	},
+
+	{
+		"pk": 1,
+		"model": "parties.competition",
+		"fields": {
+			"party": 1,
+			"name": "ZX 1K Intro"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "parties.competitionplacing",
+		"fields": {
+			"competition": 1,
+			"production": 1,
+			"ranking": "2",
+			"position": 2,
+			"score": "96"
+		}
+	}
 ]
