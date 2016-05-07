@@ -5,6 +5,7 @@ from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFo
 from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember
 from demoscene.models import Edit
 from platforms.models import Platform
+from demoscene.utils import groklinks
 from demoscene.utils.party_field import PartyField
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from demoscene.utils.text import slugify_tag
@@ -271,7 +272,12 @@ class ProductionTagsForm(forms.ModelForm):
 class ProductionDownloadLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
 		instance = super(ProductionDownloadLinkForm, self).save(commit=False)
-		instance.is_download_link = True
+
+		if instance.link_class in groklinks.PRODUCTION_EXTERNAL_LINK_TYPES:
+			instance.is_download_link = False
+		else:
+			instance.is_download_link = True
+
 		if commit:
 			instance.validate_unique()
 			instance.save()
@@ -288,7 +294,12 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 class ProductionExternalLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
 		instance = super(ProductionExternalLinkForm, self).save(commit=False)
-		instance.is_download_link = False
+
+		if instance.link_class in groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES:
+			instance.is_download_link = True
+		else:
+			instance.is_download_link = False
+
 		if commit:
 			instance.validate_unique()
 			instance.save()
