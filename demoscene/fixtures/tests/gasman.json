@@ -1,6 +1,16 @@
 [
 	{
 		"pk": 1,
+		"model": "platforms.platform",
+		"fields": {"name": "ZX Spectrum"}
+	},
+	{
+		"pk": 1,
+		"model": "productions.productiontype",
+		"fields": {"name": "Demo", "path": "0001", "depth": 1, "numchild": 0}
+	},
+	{
+		"pk": 1,
 		"model": "demoscene.releaser",
 		"fields": {
 			"name": "Gasman",
@@ -143,6 +153,7 @@
 			"title": "Madrielle",
 			"author_nicks": [1],
 			"author_affiliation_nicks": [3],
+			"platforms": [1],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}
@@ -153,6 +164,7 @@
 		"fields": {
 			"title": "Mooncheese",
 			"author_nicks": [2],
+			"types": [1],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}
@@ -163,6 +175,7 @@
 		"fields": {
 			"title": "Laesq24 Giftro",
 			"author_nicks": [4],
+			"platforms": [1],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}
@@ -172,7 +185,9 @@
 		"model": "productions.production",
 		"fields": {
 			"title": "Pondlife",
-			"author_nicks": [3],
+			"author_nicks": [3, 5],
+			"platforms": [1],
+			"types": [1],
 			"created_at": "2014-01-01",
 			"updated_at": "2014-01-01"
 		}
