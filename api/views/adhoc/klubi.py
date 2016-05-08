@@ -40,7 +40,7 @@ def demoshow(request):
 
 		exe_prods.append(prod)
 
-	response = HttpResponse(mimetype='text/plain;charset=utf-8')
+	response = HttpResponse(content_type='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
 		'Demozoo URL', 'Title', 'By', 'Release date', 'Party', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'

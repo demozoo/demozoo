@@ -20,14 +20,14 @@ def monthly(request):
 		'author_nicks', 'author_affiliation_nicks',
 	).order_by('release_date_date')
 
-	response = HttpResponse(mimetype='text/plain;charset=utf-8')
+	response = HttpResponse(content_type='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
 		'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Platform', 'Download URL'
 	])
 	for prod in prods:
-		platforms = sorted(prod.platforms.all(), key=lambda p:p.name)
-		prod_types = sorted(prod.types.all(), key=lambda t:t.name)
+		platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
+		prod_types = sorted(prod.types.all(), key=lambda t: t.name)
 		csvfile.writerow([
 			(u'http://demozoo.org' + prod.get_absolute_url()).encode('utf-8'),
 			prod.title.encode('utf-8'),

@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
 from parties.models import Party, PartyExternalLink
-from productions.models import Production, ProductionLink
+from productions.models import Production, ProductionLink, ProductionType
 
 
 class TestPouet(TestCase):
@@ -129,3 +129,63 @@ class TestZxdemo(TestCase):
 			if result['demozoo_id'] == 1 and result['zxdemo_id'] == 16
 		]
 		self.assertEqual(1, len(results))
+
+
+class TestEq(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def test_eq_prods(self):
+		response = self.client.get('/api/adhoc/eq/demos/')
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Madrielle", response.content)
+
+
+class TestKlubi(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def setUp(self):
+		game = ProductionType.add_root(name='Game')
+		stevie_dotman = Production.objects.create(
+			title="Stevie Dotman", supertype="production",
+			release_date_date='2000-03-18', release_date_precision='d'
+		)
+		stevie_dotman.types.add(game)
+
+		Production.objects.create(
+			title="Mystery Prod", supertype="production",
+			release_date_date='2000-03-18', release_date_precision='d'
+		)
+
+	def test_klubi_demoshow(self):
+		response = self.client.get('/api/adhoc/klubi/demoshow-prods/')
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Demozoo URL,Title,By,Release date,Party", response.content)
+
+	def test_klubi_demoshow_for_specific_month(self):
+		response = self.client.get('/api/adhoc/klubi/demoshow-prods/?month=2000-03')
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Madrielle", response.content)
+		# don't include games
+		self.assertNotIn("Stevie Dotman", response.content)
+		# do include prods with no type listed
+		self.assertIn("Mystery Prod", response.content)
+
+
+class TestScenesat(TestCase):
+	fixtures = ['tests/gasman.json']
+
+	def setUp(self):
+		Production.objects.create(
+			title="Cybernoid's Revenge", supertype="music",
+			release_date_date='2001-03-18', release_date_precision='d'
+		)
+
+	def test_scenesat_releases(self):
+		response = self.client.get('/api/adhoc/scenesat/monthly-releases/')
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Demozoo URL,Title,By,Release date", response.content)
+
+	def test_scenesat_releases_for_specific_month(self):
+		response = self.client.get('/api/adhoc/scenesat/monthly-releases/?month=2001-03')
+		self.assertEqual(response.status_code, 200)
+		self.assertIn("Cybernoid's Revenge", response.content)

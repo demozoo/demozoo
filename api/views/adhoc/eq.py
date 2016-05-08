@@ -22,7 +22,7 @@ def demos(request):
 		'author_nicks__releaser', 'credits__nick__releaser'
 	).order_by('title')
 
-	response = HttpResponse(mimetype='text/plain;charset=utf-8')
+	response = HttpResponse(content_type='text/plain;charset=utf-8')
 	csvfile = csv.writer(response)
 	csvfile.writerow([
 		'ID', 'Demozoo URL', 'Title', 'By', 'Release date', 'Type', 'Nationality', 'Download URL'
