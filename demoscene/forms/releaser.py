@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+import datetime
+
 from demoscene.models import Releaser, Nick, ReleaserExternalLink, Edit
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
@@ -12,6 +14,11 @@ class CreateGroupForm(forms.ModelForm):
 	abbreviation = forms.CharField(required=False, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
 	nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
 		help_text="(as a comma-separated list)")
+
+	def __init__(self, *args, **kwargs):
+		super(CreateGroupForm, self).__init__(*args, **kwargs)
+		self.instance.is_group = True
+		self.updated_at = datetime.datetime.now()
 
 	def save(self, commit=True):
 		instance = super(CreateGroupForm, self).save(commit=commit)
@@ -34,6 +41,11 @@ class CreateGroupForm(forms.ModelForm):
 class CreateScenerForm(forms.ModelForm):
 	nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
 		help_text="(as a comma-separated list)")
+
+	def __init__(self, *args, **kwargs):
+		super(CreateScenerForm, self).__init__(*args, **kwargs)
+		self.instance.is_group = False
+		self.updated_at = datetime.datetime.now()
 
 	def save(self, commit=True):
 		instance = super(CreateScenerForm, self).save(commit=commit)

@@ -56,10 +56,9 @@ def history(request, group_id):
 @login_required
 def create(request):
 	if request.method == 'POST':
-		group = Releaser(is_group=True, updated_at=datetime.datetime.now())
-		form = CreateGroupForm(request.POST, instance=group)
+		form = CreateGroupForm(request.POST)
 		if form.is_valid():
-			form.save()
+			group = form.save()
 			form.log_creation(request.user)
 			return HttpResponseRedirect(group.get_absolute_edit_url())
 	else:

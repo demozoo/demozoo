@@ -1,4 +1,3 @@
-from itertools import groupby
 import datetime
 
 from django.shortcuts import get_object_or_404, render
@@ -90,10 +89,9 @@ def edit_real_name(request, scener_id):
 @login_required
 def create(request):
 	if request.method == 'POST':
-		scener = Releaser(is_group=False, updated_at=datetime.datetime.now())
-		form = CreateScenerForm(request.POST, instance=scener)
+		form = CreateScenerForm(request.POST)
 		if form.is_valid():
-			form.save()
+			scener = form.save()
 			form.log_creation(request.user)
 			return HttpResponseRedirect(scener.get_absolute_edit_url())
 	else:

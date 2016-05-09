@@ -1,7 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-import datetime
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
@@ -15,12 +13,11 @@ class TestCreateGroupForm(TestCase):
 		self.user = User.objects.create_user('bob')
 
 	def test_create(self):
-		group = Releaser(is_group=True, updated_at=datetime.datetime.now())  # FIXME: the form should handle this
 		form = CreateGroupForm({
 			'name': 'Poo-Brain',
 			'abbreviation': 'PB',
 			'nick_variant_list': 'Poo Brain, PooBrain'
-		}, instance=group)
+		})
 		self.assertTrue(form.is_valid())
 		form.save()
 
@@ -49,11 +46,10 @@ class TestCreateScenerForm(TestCase):
 		self.user = User.objects.create_user('bob')
 
 	def test_create(self):
-		scener = Releaser(is_group=False, updated_at=datetime.datetime.now())  # FIXME: the form should handle this
 		form = CreateScenerForm({
 			'name': 'Factor6',
 			'nick_variant_list': 'Factor 6, F6'
-		}, instance=scener)
+		})
 		self.assertTrue(form.is_valid())
 		form.save()
 
