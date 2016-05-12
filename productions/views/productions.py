@@ -23,7 +23,7 @@ from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, Pro
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
 from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb
-from productions.carousel import get_carousel_items
+from productions.carousel import Carousel
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
@@ -124,6 +124,7 @@ def show(request, production_id, edit_mode=False):
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
 		'credits': production.credits_for_listing(),
+		'carousel': Carousel(production, request.user),
 
 		'download_links': production.download_links,
 		'external_links': production.external_links,
@@ -803,5 +804,6 @@ def render_credits_update(request, production):
 
 def carousel(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
-	carousel_json = json.dumps(get_carousel_items(production))
+	carousel = Carousel(production, request.user)
+	carousel_json = json.dumps(carousel.items)
 	return HttpResponse(carousel_json, content_type='text/javascript')

@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 
 from demoscene.shortcuts import get_page
 from demoscene.models import Edit
+from productions.carousel import Carousel
 from productions.models import ProductionType, Production, Byline
 from productions.forms import MusicIndexFilterForm, ProductionTagsForm, CreateMusicForm, ProductionDownloadLinkFormSet
 
@@ -69,6 +70,7 @@ def show(request, production_id, edit_mode=False):
 		'download_links': production.download_links,
 		'external_links': production.external_links,
 		'credits': production.credits_for_listing(),
+		'carousel': Carousel(production, request.user),
 		'featured_in_productions': [
 			appearance.production for appearance in
 			production.appearances_as_soundtrack.select_related('production', 'production__default_screenshot').order_by('production__release_date_date')

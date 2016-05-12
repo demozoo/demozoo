@@ -1,6 +1,5 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
-import json
 import datetime
 
 from django.shortcuts import get_object_or_404, render
@@ -9,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from demoscene.shortcuts import get_page
 from demoscene.models import Edit
+from productions.carousel import Carousel
 from productions.models import ProductionType, Production, Byline
 from productions.forms import GraphicsIndexFilterForm, ProductionTagsForm, CreateGraphicsForm, ProductionDownloadLinkFormSet
 from productions.views.productions import apply_order
@@ -67,6 +67,7 @@ def show(request, production_id, edit_mode=False):
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits_for_listing(),
+		'carousel': Carousel(production, request.user),
 		'download_links': production.download_links,
 		'external_links': production.external_links,
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
