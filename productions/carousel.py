@@ -2,9 +2,10 @@ import json
 import random
 
 from django.conf import settings
-from django.forms import Media
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
+
+from productions.cowbell import get_playable_track_data
 
 
 class Carousel(object):
@@ -12,9 +13,9 @@ class Carousel(object):
 		self.production = production
 		self.user = user
 
-		self.media = Media()
+		self.media = self.audio_media
 
-		self.slides = self.get_screenshot_slides()
+		self.slides = self.get_screenshot_slides() + self.get_audio_slides()
 
 		if self.videos:
 			# prepend a video slide
@@ -123,6 +124,36 @@ class Carousel(object):
 			'is_processing': False,
 			'data': video_data,
 		}
+
+	_audio_tracks = None
+	_audio_media = None
+
+	@property
+	def audio_tracks(self):
+		if self._audio_tracks is None:
+			self._audio_tracks, self._audio_media = get_playable_track_data(self.production)
+		return self._audio_tracks
+
+	@property
+	def audio_media(self):
+		if self._audio_media is None:
+			self._audio_tracks, self._audio_media = get_playable_track_data(self.production)
+		return self._audio_media
+
+	def get_audio_slides(self):
+		return [
+			{
+				'type': 'cowbell-audio',
+				'id': 'cowbell-%s' % track['id'],
+				'is_processing': False,
+				'data': {
+					'url': track['url'],
+					'player': track['player'],
+					'playerOpts': track['playerOpts'],
+				}
+			}
+			for track in self.audio_tracks
+		]
 
 	def get_slides_json(self):
 		return json.dumps(self.slides)
