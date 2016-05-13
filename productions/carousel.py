@@ -2,6 +2,7 @@ import json
 import random
 
 from django.conf import settings
+from django.forms import Media
 from django.template.loader import render_to_string
 
 
@@ -22,10 +23,10 @@ class Carousel(object):
 		self.production = production
 		self.user = user
 
+		self.media = Media()
+
 		screenshots = production.screenshots.order_by('id')
 		processed_screenshots = [s for s in screenshots if s.original_url]
-
-		embeddable_videos = production.links.filter(link_class__in=['YoutubeVideo', 'VimeoVideo']).exclude(thumbnail_url='')
 
 		carousel_data = [
 			{
@@ -42,6 +43,7 @@ class Carousel(object):
 			for screenshot in screenshots
 		]
 
+		embeddable_videos = production.links.filter(link_class__in=['YoutubeVideo', 'VimeoVideo']).exclude(thumbnail_url='')
 		if embeddable_videos:
 			video = embeddable_videos[0]
 			video_data = {
