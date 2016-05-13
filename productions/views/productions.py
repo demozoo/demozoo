@@ -805,5 +805,4 @@ def render_credits_update(request, production):
 def carousel(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	carousel = Carousel(production, request.user)
-	carousel_json = json.dumps(carousel.items)
-	return HttpResponse(carousel_json, content_type='text/javascript')
+	return HttpResponse(carousel.get_slides_json(), content_type='text/javascript')
