@@ -138,10 +138,29 @@
 		});
 	};
 
+	function CowbellAudio(fullData) {
+		this.isProcessing = fullData['is_processing'];
+		this.id = fullData['id'];
+		this.data = fullData.data;
+	}
+	CowbellAudio.prototype.preload = function() {
+	};
+	CowbellAudio.prototype.draw = function(container) {
+		var cowbellPlayer = $('<div class="cowbell-player"></div>');
+		container.html(cowbellPlayer);
+		cowbellPlayer.cowbell({
+			'url': this.data.url,
+			'player': eval(this.data.player),
+			'playerOpts': this.data.playerOpts,
+			'ui': Cowbell.UI.Roundel
+		});
+	};
+
 	var itemTypes = {
 		'screenshot': Screenshot,
 		'mosaic': Mosaic,
-		'video': Video
+		'video': Video,
+		'cowbell-audio': CowbellAudio
 	};
 
 	/* Constructor for a carousel */
