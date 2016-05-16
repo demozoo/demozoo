@@ -23,6 +23,7 @@
 			link.openImageInLightbox();
 		}
 	};
+	Screenshot.prototype.unload = function() {};
 
 	function buildMosaic(items, addLinks) {
 		var width = 0, height = 0, i;
@@ -79,6 +80,7 @@
 		var mosaic = buildMosaic(this.data, true);
 		container.html(mosaic);
 	};
+	Mosaic.prototype.unload = function() {};
 
 	function Video(fullData) {
 		this.isProcessing = fullData['is_processing'];
@@ -137,23 +139,30 @@
 			return false;
 		});
 	};
+	Video.prototype.unload = function() {};
 
 	function CowbellAudio(fullData) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
+		this.ui = null;
 	}
 	CowbellAudio.prototype.preload = function() {
 	};
 	CowbellAudio.prototype.draw = function(container) {
 		var cowbellPlayer = $('<div class="cowbell-player"></div>');
 		container.html(cowbellPlayer);
-		cowbellPlayer.cowbell({
+		this.ui = Cowbell.createPlayer(cowbellPlayer.get(0), {
 			'url': this.data.url,
 			'player': eval(this.data.player),
 			'playerOpts': this.data.playerOpts,
 			'ui': Cowbell.UI.Roundel
 		});
+	};
+	CowbellAudio.prototype.unload = function() {
+		if (this.ui) {
+			this.ui.open(null);
+		}
 	};
 
 	var itemTypes = {
@@ -261,6 +270,7 @@
 				tray.stop(true, true);
 				if (!hasPreloadedAllImages) preloadAllImages();
 
+				var oldItem = carouselItems[currentIndex];
 				currentIndex = (currentIndex + 1) % carouselItems.length;
 				var currentItem = carouselItems[currentIndex];
 				currentId = currentItem.id;
@@ -269,6 +279,7 @@
 				tray.append(currentBucket);
 				currentItem.draw(currentBucket);
 				tray.animate({'left': '-400px'}, function() {
+					oldItem.unload();
 					oldBucket.remove();
 					tray.css({'left': 0});
 				});
@@ -280,6 +291,7 @@
 				tray.stop(true, true);
 				if (!hasPreloadedAllImages) preloadAllImages();
 
+				var oldItem = carouselItems[currentIndex];
 				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
 				var currentItem = carouselItems[currentIndex];
 				currentId = currentItem.id;
@@ -288,6 +300,7 @@
 				tray.prepend(newBucket);
 				currentItem.draw(newBucket);
 				tray.animate({'left': '0'}, function() {
+					oldItem.unload();
 					currentBucket.remove();
 					currentBucket = newBucket;
 				});
