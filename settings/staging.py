@@ -33,7 +33,7 @@ LOGGING = {
 		'default': {
 			'level': 'DEBUG',
 			'class': 'logging.handlers.RotatingFileHandler',
-			'filename': '/home/demozoo-staging/log/app.log',
+			'filename': '/home/demozoo/log/staging-app.log',
 			'maxBytes': 10485760,
 			'backupCount': 500,
 			'formatter': 'standard',
