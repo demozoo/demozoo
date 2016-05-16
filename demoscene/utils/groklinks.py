@@ -705,7 +705,7 @@ class ModlandFile(BaseUrl):
 		regex_match(r'ftp://ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
 		regex_match(r'ftp://aero.exotica.org.uk/pub/mirrors/modland(/.*)', re.I),
-		regex_match(r'ftp://modland\.ziphoid\.com(/.*)', re.I),
+		regex_match(r'(?:ftp|http)://modland\.ziphoid\.com(/.*)', re.I),
 		regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
 		regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
 		regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
