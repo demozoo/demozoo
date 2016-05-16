@@ -18,16 +18,16 @@
 
 	<form action="{% url 'group_add_subgroup' group.id %}" method="post" class="entry_form add_subgroup_form">
 		{% csrf_token %}
-		
+
 		{% for field in form.visible_fields %}
 			{% include "shared/form_field.html" %}
 		{% endfor %}
 		{% for field in form.hidden_fields %}
 			{{ field }}
 		{% endfor %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" value="Add subgroup"/>
 		</div>
 	</form>
 {% endblock %}

@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing credit for {{ production.title }}:</h2>
+	<h2>Editing credit for {{ production.title }}</h2>
 
 	<form action="{% url 'production_edit_credit' production.id nick.id %}" method="post" class="entry_form edit_credit_form">
 		{% csrf_token %}
@@ -26,7 +26,7 @@
 		{% include "productions/credit_form.html" %}
 
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" value="Submit Edit"/>
 		</div>
 	</form>
 

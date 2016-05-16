@@ -40,7 +40,7 @@
 			{{ field }}
 		{% endfor %}
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" value="Add new party"/>
 		</div>
 	</form>
 	<script>/* <![CDATA[ */
@@ -50,7 +50,7 @@
 			var name = partySeriesNames[i];
 			partySeriesNameMatches[name.toLowerCase()] = name;
 		}
-		
+
 		var partySeriesEdited = false;
 		$('#id_party_series_name').change(function() {
 			partySeriesEdited = true;

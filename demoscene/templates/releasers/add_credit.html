@@ -17,11 +17,11 @@
 {% endblock %}
 
 {% block base_main %}
-	<h2>Add credit for {{ releaser.name }}:</h2>
+	<h2>Add credit for {{ releaser.name }}</h2>
 
 	<form action="{% url 'releaser_add_credit' releaser.id %}" method="post" class="entry_form add_credit_form">
 		{% csrf_token %}
-		
+
 		{% for field in form.visible_fields %}
 			{% include "shared/form_field.html" %}
 		{% endfor %}
@@ -32,7 +32,7 @@
 		{% include "shared/credit_formset.html" %}
 
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" value="Add Credit"/>
 		</div>
 	</form>
 {% endblock %}

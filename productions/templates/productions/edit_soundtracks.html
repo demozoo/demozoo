@@ -19,15 +19,15 @@
 
 	<form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form production_soundtrack_form">
 		{% csrf_token %}
-		
+
 		{% spawningformset sortable formset %}
 			{% spawningform as form %}
 				{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
 			{% endspawningform %}
 		{% endspawningformset %}
-		
+
 		<div class="field">
-			<input type="submit" />
+			<input type="submit" Value="Submit edit"/>
 		</div>
 	</form>
 {% endblock %}
