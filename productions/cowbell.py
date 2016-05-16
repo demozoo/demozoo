@@ -49,31 +49,38 @@ OPENMPT_MUSIC = re.compile(r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669
 def identify_link_as_track(link):
 	# return a (filetype, url) tuple for this link, or (None, None) if it can't be identified as one
 
-	if link.link_class == 'SceneOrgFile':
-		match = STREAMING_MUSIC.match(link.parameter)
-		if match:
-			filetype = match.group(1).lower()
-			url = link.link.nl_http_url
-			return (filetype, url)
+	if link.is_download_link:
+		if link.link_class == 'SceneOrgFile':
+			match = STREAMING_MUSIC.match(link.parameter)
+			if match:
+				filetype = match.group(1).lower()
+				url = link.link.nl_http_url
+				return (filetype, url)
 
-	elif link.link_class == 'ModlandFile':
-		match = OPENMPT_MUSIC.match(link.parameter)
-		if match:
+		elif link.link_class == 'ModlandFile':
+			match = OPENMPT_MUSIC.match(link.parameter)
+			if match:
+				filetype = 'openmpt'
+				url = 'http://modland.ziphoid.com%s' % link.parameter
+				return (filetype, url)
+
+			match = ZX_MUSIC.match(link.parameter)
+			if match:
+				filetype = match.group(1).lower()
+				url = 'http://modland.ziphoid.com%s' % link.parameter
+				return (filetype, url)
+
+		elif link.link_class == 'BaseUrl':
+			url = link.parameter
+			match = ZXDEMO_MUSIC.match(url)
+			if match:
+				filetype = match.group(1).lower()
+				return (filetype, url)
+
+	else:  # External link
+		if link.link_class == 'ModarchiveModule':
 			filetype = 'openmpt'
-			url = 'http://modland.ziphoid.com%s' % link.parameter
-			return (filetype, url)
-
-		match = ZX_MUSIC.match(link.parameter)
-		if match:
-			filetype = match.group(1).lower()
-			url = 'http://modland.ziphoid.com%s' % link.parameter
-			return (filetype, url)
-
-	elif link.link_class == 'BaseUrl':
-		url = link.parameter
-		match = ZXDEMO_MUSIC.match(url)
-		if match:
-			filetype = match.group(1).lower()
+			url = 'http://modarchive.org/jsplayer.php?moduleid=%s' % link.parameter
 			return (filetype, url)
 
 	# no match
@@ -84,7 +91,7 @@ def get_playable_track_data(production):
 	# Look in this production's download links for any files that can be played using Cowbell
 	tracks = []
 	combined_media = Media()
-	for link in production.download_links:
+	for link in production.links.all():
 		filetype, url = identify_link_as_track(link)
 
 		if filetype:
