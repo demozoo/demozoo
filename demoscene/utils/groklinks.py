@@ -516,6 +516,10 @@ class SceneOrgFile(BaseUrl):
 		return "http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
+	def nl_protocol_relative_url(self):
+		return "//archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
 	def download_url(self):
 		return self.nl_url
 
