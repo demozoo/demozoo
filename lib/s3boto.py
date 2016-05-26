@@ -165,7 +165,7 @@ class S3BotoStorageFile(File):
 		self._storage = storage
 		self.name = name
 		self._mode = mode
-		self.key = storage.bucket.get_key(name)
+		self.key = storage.upload_bucket.get_key(name)
 		self._is_dirty = False
 		self.file = StringIO()
 
