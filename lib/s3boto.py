@@ -39,54 +39,50 @@ GZIP_CONTENT_TYPES  = getattr(settings, 'GZIP_CONTENT_TYPES', (
 if IS_GZIPPED:
 	from gzip import GzipFile
 
+
 class S3BotoStorage(Storage):
 	"""Amazon Simple Storage Service using Boto"""
-	
+
 	def __init__(self, bucket=STORAGE_BUCKET_NAME, access_key=None,
-					   secret_key=None, acl=DEFAULT_ACL, headers=HEADERS,
-					   gzip=IS_GZIPPED, gzip_content_types=GZIP_CONTENT_TYPES):
+					secret_key=None, acl=DEFAULT_ACL, headers=HEADERS,
+					gzip=IS_GZIPPED, gzip_content_types=GZIP_CONTENT_TYPES):
 		self.acl = acl
 		self.headers = headers
 		self.gzip = gzip
 		self.gzip_content_types = gzip_content_types
-		
+
 		if not access_key and not secret_key:
-			 access_key, secret_key = self._get_access_keys()
-		
+			access_key, secret_key = self._get_access_keys()
+
+		# Ignore CALLING_FORMAT for uploads - only use it for constructing download URLs. LOL IDK
+		upload_klass = getattr(connection, 'OrdinaryCallingFormat')
+		self.upload_connection = connection.S3Connection(access_key, secret_key, calling_format=upload_klass())
+
 		try:
 			klass = getattr(connection, CALLING_FORMAT)
 		except AttributeError:
 			raise ImproperlyConfigured("Invalid CallingFormat subclass: %s\
 			\nValid choices: SubdomainCallingFormat, VHostCallingFormat, OrdinaryCallingFormat")
 		self.connection = connection.S3Connection(access_key, secret_key, calling_format=klass())
+
+		self.upload_bucket = self.upload_connection.get_bucket(bucket, validate=False)
 		#self.bucket = self._get_or_create_bucket(bucket)
-		self.bucket = self.connection.get_bucket(bucket, validate = False)
+		self.bucket = self.connection.get_bucket(bucket, validate=False)
 		# self.bucket.set_acl(self.acl)
-	
+
 	def _get_access_keys(self):
 		access_key = ACCESS_KEY_NAME
 		secret_key = SECRET_KEY_NAME
 		if (access_key or secret_key) and (not access_key or not secret_key):
 			access_key = os.environ.get(ACCESS_KEY_NAME)
 			secret_key = os.environ.get(SECRET_KEY_NAME)
-		
+
 		if access_key and secret_key:
 			# Both were provided, so use them
 			return access_key, secret_key
-		
+
 		return None, None
-	
-	def _get_or_create_bucket(self, name):
-		"""Retrieves a bucket if it exists, otherwise creates it."""
-		try:
-			return self.connection.get_bucket(name)
-		except connection.S3ResponseError, e:
-			if AUTO_CREATE_BUCKET:
-				return self.connection.create_bucket(name)
-			raise ImproperlyConfigured, ("Bucket specified by "
-			"AWS_STORAGE_BUCKET_NAME does not exist. Buckets can be "
-			"automatically created by setting AWS_AUTO_CREATE_BUCKET=True")
-	
+
 	def _clean_name(self, name):
 		# Useful for windows' paths
 		return os.path.normpath(name).replace('\\', '/')
@@ -99,62 +95,62 @@ class S3BotoStorage(Storage):
 		zfile.close()
 		content.file = zbuf
 		return content
-		
+
 	def _open(self, name, mode='rb'):
 		name = self._clean_name(name)
 		return S3BotoStorageFile(name, mode, self)
-	
+
 	def _save(self, name, content):
 		name = self._clean_name(name)
 		headers = self.headers
-		
+
 		if hasattr(content.file, 'content_type'):
 			content_type = content.file.content_type
 		else:
 			content_type = mimetypes.guess_type(name)[0] or "application/x-octet-stream"
-			
+
 		if self.gzip and content_type in self.gzip_content_types:
 			content = self._compress_content(content)
 			headers.update({'Content-Encoding': 'gzip'})
 
 		headers.update({
 			'Content-Type': content_type,
-			'Content-Length' : len(content),
+			'Content-Length': len(content),
 		})
-		
+
 		content.name = name
-		k = self.bucket.get_key(name)
+		k = self.upload_bucket.get_key(name)
 		if not k:
-			k = self.bucket.new_key(name)
+			k = self.upload_bucket.new_key(name)
 		k.set_contents_from_file(content, headers=headers, policy=self.acl)
 		return name
-	
+
 	def delete(self, name):
 		name = self._clean_name(name)
-		self.bucket.delete_key(name)
-	
+		self.upload_bucket.delete_key(name)
+
 	def exists(self, name):
 		name = self._clean_name(name)
-		k = Key(self.bucket, name)
+		k = Key(self.upload_bucket, name)
 		return k.exists()
-	
+
 	def listdir(self, name):
 		name = self._clean_name(name)
-		return [l.name for l in self.bucket.list() if not len(name) or l.name[:len(name)] == name]
-	
+		return [l.name for l in self.upload_bucket.list() if not len(name) or l.name[:len(name)] == name]
+
 	def size(self, name):
 		name = self._clean_name(name)
-		return self.bucket.get_key(name).size
-	
+		return self.upload_bucket.get_key(name).size
+
 	def url(self, name):
 		name = self._clean_name(name)
-		
+
 		# No, I don't want to do a HEAD request just to get a sodding URL thankyou.
 		#if self.bucket.get_key(name) is None:
 		#	return ''
 		#return self.bucket.get_key(name).generate_url(QUERYSTRING_EXPIRE, method='GET',
 		#	query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
-		
+
 		return self.connection.generate_url(QUERYSTRING_EXPIRE, method='GET',
 			bucket=self.bucket.name, key=name, query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
 
