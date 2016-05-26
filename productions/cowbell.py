@@ -54,7 +54,7 @@ def identify_link_as_track(link):
 			match = STREAMING_MUSIC.match(link.parameter)
 			if match:
 				filetype = match.group(1).lower()
-				url = link.link.nl_protocol_relative_url
+				url = link.link.nl_https_url
 				return (filetype, url)
 
 		elif link.link_class == 'ModlandFile':
