@@ -6,7 +6,7 @@ DEBUG = False
 EMAIL_HOST = 'localhost'
 
 AWS_QUERYSTRING_AUTH = False
-AWS_BOTO_FORCE_HTTP = True
+AWS_BOTO_FORCE_HTTP = False
 AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
 
 BROKER_URL = 'redis://localhost:6379/0'
