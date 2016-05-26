@@ -55,7 +55,7 @@ class S3BotoStorage(Storage):
 			access_key, secret_key = self._get_access_keys()
 
 		# Ignore CALLING_FORMAT for uploads - only use it for constructing download URLs. LOL IDK
-		upload_klass = getattr(connection, 'OrdinaryCallingFormat')
+		upload_klass = getattr(connection, 'SubdomainCallingFormat')
 		self.upload_connection = connection.S3Connection(access_key, secret_key, calling_format=upload_klass(), is_secure=False)
 
 		try:
