@@ -1,6 +1,8 @@
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
+from s3boto import S3BotoStorage
+
 from django.conf import settings
 
 
@@ -92,8 +94,8 @@ def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
 	"""
 
 	# connect to S3 and send the file contents
-	conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-	bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+	storage = S3BotoStorage()
+	bucket = storage.bucket
 	k = Key(bucket)
 	k.key = key_name
 	k.content_type = MIME_TYPE_BY_EXTENSION.get(extension, 'application/octet-stream')
@@ -101,9 +103,4 @@ def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
 	k.set_contents_from_file(fp, reduced_redundancy=reduced_redundancy, rewind=True)
 	k.set_acl('public-read')
 
-	# construct the resulting URL, which depends on whether we're using a CNAME alias
-	# on our bucket
-	if settings.AWS_BOTO_CALLING_FORMAT == 'VHostCallingFormat':
-		return "http://%s/%s" % (settings.AWS_STORAGE_BUCKET_NAME, key_name)
-	else:
-		return "http://%s.s3.amazonaws.com/%s" % (settings.AWS_STORAGE_BUCKET_NAME, key_name)
+	return storage.url(key_name)
