@@ -61,13 +61,13 @@ def identify_link_as_track(link):
 			match = OPENMPT_MUSIC.match(link.parameter)
 			if match:
 				filetype = 'openmpt'
-				url = 'http://modland.ziphoid.com%s' % link.parameter
+				url = 'https://ftp.modland.com%s' % link.parameter
 				return (filetype, url)
 
 			match = ZX_MUSIC.match(link.parameter)
 			if match:
 				filetype = match.group(1).lower()
-				url = 'http://modland.ziphoid.com%s' % link.parameter
+				url = 'https://ftp.modland.com%s' % link.parameter
 				return (filetype, url)
 
 		elif link.link_class == 'BaseUrl':
