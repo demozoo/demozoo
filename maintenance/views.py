@@ -119,7 +119,7 @@ def prods_without_platforms(request):
 	report_name = 'prods_without_platforms'
 
 	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.exclude(types__name='Video') \
+		.exclude(types__name__in=('Video', 'Performance')) \
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
