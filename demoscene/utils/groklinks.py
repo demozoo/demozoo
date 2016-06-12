@@ -934,7 +934,7 @@ class YoutubeVideo(BaseUrl):
 		return embed_data
 
 	def get_embed_html(self, width, height):
-		embed_url = "http://www.youtube.com/embed/%s?autoplay=1" % self.param
+		embed_url = "https://www.youtube.com/embed/%s?autoplay=1" % self.param
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" allowfullscreen></iframe>""",
 			width, height, embed_url
