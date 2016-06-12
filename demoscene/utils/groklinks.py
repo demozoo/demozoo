@@ -727,6 +727,16 @@ class FujiologyFile(BaseUrl):
 	html_title_format = "%s on the Fujiology Archive"
 
 
+class FujiologyFolder(BaseUrl):
+	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
+	tests = [
+		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*/)', re.I),
+	]
+	html_link_class = "fujiology"
+	html_link_text = "Fujiology"
+	html_title_format = "%s on the Fujiology Archive"
+
+
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
 	tests = [
@@ -1412,7 +1422,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 
 PARTY_LINK_TYPES = [
 	DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
-	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, TwitterAccount, ZxdemoParty,
+	CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
 	PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
 	FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
 	SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
