@@ -456,21 +456,24 @@ class SceneOrgFile(BaseUrl):
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
 		urldecoded_regex_match(r'https?://files\.scene\.org/view(/.*)', re.I),
 		urldecoded_regex_match(r'https?://files\.scene\.org/get\:\w+\-\w+(/.*)', re.I),
-		urldecoded_regex_match(r'http://archive\.scene\.org/pub(/.*)', re.I),
+		urldecoded_regex_match(r'https?://archive\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://http\.no\.scene\.org/scene\.org(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
-		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
 		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
-		urldecoded_regex_match(r'http://http\.hu\.scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.hu\.scene\.org/mirrors/scene.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://http\.hu\.scene\.org(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I),
-		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I),
+		urldecoded_regex_match(r'https?://http\.pl\.scene\.org/pub/demos(/.*)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.ua\.scene\.org/pub/mirrors/sceneorg(/.*)', re.I),
 	]
 
 	def __unicode__(self):
@@ -482,28 +485,24 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def mirror_links(self):
 		links = [
-			'<li><a class="country_nl" href="%s">nl/ftp</a></li>' % escape(self.nl_url),
-			'<li><a class="country_nl" href="%s">nl/http</a></li>' % escape(self.nl_http_url),
-#			'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-#			'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-#			'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
+			'<li class="country country_nl"><a href="%s">nl/ftp</a> | <a href="%s">nl/http</a></li>' % (
+				escape(self.nl_url), escape(self.nl_http_url)
+			),
+			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 		if not self.param.startswith('/mirrors/'):
 			links += [
-				'<li><a class="country_no" href="%s">no</a></li>' % escape(self.no_url),
-				'<li><a class="country_pl" href="%s">pl/ftp</a></li>' % escape(self.pl_ftp_url),
-				'<li><a class="country_pl" href="%s">pl/http</a></li>' % escape(self.pl_http_url),
-				# '<li><a class="country_jp" href="%s">jp</a></li>' % escape(self.jp_url),
+				'<li class="country country_no"><a href="%s">no/ftp</a> | <a href="%s">no/http</a></li>' % (
+					escape(self.no_ftp_url), escape(self.no_http_url)
+				),
+				'<li class="country country_pl"><a href="%s">pl/ftp</a> | <a href="%s">pl/http</a></li>' % (
+					escape(self.pl_ftp_url), escape(self.pl_http_url)
+				),
+				'<li class="country country_hu"><a href="%s">hu/ftp</a> | <a href="%s">hu/http</a></li>' % (
+					escape(self.hu_ftp_url), escape(self.hu_http_url)
+				),
+				'<li><a class="country country_ua" href="%s">ua</a></li>' % escape(self.ua_ftp_url),
 			]
-			#if not self.param.startswith('/resources/'):
-			#	links += [
-			#		'<li><a class="country_hu" href="%s">hu</a></li>' % escape(self.hu_url),
-			#	]
-		#if self.param.startswith('/mags/') or self.param.startswith('/parties/') or self.param.startswith('/resources/'):
-		#	links += [
-		#		'<li><a class="country_fr" href="%s">fr</a></li>' % escape(self.fr_url),
-		#	]
 
 		return links
 
@@ -524,35 +523,23 @@ class SceneOrgFile(BaseUrl):
 		return self.nl_url
 
 	@property
-	def no_url(self):
+	def no_ftp_url(self):
 		return "ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
-	def jp_url(self):
-		return "ftp://ftp.jp.scene.org/pub/demos/scene%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def de_ftp_url(self):
-		return "ftp://ftp.de.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def de_http_url(self):
-		return "http://http.de.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def us_ftp_url(self):
-		return "ftp://ftp.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+	def no_http_url(self):
+		return "http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def us_http_url(self):
 		return "http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
-	def fr_url(self):
-		return "http://http.fr.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+	def hu_ftp_url(self):
+		return "ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
-	def hu_url(self):
+	def hu_http_url(self):
 		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
@@ -562,6 +549,10 @@ class SceneOrgFile(BaseUrl):
 	@property
 	def pl_http_url(self):
 		return "http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def ua_ftp_url(self):
+		return "ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
 		mirrors_html = ' '.join(self.mirror_links)
@@ -592,11 +583,8 @@ class AmigascneFile(BaseUrl):
 	@property
 	def mirror_links(self):
 		links = [
-			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
+			'<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -604,18 +592,6 @@ class AmigascneFile(BaseUrl):
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub/mirrors/amigascne%s" % self.param
-
-	@property
-	def de_ftp_url(self):
-		return "ftp://ftp.de.scene.org/pub/mirrors/amigascne%s" % self.param
-
-	@property
-	def de_http_url(self):
-		return "http://http.de.scene.org/pub/mirrors/amigascne%s" % self.param
-
-	@property
-	def us_ftp_url(self):
-		return "ftp://ftp.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
 
 	@property
 	def us_http_url(self):
@@ -650,11 +626,8 @@ class PaduaOrgFile(BaseUrl):
 	@property
 	def mirror_links(self):
 		links = [
-			'<li><a class="country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			#'<li><a href="%s" class="country_de">de/ftp</a></li>' % escape(self.de_ftp_url),
-			#'<li><a href="%s" class="country_de">de/http</a></li>' % escape(self.de_http_url),
-			#'<li><a href="%s" class="country_us">us/ftp</a></li>' % escape(self.us_ftp_url),
-			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_http_url),
+			'<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
+			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -662,18 +635,6 @@ class PaduaOrgFile(BaseUrl):
 	@property
 	def nl_url(self):
 		return "ftp://ftp.scene.org/pub/mirrors/padua%s" % self.param
-
-	@property
-	def de_ftp_url(self):
-		return "ftp://ftp.de.scene.org/pub/mirrors/padua%s" % self.param
-
-	@property
-	def de_http_url(self):
-		return "http://http.de.scene.org/pub/mirrors/padua%s" % self.param
-
-	@property
-	def us_ftp_url(self):
-		return "ftp://ftp.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
 
 	@property
 	def us_http_url(self):
@@ -722,10 +683,10 @@ class ModlandFile(BaseUrl):
 	@property
 	def mirror_links(self):
 		links = [
-			'<li><a class="country_uk" href="%s">uk</a></li>' % escape(self.uk_url),
-			'<li><a href="%s" class="country_se">se</a></li>' % escape(self.se_url),
-			'<li><a href="%s" class="country_us">us</a></li>' % escape(self.us_url),
-			'<li><a href="%s" class="country_ca">ca</a></li>' % escape(self.ca_url),
+			'<li><a class="country country_uk" href="%s">uk</a></li>' % escape(self.uk_url),
+			'<li><a href="%s" class="country country_se">se</a></li>' % escape(self.se_url),
+			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_url),
+			'<li><a href="%s" class="country country_ca">ca</a></li>' % escape(self.ca_url),
 		]
 
 		return links
