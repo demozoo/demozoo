@@ -1116,7 +1116,7 @@ class DiscogsRelease(DiscogsEntry):
 
 
 class ModarchiveMember(BaseUrl):
-	canonical_format = "http://modarchive.org/member.php?%s"
+	canonical_format = "https://modarchive.org/member.php?%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php\?(\d+)', re.I),
 		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_profile'}),
@@ -1127,7 +1127,7 @@ class ModarchiveMember(BaseUrl):
 
 
 class ModarchiveModule(BaseUrl):
-	canonical_format = "http://modarchive.org/module.php?%s"
+	canonical_format = "https://modarchive.org/module.php?%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?modarchive\.org/module\.php\?(\d+)', re.I),
 		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
