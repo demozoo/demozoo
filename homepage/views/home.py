@@ -1,6 +1,5 @@
 import datetime
 
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render
 
 from comments.models import Comment
@@ -35,9 +34,7 @@ def home(request):
 		'author_nicks', 'author_affiliation_nicks', 'platforms', 'types'
 	).order_by('-created_at')[:5]
 
-	comments = Comment.objects.filter(
-		content_type=ContentType.objects.get_for_model(Production)
-	).select_related(
+	comments = Comment.objects.select_related(
 		'user'
 	).prefetch_related(
 		'commentable'

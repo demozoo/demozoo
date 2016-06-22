@@ -93,6 +93,13 @@ class Party(Commentable):
 	def __unicode__(self):
 		return self.name
 
+	@property
+	def title(self):
+		# make 'title' an alias of 'name', so that when we output comment listings, we can consistently
+		# refer to `commentable.title` and have it output something meaningful regardless of whether
+		# 'commentable' is a party or a production
+		return self.name
+
 	@models.permalink
 	def get_absolute_url(self):
 		return ('parties.views.parties.show', [str(self.id)])
