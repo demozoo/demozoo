@@ -17,7 +17,17 @@
 			container.html('<div class="screenshot"><img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" /></div>');
 		} else {
 			var link = $('<a class="screenshot"></a>').attr({'href': this.data['original_url']});
-			var img = $('<img>').attr({'src': this.data['standard_url'], 'width': this.data['standard_width'], 'height': this.data['standard_height']});
+			var img = $('<img>').attr({'src': this.data['standard_url']});
+			if (this.data['standard_width'] < 200 && this.data['standard_height'] < 150) {
+				/* tiny screen, e.g. GBC - scale to double size */
+				img.attr({
+					'width': this.data['standard_width'] * 2,
+					'height': this.data['standard_height'] * 2,
+					'class': 'pixelated'
+				});
+			} else {
+				img.attr({'width': this.data['standard_width'], 'height': this.data['standard_height']});
+			}
 			link.append(img);
 			container.html(link);
 			link.openImageInLightbox();
@@ -30,6 +40,12 @@
 		for (i = 0; i < items.length; i++) {
 			width = Math.max(width, items[i]['standard_width']);
 			height = Math.max(height, items[i]['standard_height']);
+		}
+		var zoom = false;
+		if (width < 200 & height < 150) {
+			/* tiny screen, e.g. GBC - scale to double size */
+			zoom = true;
+			width *= 2; height *= 2;
 		}
 		var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
 		for (i = 0; i < items.length; i++) {
@@ -50,9 +66,10 @@
 			});
 			var img = $('<img>').attr({
 				'src': imgData['standard_url'],
-				'width': imgData['standard_width'] / 2,
-				'height': imgData['standard_height'] / 2
+				'width': zoom ? imgData['standard_width'] : imgData['standard_width'] / 2,
+				'height': zoom ? imgData['standard_height'] : imgData['standard_height'] / 2
 			});
+			if (zoom) img.addClass('pixelated');
 			tile.append(img);
 			mosaic.append(tile);
 		}
