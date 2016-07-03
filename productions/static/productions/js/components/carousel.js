@@ -119,11 +119,19 @@
 		if (videoData['mosaic']) {
 			img = buildMosaic(videoData['mosaic'], false);
 		} else {
-			img = $('<img>').attr({
-				'src': this.data['thumbnail_url'],
-				'width': this.data['thumbnail_width'],
-				'height': this.data['thumbnail_height']
-			});
+			img = $('<img>').attr({'src': this.data['thumbnail_url']});
+			if (this.data['thumbnail_width'] < 200 && this.data['thumbnail_height'] < 150) {
+				img.attr({
+					'width': this.data['thumbnail_width'] * 2,
+					'height': this.data['thumbnail_height'] * 2,
+					'class': 'pixelated'
+				});
+			} else {
+				img.attr({
+					'width': this.data['thumbnail_width'],
+					'height': this.data['thumbnail_height']
+				});
+			}
 		}
 		link.prepend(img);
 		container.html(link);
