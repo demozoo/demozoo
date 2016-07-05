@@ -4,11 +4,16 @@ from sceneorg.scraper import scrape_dir
 from sceneorg.dirparser import parse_all_dirs
 from demoscene.tasks import find_sceneorg_results_files
 import datetime
+import logging
 import time
 import urllib2
 import json
 
 from django.conf import settings
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 @task(time_limit=3600, ignore_result=True)
@@ -24,7 +29,10 @@ def fetch_new_sceneorg_files(days=1):
 		page.close()
 
 		if not response.get('success'):
+			logger.warning("scene.org API request returned non-success! %r" % response)
 			break
+
+		logger.info("API request to %s succeeded - %d files returned" % (url, len(response['files'])))
 
 		for item in response['files']:
 			path_components = item['fullPath'].split('/')[1:]
@@ -55,6 +63,7 @@ def fetch_new_sceneorg_files(days=1):
 				f.size = item['size']
 				f.save()
 			except File.DoesNotExist:
+				logger.info("New file found: %s" % path)
 				File.objects.create(
 					path=path, last_seen_at=datetime.datetime.now(), directory=current_dir,
 					size=item['size'])
@@ -68,6 +77,7 @@ def fetch_new_sceneorg_files(days=1):
 
 	if new_file_count > 0:
 		find_sceneorg_results_files()
+
 
 # files.scene.org frontend scraper - no longer used
 @task(rate_limit='6/m', ignore_result=True)
