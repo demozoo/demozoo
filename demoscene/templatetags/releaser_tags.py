@@ -26,7 +26,7 @@ def combined_releases(releaser):
 
 	production_ids = [production.id for production, credits, nick in credits_by_production_nick]
 
-	productions = releaser.productions().select_related('default_screenshot')\
+	productions = releaser.productions().distinct().select_related('default_screenshot')\
 		.exclude(id__in=production_ids)\
 		.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')\
 		.defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes')\
