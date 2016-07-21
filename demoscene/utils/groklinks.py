@@ -1399,6 +1399,26 @@ class GameboyDemospottingDemo(BaseUrl):
 	html_title_format = "%s on Gameboy Demospotting"
 
 
+class PixeljointArtist(BaseUrl):
+	canonical_format = "http://pixeljoint.com/p/%s.htm"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pixeljoint\.com/p/(\d+)\.htm', re.I),
+	]
+	html_link_class = "pixeljoint"
+	html_link_text = "Pixeljoint"
+	html_title_format = "%s on Pixeljoint"
+
+
+class PixeljointImage(PushnpopEntry):
+	canonical_format = "http://pixeljoint.com/pixelart/%s.htm"
+	tests = [
+		regex_match(r'https?://(?:www\.)?pixeljoint\.com/pixelart/(\d+)\.htm', re.I),
+	]
+	html_link_class = "pixeljoint"
+	html_link_text = "Pixeljoint"
+	html_title_format = "%s on Pixeljoint"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1409,7 +1429,7 @@ RELEASER_LINK_TYPES = [
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
-	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor,
+	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
 	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
 	WaybackMachinePage, BaseUrl,
 ]
@@ -1422,7 +1442,7 @@ PRODUCTION_LINK_TYPES = [
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
-	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
+	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
 	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
 	WaybackMachinePage, BaseUrl,
 ]
@@ -1440,6 +1460,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage', 'GameboyDemospottingDemo',
+	'PixeljointImage',
 ]
 
 PARTY_LINK_TYPES = [
