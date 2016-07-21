@@ -1430,6 +1430,36 @@ class PixeljointImage(BaseUrl):
 	html_title_format = "%s on Pixeljoint"
 
 
+class Plus4WorldProduction(BaseUrl):
+	canonical_format = "http://plus4world.powweb.com/software/%s"
+	tests = [
+		regex_match(r'https?://plus4world\.powweb\.com/software/(\w+)', re.I),
+	]
+	html_link_class = "plus4world"
+	html_link_text = "Plus/4 World"
+	html_title_format = "%s on Plus/4 World"
+
+
+class Plus4WorldGroup(BaseUrl):
+	canonical_format = "http://plus4world.powweb.com/groups/%s"
+	tests = [
+		regex_match(r'https?://plus4world\.powweb\.com/groups/(\w+)', re.I),
+	]
+	html_link_class = "plus4world"
+	html_link_text = "Plus/4 World"
+	html_title_format = "%s on Plus/4 World"
+
+
+class Plus4WorldMember(BaseUrl):
+	canonical_format = "http://plus4world.powweb.com/members/%s"
+	tests = [
+		regex_match(r'https?://plus4world\.powweb\.com/members/(\w+)', re.I),
+	]
+	html_link_class = "plus4world"
+	html_link_text = "Plus/4 World"
+	html_title_format = "%s on Plus/4 World"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1442,6 +1472,7 @@ RELEASER_LINK_TYPES = [
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
 	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
+	Plus4WorldGroup, Plus4WorldMember,
 	WaybackMachinePage, BaseUrl,
 ]
 
@@ -1450,7 +1481,7 @@ PRODUCTION_LINK_TYPES = [
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
 	AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, CsdbMusic, NectarineSong,
-	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
+	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
@@ -1471,7 +1502,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage', 'GameboyDemospottingDemo',
-	'PixeljointImage', 'ArtcityImage',
+	'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
 ]
 
 PARTY_LINK_TYPES = [
