@@ -1379,6 +1379,26 @@ class ZxTunesArtist(BaseUrl):
 	html_title_format = "%s on ZXTunes"
 
 
+class GameboyDemospottingAuthor(BaseUrl):
+	canonical_format = "http://gameboy.modermodemet.se/en/author/%s"
+	tests = [
+		regex_match(r'https?://gameboy\.modermodemet\.se/\w+/author/(\d+)', re.I),
+	]
+	html_link_class = "gameboydemospotting"
+	html_link_text = "Gameboy Demospotting"
+	html_title_format = "%s on Gameboy Demospotting"
+
+
+class GameboyDemospottingDemo(BaseUrl):
+	canonical_format = "http://gameboy.modermodemet.se/en/demo/%s"
+	tests = [
+		regex_match(r'https?://gameboy\.modermodemet\.se/\w+/demo/(\d+)', re.I),
+	]
+	html_link_class = "gameboydemospotting"
+	html_link_text = "Gameboy Demospotting"
+	html_title_format = "%s on Gameboy Demospotting"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1389,7 +1409,7 @@ RELEASER_LINK_TYPES = [
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
-	GithubAccount, GithubRepo, AtarimaniaPage,
+	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor,
 	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
 	WaybackMachinePage, BaseUrl,
 ]
@@ -1403,7 +1423,7 @@ PRODUCTION_LINK_TYPES = [
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
 	WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame,
-	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage,
+	DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
 	WaybackMachinePage, BaseUrl,
 ]
 
@@ -1419,7 +1439,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage',
+	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage', 'GameboyDemospottingDemo',
 ]
 
 PARTY_LINK_TYPES = [
