@@ -1002,7 +1002,8 @@ class DemosceneTvVideo(BaseUrl):
 class CappedVideo(BaseUrl):
 	canonical_format = "http://capped.tv/%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?capped\.tv/([-_\w]+)', re.I),
+		querystring_match(r'https?://(?:www\.)?capped\.tv/playeralt\.php', 'vid', re.I),
+		regex_match(r'https?://(?:www\.)?capped\.tv/([-_\w]+)$', re.I),
 	]
 	html_link_class = "capped"
 	html_link_text = "Capped.TV"
