@@ -1460,6 +1460,16 @@ class Plus4WorldMember(BaseUrl):
 	html_title_format = "%s on Plus/4 World"
 
 
+class BandcampArtist(BaseUrl):
+	canonical_format = "https://%s.bandcamp.com/"
+	tests = [
+		regex_match(r'https?://([\w-]+)\.bandcamp\.com/?$', re.I),
+	]
+	html_link_class = "bandcamp"
+	html_link_text = "Bandcamp"
+	html_title_format = "%s on Bandcamp"
+
+
 RELEASER_LINK_TYPES = [
 	TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
 	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1472,7 +1482,7 @@ RELEASER_LINK_TYPES = [
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
 	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
-	Plus4WorldGroup, Plus4WorldMember,
+	Plus4WorldGroup, Plus4WorldMember, BandcampArtist,
 	WaybackMachinePage, BaseUrl,
 ]
 
