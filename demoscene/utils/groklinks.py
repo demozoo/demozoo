@@ -304,6 +304,16 @@ class ArtcityArtist(BaseUrl):
 	html_title_format = "%s on ArtCity"
 
 
+class ArtcityImage(BaseUrl):
+	canonical_format = "http://artcity.bitfellas.org/index.php?a=show&id=%s"
+	tests = [
+		querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', re.I, othervars={'a': 'show'}),
+	]
+	html_link_class = "artcity"
+	html_link_text = "ArtCity"
+	html_title_format = "%s on ArtCity"
+
+
 class DeviantartUser(BaseUrl):
 	canonical_format = "http://%s.deviantart.com"
 	tests = [
@@ -1437,7 +1447,7 @@ RELEASER_LINK_TYPES = [
 PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
-	AsciiarenaRelease, KestraBitworldRelease, StonishDisk,
+	AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
 	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
@@ -1460,7 +1470,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage', 'GameboyDemospottingDemo',
-	'PixeljointImage',
+	'PixeljointImage', 'ArtcityImage',
 ]
 
 PARTY_LINK_TYPES = [
