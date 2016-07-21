@@ -987,6 +987,16 @@ class VimeoVideo(BaseUrl):
 		)
 
 
+class VimeoUser(BaseUrl):
+	canonical_format = "http://vimeo.com/%s"
+	tests = [
+		regex_match(r'https?://(?:www\.)?vimeo\.com/([\w-]+)/?$', re.I),
+	]
+	html_link_class = "vimeo"
+	html_link_text = "Vimeo"
+	html_title_format = "%s on Vimeo"
+
+
 class DemosceneTvVideo(BaseUrl):
 	canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
 	tests = [
@@ -1482,7 +1492,7 @@ RELEASER_LINK_TYPES = [
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
 	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
-	Plus4WorldGroup, Plus4WorldMember, BandcampArtist,
+	Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser,
 	WaybackMachinePage, BaseUrl,
 ]
 
