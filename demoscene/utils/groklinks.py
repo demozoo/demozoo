@@ -1420,7 +1420,7 @@ class PixeljointArtist(BaseUrl):
 	html_title_format = "%s on Pixeljoint"
 
 
-class PixeljointImage(PushnpopEntry):
+class PixeljointImage(BaseUrl):
 	canonical_format = "http://pixeljoint.com/pixelart/%s.htm"
 	tests = [
 		regex_match(r'https?://(?:www\.)?pixeljoint\.com/pixelart/(\d+)\.htm', re.I),
