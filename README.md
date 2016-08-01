@@ -18,6 +18,15 @@ This will download an Ubuntu Trusty64 image, install dependencies, and fetch the
     
 The site will now be available at http://localhost:8000/.
 
+Rebuilding indices for the database
+-----------------------------------
+
+If you want to work with the search feature, you have to rebuild your database indices first:
+
+    ./manage.py index --rebuild --verbose
+    
+This will take a *long* time, but you only need to do it once.
+
 Creating an admin user
 ----------------------
 
