@@ -4,5 +4,8 @@ AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
 AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
 AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
 
+SCENEID_KEY = 'please read https://id.scene.org/docs/'
+SCENEID_SECRET = 'please read https://id.scene.org/docs/'
+
 # Read-only mode:
 # SITE_IS_WRITEABLE = False
