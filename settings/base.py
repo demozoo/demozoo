@@ -219,10 +219,16 @@ REST_FRAMEWORK = {
 	'PAGINATE_BY': 100
 }
 
+AUTHENTICATION_BACKENDS = (
+	'sceneid.backends.SceneIDBackend',
+	'django.contrib.auth.backends.ModelBackend',
+)
+
 BASE_URL = 'https://demozoo.org'
 HTTP_USER_AGENT = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 
 GEOCODER_URL = 'http://geocoder.demozoo.org/'
+SCENEID_HOST = 'https://id.scene.org/'
 
 # Read-only mode
 SITE_IS_WRITEABLE = True
