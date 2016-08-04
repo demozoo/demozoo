@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load demoscene_tags compress %}
+
+{% block html_title %}
+	{% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
+{% endblock %}
+
+{% block base_main %}
+	<h2>SceneID logged in as {{ nick }}</h2>
+	<p>You successfully logged in with your SceneID as <b>{{ nick }}</b>, but it's not connected to a Demozoo account yet.
+	If you already had a Demozoo account, you can log in to it and you'll be able to use both login methods from then on.
+	If you don't have a Demozoo account, you can create a new one without having to use a password to log in.</p>
+
+	<form action="." method="post" class="entry_form sceneid_connect">
+		{% csrf_token %}
+		<h3>Log in with existing account</h3>
+
+		{{ global_login_form.as_p }}
+
+		<div class="field">
+			<input type="submit" name="accountExisting" value="Log in" />
+		</div>
+	</form>
+
+	<form action="." method="post" class="entry_form sceneid_connect">
+		{% csrf_token %}
+		<h3>Create new account</h3>
+
+		{% include "shared/form_field.html" with field=form.username %}
+		{% include "shared/form_field.html" with field=form.email %}
+
+		<div class="field">
+			<input type="submit" name="accountNew" value="Register new account"/>
+		</div>
+	</form>
+
+{% endblock %}
