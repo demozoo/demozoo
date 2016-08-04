@@ -17,7 +17,7 @@
 
 	<form action="." method="post" class="entry_form sceneid_connect">
 		{% csrf_token %}
-		<h3>Log in with existing account</h3>
+		<h3>Log in with your existing Demozoo account</h3>
 
 		{{ global_login_form.as_p }}
 
@@ -28,7 +28,7 @@
 
 	<form action="." method="post" class="entry_form sceneid_connect">
 		{% csrf_token %}
-		<h3>Create new account</h3>
+		<h3>Create a new Demozoo account</h3>
 
 		{% include "shared/form_field.html" with field=form.username %}
 		{% include "shared/form_field.html" with field=form.email %}
