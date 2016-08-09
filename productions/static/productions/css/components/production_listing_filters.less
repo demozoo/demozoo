@@ -5,16 +5,20 @@
 	overflow: hidden;
 	padding: 10px;
 	clear: both;
+	text-align: center;
 	.fields {
-		width: 70%;
-		margin: auto;
+		display: inline;
 		li {
+			display: inline;
 			width: 50%;
-			float: left;
 
 			select {
 				font-size: 12pt;
+				max-width: 100%;
 			}
 		}
+	}
+	input[type='submit'] {
+		display: inline;
 	}
 }
