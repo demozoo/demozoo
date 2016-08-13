@@ -32,6 +32,9 @@ urlpatterns = patterns('',
 
 	(r'^account/forgotten_password/done/$', 'django.contrib.auth.views.password_reset_complete', {}, 'password_reset_complete'),
 
+	(r'^account/sceneid/auth/$', 'sceneid.auth.do_auth_redirect', {}, 'sceneid_auth'),
+	(r'^account/sceneid/login/$', 'sceneid.auth.process_response', {}, 'sceneid_return'),
+	(r'^account/sceneid/connect/$', 'sceneid.auth.connect_accounts', {}, 'sceneid_connect'),
 )
 
 urlpatterns += patterns('demoscene.views',
