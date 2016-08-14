@@ -219,7 +219,7 @@ REST_FRAMEWORK = {
 	'PAGINATE_BY': 100
 }
 
-BASE_URL = 'http://demozoo.org'
+BASE_URL = 'https://demozoo.org'
 HTTP_USER_AGENT = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 
 GEOCODER_URL = 'http://geocoder.demozoo.org/'

@@ -15,6 +15,8 @@ DEBUG = True
 INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar', 'django_extensions']
 MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
+BASE_URL = 'http://localhost:8000'
+
 AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
