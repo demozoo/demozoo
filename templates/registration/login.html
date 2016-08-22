@@ -24,10 +24,10 @@
 			<td>{{ form.password }}</td>
 		</tr>
 		</table>
-		
+
 		<input type="submit" value="Log in" />
 		<input type="hidden" name="next" value="{{ next }}" />
-		
+
 		<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
 	</form>
 {% endblock %}

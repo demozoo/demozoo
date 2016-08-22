@@ -637,6 +637,7 @@ class TagDescription(models.Model):
 	def __unicode__(self):
 		return self.tag.name
 
+
 class SceneID(models.Model):
 	user = models.ForeignKey(User, unique=True)
 	sceneid = models.IntegerField()
