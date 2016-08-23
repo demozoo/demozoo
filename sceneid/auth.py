@@ -35,7 +35,6 @@ class SceneIDUserSignupForm(UserCreationForm):
 		model = User
 
 
-@writeable_site_required
 def do_sceneid_request(url, params, headers, method="GET"):
 	data = urllib.urlencode(params)
 	if (method == "GET"):
