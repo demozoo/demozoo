@@ -39,12 +39,9 @@ class SceneIDUserSignupForm(UserCreationForm):
 def do_sceneid_request(url, params, headers, method="GET"):
 	data = urllib.urlencode(params)
 	if (method == "GET"):
-		request = urllib2.Request(settings.SCENEID_HOST + url + "?" + data)
+		request = urllib2.Request(settings.SCENEID_HOST + url + "?" + data, None, headers)
 	else:
-		request = urllib2.Request(settings.SCENEID_HOST + url, data)
-
-	for key in headers:
-		request.add_header(key, headers[key])
+		request = urllib2.Request(settings.SCENEID_HOST + url, data, headers)
 
 	response = urllib2.urlopen(request)
 	response_json = response.read()
@@ -63,11 +60,12 @@ def do_auth_redirect(request):
 
 	request.session['sceneid_state'] = get_random_string(length=32)
 
-	params = {}
-	params["client_id"] = settings.SCENEID_KEY
-	params["redirect_uri"] = settings.BASE_URL + reverse('sceneid_return')
-	params["response_type"] = "code"
-	params["state"] = request.session['sceneid_state']
+	params = {
+		'client_id': settings.SCENEID_KEY,
+		'redirect_uri': settings.BASE_URL + reverse('sceneid_return'),
+		'response_type': 'code',
+		'state': request.session['sceneid_state']
+	}
 
 	response['Location'] += '?' + urllib.urlencode(params)
 
@@ -94,13 +92,15 @@ def process_response(request):
 
 	auth_string = "Basic " + base64.b64encode(settings.SCENEID_KEY + ":" + settings.SCENEID_SECRET)
 
-	params = {}
-	params["grant_type"] = "authorization_code"
-	params["code"] = code
-	params["redirect_uri"] = settings.BASE_URL + reverse('sceneid_return')
+	params = {
+		'grant_type': 'authorization_code',
+		'code': code,
+		'redirect_uri': settings.BASE_URL + reverse('sceneid_return'),
+	}
 
-	headers = {}
-	headers["Authorization"] = auth_string
+	headers = {
+		'Authorization': auth_string,
+	}
 
 	response_data = do_sceneid_request('oauth/token/', params, headers, "POST")
 
@@ -109,8 +109,9 @@ def process_response(request):
 	#request.session['sceneid_refreshtoken'] = response_data["refresh_token"]
 
 	# request 2: get current user
-	headers = {}
-	headers["Authorization"] = "Bearer " + response_data["access_token"]
+	headers = {
+		'Authorization': "Bearer " + response_data["access_token"]
+	}
 
 	response_data = do_sceneid_request('api/3.0/me/', {}, headers, "GET")
 
