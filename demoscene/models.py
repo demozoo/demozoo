@@ -639,5 +639,5 @@ class TagDescription(models.Model):
 
 
 class SceneID(models.Model):
-	user = models.ForeignKey(User, unique=True)
+	user = models.OneToOneField(User)
 	sceneid = models.IntegerField()
