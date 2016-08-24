@@ -11,15 +11,15 @@ class Migration(SchemaMigration):
         # Adding model 'SceneID'
         db.create_table(u'demoscene_sceneid', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True)),
+            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
             ('sceneid', self.gf('django.db.models.fields.IntegerField')()),
         ))
-        db.send_create_signal('demoscene', ['SceneID'])
+        db.send_create_signal(u'demoscene', ['SceneID'])
+
 
     def backwards(self, orm):
         # Deleting model 'SceneID'
         db.delete_table(u'demoscene_sceneid')
-
 
 
     models = {
@@ -65,12 +65,6 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'unique': 'True'})
         },
-        u'demoscene.sceneid': {
-            'Meta': {'object_name': 'SceneID'},
-            'sceneid': ('django.db.models.fields.IntegerField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'unique': 'True'})
-        },
         u'demoscene.captchaquestion': {
             'Meta': {'object_name': 'CaptchaQuestion'},
             'answer': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -88,7 +82,7 @@ class Migration(SchemaMigration):
             'focus_object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'edits'", 'to': u"orm['auth.User']"})
         },
         u'demoscene.membership': {
             'Meta': {'object_name': 'Membership'},
@@ -140,6 +134,12 @@ class Migration(SchemaMigration):
             'link_class': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'parameter': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'releaser': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'external_links'", 'to': u"orm['demoscene.Releaser']"})
+        },
+        u'demoscene.sceneid': {
+            'Meta': {'object_name': 'SceneID'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'sceneid': ('django.db.models.fields.IntegerField', [], {}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True'})
         },
         u'demoscene.tagdescription': {
             'Meta': {'object_name': 'TagDescription'},
