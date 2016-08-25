@@ -89,11 +89,14 @@
 									{% endblock %}
 									<input type="submit" value="Log in" />
 								</form>
-								<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
 								<ul>
 									<li><a href="{% url 'user_signup' %}">Register new account</a>
 									<a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
 								</ul>
+								<div class="login_sceneid">
+								  ...or log in with
+								  <a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+								</div>
 							</div>
 						{% endif %}
 					</div>
