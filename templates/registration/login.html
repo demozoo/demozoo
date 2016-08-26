@@ -28,6 +28,9 @@
 		<input type="submit" value="Log in" />
 		<input type="hidden" name="next" value="{{ next }}" />
 
-		<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+		<div class='login_sceneid'>
+			...or log in with
+			<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+		</div>
 	</form>
 {% endblock %}
