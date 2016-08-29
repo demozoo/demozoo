@@ -3,7 +3,6 @@ from django.shortcuts import redirect, render
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.core.urlresolvers import reverse
@@ -19,16 +18,15 @@ import json
 import re
 
 
-class SceneIDUserSignupForm(UserCreationForm):
-	def __init__(self, *args, **kwargs):
-		super(SceneIDUserSignupForm, self).__init__(*args, **kwargs)
-		del self.fields['password1']
-		del self.fields['password2']
-
-	def clean_password2(self):
-		return ""
-
+class SceneIDUserSignupForm(forms.ModelForm):
 	email = forms.EmailField(required=False, help_text=_('Needed if you want to be able to reset your password later on'))
+
+	def save(self, commit=True):
+		user = super(SceneIDUserSignupForm, self).save(commit=False)
+		user.set_unusable_password()
+		if commit:
+			user.save()
+		return user
 
 	class Meta:
 		fields = ('username', 'email')
@@ -143,13 +141,16 @@ def connect_accounts(request):
 	elif request.POST.get("accountNew"):
 		form = SceneIDUserSignupForm(request.POST)
 		if form.is_valid():
-			form.cleaned_data["password1"] = get_random_string(length=32)
-			form.save()
-			user = authenticate(username=request.POST.get("username"), password=form.cleaned_data["password1"])
-			sceneid = SceneID(user=user, sceneid=request.session['sceneid_login_userdata']['id'])
-			sceneid.save()
+			sceneid_num = request.session['sceneid_login_userdata']['id']
+			user = form.save()
+			SceneID.objects.create(user=user, sceneid=sceneid_num)
+			user = authenticate(sceneid=sceneid_num)
 			login(request, user)
-			del request.session['sceneid_login_userdata']
+			try:
+				del request.session['sceneid_login_userdata']
+			except KeyError:
+				# login will overwrite request.session if the old session was authenticated
+				pass
 			return redirect('home')
 
 	return render(request, 'shared/sceneid_connect_accounts.html', {
