@@ -5,8 +5,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import SuspiciousOperation
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 from demoscene.models import SceneID
@@ -76,16 +76,11 @@ def process_response(request):
 	"""
 	Process the SceneID Oauth response
 	"""
-	state = request.GET.get('state', None)
-	if (state is None):
-		return HttpResponse("state missing!")  # todo proper exception
-
-	code = request.GET.get('code', None)
-	if (code is None):
-		return HttpResponse("code missing!")  # todo proper exception
+	state = request.GET['state']
+	code = request.GET['code']
 
 	if (state != request.session['sceneid_state']):
-		return HttpResponse("state mismatch!")  # todo proper exception
+		raise SuspiciousOperation("State mismatch!")
 
 	# request 1: turn response code into access token via endpoint
 
@@ -117,8 +112,10 @@ def process_response(request):
 	# authenticate user via django using our own backend
 	user = authenticate(sceneid=response_data["user"]["id"])
 	if user is not None:
+		# we have a known local user linked to this sceneid
 		login(request, user)
 	else:
+		# no known user with this sceneid - prompt them to connect to a new or existing account
 		request.session['sceneid_login_userdata'] = response_data["user"]
 		return redirect(reverse('sceneid_connect'))
 
@@ -127,8 +124,8 @@ def process_response(request):
 
 @writeable_site_required
 def connect_accounts(request):
-	if request.session['sceneid_login_userdata'] is None:
-		return None
+	if not request.session.get('sceneid_login_userdata'):
+		return redirect('log_in')
 
 	form = SceneIDUserSignupForm(initial={
 		'username': re.sub(r"[^a-z0-9A-Z]+", "", request.session['sceneid_login_userdata']['display_name'])
