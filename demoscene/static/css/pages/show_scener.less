@@ -25,16 +25,19 @@
 	}
 
 	.alternative_nicks_panel {
-		ul.nicks {
-			clear: both;
-			padding-top: 8px;
-		}
 		padding-bottom: 8px;
 
 		&.hide_edit_controls {
-			.edit_nick, .add_nick {
+
+			.edit_nick,
+			.add_nick {
 				display: none;
 			}
+		}
+
+		ul.nicks {
+			clear: both;
+			padding-top: 8px;
 		}
 	}
 
@@ -118,10 +121,12 @@
 		clear: both;
 		padding-top: 16px;
 		border-top: 1px dotted #ddd;
+
 		a.user {
 			font-weight: bold;
 			color: #333;
 			text-decoration: none;
+
 			&:hover {
 				text-decoration: underline;
 			}
@@ -134,15 +139,15 @@
 	overflow: hidden; /* self-clear */
 
 	h3 {
-		background-color: @demozoo_lightgreen;
-		float: left;
-		font-weight: normal;
-		color: white;
-		font-size: 10pt;
-		text-transform: uppercase;
-		font-family: FabricaRegular, sans-serif;
-		padding: 6px;
+		background-color: @colorLightGreen;
 		border-right: 6px solid #eaeaea;
+		color: white;
+		float: left;
+		font-family: FabricaRegular, sans-serif;
+		font-size: 10pt;
+		font-weight: normal;
 		min-width: 150px;
+		padding: 6px;
+		text-transform: uppercase;
 	}
 }
