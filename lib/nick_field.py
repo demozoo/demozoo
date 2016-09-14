@@ -157,7 +157,7 @@ class NickField(forms.Field):
 			if clean_nick_selection and nick_lookup.autoaccept:
 				return clean_nick_selection
 			else:
-				raise ValidationError("Please select the appropriate nick from the list.")
+				raise ValidationError("Please select the appropriate group from the list.")
 
 # test stuff
 #
