@@ -93,12 +93,13 @@ $(function() {
 			document.location.href = ui.item.url;
 		}
 	});
+    
 	searchField.data("autocomplete")._renderItem = function( ul, item ) {
 		return $( "<li></li>" )
 			.data( "item.autocomplete", item )
 			.append( $( "<a></a>" ).html(item.label).attr("href",item.url) )
 			.appendTo( ul );
-	}
+	};
 
 	applyGlobalBehaviours();
 });
