@@ -1,6 +1,7 @@
 @import "assets/_autosuggest";
 @import "assets/_login_status_panel";
 
+
 #page {
 	background-color: white;
 	margin: auto;
@@ -43,7 +44,7 @@
 				text-transform: uppercase;
 
 				&:hover {
-					border-top: 4px solid #ec5a64;
+					border-top: 4px solid @colorRedHighlighty;
 					margin-top: -4px;
 				}
 			}
@@ -51,154 +52,49 @@
 			&.active {
 
 				a {
-					background-color: #ec5a64;
+					background-color: @colorRedHighlighty;
 					color: white;
 				}
 			}
 		}
+	}
 
-		form.search {
-			clear: left;
-			padding-top: 2px;
+	form.search {
+		clear: left;
+		padding-top: 2px;
 
-			#id_q {
-				border: none;
-				padding: 0 0 0 6px;
-				height: 25px;
-				width: 395px;
-				font-size: 10pt;
-				background-color: #77c6ef;
-				color: black;
-				margin: 0;
-				float: left;
+		#id_q {
+			border: none;
+			padding: 0 0 0 6px;
+			height: 25px;
+			width: 395px;
+			font-size: 10pt;
+			background-color: #77c6ef;
+			color: black;
+			margin: 0;
+			float: left;
 
-				&.placeholder {
-					color: white;
-					font-size: 8pt;
-				}
-			}
-
-			input[type='submit'] {
-				background-color: #386580;
-				border: none;
-				height: 25px;
-				padding-left: 16px;
-				padding-right: 16px;
-				margin: 0;
-				font-size: 8pt;
-				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+			&.placeholder {
 				color: white;
-				float: left;
-			}
-		}
-	}
-
-	#login_status_panel {
-		background-color: #e8e8e8;
-		float: right;
-		margin-right: 64px;
-		width: 169px;
-
-		.login_status {
-			line-height: 33px;
-			text-indent: 32px;
-
-			a {
-				background-image: url('/static/images/icons/arrow_down.png');
-				background-position: 145px center;
-				background-repeat: no-repeat;
-				color: inherit;
-				display: block;
-				text-decoration: none;
+				font-size: 8pt;
 			}
 		}
 
-		.logged_out {
-			font-style: italic;
-			color: #9d9d9d;
-		}
-
-		.logged_in {
-			background-image: url('/static/images/icons/scener.png');
-			background-position: 8px center;
-			background-repeat: no-repeat;
-			color: #5e5f5f;
-			font-weight: bold;
-		}
-
-		.login_links {
-			background-color: #e8e8e8;
-			border-top: 1px solid #5d5f5f;
-			position: absolute;
-			width: 169px;
-			z-index: 10;
-
-			form {
-				border-bottom: 1px solid #5e5f5f;
-				padding: 8px;
-				color: #5e5f5f;
-
-				p {
-					margin-top: 0;
-					margin-bottom: 8px;
-				}
-			}
-
-			ul {
-
-				li {
-					border-bottom: 1px solid #5e5f5f;
-
-					a {
-						display: block;
-						text-decoration: none;
-						color: #5e5f5f;
-						line-height: 24px;
-						padding-left: 8px;
-
-						&:hover {
-							background-color: #d3d3d3;
-						}
-					}
-				}
-			}
-		}
-
-		.login_sceneid {
-			padding: 8px;
-			border-bottom: 1px solid black;
-			color: #5e5f5f;
-		}
-
-		a.sceneid,
-		#site_main a.sceneid,
-		#lightbox a.sceneid {
-			background: url('/static/images/SceneID_Icon_120x44.png');
-			display: inline-block;
-			width: 120px;
-			height: 44px;
-			overflow: hidden;
-			line-height: 200px;
-			margin: 5px 0 0;
+		input[type='submit'] {
+			background-color: #386580;
+			border: none;
+			height: 25px;
+			padding-left: 16px;
+			padding-right: 16px;
+			margin: 0;
+			font-size: 8pt;
+			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+			color: white;
+			float: left;
 		}
 	}
 }
 
-#site_main {
-	margin-left: 64px;
-	margin-right: 64px;
-	padding-right: 8px;
-
-	form .login_sceneid,
-	#lightbox form .login_sceneid {
-		margin: 10px 0 0;
-	}
-	form .login_sceneid a.sceneid,
-	#lightbox form .login_sceneid a.sceneid {
-		margin: 5px 0 0;
-		display: block;
-	}
-}
 
 #site_footer {
 	clear: both;
@@ -259,18 +155,7 @@
 				width: 300px;
 			}
 		}
-
-		#login_status_panel {
-			margin-right: 16px;
-		}
 	}
-
-
-	#site_main {
-		margin-left: 16px;
-		margin-right: 16px;
-	}
-
 }
 
 @media screen and (max-width: 501px) {
@@ -329,15 +214,5 @@
 				}
 			}
 		}
-	}
-}
-
-.login_links {
-
-	input[type=text],
-	input[type=password] {
-		box-sizing: border-box;
-		max-width: 100%;
-		width: 100%;
 	}
 }
