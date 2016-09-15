@@ -7,3 +7,5 @@
 /static
 /media
 /.vagrant
+.DS_Store
+/.idea
