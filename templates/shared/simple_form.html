@@ -5,10 +5,6 @@
 	{% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
 {% endblock %}
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	{% if title %}
 		<h2>{{ title }}</h2>

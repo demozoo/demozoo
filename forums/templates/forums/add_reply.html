@@ -2,9 +2,6 @@
 {% load compress %}
 
 {% block html_title %}Replying to topic '{{ topic.title }}' - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
-{% endblock %}
 
 {% block base_main %}
 	<h2>Replying to topic '{{ topic.title }}'</h2>
