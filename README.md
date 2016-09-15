@@ -10,12 +10,39 @@ The recommended way to set up a developer instance is through [Vagrant](https://
     cd demozoo
     vagrant up
 
-This will download an Ubuntu Trusty64 image, install dependencies, and fetch the latest public export of the Demozoo database. To start up the site:
+This will download an Ubuntu Trusty64 image, install dependencies, and fetch the latest public export of the Demozoo database. To connect to the site:
 
-    vagrant ssh
-    # then within the Vagrant VM:
-    ./manage.py runserver 0.0.0.0:8000
-    
+```vagrant ssh```
+
+you should see a welcome like this:    
+```
+Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-85-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Wed Sep 14 12:39:35 UTC 2016
+
+  ...........
+(demozoo) vagrant@vagrant-ubuntu-trusty-64:~/demozoo$
+
+```
+Then to start DemoZoo from within the Vagrant VM:
+
+```./manage.py runserver 0.0.0.0:8000```
+or 
+```python ./manage.py runserver 0.0.0.0:8000```
+which will result in
+```
+Validating models...
+
+0 errors found
+September 14, 2016 - 13:54:31
+Django version 1.6.8, using settings 'settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+```
+
+
 The site will now be available at http://localhost:8000/.
 
 Rebuilding indices for the database
