@@ -1,8 +1,13 @@
+html,
+body {
+	height: 100%;
+}
+
 html {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 10pt;
 	line-height: 1.3em;
-	background-color: #bfbfbf;
+	background-color: @colorBackground;
 	color: black;
 }
 
@@ -26,21 +31,21 @@ ol {
 	.listReset(); // REMOVE THIS SHITTY RESET ASAP K THX.
 }
 
-a:link {
-	color: @colorLink;
-}
-a:visited {
-	color: @colorLinkVisited;
+a {
+
+	&:link {
+		color: @colorLink;
+	}
+
+	&:visited {
+		color: @colorLinkVisited;
+	}
 }
 
-/* use a monospaced font that contains a decent amount of unicode (specifically,
-	box drawing characters) for 'pre' elements */
 pre {
 	font-family: dejavu_sans_monobook, monospace;
 	line-height: 1em;
 }
-
-/* Common components */
 
 
 
