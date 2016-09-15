@@ -19,9 +19,8 @@
 
 		a {
 			display: block;
-			width: 253px;
-			height: 52px;
-			background-color: #c32e3b;
+			.size(253px, 52px);
+			background-color: @colorRed;
 			text-indent: -5000px;
 			background-image: url('/static/images/demozoo_title.png');
 		}
@@ -185,37 +184,6 @@
 	}
 }
 
-.autosuggest_result {
-	background-repeat: no-repeat;
-	background-position: 0 center;
-	padding-left: 22px;
-	height: 30px;
-	overflow: hidden; /* clearfix for thumbnails */
-	vertical-align: middle;
-}
-
-.autosuggest_result .microthumb {
-	float: right;
-}
-.autosuggest_result.production {
-	background-image: url('/static/images/icons/disk.png');
-}
-.autosuggest_result.graphics {
-	background-image: url('/static/images/icons/palette.png');
-}
-.autosuggest_result.music {
-	background-image: url('/static/images/icons/music.png');
-}
-.autosuggest_result.scener {
-	background-image: url('/static/images/icons/scener.png');
-}
-.autosuggest_result.group {
-	background-image: url('/static/images/icons/group.png');
-}
-.autosuggest_result.party {
-	background-image: url('/static/images/icons/party.png');
-}
-
 #site_main {
 	margin-left: 64px;
 	margin-right: 64px;
@@ -373,7 +341,3 @@
 		width: 100%;
 	}
 }
-
-
-
-
