@@ -2,9 +2,6 @@
 {% load compress %}
 
 {% block html_title %}Adding comment for {{ commentable_name }} - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
-{% endblock %}
 
 {% block base_main %}
 	<h2>Adding a comment for {{ commentable_name }}</h2>
