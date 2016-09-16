@@ -6,63 +6,74 @@
 {% block body_class %}maintenance_index{% endblock %}
 
 {% block base_main %}
-	<h2>Maintenance</h2>
-	
-	<h3>Supporting data</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_prods_without_external_links' %}">Productions without external links</a></li>
-		<li><a href="{% url 'maintenance_prods_without_screenshots' %}">Productions without screenshots</a></li>
-		<li><a href="{% url 'maintenance_prods_without_platforms' %}">Productions without platforms</a></li>
-		<li><a href="{% url 'maintenance_unresolved_screenshots' %}">Unresolved screenshots</a></li>
-		<li><a href="{% url 'maintenance_prods_with_blurbs' %}">Productions with blurbs</a></li>
-		<li><a href="{% url 'maintenance_tiny_intros_without_download_links' %}">Tiny intros without download links</a></li>
-		<li><a href="{% url 'maintenance_tiny_intros_without_screenshots' %}">Tiny intros without screenshots</a></li>
-	</ul>
-	
-	<h3>Release dates</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_prods_without_release_date' %}">Productions without a release date</a></li>
-		<li><a href="{% url 'maintenance_prods_without_release_date_with_placement' %}">Productions without a release date but with a party placement attached</a></li>
-		<li><a href="{% url 'maintenance_prods_with_release_date_outside_party' %}">Productions with a release date more than 14 days away from their release party</a></li>
-		<li><a href="{% url 'maintenance_prod_soundtracks_without_release_date' %}">Music with productions attached but no release date</a></li>
-	</ul>
-	
-	<h3>Cleanup</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_group_nicks_with_brackets' %}">Group names with brackets</a></li>
-		<li><a href="{% url 'maintenance_ambiguous_groups_with_no_differentiators' %}">Ambiguous group names with no differentiators</a></li>
-		<li><a href="{% url 'maintenance_implied_memberships' %}">Group memberships found in production bylines, but missing from the member list</a></li>
-		<li><a href="{% url 'maintenance_empty_releasers' %}">Empty releaser records</a></li>
-		<li><a href="{% url 'maintenance_public_real_names' %}">Sceners with public real names</a></li>
-		<li><a href="{% url 'maintenance_prods_with_dead_amigascne_links' %}">Productions with dead amigascne links</a></li>
-		<li><a href="{% url 'maintenance_prods_with_dead_amiga_nvg_org_links' %}">Productions with dead amiga.nvg.org links</a></li>
-		<li><a href="{% url 'maintenance_credits_to_move_to_text' %}">Credits that probably need to be moved to the Text category</a></li>
-	</ul>
-	
-	<h3>De-duping</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_prods_with_same_named_credits' %}">Productions with identically-named sceners in the credits</a></li>
-		<li><a href="{% url 'maintenance_same_named_prods_by_same_releaser' %}">Identically-named productions by the same releaser</a></li>
-		<li><a href="{% url 'maintenance_same_named_prods_without_special_chars' %}">Identically-named productions by the same releaser, ignoring special chars</a></li>
-		<li><a href="{% url 'maintenance_duplicate_external_links' %}">Duplicate external links</a></li>
-		<li><a href="{% url 'maintenance_matching_real_names' %}">Sceners with matching real names</a></li>
-		<li><a href="{% url 'maintenance_matching_surnames' %}">Sceners with matching surnames</a></li>
-		<li><a href="{% url 'maintenance_groups_with_same_named_members' %}">Groups with same-named members</a></li>
-		<li><a href="{% url 'maintenance_releasers_with_same_named_groups' %}">Releasers with same-named groups</a></li>
-	</ul>
-	
-	<h3>Parties</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_sceneorg_party_dirs_with_no_party' %}">scene.org party dirs which are not linked to a party</a></li>
-		<li><a href="{% url 'maintenance_parties_with_incomplete_dates' %}">Parties with incomplete dates</a></li>
-		<li><a href="{% url 'maintenance_parties_with_no_location' %}">Parties with no location</a></li>
-		<li><a href="{% url 'sceneorg_compofolders' %}">scene.org competition directory matching</a></li>
-		<li><a href="{% url 'sceneorg_compofiles' %}">scene.org party file matching</a></li>
-		<li><a href="{% url 'maintenance_results_with_no_encoding' %}">Results files with unknown character encoding</a></li>
-	</ul>
 
-	<h3>User activity</h3>
-	<ul>
-		<li><a href="{% url 'maintenance_prod_comments' %}">Latest production comments</a></li>
-	</ul>
+	<header>
+		<h1>Maintenance</h1>
+	</header>
+	<section>
+		<h2>Supporting data</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_prods_without_external_links' %}">Productions without external links</a></li>
+			<li><a href="{% url 'maintenance_prods_without_screenshots' %}">Productions without screenshots</a></li>
+			<li><a href="{% url 'maintenance_prods_without_platforms' %}">Productions without platforms</a></li>
+			<li><a href="{% url 'maintenance_unresolved_screenshots' %}">Unresolved screenshots</a></li>
+			<li><a href="{% url 'maintenance_prods_with_blurbs' %}">Productions with blurbs</a></li>
+			<li><a href="{% url 'maintenance_tiny_intros_without_download_links' %}">Tiny intros without download links</a></li>
+			<li><a href="{% url 'maintenance_tiny_intros_without_screenshots' %}">Tiny intros without screenshots</a></li>
+		</ul>
+	</section>
+	<section>
+		<h2>Release dates</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_prods_without_release_date' %}">Productions without a release date</a></li>
+			<li><a href="{% url 'maintenance_prods_without_release_date_with_placement' %}">Productions without a release date but with a party placement attached</a></li>
+			<li><a href="{% url 'maintenance_prods_with_release_date_outside_party' %}">Productions with a release date more than 14 days away from their release party</a></li>
+			<li><a href="{% url 'maintenance_prod_soundtracks_without_release_date' %}">Music with productions attached but no release date</a></li>
+		</ul>
+	</section>
+	<section>
+		<h2>Cleanup</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_group_nicks_with_brackets' %}">Group names with brackets</a></li>
+			<li><a href="{% url 'maintenance_ambiguous_groups_with_no_differentiators' %}">Ambiguous group names with no differentiators</a></li>
+			<li><a href="{% url 'maintenance_implied_memberships' %}">Group memberships found in production bylines, but missing from the member list</a></li>
+			<li><a href="{% url 'maintenance_empty_releasers' %}">Empty releaser records</a></li>
+			<li><a href="{% url 'maintenance_public_real_names' %}">Sceners with public real names</a></li>
+			<li><a href="{% url 'maintenance_prods_with_dead_amigascne_links' %}">Productions with dead amigascne links</a></li>
+			<li><a href="{% url 'maintenance_prods_with_dead_amiga_nvg_org_links' %}">Productions with dead amiga.nvg.org links</a></li>
+			<li><a href="{% url 'maintenance_credits_to_move_to_text' %}">Credits that probably need to be moved to the Text category</a></li>
+		</ul>
+	</section>
+	<section>
+		<h2>De-duping</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_prods_with_same_named_credits' %}">Productions with identically-named sceners in the credits</a></li>
+			<li><a href="{% url 'maintenance_same_named_prods_by_same_releaser' %}">Identically-named productions by the same releaser</a></li>
+			<li><a href="{% url 'maintenance_same_named_prods_without_special_chars' %}">Identically-named productions by the same releaser, ignoring special chars</a></li>
+			<li><a href="{% url 'maintenance_duplicate_external_links' %}">Duplicate external links</a></li>
+			<li><a href="{% url 'maintenance_matching_real_names' %}">Sceners with matching real names</a></li>
+			<li><a href="{% url 'maintenance_matching_surnames' %}">Sceners with matching surnames</a></li>
+			<li><a href="{% url 'maintenance_groups_with_same_named_members' %}">Groups with same-named members</a></li>
+			<li><a href="{% url 'maintenance_releasers_with_same_named_groups' %}">Releasers with same-named groups</a></li>
+		</ul>
+	</section>
+	<section>
+		<h2>Parties</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_sceneorg_party_dirs_with_no_party' %}">scene.org party dirs which are not linked to a party</a></li>
+			<li><a href="{% url 'maintenance_parties_with_incomplete_dates' %}">Parties with incomplete dates</a></li>
+			<li><a href="{% url 'maintenance_parties_with_no_location' %}">Parties with no location</a></li>
+			<li><a href="{% url 'sceneorg_compofolders' %}">scene.org competition directory matching</a></li>
+			<li><a href="{% url 'sceneorg_compofiles' %}">scene.org party file matching</a></li>
+			<li><a href="{% url 'maintenance_results_with_no_encoding' %}">Results files with unknown character encoding</a></li>
+		</ul>
+	</section>
+	<section>
+		<h2>User activity</h2>
+		<ul>
+			<li><a href="{% url 'maintenance_prod_comments' %}">Latest production comments</a></li>
+		</ul>
+	</section>
+
+
 {% endblock %}

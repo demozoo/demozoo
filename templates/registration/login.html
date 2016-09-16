@@ -13,24 +13,29 @@
 		<p>Please log in to proceed:</p>
 	{% endif %}
 
-	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">{% csrf_token %}
+	<form method="post" action="{% url 'django.contrib.auth.views.login' %}" class="form form--login">
+		{% csrf_token %}
 		<table>
-		<tr>
-			<td><label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label></td>
-			<td>{{ form.username }}</td>
-		</tr>
-		<tr>
-			<td><label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label></td>
-			<td>{{ form.password }}</td>
-		</tr>
+			<tr>
+				<td><label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label></td>
+				<td>{{ form.username }}</td>
+			</tr>
+			<tr>
+				<td><label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label></td>
+				<td>{{ form.password }}</td>
+			</tr>
 		</table>
+		<div class="buttons">
+			<button type="submit">
+				<span>Log in</span>
+			</button>
 
-		<input type="submit" value="Log in" />
-		<input type="hidden" name="next" value="{{ next }}" />
+			<input type="hidden" name="next" value="{{ next }}" />
 
-		<div class='login_sceneid'>
-			...or log in with
-			<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+			<div class='login_sceneid'>
+				...or log in with
+				<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}
