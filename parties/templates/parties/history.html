@@ -3,22 +3,8 @@
 {% load url from future %}
 
 {% block html_title %}{{ party.name }} edit history - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/components/tabs.less" type="text/less" />
-		<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
 
 {% block base_main %}
-	<div class="tabbed_panel">
-		<ul class="tabs">
-			<li><a href="{% url 'party' party.id %}">Party</a></li>
-			<li class="active_tab">History</li>
-		</ul>
-
-		<h2>Edit history for {{ party.name }}</h2>
-		{% include "shared/history_table.html" %}
-
-	</div>
+	<h1>Edit history for {{ party.name }}</h1>
+	{% include "shared/history_table.html" %}
 {% endblock %}

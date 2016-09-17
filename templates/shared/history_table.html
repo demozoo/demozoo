@@ -1,21 +1,32 @@
 {% if edits %}
-	<table class="history">
-		{% for edit in edits %}
-			<tr>
-				<td class="timestamp">{{ edit.timestamp|date:"Y-m-d H:i:s" }}</td>
-				<td class="user"><strong><a href="{% url 'user' edit.user.id %}">{{ edit.user }}</a></strong></td>
-				<td>
-					{{ edit.description }}
-					{% if show_focuses %}
-						{% if edit.focus %}
-							(<a href="{{ edit.focus.get_absolute_url }}">link</a>)
+	<table class="table table--history">
+		<colgroup>
+			<col class="col--timestamp" />
+			<col class="col--user" />
+			<col />
+		</colgroup>
+		<tbody>
+			{% for edit in edits %}
+				<tr>
+					<td>
+						{{ edit.timestamp|date:"Y-m-d H:i:s" }}
+					</td>
+					<td>
+						<a href="{% url 'user' edit.user.id %}"><strong>{{ edit.user }}</strong></a>
+					</td>
+					<td>
+						{{ edit.description }}
+						{% if show_focuses %}
+							{% if edit.focus %}
+								(<a href="{{ edit.focus.get_absolute_url }}">link</a>)
+							{% endif %}
+							{% if edit.focus2 %}
+								(<a href="{{ edit.focus2.get_absolute_url }}">link2</a>)
+							{% endif %}
 						{% endif %}
-						{% if edit.focus2 %}
-							(<a href="{{ edit.focus2.get_absolute_url }}">link2</a>)
-						{% endif %}
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
 	</table>
 {% endif %}
