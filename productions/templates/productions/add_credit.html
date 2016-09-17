@@ -3,9 +3,6 @@
 {% load compress %}
 
 {% block html_title %}Adding credit for {{ production.title }} - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/components/credit_form.less" type="text/less" />{% endcompress %}
-{% endblock %}
 
 {% block extra_head %}
 	{% include "shared/editor_css.html" %}

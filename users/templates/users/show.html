@@ -2,11 +2,6 @@
 {% load compress %}
 
 {% block html_title %}{{ user.username }} - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
 
 {% block base_main %}
 	<div class="focus_title">
