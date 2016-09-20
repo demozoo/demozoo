@@ -1,0 +1,172 @@
+.site {
+	background-color: white;
+	margin: auto;
+	max-width: 1400px;
+}
+
+.site__header {
+	padding-bottom: 36px;
+	padding-top: 36px;
+
+	.logo {
+		float: left;
+		margin-right: 36px;
+
+		a {
+			.size(253px, 52px);
+			background-color: @colorRed;
+			background-image: url('/static/images/demozoo_title.png');
+			display: block;
+			text-indent: -5000px;
+		}
+	}
+
+	nav {
+		float: left;
+		margin-right: 36px;
+
+		li {
+			float: left;
+
+			a {
+				color: #5e5f5f;
+				display: block;
+				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+				line-height: 25px;
+				padding: 0 10px;
+				text-decoration: none;
+				text-transform: uppercase;
+
+				&:hover {
+					border-top: 4px solid @colorRedHighlighty;
+					margin-top: -4px;
+				}
+			}
+
+			&.active {
+
+				a {
+					background-color: @colorRedHighlighty;
+					color: white;
+				}
+			}
+		}
+	}
+}
+
+.site__content {
+	padding: 0 4.5%;
+}
+
+.site__footer {
+	background-color: #e8e8e8;
+	border: 10px solid white;
+	clear: both;
+	text-align: center;
+
+	li {
+		border-left: 1px solid #888;
+		display: inline;
+		font-size: 0.8em;
+		line-height: 3em;
+		margin: 0;
+		padding: 0 10px;
+
+		&:first-child {
+			border-left: none;
+			padding-left: 0;
+		}
+	}
+}
+
+
+/* Small-screen versions */
+@media screen and (max-width: 1200px) {
+
+	.site {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+}
+
+@media screen and (max-width: 1081px) {
+
+	.site {
+		border-right: none;
+	}
+
+	.site__header nav {
+		clear: both;
+		float: none;
+		width: 470px;
+		margin-left: 64px;
+		padding-top: 24px;
+	}
+}
+
+@media screen and (max-width: 601px) {
+
+	.site__header {
+		padding-top: 16px;
+
+		nav {
+			margin: auto;
+			padding-left: 16px;
+			padding-right: 16px;
+		}
+	}
+}
+
+@media screen and (max-width: 501px) {
+
+	.site__header {
+
+		.logo a {
+			display: block;
+			width: auto;
+			height: auto;
+			line-height: 33px;
+			padding-left: 8px;
+			padding-right: 16px;
+			margin: 0;
+			text-indent: 0;
+			background-image: none;
+			text-transform: uppercase;
+			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+			color: white;
+			text-decoration: none;
+			font-weight: normal;
+			font-size: 16pt;
+			letter-spacing: 4px;
+		}
+
+		nav {
+			width: auto;
+
+			ul {
+
+				li {
+					float: none;
+					width: 200px;
+
+					a:hover {
+						border-top: none;
+						margin-top: 0;
+						background-color: #ecd8da;
+						border-left: 4px solid #ec5a64;
+						margin-left: -4px;
+					}
+
+					&.active a:hover {
+						border-left: none;
+						margin-left: 0;
+						background-color: #ec5a64;
+					}
+				}
+
+
+			}
+		}
+	}
+}
+

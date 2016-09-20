@@ -25,16 +25,19 @@
 	}
 
 	.alternative_nicks_panel {
-		ul.nicks {
-			clear: both;
-			padding-top: 8px;
-		}
 		padding-bottom: 8px;
 
 		&.hide_edit_controls {
-			.edit_nick, .add_nick {
+
+			.edit_nick,
+			.add_nick {
 				display: none;
 			}
+		}
+
+		ul.nicks {
+			clear: both;
+			padding-top: 8px;
 		}
 	}
 
@@ -67,16 +70,21 @@
 	}
 
 	.groups_panel {
+
 		&.hide_edit_controls {
+
 			.edit_membership, .add_group {
 				display: none;
 			}
 		}
+
 		&.editing {
+
 			ul.memberships li:hover {
 				background-color: #ddd;
 			}
 		}
+
 		ul.actions {
 			padding-right: 8px;
 		}
@@ -118,31 +126,16 @@
 		clear: both;
 		padding-top: 16px;
 		border-top: 1px dotted #ddd;
+
 		a.user {
 			font-weight: bold;
 			color: #333;
 			text-decoration: none;
+
 			&:hover {
 				text-decoration: underline;
 			}
 		}
 	}
 
-}
-
-.panel {
-	overflow: hidden; /* self-clear */
-
-	h3 {
-		background-color: @demozoo_lightgreen;
-		float: left;
-		font-weight: normal;
-		color: white;
-		font-size: 10pt;
-		text-transform: uppercase;
-		font-family: FabricaRegular, sans-serif;
-		padding: 6px;
-		border-right: 6px solid #eaeaea;
-		min-width: 150px;
-	}
 }

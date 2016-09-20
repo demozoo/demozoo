@@ -2,30 +2,16 @@
 {% load demoscene_tags compress %}
 
 {% block html_title %}{{ production.title }} edit history - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/components/tabs.less" type="text/less" />
-		<link rel="stylesheet" href="/static/css/components/history.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
 
 {% block base_main %}
-	<div class="tabbed_panel">
-		<ul class="tabs">
-			<li><a href="{{ production.get_absolute_url }}">Production</a></li>
-			<li class="active_tab">History</li>
-		</ul>
+<h1>
+	Edit history for
+	<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+	{% if production.byline_string %}
+		<small>by {% byline production %}</small>
+	{% endif %}
+</h1>
 
-		<div class="production_title">
-			<h2>Edit history for <a href="{{ production.get_absolute_url }}">{{ production.title }}</a></h2>
-			{% if production.byline_string %}
-				<h3>
-					by {% byline production %}
-				</h3>
-			{% endif %}
-		</div>
+{% include "shared/history_table.html" %}
 
-		{% include "shared/history_table.html" %}
-
-	</div>
 {% endblock %}

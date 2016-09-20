@@ -1,107 +1,59 @@
 <!DOCTYPE html>
+<html class="no-js" lang="en">
 {% load compress %}
 {% load menu %}
 {% load url from future %}
-<!--[if lt IE 7]><html class="no-js ie6 legacy" lang="en"><![endif]-->
-<!--[if IE 7]><html class="no-js ie7 legacy" lang="en"><![endif]-->
-<!--[if IE 8]><html class="no-js ie8 legacy" lang="en"><![endif]-->
-<!--[if gt IE 8]><!--><html class="no-js" lang="en"><!--<![endif]-->
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-		<meta name="format-detection" content="telephone=no" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{% block html_title %}Demozoo{% endblock %}</title>
+<head>
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>{% block html_title %}Demozoo{% endblock %}</title>
 
-		{% comment %} --- CORE CSS --- {% endcomment %}
-		{% compress css %}
-			<link rel="stylesheet" href="/static/css/core.less" type="text/less" />
-			<link rel="stylesheet" href="/static/css/page_base.less" type="text/less" />
-			<link rel="stylesheet" href="/static/css/lightbox.less" type="text/less" />
-			<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
-		{% endcompress %}
+	{% comment %} --- CORE CSS --- {% endcomment %}
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/layout.less" type="text/less" />
+		<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
+	{% endcompress %}
 
-		{% block extra_css %}{% endblock %}
+	{% block extra_css %}{% endblock %}
 
-		{% compress js %}
-			<script src="/static/js/lib/modernizr.js"></script>
-			<script src="/static/js/jquery-1.7.1.js"></script>
+	{% compress js %}
+		<script src="/static/js/lib/modernizr.js"></script>
+		<script src="/static/js/jquery-1.7.1.js"></script>
+		<script src="/static/js/jquery.color.js"></script>
+		<script src="/static/js/lib/jquery-ui/jquery.ui.core.js"></script>
+		<script src="/static/js/lib/jquery-ui/jquery.ui.position.js"></script>
+		<script src="/static/js/lib/jquery-ui/jquery.ui.widget.js"></script>
+		<script src="/static/js/lib/jquery-ui/jquery.ui.autocomplete.js"></script>
+		<script src="/static/js/lib/jquery-ui/jquery.ui.autocomplete.html.js"></script>
+		<script src="/static/js/jquery.cookie.js"></script>
+		<script src="/static/js/jquery.thumb_preview.js"></script>
+		<script src="/static/js/lightbox.js"></script>
+		<script src="/static/js/demozoo.js"></script>
+	{% endcompress %}
 
-			<script src="/static/js/jquery.color.js"></script>
-			<script src="/static/js/lib/jquery-ui/jquery.ui.core.js"></script>
-			<script src="/static/js/lib/jquery-ui/jquery.ui.position.js"></script>
-			<script src="/static/js/lib/jquery-ui/jquery.ui.widget.js"></script>
-			<script src="/static/js/lib/jquery-ui/jquery.ui.autocomplete.js"></script>
-			<script src="/static/js/lib/jquery-ui/jquery.ui.autocomplete.html.js"></script>
-			<script src="/static/js/jquery.cookie.js"></script>
-			<script src="/static/js/jquery.thumb_preview.js"></script>
-			<script src="/static/js/lightbox.js"></script>
-			<script src="/static/js/demozoo.js"></script>
-		{% endcompress %}
+	{% block extra_js %}{% endblock %}
 
-		{% block extra_js %}{% endblock %}
+	{% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}default{% endblock %}">
 
-		{% block extra_head %}{% endblock %}
-	</head>
-	<body lang="en" class="{% block body_class %}default{% endblock %}">
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	<script type="text/javascript">
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-46757706-1', 'demozoo.org');
+	  ga('send', 'pageview');
+	</script>
 
-  ga('create', 'UA-46757706-1', 'demozoo.org');
-  ga('send', 'pageview');
-
-</script>
-		<div id="page">
-			{% if request.user.is_authenticated and not site_is_writeable %}
-				<div style="background-color: black; color: #ffc; padding: 2px; text-align: center">Demozoo is currently in <strong>read-only mode</strong>. We'll get things back to normal as soon as possible.</div>
-			{% endif %}
-			<header id="site_header">
-				<h1><a href="{% url 'home' %}">Demozoo</a></h1>
-				{% block login_status_panel %}
-					<div id="login_status_panel">
-						{% if request.user.is_authenticated %}
-							<div class="login_status logged_in">
-								{{ request.user.username }}
-							</div>
-							<div class="login_links">
-								<ul>
-									<li><a href="{% url 'account_change_password' %}">Change password</a></li>
-									<li><a href="{% url 'user' request.user.id %}">Activity</a></li>
-									{% if request.user.is_staff %}
-										<li><a href="{% url 'maintenance_index' %}">Maintenance</a></li>
-									{% endif %}
-									<li><a href="{% url 'log_out' %}">Log out</a></li>
-								</ul>
-							</div>
-						{% else %}
-							<div class="login_status logged_out">
-								Not logged in
-							</div>
-							<div class="login_links">
-								<form action="{% url 'log_in' %}" method="post">
-									{% csrf_token %}
-									{{ global_login_form.as_p }}
-									{% block login_next_field %}
-										<input type="hidden" name="next" value="{{ request.path }}">
-									{% endblock %}
-									<input type="submit" value="Log in" />
-								</form>
-								<ul>
-									<li><a href="{% url 'user_signup' %}">Register new account</a>
-									<a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
-								</ul>
-								<div class="login_sceneid">
-								  ...or log in with
-								  <a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
-								</div>
-							</div>
-						{% endif %}
-					</div>
-					<script>$('#login_status_panel .login_links').hide();</script>
-				{% endblock %}
+	<div class="site">
+		{% if request.user.is_authenticated and not site_is_writeable %}
+			<div class="maintenance">Demozoo is currently in <strong>read-only mode</strong>. We'll get things back to normal as soon as possible.</div>
+		{% endif %}
+		<header>
+			<div class="site__header">
+				<div class="logo"><a href="{% url 'home' %}"><span class="logo__label">Demozoo</span></a></div>
 				<nav>
 					<ul>
 						<li class="{% nav_active productions %}"><a href="{% url 'productions' %}">Productions</a></li>
@@ -118,22 +70,71 @@
 						</form>
 					{% endblock %}
 				</nav>
-				<div style="clear: both;"></div>
-			</header>
-			
-			<div id="site_main">
-				{% include "shared/messages.html" %}
-				{% block base_main %}{% endblock %}
+				{% block login_status_panel %}
+				<div id="login_status_panel">
+					{% if request.user.is_authenticated %}
+					<div class="login_status logged_in">
+						{{ request.user.username }}
+					</div>
+					<div class="login_links">
+						<ul>
+							<li><a href="{% url 'account_change_password' %}">Change password</a></li>
+							<li><a href="{% url 'user' request.user.id %}">Activity</a></li>
+							{% if request.user.is_staff %}
+							<li><a href="{% url 'maintenance_index' %}">Maintenance</a></li>
+							{% endif %}
+							<li><a href="{% url 'log_out' %}">Log out</a></li>
+						</ul>
+					</div>
+					{% else %}
+					<div class="login_status logged_out">
+						Not logged in
+					</div>
+					<div class="login_links">
+						<form class="login__form login__form--compact" action="{% url 'log_in' %}" method="post">
+							{% csrf_token %}
+							{{ global_login_form.as_p }}
+							{% block login_next_field %}
+							<input type="hidden" name="next" value="{{ request.path }}">
+							{% endblock %}
+							<input type="submit" value="Log in" />
+						</form>
+						<ul>
+							<li><a href="{% url 'user_signup' %}">Register new account</a>
+								<a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
+						</ul>
+						<div class="login_sceneid">
+							...or log in with
+							<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+				<script type="text/javascript">$('#login_status_panel .login_links').hide();</script>
+				{% endblock %}
+
 				<div style="clear: both;"></div>
 			</div>
-			<div id="site_footer">
-				<ul>
-					<li>&copy; {% now "Y" %} <a href="/pages/demozoo-team/">Demozoo staff</a> and contributors</li><!--
-					srsly. do we still need these CSS hacks in 2015?!?
-					--><li>Kindly hosted by <a href="https://zetta.io/">zetta.io</a></li><!--
-					--><li><a href="https://github.com/demozoo/demozoo">Get the source</a></li>
-				</ul>
-			</div>
+		</header>
+
+		<div class="site__content">
+			{% include "shared/messages.html" %}
+			{% block base_main %}{% endblock %}
+			<div style="clear: both;"></div>
 		</div>
-	</body>
+
+		<footer>
+			<div class="site__footer">
+				<nav>
+					<ul>
+						<li>&copy; {% now "Y" %} <a href="/pages/demozoo-team/">Demozoo staff</a> and contributors</li><!--
+						srsly. do we still need these CSS hacks in 2015?!?
+						--><li>Kindly hosted by <a href="https://zetta.io/">zetta.io</a></li><!--
+						--><li><a href="https://github.com/demozoo/demozoo">Get the source</a></li>
+					</ul>
+				</nav>
+			</div>
+		</footer>
+	</div>
+</body>
 </html>

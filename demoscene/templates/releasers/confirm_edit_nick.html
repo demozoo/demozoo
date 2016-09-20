@@ -8,10 +8,6 @@
 	{% include "shared/editor_css.html" %}
 {% endblock %}
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/pages/confirm_edit_nick.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	<h2>Ohai, you're editing {{ releaser.name }}'s name.</h2>
 	<p>

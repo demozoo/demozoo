@@ -3,40 +3,36 @@
 
 {% block html_title %}New account - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-		<link rel="stylesheet" href="/static/css/pages/signup.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block body_class %}signup{% endblock %}
 
 {% block base_main %}
-	<h2>New account</h2>
+	<h1>New account</h1>
 
-	<form action="." method="post" class="entry_form">
+	<form action="." method="post" class="form form--signup">
 		{% csrf_token %}
-
-		{% include "shared/form_field.html" with field=form.username %}
-		{% include "shared/form_field.html" with field=form.email %}
-		{% include "shared/form_field.html" with field=form.password1 %}
-		{% include "shared/form_field.html" with field=form.password2 %}
-
-		<div class="field captcha_field">
-			{% field_label form.captcha %}
-			<div class="field_input">
-				{{ form.captcha.errors }}
-				<p>{{ form.captcha_question.question|safe }}</p>
-				{{ form.captcha }}
-				{% if form.captcha.help_text %}
-					<div class="help_text">{{ form.captcha.help_text }}</div>
-				{% endif %}
+		<fieldset>
+			{% include "shared/form_field.html" with field=form.username %}
+			{% include "shared/form_field.html" with field=form.email %}
+			{% include "shared/form_field.html" with field=form.password1 %}
+			{% include "shared/form_field.html" with field=form.password2 %}
+		</fieldset>
+		<fieldset>
+			<div class="field captcha_field">
+				{% field_label form.captcha %}
+				<div class="field_input">
+					{{ form.captcha.errors }}
+					<p>{{ form.captcha_question.question|safe }}</p>
+					{{ form.captcha }}
+					{% if form.captcha.help_text %}
+						<div class="help_text">{{ form.captcha.help_text }}</div>
+					{% endif %}
+				</div>
 			</div>
-		</div>
-
-		<div class="field">
-			<input type="submit" value="Register new account"/>
+		</fieldset>
+		<div class="form__buttons">
+			<button type="submit">
+				<span>Register new account</span>
+			</button>
 		</div>
 	</form>
 {% endblock %}

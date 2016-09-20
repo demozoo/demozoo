@@ -1,217 +1,65 @@
-@import "variables.less";
+html,
+body {
+	height: 100%;
+}
 
-/* Reset */
+html {
+	//font-family: Helvetica, Arial, sans-serif;
+	//font-size: 10pt;
+	//line-height: 1.3em;
+	font-family: -apple-system, BlinkMacSystemFont,
+	"Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+	"Fira Sans", "Droid Sans", "Helvetica Neue",
+	sans-serif;
+	font-size: 12px;
+	line-height: 1.5;
+	background-color: @colorBackground;
+	color: #333;
+}
+
 body {
 	margin: 0;
 }
-h1, h2, h3, h4, h5, h6 {
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
 	padding: 0;
 	margin: 0;
 }
 
-ul, ol {
-	padding: 0;
-	margin: 0;
-	list-style-type: none;
+ul,
+ol {
+	.listReset(); // REMOVE THIS SHITTY RESET ASAP K THX.
 }
 
+nav {
 
-/* Font declarations */
-@font-face {
-	font-family: 'FabricaRegular';
-	src: url('/static/font/fabrica/fabrica-webfont.eot');
-	src: url('/static/font/fabrica/fabrica-webfont.eot?#iefix') format('embedded-opentype'),
-		url('/static/font/fabrica/fabrica-webfont.woff') format('woff'),
-		url('/static/font/fabrica/fabrica-webfont.ttf') format('truetype'),
-		url('/static/font/fabrica/fabrica-webfont.svg#FabricaRegular') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: 'dejavu_sans_monobook';
-	src: url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.eot');
-	src: url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.eot?#iefix') format('embedded-opentype'),
-		url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.woff') format('woff'),
-		url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.ttf') format('truetype'),
-		url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.svg#dejavu_sans_monobook') format('svg');
-	font-weight: normal;
-	font-style: normal;
+	ul {
+		.listReset();
+	}
 }
 
-a:link {
-	color: #02a;
-}
-a:visited {
-	color: #42a;
+a {
+
+	&:link {
+		color: @colorLink;
+	}
+
+	&:visited {
+		color: @colorLinkVisited;
+	}
 }
 
-/* use a monospaced font that contains a decent amount of unicode (specifically,
-	box drawing characters) for 'pre' elements */
 pre {
 	font-family: dejavu_sans_monobook, monospace;
 	line-height: 1em;
 }
 
-/* Common components */
 
-/* Action button */
-a.action_button {
-	line-height: 32px;
-	border: 1px solid #aaa;
-	border-radius: 3px;
-	background-color: #eee;
-	color: #668;
-	padding: 4px;
-	text-decoration: none;
 
-	&:hover {
-		background-color: #ccc;
-	}
 
-	&.icon {
-		padding-left: 24px;
-		background-position: 4px center;
-		background-repeat: no-repeat;
-	}
-
-	&.add { background-image: url(/static/images/icons/add.png); }
-	&.edit { background-image: url(/static/images/icons/edit.png); }
-	&.done { background-image: url(/static/images/icons/tick.png); }
-	&.import_table { background-image: url(/static/images/icons/table_go.png); }
-	&.delete { background-image: url(/static/images/icons/delete.png); }
-	&.switch { background-image: url(/static/images/icons/arrow_refresh.png); }
-	&.back { background-image: url(/static/images/icons/back.png); }
-}
-
-/* Action buttons bar */
-ul.actions {
-	float: right;
-
-	li {
-		display: inline;
-
-		a.action_button {
-			margin-left: 4px;
-		}
-	}
-}
-
-ul.maintenance_actions {
-	clear: both;
-	padding-top: 16px;
-
-	li {
-		display: inline;
-		a.action_button {
-			margin-left: 4px;
-		}
-	}
-}
-
-/* notification messages */
-ul.messages {
-	li {
-		padding: 4px;
-		margin-bottom: 36px;
-
-		&.success {
-			background-color: #bfb;
-			color: #040;
-			border: 1px solid #040;
-		}
-
-		&.error {
-			background-color: #fbb;
-			color: #400;
-			border: 1px solid #400;
-		}
-	}
-}
-
-ul.errorlist {
-	margin: 1em;
-	padding: 0.5em;
-	background-color: #fbb;
-}
-
-.redacted {
-	color: #666;
-	text-decoration: line-through;
-}
-
-.block {
-	margin-top: 15px;
-	border-top: 1px solid #aeaeae;
-	margin-bottom: 25px;
-
-	h3.block_heading {
-		margin-top: -15px;
-		background-color: @demozoo_red;
-		float: left;
-		overflow: hidden;
-		font-weight: normal;
-		color: white;
-		font-size: 10pt;
-		text-transform: uppercase;
-		font-family: FabricaRegular, sans-serif;
-		padding: 6px;
-		border-right: 6px solid @demozoo_red_highlight;
-		min-width: 150px;
-	}
-
-	> ul.actions {
-		margin-top: -15px;
-	}
-
-	> .more {
-		text-align: right;
-		margin-top: 5px;
-		margin-bottom: 15px;
-	}
-}
-
-/* Signposts: breadcrumb-like labels to give an idea of where you are in the site */
-.signpost {
-	background-color: @demozoo_lightblue;
-	color: white;
-	float: left;
-	padding: 4px 6px;
-	margin: 0 10px 10px 0;
-	width: 120px;
-	text-transform: uppercase;
-	font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-	font-size: 10pt;
-}
-
-/* Main title for 'show' pages */
-.focus_title {
-	clear: both;
-	padding: 5px 0 10px 0;
-
-	h2 {
-		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-		font-size: 26pt;
-		padding-right: 8px;
-		display: inline;
-		line-height: 28pt;
-	}
-	h3 {
-		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-		font-size: 14pt;
-		display: inline;
-		letter-spacing: -1px;
-		line-height: 20pt;
-	}
-}
-
-/* Panels */
-.editable_chunk {
-	transition: background-color 0.6s;
-	-moz-transition: background-color 0.6s;
-	-webkit-transition: background-color 0.6s;
-	-o-transition: background-color 0.6s;
-}
-.editable_chunk.hover {
-	background-color: #edeeff;
-}
 
