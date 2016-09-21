@@ -56,7 +56,7 @@ class TestProductions(TestCase):
 
 		response_data = json.loads(response.content)
 		self.assertEqual(response_data['title'], "Pondlife")
-		self.assertEqual(response_data['demozoo_url'], "http://demozoo.org/productions/4/")
+		self.assertEqual(response_data['demozoo_url'], "http://localhost:8000/productions/4/")
 		self.assertIn("Hooy-Program", [nick['name'] for nick in response_data['author_nicks']])
 
 
