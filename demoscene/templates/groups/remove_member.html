@@ -4,13 +4,6 @@
 
 {% block html_title %}Removing {{ scener.name }} as a member of {{ group.name }} - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />
-		<link rel="stylesheet" href="/static/css/pages/group_remove_member.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	<h2>Removing {{ scener.name }} as a member of {{ group.name }}</h2>
 

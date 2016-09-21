@@ -3,10 +3,6 @@
 
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/components/production_listing.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	{% if site_is_writeable %}
 		<ul class="actions">

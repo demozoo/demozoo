@@ -5,10 +5,6 @@
 	{% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
 {% endblock %}
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/css/forms.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	<h2>SceneID logged in as {{ nick }}</h2>
 	<p>You successfully logged in with your SceneID as <b>{{ nick }}</b>, but it's not connected to a Demozoo account yet.

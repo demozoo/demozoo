@@ -1,0 +1,119 @@
+.login_links {
+
+	input[type=text],
+	input[type=password] {
+		box-sizing: border-box;
+		max-width: 100%;
+		width: 100%;
+	}
+}
+
+#login_status_panel {
+	background-color: #e8e8e8;
+	float: right;
+	margin-right: 64px;
+	width: 169px;
+
+	.login_status {
+		line-height: 33px;
+		text-indent: 32px;
+
+		a {
+			background-image: url('/static/images/icons/arrow_down.png');
+			background-position: 145px center;
+			background-repeat: no-repeat;
+			color: inherit;
+			display: block;
+			text-decoration: none;
+		}
+	}
+
+	.logged_out {
+		font-style: italic;
+		color: #9d9d9d;
+	}
+
+	.logged_in {
+		background-image: url('/static/images/icons/scener.png');
+		background-position: 8px center;
+		background-repeat: no-repeat;
+		color: #5e5f5f;
+		font-weight: bold;
+	}
+
+	.login_links {
+		background-color: #e8e8e8;
+		border-top: 1px solid #5d5f5f;
+		position: absolute;
+		width: 169px;
+		z-index: 10;
+
+		form {
+			border-bottom: 1px solid #5e5f5f;
+			padding: 8px;
+			color: #5e5f5f;
+
+			p {
+				margin-top: 0;
+				margin-bottom: 8px;
+			}
+		}
+
+		ul {
+
+			li {
+				border-bottom: 1px solid #5e5f5f;
+
+				a {
+					display: block;
+					text-decoration: none;
+					color: #5e5f5f;
+					line-height: 24px;
+					padding-left: 8px;
+
+					&:hover {
+						background-color: #d3d3d3;
+					}
+				}
+			}
+		}
+	}
+
+	.login_sceneid {
+		padding: 8px;
+		border-bottom: 1px solid black;
+		color: #5e5f5f;
+	}
+
+	a.sceneid,
+	.site__content a.sceneid,
+	#lightbox a.sceneid {
+		background: url('/static/images/SceneID_Icon_120x44.png');
+		display: inline-block;
+		width: 120px;
+		height: 44px;
+		overflow: hidden;
+		line-height: 200px;
+		margin: 5px 0 0;
+	}
+}
+
+.site__content {
+
+	form .login_sceneid,
+	#lightbox form .login_sceneid {
+		margin: 10px 0 0;
+	}
+	form .login_sceneid a.sceneid,
+	#lightbox form .login_sceneid a.sceneid {
+		margin: 5px 0 0;
+		display: block;
+	}
+}
+
+@media (max-width: 601px) {
+
+	#login_status_panel {
+		margin-right: 16px;
+	}
+}

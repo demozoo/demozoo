@@ -36,37 +36,14 @@
 	}
 	&:hover .help_text,
 	&:focus .help_text {
-	display: block;
+		display: block;
 	}
 }
 
-.long_help {
-	h3 {
-		margin-bottom: 0.3em;
-		padding-left: 20px;
-		background-image: url('/static/images/icons/asterisk_yellow.png');
-		background-repeat: no-repeat;
-		background-position: left top;
-		line-height: 1.2em;
-	}
-	width: 80%;
-	margin: auto;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	background-color: #fff;
-	margin-top: 20px;
-	padding: 10px;
-	ul {
-		list-style-type: disc;
-		margin-left: 20px;
-		li {
-			margin-bottom: 0.3em;
-		}
-	}
-}
 
 
 form.entry_form {
+
 	.field {
 		clear: both;
 		padding-top: 12px;
@@ -86,23 +63,29 @@ form.entry_form {
 			width: 400px;
 			max-width: 80vw;
 		}
+
 		input.date[type=text] {
 			width: 150px;
 		}
+
 		.day_of_week {
 			padding-left: 0.5em;
 			color: #888;
 		}
+
 		input.numeric[type=text] {
 			width: 100px;
 		}
+
 		input.short[type=text] {
 			width: 150px;
 		}
+
 		textarea {
 			width: 420px;
 			height: 300px;
 		}
+
 		textarea.short_notes {
 			height: 50px;
 		}
@@ -116,6 +99,7 @@ form.entry_form {
 		padding-left: 32px;
 	}
 }
+
 form.entry_form.sceneid_connect {
 	display: inline-block;
 	vertical-align: top;
@@ -124,11 +108,37 @@ form.entry_form.sceneid_connect {
 
 /* external links form needs bigger labels */
 form.external_links_form .field {
+
 	label.field_label {
 		width: 200px;
 	}
 
 	.field_input {
 		width: 400px;
+	}
+}
+
+form.entry_form {
+
+	.credit_formset {
+
+		.category_header {
+			float: left;
+			font-weight: bold;
+			width: 100px;
+		}
+
+		.detail_header {
+			float: left;
+			font-weight: bold;
+		}
+
+		.field_input select {
+			width: 100px;
+		}
+
+		.field_input input[type="text"] {
+			width: 250px;
+		}
 	}
 }
