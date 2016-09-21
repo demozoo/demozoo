@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
-from demoscene.forms.releaser import CreateGroupForm, CreateScenerForm
+from demoscene.forms.releaser import CreateGroupForm, CreateScenerForm, ScenerEditLocationForm
 from demoscene.models import Releaser, Edit
 
 
@@ -70,3 +70,69 @@ class TestCreateScenerForm(TestCase):
 			focus_object_id=releaser.id
 		)
 		self.assertEqual(log_entry.user, self.user)
+
+
+class TestScenerEditLocationForm(TestCase):
+	def setUp(self):
+		self.scener = Releaser.objects.create(
+			name='Gasman',
+			location='Adlington, Lancashire, England, United Kingdom',
+			latitude=53.61323,
+			longitude=-2.60676,
+			country_code='GB',
+			geonames_id=2657668,
+			is_group=False,
+		)
+		self.user = User.objects.create_user('bob')
+
+	def test_edit(self):
+		form = ScenerEditLocationForm({
+			'location': 'Oxford'
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+
+		self.assertEqual(self.scener.location, 'Oxford, Oxfordshire, England, United Kingdom')
+		self.assertEqual(self.scener.country_code, 'GB')
+		self.assertEqual(self.scener.latitude, 51.75222)
+		self.assertEqual(self.scener.longitude, -1.25596)
+		self.assertEqual(self.scener.geonames_id, 2640729)
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_scener_location',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(log_entry.description, "Set location to Oxford, Oxfordshire, England, United Kingdom")
+
+	def test_unset(self):
+		form = ScenerEditLocationForm({
+			'location': ''
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+
+		self.assertEqual(self.scener.location, '')
+		self.assertEqual(self.scener.country_code, '')
+		self.assertEqual(self.scener.latitude, None)
+		self.assertEqual(self.scener.longitude, None)
+		self.assertEqual(self.scener.geonames_id, None)
+
+	def test_leave_unchanged(self):
+		# Must not perform a location lookup, as location is unchanged
+		form = ScenerEditLocationForm({
+			'location': 'Adlington, Lancashire, England, United Kingdom'
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+
+		self.assertEqual(self.scener.location, 'Adlington, Lancashire, England, United Kingdom')
+
+	def test_unrecognised_location(self):
+		form = ScenerEditLocationForm({
+			'location': 'Royston Vasey'
+		}, instance=self.scener)
+		self.assertFalse(form.is_valid())
+		self.assertEqual(form.errors['location'], ["Location not recognised"])
