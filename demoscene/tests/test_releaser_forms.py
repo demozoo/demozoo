@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
-from demoscene.forms.releaser import CreateGroupForm, CreateScenerForm, ScenerEditLocationForm
+from demoscene.forms.releaser import (
+	CreateGroupForm, CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm
+)
 from demoscene.models import Releaser, Edit
 
 
@@ -136,3 +138,73 @@ class TestScenerEditLocationForm(TestCase):
 		}, instance=self.scener)
 		self.assertFalse(form.is_valid())
 		self.assertEqual(form.errors['location'], ["Location not recognised"])
+
+
+class TestScenerEditRealNameForm(TestCase):
+	def setUp(self):
+		self.scener = Releaser.objects.create(
+			name='Gasman',
+			first_name='Matt', surname='Westcott',
+			show_first_name=True, show_surname=True,
+			is_group=False,
+		)
+		self.user = User.objects.create_user('bob')
+
+	def test_edit(self):
+		form = ScenerEditRealNameForm({
+			'first_name': 'Matt', 'surname': 'Westcottski',
+			'show_first_name': 'true',
+			'real_name_note': "he's feeling a bit shy",
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+		self.assertEqual(self.scener.surname, 'Westcottski')
+		self.assertFalse(self.scener.show_surname)
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_scener_real_name',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(log_entry.description, "Set real name")
+
+	def test_log_message_when_name_unchanged(self):
+		form = ScenerEditRealNameForm({
+			'first_name': 'Matt', 'surname': 'Westcott',
+			'show_first_name': 'true',
+			'real_name_note': "he's feeling a bit shy",
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+		self.assertEqual(self.scener.surname, 'Westcott')
+		self.assertFalse(self.scener.show_surname)
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_scener_real_name',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(log_entry.description, "Updated visibility of real name")
+
+	def test_no_log_message_when_no_change(self):
+		form = ScenerEditRealNameForm({
+			'first_name': 'Matt', 'surname': 'Westcott',
+			'show_first_name': 'true', 'show_surname': 'true',
+			'real_name_note': "",
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+		self.assertEqual(self.scener.surname, 'Westcott')
+		self.assertTrue(self.scener.show_surname)
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.filter(
+			action_type='edit_scener_real_name',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertFalse(log_entry)
