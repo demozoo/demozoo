@@ -5,9 +5,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
 from demoscene.forms.releaser import (
-	CreateGroupForm, CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm
+	CreateGroupForm, CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm,
+	ReleaserEditNotesForm, ScenerNickForm, GroupNickForm
 )
-from demoscene.models import Releaser, Edit
+from demoscene.models import Releaser, Edit, Nick
 
 
 class TestCreateGroupForm(TestCase):
@@ -208,3 +209,184 @@ class TestScenerEditRealNameForm(TestCase):
 			focus_object_id=self.scener.id
 		)
 		self.assertFalse(log_entry)
+
+
+class TestReleaserEditNotesForm(TestCase):
+	def setUp(self):
+		self.scener = Releaser.objects.create(
+			name='Gasman',
+			notes="it me",
+			is_group=False,
+		)
+		self.user = User.objects.create_user('bob')
+
+	def test_edit(self):
+		form = ReleaserEditNotesForm({
+			'notes': "it still me"
+		}, instance=self.scener)
+		self.assertTrue(form.is_valid())
+		form.save()
+		self.assertEqual(self.scener.notes, "it still me")
+		form.log_edit(self.user)
+
+		log_entry = Edit.objects.get(
+			action_type='edit_releaser_notes',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(log_entry.description, "Edited notes")
+
+
+class TestScenerNickForm(TestCase):
+	def setUp(self):
+		self.scener = Releaser.objects.create(name='Gasman', is_group=False)
+		self.primary_nick = self.scener.primary_nick
+		self.secondary_nick = Nick.objects.create(releaser=self.scener, name='Shingebis')
+		self.user = User.objects.create_user('bob')
+
+	def test_render_add(self):
+		form = ScenerNickForm(self.scener)
+		html = form.as_p()
+
+		# the 'add nick' form gives the option to set preferred name
+		self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+	def test_render_add_for_admin(self):
+		form = ScenerNickForm(self.scener, for_admin=True)
+		html = form.as_p()
+
+		# the 'add nick' form gives the option to set preferred name
+		self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+	def test_render_edit_primary(self):
+		form = ScenerNickForm(self.scener, instance=self.primary_nick)
+		html = form.as_p()
+
+		# No 'preferred name' checkbox, as this is already the primary nick
+		self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+	def test_render_edit_primary_for_admin(self):
+		form = ScenerNickForm(self.scener, instance=self.primary_nick, for_admin=True)
+		html = form.as_p()
+
+		# No 'preferred name' checkbox, as this is already the primary nick
+		self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+	def test_render_edit_secondary(self):
+		form = ScenerNickForm(self.scener, instance=self.secondary_nick)
+		html = form.as_p()
+
+		# show 'preferred name' checkbox
+		self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+	def test_render_edit_secondary_for_admin(self):
+		form = ScenerNickForm(self.scener, instance=self.secondary_nick, for_admin=True)
+		html = form.as_p()
+
+		# show 'preferred name' checkbox
+		self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# scener nicks never get differentiators or abbreviations
+		self.assertNotIn("Differentiator", html)
+		self.assertNotIn("Abbreviation", html)
+
+
+class TestGroupNickForm(TestCase):
+	def setUp(self):
+		self.group = Releaser.objects.create(name='Placebo', is_group=True)
+		self.primary_nick = self.group.primary_nick
+		self.secondary_nick = Nick.objects.create(releaser=self.group, name='Eternity Industry')
+		self.user = User.objects.create_user('bob')
+
+	def test_render_add(self):
+		form = GroupNickForm(self.group)
+		html = form.as_p()
+
+		# the 'add nick' form gives the option to set preferred name
+		self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is only available to admins
+		self.assertNotIn("Differentiator", html)
+
+	def test_render_add_for_admin(self):
+		form = GroupNickForm(self.group, for_admin=True)
+		html = form.as_p()
+
+		# the 'add nick' form gives the option to set preferred name
+		self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is available to admins
+		self.assertIn("Differentiator", html)
+
+	def test_render_edit_primary(self):
+		form = GroupNickForm(self.group, instance=self.primary_nick)
+		html = form.as_p()
+
+		# No 'preferred name' checkbox, as this is already the primary nick
+		self.assertNotIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is only available to admins
+		self.assertNotIn("Differentiator", html)
+
+	def test_render_edit_primary_for_admin(self):
+		form = GroupNickForm(self.group, instance=self.primary_nick, for_admin=True)
+		html = form.as_p()
+
+		# No 'preferred name' checkbox, as this is already the primary nick
+		self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is available to admins
+		self.assertIn("Differentiator", html)
+
+	def test_render_edit_secondary(self):
+		form = GroupNickForm(self.group, instance=self.secondary_nick)
+		html = form.as_p()
+
+		# show 'preferred name' checkbox
+		self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is only available to admins
+		self.assertNotIn("Differentiator", html)
+
+	def test_render_edit_secondary_for_admin(self):
+		form = GroupNickForm(self.group, instance=self.secondary_nick, for_admin=True)
+		html = form.as_p()
+
+		# show 'preferred name' checkbox
+		self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+
+		# group nicks can have abbreviations
+		self.assertIn("Abbreviation", html)
+		# differentiator field is available to admins
+		self.assertIn("Differentiator", html)
