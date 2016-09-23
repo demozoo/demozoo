@@ -311,6 +311,114 @@ class TestScenerNickForm(TestCase):
 		self.assertNotIn("Differentiator", html)
 		self.assertNotIn("Abbreviation", html)
 
+	def test_add_nick(self):
+		nick = Nick(releaser=self.scener)
+		form = ScenerNickForm(
+			self.scener, {'name': 'Dj.Mo0nbug', 'nick_variant_list': 'moonbug, mo0nbug'},
+			instance=nick
+		)
+		self.assertTrue(form.is_valid())
+		form.save()
+		saved_nick = self.scener.nicks.get(name='Dj.Mo0nbug')
+		self.assertTrue(saved_nick.variants.filter(name='mo0nbug').exists())
+
+		form.log_creation(self.user)
+		log_entry = Edit.objects.get(
+			action_type='add_nick',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(log_entry.description, "Added nick 'Dj.Mo0nbug'")
+
+	def test_reject_add_duplicate_nick(self):
+		nick = Nick(releaser=self.scener)
+		form = ScenerNickForm(
+			self.scener, {'name': 'Shingebis', 'nick_variant_list': ''},
+			instance=nick
+		)
+		self.assertFalse(form.is_valid())
+		self.assertEqual(form.errors['__all__'], ["This nick cannot be added, as it duplicates an existing one."])
+
+	def test_can_duplicate_other_scener_nick_on_add(self):
+		"""
+		The duplicate nick check is only enforced for nicks belonging to the same releaser;
+		a scener CAN have the same nick as someone else
+		"""
+		Releaser.objects.create(name='Spartacus', is_group=False)
+
+		nick = Nick(releaser=self.scener)
+		form = ScenerNickForm(
+			self.scener, {'name': 'Spartacus', 'nick_variant_list': ''},
+			instance=nick
+		)
+		self.assertTrue(form.is_valid())
+
+	def test_edit_nick(self):
+		form = ScenerNickForm(
+			self.scener,
+			{'name': 'Shingebiscuit', 'nick_variant_list': 'Shingebourbon', 'override_primary_nick': 'true'},
+			instance=self.secondary_nick
+		)
+		self.assertTrue(form.is_valid())
+		form.save()
+		saved_nick = self.scener.nicks.get(name='Shingebiscuit')
+		self.assertTrue(saved_nick.variants.filter(name='Shingebourbon').exists())
+		self.assertFalse(self.scener.nicks.filter(name='Shingebis').exists())
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_nick',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(
+			log_entry.description,
+			"Edited nick 'Shingebiscuit': changed name to 'Shingebiscuit'; changed aliases to 'Shingebourbon'; set as primary nick"
+		)
+
+	def test_reject_edit_duplicate_nick(self):
+		form = ScenerNickForm(
+			self.scener, {'name': 'Gasman', 'nick_variant_list': ''},
+			instance=self.secondary_nick
+		)
+		self.assertFalse(form.is_valid())
+		self.assertEqual(form.errors['__all__'], ["This nick cannot be added, as it duplicates an existing one."])
+
+	def test_edit_nick_without_changing_name(self):
+		form = ScenerNickForm(
+			self.scener, {'name': 'Shingebis', 'nick_variant_list': 'Shingebourbon'},
+			instance=self.secondary_nick
+		)
+		self.assertTrue(form.is_valid())
+		form.save()
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_nick',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.scener.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(
+			log_entry.description,
+			"Edited nick 'Shingebis': changed aliases to 'Shingebourbon'"
+		)
+
+	def test_can_duplicate_other_scener_nick_on_edit(self):
+		"""
+		The duplicate nick check is only enforced for nicks belonging to the same releaser;
+		a scener CAN have the same nick as someone else
+		"""
+		Releaser.objects.create(name='Spartacus', is_group=False)
+
+		form = ScenerNickForm(
+			self.scener, {'name': 'Spartacus', 'nick_variant_list': ''},
+			instance=self.secondary_nick
+		)
+		self.assertTrue(form.is_valid())
+
 
 class TestGroupNickForm(TestCase):
 	def setUp(self):
@@ -390,3 +498,31 @@ class TestGroupNickForm(TestCase):
 		self.assertIn("Abbreviation", html)
 		# differentiator field is available to admins
 		self.assertIn("Differentiator", html)
+
+	def test_edit_nick(self):
+		form = GroupNickForm(
+			self.group,
+			{
+				'name': 'Obecalp', 'abbreviation': 'BCP', 'differentiator': 'ZX',
+				'nick_variant_list': 'Ob3calp', 'override_primary_nick': 'true'
+			},
+			instance=self.secondary_nick,
+			for_admin=True
+		)
+		self.assertTrue(form.is_valid())
+		form.save()
+		saved_nick = self.group.nicks.get(name='Obecalp')
+		self.assertTrue(saved_nick.variants.filter(name='Ob3calp').exists())
+		self.assertFalse(self.group.nicks.filter(name='Eternity Industry').exists())
+
+		form.log_edit(self.user)
+		log_entry = Edit.objects.get(
+			action_type='edit_nick',
+			focus_content_type=ContentType.objects.get_for_model(Releaser),
+			focus_object_id=self.group.id
+		)
+		self.assertEqual(log_entry.user, self.user)
+		self.assertEqual(
+			log_entry.description,
+			"Edited nick 'Obecalp': changed name to 'Obecalp'; changed abbreviation to 'BCP'; changed differentiator to 'ZX'; changed aliases to 'Ob3calp'; set as primary nick"
+		)
