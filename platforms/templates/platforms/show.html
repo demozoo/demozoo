@@ -7,42 +7,61 @@
 {% block extra_css %}
 	{% compress css %}
 		<link rel="stylesheet" href="/static/platforms/css/pages/show_platform.less" type="text/less" />
+		<link rel="stylesheet" href="/static/platforms/css/pages/platform-overview.less" type="text/less" />
 	{% endcompress %}
 {% endblock %}
 
 {% block base_main %}
-	<div class="panel">
-		{% if platform.photo %}
-			<img src="{{ platform.photo.url }}" width="{{ platform.photo_width }}" height="{{ platform.photo_height }}" alt="" style="float: right;" />
-		{% endif %}
-		<h2>
-			{{ platform.name }}
-		</h2>
-		{{ platform.intro_text|safe_markdown }}
-		<div style="clear: both;"></div>
-	</div>
+<div class="platform-overview">
 
-	<div id="side_column">
-		{% if active_groups %}
+	<header class="platform-overview__header">
+		<div class="panel">
+			<h1 class="platform-overview__heading">{{ platform.name }}</h1>
+			{% if platform.photo %}
+			<img src="{{ platform.photo.url }}"
+			     class="platform-overview__image"
+			     alt="Image for the {{ platform.name }} platform"
+			     title="" />
+			{% endif %}
+			{{ platform.intro_text|safe_markdown }}
+		</div>
+	</header>
+
+	<div class="platform-overview__content">
+		<aside class="platform-overview__aside">
+			{% if active_groups %}
 			<div class="panel">
-				<h3>Groups active on {{ platform.name }}...</h3>
-				<ul class="releaser_list">
+				<h3 class="panel__heading">
+					<span>Groups active on {{ platform.name }}&hellip;</span>
+				</h3>
+				<ul class="list list--groups">
 					{% for group in active_groups %}
-						<li class="group">
-							<a href="{% url 'group' group.id %}">{{ group.name }}</a>
-						</li>
+					<li class="list__item">
+						<div class="group" itemscope itemtype="//schema.org/Organization">
+							<span class="icon-legacy"></span>
+							<a href="{% url 'group' group.id %}" itemprop="url">
+								<span itemprop="name">{{ group.name }}</span>
+							</a>
+						</div>
+					</li>
 					{% endfor %}
 				</ul>
 			</div>
-		{% endif %}
-	</div>
+			{% endif %}
+		</aside>
 
-	<div id="main_column">
-		{% if productions %}
+		<div class="platform-overview__main">
+			{% if productions %}
 			<div class="panel">
-				<h3 class="productions_header">Recent releases:</h3>
+				<h3 class="panel__heading">
+					<span class="icon-legacy icon-legacy--releases"></span>
+					<span>Recent releases:</span>
+				</h3>
 				{% include "shared/production_listing.html" with show_screenshots=1 %}
 			</div>
-		{% endif %}
+			{% endif %}
+		</div>
 	</div>
+</div>
+
 {% endblock %}
