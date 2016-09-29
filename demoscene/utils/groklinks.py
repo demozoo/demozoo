@@ -1485,7 +1485,7 @@ RELEASER_LINK_TYPES = [
 	CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
 	MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
 	ScenesatAct, ZxdemoAuthor, FacebookPage,
-	PushnpopGroup, PushnpopProfile, SceneOrgFolder,
+	PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
 	GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel,
 	DeviantartUser, ModarchiveMember, WikipediaPage,
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
