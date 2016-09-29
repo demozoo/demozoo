@@ -132,6 +132,24 @@ def prods_without_platforms(request):
 	})
 
 
+def prods_without_platforms_excluding_lost(request):
+	report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
+
+	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
+		.exclude(types__name__in=('Video', 'Performance')) \
+		.exclude(tags__name=('lost')) \
+		.extra(
+			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
+		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': "Productions without platforms (excluding 'lost')",
+		'productions': productions,
+		'mark_excludable': True,
+		'report_name': report_name,
+	})
+
+
 def prods_without_release_date_with_placement(request):
 	report_name = 'prods_without_release_date_with_placement'
 
