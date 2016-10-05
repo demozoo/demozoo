@@ -52,13 +52,24 @@
 
 		<div class="platform-overview__main">
 			{% if productions %}
-			<div class="panel">
-				<h3 class="panel__heading">
-					<span class="icon-legacy icon-legacy--releases"></span>
-					<span>Recent releases:</span>
-				</h3>
-				{% include "shared/production_listing.html" with show_screenshots=1 %}
-			</div>
+				<div class="panel">
+					<h3 class="panel__heading">
+						<span class="icon-legacy icon-legacy--releases"></span>
+						<span>Recent releases:</span>
+					</h3>
+
+					{% include "shared/production_listing.html" with show_screenshots=1 %}
+
+					<footer class="panel__footer">
+						<a href="{% url 'productions' %}?platform={{ platform.id }}" class="button button--more">
+							<span class="button__text">
+								All {{ platform.name }} releases
+								<span class="icon"><svg viewBox="0 0 24 24"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" /></svg></span>
+							</span>
+						</a>
+					</footer>
+
+				</div>
 			{% endif %}
 		</div>
 	</div>
