@@ -6,7 +6,7 @@ function applyGlobalBehaviours(context) {
 	$('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 
 	$('a.open_in_lightbox', context).click(function(e) {
-		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+		if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.which === 2) {
 			/* probably means they want to open it in a new window, so let them... */
 			return true;
 		}
