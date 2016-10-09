@@ -7,8 +7,6 @@
 {% block extra_css %}
 	{% compress css %}
 		<link rel="stylesheet" href="/static/productions/css/components/production_core_details.less" type="text/less" />
-
-		<link rel="stylesheet" href="/static/productions/css/pages/production_screenshots.less" type="text/less" />
 	{% endcompress %}
 {% endblock %}
 
@@ -28,12 +26,20 @@
 {% block base_main %}
 	{% include "productions/_core_details.html" with show_back_button=1 %}
 
-	{% for pic in screenshots %}
-		{% if pic.original_url %}
-			<a href="{{ pic.original_url }}" target="_blank" class="screenshot open_image_in_lightbox">
-				<img src="{{ pic.standard_url }}" width="{{ pic.standard_width }}" height="{{ pic.standard_height }}" alt="" />
-			</a>
-		{% endif %}
-	{% endfor %}
-
+	<ul class="list list--screenshots">
+		{% for pic in screenshots %}
+			{% if pic.original_url %}
+				<li class="list__item">
+					<div class="media">
+						<a href="{{ pic.original_url }}" class="screenshot open_image_in_lightbox">
+							<img src="{{ pic.standard_url }}"
+							     data-standard-width="{{ pic.standard_width }}"
+							     data-standard-height="{{ pic.standard_height }}"
+							     alt="" />
+						</a>
+					</div>
+				</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
 {% endblock %}

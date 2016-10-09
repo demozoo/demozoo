@@ -20,3 +20,28 @@
 		}
 	}
 }
+
+.list--screenshots {
+	@unit: 1.25%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	margin: 0 (@unit / -2);
+
+	.list__item {
+		box-sizing: border-box;
+		padding: 0 (@unit / 2) @unit;
+
+		@media (min-width: 768px) {
+			width: (100% / 2);
+		}
+
+		@media(min-width: 1024px) {
+			width: (100% / 3);
+		}
+
+		@media(min-width: 1280px) {
+			width: (100% / 4);
+		}
+	}
+}

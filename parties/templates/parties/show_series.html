@@ -40,9 +40,21 @@
 			<div class="panel external_links_panel">
 				<h3>External links</h3>
 				<ul class="external_links">
-					{% if party_series.website %}<li><a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a></li>{% endif %}
-					{% if party_series.twitter_url %}<li><a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a></li>{% endif %}
-					{% if party_series.pouet_url %}<li><a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a></li>{% endif %}
+					{% if party_series.website %}
+						<li>
+							<a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a>
+						</li>
+					{% endif %}
+					{% if party_series.twitter_url %}
+						<li>
+							<a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a>
+						</li>
+					{% endif %}
+					{% if party_series.pouet_url %}
+						<li>
+							<a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a>
+						</li>
+					{% endif %}
 				</ul>
 			</div>
 		{% endif %}
@@ -70,30 +82,40 @@
 	<div style="clear: both;"></div>
 
 	{% if parties %}
-		<ul class="parties">
+		<ul class="list list--party-editions">
 			{% for party in parties %}
 				{% with party.random_screenshot as pic %}
-					<li {% if not pic %}class="no_thumb"{% endif %}>
-						<a href="{{ party.get_absolute_url }}">
-							{% if pic %}
-								{% thumbnail pic %}
-							{% endif %}
-							<h3>{{ party.name }}</h3>
-							<div>{% date_range party.start_date party.end_date %}</div>
-							{% if party.is_online %}
-								<div>
-									<img src="/static/images/icons/computer.png" alt="" />
-									Online
-								</div>
-							{% elif party.location %}
-								<div>
-									{% if party.country_code %}
-										<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+					<li class="list__item">
+						<div class="party-edition">
+							<div class="media">
+								{% if pic %}
+									{% thumbnail pic %}
+								{% elif not pic %}
+									<div><code>thumbnail for no picture at all</code></div>
+								{% endif %}
+							</div>
+							<h3 class="party-edition__name">{{ party.name }}</h3>
+							<div class="meta">
+								<span class="meta__item">{% date_range party.start_date party.end_date %}</span>
+								&bull;
+								<span class="meta__item">
+									{% if party.is_online %}
+										Online
+										<img src="/static/images/icons/computer.png"
+										     alt=""
+										/>
+									{% elif party.location %}
+										{{ party.location }}
+										{% if party.country_code %}
+											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png"
+											     alt=""
+											/>
+										{% endif %}
 									{% endif %}
-									{{ party.location }}
-								</div>
-							{% endif %}
-						</a>
+								</span>
+							</div>
+							<a href="{{ party.get_absolute_url }}"><span>Something something</span></a>
+						</div>
 					</li>
 				{% endwith %}
 			{% endfor %}
