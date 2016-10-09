@@ -1,24 +1,22 @@
 /* Tags */
 .tags_panel {
-	ul.tags {
-		li {
-			a.tag_name {
-				margin: 2px 5px 2px 0;
 
-				text-decoration: none;
+	ul.tags {
+
+		li {
+
+			a.tag_name {
+				color: #3383bb;
+				background-color: #eeeeee;
+				border: 1px solid #cccccc;
+				border-radius: 6px;
 				font-weight: bold;
 				font-family: Trebuchet MS, Helvetica, Arial, sans-serif;
 				font-size: 1.1em;
-				color: #3383bb;
-				padding: .2em .5em .2em .5em;
+				margin: 2px 5px 2px 0;
+				text-decoration: none;
+				padding: .2em .5em;
 				float: left;
-
-				border: 1px solid #cccccc;
-				background-color: #eeeeee;
-				-moz-border-radius: 6px;
-				-webkit-border-radius: 6px;
-				-khtml-border-radius: 6px;
-				border-radius: 6px;
 
 				&:hover {
 					text-decoration: none;
@@ -29,6 +27,7 @@
 	}
 
 	form.tags_form {
+
 		#id_tags {
 			width: 400px;
 		}
@@ -37,6 +36,7 @@
 	ul.tagit {
 		clear: both;
 		background: white;
+
 		li.tagit-new .ui-widget-content {
 			background: transparent;
 		}
@@ -45,18 +45,28 @@
 
 /* hide edit controls whenever javascript adds the hide_edit_controls class */
 .tags_panel.hide_edit_controls {
+
 	form.tags_form {
 		display: none;
 	}
 }
 
 .tags_panel.editing {
+
 	ul.tags {
 		display: none;
 	}
 }
 
 .tag_description {
+	background-color: rgba(68, 68, 68, 0.85);
+	color: white;
+	width: 300px;
+	padding: 0 8px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+
 	&:before{
 		position: absolute;
 		top: -10px;
@@ -69,14 +79,6 @@
 		border-left: 5px solid transparent;
 		content:" ";
 	}
-
-	background-color: rgba(68, 68, 68, 0.85);
-	color: white;
-	width: 300px;
-	padding: 0 8px;
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
 
 	p {
 		margin: 0.5em 0;
