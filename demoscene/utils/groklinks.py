@@ -466,6 +466,7 @@ class SceneOrgFile(BaseUrl):
 		querystring_match(r'https?://(?:www\.)?scene\.org/file\.php', 'file', re.I),
 		urldecoded_regex_match(r'https?://files\.scene\.org/view(/.*)', re.I),
 		urldecoded_regex_match(r'https?://files\.scene\.org/get\:\w+\-\w+(/.*)', re.I),
+		urldecoded_regex_match(r'https?://files\.scene\.org/get(/.*)', re.I),
 		urldecoded_regex_match(r'https?://archive\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
