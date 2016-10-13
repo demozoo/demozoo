@@ -91,7 +91,7 @@
 								{% if pic %}
 									{% thumbnail pic %}
 								{% elif not pic %}
-									<div><code>thumbnail for no picture at all</code></div>
+
 								{% endif %}
 							</div>
 							<h3 class="party-edition__name">{{ party.name }}</h3>
@@ -114,15 +114,13 @@
 									{% endif %}
 								</span>
 							</div>
-							<a href="{{ party.get_absolute_url }}"><span>Something something</span></a>
+							<a class="more" href="{{ party.get_absolute_url }}"><span>See details for {{ party.name }}</span></a>
 						</div>
 					</li>
 				{% endwith %}
 			{% endfor %}
 		</ul>
 	{% endif %}
-
-	<div style="clear: both;"></div>
 
 	{% last_edited_by party_series %}
 {% endblock %}

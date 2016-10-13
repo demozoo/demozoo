@@ -1,3 +1,5 @@
+@unit: 1.25%;
+
 .list {
 	.listReset();
 }
@@ -21,8 +23,9 @@
 	}
 }
 
+
+.list--party-editions,
 .list--screenshots {
-	@unit: 1.25%;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -43,5 +46,13 @@
 		@media(min-width: 1280px) {
 			width: (100% / 4);
 		}
+	}
+}
+
+.list--party-editions {
+	align-items: flex-start;
+
+	.list__item {
+		padding: @unit (@unit / 2);
 	}
 }

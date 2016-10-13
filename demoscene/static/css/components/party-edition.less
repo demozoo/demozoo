@@ -1,0 +1,49 @@
+.party-edition {
+	position: relative;
+
+	.media {
+		height: 0;
+		padding-bottom: 75%;
+		background: #f0f0f0;
+
+		.thumbnail {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+		}
+	}
+
+	.more {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background-color: rgba(0,0,0,0);
+		z-index: 2;
+		overflow: hidden;
+		text-indent: -10000em;
+	}
+
+	.meta {
+		color: #666;
+		font-weight: 300;
+	}
+}
+
+.party-edition__name {
+	font-size: 150%;
+	line-height: 1.25;
+	margin: .5ex 0;
+	padding: 0;
+	font-weight: 400;
+}
+
