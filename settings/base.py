@@ -174,7 +174,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = (
-	('text/less', 'lessc {infile} {outfile}'),
+	('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
 )
 
 # Celery settings

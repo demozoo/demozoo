@@ -25,7 +25,7 @@ apt-get install -y python-xapian
 # node.js / lessc
 curl -sL https://deb.nodesource.com/setup_4.x | bash -
 apt-get install -y nodejs
-npm install -g less
+npm install -g less less-plugin-glob less-plugin-autoprefix less-plugin-clean-css
 
 # virtualenvwrapper
 pip install virtualenvwrapper
