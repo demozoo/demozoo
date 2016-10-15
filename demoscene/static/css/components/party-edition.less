@@ -2,40 +2,40 @@
 	position: relative;
 
 	.media {
+		background: #f0f0f0;
 		height: 0;
 		padding-bottom: 75%;
-		background: #f0f0f0;
-
-		.thumbnail {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-
-			img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-			}
-		}
-	}
-
-	.more {
-		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
-		right: 0;
-		background-color: rgba(0,0,0,0);
-		z-index: 2;
-		overflow: hidden;
-		text-indent: -10000em;
 	}
 
 	.meta {
 		color: #666;
 		font-weight: 300;
+	}
+
+	.more {
+		background-color: rgba(0, 0, 0, 0);
+		bottom: 0;
+		left: 0;
+		overflow: hidden;
+		position: absolute;
+		text-indent: -10000em;
+		top: 0;
+		right: 0;
+		z-index: 2;
+	}
+
+	.thumbnail {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
 	}
 }
 
