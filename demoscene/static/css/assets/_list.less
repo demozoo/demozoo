@@ -4,6 +4,10 @@
 	.listReset();
 }
 
+.list__item {
+	box-sizing: border-box;
+}
+
 .list--groups {
 	clear: both;
 
@@ -23,16 +27,36 @@
 	}
 }
 
-
-.list--party-editions,
-.list--screenshots {
+.list--party-editions {
+	align-items: flex-start;
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
 	margin: 0 (@unit / -2);
 
 	.list__item {
-		box-sizing: border-box;
+		padding: @unit (@unit / 2);
+
+		@media (min-width: 768px) {
+			width: (100% / 2);
+		}
+
+		@media(min-width: 1024px) {
+			width: (100% / 3);
+		}
+
+		@media(min-width: 1280px) {
+			width: (100% / 4);
+		}
+	}
+}
+
+.list--screenshots {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 (@unit / -2);
+
+	.list__item {
 		padding: 0 (@unit / 2) @unit;
 
 		@media (min-width: 768px) {
@@ -49,10 +73,31 @@
 	}
 }
 
-.list--party-editions {
-	align-items: flex-start;
+//
 
-	.list__item {
-		padding: @unit (@unit / 2);
+ul.production_list {
+
+	li {
+		background-position: left 2px;
+		background-repeat: no-repeat;
+		padding-left: 24px;
+		padding-top: 2px;
+		padding-bottom: 3px;
+
+		&.production {
+			background-image: url(/static/images/icons/disk.png);
+		}
+
+		&.music {
+			background-image: url(/static/images/icons/music.png);
+		}
+
+		&.graphics {
+			background-image: url(/static/images/icons/palette.png);
+		}
+
+		a {
+			color: #008;
+		}
 	}
 }
