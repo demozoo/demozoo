@@ -107,6 +107,16 @@ def microthumb(screenshot):
 	return thumbnail_params_for_size(screenshot, 48, 36)
 
 
+@register.inclusion_tag('shared/thumbnail.html')
+def megathumb(screenshot):
+	width, height = screenshot.thumb_dimensions_to_fit(400, 300)
+	return {
+		'url': screenshot.standard_url,
+		'width': width,
+		'height': height,
+	}
+
+
 @register.assignment_tag
 def site_stats():
 	return {
