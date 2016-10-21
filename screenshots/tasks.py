@@ -142,28 +142,6 @@ def create_screenshot_from_production_link(production_link_id):
 		pass
 
 
-# DEPRECATED
-@task(rate_limit='6/m', ignore_result=True)
-def create_screenshot_from_remote_file(url, production_id):
-	try:
-		download, file_content = fetch_url(url)
-		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
-
-		buf = cStringIO.StringIO(file_content)
-		img = PILConvertibleImage(buf, name_hint=url.split('/')[-1])
-
-		u = download.sha1
-		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.p' + str(production_id) + '.'
-		upload_original(img, screenshot, basename, reduced_redundancy=True)
-		upload_standard(img, screenshot, basename)
-		upload_thumb(img, screenshot, basename)
-		screenshot.save()
-
-	except (urllib2.URLError, FileTooBig):
-		# oh well.
-		pass
-
-
 def capture_upload_for_processing(uploaded_file, screenshot_id):
 	"""
 		Save an UploadedFile to our holding area on the local filesystem and schedule
