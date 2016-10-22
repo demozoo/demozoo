@@ -77,14 +77,16 @@ def upload_to_mirror(url, remote_filename, file_content):
 
 	if download:
 		# existing download was found; use the same mirror s3 key
-		return Download.objects.create(
-			url=url,
+		new_download = Download(
 			downloaded_at=datetime.datetime.now(),
 			sha1=sha1,
 			md5=md5,
 			file_size=len(file_content),
 			mirror_s3_key=download.mirror_s3_key
 		)
+		new_download.url = url
+		new_download.save()
+		return new_download
 	else:
 		# no such download exists, so upload this one
 		key_name = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:16] + '/' + clean_filename(remote_filename)
@@ -93,14 +95,16 @@ def upload_to_mirror(url, remote_filename, file_content):
 		k.key = key_name
 		k.set_contents_from_string(file_content)
 
-		return Download.objects.create(
-			url=url,
+		new_download = Download(
 			downloaded_at=datetime.datetime.now(),
 			sha1=sha1,
 			md5=md5,
 			file_size=len(file_content),
 			mirror_s3_key=key_name
 		)
+		new_download.url = url
+		new_download.save()
+		return new_download
 
 
 def fetch_url(url):
@@ -116,11 +120,12 @@ def fetch_url(url):
 		try:
 			remote_filename, file_content = fetch_origin_url(url)
 		except (urllib2.URLError, FileTooBig) as ex:
-			Download.objects.create(
-				url=url,
+			new_download = Download(
 				downloaded_at=datetime.datetime.now(),
 				error_type=ex.__class__.__name__
 			)
+			new_download.url = url
+			new_download.save()
 			raise
 		download = upload_to_mirror(url, remote_filename, file_content)
 		return download, file_content

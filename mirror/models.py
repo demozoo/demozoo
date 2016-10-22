@@ -3,6 +3,8 @@ import zipfile
 import cStringIO
 from django.db import models
 
+from demoscene.models import ExternalLink
+from demoscene.utils.groklinks import grok_production_link
 from screenshots.models import IMAGE_FILE_EXTENSIONS
 
 # successively more aggressive rules for what files we should ignore in an archive
@@ -16,8 +18,7 @@ IGNORED_ARCHIVE_MEMBER_RULES = [
 ]
 
 
-class Download(models.Model):
-	url = models.CharField(max_length=255)
+class Download(ExternalLink):
 	downloaded_at = models.DateTimeField()
 	sha1 = models.CharField(max_length=40, blank=True)
 	md5 = models.CharField(max_length=32, blank=True)
@@ -68,9 +69,15 @@ class Download(models.Model):
 
 	@staticmethod
 	def last_mirrored_download_for_url(url):
+		link = grok_production_link(url)
+		link_class = link.__class__.__name__
+		link_parameter = link.param
+
 		try:
 			# try to grab the most recent download of this URL which resulted in a mirror_s3_key
-			return Download.objects.filter(url=url).exclude(mirror_s3_key='').order_by('-downloaded_at')[0]
+			return Download.objects.filter(
+				link_class=link_class, parameter=link_parameter
+			).exclude(mirror_s3_key='').order_by('-downloaded_at')[0]
 		except IndexError:
 			return None
 
