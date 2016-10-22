@@ -4,7 +4,7 @@ import cStringIO
 from django.db import models
 
 from demoscene.models import ExternalLink
-from demoscene.utils.groklinks import grok_production_link
+from demoscene.utils.groklinks import grok_production_link, PRODUCTION_LINK_TYPES
 from screenshots.models import IMAGE_FILE_EXTENSIONS
 
 # successively more aggressive rules for what files we should ignore in an archive
@@ -25,6 +25,8 @@ class Download(ExternalLink):
 	error_type = models.CharField(max_length=64, blank=True)
 	file_size = models.IntegerField(null=True, blank=True)
 	mirror_s3_key = models.CharField(max_length=255)
+
+	link_types = PRODUCTION_LINK_TYPES
 
 	@property
 	def filename(self):
