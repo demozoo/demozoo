@@ -111,7 +111,7 @@ def urldecoded_regex_match(pattern, flags=None):
 	def match_fn(urlstring, url):
 		m = regex.match(urlstring)
 		if m:
-			return urllib.unquote(m.group(1))
+			return urllib.unquote(m.group(1)).decode('iso-8859-1')
 	return match_fn
 
 
