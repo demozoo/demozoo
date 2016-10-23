@@ -131,17 +131,6 @@ def fetch_url(url):
 		return download, file_content
 
 
-def fetch_to_local(url):
-	download, file_content = fetch_url(url)
-	local_filename = uuid.uuid4().hex[:16] + '_' + clean_filename(download.filename)
-	local_path = os.path.join(upload_dir, local_filename)
-
-	local_file = open(local_path, 'wb')
-	local_file.write(file_content)
-	local_file.close()
-	return local_path
-
-
 def find_screenshottable_graphics():
 	# Graphic productions with downloads but no screenshots
 	from django.db.models import Count
