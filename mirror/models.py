@@ -3,7 +3,7 @@ import cStringIO
 from django.db import models
 
 from demoscene.models import ExternalLink
-from demoscene.utils.groklinks import grok_production_link, PRODUCTION_LINK_TYPES
+from demoscene.utils.groklinks import PRODUCTION_LINK_TYPES
 
 
 class Download(ExternalLink):
@@ -44,20 +44,6 @@ class Download(ExternalLink):
 		k = Key(bucket)
 		k.key = self.mirror_s3_key
 		return buffer(k.get_contents_as_string())
-
-	@staticmethod
-	def last_mirrored_download_for_url(url):
-		link = grok_production_link(url)
-		link_class = link.__class__.__name__
-		link_parameter = link.param
-
-		try:
-			# try to grab the most recent download of this URL which resulted in a mirror_s3_key
-			return Download.objects.filter(
-				link_class=link_class, parameter=link_parameter
-			).exclude(mirror_s3_key='').order_by('-downloaded_at')[0]
-		except IndexError:
-			return None
 
 
 class ArchiveMember(models.Model):

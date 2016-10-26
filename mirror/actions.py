@@ -107,11 +107,17 @@ def upload_to_mirror(url, remote_filename, file_content):
 		return new_download
 
 
-def fetch_url(url):
-	# Fetch our mirrored copy of the given URL if available;
+def fetch_link(link):
+	# Fetch our mirrored copy of the given link if available;
 	# if not, mirror and return the original file
 
-	download = Download.last_mirrored_download_for_url(url)
+	url = link.download_url
+
+	# find last mirrored download
+	download = Download.objects.filter(
+		link_class=link.link_class, parameter=link.parameter
+	).exclude(mirror_s3_key='').order_by('-downloaded_at').first()
+
 	if download:
 		# existing download was found; fetch it
 		return download, download.fetch_from_s3()
@@ -120,12 +126,12 @@ def fetch_url(url):
 		try:
 			remote_filename, file_content = fetch_origin_url(url)
 		except (urllib2.URLError, FileTooBig) as ex:
-			new_download = Download(
+			Download.objects.create(
 				downloaded_at=datetime.datetime.now(),
+				link_class=link.link_class,
+				parameter=link.parameter,
 				error_type=ex.__class__.__name__
 			)
-			new_download.url = url
-			new_download.save()
 			raise
 		download = upload_to_mirror(url, remote_filename, file_content)
 		return download, file_content

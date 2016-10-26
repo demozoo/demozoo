@@ -9,7 +9,7 @@ import zipfile
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3, select_screenshot_file
-from mirror.actions import fetch_url
+from mirror.actions import fetch_link
 from django.conf import settings
 
 
@@ -94,7 +94,7 @@ def create_screenshot_from_production_link(production_link_id):
 
 		production_id = prod_link.production_id
 		url = prod_link.download_url
-		download, file_content = fetch_url(url)
+		download, file_content = fetch_link(prod_link)
 		buf = cStringIO.StringIO(file_content)
 
 		if prod_link.is_zip_file():
