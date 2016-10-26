@@ -41,7 +41,8 @@ class Download(ExternalLink):
 			# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
 			member = ArchiveMember(
 				filename=info.filename.decode('iso-8859-1'),
-				file_size=info.file_size)
+				file_size=info.file_size,
+				archive_sha1=self.sha1)
 			self.archive_members.add(member)
 
 	def select_screenshot_file(self):
@@ -86,6 +87,7 @@ class Download(ExternalLink):
 
 class ArchiveMember(models.Model):
 	download = models.ForeignKey(Download, related_name='archive_members')
+	archive_sha1 = models.CharField(max_length=40, blank=True, db_index=True)
 	filename = models.CharField(max_length=255)
 	file_size = models.IntegerField()
 
