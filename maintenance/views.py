@@ -727,7 +727,7 @@ def unresolved_screenshots(request):
 	for link in links[:100]:
 		download = Download.last_mirrored_download_for_url(link.download_url)
 		if download:
-			entries.append((link, download, download.archive_members.all()))
+			entries.append((link, download, download.get_archive_members()))
 
 	return render(request, 'maintenance/unresolved_screenshots.html', {
 		'title': 'Unresolved screenshots',

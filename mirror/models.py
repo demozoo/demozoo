@@ -39,16 +39,19 @@ class Download(ExternalLink):
 			# for every byte value) to ensure that it is *some* valid sequence of unicode characters
 			# that can be inserted into the database. When we need to access this zipfile entry
 			# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
-			member = ArchiveMember(
+			ArchiveMember.objects.get_or_create(
 				filename=info.filename.decode('iso-8859-1'),
 				file_size=info.file_size,
 				archive_sha1=self.sha1)
-			self.archive_members.add(member)
+
+	def get_archive_members(self):
+		# get archive members by looking up on sha1
+		return ArchiveMember.objects.filter(archive_sha1=self.sha1)
 
 	def select_screenshot_file(self):
 		for rule in IGNORED_ARCHIVE_MEMBER_RULES:
 			interesting_files = []
-			for member in self.archive_members.all():
+			for member in self.get_archive_members():
 				if member.file_size and not rule.match(member.filename):
 					interesting_files.append(member)
 
@@ -86,7 +89,6 @@ class Download(ExternalLink):
 
 
 class ArchiveMember(models.Model):
-	download = models.ForeignKey(Download, related_name='archive_members')
 	archive_sha1 = models.CharField(max_length=40, blank=True, db_index=True)
 	filename = models.CharField(max_length=255)
 	file_size = models.IntegerField()
@@ -117,3 +119,6 @@ class ArchiveMember(models.Model):
 
 	class Meta:
 		ordering = ['filename']
+		unique_together = [
+			('archive_sha1', 'filename', 'file_size'),
+		]

@@ -100,7 +100,7 @@ def create_screenshot_from_production_link(production_link_id):
 		if prod_link.is_zip_file():
 			z = zipfile.ZipFile(buf, 'r')
 			# catalogue the zipfile contents if we don't have them already
-			if not download.archive_members.all():
+			if not download.get_archive_members().exists():
 				download.log_zip_contents(z)
 			# select the archive member to extract a screenshot from, if we don't have
 			# a candidate already
