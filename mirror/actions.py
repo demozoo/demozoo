@@ -3,7 +3,6 @@ import os
 import errno
 import hashlib
 import urlparse
-import uuid
 import re
 import datetime
 
@@ -13,6 +12,7 @@ from boto.s3.key import Key
 from django.conf import settings
 from mirror.models import Download
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
+from screenshots.processing import select_screenshot_file
 from productions.models import Production
 
 max_size = 10485760
@@ -179,9 +179,9 @@ def find_zipped_screenshottable_graphics():
 			else:
 				# failing that, see if we already have a directory listing for this download
 				# and can derive a candidate from that
-				download = link.last_successful_download()
-				if download and download.get_archive_members().exists():
-					file_for_screenshot = download.select_screenshot_file()
+				archive_members = link.archive_members()
+				if archive_members:
+					file_for_screenshot = select_screenshot_file(archive_members)
 					if file_for_screenshot:
 						# we've found a candidate (which probably means we've improved select_screenshot_file
 						# since it was last run on this archive) - might as well store it against the

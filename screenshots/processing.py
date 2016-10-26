@@ -1,9 +1,8 @@
-from boto.s3.connection import S3Connection
+import re
+
 from boto.s3.key import Key
 
 from s3boto import S3BotoStorage
-
-from django.conf import settings
 
 
 MIME_TYPE_BY_EXTENSION = {'png': 'image/png', 'jpg': 'image/jpeg', 'gif': 'image/gif'}
@@ -104,3 +103,36 @@ def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
 	k.set_acl('public-read')
 
 	return storage.url(key_name)
+
+
+# successively more aggressive rules for what files we should ignore in an archive
+# when looking for screenshots - break out as soon as we have exactly one file remaining
+IGNORED_ARCHIVE_MEMBER_RULES = [
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),
+	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$', re.I),
+]
+
+
+def select_screenshot_file(archive_members):
+	from screenshots.models import IMAGE_FILE_EXTENSIONS
+
+	# Given a queryset of ArchiveMember objects for a graphic prod, try to determine the one that's
+	# most likely to be the final image file to make a screenshot out of. Return its filename, or
+	# None if unsuccessful
+	for rule in IGNORED_ARCHIVE_MEMBER_RULES:
+		interesting_files = []
+		for member in archive_members:
+			if member.file_size and not rule.match(member.filename):
+				interesting_files.append(member)
+
+		if len(interesting_files) == 1:
+			break
+
+	if len(interesting_files) == 1:
+		if interesting_files[0].file_extension in IMAGE_FILE_EXTENSIONS:
+			return interesting_files[0].filename
+
+	return None

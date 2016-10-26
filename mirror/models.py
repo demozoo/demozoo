@@ -1,21 +1,9 @@
-import re
 import zipfile
 import cStringIO
 from django.db import models
 
 from demoscene.models import ExternalLink
 from demoscene.utils.groklinks import grok_production_link, PRODUCTION_LINK_TYPES
-from screenshots.models import IMAGE_FILE_EXTENSIONS
-
-# successively more aggressive rules for what files we should ignore in an archive
-# when looking for screenshots - break out as soon as we have exactly one file remaining
-IGNORED_ARCHIVE_MEMBER_RULES = [
-	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$', re.I),
-	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),
-	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),
-	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),
-	re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$', re.I),
-]
 
 
 class Download(ExternalLink):
@@ -47,22 +35,6 @@ class Download(ExternalLink):
 	def get_archive_members(self):
 		# get archive members by looking up on sha1
 		return ArchiveMember.objects.filter(archive_sha1=self.sha1)
-
-	def select_screenshot_file(self):
-		for rule in IGNORED_ARCHIVE_MEMBER_RULES:
-			interesting_files = []
-			for member in self.get_archive_members():
-				if member.file_size and not rule.match(member.filename):
-					interesting_files.append(member)
-
-			if len(interesting_files) == 1:
-				break
-
-		if len(interesting_files) == 1:
-			if interesting_files[0].file_extension in IMAGE_FILE_EXTENSIONS:
-				return interesting_files[0].filename
-
-		return None
 
 	def fetch_from_s3(self):
 		from mirror.actions import open_bucket

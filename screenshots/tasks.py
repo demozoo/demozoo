@@ -8,8 +8,8 @@ import zipfile
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
-from screenshots.processing import upload_to_s3
-from mirror.actions import fetch_url, FileTooBig
+from screenshots.processing import upload_to_s3, select_screenshot_file
+from mirror.actions import fetch_url
 from django.conf import settings
 
 
@@ -105,7 +105,7 @@ def create_screenshot_from_production_link(production_link_id):
 			# select the archive member to extract a screenshot from, if we don't have
 			# a candidate already
 			if not prod_link.file_for_screenshot:
-				file_for_screenshot = download.select_screenshot_file()
+				file_for_screenshot = select_screenshot_file(download.get_archive_members())
 				if file_for_screenshot:
 					prod_link.file_for_screenshot = file_for_screenshot
 					prod_link.is_unresolved_for_screenshotting = False
