@@ -10,6 +10,7 @@ from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3, select_screenshot_file
 from mirror.actions import fetch_link
+from mirror.models import ArchiveMember
 from django.conf import settings
 
 
@@ -95,13 +96,24 @@ def create_screenshot_from_production_link(production_link_id):
 		production_id = prod_link.production_id
 		url = prod_link.download_url
 		download, file_content = fetch_link(prod_link)
+		sha1 = download.sha1
 		buf = cStringIO.StringIO(file_content)
 
 		if prod_link.is_zip_file():
 			z = zipfile.ZipFile(buf, 'r')
 			# catalogue the zipfile contents if we don't have them already
-			if not download.get_archive_members().exists():
-				download.log_zip_contents(z)
+			if not ArchiveMember.objects.filter(archive_sha1=sha1).exists():
+				for info in z.infolist():
+					# zip files do not contain information about the character encoding of filenames.
+					# We therefore decode the filename as iso-8859-1 (an encoding which defines a character
+					# for every byte value) to ensure that it is *some* valid sequence of unicode characters
+					# that can be inserted into the database. When we need to access this zipfile entry
+					# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
+					ArchiveMember.objects.get_or_create(
+						filename=info.filename.decode('iso-8859-1'),
+						file_size=info.file_size,
+						archive_sha1=sha1)
+
 			# select the archive member to extract a screenshot from, if we don't have
 			# a candidate already
 			if not prod_link.file_for_screenshot:
@@ -130,8 +142,7 @@ def create_screenshot_from_production_link(production_link_id):
 			img = PILConvertibleImage(buf, name_hint=url.split('/')[-1])
 
 		screenshot = Screenshot(production_id=production_id, source_download_id=download.id)
-		u = download.sha1
-		basename = u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.pl' + str(production_link_id) + '.'
+		basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.'
 		upload_original(img, screenshot, basename, reduced_redundancy=True)
 		upload_standard(img, screenshot, basename)
 		upload_thumb(img, screenshot, basename)

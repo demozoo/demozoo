@@ -16,22 +16,6 @@ class Download(ExternalLink):
 
 	link_types = PRODUCTION_LINK_TYPES
 
-	@property
-	def filename(self):
-		return self.mirror_s3_key.split('/')[-1]
-
-	def log_zip_contents(self, zip_file):
-		for info in zip_file.infolist():
-			# zip files do not contain information about the character encoding of filenames.
-			# We therefore decode the filename as iso-8859-1 (an encoding which defines a character
-			# for every byte value) to ensure that it is *some* valid sequence of unicode characters
-			# that can be inserted into the database. When we need to access this zipfile entry
-			# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
-			ArchiveMember.objects.get_or_create(
-				filename=info.filename.decode('iso-8859-1'),
-				file_size=info.file_size,
-				archive_sha1=self.sha1)
-
 	def get_archive_members(self):
 		# get archive members by looking up on sha1
 		return ArchiveMember.objects.filter(archive_sha1=self.sha1)
