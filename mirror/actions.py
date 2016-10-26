@@ -64,49 +64,6 @@ def open_bucket():
 	return conn.get_bucket(mirror_bucket_name)
 
 
-def upload_to_mirror(url, remote_filename, file_content):
-	sha1 = hashlib.sha1(file_content).hexdigest()
-	md5 = hashlib.md5(file_content).hexdigest()
-
-	# look for an existing download with the same sha1
-	download = None
-	try:
-		download = Download.objects.exclude(mirror_s3_key='').filter(sha1=sha1)[0]
-	except IndexError:
-		pass
-
-	if download:
-		# existing download was found; use the same mirror s3 key
-		new_download = Download(
-			downloaded_at=datetime.datetime.now(),
-			sha1=sha1,
-			md5=md5,
-			file_size=len(file_content),
-			mirror_s3_key=download.mirror_s3_key
-		)
-		new_download.url = url
-		new_download.save()
-		return new_download
-	else:
-		# no such download exists, so upload this one
-		key_name = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:16] + '/' + clean_filename(remote_filename)
-		bucket = open_bucket()
-		k = Key(bucket)
-		k.key = key_name
-		k.set_contents_from_string(file_content)
-
-		new_download = Download(
-			downloaded_at=datetime.datetime.now(),
-			sha1=sha1,
-			md5=md5,
-			file_size=len(file_content),
-			mirror_s3_key=key_name
-		)
-		new_download.url = url
-		new_download.save()
-		return new_download
-
-
 def fetch_link(link):
 	# Fetch our mirrored copy of the given link if available;
 	# if not, mirror and return the original file
@@ -133,7 +90,32 @@ def fetch_link(link):
 				error_type=ex.__class__.__name__
 			)
 			raise
-		download = upload_to_mirror(url, remote_filename, file_content)
+
+		sha1 = hashlib.sha1(file_content).hexdigest()
+		md5 = hashlib.md5(file_content).hexdigest()
+		download = Download(
+			downloaded_at=datetime.datetime.now(),
+			link_class=link.link_class,
+			parameter=link.parameter,
+			sha1=sha1,
+			md5=md5,
+			file_size=len(file_content),
+		)
+
+		# is there already a mirrored link with this sha1?
+		existing_download = Download.objects.filter(sha1=sha1).first()
+		if existing_download:
+			download.mirror_s3_key = existing_download.mirror_s3_key
+		else:
+			key_name = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:16] + '/' + clean_filename(remote_filename)
+			bucket = open_bucket()
+			k = Key(bucket)
+			k.key = key_name
+			k.set_contents_from_string(file_content)
+			download.mirror_s3_key = key_name
+
+		download.save()
+
 		return download, file_content
 
 
