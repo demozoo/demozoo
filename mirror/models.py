@@ -97,7 +97,8 @@ class ArchiveMember(models.Model):
 		return self.filename
 
 	def fetch_from_zip(self):
-		f = cStringIO.StringIO(self.download.fetch_from_s3())
+		download = Download.objects.filter(sha1=self.archive_sha1).first()
+		f = cStringIO.StringIO(download.fetch_from_s3())
 		z = zipfile.ZipFile(f, 'r')
 		member_buf = cStringIO.StringIO(
 			z.read(self.filename.encode('iso-8859-1'))
