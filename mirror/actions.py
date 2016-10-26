@@ -179,7 +179,7 @@ def find_zipped_screenshottable_graphics():
 			else:
 				# failing that, see if we already have a directory listing for this download
 				# and can derive a candidate from that
-				download = Download.last_mirrored_download_for_url(link.download_url)
+				download = link.last_successful_download()
 				if download and download.get_archive_members().exists():
 					file_for_screenshot = download.select_screenshot_file()
 					if file_for_screenshot:

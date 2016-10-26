@@ -12,7 +12,7 @@
 		<br />
 		<h3>Total remaining: {{ link_count }}</h3>
 		<br />
-		{% for link, download, archive_members in entries %}
+		{% for link, archive_members in entries %}
 			<div style="margin-bottom: 1em;">
 				<h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
 				<ul>

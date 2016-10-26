@@ -15,6 +15,7 @@ from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
 from demoscene.utils import groklinks
 from demoscene.utils.text import generate_sort_key
+from mirror.models import Download, ArchiveMember
 
 
 SUPERTYPE_CHOICES = (
@@ -603,6 +604,18 @@ class ProductionLink(ExternalLink):
 			self.video_height = embed_data['video_height']
 			self.embed_data_last_fetch_time = datetime.datetime.now()
 			self.save()
+
+	def last_successful_download(self):
+		return Download.objects.filter(
+			link_class=self.link_class, parameter=self.parameter
+		).exclude(sha1='').order_by('-downloaded_at').first()
+
+	def archive_members(self):
+		download = self.last_successful_download()
+		if download:
+			return ArchiveMember.objects.filter(archive_sha1=download.sha1)
+		else:
+			return ArchiveMember.objects.none()
 
 	class Meta:
 		unique_together = (
