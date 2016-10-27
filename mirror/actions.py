@@ -140,7 +140,7 @@ def find_screenshottable_graphics():
 	prod_links = []
 	for prod in prods:
 		for link in prod.links.all():
-			if link.is_download_link and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS:
+			if link.is_download_link and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS and link.is_believed_downloadable():
 				prod_links.append(link)
 				break  # ignore any remaining links for this prod
 
@@ -159,17 +159,21 @@ def find_zipped_screenshottable_graphics():
 
 	prod_links = []
 	for prod in prods:
+
+		# skip ASCII and executable graphics
+		if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi', 'exe-graphics', '4k-exe-graphics']):
+			continue
+
+		# skip prods for a specific platform other than DOS/Windows
+		if prod.platforms.exclude(name__in=['MS-Dos', 'Windows']):
+			continue
+
 		for link in prod.links.all():
 
 			if not (link.is_download_link and link.is_zip_file()):
 				continue
 
-			# skip ASCII and executable graphics
-			if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi', 'exe-graphics', '4k-exe-graphics']):
-				continue
-
-			# skip prods for a specific platform other than DOS/Windows
-			if prod.platforms.exclude(name__in=['MS-Dos', 'Windows']):
+			if not link.is_believed_downloadable():
 				continue
 
 			file_for_screenshot = None

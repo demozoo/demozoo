@@ -617,6 +617,32 @@ class ProductionLink(ExternalLink):
 		else:
 			return ArchiveMember.objects.none()
 
+	def is_believed_downloadable(self):
+		# mirrored files are always downloadable
+		mirrored_downloads = Download.objects.filter(
+			link_class=self.link_class, parameter=self.parameter
+		).exclude(mirror_s3_key='')
+		if mirrored_downloads.exists():
+			return True
+
+		last_download = Download.objects.filter(
+			link_class=self.link_class, parameter=self.parameter
+		).order_by('-downloaded_at').first()
+		if last_download is None:
+			# no previous downloads, so assume good
+			return True
+
+		# if we got a FileTooBig response last time, assume it'll never be downloadable
+		if last_download.error_type == 'FileTooBig':
+			return False
+
+		# if we got an error last time, and that was less than a month ago, don't retry
+		last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+		if last_download.error_type != '' and last_download.downloaded_at > last_month:
+			return False
+
+		return True
+
 	class Meta:
 		unique_together = (
 			('link_class', 'parameter', 'production', 'is_download_link'),
