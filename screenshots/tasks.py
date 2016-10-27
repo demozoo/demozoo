@@ -89,53 +89,71 @@ def rebuild_screenshot(screenshot_id):
 def create_screenshot_from_production_link(production_link_id):
 	try:
 		prod_link = ProductionLink.objects.get(id=production_link_id)
-		if prod_link.production.screenshots.count():
-			return  # don't create a screenshot if there's one already
+	except ProductionLink.DoesNotExist:
+		# guess it was deleted in the meantime, then.
+		return
 
-		production_id = prod_link.production_id
-		url = prod_link.download_url
-		blob = fetch_link(prod_link)
-		sha1 = blob.sha1
+	if prod_link.production.screenshots.count():
+		return  # don't create a screenshot if there's one already
 
-		if prod_link.is_zip_file():
-			# select the archive member to extract a screenshot from, if we don't have
-			# a candidate already
-			archive_members = ArchiveMember.objects.filter(archive_sha1=sha1)
-			if not prod_link.file_for_screenshot:
-				file_for_screenshot = select_screenshot_file(archive_members)
-				if file_for_screenshot:
-					prod_link.file_for_screenshot = file_for_screenshot
-					prod_link.is_unresolved_for_screenshotting = False
-				else:
-					prod_link.is_unresolved_for_screenshotting = True
-				prod_link.save()
+	if prod_link.has_bad_image:
+		return  # don't create a screenshot if a previous attempt has failed during image processing
 
-			image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
-			if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
-				z = blob.as_zipfile()
-				# we encode the filename as iso-8859-1 before retrieving it, because we
-				# decoded it that way on insertion into the database to ensure that it had
-				# a valid unicode string representation - see mirror/models.py
-				member_buf = cStringIO.StringIO(
-					z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
-				)
-				z.close()
+	production_id = prod_link.production_id
+	url = prod_link.download_url
+	blob = fetch_link(prod_link)
+	sha1 = blob.sha1
+
+	if prod_link.is_zip_file():
+		# select the archive member to extract a screenshot from, if we don't have
+		# a candidate already
+		archive_members = ArchiveMember.objects.filter(archive_sha1=sha1)
+		if not prod_link.file_for_screenshot:
+			file_for_screenshot = select_screenshot_file(archive_members)
+			if file_for_screenshot:
+				prod_link.file_for_screenshot = file_for_screenshot
+				prod_link.is_unresolved_for_screenshotting = False
+			else:
+				prod_link.is_unresolved_for_screenshotting = True
+			prod_link.save()
+
+		image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
+		if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
+			z = blob.as_zipfile()
+			# we encode the filename as iso-8859-1 before retrieving it, because we
+			# decoded it that way on insertion into the database to ensure that it had
+			# a valid unicode string representation - see mirror/models.py
+			member_buf = cStringIO.StringIO(
+				z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
+			)
+			z.close()
+			try:
 				img = PILConvertibleImage(member_buf, name_hint=prod_link.file_for_screenshot)
-			else:  # image is not a usable format
+			except IOError:
+				prod_link.has_bad_image = True
+				prod_link.save()
 				return
-		else:
+		else:  # image is not a usable format
+			return
+	else:
+		try:
 			img = PILConvertibleImage(blob.as_io_buffer(), name_hint=url.split('/')[-1])
+		except IOError:
+			prod_link.has_bad_image = True
+			prod_link.save()
+			return
 
-		screenshot = Screenshot(production_id=production_id)
-		basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.'
+	screenshot = Screenshot(production_id=production_id)
+	basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.'
+	try:
 		upload_original(img, screenshot, basename, reduced_redundancy=True)
 		upload_standard(img, screenshot, basename)
 		upload_thumb(img, screenshot, basename)
-		screenshot.save()
-
-	except ProductionLink.DoesNotExist:
-		# guess it was deleted in the meantime, then.
-		pass
+	except IOError:
+		prod_link.has_bad_image = True
+		prod_link.save()
+		return
+	screenshot.save()
 
 
 def capture_upload_for_processing(uploaded_file, screenshot_id):

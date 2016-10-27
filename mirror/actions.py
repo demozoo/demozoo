@@ -140,7 +140,10 @@ def find_screenshottable_graphics():
 	prod_links = []
 	for prod in prods:
 		for link in prod.links.all():
-			if link.is_download_link and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS and link.is_believed_downloadable():
+			if (
+				link.is_download_link and not link.has_bad_image
+				and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS and link.is_believed_downloadable()
+			):
 				prod_links.append(link)
 				break  # ignore any remaining links for this prod
 
@@ -173,7 +176,7 @@ def find_zipped_screenshottable_graphics():
 			if not (link.is_download_link and link.is_zip_file()):
 				continue
 
-			if not link.is_believed_downloadable():
+			if link.has_bad_image or not link.is_believed_downloadable():
 				continue
 
 			file_for_screenshot = None
