@@ -113,7 +113,7 @@ def fetch_link(link):
 
 		download.save()
 
-		return download, blob.file_content
+		return blob
 
 
 def find_screenshottable_graphics():

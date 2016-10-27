@@ -86,3 +86,9 @@ class DownloadBlob(object):
 	@cached_property
 	def file_size(self):
 		return len(self.file_content)
+
+	def as_io_buffer(self):
+		return cStringIO.StringIO(self.file_content)
+
+	def as_zipfile(self):
+		return zipfile.ZipFile(self.as_io_buffer(), 'r')
