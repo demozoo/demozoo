@@ -4,6 +4,7 @@ import re
 import uuid
 import urllib2
 import cStringIO
+import zipfile
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
@@ -123,9 +124,16 @@ def create_screenshot_from_production_link(production_link_id):
 			# we encode the filename as iso-8859-1 before retrieving it, because we
 			# decoded it that way on insertion into the database to ensure that it had
 			# a valid unicode string representation - see mirror/models.py
-			member_buf = cStringIO.StringIO(
-				z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
-			)
+			try:
+				member_buf = cStringIO.StringIO(
+					z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
+				)
+			except zipfile.BadZipfile:
+				prod_link.has_bad_image = True
+				prod_link.save()
+				z.close()
+				return
+
 			z.close()
 			try:
 				img = PILConvertibleImage(member_buf, name_hint=prod_link.file_for_screenshot)
