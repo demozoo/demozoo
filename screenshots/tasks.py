@@ -9,7 +9,7 @@ import zipfile
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3, select_screenshot_file
-from mirror.actions import fetch_link
+from mirror.actions import fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics
 from mirror.models import ArchiveMember
 from django.conf import settings
 
@@ -177,3 +177,11 @@ def capture_upload_for_processing(uploaded_file, screenshot_id):
 		destination.write(chunk)
 	destination.close()
 	create_screenshot_versions_from_local_file.delay(screenshot_id, path)
+
+
+@task(ignore_result=True)
+def fetch_remote_screenshots():
+	for prod_link in find_screenshottable_graphics():
+		create_screenshot_from_production_link.delay(prod_link.id)
+	for prod_link in find_zipped_screenshottable_graphics():
+		create_screenshot_from_production_link.delay(prod_link.id)

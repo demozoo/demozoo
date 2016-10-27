@@ -203,6 +203,11 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(hours=1),
 		"args": ()
 	},
+	"fetch-remote-screenshots": {
+		"task": "screenshots.tasks.fetch_remote_screenshots",
+		"schedule": timedelta(days=1),
+		"args": ()
+	},
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
