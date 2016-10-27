@@ -9,7 +9,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
 from django.conf import settings
-from mirror.models import Download, DownloadBlob
+from mirror.models import ArchiveMember, Download, DownloadBlob
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import select_screenshot_file
 from productions.models import Production
@@ -112,6 +112,21 @@ def fetch_link(link):
 			download.mirror_s3_key = key_name
 
 		download.save()
+
+		if link.is_zip_file():
+			# catalogue the zipfile contents if we don't have them already
+			if not ArchiveMember.objects.filter(archive_sha1=blob.sha1).exists():
+				z = blob.as_zipfile()
+				for info in z.infolist():
+					# zip files do not contain information about the character encoding of filenames.
+					# We therefore decode the filename as iso-8859-1 (an encoding which defines a character
+					# for every byte value) to ensure that it is *some* valid sequence of unicode characters
+					# that can be inserted into the database. When we need to access this zipfile entry
+					# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
+					ArchiveMember.objects.get_or_create(
+						filename=info.filename.decode('iso-8859-1'),
+						file_size=info.file_size,
+						archive_sha1=blob.sha1)
 
 		return blob
 

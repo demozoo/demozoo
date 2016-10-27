@@ -4,7 +4,6 @@ import re
 import uuid
 import urllib2
 import cStringIO
-import zipfile
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
@@ -99,20 +98,6 @@ def create_screenshot_from_production_link(production_link_id):
 		sha1 = blob.sha1
 
 		if prod_link.is_zip_file():
-			z = blob.as_zipfile()
-			# catalogue the zipfile contents if we don't have them already
-			if not ArchiveMember.objects.filter(archive_sha1=sha1).exists():
-				for info in z.infolist():
-					# zip files do not contain information about the character encoding of filenames.
-					# We therefore decode the filename as iso-8859-1 (an encoding which defines a character
-					# for every byte value) to ensure that it is *some* valid sequence of unicode characters
-					# that can be inserted into the database. When we need to access this zipfile entry
-					# again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
-					ArchiveMember.objects.get_or_create(
-						filename=info.filename.decode('iso-8859-1'),
-						file_size=info.file_size,
-						archive_sha1=sha1)
-
 			# select the archive member to extract a screenshot from, if we don't have
 			# a candidate already
 			archive_members = ArchiveMember.objects.filter(archive_sha1=sha1)
@@ -127,6 +112,7 @@ def create_screenshot_from_production_link(production_link_id):
 
 			image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
 			if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
+				z = blob.as_zipfile()
 				# we encode the filename as iso-8859-1 before retrieving it, because we
 				# decoded it that way on insertion into the database to ensure that it had
 				# a valid unicode string representation - see mirror/models.py
@@ -136,7 +122,6 @@ def create_screenshot_from_production_link(production_link_id):
 				z.close()
 				img = PILConvertibleImage(member_buf, name_hint=prod_link.file_for_screenshot)
 			else:  # image is not a usable format
-				z.close()
 				return
 		else:
 			img = PILConvertibleImage(blob.as_io_buffer(), name_hint=url.split('/')[-1])
