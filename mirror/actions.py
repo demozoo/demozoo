@@ -1,7 +1,6 @@
 import urllib2
 import os
 import errno
-import hashlib
 import urlparse
 import re
 import datetime
@@ -10,7 +9,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
 from django.conf import settings
-from mirror.models import Download
+from mirror.models import Download, DownloadBlob
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import select_screenshot_file
 from productions.models import Production
@@ -52,7 +51,7 @@ def fetch_origin_url(url):
 
 	remote_filename = urlparse.urlparse(resolved_url).path.split('/')[-1]
 
-	return remote_filename, buffer(file_content)
+	return DownloadBlob(remote_filename, buffer(file_content))
 
 
 def clean_filename(filename):
@@ -81,7 +80,7 @@ def fetch_link(link):
 	else:
 		# no mirrored copy exists - fetch and mirror the origin file
 		try:
-			remote_filename, file_content = fetch_origin_url(url)
+			blob = fetch_origin_url(url)
 		except (urllib2.URLError, FileTooBig) as ex:
 			Download.objects.create(
 				downloaded_at=datetime.datetime.now(),
@@ -91,32 +90,30 @@ def fetch_link(link):
 			)
 			raise
 
-		sha1 = hashlib.sha1(file_content).hexdigest()
-		md5 = hashlib.md5(file_content).hexdigest()
 		download = Download(
 			downloaded_at=datetime.datetime.now(),
 			link_class=link.link_class,
 			parameter=link.parameter,
-			sha1=sha1,
-			md5=md5,
-			file_size=len(file_content),
+			sha1=blob.sha1,
+			md5=blob.md5,
+			file_size=blob.file_size,
 		)
 
 		# is there already a mirrored link with this sha1?
-		existing_download = Download.objects.filter(sha1=sha1).first()
+		existing_download = Download.objects.filter(sha1=blob.sha1).first()
 		if existing_download:
 			download.mirror_s3_key = existing_download.mirror_s3_key
 		else:
-			key_name = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:16] + '/' + clean_filename(remote_filename)
+			key_name = blob.sha1[0:2] + '/' + blob.sha1[2:4] + '/' + blob.sha1[4:16] + '/' + clean_filename(blob.filename)
 			bucket = open_bucket()
 			k = Key(bucket)
 			k.key = key_name
-			k.set_contents_from_string(file_content)
+			k.set_contents_from_string(blob.file_content)
 			download.mirror_s3_key = key_name
 
 		download.save()
 
-		return download, file_content
+		return download, blob.file_content
 
 
 def find_screenshottable_graphics():

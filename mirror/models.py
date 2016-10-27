@@ -1,6 +1,9 @@
+import hashlib
 import zipfile
 import cStringIO
+
 from django.db import models
+from django.utils.functional import cached_property
 
 from demoscene.models import ExternalLink
 from demoscene.utils.groklinks import PRODUCTION_LINK_TYPES
@@ -65,3 +68,21 @@ class ArchiveMember(models.Model):
 		unique_together = [
 			('archive_sha1', 'filename', 'file_size'),
 		]
+
+
+class DownloadBlob(object):
+	def __init__(self, filename, file_content):
+		self.filename = filename
+		self.file_content = file_content
+
+	@cached_property
+	def md5(self):
+		return hashlib.md5(self.file_content).hexdigest()
+
+	@cached_property
+	def sha1(self):
+		return hashlib.sha1(self.file_content).hexdigest()
+
+	@cached_property
+	def file_size(self):
+		return len(self.file_content)
