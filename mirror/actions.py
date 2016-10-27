@@ -76,7 +76,7 @@ def fetch_link(link):
 
 	if download:
 		# existing download was found; fetch it
-		return download, download.fetch_from_s3()
+		return download.fetch_from_s3()
 	else:
 		# no mirrored copy exists - fetch and mirror the origin file
 		try:

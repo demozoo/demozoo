@@ -30,7 +30,9 @@ class Download(ExternalLink):
 		bucket = open_bucket()
 		k = Key(bucket)
 		k.key = self.mirror_s3_key
-		return buffer(k.get_contents_as_string())
+		file_content = buffer(k.get_contents_as_string())
+		filename = self.mirror_s3_key.split('/')[-1]
+		return DownloadBlob(filename, file_content)
 
 
 class ArchiveMember(models.Model):
@@ -43,8 +45,8 @@ class ArchiveMember(models.Model):
 
 	def fetch_from_zip(self):
 		download = Download.objects.filter(sha1=self.archive_sha1).first()
-		f = cStringIO.StringIO(download.fetch_from_s3())
-		z = zipfile.ZipFile(f, 'r')
+		blob = download.fetch_from_s3()
+		z = blob.as_zipfile()
 		member_buf = cStringIO.StringIO(
 			z.read(self.filename.encode('iso-8859-1'))
 		)
