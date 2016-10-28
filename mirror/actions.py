@@ -164,11 +164,7 @@ def find_zipped_screenshottable_graphics():
 	for prod in prods:
 
 		# skip ASCII and executable graphics
-		if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi', 'exe-graphics', '4k-exe-graphics']):
-			continue
-
-		# skip prods for a specific platform other than DOS/Windows
-		if prod.platforms.exclude(name__in=['MS-Dos', 'Windows']):
+		if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi']):
 			continue
 
 		for link in prod.links.all():
