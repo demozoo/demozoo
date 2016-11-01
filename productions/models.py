@@ -652,3 +652,8 @@ class ProductionLink(ExternalLink):
 		index_together = [
 			['link_class', 'parameter']
 		]
+
+
+class Ansi(models.Model):
+	production = models.ForeignKey(Production, related_name='ansis', on_delete=models.CASCADE)
+	url = models.URLField(max_length=255)

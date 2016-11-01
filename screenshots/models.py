@@ -27,6 +27,13 @@ PIL_READABLE_FORMATS = ['BMP', 'GIF', 'ICO', 'JPEG', 'PCD', 'PCX', 'PNG', 'PPM',
 WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
 EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
 
+# file formats that are readable by ansilove.js
+USABLE_ANSI_FILE_EXTENSIONS = [
+	# leave out 'bin', because those might require us to specify number of columns, and if
+	# other versions of the file exist, we'd rather use those instead
+	'ans', 'txt', 'nfo', 'asc', 'diz', 'ion', 'adf', 'idf', 'pcb', 'tnd', 'xb'
+]
+
 
 class PILConvertibleImage(object):
 	"""
