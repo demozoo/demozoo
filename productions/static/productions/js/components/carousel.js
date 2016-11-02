@@ -64,7 +64,7 @@
 			link.click(function() {
 				AnsiLove.render(ansiUrl, function (canvas, sauce) {
 					lightbox.mediaWrapper.append(canvas);
-				}, {"font": "80x25", "bits": "8", "icecolors": 0, "columns": 80, "thumbnail": 0});
+				}, {});
 				var lightbox = MediaLightbox(function(maxWidth, maxHeight) {
 					return [640, 480];
 				});
