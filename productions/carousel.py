@@ -15,7 +15,12 @@ class Carousel(object):
 
 		self.media = self.audio_media
 
-		self.slides = self.get_screenshot_slides() + self.get_audio_slides()
+		if self.ansi:
+			screenshot_slides = self.get_ansi_screenshot_slides()
+		else:
+			screenshot_slides = self.get_screenshot_slides()
+
+		self.slides = screenshot_slides + self.get_audio_slides()
 
 		if self.videos:
 			# prepend a video slide
@@ -35,13 +40,46 @@ class Carousel(object):
 		return [s for s in self.screenshots if s.original_url]
 
 	def get_screenshot_slides(self):
-		"""Return a list of screenshot slides (including processed ones)"""
+		"""Return a list of screenshot slides (including not-yet-processed ones)"""
 		return [
 			{
 				'type': 'screenshot',
 				'id': 'screenshot-%d' % screenshot.id,
 				'is_processing': not screenshot.original_url,
 				'data': {
+					'original_url': screenshot.original_url,
+					'standard_url': screenshot.standard_url,
+					'standard_width': screenshot.standard_width,
+					'standard_height': screenshot.standard_height,
+				}
+			}
+			for screenshot in self.screenshots
+		]
+
+	def get_ansi_screenshot_slides(self):
+		"""
+		If this prod is an ASCII/ANSI production with a renderable ANSI record attached, then
+		the carousel will be composed of screenshots as usual (or, more precisely: it will almost
+		certainly consist of a single screenshot, since this is an ASCII/ANSI graphic we're talking
+		about...) - but the lightbox view will use ansilove.js to render the actual ANSI file,
+		rather than using the regular image renderer.
+
+		Here we generate that list of ansi slides, consisting of the standard-size screenshot to be
+		displayed in the carousel, plus the URL to the ANSI file to be rendered in the lightbox.
+
+		original_url is provided so that whenever one of these slides is picked up for use as the
+		noJS-friendly 'initial screenshot' baked into the HTML, we have something meaningful to link to.
+
+		Demozoo: Giving A Shit About Progressive Enhancement Since 2010 (TM)
+
+		"""
+		return [
+			{
+				'type': 'ansi',
+				'id': 'ansi-%d' % screenshot.id,
+				'is_processing': not screenshot.original_url,
+				'data': {
+					'ansi_url': self.ansi.url,
 					'original_url': screenshot.original_url,
 					'standard_url': screenshot.standard_url,
 					'standard_width': screenshot.standard_width,
@@ -155,11 +193,16 @@ class Carousel(object):
 			for track in self.audio_tracks
 		]
 
+	@cached_property
+	def ansi(self):
+		"""Return the ANSI record for this prod if there is one, or None if not"""
+		return self.production.ansis.first()
+
 	def get_slides_json(self):
 		return json.dumps(self.slides)
 
 	def render(self):
-		screenshots = [i for i in self.slides if i['type'] == 'screenshot']
+		screenshots = [i for i in self.slides if i['type'] in ('screenshot', 'ansi')]
 		if screenshots:
 			initial_screenshot = screenshots[0]
 		else:
