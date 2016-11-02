@@ -2,6 +2,21 @@
 
 	/* Define carousel item types */
 
+	function buildStandardScreenshotImage(data) {
+		var img = $('<img>').attr({'src': data['standard_url']});
+		if (data['standard_width'] < 200 && data['standard_height'] < 150) {
+			/* tiny screen, e.g. GBC - scale to double size */
+			img.attr({
+				'width': data['standard_width'] * 2,
+				'height': data['standard_height'] * 2,
+				'class': 'pixelated'
+			});
+		} else {
+			img.attr({'width': data['standard_width'], 'height': data['standard_height']});
+		}
+		return img;
+	}
+
 	function Screenshot(fullData) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
@@ -17,23 +32,47 @@
 			container.html('<div class="screenshot"><img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" /></div>');
 		} else {
 			var link = $('<a class="screenshot"></a>').attr({'href': this.data['original_url']});
-			var img = $('<img>').attr({'src': this.data['standard_url']});
-			if (this.data['standard_width'] < 200 && this.data['standard_height'] < 150) {
-				/* tiny screen, e.g. GBC - scale to double size */
-				img.attr({
-					'width': this.data['standard_width'] * 2,
-					'height': this.data['standard_height'] * 2,
-					'class': 'pixelated'
-				});
-			} else {
-				img.attr({'width': this.data['standard_width'], 'height': this.data['standard_height']});
-			}
+			var img = buildStandardScreenshotImage(this.data);
 			link.append(img);
 			container.html(link);
 			link.openImageInLightbox();
 		}
 	};
 	Screenshot.prototype.unload = function() {};
+
+	function Ansi(fullData) {
+		this.isProcessing = fullData['is_processing'];
+		this.id = fullData['id'];
+		this.data = fullData.data;
+	}
+	Ansi.prototype.preload = function() {
+		var src = this.data['standard_url'];
+		var img = new Image();
+		img.src = src;
+	};
+	Ansi.prototype.draw = function(container) {
+		if (this.isProcessing) {
+			container.html('<div class="screenshot"><img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" /></div>');
+		} else {
+			var link = $('<a class="screenshot"></a>').attr({'href': this.data['original_url']});
+			var img = buildStandardScreenshotImage(this.data);
+			link.append(img);
+			container.html(link);
+
+			var ansiUrl = this.data['ansi_url'];
+
+			link.click(function() {
+				AnsiLove.render(ansiUrl, function (canvas, sauce) {
+					lightbox.mediaWrapper.append(canvas);
+				}, {"font": "80x25", "bits": "8", "icecolors": 0, "columns": 80, "thumbnail": 0});
+				var lightbox = MediaLightbox(function(maxWidth, maxHeight) {
+					return [640, 480];
+				});
+				return false;
+			});
+		}
+	};
+	Ansi.prototype.unload = function() {};
 
 	function buildMosaic(items, addLinks) {
 		var width = 0, height = 0, i;
@@ -194,7 +233,8 @@
 		'screenshot': Screenshot,
 		'mosaic': Mosaic,
 		'video': Video,
-		'cowbell-audio': CowbellAudio
+		'cowbell-audio': CowbellAudio,
+		'ansi': Ansi
 	};
 
 	/* Constructor for a carousel */

@@ -2,6 +2,7 @@ import json
 import random
 
 from django.conf import settings
+from django.forms import Media
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 
@@ -17,6 +18,7 @@ class Carousel(object):
 
 		if self.ansi:
 			screenshot_slides = self.get_ansi_screenshot_slides()
+			self.media += Media(js=['productions/js/ansilove.js'])
 		else:
 			screenshot_slides = self.get_screenshot_slides()
 
