@@ -35,7 +35,9 @@ def prods_without_screenshots(request):
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
-		).order_by('title')
+		).prefetch_related(
+			'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+		).defer('notes').order_by('sortable_title')[:10000]
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
 		'productions': productions,
