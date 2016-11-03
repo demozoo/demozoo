@@ -31,13 +31,14 @@ def prods_without_screenshots(request):
 
 	productions = Production.objects \
 		.filter(screenshots__id__isnull=True) \
+		.filter(links__is_download_link=True) \
 		.exclude(supertype='music') \
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related(
 			'author_nicks__releaser', 'author_affiliation_nicks__releaser'
-		).defer('notes').order_by('sortable_title')[:1000]
+		).defer('notes').distinct().order_by('sortable_title')[:1000]
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
 		'productions': productions,
