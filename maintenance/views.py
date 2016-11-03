@@ -725,7 +725,7 @@ def unresolved_screenshots(request):
 
 	entries = []
 	for link in links[:100]:
-		entries.append((link, link.archive_members()))
+		entries.append((link, link.archive_members().filter(file_size__gt=0)))
 
 	return render(request, 'maintenance/unresolved_screenshots.html', {
 		'title': 'Unresolved screenshots',
