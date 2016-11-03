@@ -37,7 +37,7 @@ def prods_without_screenshots(request):
 			params=[report_name]
 		).prefetch_related(
 			'author_nicks__releaser', 'author_affiliation_nicks__releaser'
-		).defer('notes').order_by('sortable_title')[:10000]
+		).defer('notes').order_by('sortable_title')[:1000]
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
 		'productions': productions,
