@@ -1,0 +1,49 @@
+.search-results {
+  font-size: (16/12) * 1rem;
+  line-height: 1.5;
+  margin: 0 0 3em;
+}
+
+.search-results__title {
+  font-size: 2em;
+  line-height: 1;
+  margin: 1ex 0 1em;
+}
+
+.search-results__heading {
+  font-size: 1.5em;
+  line-height: 1;
+  margin-top: 1em;
+  margin-bottom: .75em;
+}
+
+.search-results__list {
+  .listReset();
+}
+
+.search-results__footer {
+  border-top: 1px solid #e5e5e5;
+  margin-top: 1.5em;
+  padding: 1.5em 0;
+  text-align: right;
+}
+
+.search-result {
+  line-height: 18px;
+  min-height: 36px;
+  padding: 8px;
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  .icon {
+    flex-shrink: 0;
+    margin: 0 8px 0 0;
+  }
+
+  .microthumb {
+    margin: 0 8px 0 0;
+    .size(auto);
+  }
+}

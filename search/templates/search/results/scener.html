@@ -1,7 +1,16 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
-<li class="scener">
-	{% scener_with_affiliations result.instance %}
-	{% releaser_flag result.instance %}
-	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
-</li>
+<div class="search-result scener">
+	<svg class="icon">
+		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--scener"></use>
+	</svg>
+	<div>
+		{% scener_with_affiliations result.instance %}
+		{% releaser_flag result.instance %}
+		{% if show_snippet %}
+			<div class="search-result__snippet">
+				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+			</div>
+		{% endif %}
+	</div>
+</div>

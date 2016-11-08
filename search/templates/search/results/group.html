@@ -1,5 +1,19 @@
 {% load search_snippet %}
-<li class="group">
-	<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}{% if result.instance.primary_nick.differentiator %} ({{ result.instance.primary_nick.differentiator }}){% endif %}</a>
-	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
-</li>
+<div class="search-result group">
+	<svg class="icon">
+		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
+	</svg>
+	<div>
+		<a href="{{ result.instance.get_absolute_url }}">
+			<span>{{ result.instance }}</span>
+			{% if result.instance.primary_nick.differentiator %}
+				(<span>{{ result.instance.primary_nick.differentiator }}</span>
+			{% endif %}
+		</a>
+		<div class="search-result__snippet">
+			{% if show_snippet %}
+				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+			{% endif %}
+		</div>
+	</div>
+</div>

@@ -1,10 +1,21 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
-<li class="{{ result.instance.supertype }}">
-	{% if result.instance.default_screenshot %}{% microthumb result.instance.default_screenshot %}{% endif %}
-	<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-	{% if result.instance.author_nicks.all %}
-		<span class="annotation">by {% byline result.instance %}</span>
+<div class="search-result {{ result.instance.supertype }}">
+	<svg class="icon">
+		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ result.instance.supertype }}"></use>
+	</svg>
+	{% if result.instance.default_screenshot %}
+		{% microthumb result.instance.default_screenshot %}
 	{% endif %}
-	{% if show_snippet %}{{ result.instance.plaintext_notes|search_snippet:resultset }}{% endif %}
-</li>
+	<div>
+		<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
+		{% if result.instance.author_nicks.all %}
+			<small>by <span>{% byline result.instance %}</span></small>
+		{% endif %}
+		{% if show_snippet %}
+			<div class="search-result__snippet">
+				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+			</div>
+		{% endif %}
+	</div>
+</div>

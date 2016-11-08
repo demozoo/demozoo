@@ -7,69 +7,73 @@
 {% endblock %}
 
 {% block base_main %}
-	<h2>Search</h2>
+<section class="search-results">
+	<h1 class="search-results__title">Search</h1>
 
 	<form method="get" action=".">
 		<table>
 			{{ form.as_table }}
 			<tr>
-				<td>&nbsp;</td>
+				<th></th>
 				<td>
-					<input type="submit" value="Search">
+					<button type="submit">
+						<span>Search</span>
+					</button>
 				</td>
 			</tr>
 		</table>
+	</form>
 
-		{% if query %}
-			<div class="search_results">
-				<h3>Exact name matches</h3>
-				{% if name_results %}
-					<ul class="search_results_listing">
-						{% for result in name_results %}
+	{% if query %}
+		<section>
+			<h2 class="search-results__heading">Exact name matches</h2>
+			{% if name_results %}
+				<ul class="list list--search-results">
+					{% for result in name_results %}
+						<li class="list__item">
 							{% if result.instance.search_result_template %}
 								{% include result.instance.search_result_template %}
 							{% else %}
-								<li>
-									<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-								</li>
+								<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 							{% endif %}
-						{% endfor %}
-					</ul>
-				{% else %}
-					<p>No exact matches found.</p>
-				{% endif %}
-			</div>
-			
-			<div class="search_results">
-				<h3>Other matches</h3>
-				{% if page.object_list %}
-					<ul class="search_results_listing">
-						{% with 1 as show_snippet %}
-							{% for result in page.object_list %}
+						</li>
+					{% endfor %}
+				</ul>
+			{% else %}
+				<p>No exact matches found.</p>
+			{% endif %}
+		</section>
+
+		<section>
+			<h2 class="search-results__heading">Other matches</h2>
+			{% if page.object_list %}
+				<ul class="list list--search-results">
+					{% with 1 as show_snippet %}
+						{% for result in page.object_list %}
+							<li class="list__item">
 								{% if result.instance.search_result_template %}
 									{% include result.instance.search_result_template %}
 								{% else %}
-									<li>
-										<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-									</li>
+									<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 								{% endif %}
-							{% endfor %}
-						{% endwith %}
-					</ul>
-				{% else %}
-					<p>No results found.</p>
-				{% endif %}
-			</div>
-
-			{% if page.has_previous or page.has_next %}
-				<div>
-					{% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-					|
-					{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
-				</div>
+							</li>
+						{% endfor %}
+					{% endwith %}
+				</ul>
+			{% else %}
+				<p>No results found.</p>
 			{% endif %}
-		{% else %}
-			{# Show some example queries to run, maybe query syntax, something else? #}
-		{% endif %}
-	</form>
+		</section>
+
+		{% if page.has_previous or page.has_next %}
+		<div class="search-results__footer">
+			{% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+			|
+			{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+		</div>
+	{% endif %}
+	{% else %}
+		{# Show some example queries to run, maybe query syntax, something else? #}
+	{% endif %}
+</section>
 {% endblock %}
