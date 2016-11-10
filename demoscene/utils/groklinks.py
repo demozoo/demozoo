@@ -109,9 +109,25 @@ def urldecoded_regex_match(pattern, flags=None):
 	regex = re.compile(pattern, flags)
 
 	def match_fn(urlstring, url):
-		m = regex.match(urlstring)
+		# To avoid having to deal with crazy permutations of character encodings, we require urlstring
+		# to be passed a unicode string containing pure ASCII, and fail loudly if it isn't. This is
+		# _probably_ a safe assumption, because strings should be arriving from (e.g.) Django forms as
+		# unicode, and any non-shitty source of URLs (e.g. copy-and-paste from a browser location bar)
+		# _should_ take care of URL-encoding non-ASCII characters. If that's not the case, we'll see
+		# them fail and decide how to deal with them on a case-by-case basis.
+		if not isinstance(urlstring, unicode):
+			raise TypeError("Non-unicode string passed to urldecoded_regex_match: %r" % urlstring)
+		url_bytestring = str(urlstring)  # will fail with UnicodeEncodeError if urlstring contains non-ASCII
+
+		m = regex.match(url_bytestring)
 		if m:
-			return urllib.unquote(m.group(1)).decode('iso-8859-1')
+			unquoted_path = urllib.unquote(m.group(1))
+			# unquoted_path is now a bytestring (type 'str') consisting of codepoints 0..255 in no
+			# particular encoding. Decode this as iso-8859-1 to get a unicode string to go in the
+			# database's 'param' field, which preserves those bytes in a way that can be restored
+			# later with .encode('iso-8859-1'). (We don't care whether the bytestring is _actually_
+			# supposed to be iso-8859-1.)
+			return unquoted_path.decode('iso-8859-1')
 	return match_fn
 
 
