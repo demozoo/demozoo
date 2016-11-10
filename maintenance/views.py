@@ -724,7 +724,7 @@ def empty_releasers(request):
 
 
 def unresolved_screenshots(request):
-	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True).select_related('production')
+	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True).select_related('production')
 
 	entries = []
 	for link in links[:100]:

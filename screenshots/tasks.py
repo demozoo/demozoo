@@ -95,7 +95,11 @@ def create_screenshot_from_production_link(production_link_id):
 		return
 
 	if prod_link.production.screenshots.count():
-		return  # don't create a screenshot if there's one already
+		# don't create a screenshot if there's one already
+		if prod_link.is_unresolved_for_screenshotting:
+			prod_link.is_unresolved_for_screenshotting = False
+			prod_link.save()
+		return
 
 	if prod_link.has_bad_image:
 		return  # don't create a screenshot if a previous attempt has failed during image processing
