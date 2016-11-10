@@ -14,6 +14,10 @@ def parse_all_dirs():
 	f = gzip.GzipFile(fileobj=gzipped_file)
 
 	while True:
+		# read the ls-lR file as iso-8859-1 - not because it actually IS iso-8859-1
+		# (it's actually utf-8), but because we want to preserve the filenames in
+		# bytestring form (and iso-8859-1 is the hack we use to store bytestrings in
+		# a unicode database field).
 		line = f.readline().decode('iso-8859-1')
 		if not line:
 			break
