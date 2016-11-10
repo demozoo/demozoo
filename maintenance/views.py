@@ -118,6 +118,24 @@ def prods_with_dead_amiga_nvg_org_links(request):
 	})
 
 
+def sceneorg_download_links_with_unicode(request):
+	report_name = 'sceneorg_download_links_with_unicode'
+
+	productions = Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile') \
+		.extra(
+			where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
+		).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
+	return render(request, 'maintenance/production_report.html', {
+		'title': 'scene.org download links with unicode characters',
+		'productions': productions,
+		# don't implement exclusions on this report, because it's possible that a URL containing unicode
+		# that works now will be broken in future, and we don't want those cases to be hidden through
+		# exclusions
+		'mark_excludable': False,
+		'report_name': report_name,
+	})
+
+
 def prods_without_platforms(request):
 	report_name = 'prods_without_platforms'
 

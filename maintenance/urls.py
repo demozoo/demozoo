@@ -31,6 +31,7 @@ urlpatterns = patterns('maintenance.views',
 	(r'^empty_releasers$', 'empty_releasers', {}, 'maintenance_empty_releasers'),
 	(r'^public_real_names$', 'public_real_names', {}, 'maintenance_public_real_names'),
 	(r'^credits_to_move_to_text$', 'credits_to_move_to_text', {}, 'maintenance_credits_to_move_to_text'),
+	(r'^sceneorg_download_links_with_unicode$', 'sceneorg_download_links_with_unicode', {}, 'maintenance_sceneorg_download_links_with_unicode'),
 
 	# de-duping
 	(r'^prods_with_same_named_credits$', 'prods_with_same_named_credits', {}, 'maintenance_prods_with_same_named_credits'),
