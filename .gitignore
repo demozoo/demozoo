@@ -11,3 +11,5 @@
 /coverage_html_report
 .DS_Store
 /.idea
+/.tmp
+/node_modules
