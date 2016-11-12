@@ -477,6 +477,10 @@ class Screenshot(models.Model):
 			self.production.default_screenshot = self
 			self.production.save()
 
+		# if any production links for this production have is_unresolved_for_screenshotting=True,
+		# reset that flag since we no longer need a screenshot
+		self.production.links.filter(is_unresolved_for_screenshotting=True).update(is_unresolved_for_screenshotting=False)
+
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
 

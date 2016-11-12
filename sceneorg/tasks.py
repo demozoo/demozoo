@@ -35,7 +35,13 @@ def fetch_new_sceneorg_files(days=1):
 		logger.info("API request to %s succeeded - %d files returned" % (url, len(response['files'])))
 
 		for item in response['files']:
-			path_components = item['fullPath'].split('/')[1:]
+			# the fullPath field in the API consists of a byte string (de facto utf-8) interpreted
+			# as windows-1252 and served to us as a Unicode string.
+			# Here we encode as windows-1252 (to reconstruct the original bytestream as closely as
+			# possible), then decode the bytestream as iso-8859-1 to embed that bytestream into
+			# a unicode string that we can process and ultimately insert into the db.
+			full_path = item['fullPath'].encode('Windows-1252', 'ignore').decode('iso-8859-1')
+			path_components = full_path.split('/')[1:]
 			dirs = path_components[:-1]
 
 			path = '/'
