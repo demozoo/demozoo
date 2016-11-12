@@ -22,10 +22,10 @@ apt-get install -y libffi-dev
 # xapian (search engine)
 apt-get install -y python-xapian
 
-# node.js / lessc
+# node.js / lessc / grunt-clu
 curl -sL https://deb.nodesource.com/setup_4.x | bash -
 apt-get install -y nodejs
-npm install -g less less-plugin-glob less-plugin-autoprefix less-plugin-clean-css
+npm install -g less less-plugin-glob less-plugin-autoprefix less-plugin-clean-css grunt-cli
 
 # virtualenvwrapper
 pip install virtualenvwrapper
@@ -65,9 +65,14 @@ su - postgres -c "createuser -s vagrant"
 
 # create database
 su - vagrant -c "createdb demozoo"
+
 # fetch database export
 su - vagrant -c "wget http://data.demozoo.org/demozoo-export.sql.gz -O /home/vagrant/demozoo-export.sql.gz"
 su - vagrant -c "gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo"
 
 # migrate (in case master's db schema is ahead of the live export)
 su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate"
+
+# Install project dependencies for grunt tasks and run a first time
+su - vagrant -c "cd ~/demozoo/ && npm install"
+su - vagrant -c "cd ~/demozoo/ && grunt"
