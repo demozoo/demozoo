@@ -172,8 +172,6 @@
 		this.data = fullData.data;
 		this.ui = null;
 	}
-	CowbellAudio.prototype.preload = function() {
-	};
 	CowbellAudio.prototype.draw = function(container) {
 		var cowbellPlayer = $('<div class="cowbell-player"></div>');
 		container.html(cowbellPlayer);
@@ -220,12 +218,12 @@
 			hasInitialisedViewport = true;
 		}
 
-		var hasPreloadedAllImages = false;
+		var hasPreloadedAllItems = true;
+		var itemsNeedingPreload = [];
 
 		function loadData(carouselData) {
 			carouselItems = [];
 			var newCarouselItemsById = {};
-			hasPreloadedAllImages = false;
 
 			var foundCurrentId = false;
 			var needReload = false;
@@ -240,6 +238,10 @@
 					itemType = itemTypes[carouselData[i].type];
 					if (itemType) {
 						carouselItem = new itemType(carouselData[i]);
+						if (carouselItem.preload) {
+							itemsNeedingPreload.push(carouselItem);
+							hasPreloadedAllItems = false;
+						}
 					} else {
 						/* skip unidentified item types */
 						continue;
@@ -278,11 +280,12 @@
 		}
 		loadData(carouselData);
 
-		function preloadAllImages() {
-			for (var i = 0; i < carouselItems.length; i++) {
-				carouselItems[i].preload();
+		function preloadAllItems() {
+			for (var i = 0; i < itemsNeedingPreload.length; i++) {
+				itemsNeedingPreload[i].preload();
 			}
-			hasPreloadedAllImages = true;
+			hasPreloadedAllItems = true;
+			itemsNeedingPreload = [];
 		}
 
 		if (carouselItems.length > 1) {
@@ -293,7 +296,7 @@
 
 			nextLink.click(function() {
 				tray.stop(true, true);
-				if (!hasPreloadedAllImages) preloadAllImages();
+				if (!hasPreloadedAllItems) preloadAllItems();
 
 				var oldItem = carouselItems[currentIndex];
 				currentIndex = (currentIndex + 1) % carouselItems.length;
@@ -314,7 +317,7 @@
 
 			prevLink.click(function() {
 				tray.stop(true, true);
-				if (!hasPreloadedAllImages) preloadAllImages();
+				if (!hasPreloadedAllItems) preloadAllItems();
 
 				var oldItem = carouselItems[currentIndex];
 				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
