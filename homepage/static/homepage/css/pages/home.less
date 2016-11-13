@@ -1,45 +1,7 @@
 .homepage {
 
-	.upcoming_parties {
-		table {
-			clear: both;
-			padding-top: 10px;
-
-			tr {
-				padding-bottom: 5px;
-			}
-			th {
-				font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-				vertical-align: top;
-				padding-bottom: 5px;
-				line-height: 1.5em;
-			}
-			td {
-				vertical-align: top;
-				padding-bottom: 5px;
-				line-height: 1.5em;
-
-				li {
-					padding-left: 16px;
-					background-repeat: no-repeat;
-					background-position: left center;
-					display: block;
-					float: left;
-				}
-
-			}
-		}
-		a {
-			text-decoration: none;
-			color: #444;
-			font-weight: bold;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
-
 	.forum_topics {
+
 		.topics {
 			clear: both;
 			padding-top: 8px;
@@ -252,11 +214,13 @@
 /* Small-screen versions */
 @media screen and (max-width: 1081px) {
 	.homepage .banner {
+
 		.banner_text {
 			position: absolute;
 			bottom: 0;
 			width: 100%;
 		}
+
 		h1 {
 			position: static;
 			text-align: right;
@@ -264,6 +228,7 @@
 			width: auto;
 			font-size: 20pt;
 		}
+
 		p {
 			position: static;
 			width: auto;
@@ -275,6 +240,7 @@
 
 @media screen and (max-width: 601px) {
 	.homepage {
+
 		.banner {
 			h1 {
 				font-size: 18pt;
@@ -290,6 +256,49 @@
 					text-align: left;
 				}
 			}
+		}
+	}
+}
+
+.upcoming_parties {
+
+	table {
+		clear: both;
+		border-top: 10px solid white;
+
+		tr {
+			padding-bottom: 5px;
+		}
+
+		th {
+			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+			vertical-align: top;
+			padding-bottom: 5px;
+			line-height: 1.5em;
+		}
+
+		td {
+			vertical-align: top;
+			padding-bottom: 5px;
+			line-height: 1.5em;
+
+			li {
+				padding-left: 16px;
+				background-repeat: no-repeat;
+				background-position: left center;
+				display: block;
+				float: left;
+			}
+
+		}
+	}
+
+	a {
+		text-decoration: none;
+		color: #444;
+		font-weight: bold;
+		&:hover {
+			text-decoration: underline;
 		}
 	}
 }

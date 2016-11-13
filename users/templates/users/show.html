@@ -4,14 +4,16 @@
 {% block html_title %}{{ user.username }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<div class="focus_title">
-		<h2>{{ user.username }}</h2>
-	</div>
+<div class="user">
+	<h1>{{ user.username }}</h1>
 
-	<h3>Edits</h3>
-	{% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
+	<section class="user__edits">
+		<h2>Edits</h2>
+		{% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
 
-	{% with edits_page as page %}
+		{% with edits_page as page %}
 		{% include "shared/pagination_links.html" %}
-	{% endwith %}
+		{% endwith %}
+	</section>
+</div>
 {% endblock %}

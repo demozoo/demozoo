@@ -1,31 +1,47 @@
 {% load demoscene_tags %}
 
-<table width="100%" class="production_listing {% if show_screenshots %}listing_with_screenshots{% endif %}">
-	{% if show_screenshots %}
-		<col width="5%" />
-		<col width="45%" />
-		<col width="10%" />
+<table class="table" summary="">
+	<colgroup>
+		<col class="col--thumb" />
 		<col width="40%" />
-	{% else %}
-		<col width="50%" />
-		<col width="10%" />
-		<col width="40%" />
-	{% endif %}
+		<col />
+		<col width="col--date" />
+	</colgroup>
 	{% for prod in productions %}
 		<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
-			{% if show_screenshots %}
-				<td>
-					{% if prod.default_screenshot %}{% microthumb prod.default_screenshot %}{% endif %}
-				</td>
-			{% endif %}
-			<td class="icon icon_{{ prod.supertype }}">
-				<div class="title"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></div>
-				{% if show_prod_types %}
-					<div class="prod_type">{{ prod.platforms_and_types_list }}</div>
+			<td>
+				{% if show_screenshots %}
+					{% if prod.default_screenshot %}
+						{% microthumb prod.default_screenshot %}
+					{% else %}
+						<div class="media media--thumbnail">
+							<svg class="icon">
+								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ prod.supertype }}"></use>
+							</svg>
+						</div>
+					{% endif %}
+
+				{% else %}
+					<div class="media media--thumbnail">
+						<svg class="icon">
+							<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ prod.supertype }}"></use>
+						</svg>
+					</div>
+
 				{% endif %}
 			</td>
-			<td>{{ prod.release_date.short_format }}</td>
+			<td>
+				<div>
+					<a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a>
+				</div>
+				{% if show_prod_types %}
+					<div class="meta">
+						{{ prod.platforms_and_types_list }}
+					</div>
+				{% endif %}
+			</td>
 			<td>{% byline prod %}</td>
+			<td>{{ prod.release_date.short_format }}</td>
 		</tr>
 	{% endfor %}
 </table>

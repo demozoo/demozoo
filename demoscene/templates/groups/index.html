@@ -5,24 +5,40 @@
 {% block html_title %}Groups - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>Groups</h2>
-	
+<div class="releasers releasers--groups">
+	<h1 class="releasers__heading">Groups</h1>
 	{% if site_is_writeable %}
 		<ul class="actions">
 			<li><a href="{% url 'new_group' %}" class="action_button icon add open_in_lightbox">New group</a></li>
 		</ul>
 	{% endif %}
-	
-	<ul class="releaser_list">
+
+	<ul class="list">
 		{% for nick in nick_page.object_list %}
-			<li class="group">
-				<a href="{% url 'group' nick.releaser_id %}">{{ nick.name }}{% if nick.differentiator %} ({{ nick.differentiator }}){% endif %}</a>
-				{% nick_variants nick %}
+			<li class="list__item">
+				<div class="group">
+					<div class="media media--thumbnail">
+						<svg class="icon">
+							<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
+						</svg>
+					</div>
+					<div>
+						<a href="{% url 'group' nick.releaser_id %}">
+							{{ nick.name }}
+							{% if nick.differentiator %}(<span>{{ nick.differentiator }}</span>){% endif %}
+						</a>
+						{% nick_variants nick %}
+					</div>
+				</div>
 			</li>
 		{% endfor %}
 	</ul>
-	
+
 	{% with nick_page as page %}
 		{% include "shared/pagination_links.html" %}
 	{% endwith %}
+
+</div>
+
+	
 {% endblock %}

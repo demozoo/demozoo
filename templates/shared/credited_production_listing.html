@@ -1,54 +1,68 @@
 {% load demoscene_tags %}
 {% load url from future %}
 
-<table width="100%" class="production_listing {% if show_screenshots %}listing_with_screenshots{% endif %}">
-	{% if show_screenshots %}
-		<col width="5%" />
-		<col width="45%" />
-		<col width="10%" />
+<table class="table">
+	<colgroup>
+		<col class="col--thumb" />
 		<col width="40%" />
-	{% else %}
-		<col width="50%" />
-		<col width="10%" />
-		<col width="40%" />
-	{% endif %}
-
-	{% for production, nick, credits in credits %}
-		<tr>
-			{% if show_screenshots %}
+		<col />
+		<col width="col--date" />
+	</colgroup>
+	<tbody>
+		{% for production, nick, credits in credits %}
+			<tr>
 				<td>
-					{% if production.default_screenshot %}
-						{% microthumb production.default_screenshot %}
-					{% endif %}
-				</td>
-			{% endif %}
-			<td class="icon icon_{{ production.supertype }}">
-				<div class="title">
-					<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
-					{% if credits %}
-						-
-						{% for credit in credits %}
-							{{ credit.description }}{% if not forloop.last %},{% endif %}
-						{% endfor %}
-						{% if nick.name != releaser.name %}
-							<i>(as {{ nick.name }})</i>
+					{% if show_screenshots %}
+						{% if production.default_screenshot %}
+							{% microthumb production.default_screenshot %}
+
+						{% else %}
+							<div class="media media--thumbnail">
+								<svg class="icon">
+									<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ production.supertype }}"></use>
+								</svg>
+							</div>
 						{% endif %}
-					{% endif %}
-				</div>
-				{% if show_prod_types %}
-					<div class="prod_type">{{ production.platforms_and_types_list }}</div>
-				{% endif %}
-			</td>
-			<td>{{ production.release_date.short_format }}</td>
-			<td>{% byline production %}</td>
 
-			{% if editing and site_is_writeable %}
-				<td>
-					<a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
-						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-					</a>
+						{% else %}
+						<div class="media media--thumbnail">
+							<svg class="icon">
+								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ production.supertype }}"></use>
+							</svg>
+						</div>
+
+					{% endif %}
 				</td>
-			{% endif %}
-		</tr>
-	{% endfor %}
+				<td class="icon icon_{{ production.supertype }}">
+					<div>
+						<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+						{% if credits %}
+							-
+							{% for credit in credits %}
+								{{ credit.description }}{% if not forloop.last %},{% endif %}
+							{% endfor %}
+							{% if nick.name != releaser.name %}
+								<em>(as {{ nick.name }})</em>
+							{% endif %}
+						{% endif %}
+					</div>
+					{% if show_prod_types %}
+						<div class="meta">
+							{{ production.platforms_and_types_list }}
+						</div>
+					{% endif %}
+				</td>
+				<td>{% byline production %}</td>
+				<td>{{ production.release_date.short_format }}</td>
+
+				{% if editing and site_is_writeable %}
+					<td>
+						<a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
+							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+						</a>
+					</td>
+				{% endif %}
+			</tr>
+		{% endfor %}
+	</tbody>
 </table>
