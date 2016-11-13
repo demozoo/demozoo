@@ -5,43 +5,41 @@
 		<col class="col--thumb" />
 		<col width="40%" />
 		<col />
-		<col width="col--date" />
+		<col class="col--date" />
 	</colgroup>
-	{% for prod in productions %}
-		<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
-			<td>
-				{% if show_screenshots %}
-					{% if prod.default_screenshot %}
+	<tbody>
+		{% for prod in productions %}
+			<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
+				<td class="thumbnail">
+					{% if show_screenshots and prod.default_screenshot %}
 						{% microthumb prod.default_screenshot %}
+
 					{% else %}
 						<div class="media media--thumbnail">
 							<svg class="icon">
 								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ prod.supertype }}"></use>
 							</svg>
 						</div>
+
 					{% endif %}
-
-				{% else %}
-					<div class="media media--thumbnail">
-						<svg class="icon">
-							<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ prod.supertype }}"></use>
-						</svg>
+				</td>
+				<td>
+					<div>
+						<a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a>
 					</div>
-
-				{% endif %}
-			</td>
-			<td>
-				<div>
-					<a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a>
-				</div>
-				{% if show_prod_types %}
-					<div class="meta">
-						{{ prod.platforms_and_types_list }}
-					</div>
-				{% endif %}
-			</td>
-			<td>{% byline prod %}</td>
-			<td>{{ prod.release_date.short_format }}</td>
-		</tr>
-	{% endfor %}
+					{% if show_prod_types %}
+						<div class="meta">
+							{{ prod.platforms_and_types_list }}
+						</div>
+					{% endif %}
+				</td>
+				<td>
+					{% byline prod %}
+				</td>
+				<td>
+					<span>{{ prod.release_date.short_format }}</span>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
 </table>

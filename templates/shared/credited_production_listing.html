@@ -6,34 +6,24 @@
 		<col class="col--thumb" />
 		<col width="40%" />
 		<col />
-		<col width="col--date" />
+		<col class="col--date" />
 	</colgroup>
 	<tbody>
 		{% for production, nick, credits in credits %}
 			<tr>
-				<td>
-					{% if show_screenshots %}
-						{% if production.default_screenshot %}
-							{% microthumb production.default_screenshot %}
+				<td class="thumbnail">
+					{% if show_screenshots and production.default_screenshot %}
+						{% microthumb production.default_screenshot %}
 
-						{% else %}
-							<div class="media media--thumbnail">
-								<svg class="icon">
-									<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ production.supertype }}"></use>
-								</svg>
-							</div>
-						{% endif %}
-
-						{% else %}
+					{% else %}
 						<div class="media media--thumbnail">
 							<svg class="icon">
 								<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ production.supertype }}"></use>
 							</svg>
 						</div>
-
 					{% endif %}
 				</td>
-				<td class="icon icon_{{ production.supertype }}">
+				<td>
 					<div>
 						<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
 						{% if credits %}
