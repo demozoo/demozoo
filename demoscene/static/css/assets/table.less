@@ -6,7 +6,7 @@
 	line-height: 1.5;
 
 	tr {
-
+		border-top: 1px solid #f0f0f0;
 	}
 
 	tr:nth-child(even) {
@@ -16,24 +16,13 @@
 	tr:nth-child(odd) {
 
 		&:last-child {
-			border-bottom: 1px solid @colorGreyLightest;
-
-			&:first-child {
-				border: none;
-			}
-		}
-
-		&:first-child {
-			border-top: 1px solid @colorGreyLightest;
+			border-bottom: 1px solid #f0f0f0;
 		}
 	}
 
 	td {
-		padding: 8px;
 
-		&.thumbnail {
-			padding-right: 0;
-		}
+		padding: 7px 0 7px 7px;
 	}
 
 	.media--thumbnail {
