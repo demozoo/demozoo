@@ -221,41 +221,38 @@
 		var hasPreloadedAllItems = true;
 		var itemsNeedingPreload = [];
 
-		function loadData(carouselData) {
+		function loadCarouselItems(newCarouselItems) {
+			/* Build a new carouselItems list based on the passed newCarouselItems list, but
+			preserving existing instances if they have a matching ID and were not previously in processing */
 			carouselItems = [];
 			var newCarouselItemsById = {};
 
 			var foundCurrentId = false;
-			var needReload = false;
 			var itemCount = 0;
 
-			for (var i = 0; i < carouselData.length; i++) {
+			for (var i = 0; i < newCarouselItems.length; i++) {
+				var newCarouselItem = newCarouselItems[i];
 				/* look for an existing carousel item with this ID */
-				var carouselItem = carouselItemsById[carouselData[i].id];
+				var carouselItem = carouselItemsById[newCarouselItem.id];
 
 				if (!carouselItem || carouselItem.isProcessing) {
-					/* item not already found, or was previously in processing, so create it as new */
-					itemType = itemTypes[carouselData[i].type];
-					if (itemType) {
-						carouselItem = new itemType(carouselData[i]);
-						if (carouselItem.preload) {
-							itemsNeedingPreload.push(carouselItem);
-							hasPreloadedAllItems = false;
-						}
-					} else {
-						/* skip unidentified item types */
-						continue;
+					/* item not found, or was previously in processing, so take the new one */
+					carouselItem = newCarouselItem;
+					/* add new item to 'things that need preloading', if applicable */
+					if (carouselItem.preload) {
+						itemsNeedingPreload.push(carouselItem);
+						hasPreloadedAllItems = false;
 					}
 				}
-				carouselItems[itemCount] = carouselItem;
-				newCarouselItemsById[carouselData[i].id] = carouselItem;
 
-				if (currentId == carouselData[i].id) {
+				/* add old or new item to the final carouselItems list */
+				carouselItems[itemCount] = carouselItem;
+				newCarouselItemsById[carouselItem.id] = carouselItem;
+
+				/* if this item matches currentId, keep its place in the sequence */
+				if (currentId == carouselItem.id) {
 					foundCurrentId = true;
 					currentIndex = itemCount;
-				}
-				if (carouselData[i]['is_processing']) {
-					needReload = true;
 				}
 				itemCount++;
 			}
@@ -271,6 +268,27 @@
 
 			carouselItems[currentIndex].draw(currentBucket);
 			carouselItemsById = newCarouselItemsById;
+		}
+
+		function loadData(carouselData) {
+			var newCarouselItems = [];
+			var needReload = false;
+
+			for (var i = 0; i < carouselData.length; i++) {
+				itemType = itemTypes[carouselData[i].type];
+				if (itemType) {
+					carouselItem = new itemType(carouselData[i]);
+					newCarouselItems.push(carouselItem);
+				} else {
+					/* skip unidentified item types */
+					continue;
+				}
+
+				if (carouselData[i]['is_processing']) {
+					needReload = true;
+				}
+			}
+			loadCarouselItems(newCarouselItems);
 
 			if (needReload) {
 				setTimeout(function() {
