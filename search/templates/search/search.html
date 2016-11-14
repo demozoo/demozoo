@@ -11,17 +11,23 @@
 	<h1 class="search-results__title">Search</h1>
 
 	<form method="get" action=".">
-		<table>
-			{{ form.as_table }}
-			<tr>
-				<th></th>
-				<td>
-					<button type="submit">
-						<span>Search</span>
-					</button>
-				</td>
-			</tr>
-		</table>
+		<div class="form__item form__item--search">
+			<label class="label">
+				<div class="icon"></div>
+				<input class="input input--search"
+					   id="id_q"
+					   name="q"
+					   placeholder="Search Demozoo"
+					   type="search"
+					   value="{{ global_search_query }}" />
+				<span class="label__highlight"></span>
+			</label>
+		</div>
+		<div class="form__buttons">
+			<button type="submit" class="button button--search">
+				<span>Search</span>
+			</button>
+		</div>
 	</form>
 
 	{% if query %}

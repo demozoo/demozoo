@@ -31,6 +31,7 @@ def search(request):
 	return render(request, 'search/search.html', {
 		'form': form,
 		'query': query,
+		'global_search_query': query,
 		'name_results': name_results,
 		'page': page,
 		'resultset': resultset,
