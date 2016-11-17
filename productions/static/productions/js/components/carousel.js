@@ -188,7 +188,7 @@
 		}
 	};
 
-	var itemTypes = {
+	var slideTypes = {
 		'screenshot': Screenshot,
 		'mosaic': Mosaic,
 		'video': Video,
@@ -197,162 +197,205 @@
 
 	/* Constructor for a carousel */
 
+	function CarouselView(viewport) {
+		this.viewport = viewport;
+		this.viewport.html('<div class="viewport"><div class="tray"></div></div>');
+		this.tray = $('.tray', this.viewport);
+		this.currentBucket = $('<div class="bucket"></div>');
+		this.tray.append(this.currentBucket);
+
+		this.prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
+		this.viewport.append(this.prevLink);
+		this.nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
+		this.viewport.append(this.nextLink);
+
+		var self = this;
+		this.prevLink.click(function() {
+			if (self.onClickPrev) self.onClickPrev();
+			return false;
+		});
+		this.nextLink.click(function() {
+			if (self.onClickNext) self.onClickNext();
+			return false;
+		});
+
+		this.currentSlide = null;
+	}
+	CarouselView.prototype.hidePrevNextLinks = function() {
+		this.prevLink.hide();
+		this.nextLink.hide();
+	};
+	CarouselView.prototype.showPrevNextLinks = function() {
+		this.prevLink.show();
+		this.nextLink.show();
+	};
+	CarouselView.prototype.drawSlide = function(slide) {
+		if (this.currentSlide) this.currentSlide.unload();
+		slide.draw(this.currentBucket);
+		this.currentSlide = slide;
+	};
+
+	CarouselView.prototype.scrollSlideInFromRight = function(newSlide) {
+		this.tray.stop(true, true);
+
+		var oldSlide = this.currentSlide;
+		var oldBucket = this.currentBucket;
+		this.currentBucket = $('<div class="bucket"></div>');
+		this.tray.append(this.currentBucket);
+		newSlide.draw(this.currentBucket);
+		this.currentSlide = newSlide;
+		var self = this;
+		this.tray.animate({'left': '-400px'}, function() {
+			if (oldSlide) oldSlide.unload();
+			oldBucket.remove();
+			self.tray.css({'left': 0});
+		});
+	};
+	CarouselView.prototype.scrollSlideInFromLeft = function(newSlide) {
+		this.tray.stop(true, true);
+
+		var oldSlide = this.currentSlide;
+		var newBucket = $('<div class="bucket"></div>');
+		this.tray.css({'left': '-400px'});
+		this.tray.prepend(newBucket);
+		newSlide.draw(newBucket);
+		var self = this;
+		this.tray.animate({'left': '0'}, function() {
+			if (oldSlide) oldSlide.unload();
+			self.currentBucket.remove();
+			self.currentBucket = newBucket;
+			self.currentSlide = newSlide;
+		});
+	};
+
+	function CarouselController(viewport) {
+		this.view = new CarouselView(viewport);
+		this.slides = [];
+		this.slidesById = {};
+		this.currentId = null;
+		this.currentIndex = 0;
+
+		this.slidesNeedingPreload = [];
+
+		var self = this;
+		this.view.onClickNext = function() {
+			self.preloadSlides();
+
+			self.currentIndex = (self.currentIndex + 1) % self.slides.length;
+			var newSlide = self.slides[self.currentIndex];
+			self.currentId = newSlide.id;
+			self.view.scrollSlideInFromRight(newSlide);
+		};
+
+		this.view.onClickPrev = function() {
+			self.preloadSlides();
+
+			self.currentIndex = (self.currentIndex + self.slides.length - 1) % self.slides.length;
+			var newSlide = self.slides[self.currentIndex];
+			self.currentId = newSlide.id;
+			self.view.scrollSlideInFromLeft(newSlide);
+		};
+	}
+
+	CarouselController.prototype.loadSlides = function(newSlides) {
+		/* Build a new slides list based on the passed newSlides list, but
+		preserving existing instances if they have a matching ID and were not previously in processing */
+
+		this.slides = [];
+		var newSlidesById = {};
+		var foundCurrentId = false;
+
+		for (var i = 0; i < newSlides.length; i++) {
+			var newSlide = newSlides[i];
+			/* look for an existing slide with this ID */
+			var slide = this.slidesById[newSlide.id];
+
+			if (!slide || slide.isProcessing) {
+				/* item not found, or was previously in processing, so take the new one */
+				slide = newSlide;
+				/* add new item to 'things that need preloading', if applicable */
+				if (slide.preload) {
+					this.slidesNeedingPreload.push(slide);
+				}
+			}
+
+			/* add old or new item to the final slides list */
+			this.slides[i] = slide;
+			newSlidesById[slide.id] = slide;
+
+			/* if this item matches currentId, keep its place in the sequence */
+			if (this.currentId == slide.id) {
+				foundCurrentId = true;
+				this.currentIndex = i;
+			}
+		}
+
+		if (!foundCurrentId) {
+			this.currentIndex = 0;
+			this.currentId = this.slides[0].id;
+		}
+
+		this.slidesById = newSlidesById;
+
+		if (this.slides.length > 1) {
+			this.view.showPrevNextLinks();
+		} else {
+			this.view.hidePrevNextLinks();
+		}
+		this.view.drawSlide(this.slides[this.currentIndex]);
+	};
+
+	CarouselController.prototype.preloadSlides = function() {
+		for (var i = 0; i < this.slidesNeedingPreload.length; i++) {
+			this.slidesNeedingPreload[i].preload();
+		}
+		this.slidesNeedingPreload = [];
+	};
+
 	$.fn.carousel = function(carouselData, reloadUrl) {
 		if (carouselData.length === 0) return;
 
-		var carouselItems = [];
-		var carouselItemsById = {};
-		var currentId = null;
-		var currentIndex = 0;
-
-		var viewport = this;
-		var tray;
-		var currentBucket;
-
-		var hasInitialisedViewport = false;
-		function initViewport() {
-			viewport.html('<div class="viewport"><div class="tray"></div></div>');
-			tray = $('.tray', viewport);
-			currentBucket = $('<div class="bucket"></div>');
-			tray.append(currentBucket);
-			hasInitialisedViewport = true;
-		}
-
-		var hasPreloadedAllItems = true;
-		var itemsNeedingPreload = [];
-
-		function loadCarouselItems(newCarouselItems) {
-			/* Build a new carouselItems list based on the passed newCarouselItems list, but
-			preserving existing instances if they have a matching ID and were not previously in processing */
-			carouselItems = [];
-			var newCarouselItemsById = {};
-
-			var foundCurrentId = false;
-			var itemCount = 0;
-
-			for (var i = 0; i < newCarouselItems.length; i++) {
-				var newCarouselItem = newCarouselItems[i];
-				/* look for an existing carousel item with this ID */
-				var carouselItem = carouselItemsById[newCarouselItem.id];
-
-				if (!carouselItem || carouselItem.isProcessing) {
-					/* item not found, or was previously in processing, so take the new one */
-					carouselItem = newCarouselItem;
-					/* add new item to 'things that need preloading', if applicable */
-					if (carouselItem.preload) {
-						itemsNeedingPreload.push(carouselItem);
-						hasPreloadedAllItems = false;
-					}
-				}
-
-				/* add old or new item to the final carouselItems list */
-				carouselItems[itemCount] = carouselItem;
-				newCarouselItemsById[carouselItem.id] = carouselItem;
-
-				/* if this item matches currentId, keep its place in the sequence */
-				if (currentId == carouselItem.id) {
-					foundCurrentId = true;
-					currentIndex = itemCount;
-				}
-				itemCount++;
-			}
-
-			if (itemCount === 0) return;
-
-			if (!hasInitialisedViewport) initViewport();
-
-			if (!foundCurrentId) {
-				currentIndex = 0;
-				currentId = carouselItems[0].id;
-			}
-
-			carouselItems[currentIndex].draw(currentBucket);
-			carouselItemsById = newCarouselItemsById;
-		}
-
-		function loadData(carouselData) {
-			var newCarouselItems = [];
-			var needReload = false;
+		function unpackCarouselData(carouselData) {
+			/* unpack JSON into a list of slide objects */
+			var slides = [];
 
 			for (var i = 0; i < carouselData.length; i++) {
-				itemType = itemTypes[carouselData[i].type];
-				if (itemType) {
-					carouselItem = new itemType(carouselData[i]);
-					newCarouselItems.push(carouselItem);
+				slideType = slideTypes[carouselData[i].type];
+				if (slideType) {
+					slide = new slideType(carouselData[i]);
+					slides.push(slide);
 				} else {
 					/* skip unidentified item types */
 					continue;
 				}
-
-				if (carouselData[i]['is_processing']) {
-					needReload = true;
-				}
 			}
-			loadCarouselItems(newCarouselItems);
 
-			if (needReload) {
-				setTimeout(function() {
-					$.getJSON(reloadUrl, loadData);
-				}, 5000);
-			}
-		}
-		loadData(carouselData);
-
-		function preloadAllItems() {
-			for (var i = 0; i < itemsNeedingPreload.length; i++) {
-				itemsNeedingPreload[i].preload();
-			}
-			hasPreloadedAllItems = true;
-			itemsNeedingPreload = [];
+			return slides;
 		}
 
-		if (carouselItems.length > 1) {
-			var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
-			viewport.append(prevLink);
-			var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
-			viewport.append(nextLink);
+		function needReload(slides) {
+			/* return true iff any of the passed slides have isProcessing = true */
+			for (var i = 0; i < slides.length; i++) {
+				if (slides[i].isProcessing) return true;
+			}
+			return false;
+		}
 
-			nextLink.click(function() {
-				tray.stop(true, true);
-				if (!hasPreloadedAllItems) preloadAllItems();
-
-				var oldItem = carouselItems[currentIndex];
-				currentIndex = (currentIndex + 1) % carouselItems.length;
-				var currentItem = carouselItems[currentIndex];
-				currentId = currentItem.id;
-				var oldBucket = currentBucket;
-				currentBucket = $('<div class="bucket"></div>');
-				tray.append(currentBucket);
-				currentItem.draw(currentBucket);
-				tray.animate({'left': '-400px'}, function() {
-					oldItem.unload();
-					oldBucket.remove();
-					tray.css({'left': 0});
+		function scheduleReload() {
+			setTimeout(function() {
+				$.getJSON(reloadUrl, function(carouselData) {
+					var slides = unpackCarouselData(carouselData);
+					controller.loadSlides(slides);
+					if (needReload(slides)) scheduleReload();
 				});
-
-				return false;
-			});
-
-			prevLink.click(function() {
-				tray.stop(true, true);
-				if (!hasPreloadedAllItems) preloadAllItems();
-
-				var oldItem = carouselItems[currentIndex];
-				currentIndex = (currentIndex + carouselItems.length - 1) % carouselItems.length;
-				var currentItem = carouselItems[currentIndex];
-				currentId = currentItem.id;
-				var newBucket = $('<div class="bucket"></div>');
-				tray.css({'left': '-400px'});
-				tray.prepend(newBucket);
-				currentItem.draw(newBucket);
-				tray.animate({'left': '0'}, function() {
-					oldItem.unload();
-					currentBucket.remove();
-					currentBucket = newBucket;
-				});
-
-				return false;
-			});
+			}, 5000);
 		}
+
+		var slides = unpackCarouselData(carouselData);
+		if (slides.length === 0) return;
+
+		var controller = new CarouselController(this);
+		controller.loadSlides(slides);
+		if (needReload(slides)) scheduleReload();
 	};
 })(jQuery);
