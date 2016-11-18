@@ -136,33 +136,40 @@
 		link.prepend(img);
 		container.html(link);
 
+		var mediaItem = this;
+
 		link.click(function() {
-			var videoElement = $(videoData['embed_code']);
-			var lightbox = MediaLightbox(function(maxWidth, maxHeight) {
-				var videoWidth = videoData['video_width'];
-				var videoHeight = videoData['video_height'];
-
-				var fullWidth = Math.min(videoWidth, maxWidth);
-				var fullHeight = Math.min(videoHeight, maxHeight);
-
-				var heightAtFullWidth = (fullWidth * videoHeight/videoWidth);
-				var widthAtFullHeight = (fullHeight * videoWidth/videoHeight);
-
-				if (heightAtFullWidth <= maxHeight) {
-					finalWidth = fullWidth;
-					finalHeight = Math.round(heightAtFullWidth);
-				} else {
-					finalWidth = Math.round(widthAtFullHeight);
-					finalHeight = fullHeight;
-				}
-
-				videoElement.attr('width', finalWidth);
-				videoElement.attr('height', finalHeight);
-				return [finalWidth, finalHeight];
-			});
-			lightbox.mediaWrapper.append(videoElement);
+			var lightbox = new MediaLightbox();
+			lightbox.attachMediaItem(mediaItem);
 			return false;
 		});
+	};
+	Video.prototype.drawLightboxContent = function(lightbox, container, maxWidth, maxHeight) {
+		this.videoElement = $(this.data['embed_code']);
+		container.append(this.videoElement);
+		this.resizeLightboxContent(lightbox, maxWidth, maxHeight);
+	};
+	Video.prototype.resizeLightboxContent = function(lightbox, maxWidth, maxHeight) {
+		var videoWidth = this.data['video_width'];
+		var videoHeight = this.data['video_height'];
+
+		var fullWidth = Math.min(videoWidth, maxWidth);
+		var fullHeight = Math.min(videoHeight, maxHeight);
+
+		var heightAtFullWidth = (fullWidth * videoHeight/videoWidth);
+		var widthAtFullHeight = (fullHeight * videoWidth/videoHeight);
+
+		if (heightAtFullWidth <= maxHeight) {
+			finalWidth = fullWidth;
+			finalHeight = Math.round(heightAtFullWidth);
+		} else {
+			finalWidth = Math.round(widthAtFullHeight);
+			finalHeight = fullHeight;
+		}
+
+		lightbox.setSize(finalWidth, finalHeight);
+		this.videoElement.attr('width', finalWidth);
+		this.videoElement.attr('height', finalHeight);
 	};
 	Video.prototype.unload = function() {};
 
