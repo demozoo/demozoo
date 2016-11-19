@@ -82,6 +82,69 @@
 		});
 	};
 
+	window.ImageMediaItem = function(imageUrl) {
+		this.imageUrl = imageUrl;
+		this.screenshotImg = $('<img />');
+		this.screenshot = new Image();
+		this.isLoaded = false;
+	};
+
+	window.ImageMediaItem.prototype.drawLightboxContent = function(lightbox, container, maxImageWidth, maxImageHeight) {
+		var self = this;
+
+		this.screenshot.onload = function() {
+			self.isLoaded = true;
+			self.screenshotImg.get(0).src = self.screenshot.src;
+			container.append(self.screenshotImg);
+			self.setImageSize(lightbox, maxImageWidth, maxImageHeight);
+		};
+
+		this.screenshot.src = this.imageUrl;
+	};
+
+	window.ImageMediaItem.prototype.setImageSize = function(lightbox, maxImageWidth, maxImageHeight) {
+		var imageWidth = this.screenshot.width || 480;
+		var imageHeight = this.screenshot.height || 340;
+
+		var finalWidth, finalHeight, pixelated;
+
+		if (
+			imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
+			imageHeight <= 300 && maxImageHeight >= imageHeight * 2
+		) {
+			/* show image at double size */
+			finalWidth = imageWidth * 2;
+			finalHeight = imageHeight * 2;
+			pixelated = true;
+		} else {
+			var fullWidth = Math.min(imageWidth, maxImageWidth);
+			var fullHeight = Math.min(imageHeight, maxImageHeight);
+
+			var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
+			var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
+
+			if (heightAtFullWidth <= maxImageHeight) {
+				finalWidth = fullWidth;
+				finalHeight = Math.round(heightAtFullWidth);
+			} else {
+				finalWidth = Math.round(widthAtFullHeight);
+				finalHeight = fullHeight;
+			}
+			pixelated = false;
+		}
+
+		this.screenshotImg.attr({
+			'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
+		});
+
+		lightbox.setSize(finalWidth, finalHeight);
+	};
+
+	window.ImageMediaItem.prototype.resizeLightboxContent = function(lightbox, maxImageWidth, maxImageHeight) {
+		if (!this.isLoaded) return;
+		this.setImageSize(lightbox, maxImageWidth, maxImageHeight);
+	};
+
 	$.fn.openImageInLightbox = function() {
 		this.click(function(e) {
 			if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
@@ -89,68 +152,8 @@
 				return true;
 			}
 
-			var imageUrl = this.href;
-
-			var screenshotImg = $('<img />');
-			var screenshot = new Image();
-
 			var lightbox = new MediaLightbox();
-
-			function setImageSize(maxImageWidth, maxImageHeight) {
-				var imageWidth = screenshot.width || 480;
-				var imageHeight = screenshot.height || 340;
-
-				var finalWidth, finalHeight, pixelated;
-
-				if (
-					imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
-					imageHeight <= 300 && maxImageHeight >= imageHeight * 2
-				) {
-					/* show image at double size */
-					finalWidth = imageWidth * 2;
-					finalHeight = imageHeight * 2;
-					pixelated = true;
-				} else {
-					var fullWidth = Math.min(imageWidth, maxImageWidth);
-					var fullHeight = Math.min(imageHeight, maxImageHeight);
-
-					var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
-					var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
-
-					if (heightAtFullWidth <= maxImageHeight) {
-						finalWidth = fullWidth;
-						finalHeight = Math.round(heightAtFullWidth);
-					} else {
-						finalWidth = Math.round(widthAtFullHeight);
-						finalHeight = fullHeight;
-					}
-					pixelated = false;
-				}
-
-				screenshotImg.attr({
-					'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
-				});
-
-				lightbox.setSize(finalWidth, finalHeight);
-			}
-
-			var isLoaded = false;
-			var mediaItem = {
-				'drawLightboxContent': function(lightbox, container, maxImageWidth, maxImageHeight) {
-					screenshot.onload = function() {
-						isLoaded = true;
-						screenshotImg.get(0).src = screenshot.src;
-						container.append(screenshotImg);
-						setImageSize(maxImageWidth, maxImageHeight);
-					};
-
-					screenshot.src = imageUrl;
-				},
-				'resizeLightboxContent': function(lightbox, maxImageWidth, maxImageHeight) {
-					if (!isLoaded) return;
-					setImageSize(maxImageWidth, maxImageHeight);
-				}
-			};
+			mediaItem = new ImageMediaItem(this.href);
 			lightbox.attachMediaItem(mediaItem);
 
 			return false;
