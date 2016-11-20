@@ -138,7 +138,12 @@
 
 		var mediaItem = this;
 
-		link.click(function() {
+		link.click(function(e) {
+			if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+				/* probably means they want to open it in a new window, so let them... */
+				return true;
+			}
+
 			var lightbox = new MediaLightbox();
 			lightbox.attachMediaItem(mediaItem);
 			return false;
