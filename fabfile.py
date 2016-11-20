@@ -12,6 +12,8 @@ def deploy():
 	with cd('/home/demozoo/demozoo'):
 		run('git pull')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
+		run('npm install')
+		run('grunt')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.productionvm')
