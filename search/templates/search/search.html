@@ -10,24 +10,23 @@
 <section class="search-results">
 	<h1 class="search-results__title">Search</h1>
 
-	<form method="get" action=".">
-		<div class="form__item form__item--search">
-			<label class="label">
-				<div class="icon"></div>
+	<form class="search search--inline" method="get" action=".">
+		<fieldset>
+			<div class="search__input">
 				<input class="input input--search"
 					   id="id_q"
 					   name="q"
 					   placeholder="Search Demozoo"
 					   type="search"
 					   value="{{ global_search_query }}" />
-				<span class="label__highlight"></span>
-			</label>
-		</div>
-		<div class="form__buttons">
-			<button type="submit" class="button button--search">
-				<span>Search</span>
-			</button>
-		</div>
+				<button type="submit" class="button button--icon button--search">
+					<svg class="icon">
+						<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
+					</svg>
+					<span class="button__text">Search</span>
+				</button>
+			</div>
+		</fieldset>
 	</form>
 
 	{% if query %}

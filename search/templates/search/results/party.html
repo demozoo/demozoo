@@ -1,9 +1,9 @@
 {% load search_snippet %}
 <div class="search-result party">
-	<svg class="icon">
-		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--event"></use>
-	</svg>
-	<div>
+	<div class="media media--thumbnail">
+		{% icon 'event' %}
+	</div>
+	<div class="search-result__content">
 		<a href="{{ result.instance.get_absolute_url }}">
 			<span>{{ result.instance }}</span>{% if result.instance.tagline %}: <span>{{ result.instance.tagline }}</span>{% endif %}
 		</a>

@@ -1,10 +1,10 @@
 {% load search_snippet %}
 <div class="search-result group">
-	<svg class="icon">
-		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
-	</svg>
-	<div>
-		<a href="{{ result.instance.get_absolute_url }}">
+	<div class="media media--thumbnail">
+		{% icon group %}
+	</div>
+	<div class="search-result__content">
+		<a href="{{ result.instance.get_absolute_url }}" class="search-result__link">
 			<span>{{ result.instance }}</span>
 			{% if result.instance.primary_nick.differentiator %}
 				(<span>{{ result.instance.primary_nick.differentiator }}</span>)

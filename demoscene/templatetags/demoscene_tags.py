@@ -30,6 +30,10 @@ def scener_with_affiliations(releaser_or_nick):
 	}
 
 
+@register.inclusion_tag('shared/icon.html')
+def icon(icon):
+	return {'icon': icon}
+
 @register.inclusion_tag('shared/releaser_flag.html')
 def releaser_flag(releaser):
 	return {'releaser': releaser}

@@ -8,25 +8,6 @@
 	box-sizing: border-box;
 }
 
-.list--groups {
-	clear: both;
-
-	.list__item {
-		line-height: 16px;
-		margin-bottom: 8px;
-		padding-left: 32px;
-		position: relative;
-
-		.icon-legacy {
-			.size(16px);
-			background: url('/static/images/icons/group.png') 50% 50% no-repeat;
-			left: 8px;
-			position: absolute;
-			top: 0;
-		}
-	}
-}
-
 .list--party-editions {
 	align-items: flex-start;
 	display: flex;
@@ -73,17 +54,21 @@
 	}
 }
 
-
+.list--groups,
 .list--search-results {
 
 	.list__item {
+		border-top: 1px solid #f0f0f0;
 
 		&:nth-child(odd) {
-			background: #fafafa;
+			background: #f8f8f8;
+		}
+
+		&:last-child {
+			border-bottom: 1px solid #f0f0f0;
 		}
 	}
 }
-//
 
 ul.production_list {
 

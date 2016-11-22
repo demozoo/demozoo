@@ -1,13 +1,16 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="search-result {{ result.instance.supertype }}">
-	<svg class="icon">
-		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{ result.instance.supertype }}"></use>
-	</svg>
 	{% if result.instance.default_screenshot %}
 		{% microthumb result.instance.default_screenshot %}
+
+	{% else %}
+		<div class="media media--thumbnail">
+			{% icon result.instance.supertype %}
+		</div>
+
 	{% endif %}
-	<div>
+	<div class="search-result__content">
 		<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 		{% if result.instance.author_nicks.all %}
 			<small>by <span>{% byline result.instance %}</span></small>

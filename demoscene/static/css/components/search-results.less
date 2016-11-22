@@ -1,5 +1,5 @@
 .search-results {
-  font-size: (16/12) * 1rem;
+  font-size: 1rem;
   line-height: 1.5;
   margin: 0 0 3em;
 }
@@ -29,11 +29,12 @@
 }
 
 .search-result {
+  box-sizing: border-box;
+  display: flex;
   line-height: 18px;
   min-height: 36px;
-  padding: 8px;
+  padding: 1ex;
   position: relative;
-  display: flex;
   width: 100%;
   align-items: center;
 
@@ -42,16 +43,21 @@
     margin: 0 8px 0 0;
   }
 
-  .microthumb {
-    background-color: #888;
+  .media {
+    .size(36px);
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+    margin-right: .5rem;
     line-height: 36px;
     text-align: center;
 
     img {
       vertical-align: middle;
     }
+  }
 
-    margin: 0 8px 0 0;
-    .size(auto);
+  .snippet {
+    padding: 0.125rem;
+    line-height: 1.25rem;
   }
 }

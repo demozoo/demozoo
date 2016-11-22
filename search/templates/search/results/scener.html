@@ -1,10 +1,10 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="search-result scener">
-	<svg class="icon">
-		<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--scener"></use>
-	</svg>
-	<div>
+	<div class="media media--thumbnail">
+		{% icon 'scener' %}
+	</div>
+	<div class="search-result__content">
 		{% scener_with_affiliations result.instance %}
 		{% releaser_flag result.instance %}
 		{% if show_snippet %}

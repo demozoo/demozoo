@@ -25,5 +25,21 @@
 		.size(100%);
 		object-fit: cover;
 		position: absolute;
+		font-family: 'object-fit: cover;'; // hate doing this.
+	}
+
+	svg {
+		.size(100%);
+		border-radius: 0;
+		background-color: transparent;
+	}
+
+	&:after {
+		.pos(0);
+		.size(100%);
+		box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.25);
+		content: "";
+		position: absolute;
+		z-index: 2;
 	}
 }
