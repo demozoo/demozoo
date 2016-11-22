@@ -74,8 +74,14 @@
 			<p>
 				Real name:
 				{% if scener.real_name %}
-					{% if scener.show_first_name %}{{ scener.first_name }}{% else %}<span class="redacted" title="first name hidden from ordinary users">{{ scener.first_name }}</span>{% endif %}
-					{% if scener.show_surname %}{{ scener.surname }}{% else %}<span class="redacted" title="surname hidden from ordinary users">{{ scener.surname }}</span>{% endif %}
+					{% if scener.show_first_name %}
+						{{ scener.first_name }}
+					{% else %}
+						<del class="redacted" title="first name hidden from ordinary users">{{ scener.first_name }}</del>{% endif %}
+					{% if scener.show_surname %}
+						{{ scener.surname }}
+					{% else %}
+						<del class="redacted" title="surname hidden from ordinary users">{{ scener.surname }}</del>{% endif %}
 				{% else %}
 					<em>not set</em>
 				{% endif %}
