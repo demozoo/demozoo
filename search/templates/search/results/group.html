@@ -1,7 +1,8 @@
+{% load demoscene_tags %}
 {% load search_snippet %}
 <div class="search-result group">
 	<div class="media media--thumbnail">
-		{% icon group %}
+		{% icon 'group' %}
 	</div>
 	<div class="search-result__content">
 		<a href="{{ result.instance.get_absolute_url }}" class="search-result__link">
