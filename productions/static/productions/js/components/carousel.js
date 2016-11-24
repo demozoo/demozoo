@@ -6,11 +6,16 @@
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
+
+		this.lightboxItem = new ImageMediaItem(this.data['original_url']);
 	}
 	Screenshot.prototype.preload = function() {
 		var src = this.data['standard_url'];
 		var img = new Image();
 		img.src = src;
+	};
+	Screenshot.prototype.attachToLightbox = function(lightbox) {
+		this.lightboxItem.attachToLightbox(lightbox);
 	};
 	Screenshot.prototype.draw = function(container) {
 		if (this.isProcessing) {
@@ -30,7 +35,18 @@
 			}
 			link.append(img);
 			container.html(link);
-			link.openImageInLightbox();
+
+			var self = this;
+			link.click(function(e) {
+				if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+					/* probably means they want to open it in a new window, so let them... */
+					return true;
+				}
+
+				var lightbox = new MediaLightbox();
+				self.lightboxItem.attachToLightbox(lightbox);
+				return false;
+			});
 		}
 	};
 	Screenshot.prototype.unload = function() {};
