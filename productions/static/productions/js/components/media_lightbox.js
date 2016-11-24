@@ -63,14 +63,13 @@
 		});
 
 		if (this.mediaItem) {
-			this.mediaItem.resizeLightboxContent(this, dims.maxMediaWidth, dims.maxMediaHeight);
+			this.mediaItem.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
 		}
 	};
-	window.MediaLightbox.prototype.attachMediaItem = function(mediaItem) {
-		this.closeButton.siblings().remove();
-		this.mediaItem = mediaItem;
+	window.MediaLightbox.prototype.attach = function(mediaItemView) {
+		this.mediaItem = mediaItemView;
 		var dims = this.getAvailableDimensions();
-		this.mediaItem.drawLightboxContent(this, this.mediaWrapper, dims.maxMediaWidth, dims.maxMediaHeight);
+		this.mediaItem.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
 	};
 	window.MediaLightbox.prototype.setSize = function(width, height) {
 		var dims = this.getAvailableDimensions();
@@ -84,65 +83,63 @@
 
 	window.ImageMediaItem = function(imageUrl) {
 		this.imageUrl = imageUrl;
-		this.screenshotImg = $('<img />');
-		this.screenshot = new Image();
-		this.isLoaded = false;
 	};
 
-	window.ImageMediaItem.prototype.drawLightboxContent = function(lightbox, container, maxImageWidth, maxImageHeight) {
+	window.ImageMediaItem.prototype.attachToLightbox = function(lightbox) {
 		var self = this;
 
-		this.screenshot.onload = function() {
-			self.isLoaded = true;
-			self.screenshotImg.get(0).src = self.screenshot.src;
-			container.append(self.screenshotImg);
-			self.setImageSize(lightbox, maxImageWidth, maxImageHeight);
+		var screenshotImg = $('<img />');
+		var screenshot = new Image();
+
+		screenshot.onload = function() {
+			screenshotImg.get(0).src = screenshot.src;
+			lightbox.mediaWrapper.append(screenshotImg);
+			lightbox.attach(self);
 		};
 
-		this.screenshot.src = this.imageUrl;
-	};
+		self.setSize = function(maxImageWidth, maxImageHeight) {
+			var imageWidth = screenshot.width || 480;
+			var imageHeight = screenshot.height || 340;
 
-	window.ImageMediaItem.prototype.setImageSize = function(lightbox, maxImageWidth, maxImageHeight) {
-		var imageWidth = this.screenshot.width || 480;
-		var imageHeight = this.screenshot.height || 340;
+			var finalWidth, finalHeight, pixelated;
 
-		var finalWidth, finalHeight, pixelated;
-
-		if (
-			imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
-			imageHeight <= 300 && maxImageHeight >= imageHeight * 2
-		) {
-			/* show image at double size */
-			finalWidth = imageWidth * 2;
-			finalHeight = imageHeight * 2;
-			pixelated = true;
-		} else {
-			var fullWidth = Math.min(imageWidth, maxImageWidth);
-			var fullHeight = Math.min(imageHeight, maxImageHeight);
-
-			var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
-			var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
-
-			if (heightAtFullWidth <= maxImageHeight) {
-				finalWidth = fullWidth;
-				finalHeight = Math.round(heightAtFullWidth);
+			if (
+				imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
+				imageHeight <= 300 && maxImageHeight >= imageHeight * 2
+			) {
+				/* show image at double size */
+				finalWidth = imageWidth * 2;
+				finalHeight = imageHeight * 2;
+				pixelated = true;
 			} else {
-				finalWidth = Math.round(widthAtFullHeight);
-				finalHeight = fullHeight;
+				var fullWidth = Math.min(imageWidth, maxImageWidth);
+				var fullHeight = Math.min(imageHeight, maxImageHeight);
+
+				var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
+				var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
+
+				if (heightAtFullWidth <= maxImageHeight) {
+					finalWidth = fullWidth;
+					finalHeight = Math.round(heightAtFullWidth);
+				} else {
+					finalWidth = Math.round(widthAtFullHeight);
+					finalHeight = fullHeight;
+				}
+				pixelated = false;
 			}
-			pixelated = false;
+
+			screenshotImg.attr({
+				'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
+			});
+
+			lightbox.setSize(finalWidth, finalHeight);
 		}
 
-		this.screenshotImg.attr({
-			'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
-		});
+		self.unload = function() {
+			screenshotImg.remove();
+		}
 
-		lightbox.setSize(finalWidth, finalHeight);
-	};
-
-	window.ImageMediaItem.prototype.resizeLightboxContent = function(lightbox, maxImageWidth, maxImageHeight) {
-		if (!this.isLoaded) return;
-		this.setImageSize(lightbox, maxImageWidth, maxImageHeight);
+		screenshot.src = this.imageUrl;
 	};
 
 	$.fn.openImageInLightbox = function() {
@@ -154,7 +151,7 @@
 
 			var lightbox = new MediaLightbox();
 			mediaItem = new ImageMediaItem(this.href);
-			lightbox.attachMediaItem(mediaItem);
+			mediaItem.attachToLightbox(lightbox);
 
 			return false;
 		});

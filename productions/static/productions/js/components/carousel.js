@@ -145,36 +145,43 @@
 			}
 
 			var lightbox = new MediaLightbox();
-			lightbox.attachMediaItem(mediaItem);
+			mediaItem.attachToLightbox(lightbox);
 			return false;
 		});
 	};
-	Video.prototype.drawLightboxContent = function(lightbox, container, maxWidth, maxHeight) {
-		this.videoElement = $(this.data['embed_code']);
-		container.append(this.videoElement);
-		this.resizeLightboxContent(lightbox, maxWidth, maxHeight);
-	};
-	Video.prototype.resizeLightboxContent = function(lightbox, maxWidth, maxHeight) {
+	Video.prototype.attachToLightbox = function(lightbox) {
+		var self = {};
+
 		var videoWidth = this.data['video_width'];
 		var videoHeight = this.data['video_height'];
 
-		var fullWidth = Math.min(videoWidth, maxWidth);
-		var fullHeight = Math.min(videoHeight, maxHeight);
+		var videoElement = $(this.data['embed_code']);
+		lightbox.mediaWrapper.append(videoElement);
 
-		var heightAtFullWidth = (fullWidth * videoHeight/videoWidth);
-		var widthAtFullHeight = (fullHeight * videoWidth/videoHeight);
+		self.setSize = function(maxWidth, maxHeight) {
+			var fullWidth = Math.min(videoWidth, maxWidth);
+			var fullHeight = Math.min(videoHeight, maxHeight);
 
-		if (heightAtFullWidth <= maxHeight) {
-			finalWidth = fullWidth;
-			finalHeight = Math.round(heightAtFullWidth);
-		} else {
-			finalWidth = Math.round(widthAtFullHeight);
-			finalHeight = fullHeight;
-		}
+			var heightAtFullWidth = (fullWidth * videoHeight/videoWidth);
+			var widthAtFullHeight = (fullHeight * videoWidth/videoHeight);
 
-		lightbox.setSize(finalWidth, finalHeight);
-		this.videoElement.attr('width', finalWidth);
-		this.videoElement.attr('height', finalHeight);
+			if (heightAtFullWidth <= maxHeight) {
+				finalWidth = fullWidth;
+				finalHeight = Math.round(heightAtFullWidth);
+			} else {
+				finalWidth = Math.round(widthAtFullHeight);
+				finalHeight = fullHeight;
+			}
+
+			lightbox.setSize(finalWidth, finalHeight);
+			videoElement.attr('width', finalWidth);
+			videoElement.attr('height', finalHeight);
+		};
+
+		self.unload = function() {
+			videoElement.remove();
+		};
+		lightbox.attach(self);
 	};
 	Video.prototype.unload = function() {};
 
