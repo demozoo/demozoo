@@ -1,6 +1,6 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
-<div class="search-result {{ result.instance.supertype }}">
+<div class="result">
 	{% if result.instance.default_screenshot %}
 		{% microthumb result.instance.default_screenshot %}
 
@@ -10,13 +10,13 @@
 		</div>
 
 	{% endif %}
-	<div class="search-result__content">
+	<div class="result__content">
 		<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 		{% if result.instance.author_nicks.all %}
 			<small>by <span>{% byline result.instance %}</span></small>
 		{% endif %}
 		{% if show_snippet %}
-			<div class="search-result__snippet">
+			<div class="result__snippet">
 				{{ result.instance.plaintext_notes|search_snippet:resultset }}
 			</div>
 		{% endif %}

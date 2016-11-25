@@ -3,73 +3,131 @@
 {% load url from future %}
 
 {% block base_main %}
-	<h2>Latest activity</h2>
+	<header>
+		<h1 class="page__title">Latest activity</h1>
+	</header>
 
 	{% site_stats as stats %}
-	<p>
-		<b>Now serving...</b>
-		{{ stats.production_count }} production{{ stats.production_count|pluralize }} -
-		{{ stats.graphics_count }} graphics -
-		{{ stats.music_count }} music track{{ stats.music_count|pluralize }} -
-		{{ stats.group_count }} group{{ stats.group_count|pluralize }} -
-		{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}
-	</p>
+	<section class="stats">
+		<div class="container">
+			<!--<h2 class="stats__heading">Now serving&hellip;</h2>-->
+			<ul class="list list--stats">
+				<li>
+					<strong class="stats__count">{{ stats.production_count }}</strong>
+					<span class="stats__label">production{{ stats.production_count|pluralize }}</span>
+				</li>
+				<li>
+					<strong class="stats__count">{{ stats.graphics_count }}</strong>
+					<span class="stats__label">graphics</span>
+				</li>
+				<li>
+					<strong class="stats__count">{{ stats.music_count }}</strong>
+					<span class="stats__label">music track{{ stats.music_count|pluralize }}</span>
+				</li>
+				<li>
+					<strong class="stats__count">{{ stats.group_count }}</strong>
+					<span class="stats__label">group{{ stats.group_count|pluralize }}</span>
+				</li>
+				<li>
+					<strong class="stats__count">{{ stats.scener_count }}</strong>
+					<span class="stats__label">scener{{ stats.scener_count|pluralize }}</span>
+				</li>
+			</ul>
+		</div>
+	</section>
 
 	<p><a href="{% url 'recent_edits' %}">Recent edits</a></p>
-	<div class="chart_set">
-		<div class="chart">
-			<h2>Latest added productions</h2>
-			<ul class="production_list">
-				{% for production in latest_added_productions %}
-					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="chart">
-			<h2>Latest updated productions</h2>
-			<ul class="production_list">
-				{% for production in latest_updated_productions %}
-					<li class="{{ production.supertype }}"><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
-	
-	<div class="chart_set">
-		<div class="chart">
-			<h2>Latest added sceners</h2>
-			<ul class="releaser_list">
-				{% for scener in latest_added_sceners %}
-					<li class="scener">{% scener_with_affiliations scener %}</li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="chart">
-			<h2>Latest updated sceners</h2>
-			<ul class="releaser_list">
-				{% for scener in latest_updated_sceners %}
-					<li class="scener">{% scener_with_affiliations scener %}</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
 
-	<div class="chart_set">
-		<div class="chart">
+	<div class="latest-activity">
+		<section>
+			<h2>Latest added productions</h2>
+			<ul class="list list--results">
+				{% for production in latest_added_productions %}
+					<li class="list__item" data-type="{{ production.supertype }}">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon production.supertype %}
+							</div>
+							<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		</section>
+		<section>
+			<h2>Latest updated productions</h2>
+			<ul class="list list--results">
+				{% for production in latest_updated_productions %}
+					<li class="list__item" data-type="{{ production.supertype }}">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon production.supertype %}
+							</div>
+							<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		</section>
+		<section>
+			<h2>Latest added sceners</h2>
+			<ul class="list list--results">
+				{% for scener in latest_added_sceners %}
+					<li class="list__item" data-type="scener">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon 'scener' %}
+							</div>
+							{% scener_with_affiliations scener %}
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		</section>
+		<section>
+			<h2>Latest updated sceners</h2>
+			<ul class="list list--results">
+				{% for scener in latest_updated_sceners %}
+					<li class="list__item" data-type="scener">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon 'scener' %}
+							</div>
+							{% scener_with_affiliations scener %}
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		</section>
+		<section>
 			<h2>Latest added groups</h2>
-			<ul class="releaser_list">
+			<ul class="list list--results">
 				{% for group in latest_added_groups %}
-					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
+					<li class="list__item" data-type="group">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon 'group' %}
+							</div>
+							<a href="{% url 'group' group.id %}">{{ group.name }}</a>
+						</div>
+					</li>
 				{% endfor %}
 			</ul>
-		</div>
-		<div class="chart">
+		</section>
+		<section>
 			<h2>Latest updated groups</h2>
-			<ul class="releaser_list">
+			<ul class="list list--results">
 				{% for group in latest_updated_groups %}
-					<li class="group"><a href="{% url 'group' group.id %}">{{ group.name }}</a></li>
+					<li class="list__item" data-type="group">
+						<div class="result">
+							<div class="media media--thumbnail">
+								{% icon 'group' %}
+							</div>
+							<a href="{% url 'group' group.id %}">{{ group.name }}</a>
+						</div>
+					</li>
 				{% endfor %}
 			</ul>
-		</div>
+		</section>
 	</div>
 {% endblock %}

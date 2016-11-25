@@ -33,7 +33,7 @@
 		<section>
 			<h2 class="search-results__heading">Exact name matches</h2>
 			{% if name_results %}
-				<ul class="list list--search-results">
+				<ul class="list list--results">
 					{% for result in name_results %}
 						<li class="list__item">
 							{% if result.instance.search_result_template %}
@@ -52,7 +52,7 @@
 		<section>
 			<h2 class="search-results__heading">Other matches</h2>
 			{% if page.object_list %}
-				<ul class="list list--search-results">
+				<ul class="list list--results">
 					{% with 1 as show_snippet %}
 						{% for result in page.object_list %}
 							<li class="list__item">

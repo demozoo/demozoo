@@ -1,17 +1,17 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
-<div class="search-result group">
+<div class="result">
 	<div class="media media--thumbnail">
 		{% icon 'group' %}
 	</div>
-	<div class="search-result__content">
-		<a href="{{ result.instance.get_absolute_url }}" class="search-result__link">
+	<div class="result__content">
+		<a href="{{ result.instance.get_absolute_url }}" class="result__link">
 			<span>{{ result.instance }}</span>
 			{% if result.instance.primary_nick.differentiator %}
 				(<span>{{ result.instance.primary_nick.differentiator }}</span>)
 			{% endif %}
 		</a>
-		<div class="search-result__snippet">
+		<div class="result__snippet">
 			{% if show_snippet %}
 				{{ result.instance.plaintext_notes|search_snippet:resultset }}
 			{% endif %}

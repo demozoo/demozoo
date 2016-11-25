@@ -10,7 +10,7 @@
 	<tbody>
 		{% for prod in productions %}
 			<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
-				<td class="thumbnail">
+				<td>
 					{% if show_screenshots and prod.default_screenshot %}
 						{% microthumb prod.default_screenshot %}
 
@@ -34,7 +34,7 @@
 				<td>
 					{% byline prod %}
 				</td>
-				<td>
+				<td class="col--date">
 					<span>{{ prod.release_date.short_format }}</span>
 				</td>
 			</tr>
