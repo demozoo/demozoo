@@ -28,6 +28,7 @@
 					<div>
 						<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
 						{% if credits %}
+							-
 							{% for credit in credits %}
 								<span>{{ credit.description }}</span>{% if not forloop.last %},{% endif %}
 							{% endfor %}
