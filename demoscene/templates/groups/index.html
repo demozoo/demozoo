@@ -6,17 +6,22 @@
 
 {% block base_main %}
 <div class="releasers releasers--groups">
-	<h1 class="releasers__heading">Groups</h1>
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><a href="{% url 'new_group' %}" class="action_button icon add open_in_lightbox">New group</a></li>
-		</ul>
-	{% endif %}
+	<header class="page__header">
+		<h1 class="page__title">Groups</h1>
 
-	<ul class="list list--groups">
+		{% if site_is_writeable %}
+			<ul class="actions">
+				<li><a href="{% url 'new_group' %}" class="action_button icon add open_in_lightbox">New group</a></li>
+			</ul>
+		{% endif %}
+
+	</header>
+
+
+	<ul class="list list--results">
 		{% for nick in nick_page.object_list %}
 			<li class="list__item">
-				<div class="search-result group">
+				<div class="result">
 					<div class="media media--thumbnail">
 						<svg class="icon">
 							<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
@@ -33,7 +38,7 @@
 			</li>
 		{% endfor %}
 	</ul>
-
+	<br />
 	{% with nick_page as page %}
 		{% include "shared/pagination_links.html" %}
 	{% endwith %}

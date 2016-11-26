@@ -1,5 +1,15 @@
 .page {
 
+  &__header {
+
+    &::after {
+      clear: both;
+      content: "";
+      display: table;
+      margin: 1.5em;
+    }
+  }
+
   &__title {
     font-size: 3rem;
     font-weight: 300;
