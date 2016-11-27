@@ -13,6 +13,13 @@ module.exports = {
         files: {
             '<%= project.dir.static %>/images/icons.svg': '<%= project.dir.tmp %>/icons/*.svg'
         }
+    },
+
+    sites: {
+        files: {
+            '<%= project.dir.static %>/images/sites.svg': '<%= project.dir.tmp %>/sites/*.svg'
+        }
     }
+
 
 };
