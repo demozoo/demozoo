@@ -4,6 +4,8 @@
 /etc/demozoo.htpasswd
 /apache/demozoo2.htpasswd
 /data
+/demoscene/static/images/icons.svg
+/demoscene/static/images/sites.svg
 /static
 /media
 /.vagrant
