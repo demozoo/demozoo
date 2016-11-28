@@ -24,6 +24,20 @@ def deploy():
 		run('sudo supervisorctl restart demozoo-celerybeat')
 
 
+def deploy_staging():
+	"""Deploy the current git 'staging' branch to the staging site"""
+	with cd('/home/demozoo/demozoo-staging'):
+		run('git pull')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
+		run('npm install')
+		run('grunt')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py syncdb --settings=settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=settings.staging')
+		run('sudo supervisorctl restart demozoo-staging')
+
+
 def sanity():
 	"""Fix up data integrity errors"""
 	with cd('/home/demozoo/demozoo'):
