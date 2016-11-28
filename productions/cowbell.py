@@ -23,6 +23,14 @@ PLAYERS_BY_FILETYPE = {
 			'productions/js/cowbell/zx.min.js'
 		])
 	),
+	'sqt': (
+		'Cowbell.Player.ZXSQT', {},
+		Media(js=[
+			'productions/js/cowbell/cowbell.min.js',
+			'productions/js/cowbell/ay_chip.min.js',
+			'productions/js/cowbell/zx.min.js'
+		])
+	),
 	'vtx': (
 		'Cowbell.Player.VTX', {},
 		Media(js=[
@@ -40,8 +48,8 @@ PLAYERS_BY_FILETYPE = {
 	])),
 }
 
-ZXDEMO_MUSIC = re.compile(r'https://files\.zxdemo\.org/.*\.(stc|pt3|vtx)$', re.I)
-ZX_MUSIC = re.compile(r'.*\.(stc|pt3|vtx)$', re.I)
+ZXDEMO_MUSIC = re.compile(r'https://files\.zxdemo\.org/.*\.(stc|pt3|vtx|sqt)$', re.I)
+ZX_MUSIC = re.compile(r'.*\.(stc|pt3|vtx|sqt)$', re.I)
 STREAMING_MUSIC = re.compile(r'.*\.(mp3|ogg)$', re.I)
 OPENMPT_MUSIC = re.compile(r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf|ptm|psm|mt2|dbm|digi|imf|j2b|gdm|umx|plm|mo3|xpk|ppm|mmcmp|sfx|sfx2|mms|pt36|nt|ft)$', re.I)
 
