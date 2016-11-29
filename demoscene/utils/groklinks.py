@@ -515,7 +515,7 @@ class SceneOrgFile(BaseUrl):
 			'<li class="country country_nl"><a href="%s">nl/ftp</a> | <a href="%s">nl/http</a></li>' % (
 				escape(self.nl_url), escape(self.nl_http_url)
 			),
-			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
+			# '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 		if not self.param.startswith('/mirrors/'):
 			links += [
@@ -611,7 +611,7 @@ class AmigascneFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
+			# '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
@@ -654,7 +654,7 @@ class PaduaOrgFile(BaseUrl):
 	def mirror_links(self):
 		links = [
 			'<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
+			# '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
 		]
 
 		return links
