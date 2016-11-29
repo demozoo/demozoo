@@ -38,6 +38,7 @@
 		$(window).unbind('keydown', this.onKeydown);
 		this.overlay.remove();
 		this.mediaWrapper.remove();
+		if (this.onClose) this.onClose();
 	};
 	window.MediaLightbox.prototype.getAvailableDimensions = function() {
 		var browserWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -155,5 +156,63 @@
 
 			return false;
 		});
+	};
+
+	window.LightboxController = function() {
+		this.lightbox = null;
+		this.mediaItems = [];
+		this.mediaItemsById = {};
+		this.currentId = null;
+		this.currentIndex = 0;
+	};
+	window.LightboxController.prototype.setMediaItems = function(mediaItems) {
+		/* Assign a new mediaItems list to the lightbox controller. If the lightbox is
+		currently open, and mediaItems contains an item with the current ID, ensure that
+		currentIndex is updated to keep the lightbox at that item */
+		this.mediaItems = [];
+		var newMediaItemsById = {};
+		var foundCurrentId = false;
+
+		for (var i = 0; i < mediaItems.length; i++) {
+			var newItem = mediaItems[i];
+			/* look for an existing slide with this ID */
+			var item = this.mediaItemsById[newItem.id];
+
+			if (!item) {
+				/* take the new item */
+				item = newItem;
+			}
+
+			this.mediaItems[i] = item;
+			newMediaItemsById[item.id] = item;
+
+			/* if this item matches currentId, keep its place in the sequence */
+			if (this.currentId == item.id) {
+				foundCurrentId = true;
+				this.currentIndex = i;
+			}
+		}
+		this.mediaItemsById = newMediaItemsById;
+	};
+	window.LightboxController.prototype.openAtId = function(id) {
+		var self = this;
+
+		item = this.mediaItemsById[id];
+		if (item) {
+			if (!this.lightbox) {
+				this.lightbox = new MediaLightbox();
+				this.lightbox.onClose = function() {
+					self.lightbox = null;
+				};
+			}
+			item.attachToLightbox(this.lightbox);
+			this.currentId = id;
+			for (var i = 0; i < this.mediaItems.length; i++) {
+				if (this.mediaItems[i].id == id) {
+					this.currentIndex = i;
+					break;
+				}
+			}
+		}
 	};
 })(jQuery);

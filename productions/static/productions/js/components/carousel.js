@@ -2,10 +2,11 @@
 
 	/* Define carousel item types */
 
-	function Screenshot(fullData) {
+	function Screenshot(fullData, carouselController) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
+		this.carouselController = carouselController;
 
 		this.lightboxItem = new ImageMediaItem(this.data['original_url']);
 	}
@@ -43,15 +44,14 @@
 					return true;
 				}
 
-				var lightbox = new MediaLightbox();
-				self.lightboxItem.attachToLightbox(lightbox);
+				self.carouselController.openLightboxAtId(self.id);
 				return false;
 			});
 		}
 	};
 	Screenshot.prototype.unload = function() {};
 
-	function buildMosaic(items, addLinks) {
+	function buildMosaic(items, addLinks, carouselController) {
 		var width = 0, height = 0, i;
 		for (i = 0; i < items.length; i++) {
 			width = Math.max(width, items[i]['standard_width']);
@@ -64,6 +64,19 @@
 			width *= 2; height *= 2;
 		}
 		var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
+
+		function addTileLightboxAction(tile, id) {
+			tile.click(function(e) {
+				if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+					/* probably means they want to open it in a new window, so let them... */
+					return true;
+				}
+
+				carouselController.openLightboxAtId(id);
+				return false;
+			});
+		}
+
 		for (i = 0; i < items.length; i++) {
 			var imgData = items[i];
 			var tile;
@@ -71,7 +84,7 @@
 				tile = $('<a class="tile"></a>').attr({
 					'href': imgData['original_url']
 				});
-				tile.openImageInLightbox();
+				addTileLightboxAction(tile, imgData['id']);
 			} else {
 				tile = $('<div class="tile"></div>');
 			}
@@ -92,10 +105,11 @@
 		return mosaic;
 	}
 
-	function Mosaic(fullData) {
+	function Mosaic(fullData, carouselController) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
+		this.carouselController = carouselController;
 	}
 
 	Mosaic.prototype.preload = function() {
@@ -110,15 +124,16 @@
 		each tile will be half this in each direction, padded as necessary.
 		If all screenshots are equal size (hopefully the most common case),
 		no padding will be needed. */
-		var mosaic = buildMosaic(this.data, true);
+		var mosaic = buildMosaic(this.data, true, this.carouselController);
 		container.html(mosaic);
 	};
 	Mosaic.prototype.unload = function() {};
 
-	function Video(fullData) {
+	function Video(fullData, carouselController) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
+		this.carouselController = carouselController;
 	}
 	Video.prototype.preload = function() {
 		for (var i = 0; i < this.data.length; i++) {
@@ -133,7 +148,7 @@
 		var link = $('<a class="video"><div class="play"></div></a>').attr({'href': this.data['url']});
 		var img;
 		if (videoData['mosaic']) {
-			img = buildMosaic(videoData['mosaic'], false);
+			img = buildMosaic(videoData['mosaic'], false, null);
 		} else {
 			img = $('<img>').attr({'src': this.data['thumbnail_url']});
 			if (this.data['thumbnail_width'] < 200 && this.data['thumbnail_height'] < 150) {
@@ -152,7 +167,7 @@
 		link.prepend(img);
 		container.html(link);
 
-		var mediaItem = this;
+		var self = this;
 
 		link.click(function(e) {
 			if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
@@ -160,8 +175,7 @@
 				return true;
 			}
 
-			var lightbox = new MediaLightbox();
-			mediaItem.attachToLightbox(lightbox);
+			self.carouselController.openLightboxAtId(self.id);
 			return false;
 		});
 	};
@@ -201,11 +215,12 @@
 	};
 	Video.prototype.unload = function() {};
 
-	function CowbellAudio(fullData) {
+	function CowbellAudio(fullData, carouselController) {
 		this.isProcessing = fullData['is_processing'];
 		this.id = fullData['id'];
 		this.data = fullData.data;
 		this.ui = null;
+		this.carouselController = carouselController;
 	}
 	CowbellAudio.prototype.draw = function(container) {
 		var cowbellPlayer = $('<div class="cowbell-player"></div>');
@@ -305,6 +320,7 @@
 
 	function CarouselController(viewport) {
 		this.view = new CarouselView(viewport);
+		this.lightboxController = new LightboxController();
 		this.slides = [];
 		this.slidesById = {};
 		this.currentId = null;
@@ -332,6 +348,24 @@
 		};
 	}
 
+	CarouselController.prototype.unpackCarouselData = function(carouselData) {
+		/* unpack JSON into a list of slide objects */
+		var slides = [];
+
+		for (var i = 0; i < carouselData.length; i++) {
+			slideType = slideTypes[carouselData[i].type];
+			if (slideType) {
+				slide = new slideType(carouselData[i], this);
+				slides.push(slide);
+			} else {
+				/* skip unidentified item types */
+				continue;
+			}
+		}
+
+		return slides;
+	};
+
 	CarouselController.prototype.loadSlides = function(newSlides) {
 		/* Build a new slides list based on the passed newSlides list, but
 		preserving existing instances if they have a matching ID and were not previously in processing */
@@ -339,6 +373,7 @@
 		this.slides = [];
 		var newSlidesById = {};
 		var foundCurrentId = false;
+		var lightboxItems = [];
 
 		for (var i = 0; i < newSlides.length; i++) {
 			var newSlide = newSlides[i];
@@ -358,6 +393,10 @@
 			this.slides[i] = slide;
 			newSlidesById[slide.id] = slide;
 
+			if (slide.attachToLightbox) {
+				lightboxItems.push(slide);
+			}
+
 			/* if this item matches currentId, keep its place in the sequence */
 			if (this.currentId == slide.id) {
 				foundCurrentId = true;
@@ -371,6 +410,7 @@
 		}
 
 		this.slidesById = newSlidesById;
+		this.lightboxController.setMediaItems(lightboxItems);
 
 		if (this.slides.length > 1) {
 			this.view.showPrevNextLinks();
@@ -387,26 +427,12 @@
 		this.slidesNeedingPreload = [];
 	};
 
+	CarouselController.prototype.openLightboxAtId = function(id) {
+		this.lightboxController.openAtId(id);
+	};
+
 	$.fn.carousel = function(carouselData, reloadUrl) {
 		if (carouselData.length === 0) return;
-
-		function unpackCarouselData(carouselData) {
-			/* unpack JSON into a list of slide objects */
-			var slides = [];
-
-			for (var i = 0; i < carouselData.length; i++) {
-				slideType = slideTypes[carouselData[i].type];
-				if (slideType) {
-					slide = new slideType(carouselData[i]);
-					slides.push(slide);
-				} else {
-					/* skip unidentified item types */
-					continue;
-				}
-			}
-
-			return slides;
-		}
 
 		function needReload(slides) {
 			/* return true iff any of the passed slides have isProcessing = true */
@@ -416,20 +442,19 @@
 			return false;
 		}
 
+		var controller = new CarouselController(this);
+
 		function scheduleReload() {
 			setTimeout(function() {
 				$.getJSON(reloadUrl, function(carouselData) {
-					var slides = unpackCarouselData(carouselData);
+					var slides = controller.unpackCarouselData(carouselData);
 					controller.loadSlides(slides);
 					if (needReload(slides)) scheduleReload();
 				});
 			}, 5000);
 		}
 
-		var slides = unpackCarouselData(carouselData);
-		if (slides.length === 0) return;
-
-		var controller = new CarouselController(this);
+		var slides = controller.unpackCarouselData(carouselData);
 		controller.loadSlides(slides);
 		if (needReload(slides)) scheduleReload();
 	};

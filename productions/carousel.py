@@ -68,6 +68,7 @@ class Carousel(object):
 				'standard_url': screenshot.standard_url,
 				'standard_width': screenshot.standard_width,
 				'standard_height': screenshot.standard_height,
+				'id': 'screenshot-%d' % screenshot.id,
 			}
 			for screenshot in random.sample(self.processed_screenshots, 4)
 		]
