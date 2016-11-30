@@ -931,8 +931,10 @@ class YoutubeVideo(BaseUrl):
 
 		return embed_data
 
-	def get_embed_html(self, width, height):
-		embed_url = "https://www.youtube.com/embed/%s?autoplay=1" % self.param
+	def get_embed_html(self, width, height, autoplay=True):
+		embed_url = "https://www.youtube.com/embed/%s" % self.param
+		if autoplay:
+			embed_url += "?autoplay=1"
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" allowfullscreen></iframe>""",
 			width, height, embed_url
@@ -996,8 +998,10 @@ class VimeoVideo(BaseUrl):
 
 		return embed_data
 
-	def get_embed_html(self, width, height):
-		embed_url = "https://player.vimeo.com/video/%s?autoplay=1" % self.param
+	def get_embed_html(self, width, height, autoplay=True):
+		embed_url = "https://player.vimeo.com/video/%s" % self.param
+		if autoplay:
+			embed_url += "?autoplay=1"
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""",
 			width, height, embed_url

@@ -92,7 +92,7 @@
 		this.imageUrl = imageUrl;
 	};
 
-	window.ImageMediaItem.prototype.attachToLightbox = function(lightbox) {
+	window.ImageMediaItem.prototype.attachToLightbox = function(lightbox, autoplay) {
 		var self = this;
 
 		var screenshotImg = $('<img />');
@@ -158,7 +158,7 @@
 
 			var lightbox = new MediaLightbox();
 			mediaItem = new ImageMediaItem(this.href);
-			mediaItem.attachToLightbox(lightbox);
+			mediaItem.attachToLightbox(lightbox, false);
 
 			return false;
 		});
@@ -215,7 +215,7 @@
 					var item = self.mediaItems[self.currentIndex];
 					self.currentId = item.id;
 					self.lightbox.detach();
-					item.attachToLightbox(self.lightbox);
+					item.attachToLightbox(self.lightbox, false);
 				});
 				this.lightbox.mediaWrapper.append(prevLink);
 				var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
@@ -224,7 +224,7 @@
 					var item = self.mediaItems[self.currentIndex];
 					self.currentId = item.id;
 					self.lightbox.detach();
-					item.attachToLightbox(self.lightbox);
+					item.attachToLightbox(self.lightbox, false);
 				});
 				this.lightbox.mediaWrapper.append(nextLink);
 			}
@@ -235,7 +235,7 @@
 		item = this.mediaItemsById[id];
 		if (item) {
 			this.openLightbox();
-			item.attachToLightbox(this.lightbox);
+			item.attachToLightbox(this.lightbox, true);
 			this.currentId = id;
 			for (var i = 0; i < this.mediaItems.length; i++) {
 				if (this.mediaItems[i].id == id) {

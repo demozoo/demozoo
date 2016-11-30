@@ -89,7 +89,8 @@ class Carousel(object):
 			'url': str(video.link),
 			'video_width': video.video_width,
 			'video_height': video.video_height,
-			'embed_code': video.link.get_embed_html(video.video_width, video.video_height),
+			'embed_code': video.link.get_embed_html(video.video_width, video.video_height, autoplay=True),
+			'embed_code_without_autoplay': video.link.get_embed_html(video.video_width, video.video_height, autoplay=False),
 		}
 
 		if self.can_make_mosaic():

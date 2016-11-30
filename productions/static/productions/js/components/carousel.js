@@ -15,8 +15,8 @@
 		var img = new Image();
 		img.src = src;
 	};
-	Screenshot.prototype.attachToLightbox = function(lightbox) {
-		this.lightboxItem.attachToLightbox(lightbox);
+	Screenshot.prototype.attachToLightbox = function(lightbox, autoplay) {
+		this.lightboxItem.attachToLightbox(lightbox, autoplay);
 	};
 	Screenshot.prototype.draw = function(container) {
 		if (this.isProcessing) {
@@ -179,13 +179,13 @@
 			return false;
 		});
 	};
-	Video.prototype.attachToLightbox = function(lightbox) {
+	Video.prototype.attachToLightbox = function(lightbox, autoplay) {
 		var self = {};
 
 		var videoWidth = this.data['video_width'];
 		var videoHeight = this.data['video_height'];
 
-		var videoElement = $(this.data['embed_code']);
+		var videoElement = $(this.data[autoplay ? 'embed_code' : 'embed_code_without_autoplay']);
 		lightbox.mediaWrapper.append(videoElement);
 
 		self.setSize = function(maxWidth, maxHeight) {
