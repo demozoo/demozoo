@@ -346,6 +346,20 @@
 			self.currentId = newSlide.id;
 			self.view.scrollSlideInFromLeft(newSlide);
 		};
+
+		this.lightboxController.onNavigateToItem = function(item) {
+			var newSlide = self.slidesById[item.id];
+			if (newSlide) {
+				self.currentId = newSlide.id;
+				for (var i = 0; i < self.slides.length; i++) {
+					if (self.slides[i].id == newSlide.id) {
+						self.currentIndex = i;
+						break;
+					}
+				}
+				self.view.drawSlide(newSlide);
+			}
+		}
 	}
 
 	CarouselController.prototype.unpackCarouselData = function(carouselData) {

@@ -219,6 +219,7 @@
 					self.currentId = item.id;
 					self.lightbox.detach();
 					item.attachToLightbox(self.lightbox, false);
+					if (self.onNavigateToItem) self.onNavigateToItem(item);
 				});
 				navbar.append(prevLink);
 				var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
@@ -228,6 +229,7 @@
 					self.currentId = item.id;
 					self.lightbox.detach();
 					item.attachToLightbox(self.lightbox, false);
+					if (self.onNavigateToItem) self.onNavigateToItem(item);
 				});
 				navbar.append(nextLink);
 			}
