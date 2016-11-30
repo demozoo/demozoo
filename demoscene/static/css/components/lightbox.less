@@ -48,6 +48,46 @@
 			image-rendering: pixelated; // Chrome 41+ and Opera 26+
 		}
 	}
+
+	.navbar {
+		top: 50%;
+		position: absolute;
+		width: 100%;
+		margin-left: -8px;
+	}
+
+	a.nav {
+		position: absolute;
+		display: block;
+		width: 50px;
+		top: -40px;
+		height: 80px;
+		background-color: rgba(32, 32, 32, 0.5);
+		background-repeat: no-repeat;
+		background-position: center;
+		border-radius: 5px;
+		border: 1px solid rgba(192, 192, 192, 0.5);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+		text-indent: -5000px;
+
+		&:hover {
+			background-color: rgba(16, 16, 16, 0.7);
+		}
+	}
+
+	a.prev {
+		left: -24px;
+		background-image: url(/static/images/screenshot_nav_left.png);
+	}
+
+	a.next {
+		right: -24px;
+		background-image: url(/static/images/screenshot_nav_right.png);
+	}
+	&:hover .nav {
+		opacity: 1;
+	}
 }
 
 .media_lightbox_overlay {

@@ -209,6 +209,9 @@
 			};
 
 			if (this.mediaItems.length > 1) {
+				var navbar = $('<div class="navbar"></div>');
+				this.lightbox.mediaWrapper.append(navbar);
+
 				var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
 				prevLink.click(function() {
 					self.currentIndex = (self.currentIndex + self.mediaItems.length - 1) % self.mediaItems.length;
@@ -217,7 +220,7 @@
 					self.lightbox.detach();
 					item.attachToLightbox(self.lightbox, false);
 				});
-				this.lightbox.mediaWrapper.append(prevLink);
+				navbar.append(prevLink);
 				var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
 				nextLink.click(function() {
 					self.currentIndex = (self.currentIndex + 1) % self.mediaItems.length;
@@ -226,7 +229,7 @@
 					self.lightbox.detach();
 					item.attachToLightbox(self.lightbox, false);
 				});
-				this.lightbox.mediaWrapper.append(nextLink);
+				navbar.append(nextLink);
 			}
 
 		}
