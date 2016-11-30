@@ -72,6 +72,12 @@
 		var dims = this.getAvailableDimensions();
 		this.mediaItem.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
 	};
+	window.MediaLightbox.prototype.detach = function() {
+		if (this.mediaItem) {
+			this.mediaItem.unload();
+			this.mediaItem = null;
+		}
+	};
 	window.MediaLightbox.prototype.setSize = function(width, height) {
 		var dims = this.getAvailableDimensions();
 		this.mediaWrapper.css({
@@ -134,11 +140,11 @@
 			});
 
 			lightbox.setSize(finalWidth, finalHeight);
-		}
+		};
 
 		self.unload = function() {
 			screenshotImg.remove();
-		}
+		};
 
 		screenshot.src = this.imageUrl;
 	};
@@ -194,17 +200,41 @@
 		}
 		this.mediaItemsById = newMediaItemsById;
 	};
-	window.LightboxController.prototype.openAtId = function(id) {
+	window.LightboxController.prototype.openLightbox = function() {
 		var self = this;
+		if (!this.lightbox) {
+			this.lightbox = new MediaLightbox();
+			this.lightbox.onClose = function() {
+				self.lightbox = null;
+			};
 
+			if (this.mediaItems.length > 1) {
+				var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
+				prevLink.click(function() {
+					self.currentIndex = (self.currentIndex + self.mediaItems.length - 1) % self.mediaItems.length;
+					var item = self.mediaItems[self.currentIndex];
+					self.currentId = item.id;
+					self.lightbox.detach();
+					item.attachToLightbox(self.lightbox);
+				});
+				this.lightbox.mediaWrapper.append(prevLink);
+				var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
+				nextLink.click(function() {
+					self.currentIndex = (self.currentIndex + 1) % self.mediaItems.length;
+					var item = self.mediaItems[self.currentIndex];
+					self.currentId = item.id;
+					self.lightbox.detach();
+					item.attachToLightbox(self.lightbox);
+				});
+				this.lightbox.mediaWrapper.append(nextLink);
+			}
+
+		}
+	};
+	window.LightboxController.prototype.openAtId = function(id) {
 		item = this.mediaItemsById[id];
 		if (item) {
-			if (!this.lightbox) {
-				this.lightbox = new MediaLightbox();
-				this.lightbox.onClose = function() {
-					self.lightbox = null;
-				};
-			}
+			this.openLightbox();
 			item.attachToLightbox(this.lightbox);
 			this.currentId = id;
 			for (var i = 0; i < this.mediaItems.length; i++) {
