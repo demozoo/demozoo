@@ -1,55 +1,81 @@
 .search {
 
-  &--inline {
-    max-width: 320px;
-  }
+    &--inline {
+        margin: 0 0 2.5rem;
 
-  &__input {
-    display: flex;
-    overflow: hidden;
-  }
+        .search__input {
+            box-sizing: content-box;
+            display: flex;
+            height: 3.5rem;
+            max-width: 480px;
+            position: relative;
+            transition: 150ms ease-in border;
 
-  .input--search {
-    border: solid #f0f0f0;
-    border-width: 1px 0 1px 1px;
-    box-sizing: border-box;
-    height: 3rem;
-    border-radius: 5px 0 0 5px;
-    font-size: 1rem;
-    display: block;
-    -webkit-appearance: none;
-    padding: 1rem;
-    flex: 1 0 auto;
-    outline: none;
-
-    &:focus {
-      border-color: #444;
-
-      ~ .button {
-        background-color: @colorRed;
-        border-color: #444;
-        fill: white;
-
-        .icon {
-          fill: inherit;
+            .icon {
+                .size(3.5rem);
+                left: 0;
+                padding: 1rem;
+                pointer-events: none;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                transition: 150ms ease-in fill;
+            }
         }
-      }
-    }
-  }
 
-  .button--icon {
-    cursor: pointer;
-    .size(3rem);
-    border: solid #f0f0f0;
-    border-radius: 0 5px 5px 0;
-    border-width: 1px 1px 1px 0;
-    background: #f8f8f8;
-    outline: none;
+        input[type=search] {
+            appearance: none;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 1.25rem;
+            flex: 1 0 auto;
+            line-height: 1.5;
+            outline: none;
+            padding: 1rem 1.25rem 1rem 3.5rem;
+            position: relative;
+            transition: 150ms ease-out border-color;
 
-    .icon {
-      .size(2rem);
-      fill: #d8d8d8;
-      margin: 0;
+            &::-webkit-input-placeholder {
+                color: @colorGreyMid;
+                font-weight: 300;
+            }
+
+            &:-moz-placeholder {
+                color: @colorGreyMid;
+                font-weight: 300;
+            }
+
+            &::-moz-placeholder {
+                color: @colorGreyMid;
+                font-weight: 300;
+            }
+
+            &:-ms-input-placeholder {
+                color: @colorGreyMid;
+                font-weight: 300;
+            }
+
+            &:focus {
+                border-color: #fff #fff @colorRed;
+
+                & ~ .icon {
+                    fill: @colorRed;
+                }
+            }
+        }
+
+        .button {
+            background-color: #f8f8f8;
+            border-width: 0 0 0 1px;
+            cursor: pointer;
+
+            &__text {
+                padding: 0 1em;
+            }
+
+            .js & {
+                display: none;
+            }
+        }
     }
-  }
 }
