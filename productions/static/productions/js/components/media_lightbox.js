@@ -24,9 +24,12 @@
 			self.refreshSize();
 		};
 		$(window).resize(this.onResize);
+		this.keyCodeActions = {
+			27: function() {self.close();} /* escape key */
+		};
 		this.onKeydown = function(evt) {
-			/* check for escape key */
-			if (evt.keyCode == 27) self.close();
+			var action = self.keyCodeActions[evt.keyCode];
+			if (action) action();
 		};
 		$(window).keydown(this.onKeydown);
 
@@ -214,27 +217,35 @@
 
 				var prevLink = $('<a href="javascript:void(0);" class="nav prev">Previous</a>');
 				prevLink.click(function() {
-					self.currentIndex = (self.currentIndex + self.mediaItems.length - 1) % self.mediaItems.length;
-					var item = self.mediaItems[self.currentIndex];
-					self.currentId = item.id;
-					self.lightbox.detach();
-					item.attachToLightbox(self.lightbox, false);
-					if (self.onNavigateToItem) self.onNavigateToItem(item);
+					self.prev();
 				});
+				this.lightbox.keyCodeActions[37] = function() {self.prev();}; /* action for left arrow key */
 				navbar.append(prevLink);
 				var nextLink = $('<a href="javascript:void(0);" class="nav next">Next</a>');
 				nextLink.click(function() {
-					self.currentIndex = (self.currentIndex + 1) % self.mediaItems.length;
-					var item = self.mediaItems[self.currentIndex];
-					self.currentId = item.id;
-					self.lightbox.detach();
-					item.attachToLightbox(self.lightbox, false);
-					if (self.onNavigateToItem) self.onNavigateToItem(item);
+					self.next();
 				});
+				this.lightbox.keyCodeActions[39] = function() {self.next();}; /* action for right arrow key */
 				navbar.append(nextLink);
 			}
 
 		}
+	};
+	window.LightboxController.prototype.prev = function() {
+		this.currentIndex = (this.currentIndex + this.mediaItems.length - 1) % this.mediaItems.length;
+		var item = this.mediaItems[this.currentIndex];
+		this.currentId = item.id;
+		this.lightbox.detach();
+		item.attachToLightbox(this.lightbox, false);
+		if (this.onNavigateToItem) this.onNavigateToItem(item);
+	};
+	window.LightboxController.prototype.next = function() {
+		this.currentIndex = (this.currentIndex + 1) % this.mediaItems.length;
+		var item = this.mediaItems[this.currentIndex];
+		this.currentId = item.id;
+		this.lightbox.detach();
+		item.attachToLightbox(this.lightbox, false);
+		if (this.onNavigateToItem) this.onNavigateToItem(item);
 	};
 	window.LightboxController.prototype.openAtId = function(id) {
 		item = this.mediaItemsById[id];
