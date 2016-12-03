@@ -108,10 +108,12 @@
 
 		var screenshotImg = $('<img />');
 		var screenshot = new Image();
+		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
 		screenshot.onload = function() {
 			screenshotImg.get(0).src = screenshot.src;
-			lightbox.mediaWrapper.append(screenshotImg);
+			lightbox.mediaWrapper.append(screenshotWrapper);
+			screenshotWrapper.append(screenshotImg);
 			lightbox.attach(self);
 		};
 
@@ -119,7 +121,7 @@
 			var imageWidth = screenshot.width || 480;
 			var imageHeight = screenshot.height || 340;
 
-			var finalWidth, finalHeight, pixelated;
+			var finalWidth, finalHeight;
 
 			if (
 				imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
@@ -128,8 +130,28 @@
 				/* show image at double size */
 				finalWidth = imageWidth * 2;
 				finalHeight = imageHeight * 2;
-				pixelated = true;
+			} else if (imageWidth <= maxImageWidth && imageHeight <= maxImageHeight) {
+				/* show image at original size */
+				finalWidth = imageWidth;
+				finalHeight = imageHeight;
+			} else if (imageHeight >= 4 * imageWidth && imageWidth <= maxImageWidth) {
+				/* very tall image that fits within screen width; show at original size with scrollbar */
+				finalWidth = imageWidth;
+				finalHeight = imageHeight;
+			} else if (imageHeight >= 4 * imageWidth) {
+				/* very tall image that's also wider than screen width; show at full screen width with scrollbar */
+				finalWidth = maxImageWidth;
+				finalHeight = imageHeight * (maxImageWidth / imageWidth);
+			} else if (imageWidth >= 6 * imageHeight && imageHeight <= maxImageHeight) {
+				/* very wide image that fits within screen height; show at original size with scrollbar */
+				finalWidth = imageWidth;
+				finalHeight = imageHeight;
+			} else if (imageWidth >= 6 * imageHeight) {
+				/* very wide image that's also taller than screen height; show at full screen height with scrollbar */
+				finalHeight = maxImageHeight;
+				finalWidth = imageWidth * (maxImageHeight / imageHeight);
 			} else {
+				/* resize down to fit the smaller of screen width and screen height */
 				var fullWidth = Math.min(imageWidth, maxImageWidth);
 				var fullHeight = Math.min(imageHeight, maxImageHeight);
 
@@ -143,18 +165,28 @@
 					finalWidth = Math.round(widthAtFullHeight);
 					finalHeight = fullHeight;
 				}
-				pixelated = false;
 			}
+
+			/* use pixelated style when zoomed in */
+			var pixelated = (finalWidth > imageWidth);
+
+			// finalWidth *= 2; finalHeight *= 2; /* TEMP */
+
+			var windowWidth = Math.min(finalWidth, maxImageWidth);
+			var windowHeight = Math.min(finalHeight, maxImageHeight);
 
 			screenshotImg.attr({
 				'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
 			});
+			screenshotWrapper.css({
+				'width': windowWidth + 'px', 'height': windowHeight + 'px'
+			});
 
-			lightbox.setSize(finalWidth, finalHeight);
+			lightbox.setSize(windowWidth, windowHeight);
 		};
 
 		self.unload = function() {
-			screenshotImg.remove();
+			screenshotWrapper.remove();
 		};
 
 		screenshot.src = this.imageUrl;
