@@ -111,6 +111,7 @@
 		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
 		screenshot.onload = function() {
+			lightbox.mediaWrapper.removeClass('loading');
 			screenshotImg.get(0).src = screenshot.src;
 			lightbox.mediaWrapper.append(screenshotWrapper);
 			screenshotWrapper.append(screenshotImg);
@@ -189,6 +190,7 @@
 			screenshotWrapper.remove();
 		};
 
+		lightbox.mediaWrapper.addClass('loading');
 		screenshot.src = this.imageUrl;
 	};
 

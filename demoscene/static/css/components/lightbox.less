@@ -31,9 +31,12 @@
 	padding: 8px;
 	border: 1px solid #444;
 	background-color: #eee;
-	background-image: url('/static/images/screenshot_loading.gif');
 	background-repeat: no-repeat;
 	background-position: center;
+
+	&.loading {
+		background-image: url('/static/images/screenshot_loading.gif');
+	}
 
 	.lightbox_close {
 		margin-top: -4px;
