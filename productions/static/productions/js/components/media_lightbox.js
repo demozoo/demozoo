@@ -110,6 +110,10 @@
 		var screenshot = new Image();
 		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
+		var selectedZoomLevel = null;  /* becomes non-null when user uses the zoom controls */
+		var currentZoomLevel = null;  /* is set in setSize; copied from selectedZoomLevel if that's
+			non-null, or calculated in setAutomaticZoomLevel if not */
+
 		screenshot.onload = function() {
 			lightbox.mediaWrapper.removeClass('loading');
 			screenshotImg.get(0).src = screenshot.src;
@@ -118,58 +122,54 @@
 			lightbox.attach(self);
 		};
 
-		self.setSize = function(maxImageWidth, maxImageHeight) {
+		self.setAutomaticZoomLevel = function(maxImageWidth, maxImageHeight) {
 			var imageWidth = screenshot.width || 480;
 			var imageHeight = screenshot.height || 340;
-
-			var finalWidth, finalHeight;
 
 			if (
 				imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
 				imageHeight <= 300 && maxImageHeight >= imageHeight * 2
 			) {
 				/* show image at double size */
-				finalWidth = imageWidth * 2;
-				finalHeight = imageHeight * 2;
+				currentZoomLevel = 2;
 			} else if (imageWidth <= maxImageWidth && imageHeight <= maxImageHeight) {
 				/* show image at original size */
-				finalWidth = imageWidth;
-				finalHeight = imageHeight;
+				currentZoomLevel = 1;
 			} else if (imageHeight >= 4 * imageWidth && imageWidth <= maxImageWidth) {
 				/* very tall image that fits within screen width; show at original size with scrollbar */
-				finalWidth = imageWidth;
-				finalHeight = imageHeight;
+				currentZoomLevel = 1;
 			} else if (imageHeight >= 4 * imageWidth) {
 				/* very tall image that's also wider than screen width; show at full screen width with scrollbar */
-				finalWidth = maxImageWidth;
-				finalHeight = imageHeight * (maxImageWidth / imageWidth);
+				currentZoomLevel = maxImageWidth / imageWidth;
 			} else if (imageWidth >= 6 * imageHeight && imageHeight <= maxImageHeight) {
 				/* very wide image that fits within screen height; show at original size with scrollbar */
-				finalWidth = imageWidth;
-				finalHeight = imageHeight;
+				currentZoomLevel = 1;
 			} else if (imageWidth >= 6 * imageHeight) {
 				/* very wide image that's also taller than screen height; show at full screen height with scrollbar */
-				finalHeight = maxImageHeight;
-				finalWidth = imageWidth * (maxImageHeight / imageHeight);
+				currentZoomLevel = maxImageHeight / imageHeight;
 			} else {
 				/* resize down to fit the smaller of screen width and screen height */
-				var fullWidth = Math.min(imageWidth, maxImageWidth);
-				var fullHeight = Math.min(imageHeight, maxImageHeight);
+				currentZoomLevel = Math.min(
+					maxImageWidth / imageWidth,
+					maxImageHeight / imageHeight
+				);
+			}
+		};
 
-				var heightAtFullWidth = (fullWidth * imageHeight/imageWidth);
-				var widthAtFullHeight = (fullHeight * imageWidth/imageHeight);
-
-				if (heightAtFullWidth <= maxImageHeight) {
-					finalWidth = fullWidth;
-					finalHeight = Math.round(heightAtFullWidth);
-				} else {
-					finalWidth = Math.round(widthAtFullHeight);
-					finalHeight = fullHeight;
-				}
+		self.setSize = function(maxImageWidth, maxImageHeight) {
+			if (selectedZoomLevel === null) {
+				self.setAutomaticZoomLevel(maxImageWidth, maxImageHeight);
+			} else {
+				currentZoomLevel = selectedZoomLevel;
 			}
 
+			var imageWidth = screenshot.width || 480;
+			var imageHeight = screenshot.height || 340;
+			var finalWidth = imageWidth * currentZoomLevel;
+			var finalHeight = imageHeight * currentZoomLevel;
+
 			/* use pixelated style when zoomed in */
-			var pixelated = (finalWidth > imageWidth);
+			var pixelated = (currentZoomLevel > 1);
 
 			// finalWidth *= 2; finalHeight *= 2; /* TEMP */
 
