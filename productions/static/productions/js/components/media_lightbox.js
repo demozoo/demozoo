@@ -110,6 +110,14 @@
 		var screenshot = new Image();
 		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
+		var zoomControls = $('<ul class="zoom-controls"></ul>');
+		var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out">-</a>');
+		zoomControls.append($('<li></li>').append(zoomOutControl));
+		var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in">+</a>');
+		zoomControls.append($('<li></li>').append(zoomInControl));
+
+		var windowWidth, windowHeight;
+
 		var selectedZoomLevel = null;  /* becomes non-null when user uses the zoom controls */
 		var currentZoomLevel = null;  /* is set in setSize; copied from selectedZoomLevel if that's
 			non-null, or calculated in setAutomaticZoomLevel if not */
@@ -119,7 +127,28 @@
 			screenshotImg.get(0).src = screenshot.src;
 			lightbox.mediaWrapper.append(screenshotWrapper);
 			screenshotWrapper.append(screenshotImg);
+			lightbox.mediaWrapper.append(zoomControls);
 			lightbox.attach(self);
+
+			zoomOutControl.click(function() {
+				self.selectNewZoomLevel(currentZoomLevel / 2);
+			});
+			zoomInControl.click(function() {
+				self.selectNewZoomLevel(currentZoomLevel * 2);
+			});
+		};
+
+		self.selectNewZoomLevel = function(newZoomLevel) {
+			var wrapperElem = screenshotWrapper.get(0);
+			var centreX = (wrapperElem.scrollLeft + windowWidth / 2) / currentZoomLevel;
+			var centreY = (wrapperElem.scrollTop + windowHeight / 2) / currentZoomLevel;
+
+			selectedZoomLevel = newZoomLevel;
+			var dims = lightbox.getAvailableDimensions();
+			self.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
+
+			wrapperElem.scrollLeft = centreX * newZoomLevel - windowWidth / 2;
+			wrapperElem.scrollTop = centreY * newZoomLevel - windowHeight / 2;
 		};
 
 		self.setAutomaticZoomLevel = function(maxImageWidth, maxImageHeight) {
@@ -173,8 +202,8 @@
 
 			// finalWidth *= 2; finalHeight *= 2; /* TEMP */
 
-			var windowWidth = Math.min(finalWidth, maxImageWidth);
-			var windowHeight = Math.min(finalHeight, maxImageHeight);
+			windowWidth = Math.min(finalWidth, maxImageWidth);
+			windowHeight = Math.min(finalHeight, maxImageHeight);
 
 			screenshotImg.attr({
 				'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
@@ -188,6 +217,7 @@
 
 		self.unload = function() {
 			screenshotWrapper.remove();
+			zoomControls.remove();
 		};
 
 		lightbox.mediaWrapper.addClass('loading');

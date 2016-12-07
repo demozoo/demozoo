@@ -117,3 +117,45 @@ body.loading {
 .screenshot-wrapper {
 	overflow: scroll;
 }
+.zoom-controls {
+	position: absolute;
+	top: 75%;
+	left: 50%;
+	margin-left: -48px;
+	margin-top: -24px;
+	width: 100px;
+
+	a {
+		display: block;
+		float: left;
+		color: white;
+		background-color: rgba(32, 32, 32, 0.5);
+		height: 48px;
+		width: 48px;
+		border: 1px solid rgba(192, 192, 192, 0.5);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+		text-align: center;
+		line-height: 48px;
+		text-decoration: none;
+		font-weight: bold;
+		font-size: 16pt;
+
+		&:hover {
+			background-color: rgba(16, 16, 16, 0.7);
+		}
+
+		&.zoom-out {
+			border-top-left-radius: 5px;
+			border-bottom-left-radius: 5px;
+		}
+		&.zoom-in {
+			border-left: none;
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+		}
+	}
+}
+.media_lightbox_wrapper:hover .zoom-controls a {
+	opacity: 1;
+}
