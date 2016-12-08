@@ -212,6 +212,12 @@
 				'width': windowWidth + 'px', 'height': windowHeight + 'px'
 			});
 
+			/* stupid hack to force browsers to re-evaluate whether to add scrollbars or not */
+			screenshotWrapper.css({'overflow': 'hidden'});
+			setTimeout(function() {
+				screenshotWrapper.css({'overflow': 'auto'});
+			}, 1);
+
 			lightbox.setSize(windowWidth, windowHeight);
 		};
 
