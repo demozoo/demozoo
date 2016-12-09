@@ -118,8 +118,11 @@
 
 		var windowWidth, windowHeight;
 
-		var selectedZoomLevel = null;  /* becomes non-null when user uses the zoom controls */
-		var currentZoomLevel = null;  /* is set in setSize; copied from selectedZoomLevel if that's
+		var selectedZoomExponent = null;  /* becomes non-null when user uses the zoom controls */
+		var currentZoomLevel = null;  /* calculated from currentZoomBaseLevel / currentZoomExponent in setSize
+			and read-only elsewhere */
+		var currentZoomBaseLevel = null;
+		var currentZoomExponent = 0; /* is set in setSize; copied from selectedZoomExponent if that's
 			non-null, or calculated in setAutomaticZoomLevel if not */
 
 		screenshot.onload = function() {
@@ -131,24 +134,25 @@
 			lightbox.attach(self);
 
 			zoomOutControl.click(function() {
-				self.selectNewZoomLevel(currentZoomLevel / 2);
+				self.selectNewZoomExponent(currentZoomExponent - 1);
 			});
 			zoomInControl.click(function() {
-				self.selectNewZoomLevel(currentZoomLevel * 2);
+				self.selectNewZoomExponent(currentZoomExponent + 1);
 			});
 		};
 
-		self.selectNewZoomLevel = function(newZoomLevel) {
+		self.selectNewZoomExponent = function(newZoomExponent) {
 			var wrapperElem = screenshotWrapper.get(0);
 			var centreX = (wrapperElem.scrollLeft + windowWidth / 2) / currentZoomLevel;
 			var centreY = (wrapperElem.scrollTop + windowHeight / 2) / currentZoomLevel;
 
-			selectedZoomLevel = newZoomLevel;
+			selectedZoomExponent = newZoomExponent;
 			var dims = lightbox.getAvailableDimensions();
 			self.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
 
-			wrapperElem.scrollLeft = centreX * newZoomLevel - windowWidth / 2;
-			wrapperElem.scrollTop = centreY * newZoomLevel - windowHeight / 2;
+			/* re-centre image using new currentZoomLevel */
+			wrapperElem.scrollLeft = centreX * currentZoomLevel - windowWidth / 2;
+			wrapperElem.scrollTop = centreY * currentZoomLevel - windowHeight / 2;
 		};
 
 		self.setAutomaticZoomLevel = function(maxImageWidth, maxImageHeight) {
@@ -160,45 +164,55 @@
 				imageHeight <= 300 && maxImageHeight >= imageHeight * 2
 			) {
 				/* show image at double size */
-				currentZoomLevel = 2;
+				currentZoomBaseLevel = 1;
+				currentZoomExponent = 1;
 			} else if (imageWidth <= maxImageWidth && imageHeight <= maxImageHeight) {
 				/* show image at original size */
-				currentZoomLevel = 1;
+				currentZoomBaseLevel = 1;
+				currentZoomExponent = 0;
 			} else if (imageHeight >= 4 * imageWidth && imageWidth <= maxImageWidth) {
 				/* very tall image that fits within screen width; show at original size with scrollbar */
-				currentZoomLevel = 1;
+				currentZoomBaseLevel = 1;
+				currentZoomExponent = 0;
 			} else if (imageHeight >= 4 * imageWidth) {
 				/* very tall image that's also wider than screen width; show at full screen width with scrollbar */
-				currentZoomLevel = maxImageWidth / imageWidth;
+				currentZoomBaseLevel = maxImageWidth / imageWidth;
+				currentZoomExponent = 0;
 			} else if (imageWidth >= 6 * imageHeight && imageHeight <= maxImageHeight) {
 				/* very wide image that fits within screen height; show at original size with scrollbar */
-				currentZoomLevel = 1;
+				currentZoomBaseLevel = 1;
+				currentZoomExponent = 0;
 			} else if (imageWidth >= 6 * imageHeight) {
 				/* very wide image that's also taller than screen height; show at full screen height with scrollbar */
-				currentZoomLevel = maxImageHeight / imageHeight;
+				currentZoomBaseLevel = maxImageHeight / imageHeight;
+				currentZoomExponent = 0;
 			} else {
 				/* resize down to fit the smaller of screen width and screen height */
-				currentZoomLevel = Math.min(
+				currentZoomBaseLevel = Math.min(
 					maxImageWidth / imageWidth,
 					maxImageHeight / imageHeight
 				);
+				currentZoomExponent = 0;
 			}
 		};
 
 		self.setSize = function(maxImageWidth, maxImageHeight) {
-			if (selectedZoomLevel === null) {
+			if (selectedZoomExponent === null) {
 				self.setAutomaticZoomLevel(maxImageWidth, maxImageHeight);
 			} else {
-				currentZoomLevel = selectedZoomLevel;
+				currentZoomExponent = selectedZoomExponent;
 			}
+			currentZoomLevel = currentZoomBaseLevel * Math.pow(2, currentZoomExponent);
 
 			var imageWidth = screenshot.width || 480;
 			var imageHeight = screenshot.height || 340;
 			var finalWidth = imageWidth * currentZoomLevel;
 			var finalHeight = imageHeight * currentZoomLevel;
 
-			/* use pixelated style when zoomed in */
-			var pixelated = (currentZoomLevel > 1);
+			/* use pixelated style when zoomed in by an integer amount */
+			var pixelated = (
+				currentZoomBaseLevel == 1 &&
+				currentZoomExponent == Math.floor(currentZoomExponent) && currentZoomExponent > 0);
 
 			// finalWidth *= 2; finalHeight *= 2; /* TEMP */
 
