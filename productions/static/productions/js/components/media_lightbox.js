@@ -248,7 +248,7 @@
 		if (this.onNavigateToItem) this.onNavigateToItem(item);
 	};
 	window.LightboxController.prototype.openAtId = function(id) {
-		item = this.mediaItemsById[id];
+		var item = this.mediaItemsById[id];
 		if (item) {
 			this.openLightbox();
 			item.attachToLightbox(this.lightbox, true);
