@@ -113,6 +113,8 @@
 		var zoomControls = $('<ul class="zoom-controls"></ul>');
 		var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out">-</a>');
 		zoomControls.append($('<li></li>').append(zoomOutControl));
+		var zoomOriginalControl = $('<a href="javascript:void(0)" class="zoom-original">=</a>');
+		zoomControls.append($('<li></li>').append(zoomOriginalControl));
 		var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in">+</a>');
 		zoomControls.append($('<li></li>').append(zoomInControl));
 
@@ -134,19 +136,27 @@
 			lightbox.attach(self);
 
 			zoomOutControl.click(function() {
-				self.selectNewZoomExponent(currentZoomExponent - 0.5);
+				self.selectNewZoomLevel(null, currentZoomExponent - 0.5);
 			});
 			zoomInControl.click(function() {
-				self.selectNewZoomExponent(currentZoomExponent + 0.5);
+				self.selectNewZoomLevel(null, currentZoomExponent + 0.5);
+			});
+			zoomOriginalControl.click(function() {
+				self.selectNewZoomLevel(1, 0);
 			});
 		};
 
-		self.selectNewZoomExponent = function(newZoomExponent) {
+		self.selectNewZoomLevel = function(newZoomBaseLevel, newZoomExponent) {
 			var wrapperElem = screenshotWrapper.get(0);
 			var centreX = (wrapperElem.scrollLeft + windowWidth / 2) / currentZoomLevel;
 			var centreY = (wrapperElem.scrollTop + windowHeight / 2) / currentZoomLevel;
 
-			selectedZoomExponent = newZoomExponent;
+			if (newZoomBaseLevel !== null) {
+				currentZoomBaseLevel = newZoomBaseLevel;
+			}
+			if (newZoomExponent !== null) {
+				selectedZoomExponent = newZoomExponent;
+			}
 			var dims = lightbox.getAvailableDimensions();
 			self.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
 
