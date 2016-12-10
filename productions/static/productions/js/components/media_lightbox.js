@@ -135,6 +135,15 @@
 			lightbox.mediaWrapper.append(zoomControls);
 			lightbox.attach(self);
 
+			var hideControlsTimeout;
+			screenshotWrapper.mousemove(function() {
+				zoomControls.addClass('visible');
+				if (hideControlsTimeout !== null) clearTimeout(hideControlsTimeout);
+				hideControlsTimeout = setTimeout(function() {
+					zoomControls.removeClass('visible');
+				}, 1000);
+			})
+
 			zoomOutControl.click(function() {
 				self.selectNewZoomLevel(null, currentZoomExponent - 0.5);
 			});
