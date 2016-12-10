@@ -134,10 +134,10 @@
 			lightbox.attach(self);
 
 			zoomOutControl.click(function() {
-				self.selectNewZoomExponent(currentZoomExponent - 1);
+				self.selectNewZoomExponent(currentZoomExponent - 0.5);
 			});
 			zoomInControl.click(function() {
-				self.selectNewZoomExponent(currentZoomExponent + 1);
+				self.selectNewZoomExponent(currentZoomExponent + 0.5);
 			});
 		};
 
