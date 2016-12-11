@@ -120,11 +120,11 @@
 		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
 		var zoomControls = $('<ul class="zoom-controls"></ul>');
-		var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out">-</a>');
+		var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--zoom_out_white"></use></svg></a>');
 		zoomControls.append($('<li></li>').append(zoomOutControl));
-		var zoomOriginalControl = $('<a href="javascript:void(0)" class="zoom-original">=</a>');
+		var zoomOriginalControl = $('<a href="javascript:void(0)" class="zoom-original"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--zoom_original_white"></use></svg></a>');
 		zoomControls.append($('<li></li>').append(zoomOriginalControl));
-		var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in">+</a>');
+		var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--zoom_in_white"></use></svg></a>');
 		zoomControls.append($('<li></li>').append(zoomInControl));
 
 		var windowWidth, windowHeight;
@@ -151,7 +151,7 @@
 				hideControlsTimeout = setTimeout(function() {
 					zoomControls.removeClass('visible');
 				}, 1000);
-			})
+			});
 
 			zoomOutControl.click(function() {
 				self.selectNewZoomLevel(null, currentZoomExponent - 0.5);
