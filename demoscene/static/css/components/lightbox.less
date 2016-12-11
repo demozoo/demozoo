@@ -165,3 +165,13 @@ body.loading {
 .zoom-controls:hover a {
 	opacity: 1;
 }
+
+/* Detect scrollbar width: https://davidwalsh.name/detect-scrollbar-width */
+/* way the hell off screen */
+.scrollbar-measure {
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -9999px;
+}

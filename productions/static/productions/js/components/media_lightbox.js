@@ -106,6 +106,15 @@
 	window.ImageMediaItem.prototype.attachToLightbox = function(lightbox, autoplay) {
 		var self = this;
 
+		/* Detect scrollbar width */
+		// Create the measurement node
+		var scrollDiv = $('<div class="scrollbar-measure"></div>').get(0);
+		document.body.appendChild(scrollDiv);
+		// Get the scrollbar width
+		self.scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+		// Delete the DIV
+		document.body.removeChild(scrollDiv);
+
 		var screenshotImg = $('<img />');
 		var screenshot = new Image();
 		var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
@@ -174,50 +183,50 @@
 			wrapperElem.scrollTop = centreY * currentZoomLevel - windowHeight / 2;
 		};
 
-		self.setAutomaticZoomLevel = function(maxImageWidth, maxImageHeight) {
+		self.setAutomaticZoomLevel = function(maxWindowWidth, maxWindowHeight) {
 			var imageWidth = screenshot.width || 480;
 			var imageHeight = screenshot.height || 340;
 
 			if (
-				imageWidth <= 400 && maxImageWidth >= imageWidth * 2 &&
-				imageHeight <= 300 && maxImageHeight >= imageHeight * 2
+				imageWidth <= 400 && maxWindowWidth >= imageWidth * 2 &&
+				imageHeight <= 300 && maxWindowHeight >= imageHeight * 2
 			) {
 				/* show image at double size */
 				currentZoomBaseLevel = 1;
 				currentZoomExponent = 1;
-			} else if (imageWidth <= maxImageWidth && imageHeight <= maxImageHeight) {
+			} else if (imageWidth <= maxWindowWidth && imageHeight <= maxWindowHeight) {
 				/* show image at original size */
 				currentZoomBaseLevel = 1;
 				currentZoomExponent = 0;
-			} else if (imageHeight >= 4 * imageWidth && imageWidth <= maxImageWidth) {
+			} else if (imageHeight >= 4 * imageWidth && imageWidth <= (maxWindowWidth - self.scrollbarWidth)) {
 				/* very tall image that fits within screen width; show at original size with scrollbar */
 				currentZoomBaseLevel = 1;
 				currentZoomExponent = 0;
 			} else if (imageHeight >= 4 * imageWidth) {
 				/* very tall image that's also wider than screen width; show at full screen width with scrollbar */
-				currentZoomBaseLevel = maxImageWidth / imageWidth;
+				currentZoomBaseLevel = (maxWindowWidth - self.scrollbarWidth) / imageWidth;
 				currentZoomExponent = 0;
-			} else if (imageWidth >= 6 * imageHeight && imageHeight <= maxImageHeight) {
+			} else if (imageWidth >= 6 * imageHeight && imageHeight <= (maxWindowHeight - self.scrollbarWidth)) {
 				/* very wide image that fits within screen height; show at original size with scrollbar */
 				currentZoomBaseLevel = 1;
 				currentZoomExponent = 0;
 			} else if (imageWidth >= 6 * imageHeight) {
 				/* very wide image that's also taller than screen height; show at full screen height with scrollbar */
-				currentZoomBaseLevel = maxImageHeight / imageHeight;
+				currentZoomBaseLevel = (maxWindowHeight - self.scrollbarWidth) / imageHeight;
 				currentZoomExponent = 0;
 			} else {
 				/* resize down to fit the smaller of screen width and screen height */
 				currentZoomBaseLevel = Math.min(
-					maxImageWidth / imageWidth,
-					maxImageHeight / imageHeight
+					maxWindowWidth / imageWidth,
+					maxWindowHeight / imageHeight
 				);
 				currentZoomExponent = 0;
 			}
 		};
 
-		self.setSize = function(maxImageWidth, maxImageHeight) {
+		self.setSize = function(maxWindowWidth, maxWindowHeight) {
 			if (selectedZoomExponent === null) {
-				self.setAutomaticZoomLevel(maxImageWidth, maxImageHeight);
+				self.setAutomaticZoomLevel(maxWindowWidth, maxWindowHeight);
 			} else {
 				currentZoomExponent = selectedZoomExponent;
 			}
@@ -233,10 +242,29 @@
 				currentZoomBaseLevel == 1 &&
 				currentZoomExponent == Math.floor(currentZoomExponent) && currentZoomExponent > 0);
 
-			// finalWidth *= 2; finalHeight *= 2; /* TEMP */
-
-			windowWidth = Math.min(finalWidth, maxImageWidth);
-			windowHeight = Math.min(finalHeight, maxImageHeight);
+			if (finalWidth <= maxWindowWidth && finalHeight <= maxWindowHeight) {
+				/* yay, no scrollbar required */
+				windowWidth = finalWidth;
+				windowHeight = finalHeight;
+			} else if (finalWidth > maxWindowWidth && finalHeight > maxWindowHeight) {
+				/* scrolling required in both directions */
+				windowWidth = maxWindowWidth;
+				windowHeight = maxWindowHeight;
+			} else if (finalHeight > maxWindowHeight) {
+				/* vertical scrollbar required */
+				windowHeight = maxWindowHeight;
+				/* make window wider to accommodate scrollbar, if possible;
+				if not (i.e. the width of the scrollbar tips us over the edge of being able to display
+				the full image width on screen), we'll end up with a horizontal scrollbar too. Too bad. */
+				windowWidth = Math.min(finalWidth + self.scrollbarWidth, maxWindowWidth);
+			} else {
+				/* horizontal scrollbar required */
+				windowWidth = maxWindowWidth;
+				/* make window taller to accommodate scrollbar, if possible;
+				if not (i.e. the height of the scrollbar tips us over the edge of being able to display
+				the full image height on screen), we'll end up with a vertical scrollbar too. Too bad. */
+				windowHeight = Math.min(finalHeight + self.scrollbarWidth, maxWindowHeight);
+			}
 
 			screenshotImg.attr({
 				'width': finalWidth, 'height': finalHeight, 'class': (pixelated ? 'pixelated' : '')
