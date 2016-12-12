@@ -14,6 +14,10 @@
 		});
 
 		var self = this;
+
+		this.width = null;
+		this.height = null;
+
 		this.overlay.click(function() {
 			self.close();
 		});
@@ -68,6 +72,8 @@
 
 		if (this.mediaItem) {
 			this.mediaItem.setSize(dims.maxMediaWidth, dims.maxMediaHeight);
+		} else if (this.width === null) {
+			this.setSize(Math.min(dims.maxMediaWidth, 480), Math.min(dims.maxMediaHeight, 340));
 		}
 	};
 	window.MediaLightbox.prototype.attach = function(mediaItemView) {
@@ -89,6 +95,8 @@
 			'width': width + 'px',
 			'height': height + 24 + 'px'
 		});
+		this.width = width;
+		this.height = height;
 	};
 
 	window.ImageMediaItem = function(imageUrl) {
