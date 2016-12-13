@@ -82,7 +82,13 @@ class PILConvertibleImage(object):
 				subprocess.check_call([ANSILOVE_C_PATH, input_path, '-o', output_path])
 
 				# open result with PIL
-				self.image = Image.open(output_path)
+				try:
+					self.image = Image.open(output_path)
+				except IOError:
+					# On Linux (or just on the live server or something), ansilove adds a
+					# redundant .png to the output filename. LULZ.
+					output_path += '.png'
+					self.image = Image.open(output_path)
 				self.image.load()  # load pixel data and close file so we can delete it
 
 				# delete input and output files
