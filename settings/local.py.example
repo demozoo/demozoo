@@ -9,3 +9,6 @@ SCENEID_SECRET = 'please read https://id.scene.org/docs/'
 
 # Read-only mode:
 # SITE_IS_WRITEABLE = False
+
+# Path to Ansilove-C, if available
+# ANSILOVE_C_PATH = '/usr/local/bin/ansilove'
