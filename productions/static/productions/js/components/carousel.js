@@ -407,7 +407,7 @@
 			this.slides[i] = slide;
 			newSlidesById[slide.id] = slide;
 
-			if (slide.attachToLightbox) {
+			if (slide.attachToLightbox && !slide.isProcessing) {
 				lightboxItems.push(slide);
 			}
 
