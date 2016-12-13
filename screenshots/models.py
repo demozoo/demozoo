@@ -68,7 +68,7 @@ class PILConvertibleImage(object):
 			opened_with_pil = True
 			self.file = source_file
 		except IOError:
-			basename, ext = os.path.splitext(name_hint)
+			basename, ext = os.path.splitext(os.path.basename(name_hint))
 			if ext and ext[1:].lower() in ANSILOVE_C_READABLE_FORMATS:
 				# write source file contents to a temporary file
 				fd, input_path = tempfile.mkstemp(prefix=basename, suffix=ext)
