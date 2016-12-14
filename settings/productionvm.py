@@ -55,7 +55,7 @@ LOGGING = {
     }
 }
 
-ANSILOVE_C_PATH = '/usr/local/bin/ansilove'
+# ANSILOVE_C_PATH = '/usr/local/bin/ansilove'
 
 try:
 	from .local import *
