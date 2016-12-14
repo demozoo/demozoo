@@ -35,7 +35,7 @@ WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
 EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
 
 
-ANSILOVE_C_PATH = getattr(settings, 'ANSILOVE_C_PATH')
+ANSILOVE_C_PATH = getattr(settings, 'ANSILOVE_C_PATH', None)
 if ANSILOVE_C_PATH:
 	ANSILOVE_C_READABLE_FORMATS = ['ans', 'adf', 'idf', 'xb', 'pcb', 'tnd', 'asc', 'nfo', 'diz']
 	USABLE_IMAGE_FILE_EXTENSIONS += ANSILOVE_C_READABLE_FORMATS
