@@ -52,15 +52,16 @@ class BaseUrl():
 	html_title_format = "%s website"
 
 	def as_html(self, subject):
-		return '<a href="%s" class="%s" title="%s">%s</a>' % (
-			escape(str(self)), escape(self.html_link_class),
+		return '<a href="%s" title="%s"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/sites.svg#icon--%s"></use></svg><span>%s</span></a>' % (
+			escape(str(self)),
 			escape(self.html_title_format % subject),
+			escape(self.html_link_class),
 			escape(self.html_link_text)
 		)
 
 	def as_download_link(self):
 		hostname = urlparse.urlparse(str(self)).hostname
-		return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
+		return '<a class="primary" href="%s"><span>Download (%s)</span></a>' % (
 			escape(str(self)), escape(hostname)
 		)
 

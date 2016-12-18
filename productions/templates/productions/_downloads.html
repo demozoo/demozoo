@@ -1,19 +1,24 @@
+{% load demoscene_tags %}
 {% load url from future %}
 
-<div class="editable_chunk panel downloads_panel">
-	<h3>Downloads</h3>
-	{% if site_is_writeable %}
+<section class="downloads">
+	<div class="editable_chunk panel downloads_panel">
+		<h3>Downloads</h3>
+		{% if site_is_writeable %}
 		<ul class="actions">
 			<li>
 				<a href="{% url 'production_edit_download_links' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit download links">Edit</a>
 			</li>
 		</ul>
-	{% endif %}
-	<ul class="download_links">
-		{% for link in download_links %}
-			<li class="download_link {{ link.html_link_class }}">
+		{% endif %}
+		<ul class="download_links">
+			{% for link in download_links %}
+			<li class="download_link">
+				<!--{% icon link.html_link_class %}-->
+				<svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/sites.svg#icon--{{link.html_link_class}}"></use></svg>
 				{{ link.as_download_link|safe }}
 			</li>
-		{% endfor %}
-	</ul>
-</div>
+			{% endfor %}
+		</ul>
+	</div>
+</section>
