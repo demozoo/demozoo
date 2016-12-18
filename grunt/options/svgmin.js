@@ -10,7 +10,7 @@ module.exports = {
     sites: {
         expand: true,
         cwd: '<%= project.dir.svg %>/sites',
-        dest: '<%= project.dir.tmp %>/sites',
+        dest: '<%= project.dir.tmp %>/icons',
         src: ['*.svg']
     }
 

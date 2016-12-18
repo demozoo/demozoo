@@ -14,8 +14,7 @@
 		<ul class="download_links">
 			{% for link in download_links %}
 			<li class="download_link">
-				<!--{% icon link.html_link_class %}-->
-				<svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/sites.svg#icon--{{link.html_link_class}}"></use></svg>
+				{% icon link.html_link_class %}
 				{{ link.as_download_link|safe }}
 			</li>
 			{% endfor %}
