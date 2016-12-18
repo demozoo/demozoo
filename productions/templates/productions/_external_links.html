@@ -9,9 +9,11 @@
 			</li>
 		</ul>
 	{% endif %}
-	<ul class="external_links">
+	<ul class="list list--external-links">
 		{% for link in external_links %}
-			<li>{{ link.html_link|safe }}</li>
+			<li class="list__item">
+				{{ link.html_link|safe }}
+			</li>
 		{% endfor %}
 	</ul>
 </div>

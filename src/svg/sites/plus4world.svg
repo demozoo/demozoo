@@ -1,79 +1,78 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewbox="0 0 16 16">
-
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 16 16">
   <rect
-     y="1"
-     x="0"
-     height="14"
-     width="16"
+     style="fill:#333333"
      id="rect3647"
-     style="fill:#333333;" />
+     width="16"
+     height="14"
+     x="0"
+     y="1" />
   <path
-     style="fill:#0066cc"
+     d="M 0,1 1,1 1,5 0,5 Z"
      id="path100"
-     d="M 0,1 1,1 1,5 0,5 Z" />
+     style="fill:#0066cc" />
   <path
-     style="fill:#008080"
+     d="M 2,1 3,1 3,5 2,5 Z"
      id="path104"
-     d="M 2,1 3,1 3,5 2,5 Z" />
+     style="fill:#008080" />
   <path
-     style="fill:#669933"
+     d="M 4,1 5,1 5,5 4,5 Z"
      id="path108"
-     d="M 4,1 5,1 5,5 4,5 Z" />
+     style="fill:#669933" />
   <path
-     style="fill:#ffff33"
+     d="M 6,1 7,1 7,5 6,5 Z"
      id="path112"
-     d="M 6,1 7,1 7,5 6,5 Z" />
+     style="fill:#ffff33" />
   <path
-     style="fill:#ffcc33"
+     d="M 8,1 9,1 9,5 8,5 Z"
      id="path116"
-     d="M 8,1 9,1 9,5 8,5 Z" />
+     style="fill:#ffcc33" />
   <path
-     style="fill:#ff9933"
+     d="m 10,1 1,0 0,4 -1,0 z"
      id="path120"
-     d="m 10,1 1,0 0,4 -1,0 z" />
+     style="fill:#ff9933" />
   <path
-     style="fill:#ff6633"
+     d="m 12,1 1,0 0,4 -1,0 z"
      id="path124"
-     d="m 12,1 1,0 0,4 -1,0 z" />
+     style="fill:#ff6633" />
   <path
-     style="fill:#fe3333"
+     d="m 14,1 1,0 0,4 -1,0 z"
      id="path128"
-     d="m 14,1 1,0 0,4 -1,0 z" />
+     style="fill:#fe3333" />
   <path
-     id="path132"
-     d="M 7 6 L 7 7 L 8 7 L 8 8 L 7 8 L 7 7 L 6 7 L 6 8 L 5 8 L 5 7 L 4 7 L 3 7 L 2 7 L 1 7 L 1 8 L 1 9 L 1 10 L 1 11 L 2 11 L 2 10 L 3 10 L 4 10 L 5 10 L 5 9 L 6 9 L 7 9 L 8 9 L 8 10 L 9 10 L 9 9 L 10 9 L 11 9 L 11 10 L 12 10 L 12 9 L 13 9 L 13 10 L 14 10 L 14 9 L 15 9 L 15 8 L 15 7 L 14 7 L 14 8 L 13 8 L 13 7 L 12 7 L 12 8 L 11 8 L 11 7 L 10 7 L 10 8 L 9 8 L 9 7 L 9 6 L 8 6 L 7 6 z M 2 8 L 3 8 L 4 8 L 4 9 L 3 9 L 2 9 L 2 8 z "
-     style="fill:#e6e6e6" />
+     style="fill:#e6e6e6"
+     d="M 7,6 7,7 8,7 8,8 7,8 7,7 6,7 6,8 5,8 5,7 4,7 3,7 2,7 1,7 l 0,1 0,1 0,1 0,1 1,0 0,-1 1,0 1,0 1,0 0,-1 1,0 1,0 1,0 0,1 1,0 0,-1 1,0 1,0 0,1 1,0 0,-1 1,0 0,1 1,0 0,-1 1,0 0,-1 0,-1 -1,0 0,1 -1,0 0,-1 -1,0 0,1 -1,0 0,-1 -1,0 0,1 L 9,8 9,7 9,6 8,6 7,6 Z M 2,8 3,8 4,8 4,9 3,9 2,9 2,8 Z"
+     id="path132" />
   <path
-     style="fill:#fe3333"
+     d="m 1,11 1,0 0,4 -1,0 z"
      id="path284"
-     d="m 1,11 1,0 0,4 -1,0 z" />
+     style="fill:#fe3333" />
   <path
-     style="fill:#ff6633"
+     d="m 3,11 1,0 0,4 -1,0 z"
      id="path288"
-     d="m 3,11 1,0 0,4 -1,0 z" />
+     style="fill:#ff6633" />
   <path
-     style="fill:#ff9933"
+     d="m 5,11 1,0 0,4 -1,0 z"
      id="path292"
-     d="m 5,11 1,0 0,4 -1,0 z" />
+     style="fill:#ff9933" />
   <path
-     style="fill:#ffcc33"
+     d="m 7,11 1,0 0,4 -1,0 z"
      id="path296"
-     d="m 7,11 1,0 0,4 -1,0 z" />
+     style="fill:#ffcc33" />
   <path
-     style="fill:#ffff33"
+     d="m 9,11 1,0 0,4 -1,0 z"
      id="path300"
-     d="m 9,11 1,0 0,4 -1,0 z" />
+     style="fill:#ffff33" />
   <path
-     style="fill:#669933"
+     d="m 11,11 1,0 0,4 -1,0 z"
      id="path304"
-     d="m 11,11 1,0 0,4 -1,0 z" />
+     style="fill:#669933" />
   <path
-     style="fill:#008080"
+     d="m 13,11 1,0 0,4 -1,0 z"
      id="path308"
-     d="m 13,11 1,0 0,4 -1,0 z" />
+     style="fill:#008080" />
   <path
-     style="fill:#0066cc"
+     d="m 15,11 1,0 0,4 -1,0 z"
      id="path312"
-     d="m 15,11 1,0 0,4 -1,0 z" />
+     style="fill:#0066cc" />
 </svg>

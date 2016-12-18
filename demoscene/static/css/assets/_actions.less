@@ -9,6 +9,16 @@ ul.actions {
 			margin-left: 4px;
 		}
 	}
+
+	&:before,
+	&:after {
+		content: "";
+		display: table;
+	}
+
+	&:after {
+		clear: both;
+	}
 }
 
 ul.maintenance_actions {

@@ -58,7 +58,7 @@
 				<ul class="nicks">
 					{% for nick in alternative_nicks %}
 						<li>
-							<b>{{ nick.name }}</b> {% nick_variants nick %}
+							<strong>{{ nick.name }}</strong> {% nick_variants nick %}
 							{% if site_is_writeable and user.is_authenticated %}
 								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
@@ -83,9 +83,11 @@
 				</li>
 			</ul>
 		{% endif %}
-		<ul class="external_links">
+		<ul class="list list--external-links">
 			{% for link in external_links %}
-				<li>{{ link.html_link|safe }}</li>
+				<li class="list__item">
+					{{ link.html_link|safe }}
+				</li>
 			{% endfor %}
 		</ul>
 	</div>

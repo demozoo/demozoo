@@ -39,19 +39,19 @@
 		{% if party_series.has_any_external_links %}
 			<div class="panel external_links_panel">
 				<h3>External links</h3>
-				<ul class="external_links">
+				<ul class="list list--external-links">
 					{% if party_series.website %}
-						<li>
+						<li class="list__item">
 							<a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a>
 						</li>
 					{% endif %}
 					{% if party_series.twitter_url %}
-						<li>
+						<li class="list__item">
 							<a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a>
 						</li>
 					{% endif %}
 					{% if party_series.pouet_url %}
-						<li>
+						<li class="list__item">
 							<a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a>
 						</li>
 					{% endif %}
