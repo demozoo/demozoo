@@ -1270,8 +1270,8 @@ class ZxArtMusician(ZxArtEntry):
 class ZxArtAuthor(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/authors/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/([^\/]+/[^\/]+)/?', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/avtory/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?', re.I),
 	]
 
 
