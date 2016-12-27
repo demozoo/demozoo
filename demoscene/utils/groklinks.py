@@ -535,15 +535,15 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def nl_url(self):
-		return "ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def nl_http_url(self):
-		return "http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def nl_https_url(self):
-		return "https://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def download_url(self):
@@ -551,35 +551,35 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def no_ftp_url(self):
-		return "ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def no_http_url(self):
-		return "http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def us_http_url(self):
-		return "http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def hu_ftp_url(self):
-		return "ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def hu_http_url(self):
-		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def pl_ftp_url(self):
-		return "ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def pl_http_url(self):
-		return "http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def ua_ftp_url(self):
-		return "ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
 		mirrors_html = ' '.join(self.mirror_links)
