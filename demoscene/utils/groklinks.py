@@ -1267,6 +1267,14 @@ class ZxArtMusician(ZxArtEntry):
 	]
 
 
+class ZxArtAuthor(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/authors/%s/"
+	tests = [
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/avtory/([^\/]+/[^\/]+)/?', re.I),
+	]
+
+
 class ZxArtPicture(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
 	tests = [
@@ -1512,7 +1520,7 @@ RELEASER_LINK_TYPES = [
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
-	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
+	ZxArtAuthor, ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
 	Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser,
 	WaybackMachinePage, BaseUrl,
 ]
