@@ -1251,22 +1251,6 @@ class ZxArtEntry(BaseUrl):  # for use as an abstract superclass
 	html_title_format = "%s on ZXArt"
 
 
-class ZxArtArtist(ZxArtEntry):
-	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
-	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+)/', re.I),
-	]
-
-
-class ZxArtMusician(ZxArtEntry):
-	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
-	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+)/?', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+)/?', re.I),
-	]
-
-
 class ZxArtAuthor(ZxArtEntry):
 	canonical_format = "http://zxart.ee/eng/authors/%s/"
 	tests = [
@@ -1520,7 +1504,7 @@ RELEASER_LINK_TYPES = [
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
-	ZxArtAuthor, ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
+	ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
 	Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser,
 	WaybackMachinePage, BaseUrl,
 ]
