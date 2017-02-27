@@ -148,21 +148,27 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
 	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
+	release_date = serializers.SerializerMethodField(read_only=True)
 	platforms = PlatformSerializer(many=True, read_only=True)
 	types = ProductionTypeSummarySerializer(many=True, read_only=True)
 
 	def get_demozoo_url(self, production):
 		return settings.BASE_URL + production.get_absolute_url()
 
+	def get_release_date(self, production):
+		release_date = production.release_date
+		return release_date and release_date.numeric_format()
+
 	class Meta:
 		model = Production
-		fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types']
+		fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types']
 
 
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	author_nicks = AuthorNickSerializer(many=True, read_only=True)
 	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
+	release_date = serializers.SerializerMethodField(read_only=True)
 	platforms = PlatformSerializer(many=True, read_only=True)
 	types = ProductionTypeSerializer(many=True, read_only=True)
 	credits = ProductionCreditSerializer(many=True, read_only=True)
@@ -173,8 +179,12 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	def get_demozoo_url(self, production):
 		return settings.BASE_URL + production.get_absolute_url()
 
+	def get_release_date(self, production):
+		release_date = production.release_date
+		return release_date and release_date.numeric_format()
+
 	class Meta:
 		model = Production
 		fields = [
-			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'supertype', 'platforms', 'types',
+			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types',
 			'credits', 'download_links', 'external_links', 'screenshots']
