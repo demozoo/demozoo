@@ -74,6 +74,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+	'corsheaders.middleware.CorsMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,6 +108,7 @@ INSTALLED_APPS = (
 	'compressor',
 	'djcelery',
 	'rest_framework',
+	'corsheaders',
 
 	'demoscene',
 	'parties',
@@ -234,6 +236,10 @@ HTTP_USER_AGENT = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 
 GEOCODER_URL = 'http://geocoder.demozoo.org/'
 SCENEID_HOST = 'https://id.scene.org/'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/v1/.*$'
+CORS_ALLOW_METHODS = ['GET']
 
 # Read-only mode
 SITE_IS_WRITEABLE = True
