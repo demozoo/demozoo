@@ -17,7 +17,8 @@ def index(request):
 def show(request, user_id):
 	user = get_object_or_404(User, id=user_id)
 
-	edits = user.edits.order_by('-timestamp').select_related('user', 'focus', 'focus2')
+	edits = user.edits.order_by('-timestamp').select_related('user', 'focus_content_type',
+                                                             'focus2_content_type')
 	if not request.user.is_staff:
 		edits = edits.filter(admin_only=False)
 	edits_page = get_page(

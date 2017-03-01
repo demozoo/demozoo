@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include
 from django.contrib import admin
 admin.autodiscover()
 
-import djapian
+from lib import djapian
 djapian.load_indexes()
 
 urlpatterns = patterns('',
@@ -28,7 +28,7 @@ urlpatterns = patterns('',
 	(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm', {}, 'password_reset_confirm'),
 
 	# temporary route for password reset emails sent prior to django 1.6
-	(r'^account/forgotten_password/confirm/(?P<uidb36>\w+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm_uidb36', {}),
+	# (r'^account/forgotten_password/confirm/(?P<uidb36>\w+)/(?P<token>\w+-\w+)/$', 'django.contrib.auth.views.password_reset_confirm', {}),
 
 	(r'^account/forgotten_password/done/$', 'django.contrib.auth.views.password_reset_complete', {}, 'password_reset_complete'),
 

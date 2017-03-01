@@ -1,8 +1,6 @@
-import json
-
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from unidecode import unidecode
 
@@ -21,7 +19,7 @@ def search(request):
 
 		if len(name_results) == 1 and len(results) == 0:
 			messages.success(request, "One match found for '%s'" % query)
-			return HttpResponseRedirect(name_results[0].instance.get_absolute_url())
+			return redirect(name_results[0].instance)
 		page = get_page(results, request.GET.get('page', '1'))
 	else:
 		query = None
@@ -47,5 +45,4 @@ def live_search(request):
 		results = [hit.instance.search_result_json() for hit in results]
 	else:
 		results = []
-
-	return HttpResponse(json.dumps(results), mimetype="text/javascript")
+	return JsonResponse(results, safe=False)

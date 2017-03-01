@@ -40,9 +40,9 @@ su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR"
 su - vagrant -c "echo $PROJECT_DIR > $VIRTUALENV_DIR/.project"
 su - vagrant -c "$PIP install -r $PROJECT_DIR/requirements.txt"
 
-if [ ! -f $PROJECT_DIR/settings/local.py ]; then
+if [ ! -f $PROJECT_DIR/demozoo/settings/local.py ]; then
     SECRET_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
-    cat > $PROJECT_DIR/settings/local.py <<-EOM
+    cat > $PROJECT_DIR/demozoo/settings/local.py <<-EOM
 SECRET_KEY = '$SECRET_KEY'
 
 from .dev import DATABASES
@@ -71,7 +71,7 @@ su - vagrant -c "wget http://data.demozoo.org/demozoo-export.sql.gz -O /home/vag
 su - vagrant -c "gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo"
 
 # migrate (in case master's db schema is ahead of the live export)
-su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate"
+su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
 
 # Install project dependencies for grunt tasks and run a first time
 su - vagrant -c "cd ~/demozoo/ && npm install"

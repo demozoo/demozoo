@@ -159,6 +159,7 @@ class NickForm(forms.ModelForm):
 
 	class Meta:
 		model = Nick
+		fields = ('name', 'abbreviation', 'differentiator')
 
 
 class ScenerNickForm(NickForm):

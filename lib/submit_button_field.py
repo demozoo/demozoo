@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 
 class SubmitButtonInput(forms.Widget):
 	def __init__(self, attrs=None, button_text=None):

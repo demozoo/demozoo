@@ -6,8 +6,8 @@ from django.db import models
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 
-from fuzzy_date import FuzzyDate
-from strip_markup import strip_markup
+from lib.fuzzy_date import FuzzyDate
+from lib.strip_markup import strip_markup
 from unidecode import unidecode
 
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink

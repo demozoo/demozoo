@@ -5,7 +5,7 @@ import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.db.models import Count
 from django.template.loader import render_to_string
@@ -159,7 +159,7 @@ def history(request, production_id):
 
 @writeable_site_required
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
@@ -734,7 +734,7 @@ def remove_tag(request, production_id):
 
 def autocomplete_tags(request):
 	tags = Tag.objects.filter(name__istartswith=request.GET.get('term')).order_by('name').values_list('name', flat=True)
-	return HttpResponse(json.dumps(list(tags)), mimetype="text/javascript")
+	return JsonResponse(list(tags), safe=False)
 
 
 def autocomplete(request):
@@ -759,7 +759,7 @@ def autocomplete(request):
 		}
 		for production in productions
 	]
-	return HttpResponse(json.dumps(production_data), mimetype="text/javascript")
+	return JsonResponse(production_data, safe=False)
 
 
 @writeable_site_required

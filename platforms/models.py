@@ -1,8 +1,17 @@
 from django.db import models
 
-from model_thumbnail import ModelWithThumbnails
+from lib.model_thumbnail import ModelWithThumbnails
 from demoscene.models import Releaser
 from demoscene.utils.files import random_path
+
+
+def photo_original_upload_to(i, f):
+    return random_path('platform_photos/original', f)
+
+
+def thumbnail_upload_to(i, f):
+    return random_path('platform_photos/thumb', f)
+
 
 class Platform(ModelWithThumbnails):
 	name = models.CharField(max_length=255)
@@ -10,14 +19,14 @@ class Platform(ModelWithThumbnails):
 
 	photo = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: random_path('platform_photos/original', f)),
+		upload_to=photo_original_upload_to,
 		width_field='photo_width', height_field='photo_height')
 	photo_width = models.IntegerField(null=True, blank=True, editable=False)
 	photo_height = models.IntegerField(null=True, blank=True, editable=False)
 
 	thumbnail = models.ImageField(
 		null=True, blank=True,
-		upload_to=(lambda i, f: random_path('platform_photos/thumb', f)),
+		upload_to=thumbnail_upload_to,
 		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
 	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)

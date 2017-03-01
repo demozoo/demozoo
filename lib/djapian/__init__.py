@@ -1,10 +1,10 @@
 from django.conf import settings
 
-from djapian.indexer import Field, Indexer, CompositeIndexer
-from djapian.database import Database
-from djapian.space import IndexSpace
-from djapian.utils import load_indexes
-from djapian.decider import X
+from .indexer import Field, Indexer, CompositeIndexer  # noqa
+from .database import Database  # noqa
+from .space import IndexSpace
+from .utils import load_indexes  # noqa
+from .decider import X  # noqa
 
 space = IndexSpace(settings.DJAPIAN_DATABASE_PATH, "global")
 

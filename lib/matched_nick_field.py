@@ -34,7 +34,7 @@ class NickChoicesRenderer(forms.widgets.RadioFieldRenderer):
 				alias = ''
 			
 			label = mark_safe(flag + choice['nameWithAffiliations'] + differentiator + alias)
-			widget = forms.widgets.RadioInput(
+			widget = forms.widgets.RadioChoiceInput(
 				self.name, self.value, self.attrs.copy(), (choice['id'], label), i);
 			
 			list_items.append(

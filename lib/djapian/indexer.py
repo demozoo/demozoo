@@ -1,19 +1,17 @@
 import datetime
-import os
 
 from django.db import models
 from django.utils.itercompat import is_iterable
-from djapian.signals import post_save, pre_delete
 from django.conf import settings
 from django.utils.encoding import smart_str
 
-from djapian import decider
-from djapian.database import CompositeDatabase
-from djapian.resultset import ResultSet
-from djapian.utils.paging import paginate
-from djapian.utils.commiter import Commiter
-from djapian.utils.decorators import reopen_if_modified
-from djapian.utils import DEFAULT_WEIGHT, model_name
+from . import decider
+from .database import CompositeDatabase
+from .resultset import ResultSet
+from .utils.paging import paginate
+from .utils.commiter import Commiter
+from .utils.decorators import reopen_if_modified
+from .utils import DEFAULT_WEIGHT, model_name
 
 import xapian
 
@@ -165,9 +163,6 @@ class Indexer(object):
                 self.aliases[tag] = aliases
             else:
                 raise ValueError("Cannot create alias for tag `%s` that doesn't exist" % tag)
-
-        models.signals.post_save.connect(post_save, sender=self._model)
-        models.signals.pre_delete.connect(pre_delete, sender=self._model)
 
     def __unicode__(self):
         return self.__class__.get_descriptor()

@@ -3,7 +3,7 @@
 # Determine paths
 import os
 import sys
-FILEROOT = os.path.join(os.path.dirname(__file__), '..')
+FILEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
 # Modify sys.path so it contains the right things
 sys.path.append(FILEROOT)
@@ -31,8 +31,6 @@ DATABASES = {
 		'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for
 	}
 }
-
-SOUTH_TESTS_MIGRATE = False  # needed to stop Djapian messing things up when loading fixtures
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -83,7 +81,7 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'demozoo.urls'
 
 TEMPLATE_DIRS = (
 	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -101,7 +99,6 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
-	'south',
 	'djapian',
 	'treebeard',
 	'taggit',
@@ -110,6 +107,7 @@ INSTALLED_APPS = (
 	'rest_framework',
 	'corsheaders',
 
+    'demozoo',
 	'demoscene',
 	'parties',
 	'platforms',

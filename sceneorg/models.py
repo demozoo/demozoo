@@ -1,9 +1,6 @@
 from django.db import models
 import urllib
 import urllib2
-import hashlib
-import datetime
-from blob_field import BlobField
 
 
 class Directory(models.Model):
@@ -38,11 +35,11 @@ class Directory(models.Model):
 
 	@staticmethod
 	def party_years():
-		return Directory.objects.filter(parent=Directory.parties_root)
+		return Directory.objects.filter(parent=Directory.parties_root())
 
 	@staticmethod
 	def parties():
-		return Directory.objects.filter(parent__in=Directory.party_years)
+		return Directory.objects.filter(parent__in=Directory.party_years())
 
 
 class FileTooBig(Exception):
