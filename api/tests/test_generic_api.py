@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class TestApiRoot(TestCase):
@@ -50,6 +50,7 @@ class TestProductions(TestCase):
 		pondlife = [result for result in response_data if result['title'] == "Pondlife"][0]
 		self.assertIn("Hooy-Program", [nick['name'] for nick in pondlife['author_nicks']])
 
+	@override_settings(BASE_URL='https://demozoo.org')
 	def test_get_production(self):
 		response = self.client.get('/api/v1/productions/4/')
 		self.assertEqual(response.status_code, 200)
@@ -82,7 +83,7 @@ class TestReleasers(TestCase):
 		)
 		self.assertIn(
 			"Gasman",
-			[membership['member']['name'] for membership in response_data[0]['members']]
+			[membership['member']['name'] for membership in response_data['members']]
 		)
 
 	def test_get_releaser_prods(self):
