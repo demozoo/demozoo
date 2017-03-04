@@ -9,8 +9,8 @@ def make_default_platforms(apps, schema):
     Platform = apps.get_model('platforms', 'Platform')
     if Platform.objects.exists():
         return
-    platforms = [{'name': 'Windows'},
-				 {'name': 'ZX Spectrum'},
+    platforms = [{'name': 'ZX Spectrum'},
+                 {'name': 'Windows'},
 				 {'name': 'Commodore 64'},
 				 {'name': 'MS-Dos'},
 				 {'name': 'Amiga OCS/ECS'},
