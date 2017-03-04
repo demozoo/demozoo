@@ -456,6 +456,10 @@ class ProductionIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
 	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
 
+	def __init__(self, *args, **kwargs):
+		super(ProductionIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.featured_types()
+
 
 class GraphicsIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
