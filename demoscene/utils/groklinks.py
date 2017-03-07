@@ -153,7 +153,7 @@ def querystring_match(pattern, varname, flags=None, othervars={}):
 
 
 class TwitterAccount(BaseUrl):
-	canonical_format = "http://twitter.com/%s"
+	canonical_format = "https://twitter.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?twitter\.com/#!/([^/]+)', re.I),
 		regex_match(r'https?://(?:www\.)?twitter\.com/([^/]+)', re.I),
@@ -164,7 +164,7 @@ class TwitterAccount(BaseUrl):
 
 
 class SceneidAccount(BaseUrl):
-	canonical_format = "http://www.pouet.net/user.php?who=%s"
+	canonical_format = "https://www.pouet.net/user.php?who=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I),
 	]
@@ -174,7 +174,7 @@ class SceneidAccount(BaseUrl):
 
 
 class PouetGroup(BaseUrl):
-	canonical_format = "http://www.pouet.net/groups.php?which=%s"
+	canonical_format = "https://www.pouet.net/groups.php?which=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I),
 	]
@@ -184,7 +184,7 @@ class PouetGroup(BaseUrl):
 
 
 class PouetProduction(BaseUrl):
-	canonical_format = "http://www.pouet.net/prod.php?which=%s"
+	canonical_format = "https://www.pouet.net/prod.php?which=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I),
 	]
@@ -893,7 +893,7 @@ class ZxdemoParty(BaseUrl):
 
 
 class YoutubeVideo(BaseUrl):
-	canonical_format = "http://www.youtube.com/watch?v=%s"
+	canonical_format = "https://www.youtube.com/watch?v=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?youtube\.com/watch', 'v', re.I),
 		regex_match(r'https?://(?:www\.)?youtube\.com/embed/([^/]+)', re.I),
@@ -942,7 +942,7 @@ class YoutubeVideo(BaseUrl):
 
 
 class YoutubeUser(BaseUrl):
-	canonical_format = "http://www.youtube.com/user/%s"
+	canonical_format = "https://www.youtube.com/user/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)', re.I),
 	]
@@ -952,7 +952,7 @@ class YoutubeUser(BaseUrl):
 
 
 class YoutubeChannel(BaseUrl):
-	canonical_format = "http://www.youtube.com/channel/%s"
+	canonical_format = "https://www.youtube.com/channel/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?youtube\.com/channel/([^\/\?]+)', re.I),
 	]
@@ -962,7 +962,7 @@ class YoutubeChannel(BaseUrl):
 
 
 class VimeoVideo(BaseUrl):
-	canonical_format = "http://vimeo.com/%s"
+	canonical_format = "https://vimeo.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?vimeo\.com/(\d+)', re.I),
 	]
@@ -1009,7 +1009,7 @@ class VimeoVideo(BaseUrl):
 
 
 class VimeoUser(BaseUrl):
-	canonical_format = "http://vimeo.com/%s"
+	canonical_format = "https://vimeo.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?vimeo\.com/([\w-]+)/?$', re.I),
 	]
@@ -1053,7 +1053,7 @@ class DhsVideoDbVideo(BaseUrl):
 
 
 class FacebookPage(BaseUrl):
-	canonical_format = "http://www.facebook.com/%s"
+	canonical_format = "https://www.facebook.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?facebook\.com/(.+)', re.I),
 	]
@@ -1083,7 +1083,7 @@ class GooglePlusEvent(BaseUrl):
 
 
 class SoundcloudUser(BaseUrl):
-	canonical_format = "http://soundcloud.com/%s/"
+	canonical_format = "https://soundcloud.com/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+)', re.I),
 	]
@@ -1103,7 +1103,7 @@ class HearthisUser(BaseUrl):
 
 
 class SoundcloudTrack(BaseUrl):
-	canonical_format = "http://soundcloud.com/%s"
+	canonical_format = "https://soundcloud.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+/[^\/]+)', re.I),
 	]
@@ -1129,14 +1129,14 @@ class DiscogsEntry(BaseUrl):  # for use as an abstract superclass
 
 
 class DiscogsArtist(DiscogsEntry):
-	canonical_format = "http://www.discogs.com/artist/%s"
+	canonical_format = "https://www.discogs.com/artist/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
 	]
 
 
 class DiscogsLabel(DiscogsEntry):
-	canonical_format = "http://www.discogs.com/label/%s"
+	canonical_format = "https://www.discogs.com/label/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
 	]
