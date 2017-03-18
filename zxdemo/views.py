@@ -95,7 +95,12 @@ def productions(request):
 	if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
 		productions = productions.filter(title__istartswith=letter)
 
-	paginator = Paginator(productions, int(count))
+	try:
+		int_count = int(count)
+	except ValueError:
+		int_count = 50
+
+	paginator = Paginator(productions, int_count)
 	page = request.GET.get('page')
 
 	try:
@@ -171,7 +176,12 @@ def authors(request):
 	if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
 		releasers = releasers.filter(name__istartswith=letter)
 
-	paginator = Paginator(releasers, int(count))
+	try:
+		int_count = int(count)
+	except ValueError:
+		int_count = 50
+
+	paginator = Paginator(releasers, int_count)
 	page = request.GET.get('page')
 
 	try:
