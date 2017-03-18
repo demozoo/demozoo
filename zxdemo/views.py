@@ -548,8 +548,12 @@ def article(request, zxdemo_id):
 
 
 def article_redirect(request):
+	id = request.GET.get('id')
+	if id is None:
+		return redirect('zxdemo_articles')
+
 	try:
-		return redirect('zxdemo_article', int(request.GET.get('id')))
+		return redirect('zxdemo_article', int(id))
 	except (ValueError, UnicodeEncodeError):
 		raise Http404
 
