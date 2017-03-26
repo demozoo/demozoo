@@ -487,6 +487,7 @@ class SceneOrgFile(BaseUrl):
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://ftp\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'https?://http\.no\.scene\.org/scene\.org(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
