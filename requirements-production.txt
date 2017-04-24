@@ -19,3 +19,4 @@ timelib==0.2.1
 unidecode==0.04.14
 bcrypt==1.0.2
 python-dateutil==1.5
+uWSGI==2.0.15
