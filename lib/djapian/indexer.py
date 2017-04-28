@@ -133,6 +133,7 @@ class Indexer(object):
         Note that fields from other models can still be used in the index,
         but this model will be the one returned from search results.
         """
+        from .signals import post_save, pre_delete
         self._prepare(db, model)
 
         # Parse fields
@@ -163,6 +164,9 @@ class Indexer(object):
                 self.aliases[tag] = aliases
             else:
                 raise ValueError("Cannot create alias for tag `%s` that doesn't exist" % tag)
+
+        models.signals.post_save.connect(post_save, sender=self._model)
+        models.signals.pre_delete.connect(pre_delete, sender=self._model)
 
     def __unicode__(self):
         return self.__class__.get_descriptor()

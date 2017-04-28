@@ -21,5 +21,4 @@ def get_module(base, module_name):
         imp.find_module(module_name, base_path)
     except ImportError:
         raise NoModuleError("Cannot find module `%s` in base `%s`" % (module_name, base))
-
     return import_module('.%s' % module_name, base)

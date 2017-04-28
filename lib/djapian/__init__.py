@@ -9,3 +9,4 @@ from .decider import X  # noqa
 space = IndexSpace(settings.DJAPIAN_DATABASE_PATH, "global")
 
 add_index = space.add_index
+default_app_config = 'djapian.apps.DjapianConfig'

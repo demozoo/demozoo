@@ -51,14 +51,13 @@ def transact(func):
             func(*args, **kwargs)
         except Exception:
             traceback.print_exc()
-            transaction.rollback()
             sys.exit()
     return decorated
 
 
-@transaction.atomic
 @transact
 def update_changes(verbose, timeout, once, per_page, commit_each, app_models=None):
+    transaction.set_autocommit(False)
     counter = [0]
 
     def reset_counter():
