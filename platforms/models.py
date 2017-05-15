@@ -6,11 +6,11 @@ from demoscene.utils.files import random_path
 
 
 def photo_original_upload_to(i, f):
-    return random_path('platform_photos/original', f)
+	return random_path('platform_photos/original', f)
 
 
 def thumbnail_upload_to(i, f):
-    return random_path('platform_photos/thumb', f)
+	return random_path('platform_photos/thumb', f)
 
 
 class Platform(ModelWithThumbnails):
@@ -23,6 +23,7 @@ class Platform(ModelWithThumbnails):
 		width_field='photo_width', height_field='photo_height')
 	photo_width = models.IntegerField(null=True, blank=True, editable=False)
 	photo_height = models.IntegerField(null=True, blank=True, editable=False)
+	photo_url = models.CharField(max_length=255, blank=True, editable=False)
 
 	thumbnail = models.ImageField(
 		null=True, blank=True,
@@ -30,11 +31,19 @@ class Platform(ModelWithThumbnails):
 		editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
 	thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
 
 	def save(self, *args, **kwargs):
 		if self.photo:
 			Platform.generate_thumbnail(self.photo, self.thumbnail, (135, 90), crop=True)
+			self.photo_url = self.photo.url
+			self.thumbnail_url = self.thumbnail.url
+
 		super(Platform, self).save(*args, **kwargs)
+
+		# following the call to super(), self.photo.url is now defined and can be used
+		# to populate photo_url - but we'll do this via `update` to avoid another call to save
+		Platform.objects.filter(pk=self.pk).update(photo_url=self.photo.url)
 
 	def __unicode__(self):
 		return self.name
