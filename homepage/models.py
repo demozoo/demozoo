@@ -31,12 +31,20 @@ class BannerImage(models.Model):
 		help_text='Will be cropped to 2.5 : 1 aspect ratio. Recommended size: 832x333')
 	image_width = models.IntegerField(editable=False)
 	image_height = models.IntegerField(editable=False)
+	image_url = models.CharField(max_length=255, blank=True, editable=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
+	def save(self, *args, **kwargs):
+		super(BannerImage, self).save(*args, **kwargs)
+
+		# following the call to super(), self.image.url is now defined and can be used
+		# to populate image_url - but we'll do this via `update` to avoid another call to save
+		BannerImage.objects.filter(pk=self.pk).update(image_url=self.image.url)
+
 	# method for displaying image in admin listings
 	def image_tag(self):
-		return '<img src="%s" width="400" alt="" />' % self.image.url
+		return '<img src="%s" width="400" alt="" />' % self.image_url
 	image_tag.allow_tags = True
 
 	def __unicode__(self):
@@ -70,12 +78,20 @@ class NewsImage(models.Model):
 		help_text='Recommended size: 100x100')
 	image_width = models.IntegerField(editable=False)
 	image_height = models.IntegerField(editable=False)
+	image_url = models.CharField(max_length=255, blank=True, editable=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
+	def save(self, *args, **kwargs):
+		super(NewsImage, self).save(*args, **kwargs)
+
+		# following the call to super(), self.image.url is now defined and can be used
+		# to populate image_url - but we'll do this via `update` to avoid another call to save
+		NewsImage.objects.filter(pk=self.pk).update(image_url=self.image.url)
+
 	# method for displaying image in admin listings
 	def image_tag(self):
-		return '<img src="%s" width="100" alt="" />' % self.image.url
+		return '<img src="%s" width="100" alt="" />' % self.image_url
 	image_tag.allow_tags = True
 
 	def __unicode__(self):

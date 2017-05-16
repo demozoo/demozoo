@@ -27,7 +27,7 @@
 					<div style="clear: both;"></div>
 				{% endif %}
 				{% if banner %}
-					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
+					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">
 						<div class="banner_text">
 							<h1>{{ banner.title }}</h1>
 							{{ banner.text|safe_markdown }}
@@ -91,7 +91,7 @@
 						<div class="section group">
 							<div class="story_image col span_1_of_6">
 								{% if story.image %}
-									<img src="{{ story.image.image.url }}" width="100" alt="">
+									<img src="{{ story.image.image_url }}" width="100" alt="">
 								{% else %}
 									<img src="/static/images/news.png" width="100" alt="">
 								{% endif %}
