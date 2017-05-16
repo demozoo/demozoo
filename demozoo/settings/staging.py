@@ -14,6 +14,8 @@ BROKER_URL = 'redis://localhost:6379/1'
 
 ALLOWED_HOSTS = ['localhost', 'staging.demozoo.org']
 
+BASE_URL = 'http://staging.demozoo.org'
+
 # django-compressor offline compression
 COMPRESS_OFFLINE = True
 COMPRESS_OFFLINE_CONTEXT = {
