@@ -10,8 +10,8 @@
 	<ul>
 		{% for image in images %}
 			<li>
-				<a href="javascript:void(0);" class="choose-image" data-id="{{ image.id }}" data-url="{{ image.image.url }}">
-					<img src="{{ image.image.url }}" width="400" alt="">
+				<a href="javascript:void(0);" class="choose-image" data-id="{{ image.id }}" data-url="{{ image.image_url }}">
+					<img src="{{ image.image_url }}" width="400" alt="">
 				</a>
 			</li>
 		{% endfor %}
