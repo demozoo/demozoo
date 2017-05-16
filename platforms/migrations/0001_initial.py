@@ -23,9 +23,11 @@ class Migration(migrations.Migration):
                 ('photo', models.ImageField(blank=True, height_field=b'photo_height', null=True, upload_to=platforms.models.photo_original_upload_to, width_field=b'photo_width')),
                 ('photo_width', models.IntegerField(blank=True, editable=False, null=True)),
                 ('photo_height', models.IntegerField(blank=True, editable=False, null=True)),
+                ('photo_url', models.CharField(blank=True, editable=False, max_length=255)),
                 ('thumbnail', models.ImageField(blank=True, editable=False, height_field=b'thumbnail_height', null=True, upload_to=platforms.models.thumbnail_upload_to, width_field=b'thumbnail_width')),
                 ('thumbnail_width', models.IntegerField(blank=True, editable=False, null=True)),
                 ('thumbnail_height', models.IntegerField(blank=True, editable=False, null=True)),
+                ('thumbnail_url', models.CharField(blank=True, editable=False, max_length=255)),
             ],
             options={
                 'ordering': ['name'],
