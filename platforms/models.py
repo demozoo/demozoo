@@ -43,7 +43,8 @@ class Platform(ModelWithThumbnails):
 
 		# following the call to super(), self.photo.url is now defined and can be used
 		# to populate photo_url - but we'll do this via `update` to avoid another call to save
-		Platform.objects.filter(pk=self.pk).update(photo_url=self.photo.url)
+		if self.photo:
+			Platform.objects.filter(pk=self.pk).update(photo_url=self.photo.url)
 
 	def __unicode__(self):
 		return self.name
