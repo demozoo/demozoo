@@ -62,6 +62,9 @@ class BaseExternalLinkFormSet(BaseInlineFormSet):
 				link.save()
 			except ValidationError:
 				pass  # skip over any links that fail uniqueness
+		# 1.7 changed the handling of deleted_objects if commit=False
+		for link in self.deleted_objects:
+			link.delete()
 
 
 class CreditForm(forms.ModelForm):
