@@ -111,7 +111,7 @@ def create(request):
 			form.log_creation(request.user)
 
 			if request.is_ajax():
-				return HttpResponse('OK: %s' % party.get_absolute_url(), mimetype='text/plain')
+				return HttpResponse('OK: %s' % party.get_absolute_url(), content_type='text/plain')
 			else:
 				messages.success(request, 'Party added')
 				return redirect('party', party.id)
@@ -299,7 +299,7 @@ def autocomplete(request):
 		}
 		for party in parties
 	]
-	return HttpResponse(json.dumps(party_data), mimetype="text/javascript")
+	return HttpResponse(json.dumps(party_data), content_type="text/javascript")
 
 
 @writeable_site_required

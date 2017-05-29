@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from django.utils.encoding import StrAndUnicode
+# from django.utils.encoding import StrAndUnicode
 from productions.models import Production, ProductionType
 import datetime
 from productions.fields.byline_field import BylineField, BylineWidget
@@ -10,7 +10,7 @@ from productions.fields.production_type_field import ProductionTypeChoiceField
 # A value encapsulating the state of the ProductionWidget.
 # Used as the cleaned value of a ProductionField
 # and the value ProductionWidget returns from value_from_datadict.
-class ProductionSelection(StrAndUnicode):
+class ProductionSelection(object):
 	def __init__(self, id=None, title=None, byline_lookup=None, types_to_set=[]):
 		self.id = id
 		self.types_to_set = types_to_set

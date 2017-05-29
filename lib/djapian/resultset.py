@@ -3,7 +3,7 @@ import operator
 from copy import deepcopy
 from itertools import imap
 
-from django.db.models import get_model
+from django.apps import apps
 from django.utils.encoding import force_unicode
 
 from djapian import utils, decider
@@ -230,7 +230,7 @@ class ResultSet(object):
             doc = match.document
 
             model = doc.get_value(2)
-            model = get_model(*model.split('.'))
+            model = apps.get_model(*model.split('.'))
             pk = model._meta.pk.to_python(doc.get_value(1))
 
             percent = match.percent

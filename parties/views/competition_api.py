@@ -96,7 +96,7 @@ def add_placing(request, competition_id):
 		Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
 			description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
 
-		return HttpResponse(json.dumps(placing.json_data), mimetype="text/javascript")
+		return HttpResponse(json.dumps(placing.json_data), content_type="text/javascript")
 
 
 @writeable_site_required
@@ -124,7 +124,7 @@ def update_placing(request, placing_id):
 		placing.score = data['score']
 		placing.save()
 
-		return HttpResponse(json.dumps(placing.json_data), mimetype="text/javascript")
+		return HttpResponse(json.dumps(placing.json_data), content_type="text/javascript")
 
 
 @writeable_site_required
@@ -146,4 +146,4 @@ def delete_placing(request, placing_id):
 		if delete_production_too:
 			placing.production.delete()
 
-		return HttpResponse('OK', mimetype="text/plain")
+		return HttpResponse('OK', content_type="text/plain")

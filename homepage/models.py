@@ -20,9 +20,13 @@ class Banner(models.Model):
 		return self.title
 
 
+def banner_image_upload_to(i, f):
+    return random_path('homepage_banners', f)
+
+
 class BannerImage(models.Model):
 	image = models.ImageField(
-		upload_to=(lambda i, f: random_path('homepage_banners', f)),
+		upload_to=banner_image_upload_to,
 		width_field='image_width', height_field='image_height',
 		help_text='Will be cropped to 2.5 : 1 aspect ratio. Recommended size: 832x333')
 	image_width = models.IntegerField(editable=False)
@@ -63,10 +67,13 @@ class NewsStory(models.Model):
 	class Meta:
 		verbose_name_plural = 'News stories'
 
+def news_image_upload_to(i, f):
+    return random_path('news_images', f)
+
 
 class NewsImage(models.Model):
 	image = models.ImageField(
-		upload_to=(lambda i, f: random_path('news_images', f)),
+		upload_to=news_image_upload_to,
 		width_field='image_width', height_field='image_height',
 		help_text='Recommended size: 100x100')
 	image_width = models.IntegerField(editable=False)

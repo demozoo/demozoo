@@ -451,14 +451,29 @@ class ProductionInvitationPartyForm(forms.Form):
 ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
 	can_delete=True, extra=1)
 
+
 class ProductionIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.featured_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(ProductionIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.featured_types()
+
 
 class GraphicsIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.graphic_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(GraphicsIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.graphic_types()
+
 
 class MusicIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.music_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(MusicIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.music_types()

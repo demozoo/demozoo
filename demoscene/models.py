@@ -1,17 +1,19 @@
+from collections import OrderedDict as SortedDict
+
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.utils.datastructures import SortedDict
+# from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 import re
 import datetime
 
 from unidecode import unidecode
 
-from strip_markup import strip_markup
-from prefetch_snooping import ModelWithPrefetchSnooping
+from lib.strip_markup import strip_markup
+from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
 
 DATE_PRECISION_CHOICES = [
@@ -21,7 +23,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(ModelWithPrefetchSnooping, models.Model):
+class Releaser(models.Model, ModelWithPrefetchSnooping):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField(db_index=True)
 	notes = models.TextField(blank=True)
@@ -591,11 +593,11 @@ class Edit(models.Model):
 
 	focus_content_type = models.ForeignKey(ContentType, related_name='edits')
 	focus_object_id = models.PositiveIntegerField()
-	focus = generic.GenericForeignKey('focus_content_type', 'focus_object_id')
+	focus = GenericForeignKey('focus_content_type', 'focus_object_id')
 
 	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2')
 	focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
-	focus2 = generic.GenericForeignKey('focus2_content_type', 'focus2_object_id')
+	focus2 = GenericForeignKey('focus2_content_type', 'focus2_object_id')
 
 	description = models.TextField()
 	user = models.ForeignKey(User, related_name='edits')

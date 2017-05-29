@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from fabric.api import env, cd, run, get, local
 
-from settings.dev import DATABASES
+from demozoo.settings.dev import DATABASES
 db_username = DATABASES['default']['USER']
 
 env.hosts = ['demozoo@www1.demozoo.org']
@@ -14,10 +14,10 @@ def deploy():
 		run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
 		run('npm install')
 		run('grunt')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=settings.productionvm')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=settings.productionvm')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=settings.productionvm')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py syncdb --settings=demozoo.settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
 		run('sudo supervisorctl restart demozoo')
 		run('sudo supervisorctl restart zxdemo')
 		run('sudo supervisorctl restart demozoo-celery')
@@ -31,31 +31,31 @@ def deploy_staging():
 		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
 		run('npm install')
 		run('grunt')
-		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py syncdb --settings=settings.staging')
-		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=settings.staging')
-		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=settings.staging')
-		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py syncdb --settings=demozoo.settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
 		run('sudo supervisorctl restart demozoo-staging')
 
 
 def sanity():
 	"""Fix up data integrity errors"""
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=demozoo.settings.productionvm')
 
 
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
 		run('sudo supervisorctl stop demozoo-djapian')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=demozoo.settings.productionvm')
 		run('sudo supervisorctl start demozoo-djapian')
 
 
 def bump_external_links():
 	"""Rescan external links for new 'recognised' sites"""
 	with cd('/home/demozoo/demozoo'):
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=settings.productionvm')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm')
 
 
 def fetchdb():

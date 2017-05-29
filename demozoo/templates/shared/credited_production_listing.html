@@ -1,0 +1,59 @@
+{% load demoscene_tags %}
+
+
+<table class="table">
+	<colgroup>
+		<col class="col--thumb" />
+		<col width="40%" />
+		<col />
+		<col class="col--date" />
+		{% if editing and site_is_writeable %}
+		<col />
+		{% endif %}
+	</colgroup>
+	<tbody>
+		{% for production, nick, credits in credits %}
+			<tr>
+				<td>
+					{% if show_screenshots and production.default_screenshot %}
+						{% microthumb production.default_screenshot %}
+
+					{% else %}
+						<div class="media media--thumbnail">
+							{% icon production.supertype %}
+						</div>
+					{% endif %}
+				</td>
+				<td>
+					<div>
+						<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+						{% if credits %}
+							-
+							{% for credit in credits %}
+								<span>{{ credit.description }}</span>{% if not forloop.last %},{% endif %}
+							{% endfor %}
+							{% if nick.name != releaser.name %}
+								<em>(as <span>{{ nick.name }}</span>)</em>
+							{% endif %}
+						{% endif %}
+					</div>
+					{% if show_prod_types %}
+						<div class="meta">
+							{{ production.platforms_and_types_list }}
+						</div>
+					{% endif %}
+				</td>
+				<td>{% byline production %}</td>
+				<td>{{ production.release_date.short_format }}</td>
+
+				{% if editing and site_is_writeable %}
+					<td>
+						<a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
+							<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
+						</a>
+					</td>
+				{% endif %}
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

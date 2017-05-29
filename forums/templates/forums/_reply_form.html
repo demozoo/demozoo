@@ -1,4 +1,4 @@
-{% load url from future %}
+
 
 <form action="{% url 'forums_topic_reply' topic.id %}" method="POST" class="reply_form">
 	{% csrf_token %}

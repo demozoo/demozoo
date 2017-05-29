@@ -1,4 +1,4 @@
-class ModelWithPrefetchSnooping():
+class ModelWithPrefetchSnooping(object):
 	"""
 		Adds a has_prefetched method to a model, which indicates whether the specified
 		relation has been prefetched with prefetch_related. This knowledge can be used

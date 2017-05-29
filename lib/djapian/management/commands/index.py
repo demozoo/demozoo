@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
-from django.utils.daemonize import become_daemon
 from django.contrib.contenttypes.models import ContentType
 
 import os
@@ -11,6 +10,7 @@ import time
 from datetime import datetime
 from optparse import make_option
 
+from djapian.daemonize import become_daemon
 from djapian.models import Change
 from djapian import utils
 from djapian.utils.paging import paginate
@@ -51,14 +51,13 @@ def transact(func):
             func(*args, **kwargs)
         except Exception:
             traceback.print_exc()
-            transaction.rollback()
             sys.exit()
     return decorated
 
 
-@transaction.commit_manually
 @transact
 def update_changes(verbose, timeout, once, per_page, commit_each, app_models=None):
+    transaction.set_autocommit(False)
     counter = [0]
 
     def reset_counter():

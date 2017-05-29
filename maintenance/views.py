@@ -861,7 +861,7 @@ def exclude(request):
 		report_name=request.POST['report_name'],
 		record_id=request.POST['record_id']
 	)
-	return HttpResponse('OK', mimetype='text/plain')
+	return HttpResponse('OK', content_type='text/plain')
 
 
 @writeable_site_required
@@ -878,7 +878,7 @@ def add_membership(request):
 			member_id=request.POST['member_id'],
 			group_id=request.POST['group_id']
 		)
-	return HttpResponse('OK', mimetype='text/plain')
+	return HttpResponse('OK', content_type='text/plain')
 
 
 @writeable_site_required
@@ -890,7 +890,7 @@ def add_sceneorg_link_to_party(request):
 			party_id=request.POST['party_id'],
 			parameter=request.POST['path'],
 			link_class='SceneOrgFolder')
-	return HttpResponse('OK', mimetype='text/plain')
+	return HttpResponse('OK', content_type='text/plain')
 
 
 def view_archive_member(request, archive_member_id):
@@ -898,7 +898,7 @@ def view_archive_member(request, archive_member_id):
 		return redirect('home')
 	member = ArchiveMember.objects.get(id=archive_member_id)
 	buf = member.fetch_from_zip()
-	return HttpResponse(buf, mimetype=member.guess_mime_type())
+	return HttpResponse(buf, content_type=member.guess_mime_type())
 
 
 @writeable_site_required
@@ -913,7 +913,7 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 		production_link.is_unresolved_for_screenshotting = False
 		production_link.save()
 		create_screenshot_from_production_link.delay(productionlink_id)
-	return HttpResponse('OK', mimetype='text/plain')
+	return HttpResponse('OK', content_type='text/plain')
 
 
 def results_with_no_encoding(request):

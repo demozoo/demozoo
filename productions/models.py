@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.encoding import StrAndUnicode
+# from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
 import datetime
@@ -7,9 +7,9 @@ import datetime
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
-from fuzzy_date import FuzzyDate
-from prefetch_snooping import ModelWithPrefetchSnooping
-from strip_markup import strip_markup
+from lib.fuzzy_date import FuzzyDate
+from lib.prefetch_snooping import ModelWithPrefetchSnooping
+from lib.strip_markup import strip_markup
 
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
@@ -347,7 +347,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 
 # encapsulates list of authors and affiliations
-class Byline(StrAndUnicode):
+class Byline(object):
 	def __init__(self, authors=[], affiliations=[]):
 		self.author_nicks = authors
 		self.affiliation_nicks = affiliations
