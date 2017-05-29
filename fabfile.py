@@ -1,12 +1,14 @@
 from __future__ import with_statement
-from fabric.api import env, cd, run, get, local
+from fabric.api import hosts, cd, run, get, local
 
 from demozoo.settings.dev import DATABASES
 db_username = DATABASES['default']['USER']
 
-env.hosts = ['demozoo@www1.demozoo.org']
+PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
+STAGING_HOSTS = ['demozoo@www2.demozoo.org']
 
 
+@hosts(PRODUCTION_HOSTS)
 def deploy():
 	"""Deploy the current git master to the live site"""
 	with cd('/home/demozoo/demozoo'):
@@ -23,6 +25,7 @@ def deploy():
 		run('sudo supervisorctl restart demozoo-celerybeat')
 
 
+@hosts(STAGING_HOSTS)
 def deploy_staging():
 	"""Deploy the current git 'staging' branch to the staging site"""
 	with cd('/home/demozoo/demozoo-staging'):
@@ -36,12 +39,14 @@ def deploy_staging():
 		run('sudo supervisorctl restart demozoo-staging')
 
 
+@hosts(PRODUCTION_HOSTS)
 def sanity():
 	"""Fix up data integrity errors"""
 	with cd('/home/demozoo/demozoo'):
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=demozoo.settings.productionvm')
 
 
+@hosts(PRODUCTION_HOSTS)
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
@@ -50,12 +55,14 @@ def reindex():
 		run('sudo supervisorctl start demozoo-djapian')
 
 
+@hosts(PRODUCTION_HOSTS)
 def bump_external_links():
 	"""Rescan external links for new 'recognised' sites"""
 	with cd('/home/demozoo/demozoo'):
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm')
 
 
+@hosts(PRODUCTION_HOSTS)
 def fetchdb():
 	"""Pull the live database to the local copy"""
 	run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
@@ -67,6 +74,7 @@ def fetchdb():
 	local('rm /tmp/demozoo-fetchdb.sql.gz')
 
 
+@hosts(PRODUCTION_HOSTS)
 def exportdb():
 	"""Dump the live DB with personal info redacted"""
 	run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
