@@ -12,8 +12,8 @@ from .base import *
 # }
 
 DEBUG = True
-INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar', 'django_extensions']
-MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
+#INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar', 'django_extensions']
+#MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 BASE_URL = 'http://localhost:8000'
 
