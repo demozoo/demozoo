@@ -221,7 +221,7 @@ REST_FRAMEWORK = {
 		'rest_framework.renderers.BrowsableAPIRenderer',
 		'rest_framework_jsonp.renderers.JSONPRenderer',
 	],
-	'PAGINATE_BY': 100
+	'PAGE_SIZE': 100
 }
 
 AUTHENTICATION_BACKENDS = (
