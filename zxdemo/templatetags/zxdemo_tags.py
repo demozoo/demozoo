@@ -1,6 +1,8 @@
 from django import template
 from django.conf import settings
 from django.db.models import Q
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from zxdemo.models import spectrum_releasers
 from parties.models import Party
@@ -65,17 +67,20 @@ def download_icon(download):
 				icon_filename = filename
 				break
 
-	return '<img src="/static/zxdemo/images/icon/%s" alt="" width="24" height="24" border="0" />' % icon_filename
+	return format_html(
+		'<img src="/static/zxdemo/images/icon/{}" alt="" width="24" height="24" border="0" />',
+		icon_filename
+	)
 
 
 @register.simple_tag
 def production_type_icon(production):
 	if production.supertype == 'graphics':
-		return '<img src="/static/zxdemo/images/icon/gfx_new.gif" align="absmiddle" alt="[Graphics]" width="24" height="24" border="0" />'
+		return mark_safe('<img src="/static/zxdemo/images/icon/gfx_new.gif" align="absmiddle" alt="[Graphics]" width="24" height="24" border="0" />')
 	elif production.supertype == 'music':
-		return '<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" width="24" height="24" border="0" />'
+		return mark_safe('<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" width="24" height="24" border="0" />')
 	else:
-		return '<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" width="24" height="24" border="0" />'
+		return mark_safe('<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" width="24" height="24" border="0" />')
 
 
 @register.filter
