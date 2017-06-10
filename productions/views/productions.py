@@ -697,12 +697,13 @@ def add_tag(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
 		tag_name = slugify_tag(request.POST.get('tag_name'))
-		# check whether it's already present
-		existing_tag = production.tags.filter(name=tag_name)
-		if not existing_tag:
-			production.tags.add(tag_name)
-			Edit.objects.create(action_type='production_add_tag', focus=production,
-				description=u"Added tag '%s'" % tag_name, user=request.user)
+		if tag_name:
+			# check whether it's already present
+			existing_tag = production.tags.filter(name=tag_name)
+			if not existing_tag:
+				production.tags.add(tag_name)
+				Edit.objects.create(action_type='production_add_tag', focus=production,
+					description=u"Added tag '%s'" % tag_name, user=request.user)
 
 	return render(request, 'productions/_tags_list.html', {
 		'tags': production.tags.order_by('name'),
