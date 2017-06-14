@@ -4,7 +4,7 @@ from parties.models import Competition, ResultsFile
 from taggit.models import Tag
 
 from django.core.management.base import NoArgsCommand
-from django.db import connection, transaction
+from django.db import connection
 from django.db.models import Count
 
 
@@ -156,7 +156,5 @@ class Command(NoArgsCommand):
 
 		print "Deleting unused tags"
 		Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
-
-		transaction.commit_unless_managed()
 
 		print "done."
