@@ -1,5 +1,5 @@
 from celery.task import task
-from django.db import connection, transaction
+from django.db import connection
 import random
 from itertools import groupby
 
@@ -43,5 +43,3 @@ def set_default_screenshots():
 		cur2.execute('''
 			UPDATE productions_production SET default_screenshot_id = %s WHERE id = %s
 		''', [screenshot_id, production_id])
-
-	transaction.commit_unless_managed()
