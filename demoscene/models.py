@@ -356,11 +356,11 @@ class Nick(models.Model):
 			raise Exception("attempted to delete a releaser's primary nick through reassign_references_and_delete!")
 
 		from django.db import connection, transaction
-		cursor = connection.cursor()
-		cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		cursor.execute("UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		cursor.execute("UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		transaction.commit_unless_managed()
+		with transaction.atomic():
+			cursor = connection.cursor()
+			cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+			cursor.execute("UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+			cursor.execute("UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
 
 		self.delete()
 
