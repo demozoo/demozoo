@@ -1172,11 +1172,10 @@ class ModarchiveMember(BaseUrl):
 class ModarchiveModule(BaseUrl):
 	canonical_format = "https://modarchive.org/module.php?%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?modarchive\.org/module\.php\?(\d+)', re.I),
-		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
-		querystring_match(r'https?://(?:www\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
+		regex_match(r'https?://(?:www\.|lite\.)?modarchive\.org/module\.php\?(\d+)', re.I),
+		querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
+		querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
 		querystring_match(r'https?://api.modarchive\.org/downloads\.php', 'moduleid', re.I),
-		querystring_match(r'https?://(?:www\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
 	]
 	html_link_class = "modarchive"
 	html_link_text = "ModArchive"
