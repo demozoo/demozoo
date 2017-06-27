@@ -31,37 +31,40 @@
 
 			var resultsPanelY, menuWidth, maxResultsMenuY;
 
-			function reflow() {
-				resultsPanelY = resultsMenuColumn.offset().top;
-				resultsMenu.css({
-					'width': resultsMenuColumn.width() + 'px'
-				});
-				resultsMenuUl.css({
-					'max-height': $(window).height() - 64 + 'px'
-				});
-				var resultsPanelBottom = resultsPanelY + resultsPanel.height();
-				maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
+			if (resultsMenuColumn.length) {
 
-				setResultsPanelPosition();
-			}
-			reflow();
-
-			function setResultsPanelPosition() {
-				var scrollPos = $(window).scrollTop();
-
-				if (scrollPos <= resultsPanelY) {
-					resultsPanel.removeClass('fixed bottom');
-				} else if (scrollPos <= maxResultsMenuY - 10) {
-					resultsPanel.removeClass('bottom').addClass('fixed');
+				function reflow() {
+					resultsPanelY = resultsMenuColumn.offset().top;
 					resultsMenu.css({
-						'width': menuWidth + 'px'
+						'width': resultsMenuColumn.width() + 'px'
 					});
-				} else {
-					resultsPanel.removeClass('fixed').addClass('bottom');
-				}
-			}
+					resultsMenuUl.css({
+						'max-height': $(window).height() - 64 + 'px'
+					});
+					var resultsPanelBottom = resultsPanelY + resultsPanel.height();
+					maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
 
-			$(window).scroll(setResultsPanelPosition).load(reflow).resize(reflow);
+					setResultsPanelPosition();
+				}
+				reflow();
+
+				function setResultsPanelPosition() {
+					var scrollPos = $(window).scrollTop();
+
+					if (scrollPos <= resultsPanelY) {
+						resultsPanel.removeClass('fixed bottom');
+					} else if (scrollPos <= maxResultsMenuY - 10) {
+						resultsPanel.removeClass('bottom').addClass('fixed');
+						resultsMenu.css({
+							'width': menuWidth + 'px'
+						});
+					} else {
+						resultsPanel.removeClass('fixed').addClass('bottom');
+					}
+				}
+
+				$(window).scroll(setResultsPanelPosition).load(reflow).resize(reflow);
+			}
 		})
 	</script>
 
