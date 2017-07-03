@@ -2,6 +2,7 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -39,6 +40,14 @@ class Report(TemplateView):
 	@property
 	def exclusion_name(self):
 		return self.name
+
+	@classmethod
+	def get_url(cls):
+		return reverse('maintenance:%s' % cls.name)
+
+	@classmethod
+	def get_urlpattern(cls):
+		return url('^%s$' % cls.name, cls.as_view(), name=cls.name)
 
 	def get_context_data(self, **kwargs):
 		context = super(Report, self).get_context_data(**kwargs)
@@ -1363,3 +1372,42 @@ class TinyIntrosWithoutScreenshots(Report):
 		return context
 
 tiny_intros_without_screenshots = TinyIntrosWithoutScreenshots.as_view()
+
+
+reports = [
+	ProdsWithoutScreenshots,
+	ProdsWithoutExternalLinks,
+	ProdsWithoutReleaseDate,
+	ProdsWithDeadAmigascneLinks,
+	ProdsWithDeadAmigaNvgOrgLinks,
+	SceneorgDownloadLinksWithUnicode,
+	ProdsWithoutPlatforms,
+	ProdsWithoutPlatformsExcludingLost,
+	ProdsWithoutPlatformsWithDownloads,
+	ProdsWithoutReleaseDateWithPlacement,
+	ProdSoundtracksWithoutReleaseDate,
+	GroupNicksWithBrackets,
+	AmbiguousGroupsWithNoDifferentiators,
+	ProdsWithReleaseDateOutsideParty,
+	ProdsWithSameNamedCredits,
+	SameNamedProdsBySameReleaser,
+	SameNamedProdsWithoutSpecialChars,
+	DuplicateExternalLinks,
+	MatchingRealNames,
+	MatchingSurnames,
+	ImpliedMemberships,
+	GroupsWithSameNamedMembers,
+	ReleasersWithSameNamedGroups,
+	SceneorgPartyDirsWithNoParty,
+	PartiesWithIncompleteDates,
+	PartiesWithNoLocation,
+	EmptyReleasers,
+	UnresolvedScreenshots,
+	PublicRealNames,
+	ProdsWithBlurbs,
+	ProdComments,
+	CreditsToMoveToText,
+	ResultsWithNoEncoding,
+	TinyIntrosWithoutDownloadLinks,
+	TinyIntrosWithoutScreenshots,
+]
