@@ -86,8 +86,6 @@ class ProdsWithoutScreenshots(Report):
 		})
 		return context
 
-prods_without_screenshots = ProdsWithoutScreenshots.as_view()
-
 
 class ProdsWithoutExternalLinks(Report):
 	title = "Productions without external links"
@@ -115,8 +113,6 @@ class ProdsWithoutExternalLinks(Report):
 		})
 		return context
 
-prods_without_external_links = ProdsWithoutExternalLinks.as_view()
-
 
 class ProdsWithoutReleaseDate(Report):
 	title = "Productions without a release date"
@@ -138,8 +134,6 @@ class ProdsWithoutReleaseDate(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-prods_without_release_date = ProdsWithoutReleaseDate.as_view()
 
 
 class ProdsWithDeadAmigascneLinks(Report):
@@ -163,8 +157,6 @@ class ProdsWithDeadAmigascneLinks(Report):
 		})
 		return context
 
-prods_with_dead_amigascne_links = ProdsWithDeadAmigascneLinks.as_view()
-
 
 class ProdsWithDeadAmigaNvgOrgLinks(Report):
 	title = "Productions with dead amiga.nvg.org links"
@@ -186,8 +178,6 @@ class ProdsWithDeadAmigaNvgOrgLinks(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-prods_with_dead_amiga_nvg_org_links = ProdsWithDeadAmigaNvgOrgLinks.as_view()
 
 
 class SceneorgDownloadLinksWithUnicode(Report):
@@ -213,8 +203,6 @@ class SceneorgDownloadLinksWithUnicode(Report):
 		})
 		return context
 
-sceneorg_download_links_with_unicode = SceneorgDownloadLinksWithUnicode.as_view()
-
 
 class ProdsWithoutPlatforms(Report):
 	title = "Productions without platforms"
@@ -237,8 +225,6 @@ class ProdsWithoutPlatforms(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-prods_without_platforms = ProdsWithoutPlatforms.as_view()
 
 
 class ProdsWithoutPlatformsExcludingLost(Report):
@@ -265,8 +251,6 @@ class ProdsWithoutPlatformsExcludingLost(Report):
 		})
 		return context
 
-prods_without_platforms_excluding_lost = ProdsWithoutPlatformsExcludingLost.as_view()
-
 
 class ProdsWithoutPlatformsWithDownloads(Report):
 	title = "Productions without platforms (with downloads)"
@@ -291,8 +275,6 @@ class ProdsWithoutPlatformsWithDownloads(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-prods_without_platforms_with_downloads = ProdsWithoutPlatformsWithDownloads.as_view()
 
 
 class ProdsWithoutReleaseDateWithPlacement(Report):
@@ -329,8 +311,6 @@ class ProdsWithoutReleaseDateWithPlacement(Report):
 		})
 		return context
 
-prods_without_release_date_with_placement = ProdsWithoutReleaseDateWithPlacement.as_view()
-
 
 class ProdSoundtracksWithoutReleaseDate(Report):
 	title = "Music with productions attached but no release date"
@@ -366,8 +346,6 @@ class ProdSoundtracksWithoutReleaseDate(Report):
 		})
 		return context
 
-prod_soundtracks_without_release_date = ProdSoundtracksWithoutReleaseDate.as_view()
-
 
 class GroupNicksWithBrackets(Report):
 	title = "Group names with brackets"
@@ -388,8 +366,6 @@ class GroupNicksWithBrackets(Report):
 			'nicks': nicks,
 		})
 		return context
-
-group_nicks_with_brackets = GroupNicksWithBrackets.as_view()
 
 
 class AmbiguousGroupsWithNoDifferentiators(Report):
@@ -423,8 +399,6 @@ class AmbiguousGroupsWithNoDifferentiators(Report):
 			'nicks': nicks,
 		})
 		return context
-
-ambiguous_groups_with_no_differentiators = AmbiguousGroupsWithNoDifferentiators.as_view()
 
 
 class ProdsWithReleaseDateOutsideParty(Report):
@@ -473,8 +447,6 @@ class ProdsWithReleaseDateOutsideParty(Report):
 		})
 		return context
 
-prods_with_release_date_outside_party = ProdsWithReleaseDateOutsideParty.as_view()
-
 
 class ProdsWithSameNamedCredits(Report):
 	title = "Productions with identically-named sceners in the credits"
@@ -499,8 +471,6 @@ class ProdsWithSameNamedCredits(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-prods_with_same_named_credits = ProdsWithSameNamedCredits.as_view()
 
 
 class SameNamedProdsBySameReleaser(Report):
@@ -532,8 +502,6 @@ class SameNamedProdsBySameReleaser(Report):
 		})
 		return context
 
-same_named_prods_by_same_releaser = SameNamedProdsBySameReleaser.as_view()
-
 
 class SameNamedProdsWithoutSpecialChars(Report):
 	title = "Identically-named productions by the same releaser, ignoring special chars"
@@ -564,8 +532,6 @@ class SameNamedProdsWithoutSpecialChars(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-same_named_prods_without_special_chars = SameNamedProdsWithoutSpecialChars.as_view()
 
 
 class DuplicateExternalLinks(Report):
@@ -621,8 +587,6 @@ class DuplicateExternalLinks(Report):
 		})
 		return context
 
-duplicate_external_links = DuplicateExternalLinks.as_view()
-
 
 class MatchingRealNames(Report):
 	title = "Sceners with matching real names"
@@ -648,8 +612,6 @@ class MatchingRealNames(Report):
 		})
 		return context
 
-matching_real_names = MatchingRealNames.as_view()
-
 
 class MatchingSurnames(Report):
 	title = "Sceners with matching surnames"
@@ -672,8 +634,6 @@ class MatchingSurnames(Report):
 			'releasers': releasers,
 		})
 		return context
-
-matching_surnames = MatchingSurnames.as_view()
 
 
 class ImpliedMemberships(Report):
@@ -720,8 +680,6 @@ class ImpliedMemberships(Report):
 		})
 		return context
 
-implied_memberships = ImpliedMemberships.as_view()
-
 
 class GroupsWithSameNamedMembers(Report):
 	title = "Groups with same-named members"
@@ -754,8 +712,6 @@ class GroupsWithSameNamedMembers(Report):
 		})
 		return context
 
-groups_with_same_named_members = GroupsWithSameNamedMembers.as_view()
-
 
 class ReleasersWithSameNamedGroups(Report):
 	title = "Releasers with same-named groups"
@@ -787,8 +743,6 @@ class ReleasersWithSameNamedGroups(Report):
 			'releasers': releasers,
 		})
 		return context
-
-releasers_with_same_named_groups = ReleasersWithSameNamedGroups.as_view()
 
 
 class SceneorgPartyDirsWithNoParty(Report):
@@ -847,8 +801,6 @@ class SceneorgPartyDirsWithNoParty(Report):
 		})
 		return context
 
-sceneorg_party_dirs_with_no_party = SceneorgPartyDirsWithNoParty.as_view()
-
 
 class PartiesWithIncompleteDates(Report):
 	title = "Parties with incomplete dates"
@@ -869,8 +821,6 @@ class PartiesWithIncompleteDates(Report):
 			'parties': parties,
 		})
 		return context
-
-parties_with_incomplete_dates = PartiesWithIncompleteDates.as_view()
 
 
 class PartiesWithNoLocation(Report):
@@ -893,8 +843,6 @@ class PartiesWithNoLocation(Report):
 			'parties': parties,
 		})
 		return context
-
-parties_with_no_location = PartiesWithNoLocation.as_view()
 
 
 class EmptyReleasers(Report):
@@ -957,8 +905,6 @@ class EmptyReleasers(Report):
 		})
 		return context
 
-empty_releasers = EmptyReleasers.as_view()
-
 
 class UnresolvedScreenshots(Report):
 	title = "Unresolved screenshots"
@@ -981,8 +927,6 @@ class UnresolvedScreenshots(Report):
 			'entries': entries,
 		})
 		return context
-
-unresolved_screenshots = UnresolvedScreenshots.as_view()
 
 
 class PublicRealNames(StaffOnlyMixin, Report):
@@ -1009,8 +953,6 @@ class PublicRealNames(StaffOnlyMixin, Report):
 		})
 		return context
 
-public_real_names = PublicRealNames.as_view()
-
 
 class ProdsWithBlurbs(StaffOnlyMixin, Report):
 	title = "Productions with blurbs"
@@ -1026,8 +968,6 @@ class ProdsWithBlurbs(StaffOnlyMixin, Report):
 			'blurbs': blurbs,
 		})
 		return context
-
-prods_with_blurbs = ProdsWithBlurbs.as_view()
 
 
 class ProdComments(StaffOnlyMixin, Report):
@@ -1054,8 +994,6 @@ class ProdComments(StaffOnlyMixin, Report):
 			'comments': comments_page,
 		})
 		return context
-
-prod_comments = ProdComments.as_view()
 
 
 class CreditsToMoveToText(StaffOnlyMixin, Report):
@@ -1088,8 +1026,6 @@ class CreditsToMoveToText(StaffOnlyMixin, Report):
 			'mark_excludable': True,
 		})
 		return context
-
-credits_to_move_to_text = CreditsToMoveToText.as_view()
 
 
 @writeable_site_required
@@ -1180,8 +1116,6 @@ class ResultsWithNoEncoding(StaffOnlyMixin, Report):
 			'results_files': results_files,
 		})
 		return context
-
-results_with_no_encoding = ResultsWithNoEncoding.as_view()
 
 ENCODING_OPTIONS = [
 	(
@@ -1345,8 +1279,6 @@ class TinyIntrosWithoutDownloadLinks(Report):
 		})
 		return context
 
-tiny_intros_without_download_links = TinyIntrosWithoutDownloadLinks.as_view()
-
 
 class TinyIntrosWithoutScreenshots(Report):
 	title = "Tiny intros without screenshots"
@@ -1373,8 +1305,6 @@ class TinyIntrosWithoutScreenshots(Report):
 			'mark_excludable': True,
 		})
 		return context
-
-tiny_intros_without_screenshots = TinyIntrosWithoutScreenshots.as_view()
 
 
 class ExternalReport(object):
