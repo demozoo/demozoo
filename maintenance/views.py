@@ -15,9 +15,8 @@ from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
-from mirror.models import Download, ArchiveMember
+from mirror.models import ArchiveMember
 from screenshots.tasks import create_screenshot_from_production_link
-
 
 
 def index(request):
@@ -29,16 +28,18 @@ def index(request):
 def prods_without_screenshots(request):
 	report_name = 'prods_without_screenshots'
 
-	productions = Production.objects \
-		.filter(screenshots__id__isnull=True) \
-		.filter(links__is_download_link=True) \
-		.exclude(supertype='music') \
+	productions = (
+		Production.objects
+		.filter(screenshots__id__isnull=True)
+		.filter(links__is_download_link=True)
+		.exclude(supertype='music')
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related(
 			'author_nicks__releaser', 'author_affiliation_nicks__releaser'
 		).defer('notes').distinct().order_by('sortable_title')[:1000]
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without screenshots',
 		'productions': productions,
@@ -73,11 +74,13 @@ def prods_without_external_links(request):
 def prods_without_release_date(request):
 	report_name = 'prods_without_release_date'
 
-	productions = Production.objects.filter(release_date_date__isnull=True) \
+	productions = (
+		Production.objects.filter(release_date_date__isnull=True)
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without a release date',
 		'productions': productions,
@@ -89,11 +92,13 @@ def prods_without_release_date(request):
 def prods_with_dead_amigascne_links(request):
 	report_name = 'prods_with_dead_amigascne_links'
 
-	productions = Production.objects.filter(links__parameter__contains='amigascne.org/old/') \
+	productions = (
+		Production.objects.filter(links__parameter__contains='amigascne.org/old/')
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions with dead amigascne links',
 		'productions': productions,
@@ -105,11 +110,13 @@ def prods_with_dead_amigascne_links(request):
 def prods_with_dead_amiga_nvg_org_links(request):
 	report_name = 'prods_with_dead_amiga_nvg_org_links'
 
-	productions = Production.objects.filter(links__parameter__contains='amiga.nvg.org') \
+	productions = (
+		Production.objects.filter(links__parameter__contains='amiga.nvg.org')
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions with dead amiga.nvg.org links',
 		'productions': productions,
@@ -121,10 +128,12 @@ def prods_with_dead_amiga_nvg_org_links(request):
 def sceneorg_download_links_with_unicode(request):
 	report_name = 'sceneorg_download_links_with_unicode'
 
-	productions = Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile') \
+	productions = (
+		Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile')
 		.extra(
 			where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
 		).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'scene.org download links with unicode characters',
 		'productions': productions,
@@ -139,12 +148,14 @@ def sceneorg_download_links_with_unicode(request):
 def prods_without_platforms(request):
 	report_name = 'prods_without_platforms'
 
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.exclude(types__name__in=('Video', 'Performance')) \
+	productions = (
+		Production.objects.filter(platforms__isnull=True, supertype='production')
+		.exclude(types__name__in=('Video', 'Performance'))
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Productions without platforms',
 		'productions': productions,
@@ -156,13 +167,15 @@ def prods_without_platforms(request):
 def prods_without_platforms_excluding_lost(request):
 	report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.exclude(types__name__in=('Video', 'Performance')) \
-		.exclude(tags__name=('lost')) \
+	productions = (
+		Production.objects.filter(platforms__isnull=True, supertype='production')
+		.exclude(types__name__in=('Video', 'Performance'))
+		.exclude(tags__name=('lost'))
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': "Productions without platforms (excluding 'lost')",
 		'productions': productions,
@@ -174,13 +187,15 @@ def prods_without_platforms_excluding_lost(request):
 def prods_without_platforms_with_downloads(request):
 	report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.filter(links__is_download_link=True) \
-		.exclude(types__name__in=('Video', 'Performance')) \
+	productions = (
+		Production.objects.filter(platforms__isnull=True, supertype='production')
+		.filter(links__is_download_link=True)
+		.exclude(types__name__in=('Video', 'Performance'))
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': "Productions without platforms (with downloads)",
 		'productions': productions,
@@ -241,7 +256,7 @@ def prod_soundtracks_without_release_date(request):
 	''', [report_name])
 	productions = list(productions)
 	for production in productions:
-		if production.suggested_release_date_date != None:
+		if production.suggested_release_date_date is not None:
 			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
 	return render(request, 'maintenance/production_release_date_report.html', {
 		'title': 'Music with productions attached but no release date',
@@ -254,11 +269,13 @@ def prod_soundtracks_without_release_date(request):
 def group_nicks_with_brackets(request):
 	report_name = 'group_nicks_with_brackets'
 
-	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group=True) \
+	nicks = (
+		Nick.objects.filter(name__contains='(', releaser__is_group=True)
 		.extra(
-			where = ['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params = [report_name]
+			where=['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[report_name]
 		).order_by('name')
+	)
 	return render(request, 'maintenance/nick_report.html', {
 		'title': 'Group names with brackets',
 		'nicks': nicks,
@@ -780,6 +797,7 @@ def public_real_names(request):
 		'report_name': 'public_real_names',
 	})
 
+
 def prods_with_blurbs(request):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -789,6 +807,7 @@ def prods_with_blurbs(request):
 	return render(request, 'maintenance/prods_with_blurbs.html', {
 		'blurbs': blurbs,
 	})
+
 
 def prod_comments(request):
 	if not request.user.is_staff:
@@ -809,6 +828,7 @@ def prod_comments(request):
 	return render(request, 'maintenance/prod_comments.html', {
 		'comments': comments_page,
 	})
+
 
 def credits_to_move_to_text(request):
 	if not request.user.is_staff:
@@ -927,83 +947,90 @@ def results_with_no_encoding(request):
 	})
 
 ENCODING_OPTIONS = [
-	('Common encodings', [
-		('iso-8859-1', 'Western (ISO-8859-1)'),
-		('iso-8859-2', 'Central European (ISO-8859-2)'),
-		('iso-8859-3', 'South European (ISO-8859-3)'),
-		('iso-8859-4', 'Baltic (ISO-8859-4)'),
-		('iso-8859-5', 'Cyrillic (ISO-8859-5)'),
-		('cp437', 'MS-DOS (CP437)'),
-		('cp866', 'MS-DOS Cyrillic (CP866)'),
-		('koi8_r', 'Cyrillic Russian (KOI8-R)'),
-		('koi8_u', 'Cyrillic Ukrainian (KOI8-U)'),
-		('windows-1250', 'Central European (Windows-1250)'),
-		('windows-1251', 'Cyrillic (Windows-1251)'),
-		('windows-1252', 'Western (Windows-1252)'),
-	]),
-	('Obscure encodings', [
-		('big5', 'Chinese Traditional (Big5)'),
-		('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
-		('cp737', 'MS-DOS Greek (CP737)'),
-		('cp775', 'MS-DOS Baltic Rim (CP775)'),
-		('cp850', 'MS-DOS Latin 1 (CP850)'),
-		('cp852', 'MS-DOS Latin 2 (CP852)'),
-		('cp855', 'MS-DOS Cyrillic (CP855)'),
-		('cp856', 'Hebrew (CP856)'),
-		('cp857', 'MS-DOS Turkish (CP857)'),
-		('cp860', 'MS-DOS Portuguese (CP860)'),
-		('cp861', 'MS-DOS Icelandic (CP861)'),
-		('cp862', 'MS-DOS Hebrew (CP862)'),
-		('cp863', 'MS-DOS French Canada (CP863)'),
-		('cp864', 'Arabic (CP864)'),
-		('cp865', 'MS-DOS Nordic (CP865)'),
-		('cp869', 'MS-DOS Greek 2 (CP869)'),
-		('cp874', 'Thai (CP874)'),
-		('cp932', 'Japanese (CP932)'),
-		('cp949', 'Korean (CP949)'),
-		('cp950', 'Chinese Traditional (CP949)'),
-		('cp1006', 'Urdu (CP1006)'),
-		('euc_jp', 'Japanese (EUC-JP)'),
-		('euc_jis_2004', 'Japanese (EUC-JIS-2004)'),
-		('euc_jisx0213', 'Japanese (EUC-JIS-X-0213)'),
-		('euc_kr', 'Korean (EUC-KR)'),
-		('gb2312', 'Chinese Simplified (GB 2312)'),
-		('gbk', 'Chinese Simplified (GBK)'),
-		('gb18030', 'Chinese Simplified (GB 18030)'),
-		('hz', 'Chinese Simplified (HZ)'),
-		('iso-2022-jp', 'Japanese (ISO-2022-JP)'),
-		('iso-2022-jp-1', 'Japanese (ISO-2022-JP-1)'),
-		('iso-2022-jp-2', 'Japanese (ISO-2022-JP-2)'),
-		('iso-2022-jp-2004', 'Japanese (ISO-2022-JP-2004)'),
-		('iso-2022-jp-3', 'Japanese (ISO-2022-JP-3)'),
-		('iso-2022-jp-ext', 'Japanese (ISO-2022-JP-EXT)'),
-		('iso-2022-kr', 'Korean (ISO-2022-KR)'),
-		('iso-8859-6', 'Arabic (ISO-8859-6)'),
-		('iso-8859-7', 'Greek (ISO-8859-7)'),
-		('iso-8859-8', 'Hebrew (ISO-8859-8)'),
-		('iso-8859-9', 'Turkish (ISO-8859-9)'),
-		('iso-8859-10', 'Nordic (ISO-8859-10)'),
-		('iso-8859-13', 'Baltic (ISO-8859-13)'),
-		('iso-8859-14', 'Celtic (ISO-8859-14)'),
-		('iso-8859-15', 'Western (ISO-8859-15)'),
-		('johab', 'Korean (Johab)'),
-		('mac_cyrillic', 'Cyrillic (Macintosh)'),
-		('mac_greek', 'Greek (Macintosh)'),
-		('mac_iceland', 'Icelandic (Macintosh)'),
-		('mac_latin2', 'Central European (Macintosh)'),
-		('mac_roman', 'Western (Macintosh)'),
-		('mac_turkish', 'Turkish (Macintosh)'),
-		('shift_jis', 'Japanese (Shift_JIS)'),
-		('shift_jis_2004', 'Japanese (Shift_JIS_2004)'),
-		('shift_jisx0213', 'Japanese (Shift_JIS_X_0213)'),
-		('windows-1253', 'Greek (Windows-1253)'),
-		('windows-1254', 'Turkish (Windows-1254)'),
-		('windows-1255', 'Hebrew (Windows-1255)'),
-		('windows-1256', 'Arabic (Windows-1256)'),
-		('windows-1257', 'Baltic (Windows-1257)'),
-		('windows-1258', 'Vietnamese (Windows-1258)'),
-	]),
+	(
+		'Common encodings',
+		[
+			('iso-8859-1', 'Western (ISO-8859-1)'),
+			('iso-8859-2', 'Central European (ISO-8859-2)'),
+			('iso-8859-3', 'South European (ISO-8859-3)'),
+			('iso-8859-4', 'Baltic (ISO-8859-4)'),
+			('iso-8859-5', 'Cyrillic (ISO-8859-5)'),
+			('cp437', 'MS-DOS (CP437)'),
+			('cp866', 'MS-DOS Cyrillic (CP866)'),
+			('koi8_r', 'Cyrillic Russian (KOI8-R)'),
+			('koi8_u', 'Cyrillic Ukrainian (KOI8-U)'),
+			('windows-1250', 'Central European (Windows-1250)'),
+			('windows-1251', 'Cyrillic (Windows-1251)'),
+			('windows-1252', 'Western (Windows-1252)'),
+		]
+	),
+	(
+		'Obscure encodings',
+		[
+			('big5', 'Chinese Traditional (Big5)'),
+			('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
+			('cp737', 'MS-DOS Greek (CP737)'),
+			('cp775', 'MS-DOS Baltic Rim (CP775)'),
+			('cp850', 'MS-DOS Latin 1 (CP850)'),
+			('cp852', 'MS-DOS Latin 2 (CP852)'),
+			('cp855', 'MS-DOS Cyrillic (CP855)'),
+			('cp856', 'Hebrew (CP856)'),
+			('cp857', 'MS-DOS Turkish (CP857)'),
+			('cp860', 'MS-DOS Portuguese (CP860)'),
+			('cp861', 'MS-DOS Icelandic (CP861)'),
+			('cp862', 'MS-DOS Hebrew (CP862)'),
+			('cp863', 'MS-DOS French Canada (CP863)'),
+			('cp864', 'Arabic (CP864)'),
+			('cp865', 'MS-DOS Nordic (CP865)'),
+			('cp869', 'MS-DOS Greek 2 (CP869)'),
+			('cp874', 'Thai (CP874)'),
+			('cp932', 'Japanese (CP932)'),
+			('cp949', 'Korean (CP949)'),
+			('cp950', 'Chinese Traditional (CP949)'),
+			('cp1006', 'Urdu (CP1006)'),
+			('euc_jp', 'Japanese (EUC-JP)'),
+			('euc_jis_2004', 'Japanese (EUC-JIS-2004)'),
+			('euc_jisx0213', 'Japanese (EUC-JIS-X-0213)'),
+			('euc_kr', 'Korean (EUC-KR)'),
+			('gb2312', 'Chinese Simplified (GB 2312)'),
+			('gbk', 'Chinese Simplified (GBK)'),
+			('gb18030', 'Chinese Simplified (GB 18030)'),
+			('hz', 'Chinese Simplified (HZ)'),
+			('iso-2022-jp', 'Japanese (ISO-2022-JP)'),
+			('iso-2022-jp-1', 'Japanese (ISO-2022-JP-1)'),
+			('iso-2022-jp-2', 'Japanese (ISO-2022-JP-2)'),
+			('iso-2022-jp-2004', 'Japanese (ISO-2022-JP-2004)'),
+			('iso-2022-jp-3', 'Japanese (ISO-2022-JP-3)'),
+			('iso-2022-jp-ext', 'Japanese (ISO-2022-JP-EXT)'),
+			('iso-2022-kr', 'Korean (ISO-2022-KR)'),
+			('iso-8859-6', 'Arabic (ISO-8859-6)'),
+			('iso-8859-7', 'Greek (ISO-8859-7)'),
+			('iso-8859-8', 'Hebrew (ISO-8859-8)'),
+			('iso-8859-9', 'Turkish (ISO-8859-9)'),
+			('iso-8859-10', 'Nordic (ISO-8859-10)'),
+			('iso-8859-13', 'Baltic (ISO-8859-13)'),
+			('iso-8859-14', 'Celtic (ISO-8859-14)'),
+			('iso-8859-15', 'Western (ISO-8859-15)'),
+			('johab', 'Korean (Johab)'),
+			('mac_cyrillic', 'Cyrillic (Macintosh)'),
+			('mac_greek', 'Greek (Macintosh)'),
+			('mac_iceland', 'Icelandic (Macintosh)'),
+			('mac_latin2', 'Central European (Macintosh)'),
+			('mac_roman', 'Western (Macintosh)'),
+			('mac_turkish', 'Turkish (Macintosh)'),
+			('shift_jis', 'Japanese (Shift_JIS)'),
+			('shift_jis_2004', 'Japanese (Shift_JIS_2004)'),
+			('shift_jisx0213', 'Japanese (Shift_JIS_X_0213)'),
+			('windows-1253', 'Greek (Windows-1253)'),
+			('windows-1254', 'Turkish (Windows-1254)'),
+			('windows-1255', 'Hebrew (Windows-1255)'),
+			('windows-1256', 'Arabic (Windows-1256)'),
+			('windows-1257', 'Baltic (Windows-1257)'),
+			('windows-1258', 'Vietnamese (Windows-1258)'),
+		]
+	),
 ]
+
 
 def fix_results_file_encoding(request, results_file_id):
 	if not request.user.is_staff:
@@ -1062,11 +1089,13 @@ def tiny_intros_without_download_links(request):
 	intros = Production.objects.filter(supertype='production', types__in=prod_types)
 	intros_with_download_links = intros.filter(links__is_download_link=True).distinct().values_list('id', flat=True)
 
-	productions = intros.exclude(id__in=intros_with_download_links) \
+	productions = (
+		intros.exclude(id__in=intros_with_download_links)
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Tiny intros without download links',
 		'productions': productions,
@@ -1082,12 +1111,14 @@ def tiny_intros_without_screenshots(request):
 		'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
 	]))
 
-	productions = Production.objects.filter(supertype='production', types__in=prod_types) \
-		.filter(screenshots__id__isnull=True) \
+	productions = (
+		Production.objects.filter(supertype='production', types__in=prod_types)
+		.filter(screenshots__id__isnull=True)
 		.extra(
 			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
 			params=[report_name]
 		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+	)
 	return render(request, 'maintenance/production_report.html', {
 		'title': 'Tiny intros without download links',
 		'productions': productions,
