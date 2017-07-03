@@ -18,7 +18,7 @@
 		<ul class="pagination">
 			{% if comments.has_previous %}
 				<li>
-					<a href="{% url 'maintenance_prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
+					<a href="{% url 'maintenance:prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
 				</li>
 			{% endif %}
 
@@ -26,13 +26,13 @@
 				{% if i == comments.number %}
 					<li class="current">{{ i }}</li>
 				{% else %}
-					<li><a href="{% url 'maintenance_prod_comments' %}?page={{ i }}">{{ i }}</a></li>
+					<li><a href="{% url 'maintenance:prod_comments' %}?page={{ i }}">{{ i }}</a></li>
 				{% endif %}
 			{% endfor %}
 
 			{% if comments.has_next %}
 				<li>
-					<a href="{% url 'maintenance_prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
+					<a href="{% url 'maintenance:prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
 				</li>
 			{% endif %}
 		</ul>

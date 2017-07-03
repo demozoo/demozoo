@@ -216,7 +216,7 @@ def prods_without_release_date_with_placement(request):
 		'title': 'Productions without a release date but with a party placement attached',
 		'productions': productions,
 		'report_name': report_name,
-		'return_to': reverse('maintenance_prods_without_release_date_with_placement'),
+		'return_to': reverse('maintenance:prods_without_release_date_with_placement'),
 	})
 
 
@@ -247,7 +247,7 @@ def prod_soundtracks_without_release_date(request):
 		'title': 'Music with productions attached but no release date',
 		'productions': productions,
 		'report_name': report_name,
-		'return_to': reverse('maintenance_prod_soundtracks_without_release_date'),
+		'return_to': reverse('maintenance:prod_soundtracks_without_release_date'),
 	})
 
 
@@ -334,7 +334,7 @@ def prods_with_release_date_outside_party(request):
 		'title': 'Productions with a release date more than 14 days away from their release party',
 		'productions': productions,
 		'report_name': report_name,
-		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
+		'return_to': reverse('maintenance:prods_with_release_date_outside_party'),
 	})
 
 

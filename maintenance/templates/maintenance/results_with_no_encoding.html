@@ -15,7 +15,7 @@
 		<ul>
 			{% for file in results_files %}
 				<li>
-					<a href="{% url 'maintenance_fix_results_file_encoding' file.id %}">
+					<a href="{% url 'maintenance:fix_results_file_encoding' file.id %}">
 						{% if file.party.is_online %}
 							<img src="/static/images/icons/computer.png" alt="[Online]" title="Online" />
 						{% elif file.party.country_code %}
