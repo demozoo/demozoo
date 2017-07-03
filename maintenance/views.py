@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.generic.base import View
+from django.views.generic.base import TemplateView
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -26,8 +26,25 @@ def index(request):
 	return render(request, 'maintenance/index.html')
 
 
-class ProdsWithoutScreenshots(View):
-	def get(self, request):
+class StaffOnlyMixin(object):
+	def dispatch(self, request, *args, **kwargs):
+		if not request.user.is_staff:
+			return redirect('home')
+		return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
+
+
+class Report(TemplateView):
+	def get_context_data(self, **kwargs):
+		context = super(Report, self).get_context_data(**kwargs)
+		return context
+
+
+class ProdsWithoutScreenshots(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
+
 		report_name = 'prods_without_screenshots'
 
 		productions = (
@@ -42,18 +59,22 @@ class ProdsWithoutScreenshots(View):
 				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
 			).defer('notes').distinct().order_by('sortable_title')[:1000]
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions without screenshots',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_screenshots = ProdsWithoutScreenshots.as_view()
 
 
-class ProdsWithoutExternalLinks(View):
-	def get(self, request):
+class ProdsWithoutExternalLinks(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutExternalLinks, self).get_context_data(**kwargs)
 		report_name = 'prods_without_external_links'
 
 		productions = Production.objects.raw('''
@@ -68,18 +89,22 @@ class ProdsWithoutExternalLinks(View):
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY productions_production.title
 		''', [report_name])
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions without external links',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_external_links = ProdsWithoutExternalLinks.as_view()
 
 
-class ProdsWithoutReleaseDate(View):
-	def get(self, request):
+class ProdsWithoutReleaseDate(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutReleaseDate, self).get_context_data(**kwargs)
 		report_name = 'prods_without_release_date'
 
 		productions = (
@@ -89,18 +114,22 @@ class ProdsWithoutReleaseDate(View):
 				params=[report_name]
 			).order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions without a release date',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_release_date = ProdsWithoutReleaseDate.as_view()
 
 
-class ProdsWithDeadAmigascneLinks(View):
-	def get(self, request):
+class ProdsWithDeadAmigascneLinks(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithDeadAmigascneLinks, self).get_context_data(**kwargs)
 		report_name = 'prods_with_dead_amigascne_links'
 
 		productions = (
@@ -110,18 +139,22 @@ class ProdsWithDeadAmigascneLinks(View):
 				params=[report_name]
 			).order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions with dead amigascne links',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_with_dead_amigascne_links = ProdsWithDeadAmigascneLinks.as_view()
 
 
-class ProdsWithDeadAmigaNvgOrgLinks(View):
-	def get(self, request):
+class ProdsWithDeadAmigaNvgOrgLinks(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithDeadAmigaNvgOrgLinks, self).get_context_data(**kwargs)
 		report_name = 'prods_with_dead_amiga_nvg_org_links'
 
 		productions = (
@@ -131,18 +164,22 @@ class ProdsWithDeadAmigaNvgOrgLinks(View):
 				params=[report_name]
 			).order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions with dead amiga.nvg.org links',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_with_dead_amiga_nvg_org_links = ProdsWithDeadAmigaNvgOrgLinks.as_view()
 
 
-class SceneorgDownloadLinksWithUnicode(View):
-	def get(self, request):
+class SceneorgDownloadLinksWithUnicode(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(SceneorgDownloadLinksWithUnicode, self).get_context_data(**kwargs)
 		report_name = 'sceneorg_download_links_with_unicode'
 
 		productions = (
@@ -151,7 +188,7 @@ class SceneorgDownloadLinksWithUnicode(View):
 				where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
 			).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'scene.org download links with unicode characters',
 			'productions': productions,
 			# don't implement exclusions on this report, because it's possible that a URL containing unicode
@@ -160,12 +197,16 @@ class SceneorgDownloadLinksWithUnicode(View):
 			'mark_excludable': False,
 			'report_name': report_name,
 		})
+		return context
 
 sceneorg_download_links_with_unicode = SceneorgDownloadLinksWithUnicode.as_view()
 
 
-class ProdsWithoutPlatforms(View):
-	def get(self, request):
+class ProdsWithoutPlatforms(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatforms, self).get_context_data(**kwargs)
 		report_name = 'prods_without_platforms'
 
 		productions = (
@@ -176,18 +217,22 @@ class ProdsWithoutPlatforms(View):
 				params=[report_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions without platforms',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_platforms = ProdsWithoutPlatforms.as_view()
 
 
-class ProdsWithoutPlatformsExcludingLost(View):
-	def get(self, request):
+class ProdsWithoutPlatformsExcludingLost(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatformsExcludingLost, self).get_context_data(**kwargs)
 		report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
 		productions = (
@@ -199,18 +244,22 @@ class ProdsWithoutPlatformsExcludingLost(View):
 				params=[report_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': "Productions without platforms (excluding 'lost')",
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_platforms_excluding_lost = ProdsWithoutPlatformsExcludingLost.as_view()
 
 
-class ProdsWithoutPlatformsWithDownloads(View):
-	def get(self, request):
+class ProdsWithoutPlatformsWithDownloads(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatformsWithDownloads, self).get_context_data(**kwargs)
 		report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
 		productions = (
@@ -222,18 +271,22 @@ class ProdsWithoutPlatformsWithDownloads(View):
 				params=[report_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': "Productions without platforms (with downloads)",
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_without_platforms_with_downloads = ProdsWithoutPlatformsWithDownloads.as_view()
 
 
-class ProdsWithoutReleaseDateWithPlacement(View):
-	def get(self, request):
+class ProdsWithoutReleaseDateWithPlacement(Report):
+	template_name = 'maintenance/production_release_date_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutReleaseDateWithPlacement, self).get_context_data(**kwargs)
 		report_name = 'prods_without_release_date_with_placement'
 
 		productions = Production.objects.raw('''
@@ -256,18 +309,22 @@ class ProdsWithoutReleaseDateWithPlacement(View):
 		productions = list(productions)
 		for production in productions:
 			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
-		return render(request, 'maintenance/production_release_date_report.html', {
+		context.update({
 			'title': 'Productions without a release date but with a party placement attached',
 			'productions': productions,
 			'report_name': report_name,
 			'return_to': reverse('maintenance:prods_without_release_date_with_placement'),
 		})
+		return context
 
 prods_without_release_date_with_placement = ProdsWithoutReleaseDateWithPlacement.as_view()
 
 
-class ProdSoundtracksWithoutReleaseDate(View):
-	def get(self, request):
+class ProdSoundtracksWithoutReleaseDate(Report):
+	template_name = 'maintenance/production_release_date_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdSoundtracksWithoutReleaseDate, self).get_context_data(**kwargs)
 		report_name = 'prod_soundtracks_without_release_date'
 
 		productions = Production.objects.raw('''
@@ -290,18 +347,22 @@ class ProdSoundtracksWithoutReleaseDate(View):
 		for production in productions:
 			if production.suggested_release_date_date is not None:
 				production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
-		return render(request, 'maintenance/production_release_date_report.html', {
+		context.update({
 			'title': 'Music with productions attached but no release date',
 			'productions': productions,
 			'report_name': report_name,
 			'return_to': reverse('maintenance:prod_soundtracks_without_release_date'),
 		})
+		return context
 
 prod_soundtracks_without_release_date = ProdSoundtracksWithoutReleaseDate.as_view()
 
 
-class GroupNicksWithBrackets(View):
-	def get(self, request):
+class GroupNicksWithBrackets(Report):
+	template_name = 'maintenance/nick_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(GroupNicksWithBrackets, self).get_context_data(**kwargs)
 		report_name = 'group_nicks_with_brackets'
 
 		nicks = (
@@ -311,17 +372,21 @@ class GroupNicksWithBrackets(View):
 				params=[report_name]
 			).order_by('name')
 		)
-		return render(request, 'maintenance/nick_report.html', {
+		context.update({
 			'title': 'Group names with brackets',
 			'nicks': nicks,
 			'report_name': report_name,
 		})
+		return context
 
 group_nicks_with_brackets = GroupNicksWithBrackets.as_view()
 
 
-class AmbiguousGroupsWithNoDifferentiators(View):
-	def get(self, request):
+class AmbiguousGroupsWithNoDifferentiators(Report):
+	template_name = 'maintenance/ambiguous_group_names.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(AmbiguousGroupsWithNoDifferentiators, self).get_context_data(**kwargs)
 		report_name = 'ambiguous_groups_with_no_differentiators'
 
 		nicks = Nick.objects.raw('''
@@ -343,17 +408,21 @@ class AmbiguousGroupsWithNoDifferentiators(View):
 				AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY demoscene_nick.name
 		''', [report_name])
-		return render(request, 'maintenance/ambiguous_group_names.html', {
+		context.update({
 			'title': 'Ambiguous group names with no differentiators',
 			'nicks': nicks,
 			'report_name': report_name,
 		})
+		return context
 
 ambiguous_groups_with_no_differentiators = AmbiguousGroupsWithNoDifferentiators.as_view()
 
 
-class ProdsWithReleaseDateOutsideParty(View):
-	def get(self, request):
+class ProdsWithReleaseDateOutsideParty(Report):
+	template_name = 'maintenance/production_release_date_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithReleaseDateOutsideParty, self).get_context_data(**kwargs)
 		report_name = 'prods_with_release_date_outside_party'
 
 		productions = Production.objects.raw('''
@@ -388,18 +457,22 @@ class ProdsWithReleaseDateOutsideParty(View):
 		for production in productions:
 			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
 
-		return render(request, 'maintenance/production_release_date_report.html', {
+		context.update({
 			'title': 'Productions with a release date more than 14 days away from their release party',
 			'productions': productions,
 			'report_name': report_name,
 			'return_to': reverse('maintenance:prods_with_release_date_outside_party'),
 		})
+		return context
 
 prods_with_release_date_outside_party = ProdsWithReleaseDateOutsideParty.as_view()
 
 
-class ProdsWithSameNamedCredits(View):
-	def get(self, request):
+class ProdsWithSameNamedCredits(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithSameNamedCredits, self).get_context_data(**kwargs)
 		report_name = 'prods_with_same_named_credits'
 
 		productions = Production.objects.raw('''
@@ -412,18 +485,22 @@ class ProdsWithSameNamedCredits(View):
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		''', [report_name])
 
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Productions with identically-named sceners in the credits',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 prods_with_same_named_credits = ProdsWithSameNamedCredits.as_view()
 
 
-class SameNamedProdsBySameReleaser(View):
-	def get(self, request):
+class SameNamedProdsBySameReleaser(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(SameNamedProdsBySameReleaser, self).get_context_data(**kwargs)
 		report_name = 'same_named_prods_by_same_releaser'
 
 		productions = Production.objects.raw('''
@@ -441,18 +518,22 @@ class SameNamedProdsBySameReleaser(View):
 			ORDER BY productions_production.sortable_title
 		''', [report_name])
 
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Identically-named productions by the same releaser',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 same_named_prods_by_same_releaser = SameNamedProdsBySameReleaser.as_view()
 
 
-class SameNamedProdsWithoutSpecialChars(View):
-	def get(self, request):
+class SameNamedProdsWithoutSpecialChars(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(SameNamedProdsWithoutSpecialChars, self).get_context_data(**kwargs)
 		report_name = 'same_named_prods_without_special_chars'
 
 		productions = Production.objects.raw('''
@@ -471,18 +552,22 @@ class SameNamedProdsWithoutSpecialChars(View):
 			ORDER BY productions_production.sortable_title
 		''')
 
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Identically-named productions by the same releaser, ignoring special chars',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 same_named_prods_without_special_chars = SameNamedProdsWithoutSpecialChars.as_view()
 
 
-class DuplicateExternalLinks(View):
-	def get(self, request):
+class DuplicateExternalLinks(Report):
+	template_name = 'maintenance/duplicate_external_links.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(DuplicateExternalLinks, self).get_context_data(**kwargs)
 		def prod_duplicates_by_link_class(link_class):
 			return Production.objects.raw('''
 				SELECT DISTINCT productions_production.*, productions_productionlink.parameter
@@ -523,16 +608,20 @@ class DuplicateExternalLinks(View):
 		for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):
 			releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
 
-		return render(request, 'maintenance/duplicate_external_links.html', {
+		context.update({
 			'prod_dupes': prod_dupes,
 			'releaser_dupes': releaser_dupes,
 		})
+		return context
 
 duplicate_external_links = DuplicateExternalLinks.as_view()
 
 
-class MatchingRealNames(View):
-	def get(self, request):
+class MatchingRealNames(Report):
+	template_name = 'maintenance/matching_real_names.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(MatchingRealNames, self).get_context_data(**kwargs)
 		report_name = 'matching_real_names'
 
 		releasers = Releaser.objects.raw('''
@@ -546,17 +635,21 @@ class MatchingRealNames(View):
 				AND demoscene_releaser.id <> other_releaser.id)
 			ORDER BY demoscene_releaser.first_name, demoscene_releaser.surname, demoscene_releaser.name
 		''')
-		return render(request, 'maintenance/matching_real_names.html', {
+		context.update({
 			'title': 'Sceners with matching real names',
 			'releasers': releasers,
 			'report_name': report_name,
 		})
+		return context
 
 matching_real_names = MatchingRealNames.as_view()
 
 
-class MatchingSurnames(View):
-	def get(self, request):
+class MatchingSurnames(Report):
+	template_name = 'maintenance/matching_surnames.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(MatchingSurnames, self).get_context_data(**kwargs)
 		report_name = 'matching_surnames'
 
 		releasers = Releaser.objects.raw('''
@@ -568,17 +661,21 @@ class MatchingSurnames(View):
 				AND demoscene_releaser.id <> other_releaser.id)
 			ORDER BY demoscene_releaser.surname, demoscene_releaser.first_name, demoscene_releaser.name
 		''')
-		return render(request, 'maintenance/matching_surnames.html', {
+		context.update({
 			'title': 'Sceners with matching surnames',
 			'releasers': releasers,
 			'report_name': report_name,
 		})
+		return context
 
 matching_surnames = MatchingSurnames.as_view()
 
 
-class ImpliedMemberships(View):
-	def get(self, request):
+class ImpliedMemberships(Report):
+	template_name = 'maintenance/implied_memberships.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ImpliedMemberships, self).get_context_data(**kwargs)
 		report_name = 'implied_memberships'
 
 		cursor = connection.cursor()
@@ -612,17 +709,21 @@ class ImpliedMemberships(View):
 			}
 			for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
 		]
-		return render(request, 'maintenance/implied_memberships.html', {
+		context.update({
 			'title': 'Group memberships found in production bylines, but missing from the member list',
 			'records': records,
 			'report_name': report_name,
 		})
+		return context
 
 implied_memberships = ImpliedMemberships.as_view()
 
 
-class GroupsWithSameNamedMembers(View):
-	def get(self, request):
+class GroupsWithSameNamedMembers(Report):
+	template_name = 'maintenance/groups_with_same_named_members.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(GroupsWithSameNamedMembers, self).get_context_data(**kwargs)
 		report_name = 'groups_with_same_named_members'
 		groups = Releaser.objects.raw('''
 			SELECT grp.id, grp.name,
@@ -643,17 +744,21 @@ class GroupsWithSameNamedMembers(View):
 				other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
 			)
 		''')
-		return render(request, 'maintenance/groups_with_same_named_members.html', {
+		context.update({
 			'title': 'Groups with same-named members',
 			'groups': groups,
 			'report_name': report_name,
 		})
+		return context
 
 groups_with_same_named_members = GroupsWithSameNamedMembers.as_view()
 
 
-class ReleasersWithSameNamedGroups(View):
-	def get(self, request):
+class ReleasersWithSameNamedGroups(Report):
+	template_name = 'maintenance/releasers_with_same_named_groups.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ReleasersWithSameNamedGroups, self).get_context_data(**kwargs)
 		report_name = 'releasers_with_same_named_groups'
 		releasers = Releaser.objects.raw('''
 			SELECT member.id, member.name, member.is_group,
@@ -674,17 +779,21 @@ class ReleasersWithSameNamedGroups(View):
 				other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
 			)
 		''')
-		return render(request, 'maintenance/releasers_with_same_named_groups.html', {
+		context.update({
 			'title': 'Releasers with same-named groups',
 			'releasers': releasers,
 			'report_name': report_name,
 		})
+		return context
 
 releasers_with_same_named_groups = ReleasersWithSameNamedGroups.as_view()
 
 
-class SceneorgPartyDirsWithNoParty(View):
-	def get(self, request):
+class SceneorgPartyDirsWithNoParty(Report):
+	template_name = 'maintenance/sceneorg_party_dirs_with_no_party.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(SceneorgPartyDirsWithNoParty, self).get_context_data(**kwargs)
 		report_name = 'sceneorg_party_dirs_with_no_party'
 
 		directories_plain = Directory.objects.raw('''
@@ -728,19 +837,23 @@ class SceneorgPartyDirsWithNoParty(View):
 		unmatched_count = len(list(directories_plain))
 		matched_count = total_count - unmatched_count
 
-		return render(request, 'maintenance/sceneorg_party_dirs_with_no_party.html', {
+		context.update({
 			'title': 'scene.org party dirs which are not linked to a party',
 			'directories': directories,
 			'report_name': report_name,
 			'total_count': total_count,
 			'matched_count': matched_count,
 		})
+		return context
 
 sceneorg_party_dirs_with_no_party = SceneorgPartyDirsWithNoParty.as_view()
 
 
-class PartiesWithIncompleteDates(View):
-	def get(self, request):
+class PartiesWithIncompleteDates(Report):
+	template_name = 'maintenance/party_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(PartiesWithIncompleteDates, self).get_context_data(**kwargs)
 		report_name = 'parties_with_incomplete_dates'
 		parties = Party.objects.extra(
 			where=[
@@ -750,17 +863,21 @@ class PartiesWithIncompleteDates(View):
 			params=[report_name]
 		).order_by('start_date_date')
 
-		return render(request, 'maintenance/party_report.html', {
+		context.update({
 			'title': 'Parties with incomplete dates',
 			'parties': parties,
 			'report_name': report_name,
 		})
+		return context
 
 parties_with_incomplete_dates = PartiesWithIncompleteDates.as_view()
 
 
-class PartiesWithNoLocation(View):
-	def get(self, request):
+class PartiesWithNoLocation(Report):
+	template_name = 'maintenance/party_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(PartiesWithNoLocation, self).get_context_data(**kwargs)
 		report_name = 'parties_with_no_location'
 		parties = Party.objects.extra(
 			where=[
@@ -771,17 +888,21 @@ class PartiesWithNoLocation(View):
 			params=[report_name]
 		).order_by('start_date_date')
 
-		return render(request, 'maintenance/party_report.html', {
+		context.update({
 			'title': 'Parties with no location',
 			'parties': parties,
 			'report_name': report_name,
 		})
+		return context
 
 parties_with_no_location = PartiesWithNoLocation.as_view()
 
 
-class EmptyReleasers(View):
-	def get(self, request):
+class EmptyReleasers(Report):
+	template_name = 'maintenance/releaser_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(EmptyReleasers, self).get_context_data(**kwargs)
 		report_name = 'empty_releasers'
 		releasers = Releaser.objects.raw('''
 			SELECT id, is_group, name
@@ -831,17 +952,21 @@ class EmptyReleasers(View):
 			ORDER BY LOWER(name)
 		''', [report_name])
 
-		return render(request, 'maintenance/releaser_report.html', {
+		context.update({
 			'title': 'Empty releaser records',
 			'releasers': releasers,
 			'report_name': report_name,
 		})
+		return context
 
 empty_releasers = EmptyReleasers.as_view()
 
 
-class UnresolvedScreenshots(View):
-	def get(self, request):
+class UnresolvedScreenshots(Report):
+	template_name = 'maintenance/unresolved_screenshots.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(UnresolvedScreenshots, self).get_context_data(**kwargs)
 		links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True).select_related('production')
 
 		entries = []
@@ -851,20 +976,22 @@ class UnresolvedScreenshots(View):
 				link.archive_members().filter(file_size__gt=0).exclude(filename__in=['scene.org', 'scene.org.txt'])
 			))
 
-		return render(request, 'maintenance/unresolved_screenshots.html', {
+		context.update({
 			'title': 'Unresolved screenshots',
 			'link_count': links.count(),
 			'entries': entries,
 			'report_name': 'unresolved_screenshots',
 		})
+		return context
 
 unresolved_screenshots = UnresolvedScreenshots.as_view()
 
 
-class PublicRealNames(View):
-	def get(self, request):
-		if not request.user.is_staff:
-			return redirect('home')
+class PublicRealNames(StaffOnlyMixin, Report):
+	template_name = 'maintenance/public_real_names.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(PublicRealNames, self).get_context_data(**kwargs)
 
 		has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
 		has_public_surname = (~Q(surname='')) & Q(show_surname=True)
@@ -874,60 +1001,66 @@ class PublicRealNames(View):
 			has_public_first_name | has_public_surname
 		).order_by('name')
 
-		if request.GET.get('without_note'):
+		if self.request.GET.get('without_note'):
 			sceners = sceners.filter(real_name_note='')
 
-		return render(request, 'maintenance/public_real_names.html', {
+		context.update({
 			'title': 'Sceners with public real names',
 			'sceners': sceners,
 			'report_name': 'public_real_names',
 		})
+		return context
 
 public_real_names = PublicRealNames.as_view()
 
 
-class ProdsWithBlurbs(View):
-	def get(self, request):
-		if not request.user.is_staff:
-			return redirect('home')
+class ProdsWithBlurbs(StaffOnlyMixin, Report):
+	template_name = 'maintenance/prods_with_blurbs.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithBlurbs, self).get_context_data(**kwargs)
 
 		blurbs = ProductionBlurb.objects.select_related('production')
 
-		return render(request, 'maintenance/prods_with_blurbs.html', {
+		context.update({
 			'blurbs': blurbs,
 		})
+		return context
 
 prods_with_blurbs = ProdsWithBlurbs.as_view()
 
 
-class ProdComments(View):
-	def get(self, request):
-		if not request.user.is_staff:
-			return redirect('home')
+class ProdComments(StaffOnlyMixin, Report):
+	template_name = 'maintenance/prod_comments.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdComments, self).get_context_data(**kwargs)
 
 		production_type = ContentType.objects.get_for_model(Production)
 
 		comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
 		paginator = Paginator(comments, 100)
 
-		page = request.GET.get('page', 1)
+		page = self.request.GET.get('page', 1)
 		try:
 			comments_page = paginator.page(page)
 		except (PageNotAnInteger, EmptyPage):
 			# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
 			comments_page = paginator.page(paginator.num_pages)
 
-		return render(request, 'maintenance/prod_comments.html', {
+		context.update({
 			'comments': comments_page,
 		})
+		return context
 
 prod_comments = ProdComments.as_view()
 
 
-class CreditsToMoveToText(View):
-	def get(self, request):
-		if not request.user.is_staff:
-			return redirect('home')
+class CreditsToMoveToText(StaffOnlyMixin, Report):
+	template_name = 'maintenance/credits_to_move_to_text.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(CreditsToMoveToText, self).get_context_data(**kwargs)
 
 		report_name = 'credits_to_move_to_text'
 
@@ -948,12 +1081,13 @@ class CreditsToMoveToText(View):
 			AND productions_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 		''', [report_name])
 
-		return render(request, 'maintenance/credits_to_move_to_text.html', {
+		context.update({
 			'title': 'Credits that probably need to be moved to the Text category',
 			'credits': credits,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 credits_to_move_to_text = CreditsToMoveToText.as_view()
 
@@ -1033,16 +1167,18 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 	return HttpResponse('OK', content_type='text/plain')
 
 
-class ResultsWithNoEncoding(View):
-	def get(self, request):
-		if not request.user.is_staff:
-			return redirect('home')
+class ResultsWithNoEncoding(StaffOnlyMixin, Report):
+	template_name = 'maintenance/results_with_no_encoding.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ResultsWithNoEncoding, self).get_context_data(**kwargs)
 		results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
 
-		return render(request, 'maintenance/results_with_no_encoding.html', {
+		context.update({
 			'title': 'Results files with unknown character encoding',
 			'results_files': results_files,
 		})
+		return context
 
 results_with_no_encoding = ResultsWithNoEncoding.as_view()
 
@@ -1180,8 +1316,11 @@ def fix_results_file_encoding(request, results_file_id):
 	})
 
 
-class TinyIntrosWithoutDownloadLinks(View):
-	def get(self, request):
+class TinyIntrosWithoutDownloadLinks(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(TinyIntrosWithoutDownloadLinks, self).get_context_data(**kwargs)
 		report_name = 'tiny_intros_without_download_links'
 
 		prod_types = list(ProductionType.objects.filter(name__in=[
@@ -1198,18 +1337,22 @@ class TinyIntrosWithoutDownloadLinks(View):
 				params=[report_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Tiny intros without download links',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 tiny_intros_without_download_links = TinyIntrosWithoutDownloadLinks.as_view()
 
 
-class TinyIntrosWithoutScreenshots(View):
-	def get(self, request):
+class TinyIntrosWithoutScreenshots(Report):
+	template_name = 'maintenance/production_report.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(TinyIntrosWithoutScreenshots, self).get_context_data(**kwargs)
 		report_name = 'tiny_intros_without_screenshots'
 
 		prod_types = list(ProductionType.objects.filter(name__in=[
@@ -1224,11 +1367,12 @@ class TinyIntrosWithoutScreenshots(View):
 				params=[report_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
-		return render(request, 'maintenance/production_report.html', {
+		context.update({
 			'title': 'Tiny intros without download links',
 			'productions': productions,
 			'mark_excludable': True,
 			'report_name': report_name,
 		})
+		return context
 
 tiny_intros_without_screenshots = TinyIntrosWithoutScreenshots.as_view()
