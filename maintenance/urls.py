@@ -13,4 +13,9 @@ urlpatterns = [
 	url(r'^exclude$', views.exclude, name='exclude'),
 	url(r'^archive_member/(\d+)/$', views.view_archive_member, name='view_archive_member'),
 	url(r'^resolve_screenshot/(\d+)/(\d+)/$', views.resolve_screenshot, name='resolve_screenshot'),
-] + [report.get_urlpattern() for report in views.reports]
+]
+
+for section_title, reports in views.reports:
+	urlpatterns.extend([
+		report.get_urlpattern() for report in reports if hasattr(report, 'get_urlpattern')
+	])

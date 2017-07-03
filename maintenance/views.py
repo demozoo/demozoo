@@ -24,7 +24,10 @@ from screenshots.tasks import create_screenshot_from_production_link
 def index(request):
 	if not request.user.is_staff:
 		return redirect('home')
-	return render(request, 'maintenance/index.html')
+
+	return render(request, 'maintenance/index.html', {
+		'reports': reports,
+	})
 
 
 class StaffOnlyMixin(object):
@@ -1374,40 +1377,82 @@ class TinyIntrosWithoutScreenshots(Report):
 tiny_intros_without_screenshots = TinyIntrosWithoutScreenshots.as_view()
 
 
+class ExternalReport(object):
+	# placeholder for an item in the reports menu that doesn't live here
+	def __init__(self, url_name, title):
+		self.url_name = url_name
+		self.title = title
+
+	def get_url(self):
+		return reverse(self.url_name)
+
+
 reports = [
-	ProdsWithoutScreenshots,
-	ProdsWithoutExternalLinks,
-	ProdsWithoutReleaseDate,
-	ProdsWithDeadAmigascneLinks,
-	ProdsWithDeadAmigaNvgOrgLinks,
-	SceneorgDownloadLinksWithUnicode,
-	ProdsWithoutPlatforms,
-	ProdsWithoutPlatformsExcludingLost,
-	ProdsWithoutPlatformsWithDownloads,
-	ProdsWithoutReleaseDateWithPlacement,
-	ProdSoundtracksWithoutReleaseDate,
-	GroupNicksWithBrackets,
-	AmbiguousGroupsWithNoDifferentiators,
-	ProdsWithReleaseDateOutsideParty,
-	ProdsWithSameNamedCredits,
-	SameNamedProdsBySameReleaser,
-	SameNamedProdsWithoutSpecialChars,
-	DuplicateExternalLinks,
-	MatchingRealNames,
-	MatchingSurnames,
-	ImpliedMemberships,
-	GroupsWithSameNamedMembers,
-	ReleasersWithSameNamedGroups,
-	SceneorgPartyDirsWithNoParty,
-	PartiesWithIncompleteDates,
-	PartiesWithNoLocation,
-	EmptyReleasers,
-	UnresolvedScreenshots,
-	PublicRealNames,
-	ProdsWithBlurbs,
-	ProdComments,
-	CreditsToMoveToText,
-	ResultsWithNoEncoding,
-	TinyIntrosWithoutDownloadLinks,
-	TinyIntrosWithoutScreenshots,
+	(
+		"Supporting data",
+		[
+			ProdsWithoutExternalLinks,
+			ProdsWithoutScreenshots,
+			ProdsWithoutPlatforms,
+			ProdsWithoutPlatformsExcludingLost,
+			ProdsWithoutPlatformsWithDownloads,
+			UnresolvedScreenshots,
+			ProdsWithBlurbs,
+			TinyIntrosWithoutDownloadLinks,
+			TinyIntrosWithoutScreenshots,
+		]
+	),
+	(
+		"Release dates",
+		[
+			ProdsWithoutReleaseDate,
+			ProdsWithoutReleaseDateWithPlacement,
+			ProdsWithReleaseDateOutsideParty,
+			ProdSoundtracksWithoutReleaseDate,
+		]
+	),
+	(
+		"Cleanup",
+		[
+			GroupNicksWithBrackets,
+			AmbiguousGroupsWithNoDifferentiators,
+			ImpliedMemberships,
+			EmptyReleasers,
+			PublicRealNames,
+			ProdsWithDeadAmigascneLinks,
+			ProdsWithDeadAmigaNvgOrgLinks,
+			CreditsToMoveToText,
+			SceneorgDownloadLinksWithUnicode,
+		]
+	),
+	(
+		"De-duping",
+		[
+			ProdsWithSameNamedCredits,
+			SameNamedProdsBySameReleaser,
+			SameNamedProdsWithoutSpecialChars,
+			DuplicateExternalLinks,
+			MatchingRealNames,
+			MatchingSurnames,
+			GroupsWithSameNamedMembers,
+			ReleasersWithSameNamedGroups,
+		]
+	),
+	(
+		"Parties",
+		[
+			SceneorgPartyDirsWithNoParty,
+			PartiesWithIncompleteDates,
+			PartiesWithNoLocation,
+			ExternalReport('sceneorg_compofolders', "scene.org competition directory matching"),
+			ExternalReport('sceneorg_compofiles', "scene.org party file matching"),
+			ResultsWithNoEncoding,
+		]
+	),
+	(
+		"User activity",
+		[
+			ProdComments,
+		]
+	),
 ]
