@@ -34,18 +34,27 @@ class StaffOnlyMixin(object):
 
 
 class Report(TemplateView):
+	title = 'Untitled report :-('
+
+	@property
+	def exclusion_name(self):
+		return self.name
+
 	def get_context_data(self, **kwargs):
 		context = super(Report, self).get_context_data(**kwargs)
+		context['title'] = self.title
+		context['report_name'] = self.name
+		context['exclusion_name'] = self.exclusion_name
 		return context
 
 
 class ProdsWithoutScreenshots(Report):
+	title = "Productions without screenshots"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_screenshots'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
-
-		report_name = 'prods_without_screenshots'
 
 		productions = (
 			Production.objects
@@ -54,16 +63,14 @@ class ProdsWithoutScreenshots(Report):
 			.exclude(supertype='music')
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related(
 				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
 			).defer('notes').distinct().order_by('sortable_title')[:1000]
 		)
 		context.update({
-			'title': 'Productions without screenshots',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -71,11 +78,12 @@ prods_without_screenshots = ProdsWithoutScreenshots.as_view()
 
 
 class ProdsWithoutExternalLinks(Report):
+	title = "Productions without external links"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_external_links'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutExternalLinks, self).get_context_data(**kwargs)
-		report_name = 'prods_without_external_links'
 
 		productions = Production.objects.raw('''
 			SELECT productions_production.*
@@ -88,12 +96,10 @@ class ProdsWithoutExternalLinks(Report):
 			AND productions_productionlink.id IS NULL
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY productions_production.title
-		''', [report_name])
+		''', [self.exclusion_name])
 		context.update({
-			'title': 'Productions without external links',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -101,24 +107,23 @@ prods_without_external_links = ProdsWithoutExternalLinks.as_view()
 
 
 class ProdsWithoutReleaseDate(Report):
+	title = "Productions without a release date"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_release_date'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutReleaseDate, self).get_context_data(**kwargs)
-		report_name = 'prods_without_release_date'
 
 		productions = (
 			Production.objects.filter(release_date_date__isnull=True)
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).order_by('title')
 		)
 		context.update({
-			'title': 'Productions without a release date',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -126,24 +131,23 @@ prods_without_release_date = ProdsWithoutReleaseDate.as_view()
 
 
 class ProdsWithDeadAmigascneLinks(Report):
+	title = "Productions with dead amigascne links"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_dead_amigascne_links'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithDeadAmigascneLinks, self).get_context_data(**kwargs)
-		report_name = 'prods_with_dead_amigascne_links'
 
 		productions = (
 			Production.objects.filter(links__parameter__contains='amigascne.org/old/')
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).order_by('title')
 		)
 		context.update({
-			'title': 'Productions with dead amigascne links',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -151,24 +155,23 @@ prods_with_dead_amigascne_links = ProdsWithDeadAmigascneLinks.as_view()
 
 
 class ProdsWithDeadAmigaNvgOrgLinks(Report):
+	title = "Productions with dead amiga.nvg.org links"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_dead_amiga_nvg_org_links'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithDeadAmigaNvgOrgLinks, self).get_context_data(**kwargs)
-		report_name = 'prods_with_dead_amiga_nvg_org_links'
 
 		productions = (
 			Production.objects.filter(links__parameter__contains='amiga.nvg.org')
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).order_by('title')
 		)
 		context.update({
-			'title': 'Productions with dead amiga.nvg.org links',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -176,11 +179,12 @@ prods_with_dead_amiga_nvg_org_links = ProdsWithDeadAmigaNvgOrgLinks.as_view()
 
 
 class SceneorgDownloadLinksWithUnicode(Report):
+	title = "scene.org download links with unicode characters"
 	template_name = 'maintenance/production_report.html'
+	name = 'sceneorg_download_links_with_unicode'
 
 	def get_context_data(self, **kwargs):
 		context = super(SceneorgDownloadLinksWithUnicode, self).get_context_data(**kwargs)
-		report_name = 'sceneorg_download_links_with_unicode'
 
 		productions = (
 			Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile')
@@ -189,13 +193,11 @@ class SceneorgDownloadLinksWithUnicode(Report):
 			).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
 		)
 		context.update({
-			'title': 'scene.org download links with unicode characters',
 			'productions': productions,
 			# don't implement exclusions on this report, because it's possible that a URL containing unicode
 			# that works now will be broken in future, and we don't want those cases to be hidden through
 			# exclusions
 			'mark_excludable': False,
-			'report_name': report_name,
 		})
 		return context
 
@@ -203,25 +205,24 @@ sceneorg_download_links_with_unicode = SceneorgDownloadLinksWithUnicode.as_view(
 
 
 class ProdsWithoutPlatforms(Report):
+	title = "Productions without platforms"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_platforms'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutPlatforms, self).get_context_data(**kwargs)
-		report_name = 'prods_without_platforms'
 
 		productions = (
 			Production.objects.filter(platforms__isnull=True, supertype='production')
 			.exclude(types__name__in=('Video', 'Performance'))
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
 		context.update({
-			'title': 'Productions without platforms',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -229,11 +230,13 @@ prods_without_platforms = ProdsWithoutPlatforms.as_view()
 
 
 class ProdsWithoutPlatformsExcludingLost(Report):
+	title = "Productions without platforms (excluding 'lost')"
 	template_name = 'maintenance/production_report.html'
+	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
+	name = 'prods_without_platforms_excluding_lost'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutPlatformsExcludingLost, self).get_context_data(**kwargs)
-		report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
 		productions = (
 			Production.objects.filter(platforms__isnull=True, supertype='production')
@@ -241,14 +244,12 @@ class ProdsWithoutPlatformsExcludingLost(Report):
 			.exclude(tags__name=('lost'))
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
 		context.update({
-			'title': "Productions without platforms (excluding 'lost')",
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -256,11 +257,13 @@ prods_without_platforms_excluding_lost = ProdsWithoutPlatformsExcludingLost.as_v
 
 
 class ProdsWithoutPlatformsWithDownloads(Report):
+	title = "Productions without platforms (with downloads)"
 	template_name = 'maintenance/production_report.html'
+	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
+	name = 'prods_without_platforms_with_downloads'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutPlatformsWithDownloads, self).get_context_data(**kwargs)
-		report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
 
 		productions = (
 			Production.objects.filter(platforms__isnull=True, supertype='production')
@@ -268,14 +271,12 @@ class ProdsWithoutPlatformsWithDownloads(Report):
 			.exclude(types__name__in=('Video', 'Performance'))
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
 		context.update({
-			'title': "Productions without platforms (with downloads)",
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -283,11 +284,12 @@ prods_without_platforms_with_downloads = ProdsWithoutPlatformsWithDownloads.as_v
 
 
 class ProdsWithoutReleaseDateWithPlacement(Report):
+	title = "Productions without a release date but with a party placement attached"
 	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prods_without_release_date_with_placement'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutReleaseDateWithPlacement, self).get_context_data(**kwargs)
-		report_name = 'prods_without_release_date_with_placement'
 
 		productions = Production.objects.raw('''
 			SELECT DISTINCT ON (productions_production.id)
@@ -304,15 +306,13 @@ class ProdsWithoutReleaseDateWithPlacement(Report):
 				productions_production.release_date_date IS NULL
 				AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY productions_production.id, parties_party.end_date_date
-		''', [report_name])
+		''', [self.exclusion_name])
 
 		productions = list(productions)
 		for production in productions:
 			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
 		context.update({
-			'title': 'Productions without a release date but with a party placement attached',
 			'productions': productions,
-			'report_name': report_name,
 			'return_to': reverse('maintenance:prods_without_release_date_with_placement'),
 		})
 		return context
@@ -321,11 +321,12 @@ prods_without_release_date_with_placement = ProdsWithoutReleaseDateWithPlacement
 
 
 class ProdSoundtracksWithoutReleaseDate(Report):
+	title = "Music with productions attached but no release date"
 	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prod_soundtracks_without_release_date'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdSoundtracksWithoutReleaseDate, self).get_context_data(**kwargs)
-		report_name = 'prod_soundtracks_without_release_date'
 
 		productions = Production.objects.raw('''
 			SELECT DISTINCT ON (soundtrack.id)
@@ -342,15 +343,13 @@ class ProdSoundtracksWithoutReleaseDate(Report):
 				AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY
 				soundtrack.id, production.release_date_date
-		''', [report_name])
+		''', [self.exclusion_name])
 		productions = list(productions)
 		for production in productions:
 			if production.suggested_release_date_date is not None:
 				production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
 		context.update({
-			'title': 'Music with productions attached but no release date',
 			'productions': productions,
-			'report_name': report_name,
 			'return_to': reverse('maintenance:prod_soundtracks_without_release_date'),
 		})
 		return context
@@ -359,23 +358,22 @@ prod_soundtracks_without_release_date = ProdSoundtracksWithoutReleaseDate.as_vie
 
 
 class GroupNicksWithBrackets(Report):
+	title = "Group names with brackets"
 	template_name = 'maintenance/nick_report.html'
+	name = 'group_nicks_with_brackets'
 
 	def get_context_data(self, **kwargs):
 		context = super(GroupNicksWithBrackets, self).get_context_data(**kwargs)
-		report_name = 'group_nicks_with_brackets'
 
 		nicks = (
 			Nick.objects.filter(name__contains='(', releaser__is_group=True)
 			.extra(
 				where=['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).order_by('name')
 		)
 		context.update({
-			'title': 'Group names with brackets',
 			'nicks': nicks,
-			'report_name': report_name,
 		})
 		return context
 
@@ -383,11 +381,12 @@ group_nicks_with_brackets = GroupNicksWithBrackets.as_view()
 
 
 class AmbiguousGroupsWithNoDifferentiators(Report):
+	title = "Ambiguous group names with no differentiators"
 	template_name = 'maintenance/ambiguous_group_names.html'
+	name = 'ambiguous_groups_with_no_differentiators'
 
 	def get_context_data(self, **kwargs):
 		context = super(AmbiguousGroupsWithNoDifferentiators, self).get_context_data(**kwargs)
-		report_name = 'ambiguous_groups_with_no_differentiators'
 
 		nicks = Nick.objects.raw('''
 			SELECT demoscene_nick.*,
@@ -407,11 +406,9 @@ class AmbiguousGroupsWithNoDifferentiators(Report):
 				AND demoscene_nick.differentiator = ''
 				AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY demoscene_nick.name
-		''', [report_name])
+		''', [self.exclusion_name])
 		context.update({
-			'title': 'Ambiguous group names with no differentiators',
 			'nicks': nicks,
-			'report_name': report_name,
 		})
 		return context
 
@@ -419,11 +416,12 @@ ambiguous_groups_with_no_differentiators = AmbiguousGroupsWithNoDifferentiators.
 
 
 class ProdsWithReleaseDateOutsideParty(Report):
+	title = "Productions with a release date more than 14 days away from their release party"
 	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prods_with_release_date_outside_party'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithReleaseDateOutsideParty, self).get_context_data(**kwargs)
-		report_name = 'prods_with_release_date_outside_party'
 
 		productions = Production.objects.raw('''
 			SELECT * FROM (
@@ -452,15 +450,13 @@ class ProdsWithReleaseDateOutsideParty(Report):
 					OR releases.release_date_date > releases.party_end_date + INTERVAL '14 days'
 				)
 				AND releases.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		''', [report_name])
+		''', [self.exclusion_name])
 		productions = list(productions)
 		for production in productions:
 			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
 
 		context.update({
-			'title': 'Productions with a release date more than 14 days away from their release party',
 			'productions': productions,
-			'report_name': report_name,
 			'return_to': reverse('maintenance:prods_with_release_date_outside_party'),
 		})
 		return context
@@ -469,11 +465,12 @@ prods_with_release_date_outside_party = ProdsWithReleaseDateOutsideParty.as_view
 
 
 class ProdsWithSameNamedCredits(Report):
+	title = "Productions with identically-named sceners in the credits"
 	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_same_named_credits'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithSameNamedCredits, self).get_context_data(**kwargs)
-		report_name = 'prods_with_same_named_credits'
 
 		productions = Production.objects.raw('''
 			SELECT DISTINCT productions_production.*
@@ -483,13 +480,11 @@ class ProdsWithSameNamedCredits(Report):
 			INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
 			INNER JOIN productions_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id)
 			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		''', [report_name])
+		''', [self.exclusion_name])
 
 		context.update({
-			'title': 'Productions with identically-named sceners in the credits',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -497,11 +492,12 @@ prods_with_same_named_credits = ProdsWithSameNamedCredits.as_view()
 
 
 class SameNamedProdsBySameReleaser(Report):
+	title = "Identically-named productions by the same releaser"
 	template_name = 'maintenance/production_report.html'
+	name = 'same_named_prods_by_same_releaser'
 
 	def get_context_data(self, **kwargs):
 		context = super(SameNamedProdsBySameReleaser, self).get_context_data(**kwargs)
-		report_name = 'same_named_prods_by_same_releaser'
 
 		productions = Production.objects.raw('''
 			SELECT DISTINCT productions_production.*
@@ -516,13 +512,11 @@ class SameNamedProdsBySameReleaser(Report):
 				AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
 				AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
 			ORDER BY productions_production.sortable_title
-		''', [report_name])
+		''', [self.exclusion_name])
 
 		context.update({
-			'title': 'Identically-named productions by the same releaser',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -530,11 +524,12 @@ same_named_prods_by_same_releaser = SameNamedProdsBySameReleaser.as_view()
 
 
 class SameNamedProdsWithoutSpecialChars(Report):
+	title = "Identically-named productions by the same releaser, ignoring special chars"
 	template_name = 'maintenance/production_report.html'
+	name = 'same_named_prods_without_special_chars'
 
 	def get_context_data(self, **kwargs):
 		context = super(SameNamedProdsWithoutSpecialChars, self).get_context_data(**kwargs)
-		report_name = 'same_named_prods_without_special_chars'
 
 		productions = Production.objects.raw('''
 			SELECT DISTINCT productions_production.*
@@ -553,10 +548,8 @@ class SameNamedProdsWithoutSpecialChars(Report):
 		''')
 
 		context.update({
-			'title': 'Identically-named productions by the same releaser, ignoring special chars',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -564,7 +557,9 @@ same_named_prods_without_special_chars = SameNamedProdsWithoutSpecialChars.as_vi
 
 
 class DuplicateExternalLinks(Report):
+	title = "Duplicate external links"
 	template_name = 'maintenance/duplicate_external_links.html'
+	name = 'duplicate_external_links'
 
 	def get_context_data(self, **kwargs):
 		context = super(DuplicateExternalLinks, self).get_context_data(**kwargs)
@@ -618,11 +613,12 @@ duplicate_external_links = DuplicateExternalLinks.as_view()
 
 
 class MatchingRealNames(Report):
+	title = "Sceners with matching real names"
 	template_name = 'maintenance/matching_real_names.html'
+	name = 'matching_real_names'
 
 	def get_context_data(self, **kwargs):
 		context = super(MatchingRealNames, self).get_context_data(**kwargs)
-		report_name = 'matching_real_names'
 
 		releasers = Releaser.objects.raw('''
 			SELECT DISTINCT demoscene_releaser.*
@@ -636,9 +632,7 @@ class MatchingRealNames(Report):
 			ORDER BY demoscene_releaser.first_name, demoscene_releaser.surname, demoscene_releaser.name
 		''')
 		context.update({
-			'title': 'Sceners with matching real names',
 			'releasers': releasers,
-			'report_name': report_name,
 		})
 		return context
 
@@ -646,11 +640,12 @@ matching_real_names = MatchingRealNames.as_view()
 
 
 class MatchingSurnames(Report):
+	title = "Sceners with matching surnames"
 	template_name = 'maintenance/matching_surnames.html'
+	name = 'matching_surnames'
 
 	def get_context_data(self, **kwargs):
 		context = super(MatchingSurnames, self).get_context_data(**kwargs)
-		report_name = 'matching_surnames'
 
 		releasers = Releaser.objects.raw('''
 			SELECT DISTINCT demoscene_releaser.*
@@ -662,9 +657,7 @@ class MatchingSurnames(Report):
 			ORDER BY demoscene_releaser.surname, demoscene_releaser.first_name, demoscene_releaser.name
 		''')
 		context.update({
-			'title': 'Sceners with matching surnames',
 			'releasers': releasers,
-			'report_name': report_name,
 		})
 		return context
 
@@ -672,11 +665,12 @@ matching_surnames = MatchingSurnames.as_view()
 
 
 class ImpliedMemberships(Report):
+	title = "Group memberships found in production bylines, but missing from the member list"
 	template_name = 'maintenance/implied_memberships.html'
+	name = 'implied_memberships'
 
 	def get_context_data(self, **kwargs):
 		context = super(ImpliedMemberships, self).get_context_data(**kwargs)
-		report_name = 'implied_memberships'
 
 		cursor = connection.cursor()
 		cursor.execute("""
@@ -710,9 +704,7 @@ class ImpliedMemberships(Report):
 			for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
 		]
 		context.update({
-			'title': 'Group memberships found in production bylines, but missing from the member list',
 			'records': records,
-			'report_name': report_name,
 		})
 		return context
 
@@ -720,11 +712,12 @@ implied_memberships = ImpliedMemberships.as_view()
 
 
 class GroupsWithSameNamedMembers(Report):
+	title = "Groups with same-named members"
 	template_name = 'maintenance/groups_with_same_named_members.html'
+	name = 'groups_with_same_named_members'
 
 	def get_context_data(self, **kwargs):
 		context = super(GroupsWithSameNamedMembers, self).get_context_data(**kwargs)
-		report_name = 'groups_with_same_named_members'
 		groups = Releaser.objects.raw('''
 			SELECT grp.id, grp.name,
 				demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id, scener.is_group AS member_1_is_group,
@@ -745,9 +738,7 @@ class GroupsWithSameNamedMembers(Report):
 			)
 		''')
 		context.update({
-			'title': 'Groups with same-named members',
 			'groups': groups,
-			'report_name': report_name,
 		})
 		return context
 
@@ -755,11 +746,12 @@ groups_with_same_named_members = GroupsWithSameNamedMembers.as_view()
 
 
 class ReleasersWithSameNamedGroups(Report):
+	title = "Releasers with same-named groups"
 	template_name = 'maintenance/releasers_with_same_named_groups.html'
+	name = 'releasers_with_same_named_groups'
 
 	def get_context_data(self, **kwargs):
 		context = super(ReleasersWithSameNamedGroups, self).get_context_data(**kwargs)
-		report_name = 'releasers_with_same_named_groups'
 		releasers = Releaser.objects.raw('''
 			SELECT member.id, member.name, member.is_group,
 				demoscene_nickvariant.name AS group_1_name, grp.id AS group_1_id,
@@ -780,9 +772,7 @@ class ReleasersWithSameNamedGroups(Report):
 			)
 		''')
 		context.update({
-			'title': 'Releasers with same-named groups',
 			'releasers': releasers,
-			'report_name': report_name,
 		})
 		return context
 
@@ -790,11 +780,12 @@ releasers_with_same_named_groups = ReleasersWithSameNamedGroups.as_view()
 
 
 class SceneorgPartyDirsWithNoParty(Report):
+	title = "scene.org party dirs which are not linked to a party"
 	template_name = 'maintenance/sceneorg_party_dirs_with_no_party.html'
+	name = 'sceneorg_party_dirs_with_no_party'
 
 	def get_context_data(self, **kwargs):
 		context = super(SceneorgPartyDirsWithNoParty, self).get_context_data(**kwargs)
-		report_name = 'sceneorg_party_dirs_with_no_party'
 
 		directories_plain = Directory.objects.raw('''
 			SELECT party_dir.*
@@ -838,9 +829,7 @@ class SceneorgPartyDirsWithNoParty(Report):
 		matched_count = total_count - unmatched_count
 
 		context.update({
-			'title': 'scene.org party dirs which are not linked to a party',
 			'directories': directories,
-			'report_name': report_name,
 			'total_count': total_count,
 			'matched_count': matched_count,
 		})
@@ -850,23 +839,22 @@ sceneorg_party_dirs_with_no_party = SceneorgPartyDirsWithNoParty.as_view()
 
 
 class PartiesWithIncompleteDates(Report):
+	title = "Parties with incomplete dates"
 	template_name = 'maintenance/party_report.html'
+	name = 'parties_with_incomplete_dates'
 
 	def get_context_data(self, **kwargs):
 		context = super(PartiesWithIncompleteDates, self).get_context_data(**kwargs)
-		report_name = 'parties_with_incomplete_dates'
 		parties = Party.objects.extra(
 			where=[
 				"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
 				"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 			],
-			params=[report_name]
+			params=[self.exclusion_name]
 		).order_by('start_date_date')
 
 		context.update({
-			'title': 'Parties with incomplete dates',
 			'parties': parties,
-			'report_name': report_name,
 		})
 		return context
 
@@ -874,24 +862,23 @@ parties_with_incomplete_dates = PartiesWithIncompleteDates.as_view()
 
 
 class PartiesWithNoLocation(Report):
+	title = "Parties with no location"
 	template_name = 'maintenance/party_report.html'
+	name = 'parties_with_no_location'
 
 	def get_context_data(self, **kwargs):
 		context = super(PartiesWithNoLocation, self).get_context_data(**kwargs)
-		report_name = 'parties_with_no_location'
 		parties = Party.objects.extra(
 			where=[
 				"latitude IS NULL",
 				"is_online = 'f'",
 				"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
 			],
-			params=[report_name]
+			params=[self.exclusion_name]
 		).order_by('start_date_date')
 
 		context.update({
-			'title': 'Parties with no location',
 			'parties': parties,
-			'report_name': report_name,
 		})
 		return context
 
@@ -899,11 +886,12 @@ parties_with_no_location = PartiesWithNoLocation.as_view()
 
 
 class EmptyReleasers(Report):
+	title = "Empty releaser records"
 	template_name = 'maintenance/releaser_report.html'
+	name = 'empty_releasers'
 
 	def get_context_data(self, **kwargs):
 		context = super(EmptyReleasers, self).get_context_data(**kwargs)
-		report_name = 'empty_releasers'
 		releasers = Releaser.objects.raw('''
 			SELECT id, is_group, name
 			FROM demoscene_releaser
@@ -950,12 +938,10 @@ class EmptyReleasers(Report):
 			AND id NOT IN (SELECT releaser_id FROM demoscene_nick where differentiator <> '')
 			AND id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY LOWER(name)
-		''', [report_name])
+		''', [self.exclusion_name])
 
 		context.update({
-			'title': 'Empty releaser records',
 			'releasers': releasers,
-			'report_name': report_name,
 		})
 		return context
 
@@ -963,7 +949,9 @@ empty_releasers = EmptyReleasers.as_view()
 
 
 class UnresolvedScreenshots(Report):
+	title = "Unresolved screenshots"
 	template_name = 'maintenance/unresolved_screenshots.html'
+	name = 'unresolved_screenshots'
 
 	def get_context_data(self, **kwargs):
 		context = super(UnresolvedScreenshots, self).get_context_data(**kwargs)
@@ -977,10 +965,8 @@ class UnresolvedScreenshots(Report):
 			))
 
 		context.update({
-			'title': 'Unresolved screenshots',
 			'link_count': links.count(),
 			'entries': entries,
-			'report_name': 'unresolved_screenshots',
 		})
 		return context
 
@@ -988,7 +974,9 @@ unresolved_screenshots = UnresolvedScreenshots.as_view()
 
 
 class PublicRealNames(StaffOnlyMixin, Report):
+	title = "Sceners with public real names"
 	template_name = 'maintenance/public_real_names.html'
+	name = 'public_real_names'
 
 	def get_context_data(self, **kwargs):
 		context = super(PublicRealNames, self).get_context_data(**kwargs)
@@ -1005,9 +993,7 @@ class PublicRealNames(StaffOnlyMixin, Report):
 			sceners = sceners.filter(real_name_note='')
 
 		context.update({
-			'title': 'Sceners with public real names',
 			'sceners': sceners,
-			'report_name': 'public_real_names',
 		})
 		return context
 
@@ -1015,7 +1001,9 @@ public_real_names = PublicRealNames.as_view()
 
 
 class ProdsWithBlurbs(StaffOnlyMixin, Report):
+	title = "Productions with blurbs"
 	template_name = 'maintenance/prods_with_blurbs.html'
+	name = 'prods_with_blurbs'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithBlurbs, self).get_context_data(**kwargs)
@@ -1031,7 +1019,9 @@ prods_with_blurbs = ProdsWithBlurbs.as_view()
 
 
 class ProdComments(StaffOnlyMixin, Report):
+	title = "Latest production comments"
 	template_name = 'maintenance/prod_comments.html'
+	name = 'prod_comments'
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdComments, self).get_context_data(**kwargs)
@@ -1057,12 +1047,12 @@ prod_comments = ProdComments.as_view()
 
 
 class CreditsToMoveToText(StaffOnlyMixin, Report):
+	title = "Credits that probably need to be moved to the Text category"
 	template_name = 'maintenance/credits_to_move_to_text.html'
+	name = 'credits_to_move_to_text'
 
 	def get_context_data(self, **kwargs):
 		context = super(CreditsToMoveToText, self).get_context_data(**kwargs)
-
-		report_name = 'credits_to_move_to_text'
 
 		credits = Credit.objects.raw('''
 			SELECT
@@ -1079,13 +1069,11 @@ class CreditsToMoveToText(StaffOnlyMixin, Report):
 				OR role ILIKE '%%lyric%%'
 			)
 			AND productions_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		''', [report_name])
+		''', [self.exclusion_name])
 
 		context.update({
-			'title': 'Credits that probably need to be moved to the Text category',
 			'credits': credits,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -1168,14 +1156,15 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 
 
 class ResultsWithNoEncoding(StaffOnlyMixin, Report):
+	title = "Results files with unknown character encoding"
 	template_name = 'maintenance/results_with_no_encoding.html'
+	name = 'results_with_no_encoding'
 
 	def get_context_data(self, **kwargs):
 		context = super(ResultsWithNoEncoding, self).get_context_data(**kwargs)
 		results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
 
 		context.update({
-			'title': 'Results files with unknown character encoding',
 			'results_files': results_files,
 		})
 		return context
@@ -1317,11 +1306,12 @@ def fix_results_file_encoding(request, results_file_id):
 
 
 class TinyIntrosWithoutDownloadLinks(Report):
+	title = "Tiny intros without download links"
 	template_name = 'maintenance/production_report.html'
+	name = 'tiny_intros_without_download_links'
 
 	def get_context_data(self, **kwargs):
 		context = super(TinyIntrosWithoutDownloadLinks, self).get_context_data(**kwargs)
-		report_name = 'tiny_intros_without_download_links'
 
 		prod_types = list(ProductionType.objects.filter(name__in=[
 			'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
@@ -1334,14 +1324,12 @@ class TinyIntrosWithoutDownloadLinks(Report):
 			intros.exclude(id__in=intros_with_download_links)
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
 		context.update({
-			'title': 'Tiny intros without download links',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 
@@ -1349,11 +1337,12 @@ tiny_intros_without_download_links = TinyIntrosWithoutDownloadLinks.as_view()
 
 
 class TinyIntrosWithoutScreenshots(Report):
+	title = "Tiny intros without screenshots"
 	template_name = 'maintenance/production_report.html'
+	name = 'tiny_intros_without_screenshots'
 
 	def get_context_data(self, **kwargs):
 		context = super(TinyIntrosWithoutScreenshots, self).get_context_data(**kwargs)
-		report_name = 'tiny_intros_without_screenshots'
 
 		prod_types = list(ProductionType.objects.filter(name__in=[
 			'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
@@ -1364,14 +1353,12 @@ class TinyIntrosWithoutScreenshots(Report):
 			.filter(screenshots__id__isnull=True)
 			.extra(
 				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[report_name]
+				params=[self.exclusion_name]
 			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
 		)
 		context.update({
-			'title': 'Tiny intros without download links',
 			'productions': productions,
 			'mark_excludable': True,
-			'report_name': report_name,
 		})
 		return context
 

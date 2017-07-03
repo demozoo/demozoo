@@ -9,7 +9,7 @@
 {% block base_main %}
 	<h2>{{ title }}:</h2>
 	<div id="main_column">
-		<div class="panel report" data-report-name="{{ report_name }}">
+		<div class="panel report" data-report-name="{{ exclusion_name }}">
 			<form action="{% url 'maintenance:fix_release_dates' %}" method="post">
 				{% csrf_token %}
 				<table width="100%">
