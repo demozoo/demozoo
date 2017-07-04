@@ -2,9 +2,11 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render, get_object_or_404
+from django.views.generic.base import TemplateView
 
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -15,830 +17,1015 @@ from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
 from maintenance.models import Exclusion
-from mirror.models import Download, ArchiveMember
+from mirror.models import ArchiveMember
 from screenshots.tasks import create_screenshot_from_production_link
-
 
 
 def index(request):
 	if not request.user.is_staff:
 		return redirect('home')
-	return render(request, 'maintenance/index.html')
 
-
-def prods_without_screenshots(request):
-	report_name = 'prods_without_screenshots'
-
-	productions = Production.objects \
-		.filter(screenshots__id__isnull=True) \
-		.filter(links__is_download_link=True) \
-		.exclude(supertype='music') \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related(
-			'author_nicks__releaser', 'author_affiliation_nicks__releaser'
-		).defer('notes').distinct().order_by('sortable_title')[:1000]
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions without screenshots',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
+	return render(request, 'maintenance/index.html', {
+		'reports': reports,
 	})
 
 
-def prods_without_external_links(request):
-	report_name = 'prods_without_external_links'
+class StaffOnlyMixin(object):
+	def dispatch(self, request, *args, **kwargs):
+		if not request.user.is_staff:
+			return redirect('home')
+		return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
 
-	productions = Production.objects.raw('''
-		SELECT productions_production.*
-		FROM productions_production
-		LEFT JOIN productions_productionlink ON (
-			productions_production.id = productions_productionlink.production_id
-			AND productions_productionlink.is_download_link = 'f'
+
+class Report(TemplateView):
+	title = 'Untitled report :-('
+
+	@property
+	def exclusion_name(self):
+		return self.name
+
+	@classmethod
+	def get_url(cls):
+		return reverse('maintenance:%s' % cls.name)
+
+	@classmethod
+	def get_urlpattern(cls):
+		return url('^%s$' % cls.name, cls.as_view(), name=cls.name)
+
+	def get_context_data(self, **kwargs):
+		context = super(Report, self).get_context_data(**kwargs)
+		context['title'] = self.title
+		context['report_name'] = self.name
+		context['exclusion_name'] = self.exclusion_name
+		return context
+
+
+class ProdsWithoutScreenshots(Report):
+	title = "Productions without screenshots"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_screenshots'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects
+			.filter(screenshots__id__isnull=True)
+			.filter(links__is_download_link=True)
+			.exclude(supertype='music')
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related(
+				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+			).defer('notes').distinct().order_by('sortable_title')[:1000]
 		)
-		WHERE productions_production.supertype = 'production'
-		AND productions_productionlink.id IS NULL
-		AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY productions_production.title
-	''', [report_name])
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions without external links',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def prods_without_release_date(request):
-	report_name = 'prods_without_release_date'
+class ProdsWithoutExternalLinks(Report):
+	title = "Productions without external links"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_external_links'
 
-	productions = Production.objects.filter(release_date_date__isnull=True) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions without a release date',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutExternalLinks, self).get_context_data(**kwargs)
 
-
-def prods_with_dead_amigascne_links(request):
-	report_name = 'prods_with_dead_amigascne_links'
-
-	productions = Production.objects.filter(links__parameter__contains='amigascne.org/old/') \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions with dead amigascne links',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def prods_with_dead_amiga_nvg_org_links(request):
-	report_name = 'prods_with_dead_amiga_nvg_org_links'
-
-	productions = Production.objects.filter(links__parameter__contains='amiga.nvg.org') \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions with dead amiga.nvg.org links',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def sceneorg_download_links_with_unicode(request):
-	report_name = 'sceneorg_download_links_with_unicode'
-
-	productions = Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile') \
-		.extra(
-			where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
-		).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'scene.org download links with unicode characters',
-		'productions': productions,
-		# don't implement exclusions on this report, because it's possible that a URL containing unicode
-		# that works now will be broken in future, and we don't want those cases to be hidden through
-		# exclusions
-		'mark_excludable': False,
-		'report_name': report_name,
-	})
-
-
-def prods_without_platforms(request):
-	report_name = 'prods_without_platforms'
-
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.exclude(types__name__in=('Video', 'Performance')) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions without platforms',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def prods_without_platforms_excluding_lost(request):
-	report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
-
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.exclude(types__name__in=('Video', 'Performance')) \
-		.exclude(tags__name=('lost')) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': "Productions without platforms (excluding 'lost')",
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def prods_without_platforms_with_downloads(request):
-	report_name = 'prods_without_platforms'  # use the same report name so that they share the 'excluded' list
-
-	productions = Production.objects.filter(platforms__isnull=True, supertype='production') \
-		.filter(links__is_download_link=True) \
-		.exclude(types__name__in=('Video', 'Performance')) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': "Productions without platforms (with downloads)",
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def prods_without_release_date_with_placement(request):
-	report_name = 'prods_without_release_date_with_placement'
-
-	productions = Production.objects.raw('''
-		SELECT DISTINCT ON (productions_production.id)
-			productions_production.*,
-			parties_party.end_date_date AS suggested_release_date_date,
-			parties_party.end_date_precision AS suggested_release_date_precision,
-			parties_party.name AS release_detail
-		FROM
-			productions_production
-			INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
-			INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
-			INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
-		WHERE
-			productions_production.release_date_date IS NULL
-			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY productions_production.id, parties_party.end_date_date
-	''', [report_name])
-
-	productions = list(productions)
-	for production in productions:
-		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
-	return render(request, 'maintenance/production_release_date_report.html', {
-		'title': 'Productions without a release date but with a party placement attached',
-		'productions': productions,
-		'report_name': report_name,
-		'return_to': reverse('maintenance_prods_without_release_date_with_placement'),
-	})
-
-
-def prod_soundtracks_without_release_date(request):
-	report_name = 'prod_soundtracks_without_release_date'
-
-	productions = Production.objects.raw('''
-		SELECT DISTINCT ON (soundtrack.id)
-			soundtrack.*,
-			production.release_date_date AS suggested_release_date_date,
-			production.release_date_precision AS suggested_release_date_precision,
-			production.title AS release_detail
-		FROM
-			productions_production AS soundtrack
-			INNER JOIN productions_soundtracklink ON (soundtrack.id = productions_soundtracklink.soundtrack_id)
-			INNER JOIN productions_production AS production ON (productions_soundtracklink.production_id = production.id)
-		WHERE
-			soundtrack.release_date_date IS NULL
-			AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY
-			soundtrack.id, production.release_date_date
-	''', [report_name])
-	productions = list(productions)
-	for production in productions:
-		if production.suggested_release_date_date != None:
-			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
-	return render(request, 'maintenance/production_release_date_report.html', {
-		'title': 'Music with productions attached but no release date',
-		'productions': productions,
-		'report_name': report_name,
-		'return_to': reverse('maintenance_prod_soundtracks_without_release_date'),
-	})
-
-
-def group_nicks_with_brackets(request):
-	report_name = 'group_nicks_with_brackets'
-
-	nicks = Nick.objects.filter(name__contains = '(', releaser__is_group=True) \
-		.extra(
-			where = ['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params = [report_name]
-		).order_by('name')
-	return render(request, 'maintenance/nick_report.html', {
-		'title': 'Group names with brackets',
-		'nicks': nicks,
-		'report_name': report_name,
-	})
-
-
-def ambiguous_groups_with_no_differentiators(request):
-	report_name = 'ambiguous_groups_with_no_differentiators'
-
-	nicks = Nick.objects.raw('''
-		SELECT demoscene_nick.*,
-			same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name, same_named_nick.differentiator AS clashing_differentiator
-		FROM
-			demoscene_nick
-			INNER JOIN demoscene_releaser ON (demoscene_nick.releaser_id = demoscene_releaser.id)
-			INNER JOIN demoscene_nick AS same_named_nick ON (
-				demoscene_nick.name = same_named_nick.name
-				AND demoscene_nick.releaser_id <> same_named_nick.releaser_id)
-			INNER JOIN demoscene_releaser AS same_named_releaser ON (
-				same_named_nick.releaser_id = same_named_releaser.id
-				AND same_named_releaser.is_group = 't'
+		productions = Production.objects.raw('''
+			SELECT productions_production.*
+			FROM productions_production
+			LEFT JOIN productions_productionlink ON (
+				productions_production.id = productions_productionlink.production_id
+				AND productions_productionlink.is_download_link = 'f'
 			)
-		WHERE
-			demoscene_releaser.is_group = 't'
-			AND demoscene_nick.differentiator = ''
-			AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY demoscene_nick.name
-	''', [report_name])
-	return render(request, 'maintenance/ambiguous_group_names.html', {
-		'title': 'Ambiguous group names with no differentiators',
-		'nicks': nicks,
-		'report_name': report_name,
-	})
+			WHERE productions_production.supertype = 'production'
+			AND productions_productionlink.id IS NULL
+			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+			ORDER BY productions_production.title
+		''', [self.exclusion_name])
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def prods_with_release_date_outside_party(request):
-	report_name = 'prods_with_release_date_outside_party'
+class ProdsWithoutReleaseDate(Report):
+	title = "Productions without a release date"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_release_date'
 
-	productions = Production.objects.raw('''
-		SELECT * FROM (
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutReleaseDate, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(release_date_date__isnull=True)
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ProdsWithDeadAmigascneLinks(Report):
+	title = "Productions with dead amigascne links"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_dead_amigascne_links'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithDeadAmigascneLinks, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(links__parameter__contains='amigascne.org/old/')
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ProdsWithDeadAmigaNvgOrgLinks(Report):
+	title = "Productions with dead amiga.nvg.org links"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_dead_amiga_nvg_org_links'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithDeadAmigaNvgOrgLinks, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(links__parameter__contains='amiga.nvg.org')
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class SceneorgDownloadLinksWithUnicode(Report):
+	title = "scene.org download links with unicode characters"
+	template_name = 'maintenance/production_report.html'
+	name = 'sceneorg_download_links_with_unicode'
+
+	def get_context_data(self, **kwargs):
+		context = super(SceneorgDownloadLinksWithUnicode, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile')
+			.extra(
+				where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
+			).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			# don't implement exclusions on this report, because it's possible that a URL containing unicode
+			# that works now will be broken in future, and we don't want those cases to be hidden through
+			# exclusions
+			'mark_excludable': False,
+		})
+		return context
+
+
+class ProdsWithoutPlatforms(Report):
+	title = "Productions without platforms"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_without_platforms'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatforms, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(platforms__isnull=True, supertype='production')
+			.exclude(types__name__in=('Video', 'Performance'))
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ProdsWithoutPlatformsExcludingLost(Report):
+	title = "Productions without platforms (excluding 'lost')"
+	template_name = 'maintenance/production_report.html'
+	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
+	name = 'prods_without_platforms_excluding_lost'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatformsExcludingLost, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(platforms__isnull=True, supertype='production')
+			.exclude(types__name__in=('Video', 'Performance'))
+			.exclude(tags__name=('lost'))
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ProdsWithoutPlatformsWithDownloads(Report):
+	title = "Productions without platforms (with downloads)"
+	template_name = 'maintenance/production_report.html'
+	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
+	name = 'prods_without_platforms_with_downloads'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutPlatformsWithDownloads, self).get_context_data(**kwargs)
+
+		productions = (
+			Production.objects.filter(platforms__isnull=True, supertype='production')
+			.filter(links__is_download_link=True)
+			.exclude(types__name__in=('Video', 'Performance'))
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ProdsWithoutReleaseDateWithPlacement(Report):
+	title = "Productions without a release date but with a party placement attached"
+	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prods_without_release_date_with_placement'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutReleaseDateWithPlacement, self).get_context_data(**kwargs)
+
+		productions = Production.objects.raw('''
 			SELECT DISTINCT ON (productions_production.id)
 				productions_production.*,
-				parties_party.start_date_date AS party_start_date,
-				parties_party.end_date_date AS party_end_date,
 				parties_party.end_date_date AS suggested_release_date_date,
 				parties_party.end_date_precision AS suggested_release_date_precision,
-				parties_party.name AS release_detail,
-				parties_party.end_date_precision AS party_end_date_precision
+				parties_party.name AS release_detail
 			FROM
 				productions_production
 				INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
 				INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
 				INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
 			WHERE
-				productions_production.release_date_date IS NOT NULL
-				AND productions_production.release_date_precision = 'd'
+				productions_production.release_date_date IS NULL
+				AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
 			ORDER BY productions_production.id, parties_party.end_date_date
-		) AS releases
-		WHERE
-			releases.party_end_date_precision = 'd'
-			AND (
-				releases.release_date_date < releases.party_start_date - INTERVAL '14 days'
-				OR releases.release_date_date > releases.party_end_date + INTERVAL '14 days'
-			)
-			AND releases.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-	''', [report_name])
-	productions = list(productions)
-	for production in productions:
-		production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+		''', [self.exclusion_name])
 
-	return render(request, 'maintenance/production_release_date_report.html', {
-		'title': 'Productions with a release date more than 14 days away from their release party',
-		'productions': productions,
-		'report_name': report_name,
-		'return_to': reverse('maintenance_prods_with_release_date_outside_party'),
-	})
+		productions = list(productions)
+		for production in productions:
+			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+		context.update({
+			'productions': productions,
+			'return_to': reverse('maintenance:prods_without_release_date_with_placement'),
+		})
+		return context
 
 
-def prods_with_same_named_credits(request):
-	report_name = 'prods_with_same_named_credits'
+class ProdSoundtracksWithoutReleaseDate(Report):
+	title = "Music with productions attached but no release date"
+	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prod_soundtracks_without_release_date'
 
-	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*
-		FROM productions_production
-		INNER JOIN productions_credit ON (productions_production.id = productions_credit.production_id)
-		INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
-		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
-		INNER JOIN productions_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id)
-		AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-	''', [report_name])
+	def get_context_data(self, **kwargs):
+		context = super(ProdSoundtracksWithoutReleaseDate, self).get_context_data(**kwargs)
 
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Productions with identically-named sceners in the credits',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
-
-
-def same_named_prods_by_same_releaser(request):
-	report_name = 'same_named_prods_by_same_releaser'
-
-	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*
-		FROM productions_production
-		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
-		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
-		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-		INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-		INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
-		WHERE
-			productions_production.title <> '?'
-			AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
-			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY productions_production.sortable_title
-	''', [report_name])
-
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Identically-named productions by the same releaser',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		productions = Production.objects.raw('''
+			SELECT DISTINCT ON (soundtrack.id)
+				soundtrack.*,
+				production.release_date_date AS suggested_release_date_date,
+				production.release_date_precision AS suggested_release_date_precision,
+				production.title AS release_detail
+			FROM
+				productions_production AS soundtrack
+				INNER JOIN productions_soundtracklink ON (soundtrack.id = productions_soundtracklink.soundtrack_id)
+				INNER JOIN productions_production AS production ON (productions_soundtracklink.production_id = production.id)
+			WHERE
+				soundtrack.release_date_date IS NULL
+				AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+			ORDER BY
+				soundtrack.id, production.release_date_date
+		''', [self.exclusion_name])
+		productions = list(productions)
+		for production in productions:
+			if production.suggested_release_date_date is not None:
+				production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+		context.update({
+			'productions': productions,
+			'return_to': reverse('maintenance:prod_soundtracks_without_release_date'),
+		})
+		return context
 
 
-def same_named_prods_without_special_chars(request):
-	report_name = 'same_named_prods_without_special_chars'
+class GroupNicksWithBrackets(Report):
+	title = "Group names with brackets"
+	template_name = 'maintenance/nick_report.html'
+	name = 'group_nicks_with_brackets'
 
-	productions = Production.objects.raw('''
-		SELECT DISTINCT productions_production.*
-		FROM productions_production
-		INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
-		INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
-		INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-		INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-		INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
-		WHERE
-			productions_production.title <> '?'
-			AND productions_production.id <> other_production.id
-			AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
-			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
-		ORDER BY productions_production.sortable_title
-	''')
+	def get_context_data(self, **kwargs):
+		context = super(GroupNicksWithBrackets, self).get_context_data(**kwargs)
 
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Identically-named productions by the same releaser, ignoring special chars',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		nicks = (
+			Nick.objects.filter(name__contains='(', releaser__is_group=True)
+			.extra(
+				where=['demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).order_by('name')
+		)
+		context.update({
+			'nicks': nicks,
+		})
+		return context
 
 
-def duplicate_external_links(request):
-	def prod_duplicates_by_link_class(link_class):
-		return Production.objects.raw('''
-			SELECT DISTINCT productions_production.*, productions_productionlink.parameter
+class AmbiguousGroupsWithNoDifferentiators(Report):
+	title = "Ambiguous group names with no differentiators"
+	template_name = 'maintenance/ambiguous_group_names.html'
+	name = 'ambiguous_groups_with_no_differentiators'
+
+	def get_context_data(self, **kwargs):
+		context = super(AmbiguousGroupsWithNoDifferentiators, self).get_context_data(**kwargs)
+
+		nicks = Nick.objects.raw('''
+			SELECT demoscene_nick.*,
+				same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name, same_named_nick.differentiator AS clashing_differentiator
+			FROM
+				demoscene_nick
+				INNER JOIN demoscene_releaser ON (demoscene_nick.releaser_id = demoscene_releaser.id)
+				INNER JOIN demoscene_nick AS same_named_nick ON (
+					demoscene_nick.name = same_named_nick.name
+					AND demoscene_nick.releaser_id <> same_named_nick.releaser_id)
+				INNER JOIN demoscene_releaser AS same_named_releaser ON (
+					same_named_nick.releaser_id = same_named_releaser.id
+					AND same_named_releaser.is_group = 't'
+				)
+			WHERE
+				demoscene_releaser.is_group = 't'
+				AND demoscene_nick.differentiator = ''
+				AND demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+			ORDER BY demoscene_nick.name
+		''', [self.exclusion_name])
+		context.update({
+			'nicks': nicks,
+		})
+		return context
+
+
+class ProdsWithReleaseDateOutsideParty(Report):
+	title = "Productions with a release date more than 14 days away from their release party"
+	template_name = 'maintenance/production_release_date_report.html'
+	name = 'prods_with_release_date_outside_party'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithReleaseDateOutsideParty, self).get_context_data(**kwargs)
+
+		productions = Production.objects.raw('''
+			SELECT * FROM (
+				SELECT DISTINCT ON (productions_production.id)
+					productions_production.*,
+					parties_party.start_date_date AS party_start_date,
+					parties_party.end_date_date AS party_end_date,
+					parties_party.end_date_date AS suggested_release_date_date,
+					parties_party.end_date_precision AS suggested_release_date_precision,
+					parties_party.name AS release_detail,
+					parties_party.end_date_precision AS party_end_date_precision
+				FROM
+					productions_production
+					INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
+					INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
+					INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
+				WHERE
+					productions_production.release_date_date IS NOT NULL
+					AND productions_production.release_date_precision = 'd'
+				ORDER BY productions_production.id, parties_party.end_date_date
+			) AS releases
+			WHERE
+				releases.party_end_date_precision = 'd'
+				AND (
+					releases.release_date_date < releases.party_start_date - INTERVAL '14 days'
+					OR releases.release_date_date > releases.party_end_date + INTERVAL '14 days'
+				)
+				AND releases.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		''', [self.exclusion_name])
+		productions = list(productions)
+		for production in productions:
+			production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+
+		context.update({
+			'productions': productions,
+			'return_to': reverse('maintenance:prods_with_release_date_outside_party'),
+		})
+		return context
+
+
+class ProdsWithSameNamedCredits(Report):
+	title = "Productions with identically-named sceners in the credits"
+	template_name = 'maintenance/production_report.html'
+	name = 'prods_with_same_named_credits'
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithSameNamedCredits, self).get_context_data(**kwargs)
+
+		productions = Production.objects.raw('''
+			SELECT DISTINCT productions_production.*
 			FROM productions_production
-			INNER JOIN productions_productionlink ON (
-				productions_production.id = productions_productionlink.production_id
-				AND productions_productionlink.link_class = %s
-				AND productions_productionlink.is_download_link = 'f')
-			INNER JOIN productions_productionlink AS other_link ON (
-				productions_productionlink.link_class = other_link.link_class
-				AND productions_productionlink.parameter = other_link.parameter
-				AND productions_productionlink.id <> other_link.id
-				AND other_link.is_download_link = 'f'
-			)
-			ORDER BY productions_productionlink.parameter
-		''', [link_class])
+			INNER JOIN productions_credit ON (productions_production.id = productions_credit.production_id)
+			INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
+			INNER JOIN productions_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id)
+			AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		''', [self.exclusion_name])
 
-	def releaser_duplicates_by_link_class(link_class):
-		return Releaser.objects.raw('''
-			SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
-			FROM demoscene_releaser
-			INNER JOIN demoscene_releaserexternallink ON (
-				demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
-				AND demoscene_releaserexternallink.link_class = %s)
-			INNER JOIN demoscene_releaserexternallink AS other_link ON (
-				demoscene_releaserexternallink.link_class = other_link.link_class
-				AND demoscene_releaserexternallink.parameter = other_link.parameter
-				AND demoscene_releaserexternallink.id <> other_link.id
-			)
-			ORDER BY demoscene_releaserexternallink.parameter
-		''', [link_class])
-
-	prod_dupes = {}
-	for link_class in ProductionLink.objects.distinct().values_list('link_class', flat=True):
-		prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
-
-	releaser_dupes = {}
-	for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):
-		releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
-
-	return render(request, 'maintenance/duplicate_external_links.html', {
-		'prod_dupes': prod_dupes,
-		'releaser_dupes': releaser_dupes,
-	})
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def matching_real_names(request):
-	report_name = 'matching_real_names'
+class SameNamedProdsBySameReleaser(Report):
+	title = "Identically-named productions by the same releaser"
+	template_name = 'maintenance/production_report.html'
+	name = 'same_named_prods_by_same_releaser'
 
-	releasers = Releaser.objects.raw('''
-		SELECT DISTINCT demoscene_releaser.*
-		FROM demoscene_releaser
-		INNER JOIN demoscene_releaser AS other_releaser ON (
-			demoscene_releaser.first_name <> ''
-			AND demoscene_releaser.surname <> ''
-			AND demoscene_releaser.first_name = other_releaser.first_name
-			AND demoscene_releaser.surname = other_releaser.surname
-			AND demoscene_releaser.id <> other_releaser.id)
-		ORDER BY demoscene_releaser.first_name, demoscene_releaser.surname, demoscene_releaser.name
-	''')
-	return render(request, 'maintenance/matching_real_names.html', {
-		'title': 'Sceners with matching real names',
-		'releasers': releasers,
-		'report_name': report_name,
-	})
+	def get_context_data(self, **kwargs):
+		context = super(SameNamedProdsBySameReleaser, self).get_context_data(**kwargs)
 
-
-def matching_surnames(request):
-	report_name = 'matching_surnames'
-
-	releasers = Releaser.objects.raw('''
-		SELECT DISTINCT demoscene_releaser.*
-		FROM demoscene_releaser
-		INNER JOIN demoscene_releaser AS other_releaser ON (
-			demoscene_releaser.surname <> ''
-			AND demoscene_releaser.surname = other_releaser.surname
-			AND demoscene_releaser.id <> other_releaser.id)
-		ORDER BY demoscene_releaser.surname, demoscene_releaser.first_name, demoscene_releaser.name
-	''')
-	return render(request, 'maintenance/matching_surnames.html', {
-		'title': 'Sceners with matching surnames',
-		'releasers': releasers,
-		'report_name': report_name,
-	})
-
-
-def implied_memberships(request):
-	report_name = 'implied_memberships'
-
-	cursor = connection.cursor()
-	cursor.execute("""
-		SELECT
-			member.id, member.is_group, member.name,
-			grp.id, grp.name,
-			productions_production.id, productions_production.supertype, productions_production.title
-		FROM
-			productions_production
+		productions = Production.objects.raw('''
+			SELECT DISTINCT productions_production.*
+			FROM productions_production
 			INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
-			INNER JOIN demoscene_nick AS author_nick ON (productions_production_author_nicks.nick_id = author_nick.id)
-			INNER JOIN demoscene_releaser AS member ON (author_nick.releaser_id = member.id)
-			INNER JOIN productions_production_author_affiliation_nicks ON (productions_production.id = productions_production_author_affiliation_nicks.production_id)
-			INNER JOIN demoscene_nick AS group_nick ON (productions_production_author_affiliation_nicks.nick_id = group_nick.id)
-			INNER JOIN demoscene_releaser AS grp ON (group_nick.releaser_id = grp.id)
-			LEFT JOIN demoscene_membership ON (
-				member.id = demoscene_membership.member_id
-				AND grp.id = demoscene_membership.group_id)
-		WHERE
-			demoscene_membership.id IS NULL
-		ORDER BY
-			grp.name, grp.id, member.name, member.id, productions_production.title
-	""")
-	records = [
-		{
-			'membership': (member_id, group_id),
-			'member_id': member_id, 'member_is_group': member_is_group, 'member_name': member_name,
-			'group_id': group_id, 'group_name': group_name,
-			'production_id': production_id, 'production_supertype': production_supertype, 'production_title': production_title
-		}
-		for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
-	]
-	return render(request, 'maintenance/implied_memberships.html', {
-		'title': 'Group memberships found in production bylines, but missing from the member list',
-		'records': records,
-		'report_name': report_name,
-	})
+			INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
+			INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
+			INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
+			WHERE
+				productions_production.title <> '?'
+				AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
+				AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+			ORDER BY productions_production.sortable_title
+		''', [self.exclusion_name])
+
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def groups_with_same_named_members(request):
-	report_name = 'groups_with_same_named_members'
-	groups = Releaser.objects.raw('''
-		SELECT grp.id, grp.name,
-			demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id, scener.is_group AS member_1_is_group,
-			other_nickvariant.name AS member_2_name, other_scener.id AS member_2_id, other_scener.is_group AS member_2_is_group
-		FROM demoscene_nickvariant
-		INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
-		INNER JOIN demoscene_releaser AS scener ON (demoscene_nick.releaser_id = scener.id)
-		INNER JOIN demoscene_membership ON (scener.id = demoscene_membership.member_id)
-		INNER JOIN demoscene_releaser AS grp ON (demoscene_membership.group_id = grp.id)
-		INNER JOIN demoscene_membership AS other_membership ON (
-			other_membership.group_id = grp.id
-			AND demoscene_membership.id < other_membership.id
-		)
-		INNER JOIN demoscene_releaser AS other_scener ON (other_membership.member_id = other_scener.id)
-		INNER JOIN demoscene_nick AS other_nick ON (other_scener.id = other_nick.releaser_id)
-		INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
-			other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
-		)
-	''')
-	return render(request, 'maintenance/groups_with_same_named_members.html', {
-		'title': 'Groups with same-named members',
-		'groups': groups,
-		'report_name': report_name,
-	})
+class SameNamedProdsWithoutSpecialChars(Report):
+	title = "Identically-named productions by the same releaser, ignoring special chars"
+	template_name = 'maintenance/production_report.html'
+	name = 'same_named_prods_without_special_chars'
+
+	def get_context_data(self, **kwargs):
+		context = super(SameNamedProdsWithoutSpecialChars, self).get_context_data(**kwargs)
+
+		productions = Production.objects.raw('''
+			SELECT DISTINCT productions_production.*
+			FROM productions_production
+			INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+			INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
+			INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
+			INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
+			WHERE
+				productions_production.title <> '?'
+				AND productions_production.id <> other_production.id
+				AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
+				AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+			ORDER BY productions_production.sortable_title
+		''')
+
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def releasers_with_same_named_groups(request):
-	report_name = 'releasers_with_same_named_groups'
-	releasers = Releaser.objects.raw('''
-		SELECT member.id, member.name, member.is_group,
-			demoscene_nickvariant.name AS group_1_name, grp.id AS group_1_id,
-			other_nickvariant.name AS group_2_name, other_grp.id AS group_2_id
-		FROM demoscene_nickvariant
-		INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
-		INNER JOIN demoscene_releaser AS grp ON (demoscene_nick.releaser_id = grp.id)
-		INNER JOIN demoscene_membership ON (grp.id = demoscene_membership.group_id)
-		INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
-		INNER JOIN demoscene_membership AS other_membership ON (
-			other_membership.member_id = member.id
-			AND demoscene_membership.id < other_membership.id
-		)
-		INNER JOIN demoscene_releaser AS other_grp ON (other_membership.group_id = other_grp.id)
-		INNER JOIN demoscene_nick AS other_nick ON (other_grp.id = other_nick.releaser_id)
-		INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
-			other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
-		)
-	''')
-	return render(request, 'maintenance/releasers_with_same_named_groups.html', {
-		'title': 'Releasers with same-named groups',
-		'releasers': releasers,
-		'report_name': report_name,
-	})
+class DuplicateExternalLinks(Report):
+	title = "Duplicate external links"
+	template_name = 'maintenance/duplicate_external_links.html'
+	name = 'duplicate_external_links'
+
+	def get_context_data(self, **kwargs):
+		context = super(DuplicateExternalLinks, self).get_context_data(**kwargs)
+		def prod_duplicates_by_link_class(link_class):
+			return Production.objects.raw('''
+				SELECT DISTINCT productions_production.*, productions_productionlink.parameter
+				FROM productions_production
+				INNER JOIN productions_productionlink ON (
+					productions_production.id = productions_productionlink.production_id
+					AND productions_productionlink.link_class = %s
+					AND productions_productionlink.is_download_link = 'f')
+				INNER JOIN productions_productionlink AS other_link ON (
+					productions_productionlink.link_class = other_link.link_class
+					AND productions_productionlink.parameter = other_link.parameter
+					AND productions_productionlink.id <> other_link.id
+					AND other_link.is_download_link = 'f'
+				)
+				ORDER BY productions_productionlink.parameter
+			''', [link_class])
+
+		def releaser_duplicates_by_link_class(link_class):
+			return Releaser.objects.raw('''
+				SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
+				FROM demoscene_releaser
+				INNER JOIN demoscene_releaserexternallink ON (
+					demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
+					AND demoscene_releaserexternallink.link_class = %s)
+				INNER JOIN demoscene_releaserexternallink AS other_link ON (
+					demoscene_releaserexternallink.link_class = other_link.link_class
+					AND demoscene_releaserexternallink.parameter = other_link.parameter
+					AND demoscene_releaserexternallink.id <> other_link.id
+				)
+				ORDER BY demoscene_releaserexternallink.parameter
+			''', [link_class])
+
+		prod_dupes = {}
+		for link_class in ProductionLink.objects.distinct().values_list('link_class', flat=True):
+			prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
+
+		releaser_dupes = {}
+		for link_class in ReleaserExternalLink.objects.distinct().values_list('link_class', flat=True):
+			releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
+
+		context.update({
+			'prod_dupes': prod_dupes,
+			'releaser_dupes': releaser_dupes,
+		})
+		return context
 
 
-def sceneorg_party_dirs_with_no_party(request):
-	report_name = 'sceneorg_party_dirs_with_no_party'
+class MatchingRealNames(Report):
+	title = "Sceners with matching real names"
+	template_name = 'maintenance/matching_real_names.html'
+	name = 'matching_real_names'
 
-	directories_plain = Directory.objects.raw('''
-		SELECT party_dir.*
-		FROM sceneorg_directory AS parties_root
-		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
-		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
-		LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
-		WHERE parties_root.path = '/parties/'
-		AND parties_partyexternallink.id IS NULL
-		AND party_dir.is_deleted = 'f'
-		ORDER BY party_dir.path
-	''')
+	def get_context_data(self, **kwargs):
+		context = super(MatchingRealNames, self).get_context_data(**kwargs)
 
-	directories = Directory.objects.raw('''
-		SELECT party_dir.*,
-			parties_partyseries.name AS suggested_series_name,
-			parties_partyseries.id AS suggested_series_id,
-			parties_party.name AS suggested_party_name,
-			parties_party.id AS suggested_party_id,
-			substring(party_dir.path from '/parties/(\\\\d+)/') AS party_year
-		FROM sceneorg_directory AS parties_root
-		INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
-		INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
-		LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
-		LEFT JOIN parties_partyseries ON (
-			regexp_replace(substring(lower(party_dir.path) from '/parties/\\\\d+/([-a-z_]+)'), '[^a-z]', '', 'g')
-			= regexp_replace(lower(parties_partyseries.name), '[^a-z]', '', 'g')
-		)
-		LEFT JOIN parties_party ON (
-			parties_partyseries.id = parties_party.party_series_id
-			AND substring(party_dir.path from '/parties/(\\\\d+)/')
-				= cast(extract(year from parties_party.start_date_date) as varchar)
-		)
-		WHERE parties_root.path = '/parties/'
-		AND parties_partyexternallink.id IS NULL
-		AND party_dir.is_deleted = 'f'
-		ORDER BY party_dir.path
-	''')
-	total_count = Directory.parties().count()
-	unmatched_count = len(list(directories_plain))
-	matched_count = total_count - unmatched_count
-
-	return render(request, 'maintenance/sceneorg_party_dirs_with_no_party.html', {
-		'title': 'scene.org party dirs which are not linked to a party',
-		'directories': directories,
-		'report_name': report_name,
-		'total_count': total_count,
-		'matched_count': matched_count,
-	})
-
-
-def parties_with_incomplete_dates(request):
-	report_name = 'parties_with_incomplete_dates'
-	parties = Party.objects.extra(
-		where=[
-			"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
-			"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
-		],
-		params=[report_name]
-	).order_by('start_date_date')
-
-	return render(request, 'maintenance/party_report.html', {
-		'title': 'Parties with incomplete dates',
-		'parties': parties,
-		'report_name': report_name,
-	})
-
-
-def parties_with_no_location(request):
-	report_name = 'parties_with_no_location'
-	parties = Party.objects.extra(
-		where=[
-			"latitude IS NULL",
-			"is_online = 'f'",
-			"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
-		],
-		params=[report_name]
-	).order_by('start_date_date')
-
-	return render(request, 'maintenance/party_report.html', {
-		'title': 'Parties with no location',
-		'parties': parties,
-		'report_name': report_name,
-	})
-
-
-def empty_releasers(request):
-	report_name = 'empty_releasers'
-	releasers = Releaser.objects.raw('''
-		SELECT id, is_group, name
-		FROM demoscene_releaser
-		WHERE
-		notes = ''
-		AND id IN ( -- must belong to no groups
-			SELECT demoscene_releaser.id
+		releasers = Releaser.objects.raw('''
+			SELECT DISTINCT demoscene_releaser.*
 			FROM demoscene_releaser
-			LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
-			GROUP BY demoscene_releaser.id
-			HAVING COUNT(group_id) = 0
-		)
-		AND id IN ( -- must have no members
-			SELECT demoscene_releaser.id
+			INNER JOIN demoscene_releaser AS other_releaser ON (
+				demoscene_releaser.first_name <> ''
+				AND demoscene_releaser.surname <> ''
+				AND demoscene_releaser.first_name = other_releaser.first_name
+				AND demoscene_releaser.surname = other_releaser.surname
+				AND demoscene_releaser.id <> other_releaser.id)
+			ORDER BY demoscene_releaser.first_name, demoscene_releaser.surname, demoscene_releaser.name
+		''')
+		context.update({
+			'releasers': releasers,
+		})
+		return context
+
+
+class MatchingSurnames(Report):
+	title = "Sceners with matching surnames"
+	template_name = 'maintenance/matching_surnames.html'
+	name = 'matching_surnames'
+
+	def get_context_data(self, **kwargs):
+		context = super(MatchingSurnames, self).get_context_data(**kwargs)
+
+		releasers = Releaser.objects.raw('''
+			SELECT DISTINCT demoscene_releaser.*
 			FROM demoscene_releaser
-			LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
-			GROUP BY demoscene_releaser.id
-			HAVING COUNT(member_id) = 0
-		)
-		AND id IN ( -- must have no releases as author
-			SELECT demoscene_releaser.id
+			INNER JOIN demoscene_releaser AS other_releaser ON (
+				demoscene_releaser.surname <> ''
+				AND demoscene_releaser.surname = other_releaser.surname
+				AND demoscene_releaser.id <> other_releaser.id)
+			ORDER BY demoscene_releaser.surname, demoscene_releaser.first_name, demoscene_releaser.name
+		''')
+		context.update({
+			'releasers': releasers,
+		})
+		return context
+
+
+class ImpliedMemberships(Report):
+	title = "Group memberships found in production bylines, but missing from the member list"
+	template_name = 'maintenance/implied_memberships.html'
+	name = 'implied_memberships'
+
+	def get_context_data(self, **kwargs):
+		context = super(ImpliedMemberships, self).get_context_data(**kwargs)
+
+		cursor = connection.cursor()
+		cursor.execute("""
+			SELECT
+				member.id, member.is_group, member.name,
+				grp.id, grp.name,
+				productions_production.id, productions_production.supertype, productions_production.title
+			FROM
+				productions_production
+				INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+				INNER JOIN demoscene_nick AS author_nick ON (productions_production_author_nicks.nick_id = author_nick.id)
+				INNER JOIN demoscene_releaser AS member ON (author_nick.releaser_id = member.id)
+				INNER JOIN productions_production_author_affiliation_nicks ON (productions_production.id = productions_production_author_affiliation_nicks.production_id)
+				INNER JOIN demoscene_nick AS group_nick ON (productions_production_author_affiliation_nicks.nick_id = group_nick.id)
+				INNER JOIN demoscene_releaser AS grp ON (group_nick.releaser_id = grp.id)
+				LEFT JOIN demoscene_membership ON (
+					member.id = demoscene_membership.member_id
+					AND grp.id = demoscene_membership.group_id)
+			WHERE
+				demoscene_membership.id IS NULL
+			ORDER BY
+				grp.name, grp.id, member.name, member.id, productions_production.title
+		""")
+		records = [
+			{
+				'membership': (member_id, group_id),
+				'member_id': member_id, 'member_is_group': member_is_group, 'member_name': member_name,
+				'group_id': group_id, 'group_name': group_name,
+				'production_id': production_id, 'production_supertype': production_supertype, 'production_title': production_title
+			}
+			for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
+		]
+		context.update({
+			'records': records,
+		})
+		return context
+
+
+class GroupsWithSameNamedMembers(Report):
+	title = "Groups with same-named members"
+	template_name = 'maintenance/groups_with_same_named_members.html'
+	name = 'groups_with_same_named_members'
+
+	def get_context_data(self, **kwargs):
+		context = super(GroupsWithSameNamedMembers, self).get_context_data(**kwargs)
+		groups = Releaser.objects.raw('''
+			SELECT grp.id, grp.name,
+				demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id, scener.is_group AS member_1_is_group,
+				other_nickvariant.name AS member_2_name, other_scener.id AS member_2_id, other_scener.is_group AS member_2_is_group
+			FROM demoscene_nickvariant
+			INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_releaser AS scener ON (demoscene_nick.releaser_id = scener.id)
+			INNER JOIN demoscene_membership ON (scener.id = demoscene_membership.member_id)
+			INNER JOIN demoscene_releaser AS grp ON (demoscene_membership.group_id = grp.id)
+			INNER JOIN demoscene_membership AS other_membership ON (
+				other_membership.group_id = grp.id
+				AND demoscene_membership.id < other_membership.id
+			)
+			INNER JOIN demoscene_releaser AS other_scener ON (other_membership.member_id = other_scener.id)
+			INNER JOIN demoscene_nick AS other_nick ON (other_scener.id = other_nick.releaser_id)
+			INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
+				other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+			)
+		''')
+		context.update({
+			'groups': groups,
+		})
+		return context
+
+
+class ReleasersWithSameNamedGroups(Report):
+	title = "Releasers with same-named groups"
+	template_name = 'maintenance/releasers_with_same_named_groups.html'
+	name = 'releasers_with_same_named_groups'
+
+	def get_context_data(self, **kwargs):
+		context = super(ReleasersWithSameNamedGroups, self).get_context_data(**kwargs)
+		releasers = Releaser.objects.raw('''
+			SELECT member.id, member.name, member.is_group,
+				demoscene_nickvariant.name AS group_1_name, grp.id AS group_1_id,
+				other_nickvariant.name AS group_2_name, other_grp.id AS group_2_id
+			FROM demoscene_nickvariant
+			INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
+			INNER JOIN demoscene_releaser AS grp ON (demoscene_nick.releaser_id = grp.id)
+			INNER JOIN demoscene_membership ON (grp.id = demoscene_membership.group_id)
+			INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
+			INNER JOIN demoscene_membership AS other_membership ON (
+				other_membership.member_id = member.id
+				AND demoscene_membership.id < other_membership.id
+			)
+			INNER JOIN demoscene_releaser AS other_grp ON (other_membership.group_id = other_grp.id)
+			INNER JOIN demoscene_nick AS other_nick ON (other_grp.id = other_nick.releaser_id)
+			INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
+				other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+			)
+		''')
+		context.update({
+			'releasers': releasers,
+		})
+		return context
+
+
+class SceneorgPartyDirsWithNoParty(Report):
+	title = "scene.org party dirs which are not linked to a party"
+	template_name = 'maintenance/sceneorg_party_dirs_with_no_party.html'
+	name = 'sceneorg_party_dirs_with_no_party'
+
+	def get_context_data(self, **kwargs):
+		context = super(SceneorgPartyDirsWithNoParty, self).get_context_data(**kwargs)
+
+		directories_plain = Directory.objects.raw('''
+			SELECT party_dir.*
+			FROM sceneorg_directory AS parties_root
+			INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
+			INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
+			LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+			WHERE parties_root.path = '/parties/'
+			AND parties_partyexternallink.id IS NULL
+			AND party_dir.is_deleted = 'f'
+			ORDER BY party_dir.path
+		''')
+
+		directories = Directory.objects.raw('''
+			SELECT party_dir.*,
+				parties_partyseries.name AS suggested_series_name,
+				parties_partyseries.id AS suggested_series_id,
+				parties_party.name AS suggested_party_name,
+				parties_party.id AS suggested_party_id,
+				substring(party_dir.path from '/parties/(\\\\d+)/') AS party_year
+			FROM sceneorg_directory AS parties_root
+			INNER JOIN sceneorg_directory AS party_years ON (parties_root.id = party_years.parent_id)
+			INNER JOIN sceneorg_directory AS party_dir ON (party_years.id = party_dir.parent_id)
+			LEFT JOIN parties_partyexternallink ON (link_class = 'SceneOrgFolder' AND parameter = party_dir.path)
+			LEFT JOIN parties_partyseries ON (
+				regexp_replace(substring(lower(party_dir.path) from '/parties/\\\\d+/([-a-z_]+)'), '[^a-z]', '', 'g')
+				= regexp_replace(lower(parties_partyseries.name), '[^a-z]', '', 'g')
+			)
+			LEFT JOIN parties_party ON (
+				parties_partyseries.id = parties_party.party_series_id
+				AND substring(party_dir.path from '/parties/(\\\\d+)/')
+					= cast(extract(year from parties_party.start_date_date) as varchar)
+			)
+			WHERE parties_root.path = '/parties/'
+			AND parties_partyexternallink.id IS NULL
+			AND party_dir.is_deleted = 'f'
+			ORDER BY party_dir.path
+		''')
+		total_count = Directory.parties().count()
+		unmatched_count = len(list(directories_plain))
+		matched_count = total_count - unmatched_count
+
+		context.update({
+			'directories': directories,
+			'total_count': total_count,
+			'matched_count': matched_count,
+		})
+		return context
+
+
+class PartiesWithIncompleteDates(Report):
+	title = "Parties with incomplete dates"
+	template_name = 'maintenance/party_report.html'
+	name = 'parties_with_incomplete_dates'
+
+	def get_context_data(self, **kwargs):
+		context = super(PartiesWithIncompleteDates, self).get_context_data(**kwargs)
+		parties = Party.objects.extra(
+			where=[
+				"(start_date_precision <> 'd' OR end_date_precision <> 'd')",
+				"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+			],
+			params=[self.exclusion_name]
+		).order_by('start_date_date')
+
+		context.update({
+			'parties': parties,
+		})
+		return context
+
+
+class PartiesWithNoLocation(Report):
+	title = "Parties with no location"
+	template_name = 'maintenance/party_report.html'
+	name = 'parties_with_no_location'
+
+	def get_context_data(self, **kwargs):
+		context = super(PartiesWithNoLocation, self).get_context_data(**kwargs)
+		parties = Party.objects.extra(
+			where=[
+				"latitude IS NULL",
+				"is_online = 'f'",
+				"parties_party.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"
+			],
+			params=[self.exclusion_name]
+		).order_by('start_date_date')
+
+		context.update({
+			'parties': parties,
+		})
+		return context
+
+
+class EmptyReleasers(Report):
+	title = "Empty releaser records"
+	template_name = 'maintenance/releaser_report.html'
+	name = 'empty_releasers'
+
+	def get_context_data(self, **kwargs):
+		context = super(EmptyReleasers, self).get_context_data(**kwargs)
+		releasers = Releaser.objects.raw('''
+			SELECT id, is_group, name
 			FROM demoscene_releaser
-			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-			LEFT JOIN productions_production_author_nicks ON (demoscene_nick.id = productions_production_author_nicks.nick_id)
-			GROUP BY demoscene_releaser.id
-			HAVING COUNT(production_id) = 0
-		)
-		AND id IN ( -- must have no releases as author affiliation
-			SELECT demoscene_releaser.id
-			FROM demoscene_releaser
-			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-			LEFT JOIN productions_production_author_affiliation_nicks ON (demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id)
-			GROUP BY demoscene_releaser.id
-			HAVING COUNT(production_id) = 0
-		)
-		AND id IN ( -- must have no credits
-			SELECT demoscene_releaser.id
-			FROM demoscene_releaser
-			LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-			LEFT JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
-			GROUP BY demoscene_releaser.id
-			HAVING COUNT(production_id) = 0
-		)
-		AND id NOT IN (SELECT releaser_id FROM demoscene_nick where differentiator <> '')
-		AND id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-		ORDER BY LOWER(name)
-	''', [report_name])
+			WHERE
+			notes = ''
+			AND id IN ( -- must belong to no groups
+				SELECT demoscene_releaser.id
+				FROM demoscene_releaser
+				LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
+				GROUP BY demoscene_releaser.id
+				HAVING COUNT(group_id) = 0
+			)
+			AND id IN ( -- must have no members
+				SELECT demoscene_releaser.id
+				FROM demoscene_releaser
+				LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
+				GROUP BY demoscene_releaser.id
+				HAVING COUNT(member_id) = 0
+			)
+			AND id IN ( -- must have no releases as author
+				SELECT demoscene_releaser.id
+				FROM demoscene_releaser
+				LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
+				LEFT JOIN productions_production_author_nicks ON (demoscene_nick.id = productions_production_author_nicks.nick_id)
+				GROUP BY demoscene_releaser.id
+				HAVING COUNT(production_id) = 0
+			)
+			AND id IN ( -- must have no releases as author affiliation
+				SELECT demoscene_releaser.id
+				FROM demoscene_releaser
+				LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
+				LEFT JOIN productions_production_author_affiliation_nicks ON (demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id)
+				GROUP BY demoscene_releaser.id
+				HAVING COUNT(production_id) = 0
+			)
+			AND id IN ( -- must have no credits
+				SELECT demoscene_releaser.id
+				FROM demoscene_releaser
+				LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
+				LEFT JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
+				GROUP BY demoscene_releaser.id
+				HAVING COUNT(production_id) = 0
+			)
+			AND id NOT IN (SELECT releaser_id FROM demoscene_nick where differentiator <> '')
+			AND id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+			ORDER BY LOWER(name)
+		''', [self.exclusion_name])
 
-	return render(request, 'maintenance/releaser_report.html', {
-		'title': 'Empty releaser records',
-		'releasers': releasers,
-		'report_name': report_name,
-	})
+		context.update({
+			'releasers': releasers,
+		})
+		return context
 
 
-def unresolved_screenshots(request):
-	links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True).select_related('production')
+class UnresolvedScreenshots(Report):
+	title = "Unresolved screenshots"
+	template_name = 'maintenance/unresolved_screenshots.html'
+	name = 'unresolved_screenshots'
 
-	entries = []
-	for link in links[:100]:
-		entries.append((
-			link,
-			link.archive_members().filter(file_size__gt=0).exclude(filename__in=['scene.org', 'scene.org.txt'])
-		))
+	def get_context_data(self, **kwargs):
+		context = super(UnresolvedScreenshots, self).get_context_data(**kwargs)
+		links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True).select_related('production')
 
-	return render(request, 'maintenance/unresolved_screenshots.html', {
-		'title': 'Unresolved screenshots',
-		'link_count': links.count(),
-		'entries': entries,
-		'report_name': 'unresolved_screenshots',
-	})
+		entries = []
+		for link in links[:100]:
+			entries.append((
+				link,
+				link.archive_members().filter(file_size__gt=0).exclude(filename__in=['scene.org', 'scene.org.txt'])
+			))
+
+		context.update({
+			'link_count': links.count(),
+			'entries': entries,
+		})
+		return context
 
 
-def public_real_names(request):
-	if not request.user.is_staff:
-		return redirect('home')
+class PublicRealNames(StaffOnlyMixin, Report):
+	title = "Sceners with public real names"
+	template_name = 'maintenance/public_real_names.html'
+	name = 'public_real_names'
 
-	has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
-	has_public_surname = (~Q(surname='')) & Q(show_surname=True)
+	def get_context_data(self, **kwargs):
+		context = super(PublicRealNames, self).get_context_data(**kwargs)
 
-	sceners = Releaser.objects.filter(
-		Q(is_group=False),
-		has_public_first_name | has_public_surname
-	).order_by('name')
+		has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
+		has_public_surname = (~Q(surname='')) & Q(show_surname=True)
 
-	if request.GET.get('without_note'):
-		sceners = sceners.filter(real_name_note='')
+		sceners = Releaser.objects.filter(
+			Q(is_group=False),
+			has_public_first_name | has_public_surname
+		).order_by('name')
 
-	return render(request, 'maintenance/public_real_names.html', {
-		'title': 'Sceners with public real names',
-		'sceners': sceners,
-		'report_name': 'public_real_names',
-	})
+		if self.request.GET.get('without_note'):
+			sceners = sceners.filter(real_name_note='')
 
-def prods_with_blurbs(request):
-	if not request.user.is_staff:
-		return redirect('home')
+		context.update({
+			'sceners': sceners,
+		})
+		return context
 
-	blurbs = ProductionBlurb.objects.select_related('production')
 
-	return render(request, 'maintenance/prods_with_blurbs.html', {
-		'blurbs': blurbs,
-	})
+class ProdsWithBlurbs(StaffOnlyMixin, Report):
+	title = "Productions with blurbs"
+	template_name = 'maintenance/prods_with_blurbs.html'
+	name = 'prods_with_blurbs'
 
-def prod_comments(request):
-	if not request.user.is_staff:
-		return redirect('home')
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithBlurbs, self).get_context_data(**kwargs)
 
-	production_type = ContentType.objects.get_for_model(Production)
+		blurbs = ProductionBlurb.objects.select_related('production')
 
-	comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
-	paginator = Paginator(comments, 100)
+		context.update({
+			'blurbs': blurbs,
+		})
+		return context
 
-	page = request.GET.get('page', 1)
-	try:
-		comments_page = paginator.page(page)
-	except (PageNotAnInteger, EmptyPage):
-		# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
-		comments_page = paginator.page(paginator.num_pages)
 
-	return render(request, 'maintenance/prod_comments.html', {
-		'comments': comments_page,
-	})
+class ProdComments(StaffOnlyMixin, Report):
+	title = "Latest production comments"
+	template_name = 'maintenance/prod_comments.html'
+	name = 'prod_comments'
 
-def credits_to_move_to_text(request):
-	if not request.user.is_staff:
-		return redirect('home')
+	def get_context_data(self, **kwargs):
+		context = super(ProdComments, self).get_context_data(**kwargs)
 
-	report_name = 'credits_to_move_to_text'
+		production_type = ContentType.objects.get_for_model(Production)
 
-	credits = Credit.objects.raw('''
-		SELECT
-			productions_credit.*,
-			productions_production.title,
-			demoscene_nick.name AS nick_name
-		FROM productions_credit
-		INNER JOIN productions_production ON productions_credit.production_id = productions_production.id
-		INNER JOIN demoscene_nick ON productions_credit.nick_id = demoscene_nick.id
-		WHERE category = 'Other'
-		AND (
-			production_id IN (SELECT production_id FROM productions_production_types where productiontype_id = 5)
-			OR role ILIKE '%%text%%'
-			OR role ILIKE '%%lyric%%'
-		)
-		AND productions_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-	''', [report_name])
+		comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
+		paginator = Paginator(comments, 100)
 
-	return render(request, 'maintenance/credits_to_move_to_text.html', {
-		'title': 'Credits that probably need to be moved to the Text category',
-		'credits': credits,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		page = self.request.GET.get('page', 1)
+		try:
+			comments_page = paginator.page(page)
+		except (PageNotAnInteger, EmptyPage):
+			# If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+			comments_page = paginator.page(paginator.num_pages)
+
+		context.update({
+			'comments': comments_page,
+		})
+		return context
+
+
+class CreditsToMoveToText(StaffOnlyMixin, Report):
+	title = "Credits that probably need to be moved to the Text category"
+	template_name = 'maintenance/credits_to_move_to_text.html'
+	name = 'credits_to_move_to_text'
+
+	def get_context_data(self, **kwargs):
+		context = super(CreditsToMoveToText, self).get_context_data(**kwargs)
+
+		credits = Credit.objects.raw('''
+			SELECT
+				productions_credit.*,
+				productions_production.title,
+				demoscene_nick.name AS nick_name
+			FROM productions_credit
+			INNER JOIN productions_production ON productions_credit.production_id = productions_production.id
+			INNER JOIN demoscene_nick ON productions_credit.nick_id = demoscene_nick.id
+			WHERE category = 'Other'
+			AND (
+				production_id IN (SELECT production_id FROM productions_production_types where productiontype_id = 5)
+				OR role ILIKE '%%text%%'
+				OR role ILIKE '%%lyric%%'
+			)
+			AND productions_credit.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+		''', [self.exclusion_name])
+
+		context.update({
+			'credits': credits,
+			'mark_excludable': True,
+		})
+		return context
 
 
 @writeable_site_required
@@ -916,95 +1103,107 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 	return HttpResponse('OK', content_type='text/plain')
 
 
-def results_with_no_encoding(request):
-	if not request.user.is_staff:
-		return redirect('home')
-	results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
+class ResultsWithNoEncoding(StaffOnlyMixin, Report):
+	title = "Results files with unknown character encoding"
+	template_name = 'maintenance/results_with_no_encoding.html'
+	name = 'results_with_no_encoding'
 
-	return render(request, 'maintenance/results_with_no_encoding.html', {
-		'title': 'Results files with unknown character encoding',
-		'results_files': results_files,
-	})
+	def get_context_data(self, **kwargs):
+		context = super(ResultsWithNoEncoding, self).get_context_data(**kwargs)
+		results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
+
+		context.update({
+			'results_files': results_files,
+		})
+		return context
 
 ENCODING_OPTIONS = [
-	('Common encodings', [
-		('iso-8859-1', 'Western (ISO-8859-1)'),
-		('iso-8859-2', 'Central European (ISO-8859-2)'),
-		('iso-8859-3', 'South European (ISO-8859-3)'),
-		('iso-8859-4', 'Baltic (ISO-8859-4)'),
-		('iso-8859-5', 'Cyrillic (ISO-8859-5)'),
-		('cp437', 'MS-DOS (CP437)'),
-		('cp866', 'MS-DOS Cyrillic (CP866)'),
-		('koi8_r', 'Cyrillic Russian (KOI8-R)'),
-		('koi8_u', 'Cyrillic Ukrainian (KOI8-U)'),
-		('windows-1250', 'Central European (Windows-1250)'),
-		('windows-1251', 'Cyrillic (Windows-1251)'),
-		('windows-1252', 'Western (Windows-1252)'),
-	]),
-	('Obscure encodings', [
-		('big5', 'Chinese Traditional (Big5)'),
-		('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
-		('cp737', 'MS-DOS Greek (CP737)'),
-		('cp775', 'MS-DOS Baltic Rim (CP775)'),
-		('cp850', 'MS-DOS Latin 1 (CP850)'),
-		('cp852', 'MS-DOS Latin 2 (CP852)'),
-		('cp855', 'MS-DOS Cyrillic (CP855)'),
-		('cp856', 'Hebrew (CP856)'),
-		('cp857', 'MS-DOS Turkish (CP857)'),
-		('cp860', 'MS-DOS Portuguese (CP860)'),
-		('cp861', 'MS-DOS Icelandic (CP861)'),
-		('cp862', 'MS-DOS Hebrew (CP862)'),
-		('cp863', 'MS-DOS French Canada (CP863)'),
-		('cp864', 'Arabic (CP864)'),
-		('cp865', 'MS-DOS Nordic (CP865)'),
-		('cp869', 'MS-DOS Greek 2 (CP869)'),
-		('cp874', 'Thai (CP874)'),
-		('cp932', 'Japanese (CP932)'),
-		('cp949', 'Korean (CP949)'),
-		('cp950', 'Chinese Traditional (CP949)'),
-		('cp1006', 'Urdu (CP1006)'),
-		('euc_jp', 'Japanese (EUC-JP)'),
-		('euc_jis_2004', 'Japanese (EUC-JIS-2004)'),
-		('euc_jisx0213', 'Japanese (EUC-JIS-X-0213)'),
-		('euc_kr', 'Korean (EUC-KR)'),
-		('gb2312', 'Chinese Simplified (GB 2312)'),
-		('gbk', 'Chinese Simplified (GBK)'),
-		('gb18030', 'Chinese Simplified (GB 18030)'),
-		('hz', 'Chinese Simplified (HZ)'),
-		('iso-2022-jp', 'Japanese (ISO-2022-JP)'),
-		('iso-2022-jp-1', 'Japanese (ISO-2022-JP-1)'),
-		('iso-2022-jp-2', 'Japanese (ISO-2022-JP-2)'),
-		('iso-2022-jp-2004', 'Japanese (ISO-2022-JP-2004)'),
-		('iso-2022-jp-3', 'Japanese (ISO-2022-JP-3)'),
-		('iso-2022-jp-ext', 'Japanese (ISO-2022-JP-EXT)'),
-		('iso-2022-kr', 'Korean (ISO-2022-KR)'),
-		('iso-8859-6', 'Arabic (ISO-8859-6)'),
-		('iso-8859-7', 'Greek (ISO-8859-7)'),
-		('iso-8859-8', 'Hebrew (ISO-8859-8)'),
-		('iso-8859-9', 'Turkish (ISO-8859-9)'),
-		('iso-8859-10', 'Nordic (ISO-8859-10)'),
-		('iso-8859-13', 'Baltic (ISO-8859-13)'),
-		('iso-8859-14', 'Celtic (ISO-8859-14)'),
-		('iso-8859-15', 'Western (ISO-8859-15)'),
-		('johab', 'Korean (Johab)'),
-		('mac_cyrillic', 'Cyrillic (Macintosh)'),
-		('mac_greek', 'Greek (Macintosh)'),
-		('mac_iceland', 'Icelandic (Macintosh)'),
-		('mac_latin2', 'Central European (Macintosh)'),
-		('mac_roman', 'Western (Macintosh)'),
-		('mac_turkish', 'Turkish (Macintosh)'),
-		('shift_jis', 'Japanese (Shift_JIS)'),
-		('shift_jis_2004', 'Japanese (Shift_JIS_2004)'),
-		('shift_jisx0213', 'Japanese (Shift_JIS_X_0213)'),
-		('windows-1253', 'Greek (Windows-1253)'),
-		('windows-1254', 'Turkish (Windows-1254)'),
-		('windows-1255', 'Hebrew (Windows-1255)'),
-		('windows-1256', 'Arabic (Windows-1256)'),
-		('windows-1257', 'Baltic (Windows-1257)'),
-		('windows-1258', 'Vietnamese (Windows-1258)'),
-	]),
+	(
+		'Common encodings',
+		[
+			('iso-8859-1', 'Western (ISO-8859-1)'),
+			('iso-8859-2', 'Central European (ISO-8859-2)'),
+			('iso-8859-3', 'South European (ISO-8859-3)'),
+			('iso-8859-4', 'Baltic (ISO-8859-4)'),
+			('iso-8859-5', 'Cyrillic (ISO-8859-5)'),
+			('cp437', 'MS-DOS (CP437)'),
+			('cp866', 'MS-DOS Cyrillic (CP866)'),
+			('koi8_r', 'Cyrillic Russian (KOI8-R)'),
+			('koi8_u', 'Cyrillic Ukrainian (KOI8-U)'),
+			('windows-1250', 'Central European (Windows-1250)'),
+			('windows-1251', 'Cyrillic (Windows-1251)'),
+			('windows-1252', 'Western (Windows-1252)'),
+		]
+	),
+	(
+		'Obscure encodings',
+		[
+			('big5', 'Chinese Traditional (Big5)'),
+			('big5-hkscs', 'Chinese Traditional (Big5-HKSCS)'),
+			('cp737', 'MS-DOS Greek (CP737)'),
+			('cp775', 'MS-DOS Baltic Rim (CP775)'),
+			('cp850', 'MS-DOS Latin 1 (CP850)'),
+			('cp852', 'MS-DOS Latin 2 (CP852)'),
+			('cp855', 'MS-DOS Cyrillic (CP855)'),
+			('cp856', 'Hebrew (CP856)'),
+			('cp857', 'MS-DOS Turkish (CP857)'),
+			('cp860', 'MS-DOS Portuguese (CP860)'),
+			('cp861', 'MS-DOS Icelandic (CP861)'),
+			('cp862', 'MS-DOS Hebrew (CP862)'),
+			('cp863', 'MS-DOS French Canada (CP863)'),
+			('cp864', 'Arabic (CP864)'),
+			('cp865', 'MS-DOS Nordic (CP865)'),
+			('cp869', 'MS-DOS Greek 2 (CP869)'),
+			('cp874', 'Thai (CP874)'),
+			('cp932', 'Japanese (CP932)'),
+			('cp949', 'Korean (CP949)'),
+			('cp950', 'Chinese Traditional (CP949)'),
+			('cp1006', 'Urdu (CP1006)'),
+			('euc_jp', 'Japanese (EUC-JP)'),
+			('euc_jis_2004', 'Japanese (EUC-JIS-2004)'),
+			('euc_jisx0213', 'Japanese (EUC-JIS-X-0213)'),
+			('euc_kr', 'Korean (EUC-KR)'),
+			('gb2312', 'Chinese Simplified (GB 2312)'),
+			('gbk', 'Chinese Simplified (GBK)'),
+			('gb18030', 'Chinese Simplified (GB 18030)'),
+			('hz', 'Chinese Simplified (HZ)'),
+			('iso-2022-jp', 'Japanese (ISO-2022-JP)'),
+			('iso-2022-jp-1', 'Japanese (ISO-2022-JP-1)'),
+			('iso-2022-jp-2', 'Japanese (ISO-2022-JP-2)'),
+			('iso-2022-jp-2004', 'Japanese (ISO-2022-JP-2004)'),
+			('iso-2022-jp-3', 'Japanese (ISO-2022-JP-3)'),
+			('iso-2022-jp-ext', 'Japanese (ISO-2022-JP-EXT)'),
+			('iso-2022-kr', 'Korean (ISO-2022-KR)'),
+			('iso-8859-6', 'Arabic (ISO-8859-6)'),
+			('iso-8859-7', 'Greek (ISO-8859-7)'),
+			('iso-8859-8', 'Hebrew (ISO-8859-8)'),
+			('iso-8859-9', 'Turkish (ISO-8859-9)'),
+			('iso-8859-10', 'Nordic (ISO-8859-10)'),
+			('iso-8859-13', 'Baltic (ISO-8859-13)'),
+			('iso-8859-14', 'Celtic (ISO-8859-14)'),
+			('iso-8859-15', 'Western (ISO-8859-15)'),
+			('johab', 'Korean (Johab)'),
+			('mac_cyrillic', 'Cyrillic (Macintosh)'),
+			('mac_greek', 'Greek (Macintosh)'),
+			('mac_iceland', 'Icelandic (Macintosh)'),
+			('mac_latin2', 'Central European (Macintosh)'),
+			('mac_roman', 'Western (Macintosh)'),
+			('mac_turkish', 'Turkish (Macintosh)'),
+			('shift_jis', 'Japanese (Shift_JIS)'),
+			('shift_jis_2004', 'Japanese (Shift_JIS_2004)'),
+			('shift_jisx0213', 'Japanese (Shift_JIS_X_0213)'),
+			('windows-1253', 'Greek (Windows-1253)'),
+			('windows-1254', 'Turkish (Windows-1254)'),
+			('windows-1255', 'Hebrew (Windows-1255)'),
+			('windows-1256', 'Arabic (Windows-1256)'),
+			('windows-1257', 'Baltic (Windows-1257)'),
+			('windows-1258', 'Vietnamese (Windows-1258)'),
+		]
+	),
 ]
 
+
+@writeable_site_required
 def fix_results_file_encoding(request, results_file_id):
 	if not request.user.is_staff:
 		return redirect('home')
@@ -1052,45 +1251,138 @@ def fix_results_file_encoding(request, results_file_id):
 	})
 
 
-def tiny_intros_without_download_links(request):
-	report_name = 'tiny_intros_without_download_links'
+class TinyIntrosWithoutDownloadLinks(Report):
+	title = "Tiny intros without download links"
+	template_name = 'maintenance/production_report.html'
+	name = 'tiny_intros_without_download_links'
 
-	prod_types = list(ProductionType.objects.filter(name__in=[
-		'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
-	]))
+	def get_context_data(self, **kwargs):
+		context = super(TinyIntrosWithoutDownloadLinks, self).get_context_data(**kwargs)
 
-	intros = Production.objects.filter(supertype='production', types__in=prod_types)
-	intros_with_download_links = intros.filter(links__is_download_link=True).distinct().values_list('id', flat=True)
+		prod_types = list(ProductionType.objects.filter(name__in=[
+			'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
+		]))
 
-	productions = intros.exclude(id__in=intros_with_download_links) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Tiny intros without download links',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		intros = Production.objects.filter(supertype='production', types__in=prod_types)
+		intros_with_download_links = intros.filter(links__is_download_link=True).distinct().values_list('id', flat=True)
+
+		productions = (
+			intros.exclude(id__in=intros_with_download_links)
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
 
 
-def tiny_intros_without_screenshots(request):
-	report_name = 'tiny_intros_without_screenshots'
+class TinyIntrosWithoutScreenshots(Report):
+	title = "Tiny intros without screenshots"
+	template_name = 'maintenance/production_report.html'
+	name = 'tiny_intros_without_screenshots'
 
-	prod_types = list(ProductionType.objects.filter(name__in=[
-		'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
-	]))
+	def get_context_data(self, **kwargs):
+		context = super(TinyIntrosWithoutScreenshots, self).get_context_data(**kwargs)
 
-	productions = Production.objects.filter(supertype='production', types__in=prod_types) \
-		.filter(screenshots__id__isnull=True) \
-		.extra(
-			where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-			params=[report_name]
-		).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-	return render(request, 'maintenance/production_report.html', {
-		'title': 'Tiny intros without download links',
-		'productions': productions,
-		'mark_excludable': True,
-		'report_name': report_name,
-	})
+		prod_types = list(ProductionType.objects.filter(name__in=[
+			'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
+		]))
+
+		productions = (
+			Production.objects.filter(supertype='production', types__in=prod_types)
+			.filter(screenshots__id__isnull=True)
+			.extra(
+				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+				params=[self.exclusion_name]
+			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+		)
+		context.update({
+			'productions': productions,
+			'mark_excludable': True,
+		})
+		return context
+
+
+class ExternalReport(object):
+	# placeholder for an item in the reports menu that doesn't live here
+	def __init__(self, url_name, title):
+		self.url_name = url_name
+		self.title = title
+
+	def get_url(self):
+		return reverse(self.url_name)
+
+
+reports = [
+	(
+		"Supporting data",
+		[
+			ProdsWithoutExternalLinks,
+			ProdsWithoutScreenshots,
+			ProdsWithoutPlatforms,
+			ProdsWithoutPlatformsExcludingLost,
+			ProdsWithoutPlatformsWithDownloads,
+			UnresolvedScreenshots,
+			ProdsWithBlurbs,
+			TinyIntrosWithoutDownloadLinks,
+			TinyIntrosWithoutScreenshots,
+		]
+	),
+	(
+		"Release dates",
+		[
+			ProdsWithoutReleaseDate,
+			ProdsWithoutReleaseDateWithPlacement,
+			ProdsWithReleaseDateOutsideParty,
+			ProdSoundtracksWithoutReleaseDate,
+		]
+	),
+	(
+		"Cleanup",
+		[
+			GroupNicksWithBrackets,
+			AmbiguousGroupsWithNoDifferentiators,
+			ImpliedMemberships,
+			EmptyReleasers,
+			PublicRealNames,
+			ProdsWithDeadAmigascneLinks,
+			ProdsWithDeadAmigaNvgOrgLinks,
+			CreditsToMoveToText,
+			SceneorgDownloadLinksWithUnicode,
+		]
+	),
+	(
+		"De-duping",
+		[
+			ProdsWithSameNamedCredits,
+			SameNamedProdsBySameReleaser,
+			SameNamedProdsWithoutSpecialChars,
+			DuplicateExternalLinks,
+			MatchingRealNames,
+			MatchingSurnames,
+			GroupsWithSameNamedMembers,
+			ReleasersWithSameNamedGroups,
+		]
+	),
+	(
+		"Parties",
+		[
+			SceneorgPartyDirsWithNoParty,
+			PartiesWithIncompleteDates,
+			PartiesWithNoLocation,
+			ExternalReport('sceneorg_compofolders', "scene.org competition directory matching"),
+			ExternalReport('sceneorg_compofiles', "scene.org party file matching"),
+			ResultsWithNoEncoding,
+		]
+	),
+	(
+		"User activity",
+		[
+			ProdComments,
+		]
+	),
+]
