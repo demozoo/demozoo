@@ -12,8 +12,6 @@ from .base import *
 # }
 
 DEBUG = True
-#INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar', 'django_extensions']
-#MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
 BASE_URL = 'http://localhost:8000'
 
@@ -23,7 +21,15 @@ AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+INSTALLED_APPS = list(INSTALLED_APPS) + ['django_extensions']
+
+DEBUG_TOOLBAR_ENABLED = True  # set to False in local.py to disable
+
 try:
 	from .local import *
 except ImportError:
 	pass
+
+if DEBUG_TOOLBAR_ENABLED:
+	INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
+	MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']

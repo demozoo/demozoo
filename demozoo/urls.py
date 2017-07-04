@@ -1,4 +1,5 @@
-from django.conf.urls import patterns, include
+from django.conf import settings
+from django.conf.urls import include, patterns, url
 
 # Admin backend
 from django.contrib import admin
@@ -99,3 +100,9 @@ urlpatterns += patterns('',
 	(r'^api/', include('api.urls')),
 	(r'^users/', include('users.urls')),
 )
+
+if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:
+	import debug_toolbar
+	urlpatterns = [
+		url(r'^__debug__/', include(debug_toolbar.urls)),
+	] + urlpatterns
