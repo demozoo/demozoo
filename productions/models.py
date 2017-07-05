@@ -1,8 +1,11 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 # from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
 import datetime
+import random
 
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
@@ -483,6 +486,17 @@ class Screenshot(models.Model):
 
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
+
+
+@receiver(post_delete, sender=Screenshot)
+def reassign_default_screenshot(sender, **kwargs):
+	production = kwargs['instance'].production
+	if production.default_screenshot is None:
+		# look for remaining screenshots we can use instead
+		screenshots = production.screenshots.exclude(original_url='')
+		if screenshots:
+			production.default_screenshot = random.choice(screenshots)
+			production.save(update_fields=['default_screenshot'])
 
 
 class SoundtrackLink(models.Model):
