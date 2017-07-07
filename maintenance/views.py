@@ -23,15 +23,14 @@ from screenshots.tasks import create_screenshot_from_production_link
 
 
 def index(request):
-	if not request.user.is_staff:
-		return redirect('home')
-
 	return render(request, 'maintenance/index.html', {
-		'reports': reports,
+		'reports': reports if request.user.is_staff else public_reports,
 	})
 
 
 class StaffOnlyMixin(object):
+	is_staff_only = True
+
 	def dispatch(self, request, *args, **kwargs):
 		if not request.user.is_staff:
 			return redirect('home')
@@ -82,7 +81,7 @@ class ProdsWithoutScreenshots(Report):
 		return context
 
 
-class ProdsWithoutExternalLinks(Report):
+class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
 	title = "Productions without external links"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_without_external_links'
@@ -109,7 +108,7 @@ class ProdsWithoutExternalLinks(Report):
 		return context
 
 
-class ProdsWithoutReleaseDate(Report):
+class ProdsWithoutReleaseDate(StaffOnlyMixin, Report):
 	title = "Productions without a release date"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_without_release_date'
@@ -131,7 +130,7 @@ class ProdsWithoutReleaseDate(Report):
 		return context
 
 
-class ProdsWithDeadAmigascneLinks(Report):
+class ProdsWithDeadAmigascneLinks(StaffOnlyMixin, Report):
 	title = "Productions with dead amigascne links"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_with_dead_amigascne_links'
@@ -153,7 +152,7 @@ class ProdsWithDeadAmigascneLinks(Report):
 		return context
 
 
-class ProdsWithDeadAmigaNvgOrgLinks(Report):
+class ProdsWithDeadAmigaNvgOrgLinks(StaffOnlyMixin, Report):
 	title = "Productions with dead amiga.nvg.org links"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_with_dead_amiga_nvg_org_links'
@@ -175,7 +174,7 @@ class ProdsWithDeadAmigaNvgOrgLinks(Report):
 		return context
 
 
-class SceneorgDownloadLinksWithUnicode(Report):
+class SceneorgDownloadLinksWithUnicode(StaffOnlyMixin, Report):
 	title = "scene.org download links with unicode characters"
 	template_name = 'maintenance/production_report.html'
 	name = 'sceneorg_download_links_with_unicode'
@@ -199,7 +198,7 @@ class SceneorgDownloadLinksWithUnicode(Report):
 		return context
 
 
-class ProdsWithoutPlatforms(Report):
+class ProdsWithoutPlatforms(StaffOnlyMixin, Report):
 	title = "Productions without platforms"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_without_platforms'
@@ -222,7 +221,7 @@ class ProdsWithoutPlatforms(Report):
 		return context
 
 
-class ProdsWithoutPlatformsExcludingLost(Report):
+class ProdsWithoutPlatformsExcludingLost(StaffOnlyMixin, Report):
 	title = "Productions without platforms (excluding 'lost')"
 	template_name = 'maintenance/production_report.html'
 	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
@@ -247,7 +246,7 @@ class ProdsWithoutPlatformsExcludingLost(Report):
 		return context
 
 
-class ProdsWithoutPlatformsWithDownloads(Report):
+class ProdsWithoutPlatformsWithDownloads(StaffOnlyMixin, Report):
 	title = "Productions without platforms (with downloads)"
 	template_name = 'maintenance/production_report.html'
 	exclusion_name = 'prods_without_platforms'  # share the exclusion list with the main prods_without_platforms report
@@ -272,7 +271,7 @@ class ProdsWithoutPlatformsWithDownloads(Report):
 		return context
 
 
-class ProdsWithoutReleaseDateWithPlacement(Report):
+class ProdsWithoutReleaseDateWithPlacement(StaffOnlyMixin, Report):
 	title = "Productions without a release date but with a party placement attached"
 	template_name = 'maintenance/production_release_date_report.html'
 	name = 'prods_without_release_date_with_placement'
@@ -307,7 +306,7 @@ class ProdsWithoutReleaseDateWithPlacement(Report):
 		return context
 
 
-class ProdSoundtracksWithoutReleaseDate(Report):
+class ProdSoundtracksWithoutReleaseDate(StaffOnlyMixin, Report):
 	title = "Music with productions attached but no release date"
 	template_name = 'maintenance/production_release_date_report.html'
 	name = 'prod_soundtracks_without_release_date'
@@ -342,7 +341,7 @@ class ProdSoundtracksWithoutReleaseDate(Report):
 		return context
 
 
-class GroupNicksWithBrackets(Report):
+class GroupNicksWithBrackets(StaffOnlyMixin, Report):
 	title = "Group names with brackets"
 	template_name = 'maintenance/nick_report.html'
 	name = 'group_nicks_with_brackets'
@@ -363,7 +362,7 @@ class GroupNicksWithBrackets(Report):
 		return context
 
 
-class AmbiguousGroupsWithNoDifferentiators(Report):
+class AmbiguousGroupsWithNoDifferentiators(StaffOnlyMixin, Report):
 	title = "Ambiguous group names with no differentiators"
 	template_name = 'maintenance/ambiguous_group_names.html'
 	name = 'ambiguous_groups_with_no_differentiators'
@@ -396,7 +395,7 @@ class AmbiguousGroupsWithNoDifferentiators(Report):
 		return context
 
 
-class ProdsWithReleaseDateOutsideParty(Report):
+class ProdsWithReleaseDateOutsideParty(StaffOnlyMixin, Report):
 	title = "Productions with a release date more than 14 days away from their release party"
 	template_name = 'maintenance/production_release_date_report.html'
 	name = 'prods_with_release_date_outside_party'
@@ -443,7 +442,7 @@ class ProdsWithReleaseDateOutsideParty(Report):
 		return context
 
 
-class ProdsWithSameNamedCredits(Report):
+class ProdsWithSameNamedCredits(StaffOnlyMixin, Report):
 	title = "Productions with identically-named sceners in the credits"
 	template_name = 'maintenance/production_report.html'
 	name = 'prods_with_same_named_credits'
@@ -468,7 +467,7 @@ class ProdsWithSameNamedCredits(Report):
 		return context
 
 
-class SameNamedProdsBySameReleaser(Report):
+class SameNamedProdsBySameReleaser(StaffOnlyMixin, Report):
 	title = "Identically-named productions by the same releaser"
 	template_name = 'maintenance/production_report.html'
 	name = 'same_named_prods_by_same_releaser'
@@ -498,7 +497,7 @@ class SameNamedProdsBySameReleaser(Report):
 		return context
 
 
-class SameNamedProdsWithoutSpecialChars(Report):
+class SameNamedProdsWithoutSpecialChars(StaffOnlyMixin, Report):
 	title = "Identically-named productions by the same releaser, ignoring special chars"
 	template_name = 'maintenance/production_report.html'
 	name = 'same_named_prods_without_special_chars'
@@ -529,7 +528,7 @@ class SameNamedProdsWithoutSpecialChars(Report):
 		return context
 
 
-class DuplicateExternalLinks(Report):
+class DuplicateExternalLinks(StaffOnlyMixin, Report):
 	title = "Duplicate external links"
 	template_name = 'maintenance/duplicate_external_links.html'
 	name = 'duplicate_external_links'
@@ -583,7 +582,7 @@ class DuplicateExternalLinks(Report):
 		return context
 
 
-class MatchingRealNames(Report):
+class MatchingRealNames(StaffOnlyMixin, Report):
 	title = "Sceners with matching real names"
 	template_name = 'maintenance/matching_real_names.html'
 	name = 'matching_real_names'
@@ -608,7 +607,7 @@ class MatchingRealNames(Report):
 		return context
 
 
-class MatchingSurnames(Report):
+class MatchingSurnames(StaffOnlyMixin, Report):
 	title = "Sceners with matching surnames"
 	template_name = 'maintenance/matching_surnames.html'
 	name = 'matching_surnames'
@@ -631,7 +630,7 @@ class MatchingSurnames(Report):
 		return context
 
 
-class ImpliedMemberships(Report):
+class ImpliedMemberships(StaffOnlyMixin, Report):
 	title = "Group memberships found in production bylines, but missing from the member list"
 	template_name = 'maintenance/implied_memberships.html'
 	name = 'implied_memberships'
@@ -676,7 +675,7 @@ class ImpliedMemberships(Report):
 		return context
 
 
-class GroupsWithSameNamedMembers(Report):
+class GroupsWithSameNamedMembers(StaffOnlyMixin, Report):
 	title = "Groups with same-named members"
 	template_name = 'maintenance/groups_with_same_named_members.html'
 	name = 'groups_with_same_named_members'
@@ -708,7 +707,7 @@ class GroupsWithSameNamedMembers(Report):
 		return context
 
 
-class ReleasersWithSameNamedGroups(Report):
+class ReleasersWithSameNamedGroups(StaffOnlyMixin, Report):
 	title = "Releasers with same-named groups"
 	template_name = 'maintenance/releasers_with_same_named_groups.html'
 	name = 'releasers_with_same_named_groups'
@@ -740,7 +739,7 @@ class ReleasersWithSameNamedGroups(Report):
 		return context
 
 
-class SceneorgPartyDirsWithNoParty(Report):
+class SceneorgPartyDirsWithNoParty(StaffOnlyMixin, Report):
 	title = "scene.org party dirs which are not linked to a party"
 	template_name = 'maintenance/sceneorg_party_dirs_with_no_party.html'
 	name = 'sceneorg_party_dirs_with_no_party'
@@ -797,7 +796,7 @@ class SceneorgPartyDirsWithNoParty(Report):
 		return context
 
 
-class PartiesWithIncompleteDates(Report):
+class PartiesWithIncompleteDates(StaffOnlyMixin, Report):
 	title = "Parties with incomplete dates"
 	template_name = 'maintenance/party_report.html'
 	name = 'parties_with_incomplete_dates'
@@ -818,7 +817,7 @@ class PartiesWithIncompleteDates(Report):
 		return context
 
 
-class PartiesWithNoLocation(Report):
+class PartiesWithNoLocation(StaffOnlyMixin, Report):
 	title = "Parties with no location"
 	template_name = 'maintenance/party_report.html'
 	name = 'parties_with_no_location'
@@ -840,7 +839,7 @@ class PartiesWithNoLocation(Report):
 		return context
 
 
-class EmptyReleasers(Report):
+class EmptyReleasers(StaffOnlyMixin, Report):
 	title = "Empty releaser records"
 	template_name = 'maintenance/releaser_report.html'
 	name = 'empty_releasers'
@@ -901,7 +900,7 @@ class EmptyReleasers(Report):
 		return context
 
 
-class UnresolvedScreenshots(Report):
+class UnresolvedScreenshots(StaffOnlyMixin, Report):
 	title = "Unresolved screenshots"
 	template_name = 'maintenance/unresolved_screenshots.html'
 	name = 'unresolved_screenshots'
@@ -1270,7 +1269,7 @@ class TinyIntrosWithoutDownloadLinks(Report):
 		)
 		context.update({
 			'productions': productions,
-			'mark_excludable': True,
+			'mark_excludable': self.request.user.is_staff,
 		})
 		return context
 
@@ -1297,7 +1296,7 @@ class TinyIntrosWithoutScreenshots(Report):
 		)
 		context.update({
 			'productions': productions,
-			'mark_excludable': True,
+			'mark_excludable': self.request.user.is_staff,
 		})
 		return context
 
@@ -1381,3 +1380,9 @@ reports = [
 		]
 	),
 ]
+
+public_reports = []
+for heading, section_reports in reports:
+	public_section_reports = [r for r in section_reports if not getattr(r, 'is_staff_only', False)]
+	if public_section_reports:
+		public_reports.append((heading, public_section_reports))
