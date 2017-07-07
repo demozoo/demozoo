@@ -16,6 +16,7 @@ from comments.models import Comment
 from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
+from maintenance import reports as reports_module
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember
 from screenshots.tasks import create_screenshot_from_production_link
@@ -62,27 +63,21 @@ class Report(TemplateView):
 
 class ProdsWithoutScreenshots(Report):
 	title = "Productions without screenshots"
-	template_name = 'maintenance/production_report.html'
+	template_name = 'maintenance/productions_without_screenshots.html'
 	name = 'prods_without_screenshots'
+
+	limit = 100
 
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
 
-		productions = (
-			Production.objects
-			.filter(screenshots__id__isnull=True)
-			.filter(links__is_download_link=True)
-			.exclude(supertype='music')
-			.extra(
-				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[self.exclusion_name]
-			).prefetch_related(
-				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
-			).defer('notes').distinct().order_by('sortable_title')[:1000]
-		)
+		productions, total_count = reports_module.productions_without_screenshots(limit=self.limit)
+
 		context.update({
 			'productions': productions,
-			'mark_excludable': True,
+			'mark_excludable': self.request.user.is_staff,
+			'total_count': total_count,
+			'count': len(productions),
 		})
 		return context
 

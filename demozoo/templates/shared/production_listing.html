@@ -2,6 +2,7 @@
 
 <table class="table" summary="">
 	<colgroup>
+		{% if mark_excludable and site_is_writeable %}<col />{% endif %}
 		<col class="col--thumb" />
 		<col width="40%" />
 		<col />
@@ -10,6 +11,7 @@
 	<tbody>
 		{% for prod in productions %}
 			<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
+				{% if mark_excludable and site_is_writeable %}<td></td>{% endif %}
 				<td>
 					{% if show_screenshots and prod.default_screenshot %}
 						{% microthumb prod.default_screenshot %}

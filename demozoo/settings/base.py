@@ -177,10 +177,12 @@ COMPRESS_PRECOMPILERS = (
 	('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
 )
 
+REDIS_URL = 'redis://localhost:6379/0'
+
 # Celery settings
 import djcelery
 djcelery.setup_loader()
-BROKER_URL = 'redis://localhost:6379/0'
+BROKER_URL = REDIS_URL
 CELERY_ROUTES = {
 	'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
 }
