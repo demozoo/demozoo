@@ -1286,33 +1286,6 @@ class TinyIntrosWithoutDownloadLinks(Report):
 		return context
 
 
-class TinyIntrosWithoutScreenshots(Report):
-	title = "Tiny intros without screenshots"
-	template_name = 'maintenance/production_report.html'
-	name = 'tiny_intros_without_screenshots'
-
-	def get_context_data(self, **kwargs):
-		context = super(TinyIntrosWithoutScreenshots, self).get_context_data(**kwargs)
-
-		prod_types = list(ProductionType.objects.filter(name__in=[
-			'32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
-		]))
-
-		productions = (
-			Production.objects.filter(supertype='production', types__in=prod_types)
-			.filter(screenshots__id__isnull=True)
-			.extra(
-				where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-				params=[self.exclusion_name]
-			).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
-		)
-		context.update({
-			'productions': productions,
-			'mark_excludable': self.request.user.is_staff,
-		})
-		return context
-
-
 class ExternalReport(object):
 	# placeholder for an item in the reports menu that doesn't live here
 	def __init__(self, url_name, title):
@@ -1335,7 +1308,6 @@ reports = [
 			UnresolvedScreenshots,
 			ProdsWithBlurbs,
 			TinyIntrosWithoutDownloadLinks,
-			TinyIntrosWithoutScreenshots,
 		]
 	),
 	(
