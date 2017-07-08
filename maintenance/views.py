@@ -63,7 +63,7 @@ class Report(TemplateView):
 
 class ProdsWithoutScreenshots(Report):
 	title = "Productions without screenshots"
-	template_name = 'maintenance/productions_without_screenshots.html'
+	template_name = 'maintenance/filtered_production_report.html'
 	name = 'prods_without_screenshots'
 
 	limit = 100
@@ -79,7 +79,7 @@ class ProdsWithoutScreenshots(Report):
 			platform_ids = []
 			prod_type_ids = []
 
-		productions, total_count = reports_module.productions_without_screenshots(
+		productions, total_count = reports_module.ProductionsWithoutScreenshotsReport.run(
 			limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
 		)
 
@@ -89,6 +89,7 @@ class ProdsWithoutScreenshots(Report):
 			'total_count': total_count,
 			'count': len(productions),
 			'filter_form': filter_form,
+			'url': self.get_url(),
 		})
 		return context
 

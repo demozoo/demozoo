@@ -15,7 +15,7 @@
 {% block base_main %}
 	<h2>{{ title }}</h2>
 
-	<form action="{% url 'maintenance:prods_without_screenshots' %}" method="GET" class="production_listing_filters">
+	<form action="{{ url }}" method="GET" class="production_listing_filters">
 		<ul class="fields">
 			{{ filter_form.as_ul }}
 		</ul>
