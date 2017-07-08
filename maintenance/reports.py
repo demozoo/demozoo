@@ -2,7 +2,7 @@ import redis
 
 from django.conf import settings
 
-from productions.models import Production
+from productions.models import Production, ProductionLink
 from maintenance.models import Exclusion
 
 
@@ -149,6 +149,54 @@ class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
 			.filter(author_nicks__releaser__is_group=True)
 			.filter(credits__isnull=True)
 			.filter(links__is_download_link=True)
+			.exclude(id__in=excluded_ids)
+			.values_list('id', flat=True)
+		)
+
+
+class RandomisedProductionsReport(object):
+	@classmethod
+	def run(cls, limit=100):
+
+		def _transaction(pipe):
+			must_update_master_list = not pipe.exists(cls.master_list_key)
+
+			pipe.multi()
+
+			if must_update_master_list:
+				write_set(pipe, cls.master_list_key, cls.get_master_list())
+
+			# get randomised list of production IDs
+			pipe.srandmember(cls.master_list_key, number=limit)
+			# get total count of prods
+			pipe.scard(cls.master_list_key)
+
+		r = redis.StrictRedis.from_url(settings.REDIS_URL)
+		production_ids, count = r.transaction(_transaction, cls.master_list_key)[-2:]
+
+		productions = (
+			Production.objects.filter(id__in=production_ids)
+			.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+			.defer('notes')
+		)
+
+		return (productions, count)
+
+
+class TrackedMusicWithoutPlayableLinksReport(RandomisedProductionsReport):
+	master_list_key = 'demozoo:productions:tracked_music_without_playable_links'
+
+	@classmethod
+	def get_master_list(cls):
+		excluded_ids = Exclusion.objects.filter(report_name='tracked_music_without_playable_links').values_list('record_id', flat=True)
+		prod_ids_with_playable_links = ProductionLink.objects.filter(
+			link_class__in=['ModlandFile', 'ModarchiveModule']
+		).values_list('production_id', flat=True)
+
+		return (
+			Production.objects.filter(supertype='music', types__internal_name='tracked-music')
+			.filter(platforms__isnull=True)
+			.exclude(id__in=prod_ids_with_playable_links)
 			.exclude(id__in=excluded_ids)
 			.values_list('id', flat=True)
 		)

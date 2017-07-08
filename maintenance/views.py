@@ -99,16 +99,38 @@ class ProdsWithoutScreenshots(FilterableProductionReport):
 
 class ProdsWithoutVideoCaptures(FilterableProductionReport):
 	title = "Productions without video captures"
-	template_name = 'maintenance/filtered_production_report.html'
 	name = 'prods_without_videos'
 	report_class = reports_module.ProductionsWithoutVideosReport
 
 
 class ProdsWithoutCredits(FilterableProductionReport):
 	title = "Productions without individual credits"
-	template_name = 'maintenance/filtered_production_report.html'
 	name = 'prods_without_credits'
 	report_class = reports_module.ProductionsWithoutCreditsReport
+
+
+class RandomisedProductionReport(Report):
+	template_name = 'maintenance/randomised_production_report.html'
+	limit = 100
+
+	def get_context_data(self, **kwargs):
+		context = super(RandomisedProductionReport, self).get_context_data(**kwargs)
+
+		productions, total_count = self.report_class.run(limit=self.limit)
+
+		context.update({
+			'productions': productions,
+			'mark_excludable': self.request.user.is_staff,
+			'total_count': total_count,
+			'count': len(productions),
+		})
+		return context
+
+
+class TrackedMusicWithoutPlayableLinks(RandomisedProductionReport):
+	title = "Tracked music without playable (Modarchive / Modland) links"
+	name = 'tracked_music_without_playable_links'
+	report_class = reports_module.TrackedMusicWithoutPlayableLinksReport
 
 
 class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
@@ -1325,6 +1347,7 @@ reports = [
 			ProdsWithoutPlatforms,
 			ProdsWithoutPlatformsExcludingLost,
 			ProdsWithoutPlatformsWithDownloads,
+			TrackedMusicWithoutPlayableLinks,
 			UnresolvedScreenshots,
 			ProdsWithBlurbs,
 			TinyIntrosWithoutDownloadLinks,
