@@ -61,15 +61,12 @@ class Report(TemplateView):
 		return context
 
 
-class ProdsWithoutScreenshots(Report):
-	title = "Productions without screenshots"
+class FilterableProductionReport(Report):
 	template_name = 'maintenance/filtered_production_report.html'
-	name = 'prods_without_screenshots'
-
 	limit = 100
 
 	def get_context_data(self, **kwargs):
-		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
+		context = super(FilterableProductionReport, self).get_context_data(**kwargs)
 
 		filter_form = ProductionFilterForm(self.request.GET)
 		if filter_form.is_valid():
@@ -79,7 +76,7 @@ class ProdsWithoutScreenshots(Report):
 			platform_ids = []
 			prod_type_ids = []
 
-		productions, total_count = reports_module.ProductionsWithoutScreenshotsReport.run(
+		productions, total_count = self.report_class.run(
 			limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
 		)
 
@@ -94,37 +91,24 @@ class ProdsWithoutScreenshots(Report):
 		return context
 
 
-class ProdsWithoutVideoCaptures(Report):
+class ProdsWithoutScreenshots(FilterableProductionReport):
+	title = "Productions without screenshots"
+	name = 'prods_without_screenshots'
+	report_class = reports_module.ProductionsWithoutScreenshotsReport
+
+
+class ProdsWithoutVideoCaptures(FilterableProductionReport):
 	title = "Productions without video captures"
 	template_name = 'maintenance/filtered_production_report.html'
 	name = 'prods_without_videos'
+	report_class = reports_module.ProductionsWithoutVideosReport
 
-	limit = 100
 
-	def get_context_data(self, **kwargs):
-		context = super(ProdsWithoutVideoCaptures, self).get_context_data(**kwargs)
-
-		filter_form = ProductionFilterForm(self.request.GET)
-		if filter_form.is_valid():
-			platform_ids = [platform.id for platform in filter_form.cleaned_data['platform']]
-			prod_type_ids = [typ.id for typ in filter_form.cleaned_data['production_type']]
-		else:
-			platform_ids = []
-			prod_type_ids = []
-
-		productions, total_count = reports_module.ProductionsWithoutVideosReport.run(
-			limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
-		)
-
-		context.update({
-			'productions': productions,
-			'mark_excludable': self.request.user.is_staff,
-			'total_count': total_count,
-			'count': len(productions),
-			'filter_form': filter_form,
-			'url': self.get_url(),
-		})
-		return context
+class ProdsWithoutCredits(FilterableProductionReport):
+	title = "Productions without individual credits"
+	template_name = 'maintenance/filtered_production_report.html'
+	name = 'prods_without_credits'
+	report_class = reports_module.ProductionsWithoutCreditsReport
 
 
 class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
@@ -1337,6 +1321,7 @@ reports = [
 			ProdsWithoutExternalLinks,
 			ProdsWithoutScreenshots,
 			ProdsWithoutVideoCaptures,
+			ProdsWithoutCredits,
 			ProdsWithoutPlatforms,
 			ProdsWithoutPlatformsExcludingLost,
 			ProdsWithoutPlatformsWithDownloads,

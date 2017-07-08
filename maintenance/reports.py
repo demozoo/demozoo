@@ -133,3 +133,22 @@ class ProductionsWithoutVideosReport(FilteredProdutionsReport):
 			.exclude(id__in=excluded_ids)
 			.values_list('id', flat=True)
 		)
+
+
+class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
+	master_list_key = 'demozoo:productions:without_credits'
+
+	@classmethod
+	def get_master_list(cls):
+		excluded_ids = Exclusion.objects.filter(report_name='prods_without_credits').values_list('record_id', flat=True)
+
+		# productions which are authored (or co-authored) by a group, but have no individual credits
+
+		return (
+			Production.objects
+			.filter(author_nicks__releaser__is_group=True)
+			.filter(credits__isnull=True)
+			.filter(links__is_download_link=True)
+			.exclude(id__in=excluded_ids)
+			.values_list('id', flat=True)
+		)
