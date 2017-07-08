@@ -94,6 +94,39 @@ class ProdsWithoutScreenshots(Report):
 		return context
 
 
+class ProdsWithoutVideoCaptures(Report):
+	title = "Productions without video captures"
+	template_name = 'maintenance/filtered_production_report.html'
+	name = 'prods_without_videos'
+
+	limit = 100
+
+	def get_context_data(self, **kwargs):
+		context = super(ProdsWithoutVideoCaptures, self).get_context_data(**kwargs)
+
+		filter_form = ProductionFilterForm(self.request.GET)
+		if filter_form.is_valid():
+			platform_ids = [platform.id for platform in filter_form.cleaned_data['platform']]
+			prod_type_ids = [typ.id for typ in filter_form.cleaned_data['production_type']]
+		else:
+			platform_ids = []
+			prod_type_ids = []
+
+		productions, total_count = reports_module.ProductionsWithoutVideosReport.run(
+			limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
+		)
+
+		context.update({
+			'productions': productions,
+			'mark_excludable': self.request.user.is_staff,
+			'total_count': total_count,
+			'count': len(productions),
+			'filter_form': filter_form,
+			'url': self.get_url(),
+		})
+		return context
+
+
 class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
 	title = "Productions without external links"
 	template_name = 'maintenance/production_report.html'
@@ -1303,6 +1336,7 @@ reports = [
 		[
 			ProdsWithoutExternalLinks,
 			ProdsWithoutScreenshots,
+			ProdsWithoutVideoCaptures,
 			ProdsWithoutPlatforms,
 			ProdsWithoutPlatformsExcludingLost,
 			ProdsWithoutPlatformsWithDownloads,

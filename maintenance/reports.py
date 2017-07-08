@@ -116,3 +116,20 @@ class ProductionsWithoutScreenshotsReport(FilteredProdutionsReport):
 			.exclude(id__in=excluded_ids)
 			.values_list('id', flat=True)
 		)
+
+
+class ProductionsWithoutVideosReport(FilteredProdutionsReport):
+	master_list_key = 'demozoo:productions:without_videos'
+
+	@classmethod
+	def get_master_list(cls):
+		excluded_ids = Exclusion.objects.filter(report_name='prods_without_videos').values_list('record_id', flat=True)
+
+		return (
+			Production.objects
+			.exclude(links__link_class__in=['YoutubeVideo', 'VimeoVideo'])
+			.filter(links__is_download_link=True)
+			.exclude(supertype__in=['music', 'graphics'])
+			.exclude(id__in=excluded_ids)
+			.values_list('id', flat=True)
+		)
