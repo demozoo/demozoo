@@ -17,6 +17,7 @@ from parties.models import PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
 from maintenance import reports as reports_module
+from maintenance.forms import ProductionFilterForm
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember
 from screenshots.tasks import create_screenshot_from_production_link
@@ -70,13 +71,24 @@ class ProdsWithoutScreenshots(Report):
 	def get_context_data(self, **kwargs):
 		context = super(ProdsWithoutScreenshots, self).get_context_data(**kwargs)
 
-		productions, total_count = reports_module.productions_without_screenshots(limit=self.limit)
+		filter_form = ProductionFilterForm(self.request.GET)
+		if filter_form.is_valid():
+			platform_ids = [platform.id for platform in filter_form.cleaned_data['platform']]
+			prod_type_ids = [typ.id for typ in filter_form.cleaned_data['production_type']]
+		else:
+			platform_ids = []
+			prod_type_ids = []
+
+		productions, total_count = reports_module.productions_without_screenshots(
+			limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
+		)
 
 		context.update({
 			'productions': productions,
 			'mark_excludable': self.request.user.is_staff,
 			'total_count': total_count,
 			'count': len(productions),
+			'filter_form': filter_form,
 		})
 		return context
 
