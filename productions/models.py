@@ -239,9 +239,6 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		else:
 			return ('production_history', [str(self.id)])
 
-	def can_have_screenshots(self):
-		return (self.supertype != 'music')
-
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
 

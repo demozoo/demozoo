@@ -167,10 +167,23 @@ class Carousel(object):
 		else:
 			initial_screenshot = None
 
+		# for supertype = music, button labels should refer to "artwork" rather than screenshots
+		if self.production.supertype == 'music':
+			add_screenshot_label = "Add artwork"
+			all_screenshots_label = "All artwork"
+			manage_screenshots_label = "Manage artwork"
+		else:
+			add_screenshot_label = "Add screenshot"
+			all_screenshots_label = "All screenshots"
+			manage_screenshots_label = "Manage screenshots"
+
 		show_all_screenshots_link = len(screenshots) > 1
 		if settings.SITE_IS_WRITEABLE:
-			show_add_screenshot_link = self.production.can_have_screenshots and self.slides
-			show_manage_screenshots_link = (self.production.can_have_screenshots or len(screenshots) > 1) and self.user.is_staff
+			# always show the 'add screenshot' / 'add artwork' button, except for the special case
+			# that supertype is graphics or production and there are no carousel slides -
+			# in which case the 'add a screenshot' call-to-action will be in the carousel area instead
+			show_add_screenshot_link = self.slides or self.production.supertype == 'music'
+			show_manage_screenshots_link = screenshots and self.user.is_staff
 		else:
 			show_add_screenshot_link = False
 			show_manage_screenshots_link = False
@@ -180,8 +193,15 @@ class Carousel(object):
 			'site_is_writeable': settings.SITE_IS_WRITEABLE,
 
 			'initial_screenshot': initial_screenshot,
+
 			'show_all_screenshots_link': show_all_screenshots_link,
+			'all_screenshots_label': all_screenshots_label,
+
 			'show_add_screenshot_link': show_add_screenshot_link,
+			'add_screenshot_label': add_screenshot_label,
+
 			'show_manage_screenshots_link': show_manage_screenshots_link,
+			'manage_screenshots_label': manage_screenshots_label,
+
 			'carousel_data': self.get_slides_json(),
 		})

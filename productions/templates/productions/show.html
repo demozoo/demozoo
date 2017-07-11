@@ -83,7 +83,9 @@
 							<ul class="tell_us_something_options">
 								<li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox focus_empty_input">Add a download link</a></li>
 								<li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
-								{% if production.can_have_screenshots %}
+								{% if production.supertype == 'music' %}
+									<li><a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add artwork</a></li>
+								{% else %}
 									<li><a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add a screenshot</a></li>
 								{% endif %}
 								<li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
