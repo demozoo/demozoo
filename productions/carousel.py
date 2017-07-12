@@ -15,7 +15,7 @@ class Carousel(object):
 
 		self.media = self.audio_media
 
-		self.slides = self.get_screenshot_slides() + self.get_audio_slides()
+		self.slides = self.get_audio_slides() + self.get_screenshot_slides()
 
 		if self.videos:
 			# prepend a video slide
@@ -143,19 +143,30 @@ class Carousel(object):
 		return self._audio_media
 
 	def get_audio_slides(self):
-		return [
-			{
+		slides = []
+		for track in self.audio_tracks:
+			track_data = {
+				'url': track['url'],
+				'player': track['player'],
+				'playerOpts': track['playerOpts'],
+			}
+
+			if len(self.processed_screenshots) >= 1:
+				artwork = random.choice(self.processed_screenshots)
+				track_data['image'] = {
+					'url': artwork.standard_url,
+					'width': artwork.standard_width,
+					'height': artwork.standard_height
+				}
+
+			slides.append({
 				'type': 'cowbell-audio',
 				'id': 'cowbell-%s' % track['id'],
 				'is_processing': False,
-				'data': {
-					'url': track['url'],
-					'player': track['player'],
-					'playerOpts': track['playerOpts'],
-				}
-			}
-			for track in self.audio_tracks
-		]
+				'data': track_data
+			})
+
+		return slides
 
 	def get_slides_json(self):
 		return json.dumps(self.slides)

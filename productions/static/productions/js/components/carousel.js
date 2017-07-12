@@ -225,6 +225,11 @@
 	CowbellAudio.prototype.draw = function(container) {
 		var cowbellPlayer = $('<div class="cowbell-player"></div>');
 		container.html(cowbellPlayer);
+		if (this.data.image) {
+			cowbellPlayer.css({'background-image': 'url(' + this.data.image.url + ')'});
+		} else {
+			cowbellPlayer.addClass('no-artwork');
+		}
 		this.ui = Cowbell.createPlayer(cowbellPlayer.get(0), {
 			'url': this.data.url,
 			'player': eval(this.data.player),

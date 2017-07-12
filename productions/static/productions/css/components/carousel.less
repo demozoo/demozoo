@@ -126,7 +126,9 @@
 	}
 
 	.cowbell-player {
-		background-image: url(/static/images/sample.png);
+		&.no-artwork {
+			background-image: url(/static/images/sample.png);
+		}
 		background-repeat: no-repeat;
 		background-position: center;
 		height: 200px;
