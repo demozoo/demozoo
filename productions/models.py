@@ -239,6 +239,18 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		else:
 			return ('production_history', [str(self.id)])
 
+	@models.permalink
+	def get_all_screenshots_url(self):
+		return ('production_artwork' if self.supertype == 'music' else 'production_screenshots', [str(self.id)])
+
+	@models.permalink
+	def get_add_screenshot_url(self):
+		return ('production_add_artwork' if self.supertype == 'music' else 'production_add_screenshot', [str(self.id)])
+
+	@models.permalink
+	def get_edit_screenshots_url(self):
+		return ('production_edit_artwork' if self.supertype == 'music' else 'production_edit_screenshots', [str(self.id)])
+
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
 

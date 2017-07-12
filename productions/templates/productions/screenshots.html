@@ -2,7 +2,7 @@
 
 {% load demoscene_tags compress %}
 
-{% block html_title %}Screenshots for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
+{% block html_title %}{{ model_label }} for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block extra_css %}
 	{% compress css %}

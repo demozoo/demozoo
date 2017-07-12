@@ -1,7 +1,6 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
-import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,7 +9,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.template.loader import render_to_string
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.urlresolvers import reverse
 
 from taggit.models import Tag
@@ -371,11 +370,28 @@ def edit_download_links(request, production_id):
 
 def screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if production.supertype == 'music':
+		return redirect('production_artwork', production_id)
+
 	screenshots = production.screenshots.order_by('id')
 
 	return render(request, 'productions/screenshots.html', {
 		'production': production,
 		'screenshots': screenshots,
+		'model_label': "Screenshots",
+	})
+
+
+def artwork(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	if production.supertype != 'music':
+		return redirect('production_screenshots', production_id)
+	screenshots = production.screenshots.order_by('id')
+
+	return render(request, 'productions/screenshots.html', {
+		'production': production,
+		'screenshots': screenshots,
+		'model_label': "Artwork",
 	})
 
 
@@ -385,16 +401,39 @@ def edit_screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_url())
+	if production.supertype == 'music':
+		return redirect('production_edit_artwork', production_id)
+
 	return render(request, 'productions/edit_screenshots.html', {
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
+		'model_label': 'screenshots',
+		'delete_url_name': 'production_delete_screenshot',
 	})
 
 
 @writeable_site_required
 @login_required
-def add_screenshot(request, production_id):
+def edit_artwork(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+	if production.supertype != 'music':
+		return redirect('production_edit_screenshots', production_id)
+
+	return render(request, 'productions/edit_screenshots.html', {
+		'production': production,
+		'screenshots': production.screenshots.order_by('id'),
+		'model_label': 'artwork',
+		'delete_url_name': 'production_delete_artwork',
+	})
+
+
+@writeable_site_required
+@login_required
+def add_screenshot(request, production_id, is_artwork_view=False):
+	production = get_object_or_404(Production, id=production_id)
+
 	if request.method == 'POST':
 		uploaded_files = request.FILES.getlist('screenshot')
 		file_count = len(uploaded_files)
@@ -409,21 +448,41 @@ def add_screenshot(request, production_id):
 			production.save()
 
 			if file_count == 1:
-				Edit.objects.create(action_type='add_screenshot', focus=production,
-					description=("Added screenshot"), user=request.user)
+				if is_artwork_view:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added artwork"), user=request.user)
+				else:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added screenshot"), user=request.user)
 			else:
-				Edit.objects.create(action_type='add_screenshot', focus=production,
-					description=("Added %s screenshots" % file_count), user=request.user)
+				if is_artwork_view:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added %s artworks" % file_count), user=request.user)
+				else:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added %s screenshots" % file_count), user=request.user)
 
 		return HttpResponseRedirect(production.get_absolute_url())
-	return render(request, 'productions/add_screenshot.html', {
-		'production': production,
-	})
+	else:
+		if is_artwork_view and production.supertype != 'music':
+			return redirect('production_add_screenshot', production_id)
+		elif not is_artwork_view and production.supertype == 'music':
+			return redirect('production_add_artwork', production_id)
+
+	if is_artwork_view:
+		return render(request, 'productions/add_artwork.html', {
+			'production': production,
+		})
+
+	else:
+		return render(request, 'productions/add_screenshot.html', {
+			'production': production,
+		})
 
 
 @writeable_site_required
 @login_required
-def delete_screenshot(request, production_id, screenshot_id):
+def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=False):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_url())
@@ -440,14 +499,30 @@ def delete_screenshot(request, production_id, screenshot_id):
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			Edit.objects.create(action_type='delete_screenshot', focus=production,
-				description="Deleted screenshot", user=request.user)
+			if is_artwork_view:
+				Edit.objects.create(action_type='delete_screenshot', focus=production,
+					description="Deleted artwork", user=request.user)
+			else:
+				Edit.objects.create(action_type='delete_screenshot', focus=production,
+					description="Deleted screenshot", user=request.user)
 		return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
 	else:
-		return simple_ajax_confirmation(request,
-			reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
-			"Are you sure you want to delete this screenshot for %s?" % production.title,
-			html_title="Deleting screenshot for %s" % production.title)
+		if is_artwork_view:
+			if production.supertype != 'music':
+				return redirect('production_delete_screenshot', production_id, screenshot_id)
+
+			return simple_ajax_confirmation(request,
+				reverse('production_delete_artwork', args=[production_id, screenshot_id]),
+				"Are you sure you want to delete this artwork for %s?" % production.title,
+				html_title="Deleting artwork for %s" % production.title)
+		else:
+			if production.supertype == 'music':
+				return redirect('production_delete_artwork', production_id, screenshot_id)
+
+			return simple_ajax_confirmation(request,
+				reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
+				"Are you sure you want to delete this screenshot for %s?" % production.title,
+				html_title="Deleting screenshot for %s" % production.title)
 
 
 @writeable_site_required
