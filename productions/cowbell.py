@@ -102,10 +102,10 @@ def identify_link_as_track(link):
 				filetype = match.group(1).lower()
 				return (filetype, url)
 
-			# match = MEDIA_DEMOZOO_MUSIC.match(url)
-			# if match:
-			# 	filetype = match.group(1).lower()
-			# 	return (filetype, url)
+			match = MEDIA_DEMOZOO_MUSIC.match(url)
+			if match:
+				filetype = match.group(1).lower()
+				return (filetype, url)
 
 	else:  # External link
 		if link.link_class == 'ModarchiveModule':
