@@ -1,6 +1,7 @@
 import time
 import urllib2
 from os.path import splitext
+from socket import timeout
 
 from django.core.management.base import NoArgsCommand
 from django.utils.text import slugify
@@ -28,7 +29,7 @@ class Command(NoArgsCommand):
 
 			print("prod %s: downloading from %s" % (prod_link.production_id, prod_link.url))
 			try:
-				download = fetch_origin_url(prod_link.url)
+				download = fetch_origin_url(prod_link.download_url)
 				sha1 = download.sha1
 				(basename, file_ext) = splitext(download.filename)
 
@@ -39,7 +40,7 @@ class Command(NoArgsCommand):
 					link_class='BaseUrl', parameter=new_url,
 					is_download_link=True
 				)
-			except (urllib2.URLError, FileTooBig) as ex:
+			except (urllib2.URLError, FileTooBig, timeout) as ex:
 				pass
 
 			time.sleep(5)
