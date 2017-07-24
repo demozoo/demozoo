@@ -61,6 +61,9 @@ OPENMPT_MUSIC = re.compile(r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669
 # SID files on Modland have the extension .psid; .sid files on there are actually Amiga Sidmon tracker files
 PSID_MUSIC = re.compile(r'.*\.psid$', re.I)
 
+# stuff mirrored on media.demozoo.org/music
+MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(sid)$', re.I)
+
 
 def identify_link_as_track(link):
 	# return a (filetype, url) tuple for this link, or (None, None) if it can't be identified as one
@@ -98,6 +101,11 @@ def identify_link_as_track(link):
 			if match:
 				filetype = match.group(1).lower()
 				return (filetype, url)
+
+			# match = MEDIA_DEMOZOO_MUSIC.match(url)
+			# if match:
+			# 	filetype = match.group(1).lower()
+			# 	return (filetype, url)
 
 	else:  # External link
 		if link.link_class == 'ModarchiveModule':
