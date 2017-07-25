@@ -12,7 +12,7 @@ from demoscene.utils.accounts import is_ip_banned
 from read_only_mode import writeable_site_required
 
 
-def login(request):
+def custom_login(request):
 	if is_ip_banned(request):
 		messages.error(request, "Your account was disabled.")
 		return redirect('home')
