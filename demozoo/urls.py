@@ -19,7 +19,7 @@ urlpatterns = patterns('',
 	(r'^admin/', include(admin.site.urls)),
 
 	(r'^account/$', 'demoscene.views.accounts.index', {}, 'account_index'),
-	(r'^account/login/$', 'django.contrib.auth.views.login', {}, 'log_in'),
+	(r'^account/login/$', 'demoscene.views.accounts.login', {}, 'log_in'),
 	(r'^account/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, 'log_out'),
 	(r'^account/signup/$', 'demoscene.views.accounts.signup', {}, 'user_signup'),
 	(r'^account/change_password/$', 'demoscene.views.accounts.change_password', {}, 'account_change_password'),

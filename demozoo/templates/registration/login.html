@@ -13,7 +13,7 @@
 		<p>Please log in to proceed:</p>
 	{% endif %}
 
-	<form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+	<form method="post" action="{% url 'log_in' %}">
 		{% csrf_token %}
 		<table>
 			<tr>
