@@ -60,6 +60,7 @@ STREAMING_MUSIC = re.compile(r'.*\.(mp3|ogg)$', re.I)
 OPENMPT_MUSIC = re.compile(r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf|ptm|psm|mt2|dbm|digi|imf|j2b|gdm|umx|plm|mo3|xpk|ppm|mmcmp|sfx|sfx2|mms|pt36|nt|ft)$', re.I)
 # SID files on Modland have the extension .psid; .sid files on there are actually Amiga Sidmon tracker files
 PSID_MUSIC = re.compile(r'.*\.psid$', re.I)
+NONSTANDARD_MODLAND_EXTENSIONS = re.compile(r'.*\.(mmd0|mmd1|mmd2|mmd3)', re.I)
 
 # stuff mirrored on media.demozoo.org/music
 MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(mod|s3m|xm|it|sid)$', re.I)
@@ -78,6 +79,12 @@ def identify_link_as_track(link):
 
 		elif link.link_class == 'ModlandFile':
 			match = OPENMPT_MUSIC.match(link.parameter)
+			if match:
+				filetype = 'openmpt'
+				url = 'https://ftp.modland.com%s' % link.parameter
+				return (filetype, url)
+
+			match = NONSTANDARD_MODLAND_EXTENSIONS.match(link.parameter)
 			if match:
 				filetype = 'openmpt'
 				url = 'https://ftp.modland.com%s' % link.parameter
