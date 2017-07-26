@@ -62,7 +62,7 @@ OPENMPT_MUSIC = re.compile(r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669
 PSID_MUSIC = re.compile(r'.*\.psid$', re.I)
 
 # stuff mirrored on media.demozoo.org/music
-MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(sid)$', re.I)
+MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(mod|s3m|xm|it|sid)$', re.I)
 
 
 def identify_link_as_track(link):
@@ -105,7 +105,7 @@ def identify_link_as_track(link):
 			match = MEDIA_DEMOZOO_MUSIC.match(url)
 			if match:
 				filetype = match.group(1).lower()
-				return (filetype, url)
+				return ('sid' if filetype == 'sid' else 'openmpt', url)
 
 	else:  # External link
 		if link.link_class == 'ModarchiveModule':
