@@ -128,7 +128,7 @@ class RandomisedProductionReport(Report):
 
 
 class TrackedMusicWithoutPlayableLinks(RandomisedProductionReport):
-	title = "Tracked music without playable (Modarchive / Modland) links"
+	title = "Tracked music without playable links"
 	name = 'tracked_music_without_playable_links'
 	report_class = reports_module.TrackedMusicWithoutPlayableLinksReport
 

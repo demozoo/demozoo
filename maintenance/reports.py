@@ -1,6 +1,7 @@
 import redis
 
 from django.conf import settings
+from django.db.models import Q
 
 from productions.models import Production, ProductionLink
 from maintenance.models import Exclusion
@@ -190,7 +191,8 @@ class TrackedMusicWithoutPlayableLinksReport(RandomisedProductionsReport):
 	def get_master_list(cls):
 		excluded_ids = Exclusion.objects.filter(report_name='tracked_music_without_playable_links').values_list('record_id', flat=True)
 		prod_ids_with_playable_links = ProductionLink.objects.filter(
-			link_class__in=['ModlandFile', 'ModarchiveModule']
+			Q(link_class__in=['ModlandFile', 'ModarchiveModule']) |
+			Q(link_class='BaseUrl', parameter__startswith='https://media.demozoo.org/')
 		).values_list('production_id', flat=True)
 
 		return (
