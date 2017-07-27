@@ -219,6 +219,9 @@
 						{% if site_is_writeable %}
 							<ul class="actions">
 								<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+								{% if request.user.is_staff and not placings %}
+									<li><a class="action_button icon delete open_in_lightbox" href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
+								{% endif %}
 							</ul>
 						{% endif %}
 

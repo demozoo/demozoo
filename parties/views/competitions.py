@@ -3,12 +3,15 @@ from __future__ import absolute_import  # ensure that 'from parties.foo' imports
 import json
 import datetime
 
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db.models import Max
 
 from demoscene.models import Edit
+from demoscene.shortcuts import simple_ajax_confirmation
 from productions.models import ProductionType, Production
 from parties.models import Competition, CompetitionPlacing
 from parties.forms import CompetitionForm
@@ -148,3 +151,29 @@ def import_text(request, competition_id):
 		return render(request, 'competitions/import_text.html', {
 			'competition': competition,
 		})
+
+
+@writeable_site_required
+@login_required
+def delete(request, competition_id):
+	competition = get_object_or_404(Competition, id=competition_id)
+
+	if (not request.user.is_staff) or competition.placings.exists():
+		return HttpResponseRedirect(competition.party.get_absolute_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+
+			Edit.objects.create(action_type='delete_competition', focus=competition.party,
+				description=(u"Deleted competition '%s'" % competition.name), user=request.user)
+
+			competition.delete()
+
+			messages.success(request, "%s competition deleted" % competition.name)
+			return HttpResponseRedirect(competition.party.get_absolute_url())
+		else:
+			return HttpResponseRedirect(competition.party.get_absolute_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('delete_competition', args=[competition_id]),
+			"Are you sure you want to delete the %s competition?" % competition.name,
+			html_title="Deleting %s" % competition.name)
