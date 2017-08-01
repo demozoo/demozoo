@@ -13,7 +13,7 @@ from read_only_mode import writeable_site_required
 
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
-from parties.models import PartyExternalLink, Party, ResultsFile
+from parties.models import Competition, PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
 from maintenance import reports as reports_module
@@ -952,6 +952,26 @@ class EmptyReleasers(StaffOnlyMixin, Report):
 		return context
 
 
+class EmptyCompetitions(StaffOnlyMixin, Report):
+	title = "Empty competitions"
+	template_name = 'maintenance/competition_report.html'
+	name = 'empty_competitions'
+
+	def get_context_data(self, **kwargs):
+		context = super(EmptyCompetitions, self).get_context_data(**kwargs)
+		competitions = Competition.objects.filter(
+			placings__isnull=True
+		).extra(
+			where=['parties_competition.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+			params=[self.exclusion_name]
+		).select_related('party').order_by('party__start_date_date')
+
+		context.update({
+			'competitions': competitions,
+		})
+		return context
+
+
 class UnresolvedScreenshots(StaffOnlyMixin, Report):
 	title = "Unresolved screenshots"
 	template_name = 'maintenance/unresolved_screenshots.html'
@@ -1374,6 +1394,7 @@ reports = [
 			ProdsWithDeadAmigaNvgOrgLinks,
 			CreditsToMoveToText,
 			SceneorgDownloadLinksWithUnicode,
+			EmptyCompetitions,
 		]
 	),
 	(

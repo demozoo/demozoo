@@ -1,0 +1,20 @@
+{% extends "maintenance/base.html" %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}:</h2>
+	<div id="main_column">
+		<div class="panel report" data-report-name="{{ exclusion_name }}">
+			<ul>
+				{% for competition in competitions %}
+					<li {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ competition.id }}">
+						<a href="{{ competition.party.get_absolute_url }}">{{ competition.party.name }} {{ competition.name }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}
