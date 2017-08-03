@@ -569,6 +569,11 @@ def add_credit(request, production_id):
 					focus2=nick.releaser,
 					description=description, user=request.user)
 
+			# since we're using commit=False we must manually delete the
+			# deleted credits
+			for credit in credit_formset.deleted_objects:
+				credit.delete()
+
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
