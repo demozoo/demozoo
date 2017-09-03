@@ -16,7 +16,7 @@ from screenshots.processing import upload_to_s3
 class Command(NoArgsCommand):
 	"""Find remote music files suitable for mirroring on media.demozoo.org (so we can play them with cowbell)"""
 	def handle_noargs(self, **options):
-		filetype_filter = Q(parameter__iendswith='.sid') | Q(parameter__iendswith='.mod') | Q(parameter__iendswith='.s3m') | Q(parameter__iendswith='.xm') | Q(parameter__iendswith='.it')
+		filetype_filter = Q(parameter__iendswith='.sap') | Q(parameter__iendswith='.sid') | Q(parameter__iendswith='.mod') | Q(parameter__iendswith='.s3m') | Q(parameter__iendswith='.xm') | Q(parameter__iendswith='.it')
 		links = ProductionLink.objects.filter(
 			is_download_link=True,
 			link_class__in=['BaseUrl', 'AmigascneFile', 'SceneOrgFile', 'FujiologyFile', 'UntergrundFile', 'PaduaOrgFile'],
