@@ -52,6 +52,12 @@ PLAYERS_BY_FILETYPE = {
 			'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/jssid.min.js'
 		])
 	),
+	'sap': (
+		'Cowbell.Player.ASAP', {},
+		Media(js=[
+			'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/asap.min.js'
+		])
+	),
 }
 
 ZXDEMO_MUSIC = re.compile(r'https://files\.zxdemo\.org/.*\.(stc|pt3|vtx|sqt)$', re.I)
@@ -63,7 +69,7 @@ PSID_MUSIC = re.compile(r'.*\.psid$', re.I)
 NONSTANDARD_MODLAND_EXTENSIONS = re.compile(r'.*\.(mmd0|mmd1|mmd2|mmd3)', re.I)
 
 # stuff mirrored on media.demozoo.org/music
-MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(mod|s3m|xm|it|sid)$', re.I)
+MEDIA_DEMOZOO_MUSIC = re.compile(r'https://media\.demozoo\.org/music/.*\.(mod|s3m|xm|it|sid|sap)$', re.I)
 
 
 def identify_link_as_track(link):
@@ -112,7 +118,7 @@ def identify_link_as_track(link):
 			match = MEDIA_DEMOZOO_MUSIC.match(url)
 			if match:
 				filetype = match.group(1).lower()
-				return ('sid' if filetype == 'sid' else 'openmpt', url)
+				return (filetype if filetype in ('sid', 'sap') else 'openmpt', url)
 
 	else:  # External link
 		if link.link_class == 'ModarchiveModule':
