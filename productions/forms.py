@@ -45,7 +45,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 		else:
 			self.instance.author_nicks = []
 			self.instance.author_affiliation_nicks = []
-		self.unparsed_byline = None
+		self.instance.unparsed_byline = None
 
 		self.instance.platforms = self.cleaned_data['platforms']
 		self.instance.release_date = self.cleaned_data['release_date']
