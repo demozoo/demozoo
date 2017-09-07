@@ -87,24 +87,29 @@ class BaseUrl():
 		return None
 
 
-def regex_match(pattern, flags=None):
+def regex_match(pattern, flags=None, add_slash=False):
 	"""
 	Build a function that tests a URL against the given regexp, and, if it matches,
 	returns the first captured (bracketed) expression from it.
+	If add_slash is true, add a trailing slash if it didn't have one already
 	"""
 	regex = re.compile(pattern, flags)
 
 	def match_fn(urlstring, url):
 		m = regex.match(urlstring)
 		if m:
-			return m.group(1)
+			result = m.group(1)
+			if add_slash and not result.endswith('/'):
+				result += '/'
+			return result
 	return match_fn
 
 
-def urldecoded_regex_match(pattern, flags=None):
+def urldecoded_regex_match(pattern, flags=None, add_slash=False):
 	"""
 	Build a function that tests a URL against the given regexp, and, if it matches,
 	returns a URL-decoded version of the first captured (bracketed) expression from it.
+	If add_slash is true, add a trailing slash if it didn't have one already
 	"""
 	regex = re.compile(pattern, flags)
 
@@ -127,7 +132,10 @@ def urldecoded_regex_match(pattern, flags=None):
 			# database's 'param' field, which preserves those bytes in a way that can be restored
 			# later with .encode('iso-8859-1'). (We don't care whether the bytestring is _actually_
 			# supposed to be iso-8859-1.)
-			return unquoted_path.decode('iso-8859-1')
+			result = unquoted_path.decode('iso-8859-1')
+			if add_slash and not result.endswith('/'):
+				result += '/'
+			return result
 	return match_fn
 
 
@@ -758,7 +766,7 @@ class FujiologyFile(BaseUrl):
 class FujiologyFolder(BaseUrl):
 	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
 	tests = [
-		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*/)', re.I),
+		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
 	]
 	html_link_class = "fujiology"
 	html_link_text = "Fujiology"
@@ -859,21 +867,21 @@ class BreaksAmigaParty(BaseUrl):
 
 class SceneOrgFolder(BaseUrl):
 	tests = [
-		urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*/)', re.I),
+		urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*)', re.I, add_slash=True),
 		querystring_match(r'https?://(?:www\.)?scene\.org/dir\.php', 'dir', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*/)', re.I),
-		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*/)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
 	]
 
 	def __unicode__(self):
