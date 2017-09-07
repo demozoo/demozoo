@@ -103,6 +103,7 @@ def generic_results_txt(results_text, ranked_result_re, unranked_result_re, auth
 		if len(title_and_author_list) > 1:
 			title = author_separator.join(title_and_author_list[:-1])
 			author = title_and_author_list[-1]
+			author = re.sub(r'\s+\[REMOTE\]\s*$', '', author)
 		else:
 			title = title_and_author_list[0]
 			author = ''

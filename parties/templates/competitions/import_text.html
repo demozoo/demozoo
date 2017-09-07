@@ -142,6 +142,7 @@
 				var titleAndAuthor = row[2].split(authorSeparator);
 				if (titleAndAuthor.length > 1) {
 					var author = titleAndAuthor.pop();
+					author = author.replace(/\s+\[REMOTE\]\s*$/, '');
 					var title = titleAndAuthor.join(authorSeparator);
 				} else {
 					var author = '';
