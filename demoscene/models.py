@@ -536,7 +536,7 @@ class AccountProfile(models.Model):
 
 class ExternalLink(models.Model):
 	link_class = models.CharField(max_length=100)
-	parameter = models.CharField(max_length=255)
+	parameter = models.CharField(max_length=4096)
 
 	def _get_url(self):
 		if self.link:
