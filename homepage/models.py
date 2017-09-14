@@ -4,7 +4,8 @@ from demoscene.utils.files import random_path
 
 
 class Banner(models.Model):
-	banner_image = models.ForeignKey('BannerImage', null=True, blank=True, related_name='+',
+	banner_image = models.ForeignKey(
+		'BannerImage', null=True, blank=True, related_name='+',
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the banner if image is deleted
 	)
 	title = models.CharField(max_length=255)
@@ -21,7 +22,7 @@ class Banner(models.Model):
 
 
 def banner_image_upload_to(i, f):
-    return random_path('homepage_banners', f)
+	return random_path('homepage_banners', f)
 
 
 class BannerImage(models.Model):
@@ -54,7 +55,8 @@ class BannerImage(models.Model):
 class NewsStory(models.Model):
 	title = models.CharField(max_length=255)
 	text = models.TextField()
-	image = models.ForeignKey('NewsImage', null=True, blank=True, related_name='+',
+	image = models.ForeignKey(
+		'NewsImage', null=True, blank=True, related_name='+',
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the news story if image is deleted
 	)
 	is_public = models.BooleanField(blank=True, default=True)
@@ -67,8 +69,9 @@ class NewsStory(models.Model):
 	class Meta:
 		verbose_name_plural = 'News stories'
 
+
 def news_image_upload_to(i, f):
-    return random_path('news_images', f)
+	return random_path('news_images', f)
 
 
 class NewsImage(models.Model):
