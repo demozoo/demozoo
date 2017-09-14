@@ -19,14 +19,14 @@ from comments.forms import CommentForm
 
 
 def index(request):
-	parties = Party.objects.order_by('party_series__name', 'start_date_date').select_related('party_series')
+	parties = Party.objects.order_by('party_series__name', 'start_date_date', 'name').select_related('party_series')
 	return render(request, 'parties/index.html', {
 		'parties': parties,
 	})
 
 
 def by_date(request):
-	parties = Party.objects.order_by('start_date_date', 'end_date_date')
+	parties = Party.objects.order_by('start_date_date', 'end_date_date', 'name')
 	return render(request, 'parties/by_date.html', {
 		'parties': parties,
 	})
@@ -65,7 +65,7 @@ def show(request, party_id):
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
 		'releases': releases,
-		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
+		'parties_in_series': party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series'),
 		'external_links': external_links,
 		'comment_form': comment_form,
 	})
