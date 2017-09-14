@@ -52,3 +52,45 @@
 		}
 	}
 }
+
+
+/* Small-screen versions */
+@media screen and (max-width: 1081px) {
+	.banner {
+
+		.banner_text {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+		}
+
+		h1 {
+			position: static;
+			text-align: right;
+			padding-right: 6%;
+			width: auto;
+			font-size: 20pt;
+		}
+
+		p {
+			position: static;
+			width: auto;
+			margin: 0;
+			font-size: 11pt;
+		}
+
+		.banner_text.hidden {
+			h1, p {
+				text-align: left;
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 601px) {
+	.banner {
+		h1 {
+			font-size: 18pt;
+		}
+	}
+}
