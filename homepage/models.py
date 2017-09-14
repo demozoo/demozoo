@@ -11,6 +11,10 @@ class Banner(models.Model):
 	title = models.CharField(max_length=255)
 	text = models.TextField(blank=True)
 	url = models.CharField(max_length=255, verbose_name="URL")
+	hide_text = models.BooleanField(
+		default=False,
+		help_text="Instead of displaying text, use it as fallback text for people who can't see the image"
+	)
 
 	show_for_anonymous_users = models.BooleanField(default=True)
 	show_for_logged_in_users = models.BooleanField(default=True)

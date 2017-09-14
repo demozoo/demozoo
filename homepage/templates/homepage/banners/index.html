@@ -28,12 +28,8 @@
 		{% for banner in banners %}
 			<tr>
 				<td style="width: 600px;">
-					<a href="{% url 'edit_banner' banner.id %}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">
-						<div class="banner_text">
-							<h1>{{ banner.title }}</h1>
-							{{ banner.text|safe_markdown }}
-						</div>
-					</a>
+					{% url 'edit_banner' banner.id as banner_url %}
+					{% include 'homepage/_banner.html' with banner=banner banner_url=banner_url %}
 				</td>
 				<td align="center">
 					{% if banner.show_for_anonymous_users %}

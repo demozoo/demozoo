@@ -27,12 +27,7 @@
 					<div style="clear: both;"></div>
 				{% endif %}
 				{% if banner %}
-					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">
-						<div class="banner_text">
-							<h1>{{ banner.title }}</h1>
-							{{ banner.text|safe_markdown }}
-						</div>
-					</a>
+					{% include 'homepage/_banner.html' with banner=banner banner_url=banner.url %}
 				{% endif %}
 			</div>
 
