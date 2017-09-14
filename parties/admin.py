@@ -8,6 +8,11 @@ class CompetitionPlacingInline(admin.TabularInline):
 	raw_id_fields = ['production']
 
 
-admin.site.register(PartySeries)
-admin.site.register(Party, raw_id_fields=['invitations', 'releases'])
-admin.site.register(Competition, inlines=[CompetitionPlacingInline], list_select_related=True)
+admin.site.register(PartySeries, search_fields=['name'])
+admin.site.register(Party, raw_id_fields=['invitations', 'releases'], search_fields=['name', 'party_series__name'])
+admin.site.register(
+	Competition,
+	inlines=[CompetitionPlacingInline],
+	list_select_related=True,
+	search_fields=['name', 'party__name', 'party__party_series__name']
+)
