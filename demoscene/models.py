@@ -640,6 +640,15 @@ class TagDescription(models.Model):
 		return self.tag.name
 
 
+class BlacklistedTag(models.Model):
+	tag = models.CharField(max_length=255, help_text="The tag to be blacklisted")
+	replacement = models.CharField(max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)")
+	message = models.TextField(blank=True, help_text="Message to show to the user when they try to use the tag (optional)")
+
+	def __unicode__(self):
+		return self.tag
+
+
 class SceneID(models.Model):
 	user = models.OneToOneField(User)
 	sceneid = models.IntegerField()
