@@ -17,7 +17,7 @@ from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation, modal_workflow_confirmation
-from demoscene.models import Nick, Edit
+from demoscene.models import Nick, Edit, BlacklistedTag
 from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
@@ -777,6 +777,14 @@ def add_tag(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if request.method == 'POST':
 		tag_name = slugify_tag(request.POST.get('tag_name'))
+
+		try:
+			blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
+			tag_name = slugify_tag(blacklisted_tag.replacement)
+			message = blacklisted_tag.message
+		except BlacklistedTag.DoesNotExist:
+			message = None
+
 		if tag_name:
 			# check whether it's already present
 			existing_tag = production.tags.filter(name=tag_name)
@@ -787,6 +795,7 @@ def add_tag(request, production_id):
 
 	return render(request, 'productions/_tags_list.html', {
 		'tags': production.tags.order_by('name'),
+		'message': message
 	})
 
 
