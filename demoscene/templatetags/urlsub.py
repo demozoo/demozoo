@@ -1,7 +1,7 @@
 from django import template
-from django.utils.html import conditional_escape
 
 register = template.Library()
+
 
 @register.simple_tag(takes_context=True)
 def urlsub(context, **params_to_replace):
@@ -14,6 +14,6 @@ def urlsub(context, **params_to_replace):
 	param_string = params.urlencode()
 
 	if param_string:
-		return '?' + conditional_escape(param_string)
+		return '?' + param_string
 	else:
 		return ''
