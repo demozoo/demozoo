@@ -795,13 +795,13 @@ def add_tag(request, production_id):
 				description=u"Added tag '%s'" % tag_name, user=request.user)
 
 	tags_list_html = render_to_string('productions/_tags_list.html', {
-		'tags': production.tags.order_by('name'),
-		'message': message
+		'tags': production.tags.order_by('name')
 	})
 
 	return JsonResponse({
 		'tags_list_html': tags_list_html,
-		'clean_tag_name': tag_name
+		'clean_tag_name': tag_name,
+		'message': message,
 	})
 
 

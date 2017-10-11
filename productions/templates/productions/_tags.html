@@ -15,6 +15,7 @@
 		</ul>
 	{% endif %}
 
+	<div id="tags_message"></div>
 	{% include "productions/_tags_list.html" with tags=tags only %}
 	{% if tags_form %}
 		<form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">

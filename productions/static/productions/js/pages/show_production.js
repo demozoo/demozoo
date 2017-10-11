@@ -67,6 +67,15 @@ $(function() {
 							tagField.tagit('createTag', response['clean_tag_name'], null, true);
 						}
 					}
+					if (response['message']) {
+						$('#tags_message').addClass('error').text(
+							response['message']
+						).stop().css(
+							{'backgroundColor': '#fbb'}
+						).animate(
+							{'backgroundColor': 'white'}, 5000
+						);
+					}
 				}, 'json');
 			},
 			'afterTagRemoved': function(event, data) {
