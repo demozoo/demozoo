@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_POST
 
 from taggit.models import Tag
 from read_only_mode import writeable_site_required
@@ -770,32 +771,37 @@ def edit_tags(request, production_id):
 
 @writeable_site_required
 @login_required
+@require_POST
 def add_tag(request, production_id):
 
 	# Only used in AJAX calls.
 
 	production = get_object_or_404(Production, id=production_id)
-	if request.method == 'POST':
-		tag_name = slugify_tag(request.POST.get('tag_name'))
+	tag_name = slugify_tag(request.POST.get('tag_name'))
 
-		try:
-			blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
-			tag_name = slugify_tag(blacklisted_tag.replacement)
-			message = blacklisted_tag.message
-		except BlacklistedTag.DoesNotExist:
-			message = None
+	try:
+		blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
+		tag_name = slugify_tag(blacklisted_tag.replacement)
+		message = blacklisted_tag.message
+	except BlacklistedTag.DoesNotExist:
+		message = None
 
-		if tag_name:
-			# check whether it's already present
-			existing_tag = production.tags.filter(name=tag_name)
-			if not existing_tag:
-				production.tags.add(tag_name)
-				Edit.objects.create(action_type='production_add_tag', focus=production,
-					description=u"Added tag '%s'" % tag_name, user=request.user)
+	if tag_name:
+		# check whether it's already present
+		existing_tag = production.tags.filter(name=tag_name)
+		if not existing_tag:
+			production.tags.add(tag_name)
+			Edit.objects.create(action_type='production_add_tag', focus=production,
+				description=u"Added tag '%s'" % tag_name, user=request.user)
 
-	return render(request, 'productions/_tags_list.html', {
+	tags_list_html = render_to_string('productions/_tags_list.html', {
 		'tags': production.tags.order_by('name'),
 		'message': message
+	})
+
+	return JsonResponse({
+		'tags_list_html': tags_list_html,
+		'clean_tag_name': tag_name
 	})
 
 
