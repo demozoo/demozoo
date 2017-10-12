@@ -3,7 +3,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 
 from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember
-from demoscene.models import Edit
+from demoscene.models import BlacklistedTag, Edit
 from platforms.models import Platform
 from demoscene.utils import groklinks
 from demoscene.utils.party_field import PartyField
@@ -262,7 +262,18 @@ class ProductionBlurbForm(forms.ModelForm):
 
 class ProductionTagsForm(forms.ModelForm):
 	def clean_tags(self):
-		return [slugify_tag(name) for name in self.cleaned_data['tags']]
+		clean_tags = []
+		for name in self.cleaned_data['tags']:
+			name = slugify_tag(name)
+			try:
+				blacklisted_tag = BlacklistedTag.objects.get(tag=name)
+				name = slugify_tag(blacklisted_tag.replacement)
+			except BlacklistedTag.DoesNotExist:
+				pass
+			if name:
+				clean_tags.append(name)
+
+		return clean_tags
 
 	class Meta:
 		model = Production
