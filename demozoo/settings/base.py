@@ -9,8 +9,6 @@ FILEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 sys.path.append(FILEROOT)
 sys.path.append(os.path.join(FILEROOT, "lib"))
 
-TEMPLATE_DEBUG = True
-
 ADMINS = (
 	('Matt Westcott', 'matt@west.co.tt'),
 )
@@ -64,12 +62,32 @@ STATICFILES_FINDERS = (
 	'compressor.finders.CompressorFinder',
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-	'django.template.loaders.filesystem.Loader',
-	'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
+TEMPLATES = [
+	{
+		'BACKEND': 'django.template.backends.django.DjangoTemplates',
+		'DIRS': [
+			os.path.join(FILEROOT, 'demozoo', 'templates'),
+		],
+		'APP_DIRS': True,
+		'OPTIONS': {
+			'context_processors': [
+				# defaults
+				'django.contrib.auth.context_processors.auth',
+				'django.template.context_processors.debug',
+				'django.template.context_processors.i18n',
+				'django.template.context_processors.media',
+				'django.template.context_processors.static',
+				'django.template.context_processors.tz',
+				'django.contrib.messages.context_processors.messages',
+				# added by us
+				'django.template.context_processors.request',
+				'demoscene.context_processors.global_nav_forms',
+				'demoscene.context_processors.ajax_base_template',
+				'demoscene.context_processors.read_only_mode',
+			],
+		},
+	},
+]
 
 MIDDLEWARE_CLASSES = (
 	'corsheaders.middleware.CorsMiddleware',
@@ -82,13 +100,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'demozoo.urls'
-
-TEMPLATE_DIRS = (
-	# Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-	# Always use forward slashes, even on Windows.
-	# Don't forget to use absolute paths, not relative paths.
-	os.path.join(FILEROOT, 'demozoo', 'templates'),
-)
 
 INSTALLED_APPS = (
 	'django.contrib.auth',
@@ -122,14 +133,6 @@ INSTALLED_APPS = (
 	'forums',
 	'zxdemo',
 	'users',
-)
-
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
-TEMPLATE_CONTEXT_PROCESSORS += (
-	'django.core.context_processors.request',
-	'demoscene.context_processors.global_nav_forms',
-	'demoscene.context_processors.ajax_base_template',
-	'demoscene.context_processors.read_only_mode',
 )
 
 LOGGING = {
