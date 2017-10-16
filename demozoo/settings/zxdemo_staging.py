@@ -1,6 +1,6 @@
 from .staging import *
 
-TEMPLATES['OPTIONS']['context_processors'] = [
+TEMPLATES[0]['OPTIONS']['context_processors'] = [
 	'django.contrib.auth.context_processors.auth',
 	'django.template.context_processors.debug',
 	'django.template.context_processors.i18n',
