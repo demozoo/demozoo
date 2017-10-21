@@ -28,15 +28,15 @@ class PartySeries(models.Model):
 
 	@models.permalink
 	def get_absolute_url(self):
-		return ('parties.views.parties.show_series', [str(self.id)])
+		return ('party_series', [str(self.id)])
 
 	@models.permalink
 	def get_absolute_edit_url(self):
-		return ('parties.views.parties.show_series', [str(self.id)])
+		return ('party_series', [str(self.id)])
 
 	@models.permalink
 	def get_history_url(self):
-		return ('parties.views.parties.series_history', [str(self.id)])
+		return ('party_series_history', [str(self.id)])
 
 	def has_any_external_links(self):
 		return self.website or self.twitter_url or self.pouet_url
@@ -102,15 +102,15 @@ class Party(Commentable):
 
 	@models.permalink
 	def get_absolute_url(self):
-		return ('parties.views.parties.show', [str(self.id)])
+		return ('party', [str(self.id)])
 
 	@models.permalink
 	def get_absolute_edit_url(self):
-		return ('parties.views.parties.show', [str(self.id)])
+		return ('party', [str(self.id)])
 
 	@models.permalink
 	def get_history_url(self):
-		return ('parties.views.parties.history', [str(self.id)])
+		return ('party_history', [str(self.id)])
 
 	@property
 	def suffix(self):
@@ -260,11 +260,11 @@ class Competition(models.Model):
 
 	@models.permalink
 	def get_absolute_url(self):
-		return ('parties.views.competitions.show', [str(self.id)])
+		return ('competition', [str(self.id)])
 
 	@models.permalink
 	def get_history_url(self):
-		return ('parties.views.competitions.history', [str(self.id)])
+		return ('competition_history', [str(self.id)])
 
 	class Meta:
 		ordering = ("party__name", "name")

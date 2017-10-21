@@ -35,4 +35,3 @@ urlpatterns = [
 	url(r'^competition_api/update_placing/(\d+)/$', competition_api_views.update_placing, {}),
 	url(r'^competition_api/delete_placing/(\d+)/$', competition_api_views.delete_placing, {}),
 ]
-

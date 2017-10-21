@@ -68,9 +68,9 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	@models.permalink
 	def get_absolute_url(self):
 		if self.is_group:
-			return ('demoscene.views.groups.show', [str(self.id)])
+			return ('group', [str(self.id)])
 		else:
-			return ('demoscene.views.sceners.show', [str(self.id)])
+			return ('scener', [str(self.id)])
 
 	def get_absolute_edit_url(self):
 		return self.get_absolute_url()
@@ -78,9 +78,9 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	@models.permalink
 	def get_history_url(self):
 		if self.is_group:
-			return ('demoscene.views.groups.history', [str(self.id)])
+			return ('group_history', [str(self.id)])
 		else:
-			return ('demoscene.views.sceners.history', [str(self.id)])
+			return ('scener_history', [str(self.id)])
 
 	def productions(self):
 		from productions.models import Production
