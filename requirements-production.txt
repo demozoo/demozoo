@@ -14,6 +14,7 @@ djangorestframework==3.5.4
 djangorestframework-jsonp==1.0.2
 psycopg2==2.5.3
 pyrecoil==0.2
+redis==2.10.5
 scrubber==1.6.1
 timelib==0.2.1
 unidecode==0.04.14
