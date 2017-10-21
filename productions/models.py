@@ -82,7 +82,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
 	types = models.ManyToManyField('ProductionType', related_name='productions')
 	author_nicks = models.ManyToManyField('demoscene.Nick', related_name='productions', blank=True)
-	author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True, null=True)
+	author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True)
 	notes = models.TextField(blank=True)
 	release_date_date = models.DateField(null=True, blank=True)
 	release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
