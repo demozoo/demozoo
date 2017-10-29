@@ -514,6 +514,8 @@ class Screenshot(models.Model):
 		"""
 		prod_and_screenshot_ids = Screenshot.objects.filter(
 			production_id__in=production_ids
+		).exclude(
+			thumbnail_url=''
 		).values_list('production_id', 'id')
 
 		screenshots_by_prod_id = defaultdict(list)
