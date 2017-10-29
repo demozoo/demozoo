@@ -12,11 +12,11 @@
 		{% endif %}
 	</colgroup>
 	<tbody>
-		{% for production, nick, credits in credits %}
+		{% for production, nick, credits, screenshot in credits %}
 			<tr>
 				<td>
-					{% if show_screenshots and production.default_screenshot %}
-						{% microthumb production.default_screenshot %}
+					{% if screenshot %}
+						{% microthumb screenshot %}
 
 					{% else %}
 						<div class="media media--thumbnail">
@@ -37,11 +37,9 @@
 							{% endif %}
 						{% endif %}
 					</div>
-					{% if show_prod_types %}
-						<div class="meta">
-							{{ production.platforms_and_types_list }}
-						</div>
-					{% endif %}
+					<div class="meta">
+						{{ production.platforms_and_types_list }}
+					</div>
 				</td>
 				<td>{% byline production %}</td>
 				<td>{{ production.release_date.short_format }}</td>

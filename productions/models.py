@@ -4,6 +4,7 @@ from django.dispatch import receiver
 # from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
+from collections import defaultdict
 import datetime
 import random
 
@@ -495,6 +496,39 @@ class Screenshot(models.Model):
 
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
+
+	@staticmethod
+	def select_for_productions(productions):
+		"""
+		Given a production queryset, return a dict mapping production id to a random
+		screenshot for each production in the queryset that has screenshots
+		"""
+		production_ids = productions.values_list('id', flat=True)
+		return Screenshot.select_for_production_ids(production_ids)
+
+	@staticmethod
+	def select_for_production_ids(production_ids):
+		"""
+		Given a list of production ids, return a dict mapping production id to a random
+		screenshot for each production in the list that has screenshots
+		"""
+		prod_and_screenshot_ids = Screenshot.objects.filter(
+			production_id__in=production_ids
+		).values_list('production_id', 'id')
+
+		screenshots_by_prod_id = defaultdict(list)
+		for (prod_id, screenshot_id) in prod_and_screenshot_ids:
+			screenshots_by_prod_id[prod_id].append(screenshot_id)
+
+		chosen_screenshot_ids = [
+			random.choice(screenshot_id_set)
+			for screenshot_id_set in screenshots_by_prod_id.values()
+		]
+
+		return {
+			screenshot.production_id: screenshot
+			for screenshot in Screenshot.objects.filter(id__in=chosen_screenshot_ids)
+		}
 
 
 @receiver(post_delete, sender=Screenshot)
