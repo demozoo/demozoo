@@ -318,12 +318,12 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@property
 	def platforms_and_types_list(self):
 		if self.has_prefetched('platforms'):
-			platforms = ', '.join([platform.name for platform in sorted(self.platforms.all(), lambda p:p.name)])
+			platforms = ', '.join(sorted([platform.name for platform in self.platforms.all()]))
 		else:
 			platforms = ', '.join([platform.name for platform in self.platforms.order_by('name')])
 
 		if self.has_prefetched('types'):
-			prod_types = ', '.join([typ.name for typ in sorted(self.types.all(), lambda t:t.name)])
+			prod_types = ', '.join(sorted([typ.name for typ in self.types.all()]))
 		else:
 			prod_types = ', '.join([typ.name for typ in self.types.order_by('name')])
 		if platforms and prod_types:

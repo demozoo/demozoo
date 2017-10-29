@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load safe_markdown compress %}
+{% load safe_markdown compress demoscene_tags %}
 
 
 {% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
@@ -58,7 +58,7 @@
 						<span>Recent releases:</span>
 					</h3>
 
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
+					{% production_listing productions show_screenshots=1 %}
 
 					<footer class="panel__footer">
 						<a href="{% url 'productions' %}?platform={{ platform.id }}" class="button button--more">

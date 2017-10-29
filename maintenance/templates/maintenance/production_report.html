@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load compress %}
+{% load compress demoscene_tags %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -16,7 +16,7 @@
 	<h2>{{ title }}</h2>
 	<div id="main_column">
 		<div class="panel report" data-report-name="{{ exclusion_name }}">
-			{% include "shared/production_listing.html" %}
+			{% production_listing productions mark_excludable=mark_excludable %}
 		</div>
 	</div>
 {% endblock %}

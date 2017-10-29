@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from django.template.defaultfilters import date as date_format
 from django.utils.html import format_html
 
@@ -129,4 +130,15 @@ def site_stats():
 		'music_count': Production.objects.filter(supertype='music').count(),
 		'scener_count': Releaser.objects.filter(is_group=False).count(),
 		'group_count': Releaser.objects.filter(is_group=True).count(),
+	}
+
+
+@register.inclusion_tag('shared/production_listing.html')
+def production_listing(productions, show_screenshots=False, show_prod_types=False, mark_excludable=False):
+	return {
+		'productions': productions,
+		'show_screenshots': show_screenshots,
+		'show_prod_types': show_prod_types,
+		'mark_excludable': mark_excludable,
+		'site_is_writeable': settings.SITE_IS_WRITEABLE,
 	}

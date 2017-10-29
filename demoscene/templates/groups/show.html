@@ -196,9 +196,7 @@
 			<div class="panel">
 				<h3 class="member_productions_header">Member productions</h3>
 
-				{% with member_productions as productions %}
-					{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-				{% endwith %}
+				{% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
 			</div>
 		{% endif %}
 	</div>

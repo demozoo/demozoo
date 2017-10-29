@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress %}
+{% load compress demoscene_tags %}
 
 
 {% block html_title %}Graphics - Demozoo{% endblock %}
@@ -31,7 +31,7 @@
 
 	{% with production_page.object_list as productions %}
 		{% if productions %}
-			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
+			{% production_listing productions show_screenshots=1 show_prod_types=1 %}
 		{% else %}
 			<p style="text-align: center; font-style: italic;">No releases matching these criteria. Maybe you should make a demo about it...?</p>
 		{% endif %}

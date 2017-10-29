@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load compress %}
+{% load compress demoscene_tags %}
 
 {% block html_title %}Duplicate external links - Demozoo{% endblock %}
 
@@ -17,7 +17,7 @@
 		{% for column, productions in prod_dupes.items %}
 			<h2>Productions matching by {{ column }}:</h2>
 			<div class="panel report">
-				{% include "shared/production_listing.html" %}
+				{% production_listing productions %}
 			</div>
 		{% endfor %}
 		
