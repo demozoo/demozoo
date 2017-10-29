@@ -37,7 +37,7 @@ def index(request):
 			prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
 			queryset = queryset.filter(types__in=prod_types)
 
-	queryset = queryset.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	production_page = get_page(
 		queryset,

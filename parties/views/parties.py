@@ -47,9 +47,9 @@ def show(request, party_id):
 		for competition in party.competitions.order_by('name', 'id')
 	]
 
-	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	invitations = party.invitations.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-	releases = party.releases.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
