@@ -498,15 +498,6 @@ class Screenshot(models.Model):
 		return "%s - %s" % (self.production.title, self.original_url)
 
 	@staticmethod
-	def select_for_productions(productions):
-		"""
-		Given a production queryset, return a dict mapping production id to a random
-		screenshot for each production in the queryset that has screenshots
-		"""
-		production_ids = productions.values_list('id', flat=True)
-		return Screenshot.select_for_production_ids(production_ids)
-
-	@staticmethod
 	def select_for_production_ids(production_ids):
 		"""
 		Given a list of production ids, return a dict mapping production id to a random

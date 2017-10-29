@@ -9,12 +9,12 @@
 		<col class="col--date" />
 	</colgroup>
 	<tbody>
-		{% for prod in productions %}
+		{% for prod, screenshot in productions_and_screenshots %}
 			<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
 				{% if mark_excludable and site_is_writeable %}<td></td>{% endif %}
 				<td>
-					{% if show_screenshots and prod.default_screenshot %}
-						{% microthumb prod.default_screenshot %}
+					{% if show_screenshots and screenshot %}
+						{% microthumb screenshot %}
 
 					{% else %}
 						<div class="media media--thumbnail">
