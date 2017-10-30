@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from demoscene.shortcuts import simple_ajax_form
 from demoscene.models import Edit
-from productions.models import Production
+from productions.models import Screenshot
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
 from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset
 from read_only_mode import writeable_site_required
@@ -42,9 +42,22 @@ def show(request, party_id):
 	competitions_with_placings = [
 		(
 			competition,
-			competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+			competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
 		)
 		for competition in party.competitions.order_by('name', 'id')
+	]
+	entry_production_ids = [
+		placing.production_id
+		for _, placings in competitions_with_placings
+		for placing in placings
+	]
+	screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
+	competitions_with_placings_and_screenshots = [
+		(
+			competition,
+			[(placing, screenshot_map.get(placing.production_id)) for placing in placings]
+		)
+		for competition, placings in competitions_with_placings
 	]
 
 	invitations = party.invitations.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
@@ -61,7 +74,7 @@ def show(request, party_id):
 
 	return render(request, 'parties/show.html', {
 		'party': party,
-		'competitions_with_placings': competitions_with_placings,
+		'competitions_with_placings_and_screenshots': competitions_with_placings_and_screenshots,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
 		'releases': releases,

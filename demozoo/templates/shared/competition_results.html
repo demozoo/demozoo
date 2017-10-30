@@ -9,14 +9,14 @@
 		<col class="col--score" />
 	</colgroup>
 	<tbody>
-		{% for result in placings %}
+		{% for result, screenshot in placings %}
 			<tr class="result">
 				<td>
 					<span class="result__ranking">{{ result.ranking }}</span>
 				</td>
 				<td>
-					{% if result.production.default_screenshot %}
-						{% microthumb result.production.default_screenshot %}
+					{% if screenshot %}
+						{% microthumb screenshot %}
 
 					{% else %}
 						<div class="media media--thumbnail">
@@ -29,9 +29,7 @@
 					<div class="result__title">
 						<a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a>
 					</div>
-					{% if show_prod_types %}
-						<div class="meta">{{ result.production.platforms_and_types_list }}</div>
-					{% endif %}
+					<div class="meta">{{ result.production.platforms_and_types_list }}</div>
 				</td>
 				<td>
 					<div class="result__author">{% byline result.production %}</div>

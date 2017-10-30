@@ -12,7 +12,7 @@ from django.db.models import Max
 
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_confirmation
-from productions.models import ProductionType, Production
+from productions.models import ProductionType, Production, Screenshot
 from parties.models import Competition, CompetitionPlacing
 from parties.forms import CompetitionForm
 from platforms.models import Platform
@@ -24,7 +24,13 @@ from read_only_mode import writeable_site_required
 def show(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 
-	placings = competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+	placings = competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+	entry_production_ids = [placing.production_id for placing in placings]
+	screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
+	placings = [
+		(placing, screenshot_map.get(placing.production_id))
+		for placing in placings
+	]
 
 	return render(request, 'competitions/show.html', {
 		'competition': competition,

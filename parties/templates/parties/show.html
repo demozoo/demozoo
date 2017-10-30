@@ -213,7 +213,7 @@
 			</div>
 
 			<div class="results_body">
-				{% for compo, placings in competitions_with_placings %}
+				{% for compo, placings in competitions_with_placings_and_screenshots %}
 					<section class="competition editable_chunk" id="competition_{{ compo.id }}">
 
 						{% if site_is_writeable %}
@@ -228,7 +228,7 @@
 						<h4 class="competition__heading">{{ compo.name }}</h4>
 
 						{% if placings %}
-							{% include "shared/competition_results.html" with show_prod_types=1 %}
+							{% include "shared/competition_results.html" %}
 						{% endif %}
 					</section>
 				{% endfor %}
