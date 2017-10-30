@@ -75,7 +75,7 @@ def show(request, production_id, edit_mode=False):
 		'release_parties': production.release_parties.order_by('start_date_date'),
 		'packed_in_productions': [
 			pack_member.pack for pack_member in
-			production.packed_in.select_related('pack', 'pack__default_screenshot').order_by('pack__release_date_date')
+			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,

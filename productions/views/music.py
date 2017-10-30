@@ -73,11 +73,11 @@ def show(request, production_id, edit_mode=False):
 		'carousel': Carousel(production, request.user),
 		'featured_in_productions': [
 			appearance.production for appearance in
-			production.appearances_as_soundtrack.select_related('production', 'production__default_screenshot').order_by('production__release_date_date')
+			production.appearances_as_soundtrack.prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').order_by('production__release_date_date')
 		],
 		'packed_in_productions': [
 			pack_member.pack for pack_member in
-			production.packed_in.select_related('pack', 'pack__default_screenshot').order_by('pack__release_date_date')
+			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),

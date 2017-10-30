@@ -140,7 +140,7 @@ def show(request, production_id, edit_mode=False):
 		'pack_members': pack_members,
 		'packed_in_productions': [
 			pack_member.pack for pack_member in
-			production.packed_in.select_related('pack').order_by('pack__release_date_date')
+			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
 		'comment_form': comment_form,
 		'tags_form': tags_form,
