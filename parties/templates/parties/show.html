@@ -197,14 +197,14 @@
 		</div>
 	{% endif %}
 
-	{% if competitions_with_placings or user.is_authenticated %}
+	{% if competitions_with_placings_and_screenshots or user.is_authenticated %}
 		<div class="panel results_panel">
 			<div class="results_menu_column">
 				<div class="results_menu">
 					<h3>Results</h3>
-					{% if competitions_with_placings %}
+					{% if competitions_with_placings_and_screenshots %}
 						<ul>
-							{% for compo, placings in competitions_with_placings %}
+							{% for compo, placings in competitions_with_placings_and_screenshots %}
 								<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
 							{% endfor %}
 						</ul>
