@@ -97,6 +97,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	default_screenshot = models.ForeignKey('Screenshot', null=True, blank=True, related_name='+', editable=False,
 		on_delete=models.SET_NULL,  # don't want deletion to cascade to the production if screenshot is deleted
 		help_text="Screenshot to use alongside this production in listings - randomly assigned by script")
+	has_screenshot = models.BooleanField(default=False, editable=False, help_text="True if this prod has at least one (processed) screenshot")
 	include_notes_in_search = models.BooleanField(default=True,
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
@@ -484,9 +485,9 @@ class Screenshot(models.Model):
 	def save(self, *args, **kwargs):
 		super(Screenshot, self).save(*args, **kwargs)
 
-		# If the production does not already have a default_screenshot, and this screenshot has
-		# a thumbnail available, set this as the default
-		if self.thumbnail_url and (self.production.default_screenshot_id is None):
+		# Mark the corresponding production as having a screenshot
+		if self.thumbnail_url and not self.production.has_screenshot:
+			self.production.has_screenshot = True
 			self.production.default_screenshot = self
 			self.production.save()
 
@@ -525,14 +526,16 @@ class Screenshot(models.Model):
 
 
 @receiver(post_delete, sender=Screenshot)
-def reassign_default_screenshot(sender, **kwargs):
+def update_prod_screenshot_data_on_delete(sender, **kwargs):
 	production = kwargs['instance'].production
-	if production.default_screenshot is None:
-		# look for remaining screenshots we can use instead
-		screenshots = production.screenshots.exclude(original_url='')
-		if screenshots:
-			production.default_screenshot = random.choice(screenshots)
-			production.save(update_fields=['default_screenshot'])
+	# look for remaining screenshots
+	screenshots = production.screenshots.exclude(original_url='')
+
+	production.has_screenshot = bool(screenshots)
+	if screenshots and production.default_screenshot is None:
+		production.default_screenshot = random.choice(screenshots)
+
+	production.save(update_fields=['has_screenshot', 'default_screenshot'])
 
 
 class SoundtrackLink(models.Model):

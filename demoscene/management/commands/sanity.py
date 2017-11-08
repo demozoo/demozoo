@@ -157,4 +157,15 @@ class Command(NoArgsCommand):
 		print "Deleting unused tags"
 		Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 
+		print "Setting has_screenshots flag on productions"
+		cursor.execute('''
+			UPDATE productions_production SET has_screenshot = (
+				id IN (
+					SELECT DISTINCT production_id
+					FROM productions_screenshot
+					WHERE thumbnail_url <> ''
+				)
+			)
+		''')
+
 		print "done."
