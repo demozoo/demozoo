@@ -493,7 +493,7 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
 		if request.POST.get('yes'):
 			screenshot.delete()
 
-			# reload production model, as the deletion above may have nullified default_screenshot
+			# reload production model, as the deletion above may have nullified has_screenshot
 			# (which won't be reflected in the existing model instance)
 			production = Production.objects.get(pk=production.pk)
 

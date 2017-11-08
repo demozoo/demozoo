@@ -111,7 +111,7 @@ class ProductionsWithoutScreenshotsReport(FilteredProdutionsReport):
 
 		return (
 			Production.objects
-			.filter(default_screenshot__isnull=True)
+			.filter(has_screenshot=False)
 			.filter(links__is_download_link=True)
 			.exclude(supertype='music')
 			.exclude(id__in=excluded_ids)
