@@ -125,10 +125,10 @@
 			<div class="new_releases block">
 				<h3 class="block_heading">New releases</h3>
 				<ul>
-					{% for prod in latest_releases %}
+					{% for prod, screenshot in latest_releases_and_screenshots %}
 						<li>
 							<a href="{{ prod.get_absolute_url }}">
-								{% thumbnail prod.default_screenshot %}
+								{% thumbnail screenshot %}
 								<div class="title">{{ prod.title }}</div>
 								<div class="byline">by {{ prod.byline }}</div>
 								<div class="platforms_and_types">
