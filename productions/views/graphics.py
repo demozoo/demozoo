@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
+import random
 
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
@@ -64,6 +65,11 @@ def show(request, production_id, edit_mode=False):
 		comment_form = None
 		tags_form = None
 
+	try:
+		meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
+	except IndexError:
+		meta_screenshot = None
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'credits': production.credits_for_listing(),
@@ -81,6 +87,7 @@ def show(request, production_id, edit_mode=False):
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
 		'tags_form': tags_form,
+		'meta_screenshot': meta_screenshot,
 	})
 
 

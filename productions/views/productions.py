@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
+import random
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -120,6 +121,11 @@ def show(request, production_id, edit_mode=False):
 	else:
 		pack_members = None
 
+	try:
+		meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
+	except IndexError:
+		meta_screenshot = None
+
 	return render(request, 'productions/show.html', {
 		'production': production,
 		'editing_credits': (request.GET.get('editing') == 'credits'),
@@ -144,6 +150,7 @@ def show(request, production_id, edit_mode=False):
 		],
 		'comment_form': comment_form,
 		'tags_form': tags_form,
+		'meta_screenshot': meta_screenshot,
 	})
 
 

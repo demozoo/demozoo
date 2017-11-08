@@ -30,7 +30,7 @@
 {% block extra_head %}
 	{{ carousel.media }}
 
-	{% if production.default_screenshot %}
+	{% if meta_screenshot %}
 		<meta name="twitter:card" content="summary_large_image">
 		<meta name="twitter:site" content="@demozoo">
 		{% with production.author_twitter_handle as twitter_handle %}
@@ -39,7 +39,7 @@
 		<meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
 		<meta property="og:title" content="{{ production.title }}">
 		<meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
-		<meta property="og:image" content="{{ production.default_screenshot.standard_url }}">
+		<meta property="og:image" content="{{ meta_screenshot.standard_url }}">
 	{% endif %}
 {% endblock %}
 
