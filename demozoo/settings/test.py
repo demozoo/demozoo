@@ -43,3 +43,8 @@ class MockHTTPHandler(urllib2.HTTPHandler):
 
 mock_opener = urllib2.build_opener(MockHTTPHandler)
 urllib2.install_opener(mock_opener)
+
+try:
+	from .test_local import *
+except ImportError:
+	pass

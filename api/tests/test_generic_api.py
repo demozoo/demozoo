@@ -25,7 +25,7 @@ class TestPlatforms(TestCase):
 		self.assertEqual(response.status_code, 200)
 
 		response_data = json.loads(response.content)
-		self.assertIn("ZX Spectrum", [result['name'] for result in response_data])
+		self.assertIn("ZX Spectrum", [result['name'] for result in response_data['results']])
 
 
 class TestProdTypes(TestCase):
@@ -36,7 +36,7 @@ class TestProdTypes(TestCase):
 		self.assertEqual(response.status_code, 200)
 
 		response_data = json.loads(response.content)
-		self.assertIn("Demo", [result['name'] for result in response_data])
+		self.assertIn("Demo", [result['name'] for result in response_data['results']])
 
 
 class TestProductions(TestCase):
@@ -47,7 +47,7 @@ class TestProductions(TestCase):
 		self.assertEqual(response.status_code, 200)
 
 		response_data = json.loads(response.content)
-		pondlife = [result for result in response_data if result['title'] == "Pondlife"][0]
+		pondlife = [result for result in response_data['results'] if result['title'] == "Pondlife"][0]
 		self.assertIn("Hooy-Program", [nick['name'] for nick in pondlife['author_nicks']])
 
 	@override_settings(BASE_URL='https://demozoo.org')
@@ -69,7 +69,7 @@ class TestReleasers(TestCase):
 		self.assertEqual(response.status_code, 200)
 
 		response_data = json.loads(response.content)
-		self.assertIn("Gasman", [result['name'] for result in response_data])
+		self.assertIn("Gasman", [result['name'] for result in response_data['results']])
 
 	def test_get_releaser(self):
 		response = self.client.get('/api/v1/releasers/2/')
