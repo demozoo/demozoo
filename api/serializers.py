@@ -3,6 +3,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
+from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, Credit, ProductionType, Screenshot
 
@@ -188,3 +189,37 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 		fields = [
 			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types',
 			'credits', 'download_links', 'external_links', 'screenshots']
+
+
+class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
+	start_date = serializers.SerializerMethodField(read_only=True)
+	end_date = serializers.SerializerMethodField(read_only=True)
+
+	def get_start_date(self, party):
+		start_date = party.start_date
+		return start_date and start_date.numeric_format()
+
+	def get_end_date(self, party):
+		end_date = party.end_date
+		return end_date and end_date.numeric_format()
+
+	class Meta:
+		model = Party
+		fields = ['url', 'id', 'name', 'tagline', 'start_date', 'end_date', 'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website']
+
+
+class PartySerializer(serializers.HyperlinkedModelSerializer):
+	start_date = serializers.SerializerMethodField(read_only=True)
+	end_date = serializers.SerializerMethodField(read_only=True)
+
+	def get_start_date(self, party):
+		start_date = party.start_date
+		return start_date and start_date.numeric_format()
+
+	def get_end_date(self, party):
+		end_date = party.end_date
+		return end_date and end_date.numeric_format()
+
+	class Meta:
+		model = Party
+		fields = ['url', 'id', 'name', 'tagline', 'start_date', 'end_date', 'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website']

@@ -8,6 +8,7 @@ router.register(r'productions', generic.ProductionViewSet)
 router.register(r'production_types', generic.ProductionTypeViewSet)
 router.register(r'releasers', generic.ReleaserViewSet)
 router.register(r'platforms', generic.PlatformViewSet)
+router.register(r'parties', generic.PartyViewSet)
 
 
 urlpatterns = [
