@@ -192,16 +192,25 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
+
+	def get_demozoo_url(self, party_series):
+		return settings.BASE_URL + party_series.get_absolute_url()
+
 	class Meta:
 		model = PartySeries
 		fields = [
-			'url', 'id', 'name', 'website'
+			'url', 'demozoo_url', 'id', 'name', 'website'
 		]
 
 
 class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	start_date = serializers.SerializerMethodField(read_only=True)
 	end_date = serializers.SerializerMethodField(read_only=True)
+
+	def get_demozoo_url(self, party):
+		return settings.BASE_URL + party.get_absolute_url()
 
 	def get_start_date(self, party):
 		start_date = party.start_date
@@ -214,18 +223,22 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Party
 		fields = [
-			'url', 'id', 'name', 'tagline', 'start_date', 'end_date',
+			'url', 'demozoo_url', 'id', 'name', 'tagline', 'start_date', 'end_date',
 			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
 		]
 
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	party_series = PartySeriesListingSerializer(read_only=True)
 	start_date = serializers.SerializerMethodField(read_only=True)
 	end_date = serializers.SerializerMethodField(read_only=True)
 	invitations = ProductionListingSerializer(many=True, read_only=True)
 	releases = ProductionListingSerializer(many=True, read_only=True)
 
+	def get_demozoo_url(self, party):
+		return settings.BASE_URL + party.get_absolute_url()
+
 	def get_start_date(self, party):
 		start_date = party.start_date
 		return start_date and start_date.numeric_format()
@@ -237,17 +250,21 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Party
 		fields = [
-			'url', 'id', 'name', 'tagline', 'party_series', 'start_date', 'end_date',
+			'url', 'demozoo_url', 'id', 'name', 'tagline', 'party_series', 'start_date', 'end_date',
 			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website',
 			'invitations', 'releases',
 		]
 
 
 class PartySeriesSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	parties = PartyListingSerializer(many=True, read_only=True)
+
+	def get_demozoo_url(self, party_series):
+		return settings.BASE_URL + party_series.get_absolute_url()
 
 	class Meta:
 		model = PartySeries
 		fields = [
-			'url', 'id', 'name', 'website', 'parties'
+			'url', 'demozoo_url', 'id', 'name', 'website', 'parties'
 		]
