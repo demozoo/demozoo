@@ -191,6 +191,14 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 			'credits', 'download_links', 'external_links', 'screenshots']
 
 
+class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = PartySeries
+		fields = [
+			'url', 'id', 'name', 'website'
+		]
+
+
 class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 	start_date = serializers.SerializerMethodField(read_only=True)
 	end_date = serializers.SerializerMethodField(read_only=True)
@@ -212,8 +220,11 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
+	party_series = PartySeriesListingSerializer(read_only=True)
 	start_date = serializers.SerializerMethodField(read_only=True)
 	end_date = serializers.SerializerMethodField(read_only=True)
+	invitations = ProductionListingSerializer(many=True, read_only=True)
+	releases = ProductionListingSerializer(many=True, read_only=True)
 
 	def get_start_date(self, party):
 		start_date = party.start_date
@@ -226,16 +237,9 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Party
 		fields = [
-			'url', 'id', 'name', 'tagline', 'start_date', 'end_date',
-			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
-		]
-
-
-class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = PartySeries
-		fields = [
-			'url', 'id', 'name', 'website'
+			'url', 'id', 'name', 'tagline', 'party_series', 'start_date', 'end_date',
+			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website',
+			'invitations', 'releases',
 		]
 
 
