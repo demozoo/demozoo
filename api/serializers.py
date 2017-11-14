@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
-from parties.models import Party
+from parties.models import Party, PartySeries
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, Credit, ProductionType, Screenshot
 
@@ -205,7 +205,10 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Party
-		fields = ['url', 'id', 'name', 'tagline', 'start_date', 'end_date', 'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website']
+		fields = [
+			'url', 'id', 'name', 'tagline', 'start_date', 'end_date',
+			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
+		]
 
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
@@ -222,4 +225,25 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Party
-		fields = ['url', 'id', 'name', 'tagline', 'start_date', 'end_date', 'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website']
+		fields = [
+			'url', 'id', 'name', 'tagline', 'start_date', 'end_date',
+			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
+		]
+
+
+class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = PartySeries
+		fields = [
+			'url', 'id', 'name', 'website'
+		]
+
+
+class PartySeriesSerializer(serializers.HyperlinkedModelSerializer):
+	parties = PartyListingSerializer(many=True, read_only=True)
+
+	class Meta:
+		model = PartySeries
+		fields = [
+			'url', 'id', 'name', 'website', 'parties'
+		]
