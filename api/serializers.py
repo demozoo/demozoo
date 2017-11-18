@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
-from parties.models import Party, PartySeries
+from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, Credit, ProductionType, Screenshot
 
@@ -228,6 +228,37 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 		]
 
 
+class CompetitionPlacingSerializer(serializers.ModelSerializer):
+	production = ProductionListingSerializer(read_only=True)
+
+	class Meta:
+		model = CompetitionPlacing
+		fields = [
+			'position', 'ranking', 'score', 'production'
+		]
+
+
+class CompetitionSerializer(serializers.ModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
+	shown_date = serializers.SerializerMethodField(read_only=True)
+	platform = PlatformSerializer(read_only=True)
+	production_type = ProductionTypeSerializer(read_only=True)
+	results = CompetitionPlacingSerializer(many=True, read_only=True)
+
+	def get_demozoo_url(self, competition):
+		return settings.BASE_URL + competition.get_absolute_url()
+
+	def get_shown_date(self, competition):
+		shown_date = competition.shown_date
+		return shown_date and shown_date.numeric_format()
+
+	class Meta:
+		model = Competition
+		fields = [
+			'id', 'demozoo_url', 'name', 'shown_date', 'platform', 'production_type', 'results'
+		]
+
+
 class PartySerializer(serializers.HyperlinkedModelSerializer):
 	demozoo_url = serializers.SerializerMethodField(read_only=True)
 	party_series = PartySeriesListingSerializer(read_only=True)
@@ -235,6 +266,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 	end_date = serializers.SerializerMethodField(read_only=True)
 	invitations = ProductionListingSerializer(many=True, read_only=True)
 	releases = ProductionListingSerializer(many=True, read_only=True)
+	competitions = CompetitionSerializer(many=True, read_only=True)
 
 	def get_demozoo_url(self, party):
 		return settings.BASE_URL + party.get_absolute_url()
@@ -252,7 +284,7 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
 		fields = [
 			'url', 'demozoo_url', 'id', 'name', 'tagline', 'party_series', 'start_date', 'end_date',
 			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website',
-			'invitations', 'releases',
+			'invitations', 'releases', 'competitions',
 		]
 
 
