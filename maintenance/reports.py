@@ -198,6 +198,7 @@ class TrackedMusicWithoutPlayableLinksReport(RandomisedProductionsReport):
 		return (
 			Production.objects.filter(supertype='music', types__internal_name='tracked-music')
 			.filter(platforms__isnull=True)
+			.filter(links__is_download_link=True)
 			.exclude(id__in=prod_ids_with_playable_links)
 			.exclude(id__in=excluded_ids)
 			.values_list('id', flat=True)
