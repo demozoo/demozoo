@@ -135,7 +135,9 @@
 							<a href="{{ prod.get_absolute_url }}">
 								{% thumbnail prod.default_screenshot %}
 								<div class="title">{{ prod.title }}</div>
-								<div class="byline">by {{ prod.byline }}</div>
+								{% if prod.byline_string %}
+									<div class="byline">by {{ prod.byline }}</div>
+								{% endif %}
 								<div class="platforms_and_types">
 									{{ prod.platforms.all|join:" / " }}
 									{% if prod.platforms.count and prod.types.count %} - {% endif %}
@@ -155,7 +157,9 @@
 						<li>
 							<a href="{{ prod.get_absolute_url }}">
 								<div class="title">{{ prod.title }}</div>
-								<div class="byline">by {{ prod.byline }}</div>
+								{% if prod.byline_string %}
+									<div class="byline">by {{ prod.byline }}</div>
+								{% endif %}
 								<div class="platforms_and_types">
 									{% if prod.release_date %}
 										{{ prod.release_date.date.year }}
