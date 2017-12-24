@@ -1,15 +1,17 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="result">
-	{% if result.instance.default_screenshot %}
-		{% microthumb result.instance.default_screenshot %}
+	{% with result.instance.random_screenshot as screenshot %}
+		{% if screenshot %}
+			{% microthumb screenshot %}
 
-	{% else %}
-		<div class="media media--thumbnail">
-			{% icon result.instance.supertype %}
-		</div>
+		{% else %}
+			<div class="media media--thumbnail">
+				{% icon result.instance.supertype %}
+			</div>
 
-	{% endif %}
+		{% endif %}
+	{% endwith %}
 	<div class="result__content">
 		<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
 		{% if result.instance.author_nicks.all %}

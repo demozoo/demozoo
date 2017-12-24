@@ -293,13 +293,14 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
 	def search_result_json(self):
-		if self.default_screenshot:
-			width, height = self.default_screenshot.thumb_dimensions_to_fit(48, 36)
+		screenshot = self.random_screenshot
+		if screenshot:
+			width, height = screenshot.thumb_dimensions_to_fit(48, 36)
 			thumbnail = {
-				'url': self.default_screenshot.thumbnail_url,
+				'url': screenshot.thumbnail_url,
 				'width': width, 'height': height,
-				'natural_width': self.default_screenshot.thumbnail_width,
-				'natural_height': self.default_screenshot.thumbnail_height,
+				'natural_width': screenshot.thumbnail_width,
+				'natural_height': screenshot.thumbnail_height,
 			}
 		else:
 			thumbnail = None
@@ -352,6 +353,11 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@property
 	def download_links(self):
 		return self.links.filter(is_download_link=True)
+
+	@property
+	def random_screenshot(self):
+		if self.has_screenshot:
+			return self.screenshots.order_by('?').first()
 
 	class Meta:
 		ordering = ['sortable_title']
