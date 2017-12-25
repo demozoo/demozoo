@@ -202,11 +202,6 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(days=8),
 		"args": ()
 	},
-	#"set-default-screenshots": {
-	#	"task": "demoscene.tasks.set_default_screenshots",
-	#	"schedule": timedelta(hours=1),
-	#	"args": ()
-	#},
 	"fetch-remote-screenshots": {
 		"task": "screenshots.tasks.fetch_remote_screenshots",
 		"schedule": timedelta(days=1),

@@ -494,8 +494,7 @@ class Screenshot(models.Model):
 		# Mark the corresponding production as having a screenshot
 		if self.thumbnail_url and not self.production.has_screenshot:
 			self.production.has_screenshot = True
-			self.production.default_screenshot = self
-			self.production.save()
+			self.production.save(update_fields=['has_screenshot'])
 
 		# if any production links for this production have is_unresolved_for_screenshotting=True,
 		# reset that flag since we no longer need a screenshot
@@ -538,10 +537,7 @@ def update_prod_screenshot_data_on_delete(sender, **kwargs):
 	screenshots = production.screenshots.exclude(original_url='')
 
 	production.has_screenshot = bool(screenshots)
-	if screenshots and production.default_screenshot is None:
-		production.default_screenshot = random.choice(screenshots)
-
-	production.save(update_fields=['has_screenshot', 'default_screenshot'])
+	production.save(update_fields=['has_screenshot'])
 
 
 class SoundtrackLink(models.Model):
