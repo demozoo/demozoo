@@ -9,7 +9,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.db.models import Count
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_POST
@@ -895,7 +894,7 @@ def render_credits_update(request, production):
 			'production': production,
 			'credits': production.credits_for_listing(),
 			'editing_credits': True,
-		}, RequestContext(request))
+		}, request=request)
 		return render_modal_workflow(
 			request, None, 'productions/edit_credit_done.js', {
 				'credits_html': credits_html,
