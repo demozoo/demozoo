@@ -1,47 +1,64 @@
+from itertools import chain
+
 from django import forms
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from demoscene.models import Nick
 from demoscene.utils.nick_search import NickSelection
 
 
-# A variant of RadioFieldRenderer which accepts structs of:
-# className, nameWithDifferentiator, nameWithAffiliations, countryCode, differentiator, alias, id
-# and renders them as <li class="className" data-name="nameWithDifferentiator"> with a label containing
-# a country flag, differentiator and alias as appropriate (in addition to nameWithAffiliations)
-class NickChoicesRenderer(forms.widgets.RadioFieldRenderer):
-	def render(self):
-		from django.utils.encoding import force_unicode
-		list_items = []
-		for i, choice in enumerate(self.choices):
+class NickChoicesWidget(forms.RadioSelect):
+	template_name = 'widgets/nick_choices.html'
 
-			if choice.get('countryCode'):
-				flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
-					conditional_escape(choice['countryCode']),
-					conditional_escape(choice['countryCode']),
-					conditional_escape(choice['countryCode'].upper())
-				)
-			else:
-				flag = ''
+	def optgroups(self, name, value, attrs=None):
+		groups = []
+		has_selected = False
 
-			if choice.get('differentiator'):
-				differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(choice['differentiator'])
-			else:
-				differentiator = ''
+		for index, choice in enumerate(chain(self.choices)):
+			# each choice is a struct of:
+			# className, nameWithDifferentiator, nameWithAffiliations, countryCode, differentiator, alias, id
+			option_value = choice['id']
+			option_label = self.create_label(choice)
 
-			if choice.get('alias'):
-				alias = ' <em class="alias">(%s)</em>' % conditional_escape(choice['alias'])
-			else:
-				alias = ''
-
-			label = mark_safe(flag + choice['nameWithAffiliations'] + differentiator + alias)
-			widget = forms.widgets.RadioChoiceInput(
-				self.name, self.value, self.attrs.copy(), (choice['id'], label), i)
-
-			list_items.append(
-				u'<li class="%s" data-name="%s">%s</li>' % (choice['className'], conditional_escape(choice['nameWithDifferentiator']), force_unicode(widget))
+			selected = (
+				force_text(option_value) in value and
+				(has_selected is False or self.allow_multiple_selected)
 			)
-		return mark_safe(u'<ul>\n%s\n</ul>' % u'\n'.join(list_items))
+			if selected is True and has_selected is False:
+				has_selected = True
+			option = self.create_option(
+				name, option_value, option_label, selected, index,
+				subindex=None, attrs=attrs,
+			)
+			option['classname'] = choice['className']
+			option['name_with_differentiator'] = choice['nameWithDifferentiator']
+
+			groups.append((None, [option], index))
+
+		return groups
+
+	def create_label(self, choice):
+		if choice.get('countryCode'):
+			flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
+				conditional_escape(choice['countryCode']),
+				conditional_escape(choice['countryCode']),
+				conditional_escape(choice['countryCode'].upper())
+			)
+		else:
+			flag = ''
+
+		if choice.get('differentiator'):
+			differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(choice['differentiator'])
+		else:
+			differentiator = ''
+
+		if choice.get('alias'):
+			alias = ' <em class="alias">(%s)</em>' % conditional_escape(choice['alias'])
+		else:
+			alias = ''
+
+		return mark_safe(flag + choice['nameWithAffiliations'] + differentiator + alias)
 
 
 class MatchedNickWidget(forms.Widget):
@@ -52,8 +69,7 @@ class MatchedNickWidget(forms.Widget):
 		self.choices = self.nick_search.suggestions
 		self.selection = self.nick_search.selection
 
-		self.select_widget = forms.RadioSelect(renderer=NickChoicesRenderer,
-			choices=self.choices, attrs=attrs)
+		self.select_widget = NickChoicesWidget(choices=self.choices, attrs=attrs)
 		self.name_widget = forms.HiddenInput()
 
 		super(MatchedNickWidget, self).__init__(attrs=attrs)
