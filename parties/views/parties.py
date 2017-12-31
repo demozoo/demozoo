@@ -66,7 +66,7 @@ def show(request, party_id):
 
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		comment = Comment(commentable=party, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
 	else:

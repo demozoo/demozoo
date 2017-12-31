@@ -57,7 +57,7 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'graphics':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
