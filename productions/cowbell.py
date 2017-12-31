@@ -90,25 +90,25 @@ def identify_link_as_track(link):
 			match = OPENMPT_MUSIC.match(link.parameter)
 			if match:
 				filetype = 'openmpt'
-				url = 'https://ftp.modland.com%s' % link.parameter
+				url = 'https://modland.ziphoid.com%s' % link.parameter
 				return (filetype, url)
 
 			match = NONSTANDARD_MODLAND_EXTENSIONS.match(link.parameter)
 			if match:
 				filetype = 'openmpt'
-				url = 'https://ftp.modland.com%s' % link.parameter
+				url = 'https://modland.ziphoid.com%s' % link.parameter
 				return (filetype, url)
 
 			match = ZX_MUSIC.match(link.parameter)
 			if match:
 				filetype = match.group(1).lower()
-				url = 'https://ftp.modland.com%s' % link.parameter
+				url = 'https://modland.ziphoid.com%s' % link.parameter
 				return (filetype, url)
 
 			match = PSID_MUSIC.match(link.parameter)
 			if match:
 				filetype = 'sid'
-				url = 'https://ftp.modland.com%s' % link.parameter
+				url = 'https://modland.ziphoid.com%s' % link.parameter
 				return (filetype, url)
 
 		elif link.link_class == 'BaseUrl':
