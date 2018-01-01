@@ -5,7 +5,7 @@ Markdown==2.4
 Pillow==2.2.2
 boto==2.8.0
 celery==3.1.23
-django-celery==3.1.17
+django-celery>=3.2,<3.3
 django-celery-with-redis==3.0
 django-compressor>=2.1,<2.2
 django-cors-headers==1.1.0
