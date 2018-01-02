@@ -44,7 +44,7 @@ def compofolder_party(request, party_id):
 		query = query | Q(path__startswith=path)
 
 	dirs = Directory.objects.filter(query).filter(is_deleted=False).order_by('path').prefetch_related('competitions')
-	unmatched_competitions = party.competitions.annotate(num_dirs=Count('sceneorg_directories')).filter(num_dirs=0)
+	unmatched_competitions = party.competitions.exclude(sceneorg_directories__in=dirs)
 	unmatched_dirs = [d for d in dirs if d.competitions.count() == 0]
 	matched_dirs = [d for d in dirs if d.competitions.count() > 0]
 
