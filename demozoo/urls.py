@@ -21,7 +21,7 @@ urlpatterns = [
 	url(r'^account/signup/$', demoscene_views.accounts.signup, {}, 'user_signup'),
 	url(r'^account/change_password/$', demoscene_views.accounts.change_password, {}, 'account_change_password'),
 	# forgotten password
-	url(r'^account/forgotten_password/$', auth_views.password_reset, {'is_admin_site': False}, 'password_reset'),
+	url(r'^account/forgotten_password/$', auth_views.password_reset, {}, 'password_reset'),
 	url(r'^account/forgotten_password/success/$', auth_views.password_reset_done, {}, 'password_reset_done'),
 	url(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', auth_views.password_reset_confirm, {}, 'password_reset_confirm'),
 
