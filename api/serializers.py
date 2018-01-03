@@ -8,13 +8,7 @@ from platforms.models import Platform
 from productions.models import Production, ProductionLink, Credit, ProductionType, Screenshot
 
 
-class NickSerializer(serializers.ModelSerializer):
-	variants = serializers.StringRelatedField(many=True)
-
-	class Meta:
-		model = Nick
-		fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
-
+# Summary / listing serialisers
 
 class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
@@ -26,6 +20,105 @@ class ReleaserSummarySerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Releaser
 		fields = ['url', 'id', 'name']
+
+
+class ProductionTypeSummarySerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = ProductionType
+		fields = ['url', 'id', 'name']
+
+
+class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = ProductionType
+		fields = ['url', 'id', 'name', 'supertype']
+
+
+class PlatformSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Platform
+		fields = ['url', 'id', 'name']
+
+
+class AuthorSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Releaser
+		fields = ['url', 'id', 'name', 'is_group']
+
+
+class AuthorNickSerializer(serializers.ModelSerializer):
+	releaser = AuthorSerializer(read_only=True)
+
+	class Meta:
+		model = Nick
+		fields = ['name', 'abbreviation', 'releaser']
+
+
+class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
+	author_nicks = AuthorNickSerializer(many=True, read_only=True)
+	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
+	release_date = serializers.SerializerMethodField(read_only=True)
+	platforms = PlatformSerializer(many=True, read_only=True)
+	types = ProductionTypeSummarySerializer(many=True, read_only=True)
+
+	def get_demozoo_url(self, production):
+		return settings.BASE_URL + production.get_absolute_url()
+
+	def get_release_date(self, production):
+		release_date = production.release_date
+		return release_date and release_date.numeric_format()
+
+	class Meta:
+		model = Production
+		fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types']
+
+
+class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
+
+	def get_demozoo_url(self, party_series):
+		return settings.BASE_URL + party_series.get_absolute_url()
+
+	class Meta:
+		model = PartySeries
+		fields = [
+			'url', 'demozoo_url', 'id', 'name', 'website'
+		]
+
+
+class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
+	demozoo_url = serializers.SerializerMethodField(read_only=True)
+	start_date = serializers.SerializerMethodField(read_only=True)
+	end_date = serializers.SerializerMethodField(read_only=True)
+
+	def get_demozoo_url(self, party):
+		return settings.BASE_URL + party.get_absolute_url()
+
+	def get_start_date(self, party):
+		start_date = party.start_date
+		return start_date and start_date.numeric_format()
+
+	def get_end_date(self, party):
+		end_date = party.end_date
+		return end_date and end_date.numeric_format()
+
+	class Meta:
+		model = Party
+		fields = [
+			'url', 'demozoo_url', 'id', 'name', 'tagline', 'start_date', 'end_date',
+			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
+		]
+
+
+# Detail serialisers
+
+class NickSerializer(serializers.ModelSerializer):
+	variants = serializers.StringRelatedField(many=True)
+
+	class Meta:
+		model = Nick
+		fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
 
 
 class GroupMembershipSerializer(serializers.ModelSerializer):
@@ -89,38 +182,6 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ['url', 'demozoo_url', 'id', 'name', 'is_group', 'nicks', 'member_of', 'members', 'subgroups', 'external_links']
 
 
-class PlatformSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Platform
-		fields = ['url', 'id', 'name']
-
-
-class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = ProductionType
-		fields = ['url', 'id', 'name', 'supertype']
-
-
-class ProductionTypeSummarySerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = ProductionType
-		fields = ['url', 'id', 'name']
-
-
-class AuthorSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Releaser
-		fields = ['url', 'id', 'name', 'is_group']
-
-
-class AuthorNickSerializer(serializers.ModelSerializer):
-	releaser = AuthorSerializer(read_only=True)
-
-	class Meta:
-		model = Nick
-		fields = ['name', 'abbreviation', 'releaser']
-
-
 class ProductionExternalLinkSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ProductionLink
@@ -143,26 +204,6 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 			'standard_url', 'standard_width', 'standard_height',
 			'thumbnail_url', 'thumbnail_width', 'thumbnail_height',
 		]
-
-
-class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
-	demozoo_url = serializers.SerializerMethodField(read_only=True)
-	author_nicks = AuthorNickSerializer(many=True, read_only=True)
-	author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
-	release_date = serializers.SerializerMethodField(read_only=True)
-	platforms = PlatformSerializer(many=True, read_only=True)
-	types = ProductionTypeSummarySerializer(many=True, read_only=True)
-
-	def get_demozoo_url(self, production):
-		return settings.BASE_URL + production.get_absolute_url()
-
-	def get_release_date(self, production):
-		release_date = production.release_date
-		return release_date and release_date.numeric_format()
-
-	class Meta:
-		model = Production
-		fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types']
 
 
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
@@ -189,43 +230,6 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 		fields = [
 			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types',
 			'credits', 'download_links', 'external_links', 'screenshots']
-
-
-class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
-	demozoo_url = serializers.SerializerMethodField(read_only=True)
-
-	def get_demozoo_url(self, party_series):
-		return settings.BASE_URL + party_series.get_absolute_url()
-
-	class Meta:
-		model = PartySeries
-		fields = [
-			'url', 'demozoo_url', 'id', 'name', 'website'
-		]
-
-
-class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
-	demozoo_url = serializers.SerializerMethodField(read_only=True)
-	start_date = serializers.SerializerMethodField(read_only=True)
-	end_date = serializers.SerializerMethodField(read_only=True)
-
-	def get_demozoo_url(self, party):
-		return settings.BASE_URL + party.get_absolute_url()
-
-	def get_start_date(self, party):
-		start_date = party.start_date
-		return start_date and start_date.numeric_format()
-
-	def get_end_date(self, party):
-		end_date = party.end_date
-		return end_date and end_date.numeric_format()
-
-	class Meta:
-		model = Party
-		fields = [
-			'url', 'demozoo_url', 'id', 'name', 'tagline', 'start_date', 'end_date',
-			'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
-		]
 
 
 class CompetitionPlacingSerializer(serializers.ModelSerializer):
