@@ -111,6 +111,22 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
 		]
 
 
+class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = Party
+		fields = ['url', 'id', 'name']
+
+
+class CompetitionPlacingCompetitionSerializer(serializers.ModelSerializer):
+	party = PartySummarySerializer(read_only=True)
+
+	class Meta:
+		model = Competition
+		fields = [
+			'id', 'name', 'party'
+		]
+
+
 # Detail serialisers
 
 class NickSerializer(serializers.ModelSerializer):
@@ -196,6 +212,16 @@ class ProductionCreditSerializer(serializers.ModelSerializer):
 		fields = ['nick', 'category', 'role']
 
 
+class ProductionCompetitionPlacingSerializer(serializers.ModelSerializer):
+	competition = CompetitionPlacingCompetitionSerializer(read_only=True)
+
+	class Meta:
+		model = CompetitionPlacing
+		fields = [
+			'position', 'ranking', 'score', 'competition'
+		]
+
+
 class ScreenshotSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Screenshot
@@ -216,6 +242,9 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 	credits = ProductionCreditSerializer(many=True, read_only=True)
 	download_links = ProductionExternalLinkSerializer(many=True, read_only=True)
 	external_links = ProductionExternalLinkSerializer(many=True, read_only=True)
+	release_parties = PartySummarySerializer(many=True, read_only=True)
+	competition_placings = ProductionCompetitionPlacingSerializer(many=True, read_only=True)
+	invitation_parties = PartySummarySerializer(many=True, read_only=True)
 	screenshots = ScreenshotSerializer(many=True, read_only=True)
 
 	def get_demozoo_url(self, production):
@@ -229,7 +258,7 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 		model = Production
 		fields = [
 			'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types',
-			'credits', 'download_links', 'external_links', 'screenshots']
+			'credits', 'download_links', 'external_links', 'release_parties', 'competition_placings', 'invitation_parties', 'screenshots']
 
 
 class CompetitionPlacingSerializer(serializers.ModelSerializer):
