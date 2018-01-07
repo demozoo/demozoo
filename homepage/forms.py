@@ -13,6 +13,8 @@ class NewsStoryForm(forms.ModelForm):
 
 
 class NewsImageForm(forms.ModelForm):
+	image = forms.ImageField(required=False)
+
 	class Meta:
 		model = NewsImage
 		fields = ['image']
