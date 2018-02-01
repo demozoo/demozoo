@@ -1,3 +1,5 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -104,6 +106,8 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	updated_at = models.DateTimeField()
 
 	tags = TaggableManager(blank=True)
+
+	search_document = SearchVectorField(null=True)
 
 	search_result_template = 'search/results/production.html'
 
@@ -356,8 +360,17 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		if self.has_screenshot:
 			return self.screenshots.order_by('?').first()
 
+	def index_components(self):
+		return {
+			'A': self.asciified_title,
+			'B': self.tags_string + ' ' + self.indexed_notes
+		}
+
 	class Meta:
 		ordering = ['sortable_title']
+		indexes = [
+			GinIndex(fields=['search_document']),
+		]
 		index_together = [
 			['release_date_date', 'created_at']
 		]
