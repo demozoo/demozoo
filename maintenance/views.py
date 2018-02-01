@@ -1306,7 +1306,7 @@ def fix_results_file_encoding(request, results_file_id):
 		if encoding_is_valid:
 			results_file.encoding = encoding
 			results_file.save()
-		return redirect('maintenance_results_with_no_encoding')
+		return redirect('maintenance:results_with_no_encoding')
 	return render(request, 'maintenance/fix_results_file_encoding.html', {
 		'results_file': results_file,
 		'party': results_file.party,
