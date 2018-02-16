@@ -363,7 +363,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	def index_components(self):
 		return {
 			'A': self.asciified_title,
-			'B': self.tags_string + ' ' + self.indexed_notes
+			'C': self.tags_string + ' ' + self.indexed_notes
 		}
 
 	class Meta:

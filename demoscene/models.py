@@ -1,14 +1,14 @@
 from collections import OrderedDict as SortedDict
+import datetime
+import re
 
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
-# from django.utils.datastructures import SortedDict
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-
-import re
-import datetime
 
 from unidecode import unidecode
 
@@ -47,6 +47,8 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
+
+	search_document = SearchVectorField(null=True)
 
 	def save(self, *args, **kwargs):
 		# auto-populate updated_at; this will only happen on creation
@@ -243,8 +245,18 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 			'value': self.name_with_affiliations() + differentiator,
 		}
 
+	def index_components(self):
+		return {
+			'A': self.asciified_all_names_string,
+			'B': self.asciified_public_real_name,
+			'C': self.asciified_location + ' ' + self.plaintext_notes,
+		}
+
 	class Meta:
 		ordering = ['name']
+		indexes = [
+			GinIndex(fields=['search_document']),
+		]
 		permissions = (
 			("view_releaser_real_names", "Can view non-public real names"),
 		)

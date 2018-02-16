@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from demoscene.models import Releaser
 from productions.models import Production
 
 
@@ -8,10 +9,14 @@ class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
 		BATCH_SIZE = 10000
 
-		for klass in (Production, ):
+		for klass in (Releaser, Production):
 			i = 0
 			while True:
-				batch = klass.objects.prefetch_related('tags').order_by('pk')[i:(i + BATCH_SIZE)]
+				qs = klass.objects.order_by('pk')
+				if hasattr(klass, 'tags'):
+					qs = qs.prefetch_related('tags')
+				batch = qs[i:(i + BATCH_SIZE)]
+
 				for obj in batch:
 					obj.save()
 					i += 1
