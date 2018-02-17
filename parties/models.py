@@ -2,9 +2,11 @@ import datetime
 import hashlib
 import re
 
-from django.db import models
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
+from django.db import models
 
 from lib.fuzzy_date import FuzzyDate
 from lib.strip_markup import strip_markup
@@ -87,6 +89,8 @@ class Party(Commentable):
 
 	invitations = models.ManyToManyField('productions.Production', related_name='invitation_parties', blank=True)
 	releases = models.ManyToManyField('productions.Production', related_name='release_parties', blank=True)
+
+	search_document = SearchVectorField(null=True)
 
 	search_result_template = 'search/results/party.html'
 
@@ -207,9 +211,19 @@ class Party(Commentable):
 			meaningful names on disk)"""
 		return re.sub(r'\W+', '_', self.name.lower())
 
+	def index_components(self):
+		return {
+			'A': self.asciified_name,
+			'B': self.tagline,
+			'C': self.asciified_location + ' ' + self.plaintext_notes,
+		}
+
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("name",)
+		indexes = [
+			GinIndex(fields=['search_document']),
+		]
 
 
 class PartyExternalLink(ExternalLink):
