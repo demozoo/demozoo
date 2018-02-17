@@ -223,7 +223,7 @@ class AmpAuthor(BaseUrl):
 
 
 class CsdbScener(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/scener/?id=%s"
+	canonical_format = "http://csdb.dk/scener/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/scener/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/scener/', 'id', re.I),
@@ -234,7 +234,7 @@ class CsdbScener(BaseUrl):
 
 
 class CsdbGroup(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/group/?id=%s"
+	canonical_format = "http://csdb.dk/group/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/group/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/group/', 'id', re.I),
@@ -245,7 +245,7 @@ class CsdbGroup(BaseUrl):
 
 
 class CsdbRelease(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/release/?id=%s"
+	canonical_format = "http://csdb.dk/release/?id=%s"
 	tests = [
 		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
 		querystring_match(r'https?://noname\.c64\.org/csdb/release/\?', 'id', re.I),
@@ -257,7 +257,7 @@ class CsdbRelease(BaseUrl):
 
 
 class CsdbMusic(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/sid/?id=%s"
+	canonical_format = "http://csdb.dk/sid/?id=%s"
 	tests = [
 		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
 		querystring_match(r'https?://noname\.c64\.org/csdb/sid/\?', 'id', re.I),
@@ -845,7 +845,7 @@ class BitworldParty(BaseUrl):
 
 
 class CsdbEvent(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/event/?id=%s"
+	canonical_format = "http://csdb.dk/event/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/event/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/event/', 'id', re.I),
