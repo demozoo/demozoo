@@ -250,6 +250,7 @@ class CsdbRelease(BaseUrl):
 		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
 		querystring_match(r'https?://noname\.c64\.org/csdb/release/\?', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/release/\?', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/?', 'rid', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
