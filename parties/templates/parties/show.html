@@ -19,6 +19,17 @@
 	{% endcompress %}
 {% endblock %}
 
+{% block extra_head %}
+	<meta name="twitter:site" content="@demozoo">
+	<meta property="og:url" content="https://demozoo.org{{ party.get_absolute_url }}" />
+	<meta property="og:title" content="{{ party.title }}{% if party.tagline %}: &quot;{{ party.tagline }}&quot;{% endif %}" />
+	<meta property="og:description" content="Check out the results and releases from {{ party.name}}, held {% date_range party.start_date party.end_date %} in {{ party.location }} on Demozoo." />
+	{% comment %}
+		todo: add randomly chosen(?) image
+	{% endcomment %}
+	<meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
+{% endblock %}
+
 {% block body_class %}show_party{% endblock %}
 
 {% block base_main %}
