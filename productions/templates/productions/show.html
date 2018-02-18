@@ -29,16 +29,17 @@
 
 {% block extra_head %}
 	{{ carousel.media }}
-
-	{% if meta_screenshot %}
-		<meta name="twitter:card" content="summary_large_image">
-		<meta name="twitter:site" content="@demozoo">
-		{% with production.author_twitter_handle as twitter_handle %}
-			{% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
-		{% endwith %}
-		<meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
-		<meta property="og:title" content="{{ production.title }}">
-		<meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@demozoo">
+    {% with production.author_twitter_handle as twitter_handle %}
+        {% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
+    {% endwith %}
+    <meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
+    <meta property="og:title" content="{{ production.title }}">
+    <meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
+	{% if not meta_screenshot %}
+		<meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
+	{% else %}
 		<meta property="og:image" content="{{ meta_screenshot.standard_url }}">
 	{% endif %}
 {% endblock %}
