@@ -1,6 +1,6 @@
 # Re-parse all external links of type 'BaseUrl' or 'SceneOrgFile', in case
 # they're now recognised as a more specific type
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 from django.db import transaction
 from demoscene.models import ReleaserExternalLink
@@ -10,8 +10,8 @@ from parties.models import PartyExternalLink
 external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 
 
-class Command(NoArgsCommand):
-	def handle_noargs(self, **options):
+class Command(BaseCommand):
+	def handle(self, *args, **kwargs):
 		for model in external_link_models:
 			for link in model.objects.filter(link_class__in=['BaseUrl', 'UntergrundFile', 'SceneOrgFile']):
 				original_link_class = link.link_class
