@@ -1,367 +1,394 @@
 .spawning_formset {
-	clear: both;
+  clear: both;
 
-	li {
-		line-height: 24px;
+  li {
+    line-height: 24px;
 
-		&.placeholder_form {
-			display: none;
-		}
+    &.placeholder_form {
+      display: none;
+    }
 
-		.formset_item {
-			float: left;
+    .formset_item {
+      float: left;
 
-			.field {
-				float: left;
-				padding-top: 0;
+      .field {
+        float: left;
+        padding-top: 0;
 
-				.field_input {
-					width: 420px;
-				}
-			}
-		}
+        .field_input {
+          width: 420px;
+        }
+      }
+    }
+  }
 
-		a.delete_button {
-			float: left;
-			text-indent: -5000px;
-			width: 16px;
-			height: 24px;
-			background-repeat: no-repeat;
-			background-position: center;
-			background-image: url(/static/images/icons/delete.png);
-		}
+  a.delete_button {
+    float: left;
+    text-indent: -5000px;
+    width: 16px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(/static/images/icons/delete.png);
+  }
 
-		a.add_button {
-			width: 100px;
-			background-color: #ccc;
-			background-image: url(/static/images/icons/add.png);
-			background-position: 4px center;
-			background-repeat: no-repeat;
-			border: 1px solid #444;
-			padding-top: 2px;
-			padding-bottom: 2px;
-			padding-left: 24px;
-			padding-right: 8px;
-			margin-left: 16px;
-			line-height: 32px;
-			text-decoration: none;
-			color: #444;
+  a.add_button {
+    width: 100px;
+    background-color: #ccc;
+    background-image: url(/static/images/icons/add.png);
+    background-position: 4px center;
+    background-repeat: no-repeat;
+    border: 1px solid #444;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 24px;
+    padding-right: 8px;
+    margin-left: 16px;
+    line-height: 32px;
+    text-decoration: none;
+    color: #444;
 
-			&:hover {
-				background-color: #888;
-			}
-		}
-	}
+    &:hover {
+      background-color: #888;
+    }
+  }
 }
 
 ul.sortable_formset li.sortable_item {
-	border: 1px solid #888;
-	background-color: #ddd;
-	line-height: 28px;
-	margin-bottom: 2px;
+  border: 1px solid #888;
+  background-color: #ddd;
+  line-height: 28px;
+  margin-bottom: 2px;
 
-	.ui-icon {
-		float: left;
-		margin-top: 5px;
-		margin-left: 3px;
-	}
+  .ui-icon {
+    float: left;
+    margin-top: 5px;
+    margin-left: 3px;
+  }
 
-	a.delete_button {
-		height: 30px;
-		float: right;
-		margin-right: 8px;
-	}
+  a.delete_button {
+    height: 30px;
+    float: right;
+    margin-right: 8px;
+  }
 }
 
 /* nick fields */
 .nick_field .nick_search input[type=text] {
-	width: 300px;
+  width: 300px;
 }
 
 .nick_field.ajaxified .nick_search input[type=text] {
-	width: 400px;
+  width: 400px;
 }
 
 .byline_field .byline_search input[type=text] {
-	width: 300px;
+  width: 300px;
 }
 
 .byline_field.ajaxified .byline_search input[type=text] {
-	width: 400px;
+  width: 400px;
 }
 
 /* production field */
 .production_field {
-	line-height: 28px;
-	width: 480px;
-	float: left;
+  line-height: 28px;
+  width: 480px;
+  float: left;
 
-	.form_view .title_field {
-		float: left;
-		width: 200px;
-	}
+  .form_view .title_field {
+    float: left;
+    width: 200px;
+  }
 
-	.form_view > label {
-		padding-left: 10px;
-		padding-right: 10px;
-		float: left;
-	}
+  .form_view > label {
+    padding-left: 10px;
+    padding-right: 10px;
+    float: left;
+  }
 
-	.byline_field {
-		float: left;
-	}
+  .byline_field {
+    float: left;
+  }
 
-	.byline_field.ajaxified .byline_search input[type=text] {
-		width: 200px;
-	}
+  .byline_field.ajaxified .byline_search input[type=text] {
+    width: 200px;
+  }
 
-	.static_view_text {
-		float: left;
-	}
+  .static_view_text {
+    float: left;
+  }
 
-	.clear_button {
-		float: left;
-		width: 16px;
-		height: 16px;
-		text-indent: -5000px;
-		background-image: url('/static/images/icons/cross.png');
-	}
+  .clear_button {
+    float: left;
+    width: 16px;
+    height: 16px;
+    text-indent: -5000px;
+    background-image: url('/static/images/icons/cross.png');
+  }
 }
 
 /* byline matches */
 .matched_names {
-	font-size: 0.9em;
+  font-size: 0.9em;
 }
 
 .matched_names ul li.matched_name {
-	position: relative;
+  position: relative;
 }
 
 .matched_names ul li.matched_name a.selected_result {
-	line-height: 24px;
-	display: block;
-	padding-right: 4px;
-	cursor: pointer;
-	border: 2px solid white;
-	padding-left: 20px;
-	background-position: 4px center;
-	background-repeat: no-repeat;
-	color: black;
-	text-decoration: none;
+  line-height: 24px;
+  display: block;
+  padding-right: 4px;
+  cursor: pointer;
+  border: 2px solid white;
+  padding-left: 20px;
+  background-position: 4px center;
+  background-repeat: no-repeat;
+  color: black;
+  text-decoration: none;
 }
 
 .matched_names ul li.matched_name a.selected_result span {
-	padding-right: 20px;
-	padding-left: 4px;
+  padding-right: 20px;
+  padding-left: 4px;
 }
 
 .matched_names ul li a.icon_error {
-	background-image: url(/static/images/icons/error.png);
-	color: red;
+  background-image: url(/static/images/icons/error.png);
+  color: red;
 }
 
 .matched_names ul li a.icon_scener {
-	background-image: url(/static/images/icons/scener.png);
+  background-image: url(/static/images/icons/scener.png);
 }
 
 .matched_names ul li a.icon_group {
-	background-image: url(/static/images/icons/group.png);
+  background-image: url(/static/images/icons/group.png);
 }
 
 .matched_names ul li a.icon_add_scener {
-	background-image: url(/static/images/icons/add_scener.png);
+  background-image: url(/static/images/icons/add_scener.png);
 }
 
 .matched_names ul li a.icon_add_group {
-	background-image: url(/static/images/icons/add_group.png);
+  background-image: url(/static/images/icons/add_group.png);
 }
 
 .matched_names ul li.matched_name {
-	float: left;
-	margin-right: 4px;
+  float: left;
+  margin-right: 4px;
 }
 
 .matched_names ul li.matched_name a:hover.selected_result {
-	border-top: 2px solid #ccc;
-	border-left: 2px solid #ccc;
-	border-bottom: 2px solid #888;
-	border-right: 2px solid #888;
+  border-top: 2px solid #ccc;
+  border-left: 2px solid #ccc;
+  border-bottom: 2px solid #888;
+  border-right: 2px solid #888;
 }
 
 .matched_names ul li.matched_name a:hover.selected_result span,
 .matched_names ul li.matched_name a.active.selected_result span {
-	background-image: url(/static/images/icons/arrow_down.png);
-	background-position: right center;
-	background-repeat: no-repeat;
+  background-image: url(/static/images/icons/arrow_down.png);
+  background-position: right center;
+  background-repeat: no-repeat;
 }
 
 .matched_names ul li.matched_name a.active.selected_result {
-	border-bottom: 2px solid #ccc;
-	border-right: 2px solid #ccc;
-	border-top: 2px solid #888;
-	border-left: 2px solid #888;
-	background-color: #ddd;
+  border-bottom: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  border-top: 2px solid #888;
+  border-left: 2px solid #888;
+  background-color: #ddd;
 }
 
 .matched_names ul li.matched_name ul.suggestions {
-	position: absolute;
-	z-index: 100;
-	white-space: nowrap;
-	top: 28px;
-	border: 1px solid #888;
-	background-color: white;
+  position: absolute;
+  z-index: 100;
+  white-space: nowrap;
+  top: 28px;
+  border: 1px solid #888;
+  background-color: white;
 }
 
 .matched_names ul li.matched_name ul.suggestions li a {
-	display: block;
-	color: black;
-	text-decoration: none;
-	padding-left: 28px;
-	padding-right: 4px;
-	line-height: 24px;
-	background-position: 4px center;
-	background-repeat: no-repeat;
+  display: block;
+  color: black;
+  text-decoration: none;
+  padding-left: 28px;
+  padding-right: 4px;
+  line-height: 24px;
+  background-position: 4px center;
+  background-repeat: no-repeat;
 }
 
 .matched_names ul li.matched_name ul.suggestions li a:hover {
-	background-color: #ddd;
+  background-color: #ddd;
 }
 
 /* NickField matched names */
 .nick_match {
-	font-size: 0.9em;
-	position: relative;
-	float: left;
-	margin-right: 4px;
+  font-size: 0.9em;
+  position: relative;
+  float: left;
+  margin-right: 4px;
 
-	a.selected_result {
-		line-height: 24px;
-		display: block;
-		padding-right: 4px;
-		cursor: pointer;
-		border: 2px solid #eee;
-		padding-left: 20px;
-		background-position: 4px center;
-		background-repeat: no-repeat;
-		color: black;
-		text-decoration: none;
-		&:hover {
-			border-top: 2px solid #ccc;
-			border-left: 2px solid #ccc;
-			border-bottom: 2px solid #888;
-			border-right: 2px solid #888;
-		}
+  a.selected_result {
+    line-height: 24px;
+    display: block;
+    padding-right: 4px;
+    cursor: pointer;
+    border: 2px solid #eee;
+    padding-left: 20px;
+    background-position: 4px center;
+    background-repeat: no-repeat;
+    color: black;
+    text-decoration: none;
+    &:hover {
+      border-top: 2px solid #ccc;
+      border-left: 2px solid #ccc;
+      border-bottom: 2px solid #888;
+      border-right: 2px solid #888;
+    }
 
-		span {
-			padding-right: 20px;
-			padding-left: 4px;
-		}
+    span {
+      padding-right: 20px;
+      padding-left: 4px;
+    }
 
-	}
-	a.active.selected_result {
-		border-bottom: 2px solid #ccc;
-		border-right: 2px solid #ccc;
-		border-top: 2px solid #888;
-		border-left: 2px solid #888;
-		background-color: #ddd;
-	}
+  }
+  a.active.selected_result {
+    border-bottom: 2px solid #ccc;
+    border-right: 2px solid #ccc;
+    border-top: 2px solid #888;
+    border-left: 2px solid #888;
+    background-color: #ddd;
+  }
 
-	a:hover.selected_result span,
-	a.active.selected_result span {
-		background-image: url(/static/images/icons/arrow_down.png);
-		background-position: right center;
-		background-repeat: no-repeat;
-	}
+  a:hover.selected_result span,
+  a.active.selected_result span {
+    background-image: url(/static/images/icons/arrow_down.png);
+    background-position: right center;
+    background-repeat: no-repeat;
+  }
 
-	a.error {
-		background-image: url(/static/images/icons/error.png);
-		color: red;
-	}
-	a.scener, li.scener {
-		background-image: url(/static/images/icons/scener.png);
-	}
-	a.group, li.group {
-		background-image: url(/static/images/icons/group.png);
-	}
-	a.add_scener, li.add_scener {
-		background-image: url(/static/images/icons/add_scener.png);
-	}
-	a.add_group, li.add_group {
-		background-image: url(/static/images/icons/add_group.png);
-	}
+  a.error {
+    background-image: url(/static/images/icons/error.png);
+    color: red;
+  }
+  a.scener, li.scener {
+    background-image: url(/static/images/icons/scener.png);
+  }
+  a.group, li.group {
+    background-image: url(/static/images/icons/group.png);
+  }
+  a.add_scener, li.add_scener {
+    background-image: url(/static/images/icons/add_scener.png);
+  }
+  a.add_group, li.add_group {
+    background-image: url(/static/images/icons/add_group.png);
+  }
 
-	ul {
-		white-space: nowrap;
-		top: 28px;
-		border: 1px solid #888;
-		background-color: white;
+  ul {
+    white-space: nowrap;
+    top: 28px;
+    border: 1px solid #888;
+    background-color: white;
 
-		li {
-			display: block;
-			color: black;
-			text-decoration: none;
-			padding-left: 28px;
-			padding-right: 4px;
-			padding-bottom: 0;
-			background-position: 4px center;
-			background-repeat: no-repeat;
-			&:hover {
-				background-color: #eee;
-			}
-			&.selected {
-				background-color: #ddd;
-			}
+    li {
+      display: block;
+      color: black;
+      text-decoration: none;
+      padding-left: 28px;
+      padding-right: 4px;
+      padding-bottom: 0;
+      background-position: 4px center;
+      background-repeat: no-repeat;
+      &:hover {
+        background-color: #eee;
+      }
+      &.selected {
+        background-color: #ddd;
+      }
 
-			label {
-				display: block;
-				margin-left: -28px;
-				padding-left: 28px;
-				margin-right: -4px;
-				padding-right: 4px;
-				line-height: 24px;
-				cursor: pointer;
-			}
-		}
-	}
+      label {
+        display: block;
+        margin-left: -28px;
+        padding-left: 28px;
+        margin-right: -4px;
+        padding-right: 4px;
+        line-height: 24px;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .nick_match.ajaxified ul {
-	position: absolute;
-	z-index: 100;
+  position: absolute;
+  z-index: 100;
 
-	li input[type=radio] {
-		display: none;
-	}
+  li input[type=radio] {
+    display: none;
+  }
 }
 
 .ui-datepicker-trigger {
-	background-image: url('/static/images/icons/calendar.png');
-	background-repeat: no-repeat;
-	background-position: center;
-	margin-left: 4px;
-	text-indent: -5000px;
-	width: 20px;
-	height: 20px;
+  background-image: url('/static/images/icons/calendar.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-left: 4px;
+  text-indent: -5000px;
+  width: 20px;
+  height: 20px;
 }
 
 .asmContainer {
-	select {
-		width: 200px;
-	}
+  select {
+    width: 200px;
+  }
 
-	ol.asmList {
-		font-family: Helvetica, Arial, sans-serif;
-		font-size: 10pt;
-		width: 200px;
-	}
+  ol.asmList {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    width: 200px;
+  }
 
-	a.asmListItemRemove {
-		text-indent: -5000px;
-		background-image: url('/static/images/icons/delete.png');
-		width: 16px;
-		height: 16px;
-		padding: 3px;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
+  a.asmListItemRemove {
+    text-indent: -5000px;
+    background-image: url('/static/images/icons/delete.png');
+    width: 16px;
+    height: 16px;
+    padding: 3px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.spawning_formset {
+
+  .spawned_form {
+    display: flex;
+
+    input[type=text] {
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    div[style] {
+      display: none;
+    }
+
+    .formset_item {
+      flex-grow: 1;
+      float: none;
+      margin-right: 0.25em;
+    }
+  }
+
+  .delete {
+    .size(1px);
+    overflow: hidden;
+  }
 }
