@@ -10,20 +10,23 @@
 
 		this.lightboxItem = new ImageMediaItem(this.data['original_url']);
 	}
+
 	Screenshot.prototype.preload = function() {
 		var src = this.data['standard_url'];
 		var img = new Image();
 		img.src = src;
 	};
+
 	Screenshot.prototype.attachToLightbox = function(lightbox, autoplay) {
 		this.lightboxItem.attachToLightbox(lightbox, autoplay);
 	};
+
 	Screenshot.prototype.draw = function(container) {
 		if (this.isProcessing) {
 			container.html('<div class="screenshot"><img src="/static/images/screenshot_loading.gif" width="32" height="32" alt="" /></div>');
 		} else {
 			var link = $('<a class="screenshot"></a>').attr({'href': this.data['original_url']});
-			var img = $('<img>').attr({'src': this.data['standard_url']});
+			var img = $('<img />').attr({'src': this.data['standard_url']});
 			if (this.data['standard_width'] < 200 && this.data['standard_height'] < 150) {
 				/* tiny screen, e.g. GBC - scale to double size */
 				img.attr({
@@ -49,6 +52,7 @@
 			});
 		}
 	};
+
 	Screenshot.prototype.unload = function() {};
 
 	function buildMosaic(items, addLinks, carouselController) {
@@ -63,7 +67,7 @@
 			zoom = true;
 			width *= 2; height *= 2;
 		}
-		var mosaic = $('<div class="mosaic"></div>').css({'width': width + 'px', 'height': height + 'px'});
+		var mosaic = $('<figure class="mosaic" />');
 
 		function addTileLightboxAction(tile, id) {
 			tile.click(function(e) {
@@ -80,25 +84,23 @@
 		for (i = 0; i < items.length; i++) {
 			var imgData = items[i];
 			var tile;
+
 			if (addLinks) {
 				tile = $('<a class="tile"></a>').attr({
 					'href': imgData['original_url']
 				});
 				addTileLightboxAction(tile, imgData['id']);
 			} else {
-				tile = $('<div class="tile"></div>');
+				tile = $('<div class="mosaic__tile"></div>');
 			}
-			tile.css({
-				'width': width/2 + 'px',
-				'height': height/2 + 'px',
-				'line-height': height/2 + 'px'
-			});
+
 			var img = $('<img>').attr({
 				'src': imgData['standard_url'],
-				'width': zoom ? imgData['standard_width'] : imgData['standard_width'] / 2,
-				'height': zoom ? imgData['standard_height'] : imgData['standard_height'] / 2
+				'class': 'mosaic__image',
 			});
+
 			if (zoom) img.addClass('pixelated');
+
 			tile.append(img);
 			mosaic.append(tile);
 		}
@@ -119,6 +121,7 @@
 			img.src = src;
 		}
 	};
+
 	Mosaic.prototype.draw = function(container) {
 		/* use the largest screenshot dimension as the mosaic size;
 		each tile will be half this in each direction, padded as necessary.
@@ -127,6 +130,7 @@
 		var mosaic = buildMosaic(this.data, true, this.carouselController);
 		container.html(mosaic);
 	};
+
 	Mosaic.prototype.unload = function() {};
 
 	function Video(fullData, carouselController) {
@@ -142,6 +146,7 @@
 			img.src = src;
 		}
 	};
+
 	Video.prototype.draw = function(container) {
 		var videoData = this.data;
 
@@ -179,6 +184,7 @@
 			return false;
 		});
 	};
+
 	Video.prototype.attachToLightbox = function(lightbox, autoplay) {
 		var self = {};
 
@@ -213,6 +219,7 @@
 		};
 		lightbox.attach(self);
 	};
+
 	Video.prototype.unload = function() {};
 
 	function CowbellAudio(fullData, carouselController) {
@@ -222,6 +229,7 @@
 		this.ui = null;
 		this.carouselController = carouselController;
 	}
+
 	CowbellAudio.prototype.draw = function(container) {
 		var cowbellPlayer = $('<div class="cowbell-player"></div>');
 		container.html(cowbellPlayer);
@@ -237,6 +245,7 @@
 			'ui': Cowbell.UI.Roundel
 		});
 	};
+
 	CowbellAudio.prototype.unload = function() {
 		if (this.ui) {
 			this.ui.open(null);
@@ -276,14 +285,17 @@
 
 		this.currentSlide = null;
 	}
+
 	CarouselView.prototype.hidePrevNextLinks = function() {
 		this.prevLink.hide();
 		this.nextLink.hide();
 	};
+
 	CarouselView.prototype.showPrevNextLinks = function() {
 		this.prevLink.show();
 		this.nextLink.show();
 	};
+
 	CarouselView.prototype.drawSlide = function(slide) {
 		if (this.currentSlide) this.currentSlide.unload();
 		slide.draw(this.currentBucket);
@@ -306,6 +318,7 @@
 			self.tray.css({'left': 0});
 		});
 	};
+
 	CarouselView.prototype.scrollSlideInFromLeft = function(newSlide) {
 		this.tray.stop(true, true);
 
@@ -436,6 +449,7 @@
 		} else {
 			this.view.hidePrevNextLinks();
 		}
+
 		this.view.drawSlide(this.slides[this.currentIndex]);
 	};
 
