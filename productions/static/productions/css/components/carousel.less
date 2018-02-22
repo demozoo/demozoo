@@ -7,6 +7,7 @@
 	position: relative;
 
 	.viewport {
+		background-color: #111;
 		position: absolute;
 		width: @carouselWidth;
 		height: @carouselHeight;
@@ -60,7 +61,6 @@
 		display: inline-block;
 		width: @carouselWidth;
 		height: @carouselHeight;
-		background-color: #111;
 		text-align: center;
 		vertical-align: middle;
 	}
@@ -135,9 +135,7 @@
 	}
 
 	.cowbell-player {
-
-		background-repeat: no-repeat;
-		background-position: center;
+		background: #bbb no-repeat center;
 		height: 200px;
 		padding-top: 100px;
 
@@ -152,22 +150,18 @@
 	}
 
 	.no_screenshot {
-		width: @carouselWidth;
+		background: #bbb no-repeat center;
 		height: @carouselHeight;
-		background-color: #bbb;
+		width: @carouselWidth;
 
 		&.music {
 			background-image: url(/static/images/turntable.png);
-			background-repeat: no-repeat;
-			background-position: center;
 		}
 
 		p {
+			background: no-repeat url(/static/images/camera.png) center 100px;
 			margin: 0;
 			padding-top: 182px;
-			background-image: url(/static/images/camera.png);
-			background-repeat: no-repeat;
-			background-position: center 100px;
 			text-align: center;
 		}
 	}
