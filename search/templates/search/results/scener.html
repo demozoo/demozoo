@@ -5,11 +5,11 @@
 		{% icon 'scener' %}
 	</div>
 	<div class="result__content">
-		{% scener_with_affiliations result.instance %}
-		{% releaser_flag result.instance %}
+		{% scener_with_affiliations result %}
+		{% releaser_flag result %}
 		{% if show_snippet %}
 			<div class="result__snippet">
-				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+				{{ result.plaintext_notes }}
 			</div>
 		{% endif %}
 	</div>

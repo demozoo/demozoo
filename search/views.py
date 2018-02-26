@@ -21,6 +21,7 @@ def search(request):
 			messages.success(request, "One match found for '%s'" % query)
 			return redirect(name_results[0].instance)
 		page = get_page(results, request.GET.get('page', '1'))
+		print(repr(page.object_list))
 	else:
 		query = None
 		page = None
