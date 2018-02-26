@@ -86,7 +86,7 @@
 			var tile;
 
 			if (addLinks) {
-				tile = $('<a class="tile"></a>').attr({
+				tile = $('<a class="mosaic__tile"></a>').attr({
 					'href': imgData['original_url']
 				});
 				addTileLightboxAction(tile, imgData['id']);
