@@ -5,12 +5,12 @@
 		{% icon 'event' %}
 	</div>
 	<div class="result__content">
-		<a href="{{ result.instance.get_absolute_url }}">
-			<span>{{ result.instance }}</span>{% if result.instance.tagline %}: <span>{{ result.instance.tagline }}</span>{% endif %}
+		<a href="{{ result.get_absolute_url }}">
+			<span>{{ result }}</span>{% if result.tagline %}: <span>{{ result.tagline }}</span>{% endif %}
 		</a>
 		<div class="result__snippet">
 			{% if show_snippet %}
-				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+				{{ result.plaintext_notes }}
 			{% endif %}
 		</div>
 	</div>
