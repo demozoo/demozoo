@@ -1,22 +1,19 @@
 .carousel {
-	@carouselWidth: 400px;
-	@carouselHeight: 300px;
-
-	width: @carouselWidth;
-	height: @carouselHeight;
+	width: 400px;
+	height: 300px;
 	position: relative;
 
 	.viewport {
 		position: absolute;
-		width: @carouselWidth;
-		height: @carouselHeight;
+		width: 400px;
+		height: 300px;
 		top: 0;
 		left: 0;
 		overflow: hidden;
 
 		.tray {
-			width: (@carouselWidth * 2);
-			height: @carouselHeight;
+			width: 800px;
+			height: 300px;
 			top: 0;
 			left: 0;
 			position: absolute;
@@ -28,7 +25,7 @@
 		display: block;
 		width: 50px;
 		top: 0;
-		height: @carouselHeight;
+		height: 300px;
 		background-color: rgba(32, 32, 32, 0.5);
 		background-repeat: no-repeat;
 		background-position: center;
@@ -58,48 +55,20 @@
 
 	.bucket {
 		display: inline-block;
-		width: @carouselWidth;
-		height: @carouselHeight;
-		background-color: #111;
+		width: 400px;
+		height: 300px;
+		background-color: #bbb;
+		line-height: 300px;
 		text-align: center;
 		vertical-align: middle;
 	}
 
-	.mosaic {
-		display: flex;
-		flex-wrap: wrap;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		width: 100%;
-
-		&__tile {
-			height: 50%;
-			overflow: hidden;
-			position: relative;
-			width: 50%;
-		}
-
-		&__image {
-			height: 100%;
-			left: 0;
-			object-fit: cover !important;
-			position: absolute;
-			top: 0;
-			width: 100%;
-
-			&.pixelated {
-				image-rendering: pixelated;
-			}
-		}
-	}
-
-	.screenshot,
-	.video {
-		width: @carouselWidth;
-		height: @carouselHeight;
+	.screenshot, .video {
+		width: 400px;
+		height: 300px;
 		display: inline-block;
-		line-height: @carouselHeight;
+		background-color: #bbb;
+		line-height: 300px;
 		text-align: center;
 		vertical-align: middle;
 
@@ -134,8 +103,33 @@
 		}
 	}
 
-	.cowbell-player {
+	.mosaic {
+		display: inline-block;
+		line-height: 300px;
+		text-align: center;
+		vertical-align: middle;
 
+		.tile {
+			float: left;
+			display: inline-block;
+			text-align: center;
+			vertical-align: middle;
+
+			img {
+				margin: auto;
+				vertical-align: middle;
+
+				&.pixelated {
+					image-rendering: pixelated;
+				}
+			}
+		}
+	}
+
+	.cowbell-player {
+		&.no-artwork {
+			background-image: url(/static/images/sample.png);
+		}
 		background-repeat: no-repeat;
 		background-position: center;
 		height: 200px;
@@ -145,15 +139,11 @@
 			display: block;
 			margin: auto;
 		}
-
-		&.no-artwork {
-			background-image: url(/static/images/sample.png);
-		}
 	}
 
 	.no_screenshot {
-		width: @carouselWidth;
-		height: @carouselHeight;
+		width: 400px;
+		height: 300px;
 		background-color: #bbb;
 
 		&.music {
@@ -171,4 +161,5 @@
 			text-align: center;
 		}
 	}
+
 }
