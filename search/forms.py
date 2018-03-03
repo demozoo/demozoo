@@ -21,13 +21,15 @@ def load_mixed_objects(dicts):
 	for d in dicts:
 		to_fetch.setdefault(d['type'], set()).add(d['pk'])
 	fetched = {}
-	for key, model in (
-		('production', Production),
-		('releaser', Releaser),
-		('party', Party),
+	for key, model, prefetch_fields in (
+		('production', Production, ['author_nicks__releaser', 'author_affiliation_nicks__releaser']),
+		('releaser', Releaser, ['group_memberships__group']),
+		('party', Party, []),
 	):
 		ids = to_fetch.get(key) or []
 		objects = model.objects.filter(pk__in=ids)
+		if prefetch_fields:
+			objects = objects.prefetch_related(*prefetch_fields)
 
 		for obj in objects:
 			fetched[(key, obj.pk)] = obj
@@ -55,35 +57,39 @@ class SearchForm(forms.Form):
 		# start with an empty queryset
 		qs = Production.objects.annotate(
 			type=models.Value('empty', output_field=models.CharField()),
+			sort_title=F('title'),
 			rank=rank_annotation
-		).values('pk', 'type', 'rank').none()
+		).values('pk', 'sort_title', 'type', 'rank').none()
 
 		qs = qs.union(
 			Production.objects.annotate(
 				rank=rank_annotation,
-				type=models.Value('production', output_field=models.CharField())
+				type=models.Value('production', output_field=models.CharField()),
+				sort_title=F('sortable_title'),
 			).filter(
 				search_document=query
-			).values('pk', 'type', 'rank')
+			).values('pk', 'sort_title', 'type', 'rank')
 		)
 		qs = qs.union(
 			Releaser.objects.annotate(
 				rank=rank_annotation,
-				type=models.Value('releaser', output_field=models.CharField())
+				type=models.Value('releaser', output_field=models.CharField()),
+				sort_title=F('name'),
 			).filter(
 				search_document=query
-			).values('pk', 'type', 'rank')
+			).values('pk', 'sort_title', 'type', 'rank')
 		)
 		qs = qs.union(
 			Party.objects.annotate(
 				rank=rank_annotation,
-				type=models.Value('party', output_field=models.CharField())
+				type=models.Value('party', output_field=models.CharField()),
+				sort_title=F('name'),
 			).filter(
 				search_document=query
-			).values('pk', 'type', 'rank'),
+			).values('pk', 'sort_title', 'type', 'rank'),
 		)
 
-		qs = qs.order_by('-rank')[:20]
+		qs = qs.order_by('-rank', 'sort_title')
 		complete_results = load_mixed_objects(qs)
 
 		# TODO: filter out name results from complete_results
