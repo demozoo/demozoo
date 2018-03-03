@@ -30,6 +30,7 @@
 	</form>
 
 	{% if query %}
+		{% comment %}
 		<section>
 			<h2 class="search-results__heading">Exact name matches</h2>
 			{% if name_results %}
@@ -48,6 +49,7 @@
 				<p>No exact matches found.</p>
 			{% endif %}
 		</section>
+		{% endcomment %}
 
 		<section>
 			<h2 class="search-results__heading">Other matches</h2>
