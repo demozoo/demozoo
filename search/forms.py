@@ -1,4 +1,5 @@
 from django import forms
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import models
 from django.db.models import F
@@ -46,11 +47,8 @@ def load_mixed_objects(dicts):
 class SearchForm(forms.Form):
 	q = forms.CharField(required=True, label='Search')
 
-	def search(self, with_real_names=False):
+	def search(self, with_real_names=False, page_number=1, count=50):
 		query = unidecode(self.cleaned_data['q'])
-		name_results = (name_indexer_with_real_names if with_real_names else name_indexer).search(query).prefetch()
-		name_result_ids = set([hit.pk for hit in name_results])
-
 		psql_query = SearchQuery(query)
 		rank_annotation = SearchRank(F('search_document'), psql_query)
 
@@ -90,8 +88,16 @@ class SearchForm(forms.Form):
 		)
 
 		qs = qs.order_by('-rank', 'sort_title')
-		complete_results = load_mixed_objects(qs)
 
-		# TODO: filter out name results from complete_results
+		paginator = Paginator(qs, count)
+		# If page request (9999) is out of range, deliver last page of results.
+		try:
+			page = paginator.page(page_number)
+		except (EmptyPage, InvalidPage):
+			page = paginator.page(paginator.num_pages)
+
+		results = load_mixed_objects(page.object_list)
+
+		# TODO: separate section for exact name matches
 		# TODO: support searching admin-only data (e.g. private real names)
-		return (name_results, complete_results, complete_results)
+		return (results, page)

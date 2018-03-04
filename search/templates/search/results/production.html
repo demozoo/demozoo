@@ -17,10 +17,12 @@
 		{% if result.author_nicks.all %}
 			<small>by <span>{% byline result %}</span></small>
 		{% endif %}
+		{% comment %}
 		{% if show_snippet %}
 			<div class="result__snippet">
 				{{ result.plaintext_notes }}
 			</div>
 		{% endif %}
+		{% endcomment %}
 	</div>
 </div>
