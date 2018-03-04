@@ -52,11 +52,11 @@
 		{% endcomment %}
 
 		<section>
-			<h2 class="search-results__heading">Other matches</h2>
-			{% if page.object_list %}
+			{% if results %}
+				<h2 class="search-results__heading">Results {{ page.start_index }} - {{ page.end_index }} of {{ page.paginator.count }}</h2>
 				<ul class="list list--results">
 					{% with 1 as show_snippet %}
-						{% for result in page.object_list %}
+						{% for result in results %}
 							<li class="list__item">
 								{% if result.search_result_template %}
 									{% include result.search_result_template %}
