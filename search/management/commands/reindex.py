@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from parties.models import Party
-from demoscene.models import Releaser
+from demoscene.models import NickVariant, Releaser
 from productions.models import Production
 
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
 		BATCH_SIZE = 10000
 
-		for klass in (Party, Releaser, Production):
+		for klass in (NickVariant, Party, Releaser, Production):
 			i = 0
 			while True:
 				qs = klass.objects.order_by('pk')

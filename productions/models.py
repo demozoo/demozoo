@@ -20,7 +20,7 @@ from lib.strip_markup import strip_markup
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
 from demoscene.utils import groklinks
-from demoscene.utils.text import generate_sort_key
+from demoscene.utils.text import generate_search_title, generate_sort_key
 from mirror.models import Download, ArchiveMember
 
 
@@ -101,6 +101,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
 	sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
@@ -129,9 +130,10 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
 
-		# populate sortable_title from title
+		# populate search_title and sortable_title from title
 		if self.title:
 			self.title = self.title.strip()
+			self.search_title = generate_search_title(self.title)
 			self.sortable_title = generate_sort_key(self.title)
 
 		# auto-populate updated_at; this will only happen on creation

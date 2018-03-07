@@ -15,6 +15,7 @@ from unidecode import unidecode
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink
 from demoscene.utils import groklinks
 from demoscene.utils.files import random_path
+from demoscene.utils.text import generate_search_title
 from comments.models import Commentable
 from productions.models import Production, Screenshot
 
@@ -104,6 +105,8 @@ class Party(Commentable):
 	share_image_file_height = models.IntegerField(editable=False, null=True)
 	share_image_file_url = models.CharField(max_length=255, blank=True, editable=False)
 	share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 	search_document = SearchVectorField(null=True)
 
 	search_result_template = 'search/results/party.html'
@@ -256,6 +259,13 @@ class Party(Commentable):
 			'B': self.tagline,
 			'C': self.asciified_location + ' ' + self.plaintext_notes,
 		}
+
+	def save(self, *args, **kwargs):
+		# populate search_title from name
+		if self.name:
+			self.search_title = generate_search_title(self.name)
+
+		return super(Party, self).save(*args, **kwargs)
 
 	class Meta:
 		verbose_name_plural = "Parties"

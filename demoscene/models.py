@@ -15,6 +15,7 @@ from unidecode import unidecode
 from lib.strip_markup import strip_markup
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
+from demoscene.utils.text import generate_search_title
 
 DATE_PRECISION_CHOICES = [
 	('d', 'Day'),
@@ -387,6 +388,14 @@ class Nick(models.Model):
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+	def save(self, *args, **kwargs):
+		# populate search_title from name
+		if self.name:
+			self.search_title = generate_search_title(self.name)
+
+		return super(NickVariant, self).save(*args, **kwargs)
 
 	def __unicode__(self):
 		return self.name
