@@ -30,6 +30,8 @@ class BannerForm(forms.ModelForm):
 
 
 class BannerImageForm(forms.ModelForm):
+	image = forms.ImageField(required=False)
+
 	class Meta:
 		model = BannerImage
 		fields = ['image']
