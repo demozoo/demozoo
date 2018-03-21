@@ -33,7 +33,7 @@ def combined_releases(releaser):
 		.exclude(id__in=production_ids)\
 		.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')\
 		.defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes')\
-		.order_by('-release_date_date', '-title')
+		.order_by('-release_date_date', 'release_date_precision', '-sortable_title')
 
 	credits_with_prods = credits_by_production_nick + [(prod, None, None) for prod in productions]
 	credits_with_prods.sort(key=lambda item: (item[0].release_date_date is None, item[0].release_date_date), reverse=True)
