@@ -35,46 +35,62 @@
 {% block base_main %}
 	<script>
 		$(function() {
-			var resultsPanel = $('.results_panel');
-			var resultsMenu = $('.results_menu');
-			var resultsMenuUl = $('.results_menu ul');
-			var resultsMenuColumn = $('.results_menu_column');
+			var resultsMenuList = $('.results-menu__list');
 
-			var resultsPanelY, menuWidth, maxResultsMenuY;
+			if (resultsMenuList.length) {
+				var resultsMenu = $('.results_menu');
+				var resultsMenuColumn = $('.results_menu_column');
+				var resultsPanel = $('.results_panel');
 
-			if (resultsMenuColumn.length) {
+				var scrollY = 0,
+					ticking = false,
+					resultsPanelY,
+					resultsPanelBottom,
+					maxResultsMenuY;
 
-				function reflow() {
-					resultsPanelY = resultsMenuColumn.offset().top;
+				function requestTick(event) {
+					if(!ticking) {
+						requestAnimationFrame(event);
+					}
+					ticking = true;
+				}
+
+				function handleScroll() {
+					scrollY = window.scrollY;
+					requestTick(update);
+				}
+
+				function handleResize() {
+					requestTick(menuResize);
+				}
+
+				function menuResize() {
+					ticking = false;
+
 					resultsMenu.css({
 						'width': resultsMenuColumn.width() + 'px'
 					});
-					resultsMenuUl.css({
-						'max-height': $(window).height() - 64 + 'px'
-					});
-					var resultsPanelBottom = resultsPanelY + resultsPanel.height();
+				}
+
+				function update() {
+					ticking = false;
+					resultsPanelY = resultsPanel.offset().top;
+					resultsPanelBottom = resultsPanelY + resultsPanel.height();
 					maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
 
-					setResultsPanelPosition();
-				}
-				reflow();
-
-				function setResultsPanelPosition() {
-					var scrollPos = $(window).scrollTop();
-
-					if (scrollPos <= resultsPanelY) {
+					if (scrollY <= resultsPanelY) {
 						resultsPanel.removeClass('fixed bottom');
-					} else if (scrollPos <= maxResultsMenuY - 10) {
+					} else if (scrollY <= maxResultsMenuY - 10) {
 						resultsPanel.removeClass('bottom').addClass('fixed');
-						resultsMenu.css({
-							'width': menuWidth + 'px'
-						});
 					} else {
 						resultsPanel.removeClass('fixed').addClass('bottom');
 					}
 				}
 
-				$(window).scroll(setResultsPanelPosition).load(reflow).resize(reflow);
+				window.addEventListener('scroll', handleScroll, false);
+				window.addEventListener('resize', handleResize, false);
+				update();
+				menuResize();
 			}
 		})
 	</script>
@@ -214,9 +230,9 @@
 				<div class="results_menu">
 					<h3>Results</h3>
 					{% if competitions_with_placings_and_screenshots %}
-						<ul>
+						<ul class="results-menu__list">
 							{% for compo, placings in competitions_with_placings_and_screenshots %}
-								<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+								<li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
 							{% endfor %}
 						</ul>
 					{% endif %}
