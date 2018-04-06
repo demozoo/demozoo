@@ -2,12 +2,13 @@ from django import forms
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q
 
 from unidecode import unidecode
 
 from demoscene.index import name_indexer, name_indexer_with_real_names
 from demoscene.models import Releaser
+from demoscene.utils.text import generate_search_title
 from parties.models import Party
 from productions.models import Production
 
@@ -48,46 +49,67 @@ class SearchForm(forms.Form):
 	q = forms.CharField(required=True, label='Search')
 
 	def search(self, with_real_names=False, page_number=1, count=50):
-		query = unidecode(self.cleaned_data['q'])
-		psql_query = SearchQuery(query)
+		query = self.cleaned_data['q']
+		psql_query = SearchQuery(unidecode(query))
+		clean_query = generate_search_title(query)
 		rank_annotation = SearchRank(F('search_document'), psql_query)
 
 		# start with an empty queryset
 		qs = Production.objects.annotate(
 			type=models.Value('empty', output_field=models.CharField()),
-			sort_title=F('title'),
+			exactness=models.Value(0, output_field=models.IntegerField()),
 			rank=rank_annotation
-		).values('pk', 'sort_title', 'type', 'rank').none()
+		).values('pk', 'type', 'exactness', 'rank').none()
 
+		# Search for productions
 		qs = qs.union(
 			Production.objects.annotate(
 				rank=rank_annotation,
 				type=models.Value('production', output_field=models.CharField()),
-				sort_title=F('sortable_title'),
+				exactness=models.Case(
+					models.When(search_title=clean_query, then=models.Value(2)),
+					models.When(search_title__startswith=clean_query, then=models.Value(1)),
+					default=models.Value(0, output_field=models.IntegerField()),
+					output_field=models.IntegerField()
+				)
 			).filter(
-				search_document=query
-			).values('pk', 'sort_title', 'type', 'rank')
+				Q(search_document=psql_query)
+			).values('pk', 'type', 'exactness', 'rank')
 		)
+
+		# Search for releasers
 		qs = qs.union(
 			Releaser.objects.annotate(
 				rank=rank_annotation,
 				type=models.Value('releaser', output_field=models.CharField()),
-				sort_title=F('name'),
+				exactness=models.Case(
+					models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
+					models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
+					default=models.Value(0, output_field=models.IntegerField()),
+					output_field=models.IntegerField()
+				)
 			).filter(
-				search_document=query
-			).values('pk', 'sort_title', 'type', 'rank')
+				Q(search_document=psql_query)
+			).values('pk', 'type', 'exactness', 'rank')
 		)
+
+		# Search for parties
 		qs = qs.union(
 			Party.objects.annotate(
 				rank=rank_annotation,
 				type=models.Value('party', output_field=models.CharField()),
-				sort_title=F('name'),
+				exactness=models.Case(
+					models.When(search_title=clean_query, then=models.Value(2)),
+					models.When(search_title__startswith=clean_query, then=models.Value(1)),
+					default=models.Value(0, output_field=models.IntegerField()),
+					output_field=models.IntegerField()
+				)
 			).filter(
-				search_document=query
-			).values('pk', 'sort_title', 'type', 'rank'),
+				Q(search_document=psql_query)
+			).values('pk', 'type', 'exactness', 'rank'),
 		)
 
-		qs = qs.order_by('-rank', 'sort_title')
+		qs = qs.order_by('-exactness', '-rank')
 
 		paginator = Paginator(qs, count)
 		# If page request (9999) is out of range, deliver last page of results.
@@ -98,6 +120,5 @@ class SearchForm(forms.Form):
 
 		results = load_mixed_objects(page.object_list)
 
-		# TODO: separate section for exact name matches
 		# TODO: support searching admin-only data (e.g. private real names)
 		return (results, page)
