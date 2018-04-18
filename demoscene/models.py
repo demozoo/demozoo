@@ -251,7 +251,7 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 
 class Nick(models.Model):
-	releaser = models.ForeignKey(Releaser, related_name='nicks')
+	releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 	abbreviation = models.CharField(max_length=255, blank=True, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
 	differentiator = models.CharField(max_length=32, blank=True, help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country")
@@ -373,7 +373,7 @@ class Nick(models.Model):
 
 
 class NickVariant(models.Model):
-	nick = models.ForeignKey(Nick, related_name='variants')
+	nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 
 	def __unicode__(self):
@@ -511,8 +511,8 @@ class NickVariant(models.Model):
 
 
 class Membership(models.Model):
-	member = models.ForeignKey(Releaser, related_name='group_memberships')
-	group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships')
+	member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
+	group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE)
 	is_current = models.BooleanField(default=True)
 	data_source = models.CharField(max_length=32, blank=True, null=True)
 
@@ -575,7 +575,7 @@ class ExternalLink(models.Model):
 
 
 class ReleaserExternalLink(ExternalLink):
-	releaser = models.ForeignKey(Releaser, related_name='external_links')
+	releaser = models.ForeignKey(Releaser, related_name='external_links', on_delete=models.CASCADE)
 	link_types = groklinks.RELEASER_LINK_TYPES
 
 	def html_link(self):
@@ -591,16 +591,16 @@ class ReleaserExternalLink(ExternalLink):
 class Edit(models.Model):
 	action_type = models.CharField(max_length=100)
 
-	focus_content_type = models.ForeignKey(ContentType, related_name='edits')
+	focus_content_type = models.ForeignKey(ContentType, related_name='edits', on_delete=models.CASCADE)
 	focus_object_id = models.PositiveIntegerField()
 	focus = GenericForeignKey('focus_content_type', 'focus_object_id')
 
-	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2')
+	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2', on_delete=models.CASCADE)
 	focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
 	focus2 = GenericForeignKey('focus2_content_type', 'focus2_object_id')
 
 	description = models.TextField()
-	user = models.ForeignKey(User, related_name='edits')
+	user = models.ForeignKey(User, related_name='edits', on_delete=models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	admin_only = models.BooleanField(default=False)

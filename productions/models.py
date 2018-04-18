@@ -408,12 +408,12 @@ class Byline(object):
 
 
 class ProductionDemozoo0Platform(models.Model):
-	production = models.ForeignKey(Production, related_name='demozoo0_platforms')
+	production = models.ForeignKey(Production, related_name='demozoo0_platforms', on_delete=models.CASCADE)
 	platform = models.CharField(max_length=64)
 
 
 class ProductionBlurb(models.Model):
-	production = models.ForeignKey(Production, related_name='blurbs')
+	production = models.ForeignKey(Production, related_name='blurbs', on_delete=models.CASCADE)
 	body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
@@ -426,8 +426,8 @@ class Credit(models.Model):
 		('Other', 'Other')
 	]
 
-	production = models.ForeignKey(Production, related_name='credits')
-	nick = models.ForeignKey(Nick, related_name='credits')
+	production = models.ForeignKey(Production, related_name='credits', on_delete=models.CASCADE)
+	nick = models.ForeignKey(Nick, related_name='credits', on_delete=models.CASCADE)
 	category = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
 	role = models.CharField(max_length=255, blank=True)
 
@@ -456,7 +456,7 @@ class Credit(models.Model):
 
 
 class Screenshot(models.Model):
-	production = models.ForeignKey(Production, related_name='screenshots')
+	production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
 	original_url = models.CharField(max_length=255, blank=True)
 	original_width = models.IntegerField(editable=False, null=True, blank=True)
 	original_height = models.IntegerField(editable=False, null=True, blank=True)
@@ -538,8 +538,8 @@ def update_prod_screenshot_data_on_delete(sender, **kwargs):
 
 
 class SoundtrackLink(models.Model):
-	production = models.ForeignKey(Production, related_name='soundtrack_links')
-	soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack')
+	production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
+	soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
 	position = models.IntegerField()
 
 	def __unicode__(self):
@@ -550,8 +550,8 @@ class SoundtrackLink(models.Model):
 
 
 class PackMember(models.Model):
-	pack = models.ForeignKey(Production, related_name='pack_members')
-	member = models.ForeignKey(Production, related_name='packed_in')
+	pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
+	member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)
 	position = models.IntegerField()
 
 	def __unicode__(self):
@@ -562,7 +562,7 @@ class PackMember(models.Model):
 
 
 class ProductionLink(ExternalLink):
-	production = models.ForeignKey(Production, related_name='links')
+	production = models.ForeignKey(Production, related_name='links', on_delete=models.CASCADE)
 	is_download_link = models.BooleanField()
 	description = models.CharField(max_length=255, blank=True)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')

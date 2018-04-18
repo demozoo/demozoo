@@ -59,12 +59,12 @@ class PartySeries(models.Model):
 
 
 class PartySeriesDemozoo0Reference(models.Model):
-	party_series = models.ForeignKey(PartySeries, related_name='demozoo0_ids')
+	party_series = models.ForeignKey(PartySeries, related_name='demozoo0_ids', on_delete=models.CASCADE)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 
 class Party(Commentable):
-	party_series = models.ForeignKey(PartySeries, related_name='parties')
+	party_series = models.ForeignKey(PartySeries, related_name='parties', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, unique=True)
 	tagline = models.CharField(max_length=255, blank=True)
 	start_date_date = models.DateField()
@@ -213,7 +213,7 @@ class Party(Commentable):
 
 
 class PartyExternalLink(ExternalLink):
-	party = models.ForeignKey(Party, related_name='external_links')
+	party = models.ForeignKey(Party, related_name='external_links', on_delete=models.CASCADE)
 	link_types = groklinks.PARTY_LINK_TYPES
 
 	def html_link(self):
@@ -227,12 +227,12 @@ class PartyExternalLink(ExternalLink):
 
 
 class Competition(models.Model):
-	party = models.ForeignKey(Party, related_name='competitions')
+	party = models.ForeignKey(Party, related_name='competitions', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 	shown_date_date = models.DateField(null=True, blank=True)
 	shown_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
-	platform = models.ForeignKey('platforms.Platform', blank=True, null=True)
-	production_type = models.ForeignKey('productions.ProductionType', blank=True, null=True)
+	platform = models.ForeignKey('platforms.Platform', blank=True, null=True, on_delete=models.SET_NULL)
+	production_type = models.ForeignKey('productions.ProductionType', blank=True, null=True, on_delete=models.SET_NULL)
 
 	def results(self):
 		return self.placings.order_by('position')
@@ -271,8 +271,8 @@ class Competition(models.Model):
 
 
 class CompetitionPlacing(models.Model):
-	competition = models.ForeignKey(Competition, related_name='placings')
-	production = models.ForeignKey('productions.Production', related_name='competition_placings')
+	competition = models.ForeignKey(Competition, related_name='placings', on_delete=models.CASCADE)
+	production = models.ForeignKey('productions.Production', related_name='competition_placings', on_delete=models.CASCADE)
 	ranking = models.CharField(max_length=32, blank=True)
 	position = models.IntegerField()
 	score = models.CharField(max_length=32, blank=True)
@@ -324,7 +324,7 @@ class CompetitionPlacing(models.Model):
 
 
 class ResultsFile(models.Model):
-	party = models.ForeignKey(Party, related_name='results_files')
+	party = models.ForeignKey(Party, related_name='results_files', on_delete=models.CASCADE)
 	filename = models.CharField(max_length=255, blank=True)
 	file = models.FileField(storage=FileSystemStorage(), upload_to='results', blank=True)
 	filesize = models.IntegerField()

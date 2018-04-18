@@ -9,7 +9,7 @@ class Directory(models.Model):
 	first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
 	last_seen_at = models.DateTimeField()
 	last_spidered_at = models.DateTimeField(null=True, blank=True)
-	parent = models.ForeignKey('Directory', related_name='subdirectories', null=True, blank=True)
+	parent = models.ForeignKey('Directory', related_name='subdirectories', null=True, blank=True, on_delete=models.CASCADE)
 	competitions = models.ManyToManyField('parties.Competition', related_name="sceneorg_directories")
 
 	def mark_deleted(self):
@@ -51,7 +51,7 @@ class File(models.Model):
 	is_deleted = models.BooleanField(default=False)
 	first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
 	last_seen_at = models.DateTimeField()
-	directory = models.ForeignKey(Directory, related_name='files')
+	directory = models.ForeignKey(Directory, related_name='files', on_delete=models.CASCADE)
 	size = models.BigIntegerField(null=True)
 
 	def __unicode__(self):

@@ -7,8 +7,8 @@ import datetime
 
 
 class Comment(models.Model):
-	user = models.ForeignKey(User, related_name='comments')
-	content_type = models.ForeignKey(ContentType)
+	user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
+	content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
 	object_id = models.PositiveIntegerField()
 	commentable = GenericForeignKey('content_type', 'object_id')
 
