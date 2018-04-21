@@ -9,7 +9,7 @@ from unidecode import unidecode
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
-from productions.models import Production
+from productions.models import Production, Screenshot
 
 
 class SearchForm(forms.Form):
@@ -108,10 +108,14 @@ class SearchForm(forms.Form):
 		fetched = {}
 
 		if 'production' in to_fetch:
-			productions = Production.objects.filter(pk__in=to_fetch['production']).prefetch_related(
+			production_ids = to_fetch['production']
+			productions = Production.objects.filter(pk__in=production_ids).prefetch_related(
 				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
 			)
+			screenshots = Screenshot.select_for_production_ids(production_ids)
+
 			for prod in productions:
+				prod.selected_screenshot = screenshots.get(prod.pk)
 				fetched[('production', prod.pk)] = prod
 
 		if 'releaser' in to_fetch:
