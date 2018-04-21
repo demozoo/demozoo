@@ -30,27 +30,6 @@
 	</form>
 
 	{% if query %}
-		{% comment %}
-		<section>
-			<h2 class="search-results__heading">Exact name matches</h2>
-			{% if name_results %}
-				<ul class="list list--results">
-					{% for result in name_results %}
-						<li class="list__item">
-							{% if result.instance.search_result_template %}
-								{% include result.instance.search_result_template %}
-							{% else %}
-								<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-							{% endif %}
-						</li>
-					{% endfor %}
-				</ul>
-			{% else %}
-				<p>No exact matches found.</p>
-			{% endif %}
-		</section>
-		{% endcomment %}
-
 		<section>
 			{% if results %}
 				<h2 class="search-results__heading">Results {{ page.start_index }} - {{ page.end_index }} of {{ page.paginator.count }}</h2>
@@ -78,7 +57,7 @@
 			|
 			{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
 		</div>
-	{% endif %}
+		{% endif %}
 	{% else %}
 		{# Show some example queries to run, maybe query syntax, something else? #}
 	{% endif %}
