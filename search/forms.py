@@ -120,7 +120,7 @@ class SearchForm(forms.Form):
 
 		if 'releaser' in to_fetch:
 			releasers = Releaser.objects.filter(pk__in=to_fetch['releaser']).prefetch_related(
-				'group_memberships__group'
+				'group_memberships__group', 'nicks'
 			)
 			for releaser in releasers:
 				fetched[('releaser', releaser.pk)] = releaser
