@@ -11,12 +11,10 @@
 				(<span>{{ result.primary_nick.differentiator }}</span>)
 			{% endif %}
 		</a>
-		{% comment %}
-		<div class="result__snippet">
-			{% if show_snippet %}
-				{{ result.plaintext_notes }}
-			{% endif %}
-		</div>
-		{% endcomment %}
+		{% if result.has_search_snippet %}
+			<div class="result__snippet">
+				<p class="snippet">{{ result.search_snippet|safe }}</p>
+			</div>
+		{% endif %}
 	</div>
 </div>

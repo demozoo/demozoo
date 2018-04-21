@@ -2,7 +2,7 @@ from django import forms
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F, Func, Q
 
 from unidecode import unidecode
 
@@ -10,6 +10,12 @@ from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
 from productions.models import Production, Screenshot
+
+
+class TSHeadline(Func):
+	# Expose the ts_headline function (used for generating search result snippets) to Django ORM.
+	function = 'ts_headline'
+	output_field = models.TextField()
 
 
 class SearchForm(forms.Form):
@@ -111,23 +117,33 @@ class SearchForm(forms.Form):
 			production_ids = to_fetch['production']
 			productions = Production.objects.filter(pk__in=production_ids).prefetch_related(
 				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+			).annotate(
+				search_snippet=TSHeadline('notes', psql_query)
 			)
 			screenshots = Screenshot.select_for_production_ids(production_ids)
 
 			for prod in productions:
 				prod.selected_screenshot = screenshots.get(prod.pk)
+				# Ignore any search snippets that don't actually contain a highlighted term
+				prod.has_search_snippet = '<b>' in prod.search_snippet
 				fetched[('production', prod.pk)] = prod
 
 		if 'releaser' in to_fetch:
 			releasers = Releaser.objects.filter(pk__in=to_fetch['releaser']).prefetch_related(
 				'group_memberships__group', 'nicks'
+			).annotate(
+				search_snippet=TSHeadline('notes', psql_query)
 			)
 			for releaser in releasers:
+				releaser.has_search_snippet = '<b>' in releaser.search_snippet
 				fetched[('releaser', releaser.pk)] = releaser
 
 		if 'party' in to_fetch:
-			parties = Party.objects.filter(pk__in=to_fetch['party'])
+			parties = Party.objects.filter(pk__in=to_fetch['party']).annotate(
+				search_snippet=TSHeadline('notes', psql_query)
+			)
 			for party in parties:
+				party.has_search_snippet = '<b>' in party.search_snippet
 				fetched[('party', party.pk)] = party
 
 		# Build final list in same order as returned by the original results query

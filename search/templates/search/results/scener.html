@@ -7,12 +7,10 @@
 	<div class="result__content">
 		{% scener_with_affiliations result %}
 		{% releaser_flag result %}
-		{% comment %}
-		{% if show_snippet %}
+		{% if result.has_search_snippet %}
 			<div class="result__snippet">
-				{{ result.plaintext_notes }}
+				<p class="snippet">{{ result.search_snippet|safe }}</p>
 			</div>
 		{% endif %}
-		{% endcomment %}
 	</div>
 </div>
