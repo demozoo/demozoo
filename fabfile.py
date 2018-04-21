@@ -50,9 +50,14 @@ def sanity():
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
-		run('sudo supervisorctl stop demozoo-djapian')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=demozoo.settings.productionvm')
-		run('sudo supervisorctl start demozoo-djapian')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.productionvm')
+
+
+@hosts(STAGING_HOSTS)
+def reindex_staging():
+	"""Rebuild the search index on staging from scratch. WARNING:SLOW"""
+	with cd('/home/demozoo/demozoo-staging'):
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py reindex --settings=demozoo.settings.staging')
 
 
 @hosts(PRODUCTION_HOSTS)
