@@ -93,7 +93,7 @@ class SearchForm(forms.Form):
 			).values('pk', 'type', 'exactness', 'rank'),
 		)
 
-		qs = qs.order_by('-exactness', '-rank')
+		qs = qs.order_by('-exactness', '-rank', 'pk')
 
 		# Apply pagination to the query before performing the (expensive) real data fetches.
 
