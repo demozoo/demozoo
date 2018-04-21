@@ -6,43 +6,10 @@ from django.db.models import F, Q
 
 from unidecode import unidecode
 
-from demoscene.index import name_indexer, name_indexer_with_real_names
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
 from productions.models import Production
-
-
-def load_mixed_objects(dicts):
-	"""
-	Takes a list of dictionaries, each of which must at least have a 'type'
-	and a 'pk' key. Returns a list of ORM objects of those various types.
-	Each returned ORM object has a .original_dict attribute populated.
-	"""
-	to_fetch = {}
-	for d in dicts:
-		to_fetch.setdefault(d['type'], set()).add(d['pk'])
-	fetched = {}
-	for key, model, prefetch_fields in (
-		('production', Production, ['author_nicks__releaser', 'author_affiliation_nicks__releaser']),
-		('releaser', Releaser, ['group_memberships__group']),
-		('party', Party, []),
-	):
-		ids = to_fetch.get(key) or []
-		objects = model.objects.filter(pk__in=ids)
-		if prefetch_fields:
-			objects = objects.prefetch_related(*prefetch_fields)
-
-		for obj in objects:
-			fetched[(key, obj.pk)] = obj
-	# Build list in same order as dicts argument
-	to_return = []
-	for d in dicts:
-		item = fetched.get((d['type'], d['pk'])) or None
-		if item:
-			item.original_dict = d
-		to_return.append(item)
-	return to_return
 
 
 class SearchForm(forms.Form):
@@ -53,6 +20,16 @@ class SearchForm(forms.Form):
 		psql_query = SearchQuery(unidecode(query))
 		clean_query = generate_search_title(query)
 		rank_annotation = SearchRank(F('search_document'), psql_query)
+
+		# Construct the master search query as a union of subqueries that search
+		# one model each. Each subquery yields a queryset of dicts with the following fields:
+		# 'type': 'production', 'releaser' or 'party'
+		# 'pk': primary key of the relevant object
+		# 'exactness': magic number used to prioritise exact/prefix title matches in the ordering:
+		#     2 = (the cleaned version of) the title exactly matches (the cleaned verson of) the search query
+		#     1 = (the cleaned version of) the title starts with (the cleaned version of) the search query
+		#     0 = neither of the above
+		# 'rank': search ranking as calculated by postgres search
 
 		# start with an empty queryset
 		qs = Production.objects.annotate(
@@ -78,6 +55,7 @@ class SearchForm(forms.Form):
 		)
 
 		# Search for releasers
+		# TODO: support searching admin-only data (e.g. private real names)
 		qs = qs.union(
 			Releaser.objects.annotate(
 				rank=rank_annotation,
@@ -111,6 +89,8 @@ class SearchForm(forms.Form):
 
 		qs = qs.order_by('-exactness', '-rank')
 
+		# Apply pagination to the query before performing the (expensive) real data fetches.
+
 		paginator = Paginator(qs, count)
 		# If page request (9999) is out of range, deliver last page of results.
 		try:
@@ -118,7 +98,40 @@ class SearchForm(forms.Form):
 		except (EmptyPage, InvalidPage):
 			page = paginator.page(paginator.num_pages)
 
-		results = load_mixed_objects(page.object_list)
+		# Assemble the results into a plan for fetching the actual models -
+		# form a dict that maps model/type to a set of PKs
+		to_fetch = {}
+		for d in page.object_list:
+			to_fetch.setdefault(d['type'], set()).add(d['pk'])
 
-		# TODO: support searching admin-only data (e.g. private real names)
+		# now do the fetches, and store the results as a mapping of (type, pk) tuple to object
+		fetched = {}
+
+		if 'production' in to_fetch:
+			productions = Production.objects.filter(pk__in=to_fetch['production']).prefetch_related(
+				'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+			)
+			for prod in productions:
+				fetched[('production', prod.pk)] = prod
+
+		if 'releaser' in to_fetch:
+			releasers = Releaser.objects.filter(pk__in=to_fetch['releaser']).prefetch_related(
+				'group_memberships__group'
+			)
+			for releaser in releasers:
+				fetched[('releaser', releaser.pk)] = releaser
+
+		if 'party' in to_fetch:
+			parties = Party.objects.filter(pk__in=to_fetch['party'])
+			for party in parties:
+				fetched[('party', party.pk)] = party
+
+		# Build final list in same order as returned by the original results query
+		results = []
+		for d in page.object_list:
+			item = fetched.get((d['type'], d['pk'])) or None
+			if item:
+				item.search_info = d
+			results.append(item)
+
 		return (results, page)
