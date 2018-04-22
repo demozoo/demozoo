@@ -99,6 +99,16 @@ class SearchForm(forms.Form):
 			if 'party' in requested_types:
 				subqueries_from_type.add('party')
 
+			# assume that any otherwise-unrecognised 'type' values indicate a production type
+			production_types = set()
+			for val in requested_types:
+				if val not in ('production', 'graphics', 'music', 'scener', 'group', 'releaser', 'party'):
+					production_types.add(val)
+
+			if production_types:
+				subqueries_from_type.add('production')
+				production_filter_q &= Q(types__name__in=production_types)
+
 			subqueries_to_perform &= subqueries_from_type
 
 		# Construct the master search query as a union of subqueries that search
