@@ -25,6 +25,7 @@ class TSHeadline(Func):
 FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
+TAG_RE = re.compile(r'\[([\w-]+)\]')
 RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged')
 
 
@@ -36,6 +37,7 @@ class SearchForm(forms.Form):
 
 		# Look for filter expressions within query
 		filter_expressions = collections.defaultdict(set)
+		tag_names = set()
 
 		def apply_filter(match):
 			key, val = match.groups()
@@ -49,6 +51,12 @@ class SearchForm(forms.Form):
 
 		for filter_re in (FILTER_RE_ONEWORD, FILTER_RE_SINGLEQUOTE, FILTER_RE_DOUBLEQUOTE):
 			query = filter_re.sub(apply_filter, query)
+
+		def apply_tag(match):
+			tag_names.add(match.group(1))
+			return ''
+
+		query = TAG_RE.sub(apply_tag, query)
 
 		psql_query = SearchQuery(unidecode(query))
 		clean_query = generate_search_title(query)
@@ -109,9 +117,9 @@ class SearchForm(forms.Form):
 					)
 				)
 
-		if 'tagged' in filter_expressions:
+		if tag_names or ('tagged' in filter_expressions):
 			subqueries_to_perform &= set(['production'])
-			for tag_name in filter_expressions['tagged']:
+			for tag_name in filter_expressions['tagged'] | tag_names:
 				production_filter_q &= Q(tags__name=tag_name)
 
 		if 'type' in filter_expressions:
