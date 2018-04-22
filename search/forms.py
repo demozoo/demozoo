@@ -77,8 +77,10 @@ class SearchForm(forms.Form):
 			for name in filter_expressions['by'] | filter_expressions['author']:
 				clean_name = generate_search_title(name)
 				production_filter_q &= (
-					Q(author_nicks__variants__search_title=clean_name) |
-					Q(author_affiliation_nicks__variants__search_title=clean_name)
+					# join back through releaser so that we match any nick variant ever used by the author,
+					# not just the nick used on the prod. Better to err on the side of being too liberal
+					Q(author_nicks__releaser__nicks__variants__search_title=clean_name) |
+					Q(author_affiliation_nicks__releaser__nicks__variants__search_title=clean_name)
 				)
 
 		if 'of' in filter_expressions:
@@ -97,8 +99,14 @@ class SearchForm(forms.Form):
 					is_group=False, group_memberships__group__nicks__variants__search_title=clean_name
 				)
 				production_filter_q &= (
-					Q(author_nicks__releaser__is_group=True, author_nicks__variants__search_title=clean_name) |
-					Q(author_affiliation_nicks__variants__search_title=clean_name)
+					# join back through releaser so that we match any nick variant ever used by the author,
+					# not just the nick used on the prod. Better to err on the side of being too liberal
+					Q(
+						author_nicks__releaser__is_group=True,
+						author_nicks__releaser__nicks__variants__search_title=clean_name
+					) | Q(
+						author_affiliation_nicks__releaser__nicks__variants__search_title=clean_name
+					)
 				)
 
 		if 'type' in filter_expressions:
