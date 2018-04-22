@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.postgres.search import SearchQuery, SearchRank
@@ -18,11 +20,37 @@ class TSHeadline(Func):
 	output_field = models.TextField()
 
 
+# match foo:bar, foo:"raster bar" or foo:'copper bar'
+FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
+FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"\b')
+FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'\b')
+
+
 class SearchForm(forms.Form):
 	q = forms.CharField(required=True, label='Search')
 
 	def search(self, with_real_names=False, page_number=1, count=50):
 		query = self.cleaned_data['q']
+
+		# Look for filter expressions within query
+		types_to_search = set()
+		def apply_filter(match):
+			key, val = match.groups()
+			if key == 'type':
+				if val in ('production', 'releaser', 'party'):
+					types_to_search.add(val)
+					return ''
+
+			# if we fall through here, the filter has not been recognised;
+			# leave the original string intact to be handled as a search term
+			return match.group(0)
+
+		for filter_re in (FILTER_RE_ONEWORD, FILTER_RE_SINGLEQUOTE, FILTER_RE_DOUBLEQUOTE):
+			query = filter_re.sub(apply_filter, query)
+
+		if not types_to_search:
+			types_to_search = set(['production', 'releaser', 'party'])
+
 		psql_query = SearchQuery(unidecode(query))
 		clean_query = generate_search_title(query)
 		rank_annotation = SearchRank(F('search_document'), psql_query)
@@ -44,62 +72,71 @@ class SearchForm(forms.Form):
 			rank=rank_annotation
 		).values('pk', 'type', 'exactness', 'rank').none()
 
-		# Search for productions
-		qs = qs.union(
-			Production.objects.annotate(
-				rank=rank_annotation,
-				type=models.Value('production', output_field=models.CharField()),
-				exactness=models.Case(
-					models.When(search_title=clean_query, then=models.Value(2)),
-					models.When(search_title__startswith=clean_query, then=models.Value(1)),
-					default=models.Value(0, output_field=models.IntegerField()),
-					output_field=models.IntegerField()
-				)
-			).filter(
-				Q(search_document=psql_query)
-			).values('pk', 'type', 'exactness', 'rank')
-		)
+		if 'production' in types_to_search:
+			# Search for productions
+			qs = qs.union(
+				Production.objects.annotate(
+					rank=rank_annotation,
+					type=models.Value('production', output_field=models.CharField()),
+					exactness=models.Case(
+						models.When(search_title=clean_query, then=models.Value(2)),
+						models.When(search_title__startswith=clean_query, then=models.Value(1)),
+						default=models.Value(0, output_field=models.IntegerField()),
+						output_field=models.IntegerField()
+					)
+				).filter(
+					Q(search_document=psql_query)
+				).order_by(
+					# empty order_by to cancel the Production model's native ordering
+				).values('pk', 'type', 'exactness', 'rank')
+			)
 
-		# Search for releasers
-		if with_real_names:
-			releaser_filter_q = Q(admin_search_document=psql_query)
-			releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
-		else:
-			releaser_filter_q = Q(search_document=psql_query)
-			releaser_rank_annotation = rank_annotation
+		if 'releaser' in types_to_search:
+			# Search for releasers
+			if with_real_names:
+				releaser_filter_q = Q(admin_search_document=psql_query)
+				releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
+			else:
+				releaser_filter_q = Q(search_document=psql_query)
+				releaser_rank_annotation = rank_annotation
 
-		qs = qs.union(
-			Releaser.objects.annotate(
-				rank=releaser_rank_annotation,
-				type=models.Value('releaser', output_field=models.CharField()),
-				# Exactness test will be applied to each of the releaser's nick variants;
-				# take the highest result
-				exactness=models.Max(models.Case(
-					models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
-					models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
-					default=models.Value(0, output_field=models.IntegerField()),
-					output_field=models.IntegerField()
-				))
-			).filter(
-				releaser_filter_q
-			).values('pk', 'type', 'exactness', 'rank')
-		)
+			qs = qs.union(
+				Releaser.objects.annotate(
+					rank=releaser_rank_annotation,
+					type=models.Value('releaser', output_field=models.CharField()),
+					# Exactness test will be applied to each of the releaser's nick variants;
+					# take the highest result
+					exactness=models.Max(models.Case(
+						models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
+						models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
+						default=models.Value(0, output_field=models.IntegerField()),
+						output_field=models.IntegerField()
+					))
+				).filter(
+					releaser_filter_q
+				).order_by(
+					# empty order_by to cancel the Releaser model's native ordering
+				).values('pk', 'type', 'exactness', 'rank')
+			)
 
-		# Search for parties
-		qs = qs.union(
-			Party.objects.annotate(
-				rank=rank_annotation,
-				type=models.Value('party', output_field=models.CharField()),
-				exactness=models.Case(
-					models.When(search_title=clean_query, then=models.Value(2)),
-					models.When(search_title__startswith=clean_query, then=models.Value(1)),
-					default=models.Value(0, output_field=models.IntegerField()),
-					output_field=models.IntegerField()
-				)
-			).filter(
-				Q(search_document=psql_query)
-			).values('pk', 'type', 'exactness', 'rank'),
-		)
+		if 'party' in types_to_search:
+			# Search for parties
+			qs = qs.union(
+				Party.objects.annotate(
+					rank=rank_annotation,
+					type=models.Value('party', output_field=models.CharField()),
+					exactness=models.Case(
+						models.When(search_title=clean_query, then=models.Value(2)),
+						models.When(search_title__startswith=clean_query, then=models.Value(1)),
+						default=models.Value(0, output_field=models.IntegerField()),
+						output_field=models.IntegerField()
+					)
+				).filter(
+					Q(search_document=psql_query)
+				).order_by(
+					# empty order_by to cancel the Party model's native ordering
+				).values('pk', 'type', 'exactness', 'rank'),
+			)
 
 		qs = qs.order_by('-exactness', '-rank', 'pk')
 
