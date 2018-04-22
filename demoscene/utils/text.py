@@ -17,6 +17,9 @@ def generate_search_title(s):
 	# strip accents
 	s = ''.join(c for c in unicodedata.normalize('NFD', s) if not unicodedata.combining(c))
 
+	# normalise $ to S (special case for T$ at Saga Musix's insistence ;-) )
+	s = s.replace('$', 's')
+
 	# replace punctuation with spaces
 	s = ''.join((' ' if unicodedata.category(c)[0] == 'P' else c) for c in s)
 
