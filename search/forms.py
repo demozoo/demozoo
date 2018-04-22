@@ -23,9 +23,9 @@ class TSHeadline(Func):
 
 # match foo:bar, foo:"raster bar" or foo:'copper bar'
 FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
-FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"\b')
-FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'\b')
-RECOGNISED_FILTER_KEYS = ('type',)
+FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
+FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
+RECOGNISED_FILTER_KEYS = ('type', 'platform')
 
 
 class SearchForm(forms.Form):
@@ -66,6 +66,10 @@ class SearchForm(forms.Form):
 			releaser_rank_annotation = rank_annotation
 
 		party_filter_q = Q(search_document=psql_query)
+
+		if 'platform' in filter_expressions:
+			subqueries_to_perform &= set(['production'])
+			production_filter_q &= Q(platforms__name__in=filter_expressions['platform'])
 
 		if 'type' in filter_expressions:
 			requested_types = filter_expressions['type']
@@ -129,7 +133,7 @@ class SearchForm(forms.Form):
 					production_filter_q
 				).order_by(
 					# empty order_by to cancel the Production model's native ordering
-				).values('pk', 'type', 'exactness', 'rank')
+				).distinct().values('pk', 'type', 'exactness', 'rank')
 			)
 
 		if 'releaser' in subqueries_to_perform:
