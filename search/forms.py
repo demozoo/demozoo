@@ -22,10 +22,10 @@ class TSHeadline(Func):
 
 
 # match foo:bar, foo:"raster bar" or foo:'copper bar'
-FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
+FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged')
 
 
 class SearchForm(forms.Form):
@@ -108,6 +108,11 @@ class SearchForm(forms.Form):
 						author_affiliation_nicks__releaser__nicks__variants__search_title=clean_name
 					)
 				)
+
+		if 'tagged' in filter_expressions:
+			subqueries_to_perform &= set(['production'])
+			for tag_name in filter_expressions['tagged']:
+				production_filter_q &= Q(tags__name=tag_name)
 
 		if 'type' in filter_expressions:
 			requested_types = filter_expressions['type']
