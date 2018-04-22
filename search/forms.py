@@ -72,12 +72,14 @@ class SearchForm(forms.Form):
 			Releaser.objects.annotate(
 				rank=releaser_rank_annotation,
 				type=models.Value('releaser', output_field=models.CharField()),
-				exactness=models.Case(
+				# Exactness test will be applied to each of the releaser's nick variants;
+				# take the highest result
+				exactness=models.Max(models.Case(
 					models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
 					models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
 					default=models.Value(0, output_field=models.IntegerField()),
 					output_field=models.IntegerField()
-				)
+				))
 			).filter(
 				releaser_filter_q
 			).values('pk', 'type', 'exactness', 'rank')
