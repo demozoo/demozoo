@@ -25,7 +25,7 @@ class TSHeadline(Func):
 FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
-RECOGNISED_FILTER_KEYS = ('type', 'platform')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on')
 
 
 class SearchForm(forms.Form):
@@ -67,9 +67,10 @@ class SearchForm(forms.Form):
 
 		party_filter_q = Q(search_document=psql_query)
 
-		if 'platform' in filter_expressions:
+		if 'platform' in filter_expressions or 'on' in filter_expressions:
 			subqueries_to_perform &= set(['production'])
-			production_filter_q &= Q(platforms__name__in=filter_expressions['platform'])
+			platforms = filter_expressions['platform'] | filter_expressions['on']
+			production_filter_q &= Q(platforms__name__in=platforms)
 
 		if 'type' in filter_expressions:
 			requested_types = filter_expressions['type']
