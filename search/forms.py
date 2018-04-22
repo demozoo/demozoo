@@ -25,7 +25,7 @@ class TSHeadline(Func):
 FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group')
 
 
 class SearchForm(forms.Form):
@@ -87,6 +87,18 @@ class SearchForm(forms.Form):
 				clean_name = generate_search_title(name)
 				releaser_filter_q &= Q(
 					is_group=False, group_memberships__group__nicks__variants__search_title=clean_name
+				)
+
+		if 'group' in filter_expressions:
+			subqueries_to_perform &= set(['production', 'releaser'])
+			for name in filter_expressions['group']:
+				clean_name = generate_search_title(name)
+				releaser_filter_q &= Q(
+					is_group=False, group_memberships__group__nicks__variants__search_title=clean_name
+				)
+				production_filter_q &= (
+					Q(author_nicks__releaser__is_group=True, author_nicks__variants__search_title=clean_name) |
+					Q(author_affiliation_nicks__variants__search_title=clean_name)
 				)
 
 		if 'type' in filter_expressions:
