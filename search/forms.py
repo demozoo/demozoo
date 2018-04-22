@@ -26,7 +26,7 @@ FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
 TAG_RE = re.compile(r'\[([\w-]+)\]')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year')
 
 
 class SearchForm(forms.Form):
@@ -121,6 +121,17 @@ class SearchForm(forms.Form):
 			subqueries_to_perform &= set(['production'])
 			for tag_name in filter_expressions['tagged'] | tag_names:
 				production_filter_q &= Q(tags__name=tag_name)
+
+		if 'year' in filter_expressions:
+			subqueries_to_perform &= set(['production', 'party'])
+			for year_str in filter_expressions['year']:
+				try:
+					year = int(year_str)
+				except ValueError:
+					continue
+
+				production_filter_q &= Q(release_date_date__year=year)
+				party_filter_q &= (Q(start_date_date__year=year) | Q(end_date_date__year=year))
 
 		if 'type' in filter_expressions:
 			requested_types = filter_expressions['type']
