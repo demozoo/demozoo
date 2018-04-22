@@ -42,10 +42,10 @@ class SearchForm(forms.Form):
 			if key in RECOGNISED_FILTER_KEYS:
 				filter_expressions[key].add(val)
 				return ''
-
-			# if we fall through here, the filter has not been recognised;
-			# leave the original string intact to be handled as a search term
-			return match.group(0)
+			else:
+				# the filter has not been recognised;
+				# leave the original string intact to be handled as a search term
+				return match.group(0)
 
 		for filter_re in (FILTER_RE_ONEWORD, FILTER_RE_SINGLEQUOTE, FILTER_RE_DOUBLEQUOTE):
 			query = filter_re.sub(apply_filter, query)
@@ -70,9 +70,17 @@ class SearchForm(forms.Form):
 		if 'type' in filter_expressions:
 			requested_types = filter_expressions['type']
 			subqueries_from_type = set()
+			filter_by_prod_supertype = False
+			production_supertypes = []
 
-			if 'production' in requested_types:
+			for supertype in ('production', 'graphics', 'music'):
+				if supertype in requested_types:
+					filter_by_prod_supertype = True
+					production_supertypes.append(supertype)
+
+			if filter_by_prod_supertype:
 				subqueries_from_type.add('production')
+				production_filter_q &= Q(supertype__in=production_supertypes)
 
 			if 'releaser' in requested_types or 'scener' in requested_types or 'group' in requested_types:
 				subqueries_from_type.add('releaser')
