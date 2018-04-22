@@ -61,10 +61,16 @@ class SearchForm(forms.Form):
 		)
 
 		# Search for releasers
-		# TODO: support searching admin-only data (e.g. private real names)
+		if with_real_names:
+			releaser_filter_q = Q(admin_search_document=psql_query)
+			releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
+		else:
+			releaser_filter_q = Q(search_document=psql_query)
+			releaser_rank_annotation = rank_annotation
+
 		qs = qs.union(
 			Releaser.objects.annotate(
-				rank=rank_annotation,
+				rank=releaser_rank_annotation,
 				type=models.Value('releaser', output_field=models.CharField()),
 				exactness=models.Case(
 					models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
@@ -73,7 +79,7 @@ class SearchForm(forms.Form):
 					output_field=models.IntegerField()
 				)
 			).filter(
-				Q(search_document=psql_query)
+				releaser_filter_q
 			).values('pk', 'type', 'exactness', 'rank')
 		)
 
