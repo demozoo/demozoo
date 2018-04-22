@@ -1,3 +1,4 @@
+import collections
 import re
 
 from django import forms
@@ -24,6 +25,7 @@ class TSHeadline(Func):
 FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:(\w+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"\b')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'\b')
+RECOGNISED_FILTER_KEYS = ('type',)
 
 
 class SearchForm(forms.Form):
@@ -33,13 +35,13 @@ class SearchForm(forms.Form):
 		query = self.cleaned_data['q']
 
 		# Look for filter expressions within query
-		types_to_search = set()
+		filter_expressions = collections.defaultdict(set)
+
 		def apply_filter(match):
 			key, val = match.groups()
-			if key == 'type':
-				if val in ('production', 'releaser', 'party'):
-					types_to_search.add(val)
-					return ''
+			if key in RECOGNISED_FILTER_KEYS:
+				filter_expressions[key].add(val)
+				return ''
 
 			# if we fall through here, the filter has not been recognised;
 			# leave the original string intact to be handled as a search term
@@ -48,12 +50,43 @@ class SearchForm(forms.Form):
 		for filter_re in (FILTER_RE_ONEWORD, FILTER_RE_SINGLEQUOTE, FILTER_RE_DOUBLEQUOTE):
 			query = filter_re.sub(apply_filter, query)
 
-		if not types_to_search:
-			types_to_search = set(['production', 'releaser', 'party'])
-
 		psql_query = SearchQuery(unidecode(query))
 		clean_query = generate_search_title(query)
 		rank_annotation = SearchRank(F('search_document'), psql_query)
+
+		subqueries_to_perform = set(['production', 'releaser', 'party'])
+
+		production_filter_q = Q(search_document=psql_query)
+
+		if with_real_names:
+			releaser_filter_q = Q(admin_search_document=psql_query)
+			releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
+		else:
+			releaser_filter_q = Q(search_document=psql_query)
+			releaser_rank_annotation = rank_annotation
+
+		party_filter_q = Q(search_document=psql_query)
+
+		if 'type' in filter_expressions:
+			requested_types = filter_expressions['type']
+			subqueries_from_type = set()
+
+			if 'production' in requested_types:
+				subqueries_from_type.add('production')
+
+			if 'releaser' in requested_types or 'scener' in requested_types or 'group' in requested_types:
+				subqueries_from_type.add('releaser')
+
+				if 'scener' in requested_types and not ('releaser' in requested_types or 'group' in requested_types):
+					releaser_filter_q &= Q(is_group=False)
+
+				if 'group' in requested_types and not ('releaser' in requested_types or 'scener' in requested_types):
+					releaser_filter_q &= Q(is_group=True)
+
+			if 'party' in requested_types:
+				subqueries_from_type.add('party')
+
+			subqueries_to_perform &= subqueries_from_type
 
 		# Construct the master search query as a union of subqueries that search
 		# one model each. Each subquery yields a queryset of dicts with the following fields:
@@ -72,7 +105,7 @@ class SearchForm(forms.Form):
 			rank=rank_annotation
 		).values('pk', 'type', 'exactness', 'rank').none()
 
-		if 'production' in types_to_search:
+		if 'production' in subqueries_to_perform:
 			# Search for productions
 			qs = qs.union(
 				Production.objects.annotate(
@@ -85,21 +118,14 @@ class SearchForm(forms.Form):
 						output_field=models.IntegerField()
 					)
 				).filter(
-					Q(search_document=psql_query)
+					production_filter_q
 				).order_by(
 					# empty order_by to cancel the Production model's native ordering
 				).values('pk', 'type', 'exactness', 'rank')
 			)
 
-		if 'releaser' in types_to_search:
+		if 'releaser' in subqueries_to_perform:
 			# Search for releasers
-			if with_real_names:
-				releaser_filter_q = Q(admin_search_document=psql_query)
-				releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
-			else:
-				releaser_filter_q = Q(search_document=psql_query)
-				releaser_rank_annotation = rank_annotation
-
 			qs = qs.union(
 				Releaser.objects.annotate(
 					rank=releaser_rank_annotation,
@@ -119,7 +145,7 @@ class SearchForm(forms.Form):
 				).values('pk', 'type', 'exactness', 'rank')
 			)
 
-		if 'party' in types_to_search:
+		if 'party' in subqueries_to_perform:
 			# Search for parties
 			qs = qs.union(
 				Party.objects.annotate(
@@ -132,7 +158,7 @@ class SearchForm(forms.Form):
 						output_field=models.IntegerField()
 					)
 				).filter(
-					Q(search_document=psql_query)
+					party_filter_q
 				).order_by(
 					# empty order_by to cancel the Party model's native ordering
 				).values('pk', 'type', 'exactness', 'rank'),
@@ -175,7 +201,7 @@ class SearchForm(forms.Form):
 
 		if 'releaser' in to_fetch:
 			releasers = Releaser.objects.filter(pk__in=to_fetch['releaser']).prefetch_related(
-				'group_memberships__group', 'nicks'
+				'group_memberships__group__nicks', 'nicks'
 			).annotate(
 				search_snippet=TSHeadline('notes', psql_query)
 			)
