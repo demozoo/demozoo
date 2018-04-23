@@ -1,4 +1,4 @@
-{% load url from future %}
+
 {% load demoscene_tags %}
 
 <div class="panel screenshots_panel">
@@ -13,7 +13,9 @@
 					<img src="{{ initial_screenshot.data.standard_url }}" width="{{ initial_screenshot.data.standard_width }}" height="{{ initial_screenshot.data.standard_height }}" alt="" />
 				</a>
 			{% endif %}
-		{% elif production.can_have_screenshots %}
+		{% elif production.supertype == 'music' %}
+			<div class="no_screenshot music"></div>
+		{% else %}
 			<div class="no_screenshot">
 				<p>
 					No screenshot yet!
@@ -22,8 +24,6 @@
 					{% endif %}
 				</p>
 			</div>
-		{% else %}
-			<div class="no_screenshot music"></div>
 		{% endif %}
 	</div>
 
@@ -31,17 +31,17 @@
 		<ul class="actions">
 			{% if show_all_screenshots_link %}
 				<li class="all_screenshots">
-					<a class="action_button" href="{% url 'production_screenshots' production.id %}">All screenshots</a>
+					<a class="action_button" href="{{ production.get_all_screenshots_url }}">{{ all_screenshots_label }}</a>
 				</li>
 			{% endif %}
 			{% if show_add_screenshot_link %}
 				<li>
-					<a href="{% url 'production_add_screenshot' production.id %}" class="action_button icon add open_in_lightbox">Add screenshot</a>
+					<a href="{{ production.get_add_screenshot_url }}" class="action_button icon add open_in_lightbox">{{ add_screenshot_label }}</a>
 				</li>
 			{% endif %}
 			{% if show_manage_screenshots_link %}
 				<li>
-					<a href="{% url 'production_edit_screenshots' production.id %}" class="action_button icon edit">Manage screenshots</a>
+					<a href="{{ production.get_edit_screenshots_url }}" class="action_button icon edit">{{ manage_screenshots_label }}</a>
 				</li>
 			{% endif %}
 		</ul>

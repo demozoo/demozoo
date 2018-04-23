@@ -1,21 +1,19 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models, transaction
-from django.utils.daemonize import become_daemon
 from django.contrib.contenttypes.models import ContentType
 
-import os
 import sys
 import operator
 import time
-from datetime import datetime
-from optparse import make_option
 
+from djapian.daemonize import become_daemon
 from djapian.models import Change
 from djapian import utils
 from djapian.utils.paging import paginate
 from djapian.utils.commiter import Commiter
 from djapian import IndexSpace
+
 
 def get_content_types(app_models, *actions):
     lookup_args = dict(action__in=actions)
@@ -26,6 +24,7 @@ def get_content_types(app_models, *actions):
                     .values_list('content_type', flat=True)\
                     .distinct()
     return ContentType.objects.filter(pk__in=types)
+
 
 def get_indexers(content_type):
     return reduce(
@@ -51,14 +50,13 @@ def transact(func):
             func(*args, **kwargs)
         except Exception:
             traceback.print_exc()
-            transaction.rollback()
             sys.exit()
     return decorated
 
 
-@transaction.commit_manually
 @transact
 def update_changes(verbose, timeout, once, per_page, commit_each, app_models=None):
+    transaction.set_autocommit(False)
     counter = [0]
 
     def reset_counter():
@@ -145,6 +143,7 @@ def update_changes(verbose, timeout, once, per_page, commit_each, app_models=Non
 
         time.sleep(timeout)
 
+
 def rebuild(verbose, per_page, commit_each, app_models=None):
     def after_index(obj):
         if verbose:
@@ -158,31 +157,45 @@ def rebuild(verbose, per_page, commit_each, app_models=None):
                     indexer.clear()
                     indexer.update(None, after_index, per_page, commit_each)
 
+
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--verbose', dest='verbose', default=False,
-                    action='store_true',
-                    help='Verbosity output'),
-        make_option('--daemonize', dest='make_daemon', default=False,
-                    action='store_true',
-                    help='Do not fork the process'),
-        make_option('--loop', dest='loop', default=False,
-                    action='store_true',
-                    help='Run update loop indefinetely'),
-        make_option('--time-out', dest='timeout', default=10,
-                    action='store', type='int',
-                    help='Time to sleep between each query to the'
-                         ' database (default: %default)'),
-        make_option('--rebuild', dest='rebuild_index', default=False,
-                    action='store_true',
-                    help='Rebuild index database'),
-        make_option('--per_page', dest='per_page', default=1000,
-                    action='store', type='int',
-                    help='Working page size'),
-        make_option('--commit_each', dest='commit_each', default=False,
-                    action='store_true',
-                    help='Commit/flush changes on every document update'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--verbose', dest='verbose', default=False,
+            action='store_true',
+            help='Verbosity output'
+        )
+        parser.add_argument(
+            '--daemonize', dest='make_daemon', default=False,
+            action='store_true',
+            help='Do not fork the process'
+        )
+        parser.add_argument(
+            '--loop', dest='loop', default=False,
+            action='store_true',
+            help='Run update loop indefinetely'
+        )
+        parser.add_argument(
+            '--time-out', dest='timeout', default=10,
+            action='store', type=int,
+            help='Time to sleep between each query to the database (default: 10)'
+        )
+        parser.add_argument(
+            '--rebuild', dest='rebuild_index', default=False,
+            action='store_true',
+            help='Rebuild index database'
+        )
+        parser.add_argument(
+            '--per_page', dest='per_page', default=1000,
+            action='store', type=int,
+            help='Working page size'
+        )
+        parser.add_argument(
+            '--commit_each', dest='commit_each', default=False,
+            action='store_true',
+            help='Commit/flush changes on every document update'
+        )
+
     help = 'This is the Djapian daemon used to update the index based on djapian_change table.'
 
     requires_model_validation = True

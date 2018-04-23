@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load compress %}
+
+<html>
+	<head>
+		<title>{% block html_title %}Demozoo{% endblock %}</title>
+		{% block extra_css %}{% endblock %}
+		{% block extra_head %}{% endblock %}
+	</head>
+	<body class="{% block body_class %}default{% endblock %}">
+		<div class="content">
+			{% include "shared/messages.html" %}
+			{% block base_main %}{% endblock %}
+		</div>
+	</body>
+</html>

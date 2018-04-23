@@ -31,9 +31,12 @@
 	padding: 8px;
 	border: 1px solid #444;
 	background-color: #eee;
-	background-image: url('/static/images/screenshot_loading.gif');
 	background-repeat: no-repeat;
 	background-position: center;
+
+	&.loading {
+		background-image: url('/static/images/screenshot_loading.gif');
+	}
 
 	.lightbox_close {
 		margin-top: -4px;
@@ -47,6 +50,47 @@
 		&.pixelated {
 			image-rendering: pixelated; // Chrome 41+ and Opera 26+
 		}
+	}
+
+	.navbar {
+		top: 50%;
+		position: absolute;
+		width: 100%;
+		margin-left: -8px;
+	}
+
+	a.nav {
+		position: absolute;
+		display: block;
+		width: 50px;
+		top: -40px;
+		height: 80px;
+		background-color: rgba(32, 32, 32, 0.5);
+		background-repeat: no-repeat;
+		background-position: center;
+		border-radius: 5px;
+		border: 1px solid rgba(192, 192, 192, 0.5);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+		text-indent: -5000px;
+		overflow: hidden;
+
+		&:hover {
+			background-color: rgba(16, 16, 16, 0.7);
+		}
+	}
+
+	a.prev {
+		left: -24px;
+		background-image: url(/static/images/screenshot_nav_left.png);
+	}
+
+	a.next {
+		right: -24px;
+		background-image: url(/static/images/screenshot_nav_right.png);
+	}
+	&:hover .nav {
+		opacity: 1;
 	}
 }
 
@@ -68,4 +112,70 @@ a.lightbox_close {
 
 body.loading {
 	cursor: progress;
+}
+
+/* screenshot viewer */
+.screenshot-wrapper {
+	overflow: auto;
+}
+.zoom-controls {
+	position: absolute;
+	top: 75%;
+	left: 50%;
+	margin-left: -72px;
+	margin-top: -24px;
+	width: 149px;
+
+	a {
+		display: block;
+		float: left;
+		background-color: rgba(32, 32, 32, 0.5);
+		height: 48px;
+		width: 48px;
+		border: 1px solid rgba(192, 192, 192, 0.5);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+		text-align: center;
+		line-height: 48px;
+		text-decoration: none;
+		font-weight: bold;
+		font-size: 16pt;
+
+		&:hover {
+			background-color: rgba(16, 16, 16, 0.7);
+		}
+
+		&.zoom-out {
+			border-top-left-radius: 5px;
+			border-bottom-left-radius: 5px;
+		}
+		&.zoom-original {
+			border-left: none;
+		}
+		&.zoom-in {
+			border-left: none;
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+		}
+
+		svg.icon {
+			fill: #fff;
+		}
+	}
+}
+.media_lightbox_wrapper:hover .zoom-controls.visible a {
+	opacity: 1;
+}
+.zoom-controls:hover a {
+	opacity: 1;
+}
+
+/* Detect scrollbar width: https://davidwalsh.name/detect-scrollbar-width */
+/* way the hell off screen */
+.scrollbar-measure {
+	width: 100px;
+	height: 100px;
+	overflow: scroll;
+	position: absolute;
+	top: -9999px;
 }

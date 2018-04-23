@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load url from future %}
+
 
 {% block html_title %}Importing results for {{ competition.party.name }} {{ competition.name }} competition - Demozoo{% endblock %}
 
@@ -142,6 +142,7 @@
 				var titleAndAuthor = row[2].split(authorSeparator);
 				if (titleAndAuthor.length > 1) {
 					var author = titleAndAuthor.pop();
+					author = author.replace(/\s+\[REMOTE\]\s*$/, '');
 					var title = titleAndAuthor.join(authorSeparator);
 				} else {
 					var author = '';

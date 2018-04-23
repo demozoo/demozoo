@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load demoscene_tags compress %}
-{% load url from future %}
+
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
@@ -29,17 +29,18 @@
 
 {% block extra_head %}
 	{{ carousel.media }}
-
-	{% if production.default_screenshot %}
-		<meta name="twitter:card" content="summary_large_image">
-		<meta name="twitter:site" content="@demozoo">
-		{% with production.author_twitter_handle as twitter_handle %}
-			{% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
-		{% endwith %}
-		<meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
-		<meta property="og:title" content="{{ production.title }}">
-		<meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
-		<meta property="og:image" content="{{ production.default_screenshot.standard_url }}">
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="@demozoo">
+	{% with production.author_twitter_handle as twitter_handle %}
+		{% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
+	{% endwith %}
+	<meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
+	<meta property="og:title" content="{{ production.title }}">
+	<meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
+	{% if not meta_screenshot %}
+		<meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
+	{% else %}
+		<meta property="og:image" content="{{ meta_screenshot.standard_url }}">
 	{% endif %}
 {% endblock %}
 
@@ -83,8 +84,10 @@
 							<ul class="tell_us_something_options">
 								<li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox focus_empty_input">Add a download link</a></li>
 								<li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
-								{% if production.can_have_screenshots %}
-									<li><a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add a screenshot</a></li>
+								{% if production.supertype == 'music' %}
+									<li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add artwork</a></li>
+								{% else %}
+									<li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add a screenshot</a></li>
 								{% endif %}
 								<li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
 								{% if production.can_have_soundtracks %}
@@ -124,26 +127,21 @@
 					</ul>
 				{% endif %}
 
-				{% include "shared/production_listing.html" with productions=pack_members %}
-
+				{% production_listing pack_members show_screenshots=1 %}
 			</div>
 		{% endif %}
 
 		{% if packed_in_productions %}
 			<div class="packed_in_panel panel">
 				<h3>Packed in:</h3>
-				{% with packed_in_productions as productions %}
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
-				{% endwith %}
+				{% production_listing packed_in_productions show_screenshots=1 %}
 			</div>
 		{% endif %}
 
 		{% if featured_in_productions %}
 			<div class="featured_in_panel panel">
 				<h3>Featured in:</h3>
-				{% with featured_in_productions as productions %}
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
-				{% endwith %}
+				{% production_listing featured_in_productions show_screenshots=1 %}
 			</div>
 		{% endif %}
 
@@ -159,9 +157,7 @@
 					</ul>
 				{% endif %}
 
-				{% with soundtracks as productions %}
-					{% include "shared/production_listing.html" %}
-				{% endwith %}
+				{% production_listing soundtracks %}
 
 			</div>
 		{% endif %}

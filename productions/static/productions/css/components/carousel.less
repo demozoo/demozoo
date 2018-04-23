@@ -1,19 +1,23 @@
 .carousel {
-	width: 400px;
-	height: 300px;
+	@carouselWidth: 400px;
+	@carouselHeight: 300px;
+
+	width: @carouselWidth;
+	height: @carouselHeight;
 	position: relative;
 
 	.viewport {
+		background-color: #111;
 		position: absolute;
-		width: 400px;
-		height: 300px;
+		width: @carouselWidth;
+		height: @carouselHeight;
 		top: 0;
 		left: 0;
 		overflow: hidden;
 
 		.tray {
-			width: 800px;
-			height: 300px;
+			width: (@carouselWidth * 2);
+			height: @carouselHeight;
 			top: 0;
 			left: 0;
 			position: absolute;
@@ -25,13 +29,14 @@
 		display: block;
 		width: 50px;
 		top: 0;
-		height: 300px;
+		height: @carouselHeight;
 		background-color: rgba(32, 32, 32, 0.5);
 		background-repeat: no-repeat;
 		background-position: center;
 		opacity: 0;
 		transition: opacity 0.2s ease-in-out;
 		text-indent: -500px;
+		overflow: hidden;
 
 		&:active {
 			background-color: rgba(16, 16, 16, 0.7);
@@ -54,22 +59,50 @@
 
 	.bucket {
 		display: inline-block;
-		width: 400px;
-		height: 300px;
-		background-color: #bbb;
-		line-height: 300px;
+		width: @carouselWidth;
+		height: @carouselHeight;
 		text-align: center;
 		vertical-align: middle;
 	}
 
-	.screenshot, .video {
-		width: 400px;
-		height: 300px;
+	.mosaic {
+		display: flex;
+		flex-wrap: wrap;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+
+		&__tile {
+			height: 50%;
+			overflow: hidden;
+			position: relative;
+			width: 50%;
+		}
+
+		&__image {
+			height: 100%;
+			left: 0;
+			object-fit: cover !important;
+			position: absolute;
+			top: 0;
+			width: 100%;
+
+			&.pixelated {
+				image-rendering: pixelated;
+			}
+		}
+	}
+
+	.screenshot,
+	.video {
+		width: @carouselWidth;
+		height: @carouselHeight;
 		display: inline-block;
-		background-color: #bbb;
-		line-height: 300px;
+		line-height: @carouselHeight;
 		text-align: center;
 		vertical-align: middle;
+		font-size: 0;
 
 		img {
 			margin: auto;
@@ -102,33 +135,8 @@
 		}
 	}
 
-	.mosaic {
-		display: inline-block;
-		line-height: 300px;
-		text-align: center;
-		vertical-align: middle;
-
-		.tile {
-			float: left;
-			display: inline-block;
-			text-align: center;
-			vertical-align: middle;
-
-			img {
-				margin: auto;
-				vertical-align: middle;
-
-				&.pixelated {
-					image-rendering: pixelated;
-				}
-			}
-		}
-	}
-
 	.cowbell-player {
-		background-image: url(/static/images/sample.png);
-		background-repeat: no-repeat;
-		background-position: center;
+		background: #bbb no-repeat center;
 		height: 200px;
 		padding-top: 100px;
 
@@ -136,27 +144,26 @@
 			display: block;
 			margin: auto;
 		}
+
+		&.no-artwork {
+			background-image: url(/static/images/sample.png);
+		}
 	}
 
 	.no_screenshot {
-		width: 400px;
-		height: 300px;
-		background-color: #bbb;
+		background: #bbb no-repeat center;
+		height: @carouselHeight;
+		width: @carouselWidth;
 
 		&.music {
 			background-image: url(/static/images/turntable.png);
-			background-repeat: no-repeat;
-			background-position: center;
 		}
 
 		p {
+			background: no-repeat url(/static/images/camera.png) center 100px;
 			margin: 0;
 			padding-top: 182px;
-			background-image: url(/static/images/camera.png);
-			background-repeat: no-repeat;
-			background-position: center 100px;
 			text-align: center;
 		}
 	}
-
 }

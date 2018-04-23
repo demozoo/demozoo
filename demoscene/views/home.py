@@ -35,7 +35,7 @@ def page_not_found_test(request):
 
 
 def recent_edits(request):
-	edits = Edit.objects.order_by('-timestamp').select_related('user', 'focus')
+	edits = Edit.objects.order_by('-timestamp').select_related('user')
 	if not request.user.is_staff:
 		edits = edits.filter(admin_only=False)
 	edits_page = get_page(

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load demoscene_tags compress %}
 {% load safe_markdown %}
-{% load url from future %}
+
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
@@ -19,49 +19,79 @@
 	{% endcompress %}
 {% endblock %}
 
+{% block extra_head %}
+	<meta name="twitter:site" content="@demozoo">
+	<meta property="og:url" content="https://demozoo.org{{ party.get_absolute_url }}" />
+	<meta property="og:title" content="{{ party.title }}{% if party.tagline %}: &quot;{{ party.tagline }}&quot;{% endif %}" />
+	<meta property="og:description" content="Check out the results and releases from {{ party.name}}, held {% date_range party.start_date party.end_date %} in {{ party.location }} on Demozoo." />
+	{% comment %}
+		todo: add randomly chosen(?) image
+	{% endcomment %}
+	<meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
+{% endblock %}
+
 {% block body_class %}show_party{% endblock %}
 
 {% block base_main %}
 	<script>
 		$(function() {
-			var resultsPanel = $('.results_panel');
-			var resultsMenu = $('.results_menu');
-			var resultsMenuUl = $('.results_menu ul');
-			var resultsMenuColumn = $('.results_menu_column');
+			var resultsMenuList = $('.results-menu__list');
 
-			var resultsPanelY, menuWidth, maxResultsMenuY;
+			if (resultsMenuList.length) {
+				var resultsMenu = $('.results_menu');
+				var resultsMenuColumn = $('.results_menu_column');
+				var resultsPanel = $('.results_panel');
 
-			function reflow() {
-				resultsPanelY = resultsMenuColumn.offset().top;
-				resultsMenu.css({
-					'width': resultsMenuColumn.width() + 'px'
-				});
-				resultsMenuUl.css({
-					'max-height': $(window).height() - 64 + 'px'
-				});
-				var resultsPanelBottom = resultsPanelY + resultsPanel.height();
-				maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
+				var scrollY = 0,
+					ticking = false,
+					resultsPanelY,
+					resultsPanelBottom,
+					maxResultsMenuY;
 
-				setResultsPanelPosition();
-			}
-			reflow();
-
-			function setResultsPanelPosition() {
-				var scrollPos = $(window).scrollTop();
-
-				if (scrollPos <= resultsPanelY) {
-					resultsPanel.removeClass('fixed bottom');
-				} else if (scrollPos <= maxResultsMenuY - 10) {
-					resultsPanel.removeClass('bottom').addClass('fixed');
-					resultsMenu.css({
-						'width': menuWidth + 'px'
-					});
-				} else {
-					resultsPanel.removeClass('fixed').addClass('bottom');
+				function requestTick(event) {
+					if(!ticking) {
+						requestAnimationFrame(event);
+					}
+					ticking = true;
 				}
-			}
 
-			$(window).scroll(setResultsPanelPosition).load(reflow).resize(reflow);
+				function handleScroll() {
+					scrollY = window.scrollY;
+					requestTick(update);
+				}
+
+				function handleResize() {
+					requestTick(menuResize);
+				}
+
+				function menuResize() {
+					ticking = false;
+
+					resultsMenu.css({
+						'width': resultsMenuColumn.width() + 'px'
+					});
+				}
+
+				function update() {
+					ticking = false;
+					resultsPanelY = resultsPanel.offset().top;
+					resultsPanelBottom = resultsPanelY + resultsPanel.height();
+					maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
+
+					if (scrollY <= resultsPanelY) {
+						resultsPanel.removeClass('fixed bottom');
+					} else if (scrollY <= maxResultsMenuY - 10) {
+						resultsPanel.removeClass('bottom').addClass('fixed');
+					} else {
+						resultsPanel.removeClass('fixed').addClass('bottom');
+					}
+				}
+
+				window.addEventListener('scroll', handleScroll, false);
+				window.addEventListener('resize', handleResize, false);
+				update();
+				menuResize();
+			}
 		})
 	</script>
 
@@ -174,7 +204,7 @@
 			{% endif %}
 
 			{% if invitations %}
-				{% include "shared/production_listing.html" with productions=invitations show_screenshots=1 show_prod_types=1 %}
+				{% production_listing invitations show_screenshots=1 show_prod_types=1 %}
 			{% endif %}
 		</div>
 	{% endif %}
@@ -189,20 +219,20 @@
 			{% endif %}
 
 			{% if releases %}
-				{% include "shared/production_listing.html" with productions=releases show_screenshots=1 show_prod_types=1 %}
+				{% production_listing releases show_screenshots=1 show_prod_types=1 %}
 			{% endif %}
 		</div>
 	{% endif %}
 
-	{% if competitions_with_placings or user.is_authenticated %}
+	{% if competitions_with_placings_and_screenshots or user.is_authenticated %}
 		<div class="panel results_panel">
 			<div class="results_menu_column">
 				<div class="results_menu">
 					<h3>Results</h3>
-					{% if competitions_with_placings %}
-						<ul>
-							{% for compo, placings in competitions_with_placings %}
-								<li class="{% cycle 'odd' 'even' %}"><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+					{% if competitions_with_placings_and_screenshots %}
+						<ul class="results-menu__list">
+							{% for compo, placings in competitions_with_placings_and_screenshots %}
+								<li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
 							{% endfor %}
 						</ul>
 					{% endif %}
@@ -210,19 +240,22 @@
 			</div>
 
 			<div class="results_body">
-				{% for compo, placings in competitions_with_placings %}
+				{% for compo, placings in competitions_with_placings_and_screenshots %}
 					<section class="competition editable_chunk" id="competition_{{ compo.id }}">
 
 						{% if site_is_writeable %}
 							<ul class="actions">
 								<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+								{% if request.user.is_staff and not placings %}
+									<li><a class="action_button icon delete open_in_lightbox" href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
+								{% endif %}
 							</ul>
 						{% endif %}
 
 						<h4 class="competition__heading">{{ compo.name }}</h4>
 
 						{% if placings %}
-							{% include "shared/competition_results.html" with show_prod_types=1 %}
+							{% include "shared/competition_results.html" %}
 						{% endif %}
 					</section>
 				{% endfor %}

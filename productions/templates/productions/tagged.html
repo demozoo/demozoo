@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load safe_markdown compress %}
+{% load safe_markdown compress demoscene_tags %}
 
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
@@ -20,9 +20,7 @@
 	{% include "shared/production_reorder_links.html" %}
 
 	<ul>
-		{% with production_page.object_list as productions %}
-			{% include "shared/production_listing.html" with show_screenshots=1 show_prod_types=1 %}
-		{% endwith %}
+		{% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
 	</ul>
 	
 	{% with production_page as page %}

@@ -3,6 +3,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from demoscene.models import Releaser
+from parties.models import Party, PartySeries
 from platforms.models import Platform
 from productions.models import Production, ProductionType
 from api import serializers
@@ -62,3 +63,15 @@ class ReleaserViewSet(ListDetailModelViewSet):
 			queryset, many=True, context={'request': request}
 		)
 		return Response(serializer.data)
+
+
+class PartySeriesViewSet(ListDetailModelViewSet):
+	queryset = PartySeries.objects.all()
+	list_serializer_class = serializers.PartySeriesListingSerializer
+	serializer_class = serializers.PartySeriesSerializer
+
+
+class PartyViewSet(ListDetailModelViewSet):
+	queryset = Party.objects.all()
+	list_serializer_class = serializers.PartyListingSerializer
+	serializer_class = serializers.PartySerializer

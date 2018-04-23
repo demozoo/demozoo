@@ -531,15 +531,15 @@
             }
         },
 
-        removeTag: function(tag, animate) {
+        removeTag: function(tag, animate, skipEvents) {
             animate = typeof animate === 'undefined' ? this.options.animate : animate;
 
             tag = $(tag);
 
             // DEPRECATED.
-            this._trigger('onTagRemoved', null, tag);
+            if (!skipEvents) this._trigger('onTagRemoved', null, tag);
 
-            if (this._trigger('beforeTagRemoved', null, {tag: tag, tagLabel: this.tagLabel(tag)}) === false) {
+            if (!skipEvents && this._trigger('beforeTagRemoved', null, {tag: tag, tagLabel: this.tagLabel(tag)}) === false) {
                 return;
             }
 
@@ -559,23 +559,23 @@
                 var thisTag = this;
                 hide_args.push(function() {
                     tag.remove();
-                    thisTag._trigger('afterTagRemoved', null, {tag: tag, tagLabel: thisTag.tagLabel(tag)});
+                    if (!skipEvents) thisTag._trigger('afterTagRemoved', null, {tag: tag, tagLabel: thisTag.tagLabel(tag)});
                 });
 
                 tag.fadeOut('fast').hide.apply(tag, hide_args).dequeue();
             } else {
                 tag.remove();
-                this._trigger('afterTagRemoved', null, {tag: tag, tagLabel: this.tagLabel(tag)});
+                if (!skipEvents) this._trigger('afterTagRemoved', null, {tag: tag, tagLabel: this.tagLabel(tag)});
             }
 
         },
 
-        removeTagByLabel: function(tagLabel, animate) {
+        removeTagByLabel: function(tagLabel, animate, skipEvents) {
             var toRemove = this._findTagByLabel(tagLabel);
             if (!toRemove) {
                 throw "No such tag exists with the name '" + tagLabel + "'";
             }
-            this.removeTag(toRemove, animate);
+            this.removeTag(toRemove, animate, skipEvents);
         },
 
         removeAll: function() {

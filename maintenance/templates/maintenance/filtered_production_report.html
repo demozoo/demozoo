@@ -1,0 +1,34 @@
+{% extends "maintenance/base.html" %}
+{% load compress demoscene_tags %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block extra_css %}
+	{% compress css %}
+		<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
+		<link rel="stylesheet" href="/static/maintenance/css/components/production_listing_filters.less" type="text/less" />
+	{% endcompress %}
+{% endblock %}
+
+{% block base_main %}
+	<h2>{{ title }}</h2>
+
+	<form action="{{ url }}" method="GET" class="production_listing_filters">
+		<ul class="fields">
+			{{ filter_form.as_ul }}
+		</ul>
+		<input type="submit" value="Filter results">
+	</form>
+
+	<p>
+		Showing {{ count }} of {{ total_count }}
+		{% if count < total_count %}(refresh for another selection){% endif %}
+	</p>
+	<div id="main_column">
+		<div class="panel report" data-report-name="{{ exclusion_name }}">
+			{% production_listing productions show_prod_types=1 mark_excludable=mark_excludable %}
+		</div>
+	</div>
+{% endblock %}

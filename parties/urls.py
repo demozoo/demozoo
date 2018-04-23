@@ -1,31 +1,37 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
 
-urlpatterns = patterns('parties.views',
-	(r'^parties/$', 'parties.index', {}, 'parties'),
-	(r'^parties/by_date/$', 'parties.by_date', {}, 'parties_by_date'),
-	(r'^parties/(\d+)/$', 'parties.show', {}, 'party'),
-	(r'^parties/(\d+)/history/$', 'parties.history', {}, 'party_history'),
-	(r'^parties/series/(\d+)/$', 'parties.show_series', {}, 'party_series'),
-	(r'^parties/series/(\d+)/history/$', 'parties.series_history', {}, 'party_series_history'),
-	(r'^parties/series/(\d+)/edit/$', 'parties.edit_series', {}, 'party_edit_series'),
-	(r'^parties/series/(\d+)/edit_notes/$', 'parties.edit_series_notes', {}, 'party_edit_series_notes'),
-	(r'^parties/new/$', 'parties.create', {}, 'new_party'),
-	(r'^parties/(\d+)/add_competition/$', 'parties.add_competition', {}, 'party_add_competition'),
-	(r'^parties/(\d+)/edit/$', 'parties.edit', {}, 'edit_party'),
-	(r'^parties/(\d+)/edit_competition/(\d+)/$', 'parties.edit_competition', {}, 'party_edit_competition'),
-	(r'^parties/(\d+)/edit_notes/$', 'parties.edit_notes', {}, 'party_edit_notes'),
-	(r'^parties/(\d+)/edit_external_links/$', 'parties.edit_external_links', {}, 'party_edit_external_links'),
-	(r'^parties/(\d+)/results_file/(\d+)/$', 'parties.results_file', {}, 'party_results_file'),
-	(r'^parties/autocomplete/$', 'parties.autocomplete', {}),
-	(r'^parties/(\d+)/edit_invitations/$', 'parties.edit_invitations', {}, 'party_edit_invitations'),
-	(r'^parties/(\d+)/edit_releases/$', 'parties.edit_releases', {}, 'party_edit_releases'),
+from parties.views import competition_api as competition_api_views
+from parties.views import competitions as competition_views
+from parties.views import parties as party_views
 
-	(r'^competitions/(\d+)/$', 'competitions.show', {}, 'competition'),
-	(r'^competitions/(\d+)/history/$', 'competitions.history', {}, 'competition_history'),
-	(r'^competitions/(\d+)/edit$', 'competitions.edit', {}, 'competition_edit'),
-	(r'^competitions/(\d+)/import_text$', 'competitions.import_text', {}, 'competition_import_text'),
 
-	(r'^competition_api/add_placing/(\d+)/$', 'competition_api.add_placing', {}),
-	(r'^competition_api/update_placing/(\d+)/$', 'competition_api.update_placing', {}),
-	(r'^competition_api/delete_placing/(\d+)/$', 'competition_api.delete_placing', {}),
-)
+urlpatterns = [
+	url(r'^parties/$', party_views.index, {}, 'parties'),
+	url(r'^parties/by_date/$', party_views.by_date, {}, 'parties_by_date'),
+	url(r'^parties/(\d+)/$', party_views.show, {}, 'party'),
+	url(r'^parties/(\d+)/history/$', party_views.history, {}, 'party_history'),
+	url(r'^parties/series/(\d+)/$', party_views.show_series, {}, 'party_series'),
+	url(r'^parties/series/(\d+)/history/$', party_views.series_history, {}, 'party_series_history'),
+	url(r'^parties/series/(\d+)/edit/$', party_views.edit_series, {}, 'party_edit_series'),
+	url(r'^parties/series/(\d+)/edit_notes/$', party_views.edit_series_notes, {}, 'party_edit_series_notes'),
+	url(r'^parties/new/$', party_views.create, {}, 'new_party'),
+	url(r'^parties/(\d+)/add_competition/$', party_views.add_competition, {}, 'party_add_competition'),
+	url(r'^parties/(\d+)/edit/$', party_views.edit, {}, 'edit_party'),
+	url(r'^parties/(\d+)/edit_competition/(\d+)/$', party_views.edit_competition, {}, 'party_edit_competition'),
+	url(r'^parties/(\d+)/edit_notes/$', party_views.edit_notes, {}, 'party_edit_notes'),
+	url(r'^parties/(\d+)/edit_external_links/$', party_views.edit_external_links, {}, 'party_edit_external_links'),
+	url(r'^parties/(\d+)/results_file/(\d+)/$', party_views.results_file, {}, 'party_results_file'),
+	url(r'^parties/autocomplete/$', party_views.autocomplete, {}),
+	url(r'^parties/(\d+)/edit_invitations/$', party_views.edit_invitations, {}, 'party_edit_invitations'),
+	url(r'^parties/(\d+)/edit_releases/$', party_views.edit_releases, {}, 'party_edit_releases'),
+
+	url(r'^competitions/(\d+)/$', competition_views.show, {}, 'competition'),
+	url(r'^competitions/(\d+)/history/$', competition_views.history, {}, 'competition_history'),
+	url(r'^competitions/(\d+)/edit$', competition_views.edit, {}, 'competition_edit'),
+	url(r'^competitions/(\d+)/import_text$', competition_views.import_text, {}, 'competition_import_text'),
+	url(r'^competitions/(\d+)/delete/$', competition_views.delete, {}, 'delete_competition'),
+
+	url(r'^competition_api/add_placing/(\d+)/$', competition_api_views.add_placing, {}),
+	url(r'^competition_api/update_placing/(\d+)/$', competition_api_views.update_placing, {}),
+	url(r'^competition_api/delete_placing/(\d+)/$', competition_api_views.delete_placing, {}),
+]

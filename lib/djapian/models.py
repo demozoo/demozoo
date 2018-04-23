@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.encoding import smart_str
 
 from datetime import datetime
@@ -42,13 +42,13 @@ class Change(models.Model):
         ("delete", "object deleted"),
     )
 
-    content_type = models.ForeignKey(ContentType, db_index=True)
+    content_type = models.ForeignKey(ContentType, db_index=True, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=150)
 
     date = models.DateTimeField(default=datetime.now)
     action = models.CharField(max_length=6, choices=ACTIONS)
 
-    object = generic.GenericForeignKey()
+    object = GenericForeignKey()
 
     objects = ChangeManager()
 

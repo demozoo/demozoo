@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from demoscene.shortcuts import simple_ajax_form
 from demoscene.models import Edit
-from productions.models import Production
+from productions.models import Screenshot
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
 from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset
 from read_only_mode import writeable_site_required
@@ -19,14 +19,14 @@ from comments.forms import CommentForm
 
 
 def index(request):
-	parties = Party.objects.order_by('party_series__name', 'start_date_date').select_related('party_series')
+	parties = Party.objects.order_by('party_series__name', 'start_date_date', 'name').select_related('party_series')
 	return render(request, 'parties/index.html', {
 		'parties': parties,
 	})
 
 
 def by_date(request):
-	parties = Party.objects.order_by('start_date_date', 'end_date_date')
+	parties = Party.objects.order_by('start_date_date', 'end_date_date', 'name')
 	return render(request, 'parties/by_date.html', {
 		'parties': parties,
 	})
@@ -42,23 +42,31 @@ def show(request, party_id):
 	competitions_with_placings = [
 		(
 			competition,
-			competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+			competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
 		)
 		for competition in party.competitions.order_by('name', 'id')
 	]
+	entry_production_ids = [
+		placing.production_id
+		for _, placings in competitions_with_placings
+		for placing in placings
+	]
+	screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
+	competitions_with_placings_and_screenshots = [
+		(
+			competition,
+			[(placing, screenshot_map.get(placing.production_id)) for placing in placings]
+		)
+		for competition, placings in competitions_with_placings
+	]
 
-	# Do not show an invitations section in the special case that all invitations are
-	# entries in a competition at this party (which probably means that it was an invitation compo)
-	invitations = party.invitations.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
-	non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
-	if not non_competing_invitations:
-		invitations = Production.objects.none
+	invitations = party.invitations.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-	releases = party.releases.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		comment = Comment(commentable=party, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
 	else:
@@ -66,11 +74,11 @@ def show(request, party_id):
 
 	return render(request, 'parties/show.html', {
 		'party': party,
-		'competitions_with_placings': competitions_with_placings,
+		'competitions_with_placings_and_screenshots': competitions_with_placings_and_screenshots,
 		'results_files': party.results_files.all(),
 		'invitations': invitations,
 		'releases': releases,
-		'parties_in_series': party.party_series.parties.order_by('start_date_date').select_related('party_series'),
+		'parties_in_series': party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series'),
 		'external_links': external_links,
 		'comment_form': comment_form,
 	})
@@ -111,7 +119,7 @@ def create(request):
 			form.log_creation(request.user)
 
 			if request.is_ajax():
-				return HttpResponse('OK: %s' % party.get_absolute_url(), mimetype='text/plain')
+				return HttpResponse('OK: %s' % party.get_absolute_url(), content_type='text/plain')
 			else:
 				messages.success(request, 'Party added')
 				return redirect('party', party.id)
@@ -299,7 +307,7 @@ def autocomplete(request):
 		}
 		for party in parties
 	]
-	return HttpResponse(json.dumps(party_data), mimetype="text/javascript")
+	return HttpResponse(json.dumps(party_data), content_type="text/javascript")
 
 
 @writeable_site_required

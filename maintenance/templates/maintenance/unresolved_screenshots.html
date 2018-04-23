@@ -1,6 +1,6 @@
 {% extends "maintenance/base.html" %}
 {% load demoscene_tags %}
-{% load url from future %}
+
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -19,11 +19,11 @@
 					{% for file in archive_members %}
 						<li>
 							{% if site_is_writeable %}
-								<a href="{% url 'maintenance_resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
+								<a href="{% url 'maintenance:resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
 							{% else %}
 								{{ file.filename }} ({{ file.file_size }} bytes)
 							{% endif %}
-							- <a href="{% url 'maintenance_view_archive_member' file.id %}" target="_blank">view</a>
+							- <a href="{% url 'maintenance:view_archive_member' file.id %}" target="_blank">view</a>
 						</li>
 					{% endfor %}
 				<ul>

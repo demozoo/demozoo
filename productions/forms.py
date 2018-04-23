@@ -3,7 +3,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 
 from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember
-from demoscene.models import Edit
+from demoscene.models import BlacklistedTag, Edit
 from platforms.models import Platform
 from demoscene.utils import groklinks
 from demoscene.utils.party_field import PartyField
@@ -45,7 +45,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 		else:
 			self.instance.author_nicks = []
 			self.instance.author_affiliation_nicks = []
-		self.unparsed_byline = None
+		self.instance.unparsed_byline = None
 
 		self.instance.platforms = self.cleaned_data['platforms']
 		self.instance.release_date = self.cleaned_data['release_date']
@@ -262,7 +262,18 @@ class ProductionBlurbForm(forms.ModelForm):
 
 class ProductionTagsForm(forms.ModelForm):
 	def clean_tags(self):
-		return [slugify_tag(name) for name in self.cleaned_data['tags']]
+		clean_tags = []
+		for name in self.cleaned_data['tags']:
+			name = slugify_tag(name)
+			try:
+				blacklisted_tag = BlacklistedTag.objects.get(tag=name)
+				name = slugify_tag(blacklisted_tag.replacement)
+			except BlacklistedTag.DoesNotExist:
+				pass
+			if name:
+				clean_tags.append(name)
+
+		return clean_tags
 
 	class Meta:
 		model = Production
@@ -451,14 +462,29 @@ class ProductionInvitationPartyForm(forms.Form):
 ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
 	can_delete=True, extra=1)
 
+
 class ProductionIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.featured_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(ProductionIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.featured_types()
+
 
 class GraphicsIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.graphic_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(GraphicsIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.graphic_types()
+
 
 class MusicIndexFilterForm(forms.Form):
 	platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.music_types(), empty_label='All types')
+	production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+
+	def __init__(self, *args, **kwargs):
+		super(MusicIndexFilterForm, self).__init__(*args, **kwargs)
+		self.fields['production_type'].queryset = ProductionType.music_types()

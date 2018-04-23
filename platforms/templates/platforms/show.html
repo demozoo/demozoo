@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% load safe_markdown compress %}
-{% load url from future %}
+{% load safe_markdown compress demoscene_tags %}
+
 
 {% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
 
@@ -18,7 +18,7 @@
 		<div class="panel">
 			<h1 class="platform-overview__heading">{{ platform.name }}</h1>
 			{% if platform.photo %}
-			<img src="{{ platform.photo.url }}"
+			<img src="{{ platform.photo_url }}"
 			     class="platform-overview__image"
 			     alt="Image for the {{ platform.name }} platform"
 			     title="" />
@@ -58,7 +58,7 @@
 						<span>Recent releases:</span>
 					</h3>
 
-					{% include "shared/production_listing.html" with show_screenshots=1 %}
+					{% production_listing productions show_screenshots=1 %}
 
 					<footer class="panel__footer">
 						<a href="{% url 'productions' %}?platform={{ platform.id }}" class="button button--more">

@@ -1,5 +1,7 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
 
-urlpatterns = patterns('pages.views',
-	(r'^(.+)/$', 'page', {}, 'page'),
-)
+from pages import views as pages_views
+
+urlpatterns = [
+	url(r'^(.+)/$', pages_views.page, {}, 'page'),
+]

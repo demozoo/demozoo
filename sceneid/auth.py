@@ -110,8 +110,11 @@ def process_response(request):
 	# authenticate user via django using our own backend
 	user = authenticate(sceneid=response_data["user"]["id"])
 	if user is not None:
-		# we have a known local user linked to this sceneid
+		# we have a known active local user linked to this sceneid
 		login(request, user)
+	elif User.objects.filter(sceneid__sceneid=response_data["user"]["id"], is_active=False).exists():
+		# user is recognised but deactivated
+		messages.error(request, "Your account was disabled.")
 	else:
 		# no known user with this sceneid - prompt them to connect to a new or existing account
 		request.session['sceneid_login_userdata'] = response_data["user"]
@@ -130,7 +133,7 @@ def connect_accounts(request):
 	})
 	if request.POST.get("accountExisting"):
 		user = authenticate(username=request.POST.get("username"), password=request.POST.get("password"))
-		if user is not None:
+		if user is not None and user.is_active:
 			sceneid = SceneID(user=user, sceneid=request.session['sceneid_login_userdata']['id'])
 			sceneid.save()
 			login(request, user)

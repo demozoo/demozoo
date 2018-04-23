@@ -88,24 +88,29 @@ class BaseUrl():
 		return None
 
 
-def regex_match(pattern, flags=None):
+def regex_match(pattern, flags=None, add_slash=False):
 	"""
 	Build a function that tests a URL against the given regexp, and, if it matches,
 	returns the first captured (bracketed) expression from it.
+	If add_slash is true, add a trailing slash if it didn't have one already
 	"""
 	regex = re.compile(pattern, flags)
 
 	def match_fn(urlstring, url):
 		m = regex.match(urlstring)
 		if m:
-			return m.group(1)
+			result = m.group(1)
+			if add_slash and not result.endswith('/'):
+				result += '/'
+			return result
 	return match_fn
 
 
-def urldecoded_regex_match(pattern, flags=None):
+def urldecoded_regex_match(pattern, flags=None, add_slash=False):
 	"""
 	Build a function that tests a URL against the given regexp, and, if it matches,
 	returns a URL-decoded version of the first captured (bracketed) expression from it.
+	If add_slash is true, add a trailing slash if it didn't have one already
 	"""
 	regex = re.compile(pattern, flags)
 
@@ -128,7 +133,10 @@ def urldecoded_regex_match(pattern, flags=None):
 			# database's 'param' field, which preserves those bytes in a way that can be restored
 			# later with .encode('iso-8859-1'). (We don't care whether the bytestring is _actually_
 			# supposed to be iso-8859-1.)
-			return unquoted_path.decode('iso-8859-1')
+			result = unquoted_path.decode('iso-8859-1')
+			if add_slash and not result.endswith('/'):
+				result += '/'
+			return result
 	return match_fn
 
 
@@ -154,7 +162,7 @@ def querystring_match(pattern, varname, flags=None, othervars={}):
 
 
 class TwitterAccount(BaseUrl):
-	canonical_format = "http://twitter.com/%s"
+	canonical_format = "https://twitter.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?twitter\.com/#!/([^/]+)', re.I),
 		regex_match(r'https?://(?:www\.)?twitter\.com/([^/]+)', re.I),
@@ -165,7 +173,7 @@ class TwitterAccount(BaseUrl):
 
 
 class SceneidAccount(BaseUrl):
-	canonical_format = "http://www.pouet.net/user.php?who=%s"
+	canonical_format = "https://www.pouet.net/user.php?who=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I),
 	]
@@ -175,7 +183,7 @@ class SceneidAccount(BaseUrl):
 
 
 class PouetGroup(BaseUrl):
-	canonical_format = "http://www.pouet.net/groups.php?which=%s"
+	canonical_format = "https://www.pouet.net/groups.php?which=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I),
 	]
@@ -185,7 +193,7 @@ class PouetGroup(BaseUrl):
 
 
 class PouetProduction(BaseUrl):
-	canonical_format = "http://www.pouet.net/prod.php?which=%s"
+	canonical_format = "https://www.pouet.net/prod.php?which=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I),
 	]
@@ -216,7 +224,7 @@ class AmpAuthor(BaseUrl):
 
 
 class CsdbScener(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/scener/?id=%s"
+	canonical_format = "http://csdb.dk/scener/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/scener/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/scener/', 'id', re.I),
@@ -227,7 +235,7 @@ class CsdbScener(BaseUrl):
 
 
 class CsdbGroup(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/group/?id=%s"
+	canonical_format = "http://csdb.dk/group/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/group/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/group/', 'id', re.I),
@@ -238,11 +246,12 @@ class CsdbGroup(BaseUrl):
 
 
 class CsdbRelease(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/release/?id=%s"
+	canonical_format = "http://csdb.dk/release/?id=%s"
 	tests = [
 		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
 		querystring_match(r'https?://noname\.c64\.org/csdb/release/\?', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/release/\?', 'id', re.I),
+		querystring_match(r'https?://(?:www\.)?csdb\.dk/\?', 'rid', re.I),
 	]
 	html_link_class = "csdb"
 	html_link_text = "CSDb"
@@ -250,7 +259,7 @@ class CsdbRelease(BaseUrl):
 
 
 class CsdbMusic(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/sid/?id=%s"
+	canonical_format = "http://csdb.dk/sid/?id=%s"
 	tests = [
 		# need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
 		querystring_match(r'https?://noname\.c64\.org/csdb/sid/\?', 'id', re.I),
@@ -488,6 +497,7 @@ class SceneOrgFile(BaseUrl):
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://(?:ftp\.)?(?:nl\.)?scene\.org(/mirrors/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I),
+		urldecoded_regex_match(r'https?://ftp\.scene\.org/pub(/.*)', re.I),
 		urldecoded_regex_match(r'https?://http\.no\.scene\.org/scene\.org(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
 		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
@@ -536,15 +546,15 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def nl_url(self):
-		return "ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def nl_http_url(self):
-		return "http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def nl_https_url(self):
-		return "https://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"https://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def download_url(self):
@@ -552,35 +562,35 @@ class SceneOrgFile(BaseUrl):
 
 	@property
 	def no_ftp_url(self):
-		return "ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def no_http_url(self):
-		return "http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def us_http_url(self):
-		return "http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def hu_ftp_url(self):
-		return "ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def hu_http_url(self):
-		return "http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def pl_ftp_url(self):
-		return "ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def pl_http_url(self):
-		return "http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	@property
 	def ua_ftp_url(self):
-		return "ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
+		return u"ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
 
 	def as_download_link(self):
 		mirrors_html = ' '.join(self.mirror_links)
@@ -758,7 +768,7 @@ class FujiologyFile(BaseUrl):
 class FujiologyFolder(BaseUrl):
 	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
 	tests = [
-		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*/)', re.I),
+		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
 	]
 	html_link_class = "fujiology"
 	html_link_text = "Fujiology"
@@ -837,7 +847,7 @@ class BitworldParty(BaseUrl):
 
 
 class CsdbEvent(BaseUrl):
-	canonical_format = "http://noname.c64.org/csdb/event/?id=%s"
+	canonical_format = "http://csdb.dk/event/?id=%s"
 	tests = [
 		querystring_match(r'https?://noname\.c64\.org/csdb/event/', 'id', re.I),
 		querystring_match(r'https?://(?:www\.)?csdb\.dk/event/', 'id', re.I),
@@ -859,21 +869,21 @@ class BreaksAmigaParty(BaseUrl):
 
 class SceneOrgFolder(BaseUrl):
 	tests = [
-		urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*/)', re.I),
+		urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*)', re.I, add_slash=True),
 		querystring_match(r'https?://(?:www\.)?scene\.org/dir\.php', 'dir', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*/)$', re.I),
-		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*/)', re.I),
-		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*/)', re.I),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org(/mirrors/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.no\.scene\.org/scene\.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
+		urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
 	]
 
 	def __unicode__(self):
@@ -894,7 +904,7 @@ class ZxdemoParty(BaseUrl):
 
 
 class YoutubeVideo(BaseUrl):
-	canonical_format = "http://www.youtube.com/watch?v=%s"
+	canonical_format = "https://www.youtube.com/watch?v=%s"
 	tests = [
 		querystring_match(r'https?://(?:www\.)?youtube\.com/watch', 'v', re.I),
 		regex_match(r'https?://(?:www\.)?youtube\.com/embed/([^/]+)', re.I),
@@ -932,8 +942,10 @@ class YoutubeVideo(BaseUrl):
 
 		return embed_data
 
-	def get_embed_html(self, width, height):
-		embed_url = "https://www.youtube.com/embed/%s?autoplay=1" % self.param
+	def get_embed_html(self, width, height, autoplay=True):
+		embed_url = "https://www.youtube.com/embed/%s" % self.param
+		if autoplay:
+			embed_url += "?autoplay=1"
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" allowfullscreen></iframe>""",
 			width, height, embed_url
@@ -941,7 +953,7 @@ class YoutubeVideo(BaseUrl):
 
 
 class YoutubeUser(BaseUrl):
-	canonical_format = "http://www.youtube.com/user/%s"
+	canonical_format = "https://www.youtube.com/user/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)', re.I),
 	]
@@ -951,7 +963,7 @@ class YoutubeUser(BaseUrl):
 
 
 class YoutubeChannel(BaseUrl):
-	canonical_format = "http://www.youtube.com/channel/%s"
+	canonical_format = "https://www.youtube.com/channel/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?youtube\.com/channel/([^\/\?]+)', re.I),
 	]
@@ -961,7 +973,7 @@ class YoutubeChannel(BaseUrl):
 
 
 class VimeoVideo(BaseUrl):
-	canonical_format = "http://vimeo.com/%s"
+	canonical_format = "https://vimeo.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?vimeo\.com/(\d+)', re.I),
 	]
@@ -997,8 +1009,10 @@ class VimeoVideo(BaseUrl):
 
 		return embed_data
 
-	def get_embed_html(self, width, height):
-		embed_url = "https://player.vimeo.com/video/%s?autoplay=1" % self.param
+	def get_embed_html(self, width, height, autoplay=True):
+		embed_url = "https://player.vimeo.com/video/%s" % self.param
+		if autoplay:
+			embed_url += "?autoplay=1"
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""",
 			width, height, embed_url
@@ -1006,7 +1020,7 @@ class VimeoVideo(BaseUrl):
 
 
 class VimeoUser(BaseUrl):
-	canonical_format = "http://vimeo.com/%s"
+	canonical_format = "https://vimeo.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?vimeo\.com/([\w-]+)/?$', re.I),
 	]
@@ -1050,7 +1064,7 @@ class DhsVideoDbVideo(BaseUrl):
 
 
 class FacebookPage(BaseUrl):
-	canonical_format = "http://www.facebook.com/%s"
+	canonical_format = "https://www.facebook.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?facebook\.com/(.+)', re.I),
 	]
@@ -1080,7 +1094,7 @@ class GooglePlusEvent(BaseUrl):
 
 
 class SoundcloudUser(BaseUrl):
-	canonical_format = "http://soundcloud.com/%s/"
+	canonical_format = "https://soundcloud.com/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+)', re.I),
 	]
@@ -1100,7 +1114,7 @@ class HearthisUser(BaseUrl):
 
 
 class SoundcloudTrack(BaseUrl):
-	canonical_format = "http://soundcloud.com/%s"
+	canonical_format = "https://soundcloud.com/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+/[^\/]+)', re.I),
 	]
@@ -1126,14 +1140,14 @@ class DiscogsEntry(BaseUrl):  # for use as an abstract superclass
 
 
 class DiscogsArtist(DiscogsEntry):
-	canonical_format = "http://www.discogs.com/artist/%s"
+	canonical_format = "https://www.discogs.com/artist/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
 	]
 
 
 class DiscogsLabel(DiscogsEntry):
-	canonical_format = "http://www.discogs.com/label/%s"
+	canonical_format = "https://www.discogs.com/label/%s"
 	tests = [
 		regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
 	]
@@ -1168,9 +1182,9 @@ class ModarchiveMember(BaseUrl):
 class ModarchiveModule(BaseUrl):
 	canonical_format = "https://modarchive.org/module.php?%s"
 	tests = [
-		regex_match(r'https?://(?:www\.)?modarchive\.org/module\.php\?(\d+)', re.I),
-		querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
-		querystring_match(r'https?://(?:www\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
+		regex_match(r'https?://(?:www\.|lite\.)?modarchive\.org/module\.php\?(\d+)', re.I),
+		querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
+		querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
 		querystring_match(r'https?://api.modarchive\.org/downloads\.php', 'moduleid', re.I),
 	]
 	html_link_class = "modarchive"
@@ -1248,19 +1262,11 @@ class ZxArtEntry(BaseUrl):  # for use as an abstract superclass
 	html_title_format = "%s on ZXArt"
 
 
-class ZxArtArtist(ZxArtEntry):
-	canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
+class ZxArtAuthor(ZxArtEntry):
+	canonical_format = "http://zxart.ee/eng/authors/%s/"
 	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+)/', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+)/', re.I),
-	]
-
-
-class ZxArtMusician(ZxArtEntry):
-	canonical_format = "http://zxart.ee/eng/music/authors/%s/"
-	tests = [
-		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+)/?', re.I),
-		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+)/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?', re.I),
+		regex_match(r'https?://(?:www\.)?zxart\.ee/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?', re.I),
 	]
 
 
@@ -1509,7 +1515,7 @@ RELEASER_LINK_TYPES = [
 	SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
 	HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
 	GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
-	ZxArtArtist, ZxArtMusician, ZxTunesArtist, InternetArchivePage,
+	ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
 	Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser,
 	WaybackMachinePage, BaseUrl,
 ]
@@ -1539,7 +1545,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
 	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'WaybackMachinePage', 'GameboyDemospottingDemo',
+	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
 	'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
 ]
 

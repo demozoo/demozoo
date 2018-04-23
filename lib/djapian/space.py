@@ -1,9 +1,9 @@
+from collections import OrderedDict as SortedDict
 import os
 import new
 
 from django.db import models
-from django.conf import settings
-from django.utils.datastructures import SortedDict
+# from django.conf import settings
 
 from djapian import utils
 from djapian.database import Database

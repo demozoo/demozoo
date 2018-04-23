@@ -3,13 +3,16 @@ from __future__ import absolute_import  # ensure that 'from parties.foo' imports
 import json
 import datetime
 
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db.models import Max
 
 from demoscene.models import Edit
-from productions.models import ProductionType, Production
+from demoscene.shortcuts import simple_ajax_confirmation
+from productions.models import ProductionType, Production, Screenshot
 from parties.models import Competition, CompetitionPlacing
 from parties.forms import CompetitionForm
 from platforms.models import Platform
@@ -21,7 +24,13 @@ from read_only_mode import writeable_site_required
 def show(request, competition_id):
 	competition = get_object_or_404(Competition, id=competition_id)
 
-	placings = competition.placings.order_by('position', 'production__id').select_related('production__default_screenshot').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+	placings = competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+	entry_production_ids = [placing.production_id for placing in placings]
+	screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
+	placings = [
+		(placing, screenshot_map.get(placing.production_id))
+		for placing in placings
+	]
 
 	return render(request, 'competitions/show.html', {
 		'competition': competition,
@@ -148,3 +157,29 @@ def import_text(request, competition_id):
 		return render(request, 'competitions/import_text.html', {
 			'competition': competition,
 		})
+
+
+@writeable_site_required
+@login_required
+def delete(request, competition_id):
+	competition = get_object_or_404(Competition, id=competition_id)
+
+	if (not request.user.is_staff) or competition.placings.exists():
+		return HttpResponseRedirect(competition.party.get_absolute_url())
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+
+			Edit.objects.create(action_type='delete_competition', focus=competition.party,
+				description=(u"Deleted competition '%s'" % competition.name), user=request.user)
+
+			competition.delete()
+
+			messages.success(request, "%s competition deleted" % competition.name)
+			return HttpResponseRedirect(competition.party.get_absolute_url())
+		else:
+			return HttpResponseRedirect(competition.party.get_absolute_url())
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('delete_competition', args=[competition_id]),
+			"Are you sure you want to delete the %s competition?" % competition.name,
+			html_title="Deleting %s" % competition.name)

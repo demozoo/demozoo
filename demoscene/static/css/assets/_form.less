@@ -4,9 +4,9 @@ fieldset {
   padding: 0;
 }
 
-
 /* data entry forms */
 .form_title {
+
 	h2 {
 		display: inline;
 	}
@@ -47,7 +47,7 @@ fieldset {
 	}
 }
 
-form.entry_form {
+.entry_form {
 
 	.field {
 		clear: both;
@@ -103,16 +103,16 @@ form.entry_form {
 	.formset_header {
 		padding-left: 32px;
 	}
-}
 
-form.entry_form.sceneid_connect {
-	display: inline-block;
-	vertical-align: top;
-	margin-right: 50px;
+	&.sceneid_connect {
+		display: inline-block;
+		vertical-align: top;
+		margin-right: 50px;
+	}
 }
 
 /* external links form needs bigger labels */
-form.external_links_form .field {
+.external_links_form .field {
 
 	label.field_label {
 		width: 200px;
@@ -123,7 +123,7 @@ form.external_links_form .field {
 	}
 }
 
-form.entry_form {
+.entry_form {
 
 	.credit_formset {
 
@@ -138,12 +138,15 @@ form.entry_form {
 			font-weight: bold;
 		}
 
-		.field_input select {
-			width: 100px;
-		}
+		.field_input {
 
-		.field_input input[type="text"] {
-			width: 250px;
+			select {
+				width: 100px;
+			}
+
+			input[type="text"] {
+				width: 250px;
+			}
 		}
 	}
 }

@@ -1,17 +1,19 @@
+from collections import OrderedDict as SortedDict
+
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.utils.datastructures import SortedDict
+# from django.utils.datastructures import SortedDict
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 import re
 import datetime
 
 from unidecode import unidecode
 
-from strip_markup import strip_markup
-from prefetch_snooping import ModelWithPrefetchSnooping
+from lib.strip_markup import strip_markup
+from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
 
 DATE_PRECISION_CHOICES = [
@@ -21,7 +23,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(ModelWithPrefetchSnooping, models.Model):
+class Releaser(models.Model, ModelWithPrefetchSnooping):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField(db_index=True)
 	notes = models.TextField(blank=True)
@@ -66,9 +68,9 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	@models.permalink
 	def get_absolute_url(self):
 		if self.is_group:
-			return ('demoscene.views.groups.show', [str(self.id)])
+			return ('group', [str(self.id)])
 		else:
-			return ('demoscene.views.sceners.show', [str(self.id)])
+			return ('scener', [str(self.id)])
 
 	def get_absolute_edit_url(self):
 		return self.get_absolute_url()
@@ -76,9 +78,9 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 	@models.permalink
 	def get_history_url(self):
 		if self.is_group:
-			return ('demoscene.views.groups.history', [str(self.id)])
+			return ('group_history', [str(self.id)])
 		else:
-			return ('demoscene.views.sceners.history', [str(self.id)])
+			return ('scener_history', [str(self.id)])
 
 	def productions(self):
 		from productions.models import Production
@@ -249,7 +251,7 @@ class Releaser(ModelWithPrefetchSnooping, models.Model):
 
 
 class Nick(models.Model):
-	releaser = models.ForeignKey(Releaser, related_name='nicks')
+	releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 	abbreviation = models.CharField(max_length=255, blank=True, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
 	differentiator = models.CharField(max_length=32, blank=True, help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country")
@@ -354,11 +356,11 @@ class Nick(models.Model):
 			raise Exception("attempted to delete a releaser's primary nick through reassign_references_and_delete!")
 
 		from django.db import connection, transaction
-		cursor = connection.cursor()
-		cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		cursor.execute("UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		cursor.execute("UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-		transaction.commit_unless_managed()
+		with transaction.atomic():
+			cursor = connection.cursor()
+			cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+			cursor.execute("UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+			cursor.execute("UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
 
 		self.delete()
 
@@ -371,7 +373,7 @@ class Nick(models.Model):
 
 
 class NickVariant(models.Model):
-	nick = models.ForeignKey(Nick, related_name='variants')
+	nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
 
 	def __unicode__(self):
@@ -509,8 +511,8 @@ class NickVariant(models.Model):
 
 
 class Membership(models.Model):
-	member = models.ForeignKey(Releaser, related_name='group_memberships')
-	group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships')
+	member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
+	group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE)
 	is_current = models.BooleanField(default=True)
 	data_source = models.CharField(max_length=32, blank=True, null=True)
 
@@ -519,7 +521,7 @@ class Membership(models.Model):
 
 
 class AccountProfile(models.Model):
-	user = models.ForeignKey(User, unique=True)
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 	def __unicode__(self):
@@ -534,7 +536,7 @@ class AccountProfile(models.Model):
 
 class ExternalLink(models.Model):
 	link_class = models.CharField(max_length=100)
-	parameter = models.CharField(max_length=255)
+	parameter = models.CharField(max_length=4096)
 
 	def _get_url(self):
 		if self.link:
@@ -573,7 +575,7 @@ class ExternalLink(models.Model):
 
 
 class ReleaserExternalLink(ExternalLink):
-	releaser = models.ForeignKey(Releaser, related_name='external_links')
+	releaser = models.ForeignKey(Releaser, related_name='external_links', on_delete=models.CASCADE)
 	link_types = groklinks.RELEASER_LINK_TYPES
 
 	def html_link(self):
@@ -589,16 +591,16 @@ class ReleaserExternalLink(ExternalLink):
 class Edit(models.Model):
 	action_type = models.CharField(max_length=100)
 
-	focus_content_type = models.ForeignKey(ContentType, related_name='edits')
+	focus_content_type = models.ForeignKey(ContentType, related_name='edits', on_delete=models.CASCADE)
 	focus_object_id = models.PositiveIntegerField()
-	focus = generic.GenericForeignKey('focus_content_type', 'focus_object_id')
+	focus = GenericForeignKey('focus_content_type', 'focus_object_id')
 
-	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2')
+	focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2', on_delete=models.CASCADE)
 	focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
-	focus2 = generic.GenericForeignKey('focus2_content_type', 'focus2_object_id')
+	focus2 = GenericForeignKey('focus2_content_type', 'focus2_object_id')
 
 	description = models.TextField()
-	user = models.ForeignKey(User, related_name='edits')
+	user = models.ForeignKey(User, related_name='edits', on_delete=models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	admin_only = models.BooleanField(default=False)
@@ -636,6 +638,15 @@ class TagDescription(models.Model):
 
 	def __unicode__(self):
 		return self.tag.name
+
+
+class BlacklistedTag(models.Model):
+	tag = models.CharField(max_length=255, help_text="The tag to be blacklisted")
+	replacement = models.CharField(max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)")
+	message = models.TextField(blank=True, help_text="Message to show to the user when they try to use the tag (optional)")
+
+	def __unicode__(self):
+		return self.tag
 
 
 class SceneID(models.Model):

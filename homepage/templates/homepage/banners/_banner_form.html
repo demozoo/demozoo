@@ -7,7 +7,7 @@
 		{{ form.banner_image }}
 
 		{% with form.instance.banner_image as image %}
-			<img id="image-preview" src="{{ image.image.url }}" width="600" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<img id="image-preview" src="{{ image.image_url }}" width="600" alt="" {% if not image %}style="display: none;"{% endif %}>
 			<button id="choose-image" type="button" data-url="{% url 'banner_images_browse' %}">choose</button>
 			<button id="clear-image" type="button">clear</button>
 		{% endwith %}
@@ -22,6 +22,7 @@
 
 {% include "shared/form_field.html" with field=form.title %}
 {% include "shared/form_field.html" with field=form.text %}
+{% include "shared/form_field.html" with field=form.hide_text %}
 {% include "shared/form_field.html" with field=form.url %}
 {% include "shared/form_field.html" with field=form.show_for_anonymous_users %}
 {% include "shared/form_field.html" with field=form.show_for_logged_in_users %}

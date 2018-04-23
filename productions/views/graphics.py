@@ -1,6 +1,7 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
+import random
 
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
@@ -36,7 +37,7 @@ def index(request):
 			prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
 			queryset = queryset.filter(types__in=prod_types)
 
-	queryset = queryset.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	production_page = get_page(
 		queryset,
@@ -56,13 +57,18 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'graphics':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
 	else:
 		comment_form = None
 		tags_form = None
+
+	try:
+		meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
+	except IndexError:
+		meta_screenshot = None
 
 	return render(request, 'productions/show.html', {
 		'production': production,
@@ -75,12 +81,13 @@ def show(request, production_id, edit_mode=False):
 		'release_parties': production.release_parties.order_by('start_date_date'),
 		'packed_in_productions': [
 			pack_member.pack for pack_member in
-			production.packed_in.select_related('pack', 'pack__default_screenshot').order_by('pack__release_date_date')
+			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
 		'tags_form': tags_form,
+		'meta_screenshot': meta_screenshot,
 	})
 
 

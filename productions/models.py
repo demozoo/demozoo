@@ -1,15 +1,19 @@
 from django.db import models
-from django.utils.encoding import StrAndUnicode
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+# from django.utils.encoding import StrAndUnicode
 from django.utils.translation import ugettext_lazy as _
 
+from collections import defaultdict
 import datetime
+import random
 
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
-from fuzzy_date import FuzzyDate
-from prefetch_snooping import ModelWithPrefetchSnooping
-from strip_markup import strip_markup
+from lib.fuzzy_date import FuzzyDate
+from lib.prefetch_snooping import ModelWithPrefetchSnooping
+from lib.strip_markup import strip_markup
 
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
@@ -79,7 +83,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
 	types = models.ManyToManyField('ProductionType', related_name='productions')
 	author_nicks = models.ManyToManyField('demoscene.Nick', related_name='productions', blank=True)
-	author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True, null=True)
+	author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True)
 	notes = models.TextField(blank=True)
 	release_date_date = models.DateField(null=True, blank=True)
 	release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
@@ -90,9 +94,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	data_source = models.CharField(max_length=32, blank=True, null=True)
 	unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
 	has_bonafide_edits = models.BooleanField(default=True, help_text="True if this production has been updated through its own forms, as opposed to just compo results tables")
-	default_screenshot = models.ForeignKey('Screenshot', null=True, blank=True, related_name='+', editable=False,
-		on_delete=models.SET_NULL,  # don't want deletion to cascade to the production if screenshot is deleted
-		help_text="Screenshot to use alongside this production in listings - randomly assigned by script")
+	has_screenshot = models.BooleanField(default=False, editable=False, help_text="True if this prod has at least one (processed) screenshot")
 	include_notes_in_search = models.BooleanField(default=True,
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
@@ -236,8 +238,17 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		else:
 			return ('production_history', [str(self.id)])
 
-	def can_have_screenshots(self):
-		return (self.supertype != 'music')
+	@models.permalink
+	def get_all_screenshots_url(self):
+		return ('production_artwork' if self.supertype == 'music' else 'production_screenshots', [str(self.id)])
+
+	@models.permalink
+	def get_add_screenshot_url(self):
+		return ('production_add_artwork' if self.supertype == 'music' else 'production_add_screenshot', [str(self.id)])
+
+	@models.permalink
+	def get_edit_screenshots_url(self):
+		return ('production_edit_artwork' if self.supertype == 'music' else 'production_edit_screenshots', [str(self.id)])
 
 	def can_have_soundtracks(self):
 		return (self.supertype == 'production')
@@ -279,13 +290,14 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
 	def search_result_json(self):
-		if self.default_screenshot:
-			width, height = self.default_screenshot.thumb_dimensions_to_fit(48, 36)
+		screenshot = self.random_screenshot
+		if screenshot:
+			width, height = screenshot.thumb_dimensions_to_fit(48, 36)
 			thumbnail = {
-				'url': self.default_screenshot.thumbnail_url,
+				'url': screenshot.thumbnail_url,
 				'width': width, 'height': height,
-				'natural_width': self.default_screenshot.thumbnail_width,
-				'natural_height': self.default_screenshot.thumbnail_height,
+				'natural_width': screenshot.thumbnail_width,
+				'natural_height': screenshot.thumbnail_height,
 			}
 		else:
 			thumbnail = None
@@ -305,12 +317,12 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@property
 	def platforms_and_types_list(self):
 		if self.has_prefetched('platforms'):
-			platforms = ', '.join([platform.name for platform in sorted(self.platforms.all(), lambda p:p.name)])
+			platforms = ', '.join(sorted([platform.name for platform in self.platforms.all()]))
 		else:
 			platforms = ', '.join([platform.name for platform in self.platforms.order_by('name')])
 
 		if self.has_prefetched('types'):
-			prod_types = ', '.join([typ.name for typ in sorted(self.types.all(), lambda t:t.name)])
+			prod_types = ', '.join(sorted([typ.name for typ in self.types.all()]))
 		else:
 			prod_types = ', '.join([typ.name for typ in self.types.order_by('name')])
 		if platforms and prod_types:
@@ -339,6 +351,11 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	def download_links(self):
 		return self.links.filter(is_download_link=True)
 
+	@property
+	def random_screenshot(self):
+		if self.has_screenshot:
+			return self.screenshots.order_by('?').first()
+
 	class Meta:
 		ordering = ['sortable_title']
 		index_together = [
@@ -347,7 +364,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 
 # encapsulates list of authors and affiliations
-class Byline(StrAndUnicode):
+class Byline(object):
 	def __init__(self, authors=[], affiliations=[]):
 		self.author_nicks = authors
 		self.affiliation_nicks = affiliations
@@ -391,12 +408,12 @@ class Byline(StrAndUnicode):
 
 
 class ProductionDemozoo0Platform(models.Model):
-	production = models.ForeignKey(Production, related_name='demozoo0_platforms')
+	production = models.ForeignKey(Production, related_name='demozoo0_platforms', on_delete=models.CASCADE)
 	platform = models.CharField(max_length=64)
 
 
 class ProductionBlurb(models.Model):
-	production = models.ForeignKey(Production, related_name='blurbs')
+	production = models.ForeignKey(Production, related_name='blurbs', on_delete=models.CASCADE)
 	body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
@@ -409,8 +426,8 @@ class Credit(models.Model):
 		('Other', 'Other')
 	]
 
-	production = models.ForeignKey(Production, related_name='credits')
-	nick = models.ForeignKey(Nick, related_name='credits')
+	production = models.ForeignKey(Production, related_name='credits', on_delete=models.CASCADE)
+	nick = models.ForeignKey(Nick, related_name='credits', on_delete=models.CASCADE)
 	category = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
 	role = models.CharField(max_length=255, blank=True)
 
@@ -439,7 +456,7 @@ class Credit(models.Model):
 
 
 class Screenshot(models.Model):
-	production = models.ForeignKey(Production, related_name='screenshots')
+	production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
 	original_url = models.CharField(max_length=255, blank=True)
 	original_width = models.IntegerField(editable=False, null=True, blank=True)
 	original_height = models.IntegerField(editable=False, null=True, blank=True)
@@ -471,11 +488,10 @@ class Screenshot(models.Model):
 	def save(self, *args, **kwargs):
 		super(Screenshot, self).save(*args, **kwargs)
 
-		# If the production does not already have a default_screenshot, and this screenshot has
-		# a thumbnail available, set this as the default
-		if self.thumbnail_url and (self.production.default_screenshot_id is None):
-			self.production.default_screenshot = self
-			self.production.save()
+		# Mark the corresponding production as having a screenshot
+		if self.thumbnail_url and not self.production.has_screenshot:
+			self.production.has_screenshot = True
+			self.production.save(update_fields=['has_screenshot'])
 
 		# if any production links for this production have is_unresolved_for_screenshotting=True,
 		# reset that flag since we no longer need a screenshot
@@ -484,10 +500,46 @@ class Screenshot(models.Model):
 	def __unicode__(self):
 		return "%s - %s" % (self.production.title, self.original_url)
 
+	@staticmethod
+	def select_for_production_ids(production_ids):
+		"""
+		Given a list of production ids, return a dict mapping production id to a random
+		screenshot for each production in the list that has screenshots
+		"""
+		prod_and_screenshot_ids = Screenshot.objects.filter(
+			production_id__in=production_ids
+		).exclude(
+			thumbnail_url=''
+		).values_list('production_id', 'id')
+
+		screenshots_by_prod_id = defaultdict(list)
+		for (prod_id, screenshot_id) in prod_and_screenshot_ids:
+			screenshots_by_prod_id[prod_id].append(screenshot_id)
+
+		chosen_screenshot_ids = [
+			random.choice(screenshot_id_set)
+			for screenshot_id_set in screenshots_by_prod_id.values()
+		]
+
+		return {
+			screenshot.production_id: screenshot
+			for screenshot in Screenshot.objects.filter(id__in=chosen_screenshot_ids)
+		}
+
+
+@receiver(post_delete, sender=Screenshot)
+def update_prod_screenshot_data_on_delete(sender, **kwargs):
+	production = kwargs['instance'].production
+	# look for remaining screenshots
+	screenshots = production.screenshots.exclude(original_url='')
+
+	production.has_screenshot = bool(screenshots)
+	production.save(update_fields=['has_screenshot'])
+
 
 class SoundtrackLink(models.Model):
-	production = models.ForeignKey(Production, related_name='soundtrack_links')
-	soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack')
+	production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
+	soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
 	position = models.IntegerField()
 
 	def __unicode__(self):
@@ -498,8 +550,8 @@ class SoundtrackLink(models.Model):
 
 
 class PackMember(models.Model):
-	pack = models.ForeignKey(Production, related_name='pack_members')
-	member = models.ForeignKey(Production, related_name='packed_in')
+	pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
+	member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)
 	position = models.IntegerField()
 
 	def __unicode__(self):
@@ -510,7 +562,7 @@ class PackMember(models.Model):
 
 
 class ProductionLink(ExternalLink):
-	production = models.ForeignKey(Production, related_name='links')
+	production = models.ForeignKey(Production, related_name='links', on_delete=models.CASCADE)
 	is_download_link = models.BooleanField()
 	description = models.CharField(max_length=255, blank=True)
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')

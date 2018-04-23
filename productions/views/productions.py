@@ -1,24 +1,24 @@
 from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
 
 import datetime
-import json
+import random
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.db.models import Count
 from django.template.loader import render_to_string
-from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_POST
 
 from taggit.models import Tag
 from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation, modal_workflow_confirmation
-from demoscene.models import Nick, Edit
+from demoscene.models import Nick, Edit, BlacklistedTag
 from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
@@ -47,7 +47,7 @@ def index(request):
 			prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
 			queryset = queryset.filter(types__in=prod_types)
 
-	queryset = queryset.select_related('default_screenshot').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+	queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
 	production_page = get_page(
 		queryset,
@@ -104,7 +104,7 @@ def show(request, production_id, edit_mode=False):
 	if production.supertype != 'production':
 		return HttpResponseRedirect(production.get_absolute_url())
 
-	if request.user.is_authenticated():
+	if request.user.is_authenticated:
 		comment = Comment(commentable=production, user=request.user)
 		comment_form = CommentForm(instance=comment, prefix="comment")
 		tags_form = ProductionTagsForm(instance=production)
@@ -119,6 +119,11 @@ def show(request, production_id, edit_mode=False):
 		]
 	else:
 		pack_members = None
+
+	try:
+		meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
+	except IndexError:
+		meta_screenshot = None
 
 	return render(request, 'productions/show.html', {
 		'production': production,
@@ -140,10 +145,11 @@ def show(request, production_id, edit_mode=False):
 		'pack_members': pack_members,
 		'packed_in_productions': [
 			pack_member.pack for pack_member in
-			production.packed_in.select_related('pack', 'pack__default_screenshot').order_by('pack__release_date_date')
+			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
 		'comment_form': comment_form,
 		'tags_form': tags_form,
+		'meta_screenshot': meta_screenshot,
 	})
 
 
@@ -159,7 +165,7 @@ def history(request, production_id):
 
 @writeable_site_required
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
@@ -371,11 +377,28 @@ def edit_download_links(request, production_id):
 
 def screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if production.supertype == 'music':
+		return redirect('production_artwork', production_id)
+
 	screenshots = production.screenshots.order_by('id')
 
 	return render(request, 'productions/screenshots.html', {
 		'production': production,
 		'screenshots': screenshots,
+		'model_label': "Screenshots",
+	})
+
+
+def artwork(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	if production.supertype != 'music':
+		return redirect('production_screenshots', production_id)
+	screenshots = production.screenshots.order_by('id')
+
+	return render(request, 'productions/screenshots.html', {
+		'production': production,
+		'screenshots': screenshots,
+		'model_label': "Artwork",
 	})
 
 
@@ -385,16 +408,39 @@ def edit_screenshots(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_url())
+	if production.supertype == 'music':
+		return redirect('production_edit_artwork', production_id)
+
 	return render(request, 'productions/edit_screenshots.html', {
 		'production': production,
 		'screenshots': production.screenshots.order_by('id'),
+		'model_label': 'screenshots',
+		'delete_url_name': 'production_delete_screenshot',
 	})
 
 
 @writeable_site_required
 @login_required
-def add_screenshot(request, production_id):
+def edit_artwork(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+	if production.supertype != 'music':
+		return redirect('production_edit_screenshots', production_id)
+
+	return render(request, 'productions/edit_screenshots.html', {
+		'production': production,
+		'screenshots': production.screenshots.order_by('id'),
+		'model_label': 'artwork',
+		'delete_url_name': 'production_delete_artwork',
+	})
+
+
+@writeable_site_required
+@login_required
+def add_screenshot(request, production_id, is_artwork_view=False):
+	production = get_object_or_404(Production, id=production_id)
+
 	if request.method == 'POST':
 		uploaded_files = request.FILES.getlist('screenshot')
 		file_count = len(uploaded_files)
@@ -409,21 +455,41 @@ def add_screenshot(request, production_id):
 			production.save()
 
 			if file_count == 1:
-				Edit.objects.create(action_type='add_screenshot', focus=production,
-					description=("Added screenshot"), user=request.user)
+				if is_artwork_view:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added artwork"), user=request.user)
+				else:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added screenshot"), user=request.user)
 			else:
-				Edit.objects.create(action_type='add_screenshot', focus=production,
-					description=("Added %s screenshots" % file_count), user=request.user)
+				if is_artwork_view:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added %s artworks" % file_count), user=request.user)
+				else:
+					Edit.objects.create(action_type='add_screenshot', focus=production,
+						description=("Added %s screenshots" % file_count), user=request.user)
 
 		return HttpResponseRedirect(production.get_absolute_url())
-	return render(request, 'productions/add_screenshot.html', {
-		'production': production,
-	})
+	else:
+		if is_artwork_view and production.supertype != 'music':
+			return redirect('production_add_screenshot', production_id)
+		elif not is_artwork_view and production.supertype == 'music':
+			return redirect('production_add_artwork', production_id)
+
+	if is_artwork_view:
+		return render(request, 'productions/add_artwork.html', {
+			'production': production,
+		})
+
+	else:
+		return render(request, 'productions/add_screenshot.html', {
+			'production': production,
+		})
 
 
 @writeable_site_required
 @login_required
-def delete_screenshot(request, production_id, screenshot_id):
+def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=False):
 	production = get_object_or_404(Production, id=production_id)
 	if not request.user.is_staff:
 		return HttpResponseRedirect(production.get_absolute_url())
@@ -433,21 +499,37 @@ def delete_screenshot(request, production_id, screenshot_id):
 		if request.POST.get('yes'):
 			screenshot.delete()
 
-			# reload production model, as the deletion above may have nullified default_screenshot
+			# reload production model, as the deletion above may have nullified has_screenshot
 			# (which won't be reflected in the existing model instance)
 			production = Production.objects.get(pk=production.pk)
 
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
 			production.save()
-			Edit.objects.create(action_type='delete_screenshot', focus=production,
-				description="Deleted screenshot", user=request.user)
+			if is_artwork_view:
+				Edit.objects.create(action_type='delete_screenshot', focus=production,
+					description="Deleted artwork", user=request.user)
+			else:
+				Edit.objects.create(action_type='delete_screenshot', focus=production,
+					description="Deleted screenshot", user=request.user)
 		return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
 	else:
-		return simple_ajax_confirmation(request,
-			reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
-			"Are you sure you want to delete this screenshot for %s?" % production.title,
-			html_title="Deleting screenshot for %s" % production.title)
+		if is_artwork_view:
+			if production.supertype != 'music':
+				return redirect('production_delete_screenshot', production_id, screenshot_id)
+
+			return simple_ajax_confirmation(request,
+				reverse('production_delete_artwork', args=[production_id, screenshot_id]),
+				"Are you sure you want to delete this artwork for %s?" % production.title,
+				html_title="Deleting artwork for %s" % production.title)
+		else:
+			if production.supertype == 'music':
+				return redirect('production_delete_artwork', production_id, screenshot_id)
+
+			return simple_ajax_confirmation(request,
+				reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
+				"Are you sure you want to delete this screenshot for %s?" % production.title,
+				html_title="Deleting screenshot for %s" % production.title)
 
 
 @writeable_site_required
@@ -544,6 +626,11 @@ def edit_credit(request, production_id, nick_id):
 				# (not just the ones that have been updated by credit_formset.save)
 				nick = nick_form.cleaned_data['nick'].commit()
 				credits.update(nick=nick)
+
+			# since we're using commit=False we must manually delete the
+			# deleted credits
+			for credit in credit_formset.deleted_objects:
+				credit.delete()
 
 			production.updated_at = datetime.datetime.now()
 			production.has_bonafide_edits = True
@@ -690,13 +777,22 @@ def edit_tags(request, production_id):
 
 @writeable_site_required
 @login_required
+@require_POST
 def add_tag(request, production_id):
 
 	# Only used in AJAX calls.
 
 	production = get_object_or_404(Production, id=production_id)
-	if request.method == 'POST':
-		tag_name = slugify_tag(request.POST.get('tag_name'))
+	tag_name = slugify_tag(request.POST.get('tag_name'))
+
+	try:
+		blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
+		tag_name = slugify_tag(blacklisted_tag.replacement)
+		message = blacklisted_tag.message
+	except BlacklistedTag.DoesNotExist:
+		message = None
+
+	if tag_name:
 		# check whether it's already present
 		existing_tag = production.tags.filter(name=tag_name)
 		if not existing_tag:
@@ -704,8 +800,14 @@ def add_tag(request, production_id):
 			Edit.objects.create(action_type='production_add_tag', focus=production,
 				description=u"Added tag '%s'" % tag_name, user=request.user)
 
-	return render(request, 'productions/_tags_list.html', {
-		'tags': production.tags.order_by('name'),
+	tags_list_html = render_to_string('productions/_tags_list.html', {
+		'tags': production.tags.order_by('name')
+	})
+
+	return JsonResponse({
+		'tags_list_html': tags_list_html,
+		'clean_tag_name': tag_name,
+		'message': message,
 	})
 
 
@@ -734,7 +836,7 @@ def remove_tag(request, production_id):
 
 def autocomplete_tags(request):
 	tags = Tag.objects.filter(name__istartswith=request.GET.get('term')).order_by('name').values_list('name', flat=True)
-	return HttpResponse(json.dumps(list(tags)), mimetype="text/javascript")
+	return JsonResponse(list(tags), safe=False)
 
 
 def autocomplete(request):
@@ -759,7 +861,7 @@ def autocomplete(request):
 		}
 		for production in productions
 	]
-	return HttpResponse(json.dumps(production_data), mimetype="text/javascript")
+	return JsonResponse(production_data, safe=False)
 
 
 @writeable_site_required
@@ -792,7 +894,7 @@ def render_credits_update(request, production):
 			'production': production,
 			'credits': production.credits_for_listing(),
 			'editing_credits': True,
-		}, RequestContext(request))
+		}, request=request)
 		return render_modal_workflow(
 			request, None, 'productions/edit_credit_done.js', {
 				'credits_html': credits_html,

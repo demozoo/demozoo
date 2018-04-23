@@ -1,6 +1,6 @@
 *.pyc
-/local_settings.py
-/settings/local.py
+/demozoo/settings/local.py
+/demozoo/settings/test_local.py
 /etc/demozoo.htpasswd
 /apache/demozoo2.htpasswd
 /data
@@ -15,3 +15,5 @@
 /.idea
 /.tmp
 /node_modules
+/npm-debug.log
+*.sw[op]

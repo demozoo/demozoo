@@ -52,15 +52,31 @@ $(function() {
 		var addTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/add_tag/');
 		var removeTagUrl = editTagsUrl.replace(/\/edit_tags\/$/, '/remove_tag/');
 
-		$('#id_tags').tagit({
+		var tagField = $('#id_tags');
+		tagField.tagit({
 			'afterTagAdded': function(event, data) {
 				if (data.duringInitialization) return;
 				$.post(addTagUrl, {
 					'csrfmiddlewaretoken': $.cookie('csrftoken'),
 					'tag_name': data.tagLabel
 				}, function(response) {
-					$('ul.tags').html(response);
-				});
+					$('ul.tags').html(response['tags_list_html']);
+					if (response['clean_tag_name'] != data.tagLabel) {
+						tagField.tagit('removeTagByLabel', data.tagLabel, false, true);
+						if (response['clean_tag_name'] !== '') {
+							tagField.tagit('createTag', response['clean_tag_name'], null, true);
+						}
+					}
+					if (response['message']) {
+						$('#tags_message').addClass('error').text(
+							response['message']
+						).stop().css(
+							{'backgroundColor': '#fbb'}
+						).animate(
+							{'backgroundColor': 'white'}, 5000
+						);
+					}
+				}, 'json');
 			},
 			'afterTagRemoved': function(event, data) {
 				$.post(removeTagUrl, {

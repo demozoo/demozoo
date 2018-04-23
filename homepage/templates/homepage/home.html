@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load demoscene_tags compress %}
 {% load safe_markdown %}
-{% load url from future %}
 
 {% block body_class %}homepage{% endblock %}
 
@@ -28,12 +27,7 @@
 					<div style="clear: both;"></div>
 				{% endif %}
 				{% if banner %}
-					<a href="{{ banner.url }}" class="banner" style="background-image: url('{{ banner.banner_image.image.url }}');">
-						<div class="banner_text">
-							<h1>{{ banner.title }}</h1>
-							{{ banner.text|safe_markdown }}
-						</div>
-					</a>
+					{% include 'homepage/_banner.html' with banner=banner banner_url=banner.url %}
 				{% endif %}
 			</div>
 
@@ -92,7 +86,7 @@
 						<div class="section group">
 							<div class="story_image col span_1_of_6">
 								{% if story.image %}
-									<img src="{{ story.image.image.url }}" width="100" alt="">
+									<img src="{{ story.image.image_url }}" width="100" alt="">
 								{% else %}
 									<img src="/static/images/news.png" width="100" alt="">
 								{% endif %}
@@ -131,12 +125,14 @@
 			<div class="new_releases block">
 				<h3 class="block_heading">New releases</h3>
 				<ul>
-					{% for prod in latest_releases %}
+					{% for prod, screenshot in latest_releases_and_screenshots %}
 						<li>
 							<a href="{{ prod.get_absolute_url }}">
-								{% thumbnail prod.default_screenshot %}
+								{% thumbnail screenshot %}
 								<div class="title">{{ prod.title }}</div>
-								<div class="byline">by {{ prod.byline }}</div>
+								{% if prod.byline_string %}
+									<div class="byline">by {{ prod.byline }}</div>
+								{% endif %}
 								<div class="platforms_and_types">
 									{{ prod.platforms.all|join:" / " }}
 									{% if prod.platforms.count and prod.types.count %} - {% endif %}
@@ -156,7 +152,9 @@
 						<li>
 							<a href="{{ prod.get_absolute_url }}">
 								<div class="title">{{ prod.title }}</div>
-								<div class="byline">by {{ prod.byline }}</div>
+								{% if prod.byline_string %}
+									<div class="byline">by {{ prod.byline }}</div>
+								{% endif %}
 								<div class="platforms_and_types">
 									{% if prod.release_date %}
 										{{ prod.release_date.date.year }}

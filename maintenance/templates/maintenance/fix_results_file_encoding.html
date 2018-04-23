@@ -41,7 +41,7 @@
 	{% if encoding_is_valid %}
 		<ul class="actions">
 			<li>
-				<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="POST">
+				<form action="{% url 'maintenance:fix_results_file_encoding' results_file.id %}" method="POST">
 					{% csrf_token %}
 					<input type="hidden" name="encoding" value="{{ encoding }}">
 					<input type="submit" value="Accept this encoding" class="action_button icon done">
@@ -49,7 +49,7 @@
 			</li>
 		</ul>
 	{% endif %}
-	<form action="{% url 'maintenance_fix_results_file_encoding' results_file.id %}" method="GET">
+	<form action="{% url 'maintenance:fix_results_file_encoding' results_file.id %}" method="GET">
 		<div>
 			<label for="encoding">Encoding</label>
 			<select id="encoding" name="encoding">

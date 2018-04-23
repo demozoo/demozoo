@@ -1,5 +1,5 @@
 test:
-	./manage.py test --settings=settings.test
+	./manage.py test --settings=demozoo.settings.test
 
 coverage:
-	coverage run ./manage.py test --settings=settings.test && coverage html
+	coverage run ./manage.py test --settings=demozoo.settings.test && coverage html

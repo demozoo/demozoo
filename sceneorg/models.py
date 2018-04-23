@@ -1,9 +1,6 @@
 from django.db import models
 import urllib
 import urllib2
-import hashlib
-import datetime
-from blob_field import BlobField
 
 
 class Directory(models.Model):
@@ -12,7 +9,7 @@ class Directory(models.Model):
 	first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
 	last_seen_at = models.DateTimeField()
 	last_spidered_at = models.DateTimeField(null=True, blank=True)
-	parent = models.ForeignKey('Directory', related_name='subdirectories', null=True, blank=True)
+	parent = models.ForeignKey('Directory', related_name='subdirectories', null=True, blank=True, on_delete=models.CASCADE)
 	competitions = models.ManyToManyField('parties.Competition', related_name="sceneorg_directories")
 
 	def mark_deleted(self):
@@ -38,11 +35,11 @@ class Directory(models.Model):
 
 	@staticmethod
 	def party_years():
-		return Directory.objects.filter(parent=Directory.parties_root)
+		return Directory.objects.filter(parent=Directory.parties_root())
 
 	@staticmethod
 	def parties():
-		return Directory.objects.filter(parent__in=Directory.party_years)
+		return Directory.objects.filter(parent__in=Directory.party_years())
 
 
 class FileTooBig(Exception):
@@ -54,7 +51,7 @@ class File(models.Model):
 	is_deleted = models.BooleanField(default=False)
 	first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
 	last_seen_at = models.DateTimeField()
-	directory = models.ForeignKey(Directory, related_name='files')
+	directory = models.ForeignKey(Directory, related_name='files', on_delete=models.CASCADE)
 	size = models.BigIntegerField(null=True)
 
 	def __unicode__(self):

@@ -1,26 +1,6 @@
 [
 	{
 		"pk": 1,
-		"model": "platforms.platform",
-		"fields": {"name": "ZX Spectrum"}
-	},
-	{
-		"pk": 1,
-		"model": "productions.productiontype",
-		"fields": {"name": "Demo", "path": "0001", "depth": 1, "numchild": 0}
-	},
-	{
-		"pk": 2,
-		"model": "productions.productiontype",
-		"fields": {"name": "Intro", "path": "0002", "depth": 1, "numchild": 1}
-	},
-	{
-		"pk": 3,
-		"model": "productions.productiontype",
-		"fields": {"name": "1K Intro", "path": "00020001", "depth": 2, "numchild": 0}
-	},
-	{
-		"pk": 1,
 		"model": "demoscene.releaser",
 		"fields": {
 			"name": "Gasman",

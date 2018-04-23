@@ -40,7 +40,7 @@ def match(request):
 	# to simulate network lag:
 	#import time
 	#time.sleep(2)
-	return HttpResponse(json.dumps(data), mimetype="text/javascript")
+	return HttpResponse(json.dumps(data), content_type="text/javascript")
 
 
 def byline_match(request):
@@ -59,7 +59,7 @@ def byline_match(request):
 		'author_matches': byline_search.author_matches_data,
 		'affiliation_matches': byline_search.affiliation_matches_data,
 	}
-	return HttpResponse(json.dumps(data), mimetype="text/javascript")
+	return HttpResponse(json.dumps(data), content_type="text/javascript")
 
 	# alternative (non-functional) response to get django debug toolbar to show up
 	#return HttpResponse("<body>%s</body>" % json.dumps(data))

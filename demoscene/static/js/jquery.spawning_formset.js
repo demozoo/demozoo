@@ -56,7 +56,7 @@
 				$('a.delete_button', newForm).click(function() {
 					deleteForm(newForm);
 				});
-				newForm.hide().slideDown('fast');
+				newForm.hide().show();
 				if (opts.onShow) opts.onShow(newForm);
 				try {$(':input:visible', newForm)[0].focus();}catch(_){}
 			})

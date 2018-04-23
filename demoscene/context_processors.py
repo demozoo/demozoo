@@ -2,6 +2,8 @@ from search.forms import SearchForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
 
+from demoscene.utils.accounts import is_ip_banned
+
 
 def global_nav_forms(request):
 	return {
@@ -18,5 +20,6 @@ def ajax_base_template(request):
 
 def read_only_mode(request):
 	return {
-		'site_is_writeable': settings.SITE_IS_WRITEABLE
+		'site_is_writeable': settings.SITE_IS_WRITEABLE,
+		'is_ip_banned': is_ip_banned(request),
 	}

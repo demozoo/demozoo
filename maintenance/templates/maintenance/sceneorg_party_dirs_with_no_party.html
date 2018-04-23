@@ -1,6 +1,6 @@
 {% extends "maintenance/base.html" %}
 {% load demoscene_tags %}
-{% load url from future %}
+
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -78,7 +78,7 @@
 					<td>
 						{% if site_is_writeable %}
 							{% if dir.suggested_party_id %}
-								<form class="add_sceneorg_link" action="{% url 'maintenance_add_sceneorg_link_to_party' %}" method="post">
+								<form class="add_sceneorg_link" action="{% url 'maintenance:add_sceneorg_link_to_party' %}" method="post">
 									{% csrf_token %}
 									<input type="hidden" name="path" value="{{ dir.path }}" />
 									<input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />

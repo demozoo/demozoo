@@ -9,7 +9,7 @@
 		{{ form.image }}
 
 		{% with form.instance.image as image %}
-			<img id="image-preview" src="{{ image.image.url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+			<img id="image-preview" src="{{ image.image_url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
 			<button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
 			<button id="clear-image" type="button">clear</button>
 		{% endwith %}

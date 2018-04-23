@@ -1,6 +1,13 @@
+import os
+import os.path
+import StringIO
+import subprocess
+import tempfile
+
 from PIL import Image
 from recoil import RecoilImage
-import StringIO
+
+from django.conf import settings
 
 from screenshots.processing import get_thumbnail_sizing_params
 
@@ -27,6 +34,16 @@ PIL_READABLE_FORMATS = ['BMP', 'GIF', 'ICO', 'JPEG', 'PCD', 'PCX', 'PNG', 'PPM',
 WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
 EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
 
+
+ANSILOVE_C_PATH = getattr(settings, 'ANSILOVE_C_PATH', None)
+if ANSILOVE_C_PATH:
+	ANSILOVE_C_READABLE_FORMATS = ['ans', 'adf', 'idf', 'xb', 'pcb', 'tnd', 'asc', 'nfo', 'diz']
+	USABLE_IMAGE_FILE_EXTENSIONS += ANSILOVE_C_READABLE_FORMATS
+	IMAGE_FILE_EXTENSIONS += ANSILOVE_C_READABLE_FORMATS
+else:
+	ANSILOVE_C_READABLE_FORMATS = []
+
+
 # file formats that are readable by ansilove.js
 USABLE_ANSI_FILE_EXTENSIONS = [
 	# leave out 'bin', because those might require us to specify number of columns, and if
@@ -41,20 +58,51 @@ class PILConvertibleImage(object):
 		using PIL.
 	"""
 	def __init__(self, source_file, name_hint=""):
-		self.file = source_file
+		# we will retain the original file object if AND ONLY IF it is directly readable by PIL,
+		# so that it can be returned as-is for use as the original rendition in the case of web-usable formats
+		self.file = None
 
 		opened_with_pil = False
 		try:
 			self.image = Image.open(source_file)  # raises IOError if image can't be identified
 			opened_with_pil = True
+			self.file = source_file
 		except IOError:
-			# try pyrecoil
-			try:
+			basename, ext = os.path.splitext(os.path.basename(name_hint))
+			if ext and ext[1:].lower() in ANSILOVE_C_READABLE_FORMATS:
+				# write source file contents to a temporary file
+				fd, input_path = tempfile.mkstemp(prefix=basename, suffix=ext)
+				f = os.fdopen(fd, 'wb')
 				source_file.seek(0)
-				img = RecoilImage(name_hint, source_file)
-				self.image = img.to_pil()
-			except ValueError:
-				raise IOError("Image format is not supported")
+				f.write(source_file.read())
+				f.close()
+
+				# run file through ansilove
+				output_path = input_path + '.png'
+				subprocess.check_call([ANSILOVE_C_PATH, input_path, '-o', output_path])
+
+				# open result with PIL
+				try:
+					self.image = Image.open(output_path)
+				except IOError:
+					# On Linux (or just on the live server or something), ansilove adds a
+					# redundant .png to the output filename. LULZ.
+					output_path += '.png'
+					self.image = Image.open(output_path)
+				self.image.load()  # load pixel data and close file so we can delete it
+
+				# delete input and output files
+				os.remove(input_path)
+				os.remove(output_path)
+
+			else:
+				# try pyrecoil
+				try:
+					source_file.seek(0)
+					img = RecoilImage(name_hint, source_file)
+					self.image = img.to_pil()
+				except ValueError:
+					raise IOError("Image format is not supported")
 
 		if opened_with_pil and self.image.format not in PIL_READABLE_FORMATS:
 			raise IOError("Image format is not supported")
@@ -64,7 +112,7 @@ class PILConvertibleImage(object):
 			return a file object for an image of the same dimensions as the original, in a
 			web-usable format, along with a tuple of its dimensions and the appropriate file extension
 		"""
-		if self.image.format in WEB_USABLE_FORMATS:
+		if self.image.format in WEB_USABLE_FORMATS and self.file is not None:
 			# just return the original file object, since it's already usable in that format
 			return self.file, self.image.size, EXTENSIONS_BY_FORMAT[self.image.format]
 		else:

@@ -1,6 +1,6 @@
 {% extends "maintenance/base.html" %}
 {% load demoscene_tags compress %}
-{% load url from future %}
+
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 {% block extra_css %}
@@ -53,7 +53,7 @@
 					{% with membership.list.0 as record %}
 						<td style="border-bottom: 1px solid #888; padding: 4px;">
 							{% if site_is_writeable %}
-								<form class="add_membership" action="{% url 'maintenance_add_membership' %}" method="post">
+								<form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
 									<input type="hidden" name="member_id" value="{{ record.member_id }}" />
 									<input type="hidden" name="group_id" value="{{ record.group_id }}" />
 									<input type="submit" value="Add" />
