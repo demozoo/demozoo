@@ -1,78 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 16 16">
-  <rect
-     style="fill:#333333"
-     id="rect3647"
-     width="16"
-     height="14"
-     x="0"
-     y="1" />
-  <path
-     d="M 0,1 1,1 1,5 0,5 Z"
-     id="path100"
-     style="fill:#0066cc" />
-  <path
-     d="M 2,1 3,1 3,5 2,5 Z"
-     id="path104"
-     style="fill:#008080" />
-  <path
-     d="M 4,1 5,1 5,5 4,5 Z"
-     id="path108"
-     style="fill:#669933" />
-  <path
-     d="M 6,1 7,1 7,5 6,5 Z"
-     id="path112"
-     style="fill:#ffff33" />
-  <path
-     d="M 8,1 9,1 9,5 8,5 Z"
-     id="path116"
-     style="fill:#ffcc33" />
-  <path
-     d="m 10,1 1,0 0,4 -1,0 z"
-     id="path120"
-     style="fill:#ff9933" />
-  <path
-     d="m 12,1 1,0 0,4 -1,0 z"
-     id="path124"
-     style="fill:#ff6633" />
-  <path
-     d="m 14,1 1,0 0,4 -1,0 z"
-     id="path128"
-     style="fill:#fe3333" />
-  <path
-     style="fill:#e6e6e6"
-     d="M 7,6 7,7 8,7 8,8 7,8 7,7 6,7 6,8 5,8 5,7 4,7 3,7 2,7 1,7 l 0,1 0,1 0,1 0,1 1,0 0,-1 1,0 1,0 1,0 0,-1 1,0 1,0 1,0 0,1 1,0 0,-1 1,0 1,0 0,1 1,0 0,-1 1,0 0,1 1,0 0,-1 1,0 0,-1 0,-1 -1,0 0,1 -1,0 0,-1 -1,0 0,1 -1,0 0,-1 -1,0 0,1 L 9,8 9,7 9,6 8,6 7,6 Z M 2,8 3,8 4,8 4,9 3,9 2,9 2,8 Z"
-     id="path132" />
-  <path
-     d="m 1,11 1,0 0,4 -1,0 z"
-     id="path284"
-     style="fill:#fe3333" />
-  <path
-     d="m 3,11 1,0 0,4 -1,0 z"
-     id="path288"
-     style="fill:#ff6633" />
-  <path
-     d="m 5,11 1,0 0,4 -1,0 z"
-     id="path292"
-     style="fill:#ff9933" />
-  <path
-     d="m 7,11 1,0 0,4 -1,0 z"
-     id="path296"
-     style="fill:#ffcc33" />
-  <path
-     d="m 9,11 1,0 0,4 -1,0 z"
-     id="path300"
-     style="fill:#ffff33" />
-  <path
-     d="m 11,11 1,0 0,4 -1,0 z"
-     id="path304"
-     style="fill:#669933" />
-  <path
-     d="m 13,11 1,0 0,4 -1,0 z"
-     id="path308"
-     style="fill:#008080" />
-  <path
-     d="m 15,11 1,0 0,4 -1,0 z"
-     id="path312"
-     style="fill:#0066cc" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <path fill="#333" d="M0 1h16v14H0z"/>
+  <path d="M0 1h1v4H0z" fill="#06c"/>
+  <path d="M2 1h1v4H2z" fill="teal"/>
+  <path d="M4 1h1v4H4z" fill="#693"/>
+  <path d="M6 1h1v4H6z" fill="#ff3"/>
+  <path d="M8 1h1v4H8z" fill="#fc3"/>
+  <path d="M10 1h1v4h-1z" fill="#f93"/>
+  <path d="M12 1h1v4h-1z" fill="#f63"/>
+  <path d="M14 1h1v4h-1z" fill="#fe3333"/>
+  <path d="M7 6v1h1v1H7V7H6v1H5V7H1v4h1v-1h3V9h3v1h1V9h2v1h1V9h1v1h1V9h1V7h-1v1h-1V7h-1v1h-1V7h-1v1H9V6H7zM2 8h2v1H2V8z" fill="#e6e6e6"/>
+  <path d="M1 11h1v4H1z" fill="#fe3333"/>
+  <path d="M3 11h1v4H3z" fill="#f63"/>
+  <path d="M5 11h1v4H5z" fill="#f93"/>
+  <path d="M7 11h1v4H7z" fill="#fc3"/>
+  <path d="M9 11h1v4H9z" fill="#ff3"/>
+  <path d="M11 11h1v4h-1z" fill="#693"/>
+  <path d="M13 11h1v4h-1z" fill="teal"/>
+  <path d="M15 11h1v4h-1z" fill="#06c"/>
 </svg>

@@ -1,14 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW X8 -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="16px" height="16px" version="1.1" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-viewBox="0 0 16 16"
- xmlns:xlink="http://www.w3.org/1999/xlink">
- <g id="Layer_x0020_1">
-  <metadata id="CorelCorpID_0Corel-Layer"/>
-  <polygon fill="red" points="16,3 16,0 0,16 3,16 "/>
-  <polygon fill="#FFC800" points="16,6 16,3 3,16 6,16 "/>
-  <polygon fill="green" points="16,9 16,6 6,16 9,16 "/>
-  <polygon fill="#0080FF" points="16,12 16,9 9,16 12,16 "/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 16 16">
+ <path fill="red" d="M16 3V0L0 16h3z"/>
+ <path fill="#FFC800" d="M16 6V3L3 16h3z"/>
+ <path fill="green" d="M16 9V6L6 16h3z"/>
+ <path fill="#0080FF" d="M16 12V9l-7 7h3z"/>
 </svg>

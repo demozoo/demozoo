@@ -1,62 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   id="svg2"
-   viewBox="0 0 16 16"
-   version="1.1">
-  <metadata
-     id="metadata520">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs518" />
-  <g
-     id="layer1">
-    <rect
-       y="0"
-       x="0"
-       height="16"
-       width="16"
-       id="rect5302"
-       style="opacity:1;fill:#000000;fill-opacity:1" />
-  </g>
-  <polygon
-     transform="matrix(0.6875,0,0,0.6875,5,5)"
-     style="clip-rule:evenodd;fill:#ff0000;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-     points="16,0 0,16 3,16 16,3 "
-     id="polygon5277" />
-  <polygon
-     transform="matrix(0.6875,0,0,0.6875,5,5)"
-     style="clip-rule:evenodd;fill:#ffc800;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-     points="16,3 3,16 6,16 16,6 "
-     id="polygon5279" />
-  <polygon
-     transform="matrix(0.6875,0,0,0.6875,5,5)"
-     style="clip-rule:evenodd;fill:#008000;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-     points="16,6 6,16 9,16 16,9 "
-     id="polygon5281" />
-  <polygon
-     transform="matrix(0.6875,0,0,0.6875,5,5)"
-     style="clip-rule:evenodd;fill:#0000ff;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
-     points="16,9 9,16 12,16 16,12 "
-     id="polygon5283" />
-  <g
-     id="layer2">
-    <path
-       style="fill:#ffffff"
-       id="rect166"
-       d="M 1 5 L 1 6 L 2 6 L 3 6 L 4 6 L 5 6 L 5 7 L 4 7 L 4 8 L 3 8 L 3 9 L 2 9 L 2 10 L 1 10 L 1 11 L 2 11 L 3 11 L 4 11 L 5 11 L 6 11 L 7 11 L 8 11 L 9 11 L 10 11 L 10 10 L 11 10 L 11 9 L 12 9 L 12 10 L 13 10 L 13 11 L 14 11 L 15 11 L 15 10 L 14 10 L 14 9 L 13 9 L 13 8 L 13 7 L 14 7 L 14 6 L 15 6 L 15 5 L 14 5 L 13 5 L 13 6 L 12 6 L 12 7 L 11 7 L 11 6 L 10 6 L 10 5 L 9 5 L 8 5 L 7 5 L 6 5 L 5 5 L 4 5 L 3 5 L 2 5 L 1 5 z M 7 6 L 8 6 L 9 6 L 9 7 L 10 7 L 10 8 L 10 9 L 9 9 L 9 10 L 8 10 L 7 10 L 6 10 L 5 10 L 4 10 L 4 9 L 5 9 L 5 8 L 6 8 L 6 7 L 7 7 L 7 6 z " />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <path d="M0 0h16v16H0z"/>
+  <path clip-rule="evenodd" fill="red" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" d="M16 5L5 16h2.063L16 7.062z"/>
+  <path clip-rule="evenodd" fill="#ffc800" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" d="M16 7.063L7.062 16h2.063L16 9.125z"/>
+  <path clip-rule="evenodd" fill="green" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" d="M16 9.125L9.125 16h2.063L16 11.187z"/>
+  <path clip-rule="evenodd" fill="#00f" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" d="M16 11.188L11.187 16h2.063L16 13.25z"/>
+  <path d="M1 5v1h4v1H4v1H3v1H2v1H1v1h9v-1h1V9h1v1h1v1h2v-1h-1V9h-1V7h1V6h1V5h-2v1h-1v1h-1V6h-1V5H1zm6 1h2v1h1v2H9v1H4V9h1V8h1V7h1V6z" fill="#fff"/>
 </svg>
