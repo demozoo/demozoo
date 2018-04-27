@@ -39,6 +39,7 @@ def search(request):
 
 def live_search(request):
 	query = request.GET.get('q')
+	category = request.GET.get('category')
 	if query:
 		clean_query = generate_search_title(query)
 
@@ -46,21 +47,31 @@ def live_search(request):
 		qs = Production.objects.annotate(
 			type=models.Value('empty', output_field=models.CharField()),
 		).values('pk', 'type').none()
-		qs = qs.union(
-			Production.objects.annotate(
+
+		if (not category) or category in ('production', 'graphics', 'music'):
+			prod_qs = Production.objects.annotate(
 				type=models.Value('production', output_field=models.CharField()),
-			).filter(search_title__startswith=clean_query).values('pk', 'type')
-		)
-		qs = qs.union(
-			Releaser.objects.annotate(
+				name=models.Value('', output_field=models.CharField()),
+			).order_by().filter(search_title__startswith=clean_query).values('pk', 'type')
+			if category in ('production', 'graphics', 'music'):
+				prod_qs = prod_qs.filter(supertype=category)
+			qs = qs.union(prod_qs)
+
+		if (not category) or category in ('scener', 'group'):
+			releaser_qs = Releaser.objects.annotate(
 				type=models.Value('releaser', output_field=models.CharField()),
-			).filter(nicks__variants__search_title__startswith=clean_query).values('pk', 'type')
-		)
-		qs = qs.union(
-			Party.objects.annotate(
-				type=models.Value('party', output_field=models.CharField()),
-			).filter(search_title__startswith=clean_query).values('pk', 'type')
-		)
+			).order_by('pk').filter(nicks__variants__search_title__startswith=clean_query).values('pk', 'type').distinct()
+			if category in ('scener', 'group'):
+				releaser_qs = releaser_qs.filter(is_group=(category == 'group'))
+			qs = qs.union(releaser_qs)
+
+		if (not category) or category == 'party':
+			qs = qs.union(
+				Party.objects.annotate(
+					type=models.Value('party', output_field=models.CharField()),
+				).order_by().filter(search_title__startswith=clean_query).values('pk', 'type')
+			)
+
 		search_result_data = list(qs[:10])
 
 		# Assemble the results into a plan for fetching the actual models -

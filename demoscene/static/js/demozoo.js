@@ -59,7 +59,8 @@ $(function() {
 	});
 
 	var searchPlaceholderText = 'Type in keyword';
-	var searchField = $('#global_search #id_q');
+	var searchField = $('#id_global_search-q');
+	var searchCategoryField = $('#id_global_search-category');
 	if (searchField.val() === '' || searchField.val() === searchPlaceholderText) {
 		searchField.val(searchPlaceholderText).addClass('placeholder');
 	}
@@ -81,7 +82,7 @@ $(function() {
 	searchField.autocomplete({
 		'html': true,
 		'source': function(request, response) {
-			$.getJSON('/search/live/', {'q': request.term}, function(data) {
+			$.getJSON('/search/live/', {'q': request.term, 'category': searchCategoryField.val()}, function(data) {
 				for (var i = 0; i < data.length; i++) {
 					var thumbnail = '';
 					if (data[i].thumbnail) {
