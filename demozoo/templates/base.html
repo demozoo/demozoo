@@ -75,6 +75,7 @@
 					{% block global_search_form %}
 						<form class="search" id="global_search" method="get" action="{% url 'search' %}">
 							{{ global_search_form.q }}
+							{{ global_search_form.category }}
 							<input type="submit" value="Search" />
 						</form>
 					{% endblock %}
