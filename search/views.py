@@ -26,12 +26,12 @@ def search(request):
 
 		results, page = form.search(with_real_names=has_real_name_access, page_number=page_number)
 	else:
-		query = None
+		query = ''
 		page = None
+		results = None
 	return render(request, 'search/search.html', {
 		'form': form,
 		'query': query,
-		'global_search_query': query,
 		'results': results,
 		'page': page,
 	})
