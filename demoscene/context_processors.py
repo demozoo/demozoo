@@ -7,7 +7,7 @@ from demoscene.utils.accounts import is_ip_banned
 
 def global_nav_forms(request):
 	return {
-		'global_search_form': SearchForm(),
+		'global_search_form': SearchForm(auto_id="id_global_search-%s"),
 		'global_login_form': AuthenticationForm(),
 	}
 
