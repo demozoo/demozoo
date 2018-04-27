@@ -9,9 +9,6 @@ from django.contrib.auth import views as auth_views
 from demoscene import views as demoscene_views
 from sceneid import auth as sceneid_views
 
-from lib import djapian
-djapian.load_indexes()
-
 urlpatterns = [
 	url(r'^admin/', include(admin.site.urls)),
 

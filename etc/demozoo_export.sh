@@ -8,7 +8,7 @@ psql demozoo_export -c "UPDATE demoscene_releaser SET surname='' WHERE show_surn
 psql demozoo_export -c "UPDATE productions_production SET search_document=NULL;"
 psql demozoo_export -c "UPDATE demoscene_releaser SET search_document=NULL, admin_search_document=NULL;"
 psql demozoo_export -c "UPDATE parties_party SET search_document=NULL;"
-psql demozoo_export -c "TRUNCATE TABLE celery_taskmeta, celery_tasksetmeta, django_session, djapian_change, djcelery_intervalschedule, djcelery_periodictask, djcelery_crontabschedule, djcelery_periodictasks, djcelery_taskstate, djcelery_workerstate;"
+psql demozoo_export -c "TRUNCATE TABLE celery_taskmeta, celery_tasksetmeta, django_session, djcelery_intervalschedule, djcelery_periodictask, djcelery_crontabschedule, djcelery_periodictasks, djcelery_taskstate, djcelery_workerstate;"
 
 pg_dump -O demozoo_export | gzip - > /home/demozoo/demozoo/data/demozoo-export.sql.gz
 

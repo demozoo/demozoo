@@ -110,7 +110,6 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
-	'djapian',
 	'treebeard',
 	'taggit',
 	'compressor',
@@ -161,8 +160,6 @@ LOGGING = {
 
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
-
-DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT, 'data', 'djapian')
 
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
