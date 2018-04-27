@@ -100,7 +100,43 @@ def live_search(request):
 		for d in search_result_data:
 			item = fetched.get((d['type'], d['pk'])) or None
 			if item:
-				results.append(item.search_result_json())
+				if d['type'] == 'production':
+					if item.selected_screenshot:
+						screenshot = item.selected_screenshot
+						width, height = screenshot.thumb_dimensions_to_fit(48, 36)
+						thumbnail = {
+							'url': screenshot.thumbnail_url,
+							'width': width, 'height': height,
+							'natural_width': screenshot.thumbnail_width,
+							'natural_height': screenshot.thumbnail_height,
+						}
+					else:
+						thumbnail = None
+
+					results.append({
+						'type': item.supertype,
+						'url': item.get_absolute_url(),
+						'value': item.title_with_byline,
+						'thumbnail': thumbnail
+					})
+				elif d['type'] == 'releaser':
+					primary_nick = item.primary_nick
+					if primary_nick.differentiator:
+						differentiator = " (%s)" % primary_nick.differentiator
+					else:
+						differentiator = ""
+
+					results.append({
+						'type': 'group' if item.is_group else 'scener',
+						'url': item.get_absolute_url(),
+						'value': item.name_with_affiliations() + differentiator,
+					})
+				elif d['type'] == 'party':
+					results.append({
+						'type': 'party',
+						'url': item.get_absolute_url(),
+						'value': item.name,
+					})
 
 	else:
 		results = []
