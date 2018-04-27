@@ -31,6 +31,20 @@ RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group
 
 class SearchForm(forms.Form):
 	q = forms.CharField(required=True, label='Search')
+	category = forms.ChoiceField(required=False, choices=[
+		('', "Everything"),
+		('production', "Productions"),
+		('graphics', "Graphics"),
+		('music', "Music"),
+		('scener', "Sceners"),
+		('group', "Groups"),
+		('party', "Parties"),
+	])
+
+	def clean(self):
+		category = self.cleaned_data.get('category')
+		if category:
+			self.cleaned_data['q'] += (' type:%s' % category)
 
 	def search(self, with_real_names=False, page_number=1, count=50):
 		query = self.cleaned_data['q']
