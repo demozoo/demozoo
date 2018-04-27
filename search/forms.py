@@ -307,6 +307,6 @@ class SearchForm(forms.Form):
 			item = fetched.get((d['type'], d['pk'])) or None
 			if item:
 				item.search_info = d
-			results.append(item)
+				results.append(item)
 
 		return (results, page)
