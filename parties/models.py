@@ -231,13 +231,6 @@ class Party(Commentable):
 		results_file.file.save(self.clean_name + '.txt', ContentFile(sceneorg_file.fetched_data()))
 		# this also commits the ResultsFile record to the database
 
-	def search_result_json(self):
-		return {
-			'type': 'party',
-			'url': self.get_absolute_url(),
-			'value': self.name,
-		}
-
 	@property
 	def clean_name(self):
 		"""a name for this party that can be used in filenames (used to give results.txt files

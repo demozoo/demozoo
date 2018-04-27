@@ -295,26 +295,6 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	def tags_string(self):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
-	def search_result_json(self):
-		screenshot = self.random_screenshot
-		if screenshot:
-			width, height = screenshot.thumb_dimensions_to_fit(48, 36)
-			thumbnail = {
-				'url': screenshot.thumbnail_url,
-				'width': width, 'height': height,
-				'natural_width': screenshot.thumbnail_width,
-				'natural_height': screenshot.thumbnail_height,
-			}
-		else:
-			thumbnail = None
-
-		return {
-			'type': self.supertype,
-			'url': self.get_absolute_url(),
-			'value': self.title_with_byline,
-			'thumbnail': thumbnail
-		}
-
 	def credits_for_listing(self):
 		return self.credits.select_related('nick__releaser').extra(
 			select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
@@ -356,11 +336,6 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	@property
 	def download_links(self):
 		return self.links.filter(is_download_link=True)
-
-	@property
-	def random_screenshot(self):
-		if self.has_screenshot:
-			return self.screenshots.order_by('?').first()
 
 	def index_components(self):
 		return {
