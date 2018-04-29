@@ -5,6 +5,21 @@
 {% block extra_css %}
 	{% compress css %}<link rel="stylesheet" href="/static/search/css/pages/search.less" type="text/less" />{% endcompress %}
 {% endblock %}
+{% block extra_js %}
+	<script>
+		$(function() {
+			var advancedSearchHelp = $('#advanced_search_help');
+			advancedSearchHelp.hide();
+			var advancedSearchLink = $('<small><a href="javascript:void(0)">Advanced search help</a></small>');
+			$('.search-results form.search').append(advancedSearchLink);
+			advancedSearchLink.find('a').toggle(function() {
+				advancedSearchHelp.slideDown();
+			}, function() {
+				advancedSearchHelp.slideUp();
+			});
+		});
+	</script>
+{% endblock %}
 
 {% block base_main %}
 <section class="search-results">
@@ -28,6 +43,19 @@
 			</div>
 		</fieldset>
 	</form>
+
+	<div id="advanced_search_help" class="long_help">
+		<h3>Search filtering options</h3>
+		<ul>
+			<li><kbd>cocio type:music</kbd> - restrict search results to a specific type. Recognised types are <kbd>production</kbd>, <kbd>music</kbd>, <kbd>graphics</kbd>, <kbd>scener</kbd>, <kbd>group</kbd>, <kbd>party</kbd> or any production type, e.g. <kbd>type:"64K Intro"</kbd></li>
+			<li><kbd>deus on:"Commodore 64"</kbd> or <kbd>deus platform:"Commodore 64"</kbd> - search releases on a specific platform</li>
+			<li><kbd>horse by:farbrausch</kbd> or <kbd>horse author:farbrausch</kbd> - search releases by a specific author</li>
+			<li><kbd>smash of:flt</kbd> - search members of a specific group</li>
+			<li><kbd>rob group:aardbei</kbd> - search members and releases of a specific group</li>
+			<li><kbd>heart [scene-poetry]</kbd> or <kbd>heart tagged:scene-poetry</kbd> - search releases with a specific tag</li>
+			<li><kbd>inercia year:2005</kbd> - search releases and parties from a specific year</li>
+		</ul>
+	</div>
 
 	{% if query %}
 		<section>
