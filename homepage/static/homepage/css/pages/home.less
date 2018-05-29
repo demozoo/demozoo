@@ -269,3 +269,20 @@
 		}
 	}
 }
+
+/* quick and ugly fix for #345 - the preaching against wildcard style resets will ensue later. */
+.news-story {
+
+	&__content {
+
+		ul {
+			list-style: disc;
+			margin: 0 1.75em 1.5em;
+		}
+
+		ol {
+			list-style: decimal;
+			margin: 0 1.75em 1.5em;
+		}
+	}
+}
