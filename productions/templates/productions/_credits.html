@@ -1,7 +1,7 @@
 
 
 <div class="editable_chunk credits_panel panel {% if not credits %}hidden{% endif %} {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
-	<h3>Credits</h3>
+	<h3 class="panel__title">Credits</h3>
 
 	{% if site_is_writeable and not user.is_authenticated %}
 		{% comment %} Provide an 'edit' button that takes them to the login page.

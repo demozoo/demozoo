@@ -1,7 +1,7 @@
 
 
 <div class="editable_chunk panel tags_panel {% if site_is_writeable and user.is_authenticated %}edit_toggle{% endif %}">
-	<h3>Tags</h3>
+	<h3 class="panel__title">Tags</h3>
 
 	{% if site_is_writeable and not user.is_authenticated %}
 		{% comment %} Provide an 'edit' button that takes them to the login page.

@@ -39,7 +39,7 @@
 	{% with scener.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
 			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-				<h3>Also known as</h3>
+				<h3 class="panel__title">Also known as</h3>
 
 				{% if site_is_writeable and not user.is_authenticated %}
 					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -115,7 +115,7 @@
 	</div>
 
 	<div class="editable_chunk panel external_links_panel">
-		<h3>External links</h3>
+		<h3 class="panel__title">External links</h3>
 
 		{% if site_is_writeable %}
 			<ul class="actions">
@@ -146,7 +146,7 @@
 
 	<div id="side_column">
 		<div class="panel groups_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
-			<h3>Member of</h3>
+			<h3 class="panel__title">Member of</h3>
 
 			{% if site_is_writeable and not user.is_authenticated %}
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -177,7 +177,7 @@
 	
 	<div id="main_column">
 		<div class="panel editable_chunk">
-			<h3 class="productions_header">Productions</h3>
+			<h3 class="panel__title productions_header">Productions</h3>
 			{% if site_is_writeable %}
 				<ul class="actions">
 					<li>

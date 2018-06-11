@@ -135,7 +135,7 @@
 
 	{% if results_files %}
 		<div class="panel results_file_panel">
-			<h3>Results file</h3>
+			<h3 class="panel__title">Results file</h3>
 			<ul class="results_files">
 				{% for file in results_files %}
 					<li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
@@ -145,7 +145,7 @@
 	{% endif %}
 
 	<div class="editable_chunk panel external_links_panel">
-		<h3>External links</h3>
+		<h3 class="panel__title">External links</h3>
 		{% if site_is_writeable %}
 			<ul class="actions">
 				<li>
@@ -194,7 +194,7 @@
 
 	{% if invitations or user.is_authenticated %}
 		<div class="panel invitations_panel editable_chunk">
-			<h3>
+			<h3 class="panel__title">
 				Invitation{{ invitations|length|pluralize }}
 			</h3>
 			{% if site_is_writeable %}
@@ -211,7 +211,7 @@
 
 	{% if releases or user.is_authenticated %}
 		<div class="panel releases_panel editable_chunk">
-			<h3>Releases</h3>
+			<h3 class="panel__title">Releases</h3>
 			{% if site_is_writeable %}
 				<ul class="actions">
 					<li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit releases</a></li>
@@ -228,7 +228,7 @@
 		<div class="panel results_panel">
 			<div class="results_menu_column">
 				<div class="results_menu">
-					<h3>Results</h3>
+					<h3 class="panel__title">Results</h3>
 					{% if competitions_with_placings_and_screenshots %}
 						<ul class="results-menu__list">
 							{% for compo, placings in competitions_with_placings_and_screenshots %}

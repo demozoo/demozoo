@@ -117,7 +117,7 @@
 
 		{% if production.can_have_pack_members %}
 			<div class="pack_contents_panel panel editable_chunk">
-				<h3>Pack contents</h3>
+				<h3 class="panel__title">Pack contents</h3>
 
 				{% if site_is_writeable %}
 					<ul class="actions">
@@ -133,21 +133,21 @@
 
 		{% if packed_in_productions %}
 			<div class="packed_in_panel panel">
-				<h3>Packed in:</h3>
+				<h3 class="panel__title">Packed in:</h3>
 				{% production_listing packed_in_productions show_screenshots=1 %}
 			</div>
 		{% endif %}
 
 		{% if featured_in_productions %}
 			<div class="featured_in_panel panel">
-				<h3>Featured in:</h3>
+				<h3 class="panel__title">Featured in:</h3>
 				{% production_listing featured_in_productions show_screenshots=1 %}
 			</div>
 		{% endif %}
 
 		{% if soundtracks %}
 			<div class="soundtracks_panel panel editable_chunk">
-				<h3>Soundtrack</h3>
+				<h3 class="panel__title">Soundtrack</h3>
 
 				{% if site_is_writeable %}
 					<ul class="actions">

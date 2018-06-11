@@ -44,7 +44,7 @@
 	{% with group.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
 			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-				<h3>Also known as</h3>
+				<h3 class="panel__title">Also known as</h3>
 
 				{% if site_is_writeable and not user.is_authenticated %}
 					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -75,7 +75,7 @@
 	{% endwith %}
 
 	<div class="editable_chunk panel external_links_panel">
-		<h3>External links</h3>
+		<h3 class="panel__title">External links</h3>
 		{% if site_is_writeable %}
 			<ul class="actions">
 				<li>
@@ -106,7 +106,7 @@
 	<div id="side_column">
 		{% if supergroupships %}
 			<div class="panel supergroups_panel">
-				<h3>Subgroup of</h3>
+				<h3 class="panel__title">Subgroup of</h3>
 				<ul class="memberships">
 					{% for membership in supergroupships %}
 						<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
@@ -119,7 +119,7 @@
 		{% endif %}
 
 		<div class="panel members_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-			<h3>Members</h3>
+			<h3 class="panel__title">Members</h3>
 
 			{% if site_is_writeable and not user.is_authenticated %}
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -149,7 +149,7 @@
 		</div>
 
 		<div class="panel subgroups_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-			<h3>Subgroups</h3>
+			<h3 class="panel__title">Subgroups</h3>
 
 			{% if site_is_writeable and not user.is_authenticated %}
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -181,7 +181,7 @@
 
 	<div id="main_column">
 		<div class="panel editable_chunk">
-			<h3 class="productions_header">Productions</h3>
+			<h3 class="panel__title productions_header">Productions</h3>
 			{% if site_is_writeable %}
 				<ul class="actions">
 					<li>
@@ -194,7 +194,7 @@
 
 		{% if member_productions %}
 			<div class="panel">
-				<h3 class="member_productions_header">Member productions</h3>
+				<h3 class="panel__title member_productions_header">Member productions</h3>
 
 				{% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
 			</div>
