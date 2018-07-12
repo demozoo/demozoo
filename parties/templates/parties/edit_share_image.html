@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
-{% load safe_markdown %}
 
 
 {% block html_title %}Edit social share image for {{ party.name }} - Demozoo{% endblock %}
@@ -11,6 +9,11 @@
 		.entry_form .field_input {
 			width: auto;
 		}
+		.thumbnail {
+			float: left;
+			width: 250px;
+			height: 160px;
+		}
 	</style>
 {% endblock %}
 
@@ -20,6 +23,19 @@
 		{% csrf_token %}
 
 		{% include "shared/form_field.html" with field=form.share_image_file %}
+
+		{% with form.share_screenshot as field %}
+			<div class="field">
+				<label for="{{ field.id_for_label }}" class="field_label">Or choose a screenshot:</label>
+				<div class="field_input">
+					{{ field.errors }}
+
+					{% for screenshot, option in form.options_with_screenshots %}
+						<div class="thumbnail"><label>{{ option.tag }} <img src="{{ screenshot.thumbnail_url }}" width="{{ screenshot.thumbnail_width }}" height="{{ screenshot.thumbnail_height }}" alt="" /></label></div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endwith %}
 
 		<div class="field">
 			<input type="submit" value="Update" />

@@ -168,6 +168,13 @@ class Party(Commentable):
 		self.end_date_precision = fuzzy_date.precision
 	end_date = property(_get_end_date, _set_end_date)
 
+	def get_screenshots(self):
+		compo_entry_prod_ids = Production.objects.filter(competition_placings__competition__party=self).values_list('id', flat=True)
+		invitation_prod_ids = self.invitations.values_list('id', flat=True)
+		non_compo_release_prod_ids = self.releases.values_list('id', flat=True)
+		prod_ids = list(compo_entry_prod_ids) + list(invitation_prod_ids) + list(non_compo_release_prod_ids)
+		return Screenshot.objects.filter(production_id__in=prod_ids)
+
 	def random_screenshot(self):
 		screenshots = Screenshot.objects.filter(production__competition_placings__competition__party=self)
 		try:
