@@ -19,6 +19,7 @@
 
 {% block base_main %}
 	<h1>Editing social share image for: {{ party.name }}</h1>
+	<p>Currently: <img src="{{ party.share_image_url }}"></p>
 	<form action="{% url 'party_edit_share_image' party.id %}" method="post" enctype="multipart/form-data" class="entry_form">
 		{% csrf_token %}
 
