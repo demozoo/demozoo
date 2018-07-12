@@ -12,6 +12,7 @@ from unidecode import unidecode
 
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink
 from demoscene.utils import groklinks
+from demoscene.utils.files import random_path
 from comments.models import Commentable
 from productions.models import Production, Screenshot
 
@@ -63,6 +64,10 @@ class PartySeriesDemozoo0Reference(models.Model):
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 
+def party_share_image_upload_to(i, f):
+	return random_path('party_share_images', f)
+
+
 class Party(Commentable):
 	party_series = models.ForeignKey(PartySeries, related_name='parties', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, unique=True)
@@ -87,6 +92,16 @@ class Party(Commentable):
 
 	invitations = models.ManyToManyField('productions.Production', related_name='invitation_parties', blank=True)
 	releases = models.ManyToManyField('productions.Production', related_name='release_parties', blank=True)
+
+	share_image_file = models.ImageField(
+		upload_to=party_share_image_upload_to, blank=True,
+		width_field='share_image_file_width', height_field='share_image_file_height',
+		help_text="Upload an image file to display when sharing this party page on social media"
+	)
+	share_image_file_width = models.IntegerField(editable=False, null=True)
+	share_image_file_height = models.IntegerField(editable=False, null=True)
+	share_image_file_url = models.CharField(max_length=255, blank=True, editable=False)
+	share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
 
 	search_result_template = 'search/results/party.html'
 
