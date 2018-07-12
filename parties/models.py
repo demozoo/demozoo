@@ -108,6 +108,15 @@ class Party(Commentable):
 	def __unicode__(self):
 		return self.name
 
+	def save(self, *args, **kwargs):
+		super(Party, self).save(*args, **kwargs)
+		if self.share_image_file_url and not self.share_image_file:
+			# clear the previous share_image_file_url field
+			Party.objects.filter(pk=self.pk).update(share_image_file_url='')
+		elif self.share_image_file and self.share_image_file.url != self.share_image_file_url:
+			# update the share_image_file_url field with the URL from share_image_file
+			Party.objects.filter(pk=self.pk).update(share_image_file_url=self.share_image_file.url)
+
 	@property
 	def title(self):
 		# make 'title' an alias of 'name', so that when we output comment listings, we can consistently

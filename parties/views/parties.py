@@ -12,7 +12,11 @@ from demoscene.shortcuts import simple_ajax_form
 from demoscene.models import Edit
 from productions.models import Screenshot
 from parties.models import Party, PartySeries, Competition, PartyExternalLink, ResultsFile
-from parties.forms import PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset
+from parties.forms import (
+	PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet,
+	PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset,
+	PartyShareImageForm
+)
 from read_only_mode import writeable_site_required
 from comments.models import Comment
 from comments.forms import CommentForm
@@ -378,3 +382,26 @@ def edit_releases(request, party_id):
 @login_required
 def edit_competition(request, party_id, competition_id):
 	return redirect('competition_edit', competition_id)
+
+
+@writeable_site_required
+@login_required
+def edit_share_image(request, party_id):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	party = get_object_or_404(Party, id=party_id)
+	if request.method == 'POST':
+		form = PartyShareImageForm(request.POST, request.FILES, instance=party)
+		if form.is_valid():
+			form.save()
+
+			messages.success(request, 'Social share image updated')
+			return redirect('party', party.id)
+	else:
+		form = PartyShareImageForm(instance=party)
+
+	return render(request, 'parties/edit_share_image.html', {
+		'party': party,
+		'form': form,
+	})

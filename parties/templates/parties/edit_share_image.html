@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load demoscene_tags compress %}
+{% load safe_markdown %}
+
+
+{% block html_title %}Edit social share image for {{ party.name }} - Demozoo{% endblock %}
+
+{% block extra_css %}
+	<style type="text/css">
+		/* relax width constraint on the file upload field, so that the 'clear' checkbox doesn't wrap */
+		.entry_form .field_input {
+			width: auto;
+		}
+	</style>
+{% endblock %}
+
+{% block base_main %}
+	<h1>Editing social share image for: {{ party.name }}</h1>
+	<form action="{% url 'party_edit_share_image' party.id %}" method="post" enctype="multipart/form-data" class="entry_form">
+		{% csrf_token %}
+
+		{% include "shared/form_field.html" with field=form.share_image_file %}
+
+		<div class="field">
+			<input type="submit" value="Update" />
+		</div>
+	</form>
+{% endblock %}
