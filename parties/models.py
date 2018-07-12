@@ -238,6 +238,15 @@ class Party(Commentable):
 			meaningful names on disk)"""
 		return re.sub(r'\W+', '_', self.name.lower())
 
+	@property
+	def share_image_url(self):
+		if self.share_image_file_url:
+			return self.share_image_file_url
+		elif self.share_screenshot:
+			return self.share_screenshot.standard_url
+		else:
+			return 'https://demozoo.org/static/images/fb-1200x627.png'
+
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("name",)

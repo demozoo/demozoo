@@ -227,7 +227,13 @@ class PartyShareImageForm(forms.ModelForm):
 		)
 
 	def options_with_screenshots(self):
-		return zip(self['share_screenshot'].field.queryset, list(self['share_screenshot']))
+		screenshots_by_id = {
+			s.id: s for s in self['share_screenshot'].field.queryset
+		}
+		return [
+			(screenshots_by_id[option.data['value']], option)
+			for option in list(self['share_screenshot'])
+		]
 
 	class Meta:
 		model = Party
