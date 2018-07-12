@@ -103,6 +103,11 @@
 				<li>
 					<a href="{% url 'edit_party' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
 				</li>
+				{% if request.user.is_staff %}
+					<li>
+						<a href="{% url 'party_edit_share_image' party.id %}" class="action_button icon picture_edit">Edit social share image</a>
+					</li>
+				{% endif %}
 			</ul>
 		{% endif %}
 

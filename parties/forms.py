@@ -216,3 +216,9 @@ class PartyReleaseForm(forms.Form):
 
 PartyReleaseFormset = formset_factory(PartyReleaseForm,
 	can_delete=True, extra=1)
+
+
+class PartyShareImageForm(forms.ModelForm):
+	class Meta:
+		model = Party
+		fields = ['share_image_file']
