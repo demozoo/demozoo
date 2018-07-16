@@ -6,7 +6,7 @@
 		border: none;
 		padding: 0 0 0 6px;
 		height: 25px;
-		width: 395px;
+		width: 360px;
 		font-size: 10pt;
 		background-color: #77c6ef;
 		color: black;
@@ -19,17 +19,26 @@
 		}
 	}
 
-	input[type=submit] {
+	select[name=category] {
+		float: left;
+		height: 25px;
+		border-radius: 0;
+	}
+
+	button[type=submit] {
 		background-color: #386580;
 		border: none;
 		color: white;
 		float: left;
-		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-		font-size: 8pt;
 		height: 25px;
+		width: 40px;
+		padding: 0;
 		margin: 0;
-		padding-left: 16px;
-		padding-right: 16px;
+
+		svg.icon {
+			fill: #fff;
+			height: 25px;
+		}
 	}
 
 	@media screen and (max-width: 501px) {

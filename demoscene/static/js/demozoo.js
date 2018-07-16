@@ -58,7 +58,7 @@ $(function() {
 		return false;
 	});
 
-	var searchPlaceholderText = 'Type in keyword';
+	var searchPlaceholderText = 'Search for...';
 	var searchField = $('#id_global_search-q');
 	var searchCategoryField = $('#id_global_search-category');
 	if (searchField.val() === '' || searchField.val() === searchPlaceholderText) {
