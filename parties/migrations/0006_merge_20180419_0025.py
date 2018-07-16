@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('parties', '0004_set_on_delete'),
+        ('parties', '0005_party_share_image'),
         ('parties', '0005_party_search_title'),
     ]
 
