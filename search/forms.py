@@ -12,6 +12,7 @@ from unidecode import unidecode
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
+from platforms.models import Platform
 from productions.models import Production, Screenshot
 
 
@@ -92,7 +93,12 @@ class SearchForm(forms.Form):
 		if 'platform' in filter_expressions or 'on' in filter_expressions:
 			subqueries_to_perform &= set(['production'])
 			platforms = filter_expressions['platform'] | filter_expressions['on']
-			production_filter_q &= Q(platforms__name__in=platforms)
+
+			platform_ids = Platform.objects.none().values_list('id', flat=True)
+			for platform_name in platforms:
+				platform_ids |= Platform.objects.filter(Q(name__iexact=platform_name) | Q(aliases__name__iexact=platform_name)).values_list('id', flat=True)
+
+			production_filter_q &= Q(platforms__id__in=list(platform_ids))
 
 		if 'by' in filter_expressions or 'author' in filter_expressions:
 			subqueries_to_perform &= set(['production'])
