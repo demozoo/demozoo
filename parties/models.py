@@ -115,7 +115,12 @@ class Party(Commentable):
 		return self.name
 
 	def save(self, *args, **kwargs):
+		# populate search_title from name
+		if self.name:
+			self.search_title = generate_search_title(self.name)
+
 		super(Party, self).save(*args, **kwargs)
+
 		if self.share_image_file_url and not self.share_image_file:
 			# clear the previous share_image_file_url field
 			Party.objects.filter(pk=self.pk).update(share_image_file_url='')
@@ -254,13 +259,6 @@ class Party(Commentable):
 			'B': self.tagline,
 			'C': self.asciified_location + ' ' + self.plaintext_notes,
 		}
-
-	def save(self, *args, **kwargs):
-		# populate search_title from name
-		if self.name:
-			self.search_title = generate_search_title(self.name)
-
-		return super(Party, self).save(*args, **kwargs)
 
 	class Meta:
 		verbose_name_plural = "Parties"
