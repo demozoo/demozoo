@@ -79,7 +79,8 @@ def make_default_platforms(apps, schema):
 				 {'name': 'Gamepark 32 '},
 				 {'name': 'Electronika BK-0010/11M'},
 				 {'name': 'Enterprise'},
-				 {'name': 'NEC PC Engine'}]
+				 {'name': 'NEC PC Engine'},
+				 {'name': 'Nintendo Switch'}]
 
     for platform in platforms:
         Platform.objects.create(**platform)
