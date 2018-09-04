@@ -26,6 +26,7 @@ urlpatterns = [
 	url(r'^adhoc/scenesat/monthly-releases/$', adhoc.scenesat.monthly, {}),
 
 	url(r'^adhoc/eq/demos/$', adhoc.eq.demos, {}),
+	url(r'^adhoc/group-abbreviations/$', adhoc.group_abbreviations.group_abbreviations, {}),
 
 	url(r'^v1/', include(router.urls)),
 ]
