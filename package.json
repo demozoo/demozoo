@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "Demozoo - The best demoscene website in the world.",
   "main": "Gruntfile.js",
+  "browserlist": "last 3 versions",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "autoprefixer": "postcss ./static/css/*.css --use autoprefixer -d ./static/css",
+    "sass": "node-sass --importer node_modules/node-sass-glob-importer/dist/cli.js ./src/style/layout.scss ./static/css/dz.css",
+    "svgstore:icons": "svgstore -o ./static/svg/icons.svg ./src/svg/icons/*.svg",
+    "svgstore:flags": "svgstore -o ./static/svg/flags.svg ./src/svg/flags/*.svg"
   },
   "repository": {
     "type": "git",
@@ -17,11 +21,20 @@
   },
   "homepage": "https://github.com/demozoo/demozoo#readme",
   "devDependencies": {
+    "autoprefixer": "^9.1.5",
     "glob": "^7.1.1",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.3",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-svgmin": "^4.0.0",
     "grunt-svgstore": "^1.0.0",
-    "load-grunt-tasks": "^3.5.2"
-  }
+    "load-grunt-tasks": "^3.5.2",
+    "node-sass": "^4.9.3",
+    "node-sass-glob-importer": "^5.2.0",
+    "postcss": "^7.0.2",
+    "postcss-cli": "^6.0.0",
+    "postcss-normalize": "^7.0.1",
+    "svgo": "^1.1.1",
+    "svgstore-cli": "^1.3.1"
+  },
+  "dependencies": {}
 }
