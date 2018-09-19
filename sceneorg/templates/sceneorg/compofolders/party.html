@@ -2,10 +2,6 @@
 {% load compress %}
 
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block extra_js %}
 	{% if site_is_writeable %}
 		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
@@ -14,6 +10,7 @@
 {% endblock %}
 
 {% block base_main %}
+<section class="sceneorg">
 	{% if site_is_writeable %}
 		<ul class="actions">
 			<li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<a href="javascript:void($('#compofolders_done').submit())" class="action_button icon done">All done</a></form></li>
@@ -54,4 +51,5 @@
 			{% endfor %}
 		{% endfor %}
 	</ul>
+</section>
 {% endblock %}

@@ -3,16 +3,11 @@
 
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
-		<link rel="stylesheet" href="/static/maintenance/css/implied_memberships.css" type="text/less" />
-	{% endcompress %}
-{% endblock %}
 
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
+<section class="implied_memberships">
 	<script>
 		$(function() {
 			$('form.add_membership').submit(function() {
@@ -65,4 +60,5 @@
 			{% endfor %}
 		</table>
 	</div>
+</section>
 {% endblock %}

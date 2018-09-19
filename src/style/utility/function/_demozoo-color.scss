@@ -1,0 +1,3 @@
+@function demozoo-color($key: 'primary') {
+  @return map-get($demozoo-color, $key);
+}

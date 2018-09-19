@@ -5,12 +5,6 @@
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/parties/css/pages/show_party.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block extra_js %}
 	{% compress js %}
 		<script src="/static/js/components/notes_panel.js"></script>

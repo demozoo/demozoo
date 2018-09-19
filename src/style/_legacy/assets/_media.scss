@@ -1,0 +1,49 @@
+.media {
+	overflow: hidden;
+	position: relative;
+
+	svg,
+	img {
+		display: block;
+		width: 100%;
+	}
+
+	svg {
+		max-height: 100%;
+	}
+
+	iframe {
+		position: absolute;
+		@include pos(0);
+	}
+}
+
+.media--thumbnail {
+
+	img {
+		@include pos(0);
+		@include size(100%);
+		object-fit: cover;
+		position: absolute;
+		font-family: 'object-fit: cover;'; // hate doing this.
+	}
+
+	svg {
+		@include size(100%);
+		background-color: transparent;
+		border-radius: 0;
+	}
+
+	&:after {
+		@include pos(0);
+		@include size(100%);
+		box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.25);
+		content: "";
+		position: absolute;
+		z-index: 2;
+	}
+
+	.list--results & {
+		@include size(3em);
+	}
+}

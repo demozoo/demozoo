@@ -2,14 +2,8 @@
 {% load compress %}
 
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />
-		<link rel="stylesheet" href="/static/sceneorg/css/pages/parties_by_series.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
+<section class="sceneorg">
 	<h2>scene.org compo folder matching</h2>
 	<p>
 		<a href="{% url 'sceneorg_compofolders' %}?order=year">By year</a> | <strong>By series</strong>
@@ -36,4 +30,5 @@
 			</tr>
 		{% endfor %}
 	</table>
+</section>
 {% endblock %}
