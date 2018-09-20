@@ -1,8 +1,0 @@
-{
-  "dir": {
-    "tmp": ".tmp",
-    "src": "src",
-    "icons": "src/svg/icons",
-    "static": "demoscene/static"
-  }
-}

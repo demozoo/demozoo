@@ -22,10 +22,10 @@ apt-get install -y libffi-dev
 # xapian (search engine)
 apt-get install -y python-xapian
 
-# node.js / lessc / grunt-cli
-curl -sL https://deb.nodesource.com/setup_4.x | bash -
+# node.js
+curl -sL https://deb.nodesource.com/setup_8.x | bash -
 apt-get install -y nodejs
-npm install -g less@2.7.3 less-plugin-glob less-plugin-autoprefix less-plugin-clean-css grunt-cli
+# npm install -g less@2.7.3 less-plugin-glob less-plugin-autoprefix less-plugin-clean-css grunt-cli
 
 # virtualenvwrapper
 pip install virtualenvwrapper
@@ -75,4 +75,4 @@ su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.setti
 
 # Install project dependencies for grunt tasks and run a first time
 su - vagrant -c "cd ~/demozoo/ && npm install"
-su - vagrant -c "cd ~/demozoo/ && grunt"
+# su - vagrant -c "cd ~/demozoo/ && grunt"
