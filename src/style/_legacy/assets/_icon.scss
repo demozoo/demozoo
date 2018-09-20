@@ -1,28 +1,25 @@
 span.icon {
-	.size(16px);
+	@include size(16px);
 	display: inline-block;
 	vertical-align: middle;
 
 	svg {
-		.size(100%);
+		@include size(100%);
 		display: block;
 		fill: inherit;
 	}
 }
 
 svg.icon {
-	.size(36px);
-	//background: #eee;
+	@include size(36px);
 	fill: #aaa;
 	box-sizing: border-box;
 	padding: 6px;
 	vertical-align: middle;
 }
 
-
-
 .icon-legacy {
-	.size(16px);
+	@include size(16px);
 	display: inline-block;
 	vertical-align: middle;
 	background: no-repeat 50% 50% transparent;
@@ -32,4 +29,3 @@ svg.icon {
 		background-image: url('/static/images/icons/package.png');
 	}
 }
-

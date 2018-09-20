@@ -6,15 +6,15 @@
   line-height: 1.5;
 
   tr {
-    border-top: 1px solid @colorTableBorder;
+    border-top: 1px solid demozoo-color('table-border');
 
     &:last-child {
-      border-bottom: 1px solid @colorTableBorder;
+      border-bottom: 1px solid demozoo-color('table-border');
     }
   }
 
   tr:nth-child(even) {
-    background-color: @colorGreyLightest;
+    background-color: #F8F8F8;
   }
 
   td {
@@ -26,8 +26,8 @@
   }
 
   .media--thumbnail {
-    .size(3em);
-    background-color: @colorThumbnailBackground;
+    @include size(3em);
+    background-color: demozoo-color('thumbnail-background');
   }
 
   .meta {

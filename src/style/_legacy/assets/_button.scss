@@ -21,8 +21,8 @@
 	}
 
 	&:hover {
-		background-color: @colorRed;
-		border-color: @colorRed;
+		background-color: demozoo-color('primary');
+		border-color: demozoo-color('primary');
 		color: white;
 
 		svg {
@@ -37,7 +37,7 @@
 	}
 
 	.icon {
-		.size(24px);
+		@include size(24px);
 		line-height: 1;
 		vertical-align: middle;
 		fill: #888;

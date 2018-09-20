@@ -5,7 +5,7 @@
 
 	h3.block_heading {
 		margin-top: -15px;
-		background-color: @demozoo_red;
+		background-color: demozoo-color('primary');
 		float: left;
 		overflow: hidden;
 		font-weight: normal;
@@ -14,7 +14,7 @@
 		text-transform: uppercase;
 		font-family: FabricaRegular, sans-serif;
 		padding: 6px;
-		border-right: 6px solid @demozoo_red_highlight;
+		border-right: 6px solid #ED89A3;
 		min-width: 150px;
 	}
 
