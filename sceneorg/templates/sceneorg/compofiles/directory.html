@@ -4,10 +4,6 @@
 
 {% block html_title %}scene.org file matching for {{ directory.path }} - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block extra_js %}
 	{% if site_is_writeable %}{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}{% endif %}
 {% endblock %}

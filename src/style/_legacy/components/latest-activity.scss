@@ -1,0 +1,33 @@
+.latest-activity {
+
+  section {
+    margin: 0 0 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.25;
+    font-weight: 500;
+    padding: 1ex 0;
+    margin: 1em 0 0;
+    color: demozoo-color('primary');
+  }
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-wrap: wrap;
+
+    section {
+      box-sizing: border-box;
+      width: 50%;
+
+      &:nth-child(odd) {
+        padding-right: 1.5em;
+      }
+
+      &:nth-child(even) {
+        padding-left: 1.5em;
+      }
+    }
+  }
+}

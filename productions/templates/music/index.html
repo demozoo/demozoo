@@ -4,12 +4,6 @@
 
 {% block html_title %}Music - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/productions/css/components/production_listing_filters.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	{% if site_is_writeable %}
 		<ul class="actions">

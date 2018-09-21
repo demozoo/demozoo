@@ -5,13 +5,6 @@
 
 {% block body_class %}maintenance_report{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/maintenance/css/maintenance.css" />
-		<link rel="stylesheet" href="/static/maintenance/css/components/production_listing_filters.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 	<h2>{{ title }}</h2>
 

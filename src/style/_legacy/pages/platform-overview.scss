@@ -1,0 +1,47 @@
+.platform-overview {
+	font-size: 14px;
+	line-height: 1.5;
+
+	&__header {
+
+		&:after {
+			content: "";
+			clear: both;
+			display: table-cell;
+		}
+	}
+
+	&__heading {
+		font-size: 2.16em;
+		font-weight: 400;
+	}
+
+	&__image {
+		display: block;
+		max-width: 100%;
+		margin: 1em auto;
+	}
+}
+
+@media (min-width: 768px) {
+
+	.platform-overview__content {
+		display: flex;
+	}
+
+	.platform-overview__aside {
+		box-sizing: border-box;
+		padding-right: 16px;
+		width: 25%;
+	}
+
+	.platform-overview__main {
+		box-sizing: border-box;
+		width: 75%;
+	}
+
+    .platform-overview__image {
+	    float: right;
+	    margin: 1em 0 1em 1em;
+    }
+}

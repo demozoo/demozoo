@@ -1,0 +1,30 @@
+.implied_memberships {
+
+li.production {
+	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	background-image: url(/static/images/icons/disk.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+li.music {
+	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	background-image: url(/static/images/icons/music.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+li.graphics {
+	padding-left: 24px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+	background-image: url(/static/images/icons/palette.png);
+	background-position: left center;
+	background-repeat: no-repeat;
+}
+
+}
