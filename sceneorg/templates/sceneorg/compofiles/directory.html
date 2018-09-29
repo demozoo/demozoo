@@ -9,7 +9,10 @@
 {% endblock %}
 
 {% block extra_js %}
-	{% if site_is_writeable %}{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}{% endif %}
+	{% if site_is_writeable %}
+		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+		{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}
+	{% endif %}
 {% endblock %}
 
 {% block base_main %}
