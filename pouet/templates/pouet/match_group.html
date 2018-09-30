@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Pouet release matching: {{ releaser.name }}</h2>
+
+	<p>matched:</p>
+	<ul class="matched">
+		{% for prod in matched_prods %}
+			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+		{% endfor %}
+	</ul>
+
+	<p>unmatched:</p>
+	<ul class="unmatched">
+		{% for prod in unmatched_prods %}
+			<li><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

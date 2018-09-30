@@ -125,6 +125,7 @@ INSTALLED_APPS = (
 	'maintenance',
 	'pages',
 	'sceneorg',
+	'pouet',
 	'mirror',
 	'screenshots',
 	'homepage',

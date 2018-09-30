@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+	<h2>Pouet release matching</h2>
+
+	<ul>
+		{% for releaser in releasers %}
+			<li>
+				<a href="{% url 'pouet_match_group' releaser.id %}">{{ releaser.name }}</a>
+			</li>
+		{% endfor %}
+	<ul>
+{% endblock %}
