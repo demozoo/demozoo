@@ -960,7 +960,7 @@ class YoutubeVideo(BaseUrl):
 			(id, timestamp) = self.param.split('/')
 			return u"https://www.youtube.com/watch?v=%s&t=%s" % (id, timestamp)
 		else:
-			return u"https://www.youtube.com/watch?v=%s" % id
+			return u"https://www.youtube.com/watch?v=%s" % self.param
 
 	def get_embed_data(self):
 		embed_data = {}
