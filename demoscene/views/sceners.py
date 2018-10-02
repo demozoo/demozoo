@@ -32,7 +32,7 @@ def show(request, scener_id, edit_mode=False):
 
 	user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
 
-	external_links = scener.external_links.select_related('releaser').defer('releaser__notes')
+	external_links = scener.active_external_links.select_related('releaser').defer('releaser__notes')
 	if not request.user.is_staff:
 		external_links = external_links.exclude(link_class='SlengpungUser')
 	if not user_has_real_name_access and not scener.can_reveal_full_real_name():

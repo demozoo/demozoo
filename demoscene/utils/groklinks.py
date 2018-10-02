@@ -1559,6 +1559,14 @@ PARTY_LINK_TYPES = [
 	SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
 ]
 
+# Links that should be kept for archiving purposes, but not shown or available for editing
+ARCHIVED_LINK_TYPES = [
+	'ZxdemoAuthor', 'ZxdemoItem', 'ZxdemoParty',
+	'PushnpopProduction', 'PushnpopParty', 'PushnpopGroup', 'PushnpopProfile',
+	'DemosceneTvVideo',
+	'LanyrdEvent',
+]
+
 
 def grok_link_by_types(urlstring, link_types):
 	"""

@@ -123,6 +123,10 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	def members(self):
 		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
 
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
+
 	def name_with_affiliations(self):
 		groups = self.current_groups()
 

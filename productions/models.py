@@ -330,12 +330,12 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	@property
 	def external_links(self):
-		external_links = self.links.filter(is_download_link=False)
+		external_links = self.links.filter(is_download_link=False).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 		return sorted(external_links, key=lambda obj: obj.sort_key)
 
 	@property
 	def download_links(self):
-		return self.links.filter(is_download_link=True)
+		return self.links.filter(is_download_link=True).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
 	def index_components(self):
 		return {

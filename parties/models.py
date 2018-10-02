@@ -216,6 +216,10 @@ class Party(Commentable):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
+
 	# return the sceneorg.models.File instance for our best guess at the results textfile in this
 	# party's folder on scene.org
 	def sceneorg_results_file(self):
