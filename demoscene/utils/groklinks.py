@@ -28,7 +28,7 @@ class BaseUrl():
 		"""
 		for test in cls.tests:
 			m = test(urlstring, url)
-			if m != None:
+			if m is not None:
 				return m
 
 	@classmethod
@@ -38,7 +38,7 @@ class BaseUrl():
 		instance of this link class. If not, return None.
 		"""
 		param = cls.extract_param(urlstring, url)
-		if param != None:
+		if param is not None:
 			return cls(param)
 
 	def __unicode__(self):
@@ -906,11 +906,44 @@ class ZxdemoParty(BaseUrl):
 
 
 class YoutubeVideo(BaseUrl):
-	canonical_format = "https://www.youtube.com/watch?v=%s"
+	def match_long_url(urlstring, url):
+		regex = re.compile(r'https?://(?:www\.)?youtube\.com/watch\?', re.I)
+		if regex.match(urlstring):
+			querystring = urlparse.parse_qs(url.query)
+			try:
+				if 't' in querystring:
+					return "%s/%s" % (querystring['v'][0], querystring['t'][0])
+				else:
+					return querystring['v'][0]
+			except KeyError:
+				return None
+
+	def match_embed_url(urlstring, url):
+		regex = re.compile(r'https?://(?:www\.)?youtube\.com/embed/([\w\-\_]+)', re.I)
+		m = regex.match(urlstring)
+		if m:
+			v = m.group(1)
+			querystring = urlparse.parse_qs(url.query)
+			if 'start' in querystring:
+				return "%s/%s" % (v, querystring['start'][0])
+			else:
+				return v
+
+	def match_short_url(urlstring, url):
+		regex = re.compile(r'https?://(?:www\.)?youtu\.be/([\w\-\_]+)', re.I)
+		m = regex.match(urlstring)
+		if m:
+			v = m.group(1)
+			querystring = urlparse.parse_qs(url.query)
+			if 't' in querystring:
+				return "%s/%s" % (v, querystring['t'][0])
+			else:
+				return v
+
 	tests = [
-		querystring_match(r'https?://(?:www\.)?youtube\.com/watch', 'v', re.I),
-		regex_match(r'https?://(?:www\.)?youtube\.com/embed/([^/]+)', re.I),
-		regex_match(r'https?://(?:www\.)?youtu\.be/([^/]+)', re.I),
+		match_long_url,
+		match_embed_url,
+		match_short_url,
 	]
 	html_link_class = "youtube"
 	html_link_text = "YouTube"
@@ -921,6 +954,13 @@ class YoutubeVideo(BaseUrl):
 	oembed_add_format_parameter = True
 
 	supports_embed_data = True
+
+	def __unicode__(self):
+		if '/' in self.param:
+			(id, timestamp) = self.param.split('/')
+			return u"https://www.youtube.com/watch?v=%s&t=%s" % (id, timestamp)
+		else:
+			return u"https://www.youtube.com/watch?v=%s" % id
 
 	def get_embed_data(self):
 		embed_data = {}
@@ -945,9 +985,23 @@ class YoutubeVideo(BaseUrl):
 		return embed_data
 
 	def get_embed_html(self, width, height, autoplay=True):
-		embed_url = "https://www.youtube.com/embed/%s" % self.param
-		if autoplay:
-			embed_url += "?autoplay=1"
+		if '/' in self.param:
+			(id, timestamp) = self.param.split('/')
+
+			# timestamps given in the format 1m30s need to be converted to just seconds,
+			# because fuck you that's why
+			m = re.match(r'(\d+)m(\d+)', timestamp)
+			if m:
+				(minutes, seconds) = m.groups()
+				timestamp = int(minutes) * 60 + int(seconds)
+
+			embed_url = "https://www.youtube.com/embed/%s?start=%s" % (id, timestamp)
+			if autoplay:
+				embed_url += "&autoplay=1"
+		else:
+			embed_url = "https://www.youtube.com/embed/%s" % self.param
+			if autoplay:
+				embed_url += "?autoplay=1"
 		return format_html(
 			"""<iframe width="{}" height="{}" src="{}" frameborder="0" allowfullscreen></iframe>""",
 			width, height, embed_url
