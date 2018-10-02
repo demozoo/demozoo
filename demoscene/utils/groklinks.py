@@ -270,9 +270,10 @@ class CsdbMusic(BaseUrl):
 
 
 class NectarineArtist(BaseUrl):
-	canonical_format = "https://www.scenemusic.net/demovibes/artist/%s/"
+	canonical_format = "https://scenestream.net/demovibes/artist/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/artist/(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/artist/(\d+)', re.I),
 	]
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
@@ -280,9 +281,10 @@ class NectarineArtist(BaseUrl):
 
 
 class NectarineSong(BaseUrl):
-	canonical_format = "https://www.scenemusic.net/demovibes/song/%s/"
+	canonical_format = "https://scenestream.net/demovibes/song/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/song/(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/song/(\d+)', re.I),
 	]
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
@@ -290,9 +292,10 @@ class NectarineSong(BaseUrl):
 
 
 class NectarineGroup(BaseUrl):
-	canonical_format = "https://www.scenemusic.net/demovibes/group/%s/"
+	canonical_format = "https://scenestream.net/demovibes/group/%s/"
 	tests = [
 		regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/group/(\d+)', re.I),
+		regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/group/(\d+)', re.I),
 	]
 	html_link_class = "nectarine"
 	html_link_text = "Nectarine"
