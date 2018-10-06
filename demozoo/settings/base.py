@@ -205,6 +205,11 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(days=1),
 		"args": ()
 	},
+	"pull-pouet-groups": {
+		"task": "pouet.tasks.pull_groups",
+		"schedule": timedelta(days=7),
+		"args": ()
+	},
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
