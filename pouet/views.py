@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 
 from demoscene.models import Releaser
-from productions.models import Production, ProductionType
+from pouet.matching import get_match_data
+from productions.models import Production, ProductionLink, ProductionType
 
 
 def groups(request):
@@ -19,31 +19,11 @@ def groups(request):
 def match_group(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 
-	music_prod_type = ProductionType.objects.get(internal_name='music')
-	gfx_prod_type = ProductionType.objects.get(internal_name='graphics')
-	exe_gfx_prod_type = ProductionType.objects.get(internal_name='exe-graphics')
-
-	pouetable_prod_types = ProductionType.objects.exclude(
-		Q(path__startswith=music_prod_type.path) |
-		(Q(path__startswith=gfx_prod_type.path) & ~Q(path__startswith=exe_gfx_prod_type.path))
-	)
-
-	releaser_prods = Production.objects.filter(
-		(Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser)) &
-		Q(types__in=pouetable_prod_types)
-	).distinct()
-
-	matched_prods = releaser_prods.filter(
-		Q(links__link_class='PouetProduction')
-	).order_by('title').only('title', 'supertype')
-
-	matched_prod_ids = [prod.id for prod in matched_prods]
-	unmatched_prods = releaser_prods.exclude(
-		id__in=matched_prod_ids
-	).order_by('title').only('title', 'supertype')
+	unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = get_match_data(releaser)
 
 	return render(request, 'pouet/match_group.html', {
 		'releaser': releaser,
+		'unmatched_demozoo_prods': unmatched_demozoo_prods,
+		'unmatched_pouet_prods': unmatched_pouet_prods,
 		'matched_prods': matched_prods,
-		'unmatched_prods': unmatched_prods,
 	})

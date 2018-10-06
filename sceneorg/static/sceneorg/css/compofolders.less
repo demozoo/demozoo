@@ -57,7 +57,7 @@ ul.folders strong a {
 	}
 }
 
-.unmatched_directories, .unmatched_files {
+.unmatched_left {
 	width: 50%;
 	float: left;
 	> li {
@@ -66,7 +66,7 @@ ul.folders strong a {
 	}
 }
 
-.unmatched_competitions, .unmatched_productions {
+.unmatched_right {
 	width: 50%;
 	float: left;
 	> li {
@@ -87,16 +87,10 @@ ul.folders strong a {
 	vertical-align: top;
 }
 
-button.directory, button.file {
+button.matchable {
 	.white_button;
 }
-button.directory.selected, button.file.selected {
-	.red_button;
-}
-button.competition, button.production {
-	.white_button;
-}
-button.competition.selected, button.production.selected {
+button.matchable.selected, button.file.selected {
 	.red_button;
 }
 
