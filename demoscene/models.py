@@ -49,8 +49,8 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
-	search_document = SearchVectorField(null=True)
-	admin_search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
+	admin_search_document = SearchVectorField(null=True, editable=False)
 
 	def save(self, *args, **kwargs):
 		# auto-populate updated_at; this will only happen on creation

@@ -108,7 +108,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	tags = TaggableManager(blank=True)
 
-	search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
 
 	search_result_template = 'search/results/production.html'
 

@@ -107,7 +107,7 @@ class Party(Commentable):
 	share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
 
 	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-	search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
 
 	search_result_template = 'search/results/party.html'
 
