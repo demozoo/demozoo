@@ -168,7 +168,7 @@ def production(request, production_id):
 def production_redirect(request):
 	try:
 		id = int(request.GET.get('id'))
-	except (ValueError, UnicodeEncodeError):
+	except (TypeError, ValueError, UnicodeEncodeError):
 		raise Http404
 
 	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=id)
@@ -268,7 +268,7 @@ def author(request, releaser_id):
 def author_redirect(request):
 	try:
 		id = int(request.GET.get('id'))
-	except (ValueError, UnicodeEncodeError):
+	except (TypeError, ValueError, UnicodeEncodeError):
 		raise Http404
 
 	releaser_link = get_object_or_404(ReleaserExternalLink, link_class='ZxdemoAuthor', parameter=id)
@@ -373,7 +373,7 @@ def party(request, party_id):
 def party_redirect(request):
 	try:
 		id = int(request.GET.get('id'))
-	except (ValueError, UnicodeEncodeError):
+	except (TypeError, ValueError, UnicodeEncodeError):
 		raise Http404
 
 	party_link = get_object_or_404(PartyExternalLink, link_class='ZxdemoParty', parameter=id)
