@@ -225,7 +225,8 @@ def compofile_link(request):
 		link_class='SceneOrgFile',
 		parameter=sceneorg_file.path,
 		production_id=production.id,
-		is_download_link=True
+		is_download_link=True,
+		source='match',
 	)
 	if created:
 		Edit.objects.create(action_type='add_download_link', focus=production,

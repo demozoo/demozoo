@@ -282,6 +282,11 @@ class ProductionTagsForm(forms.ModelForm):
 
 class ProductionDownloadLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
+		# populate the source field of new instances with 'manual' to indicate that they
+		# were created by filling in this form rather than automated matching
+		if self.instance.pk is None:
+			self.instance.source = 'manual'
+
 		instance = super(ProductionDownloadLinkForm, self).save(commit=False)
 
 		if instance.link_class in groklinks.PRODUCTION_EXTERNAL_LINK_TYPES:
@@ -304,6 +309,11 @@ ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink
 
 class ProductionExternalLinkForm(ExternalLinkForm):
 	def save(self, commit=True):
+		# populate the source field of new instances with 'manual' to indicate that they
+		# were created by filling in this form rather than automated matching
+		if self.instance.pk is None:
+			self.instance.source = 'manual'
+
 		instance = super(ProductionExternalLinkForm, self).save(commit=False)
 
 		if instance.link_class in groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES:

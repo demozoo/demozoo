@@ -559,6 +559,7 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 	has_bad_image = models.BooleanField(default=False, help_text="Indicates that an attempt to create a screenshot from this link has failed at the image processing stage")
+	source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
 
 	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)

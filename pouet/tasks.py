@@ -6,7 +6,8 @@ import urllib2
 from celery.task import task
 from django.conf import settings
 
-from demoscene.models import ReleaserExternalLink
+from demoscene.models import Releaser, ReleaserExternalLink
+from pouet.matching import automatch_productions
 from pouet.models import Group, Production
 
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 @task(ignore_result=True)
 def pull_groups():
 	for link in ReleaserExternalLink.objects.filter(link_class='PouetGroup'):
-		pull_group.delay(link.parameter)
+		pull_group.delay(link.parameter, link.releaser_id)
 
 
 def fetch_group(group_data, groups_by_id):
@@ -38,7 +39,7 @@ def fetch_group(group_data, groups_by_id):
 
 
 @task(rate_limit='12/m', ignore_result=True)
-def pull_group(pouet_id):
+def pull_group(pouet_id, releaser_id):
 	url = 'http://api.pouet.net/v1/group/?id=%d' % int(pouet_id)
 	req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
 	page = urllib2.urlopen(req)
@@ -69,3 +70,5 @@ def pull_group(pouet_id):
 			'last_seen_at': datetime.datetime.now(),
 		})
 		prod.groups = [fetch_group(g, groups_by_id) for g in prod_data['groups']]
+
+	automatch_productions(Releaser.objects.get(id=releaser_id))

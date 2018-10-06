@@ -83,4 +83,10 @@ def automatch_productions(releaser):
 
 	for title, (demozoo_ids, pouet_ids) in prods_by_name.items():
 		if len(demozoo_ids) == 1 and len(pouet_ids) == 1:
-			print("match found for '%s': demozoo id %d, pouet id %d" % (title, demozoo_ids[0], pouet_ids[0]))
+			ProductionLink.objects.create(
+				production_id=demozoo_ids[0],
+				link_class='PouetProduction',
+				parameter=pouet_ids[0],
+				is_download_link=False,
+				source='auto',
+			)
