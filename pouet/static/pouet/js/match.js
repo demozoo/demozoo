@@ -21,7 +21,7 @@ $(function() {
 		'unlinkAction': function(leftVal, rightVal) {
 			$.ajax({
 				type: 'POST',
-				url: '/pouet/unlink/',
+				url: '/pouet/production-unlink/',
 				data: {'demozoo_id': leftVal, 'pouet_id': rightVal},
 				beforeSend: function(xhr) {
 					/* need to add CSRF token to the request so that Django will accept it */
@@ -35,7 +35,7 @@ $(function() {
 			/* post the ID pair to the server */
 			$.ajax({
 				type: 'POST',
-				url: '/pouet/link/',
+				url: '/pouet/production-link/',
 				data: {'demozoo_id': leftVal, 'pouet_id': rightVal},
 				beforeSend: function(xhr) {
 					/* need to add CSRF token to the request so that Django will accept it */
