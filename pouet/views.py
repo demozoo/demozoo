@@ -12,6 +12,7 @@ from productions.models import Production, ProductionLink
 from read_only_mode import writeable_site_required
 
 
+@login_required
 def groups(request):
 	# get list of releasers who have Pouet.GroupMatchInfo data
 	groups = GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name').prefetch_related('releaser__nicks')
@@ -27,6 +28,7 @@ def groups(request):
 	})
 
 
+@login_required
 def match_group(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 
