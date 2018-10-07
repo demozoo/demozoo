@@ -207,7 +207,12 @@ CELERYBEAT_SCHEDULE = {
 	},
 	"pull-pouet-groups": {
 		"task": "pouet.tasks.pull_groups",
-		"schedule": timedelta(days=7),
+		"schedule": timedelta(days=14),
+		"args": ()
+	},
+	"automatch-pouet-groups": {
+		"task": "pouet.tasks.automatch_all_groups",
+		"schedule": timedelta(days=1),
 		"args": ()
 	},
 }

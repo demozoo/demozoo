@@ -1371,6 +1371,7 @@ reports = [
 			UnresolvedScreenshots,
 			ProdsWithBlurbs,
 			TinyIntrosWithoutDownloadLinks,
+			ExternalReport('pouet_groups', "Pouet link matching"),
 		]
 	),
 	(
