@@ -72,3 +72,9 @@ def pull_group(pouet_id, releaser_id):
 		prod.groups = [fetch_group(g, groups_by_id) for g in prod_data['groups']]
 
 	automatch_productions(Releaser.objects.get(id=releaser_id))
+
+
+@task(ignore_result=True)
+def automatch_all_groups():
+	for link in ReleaserExternalLink.objects.filter(link_class='PouetGroup').select_related('releaser'):
+		automatch_productions(link.releaser)

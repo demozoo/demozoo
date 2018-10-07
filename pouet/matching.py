@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from django.db.models import Q
 
-from pouet.models import Production as PouetProduction
+from pouet.models import GroupMatchInfo, Production as PouetProduction
 from productions.models import Production, ProductionLink, ProductionType
 
 
@@ -71,6 +71,10 @@ def get_match_data(releaser):
 def automatch_productions(releaser):
 	unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = get_match_data(releaser)
 
+	matched_production_count = len(matched_prods)
+	unmatched_demozoo_production_count = len(unmatched_demozoo_prods)
+	unmatched_pouet_production_count = len(unmatched_pouet_prods)
+
 	# mapping of lowercased prod title to a pair of lists of demozoo IDs and pouet IDs of
 	# prods with that name
 	prods_by_name = defaultdict(lambda: ([], []))
@@ -90,3 +94,14 @@ def automatch_productions(releaser):
 				is_download_link=False,
 				source='auto',
 			)
+			matched_production_count += 1
+			unmatched_demozoo_production_count -= 1
+			unmatched_pouet_production_count -= 1
+
+	GroupMatchInfo.objects.update_or_create(
+		releaser_id=releaser.id, defaults={
+			'matched_production_count': matched_production_count,
+			'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
+			'unmatched_pouet_production_count': unmatched_pouet_production_count,
+		}
+	)

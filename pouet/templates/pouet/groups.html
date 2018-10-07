@@ -4,9 +4,10 @@
 	<h2>Pouet release matching</h2>
 
 	<ul>
-		{% for releaser in releasers %}
+		{% for group in groups %}
 			<li>
-				<a href="{% url 'pouet_match_group' releaser.id %}">{{ releaser.name }}</a>
+				<a href="{% url 'pouet_match_group' group.releaser.id %}">{{ group.releaser.name }}{% if group.releaser.primary_nick.differentiator %} ({{ group.releaser.primary_nick.differentiator }}){% endif %}</a>
+				- {{ group.unmatched_demozoo_production_count }} vs {{ group.unmatched_pouet_production_count }} unmatched, {{ group.matched_production_count }} matched
 			</li>
 		{% endfor %}
 	<ul>

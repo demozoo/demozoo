@@ -16,3 +16,10 @@ class Production(models.Model):
 	name = models.CharField(max_length=255)
 	groups = models.ManyToManyField(Group, related_name='productions')
 	last_seen_at = models.DateTimeField()
+
+
+class GroupMatchInfo(models.Model):
+	releaser = models.OneToOneField('demoscene.Releaser', on_delete=models.CASCADE)
+	matched_production_count = models.IntegerField()
+	unmatched_demozoo_production_count = models.IntegerField()
+	unmatched_pouet_production_count = models.IntegerField()

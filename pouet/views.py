@@ -5,14 +5,19 @@ from django.shortcuts import get_object_or_404, render
 
 from demoscene.models import Releaser
 from pouet.matching import get_match_data
-from productions.models import Production, ProductionLink, ProductionType
+from pouet.models import GroupMatchInfo
 
 
 def groups(request):
-	# get list of releasers who have PouetGroup cross-links
-	releasers = Releaser.objects.filter(external_links__link_class='PouetGroup').order_by('name').distinct().only('name')
+	# get list of releasers who have Pouet.GroupMatchInfo data
+	groups = GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name').prefetch_related('releaser__nicks')
+
+	if not request.GET.get('full'):
+		# filter to just the ones which have unmatched entries on both sides
+		groups = groups.filter(unmatched_demozoo_production_count__gt=0, unmatched_pouet_production_count__gt=0)
+
 	return render(request, 'pouet/groups.html', {
-		'releasers': releasers,
+		'groups': groups,
 	})
 
 
