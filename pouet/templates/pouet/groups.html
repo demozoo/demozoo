@@ -3,6 +3,17 @@
 {% block base_main %}
 	<h2>Pouet release matching</h2>
 
+	<p>
+		Show:
+		{% if showing_full %}
+			<a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
+			<strong>All groups</strong>
+		{% else %}
+			<strong>Groups with potential matches</strong> |
+			<a href="{% url 'pouet_groups' %}?full=1">All groups</a>
+		{% endif %}
+	</p>
+
 	<ul>
 		{% for group in groups %}
 			<li>
