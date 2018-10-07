@@ -20,25 +20,27 @@
 
 	<ul class="unmatched_left unmatched_demozoo_prods">
 		<li>Demozoo prods:</li>
-		{% for id, title in unmatched_demozoo_prods %}
-			<li><button class="matchable demozoo_prod unmatched" value="{{ id }}">{{ title }}</button></li>
+		{% for id, title, url in unmatched_demozoo_prods %}
+			<li>
+				<button class="matchable demozoo_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{{ title }}</button>
+			</li>
 		{% endfor %}
 	</ul>
 
 	<ul class="unmatched_right unmatched_pouet_prods">
 		<li>Pouet prods:</li>
-		{% for id, title in unmatched_pouet_prods %}
-			<li><button class="matchable pouet_prod unmatched" value="{{ id }}">{{ title }}</button></li>
+		{% for id, title, url in unmatched_pouet_prods %}
+			<li><button class="matchable pouet_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{{ title }}</button></li>
 		{% endfor %}
 	</ul>
 
 	<h3>Matched:</h3>
 	<ul class="matches">
-		{% for dz_id, dz_title, pouet_id, pouet_title in matched_prods %}
+		{% for dz_id, dz_title, dz_url, pouet_id, pouet_title, pouet_url in matched_prods %}
 			<li>
-				<button class="matchable demozoo_prod matched" value="{{ dz_id }}">{{ dz_title }}</button>
+				<button class="matchable demozoo_prod matched" value="{{ dz_id }}" data-info-url="{{ dz_url }}">{{ dz_title }}</button>
 				=
-				<button class="matchable pouet_prod matched" value="{{ pouet_id }}">{{ pouet_title }}</button>
+				<button class="matchable pouet_prod matched" value="{{ pouet_id }}" data-info-url="{{ pouet_url }}">{{ pouet_title }}</button>
 				<button class="unlink" title="Delete this match">unlink</button>
 			</li>
 		{% endfor %}

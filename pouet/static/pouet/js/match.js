@@ -1,7 +1,23 @@
 $(function() {
 	constructMatchingInterface({
 		'leftSelector': 'button.demozoo_prod',
+		'initLeftButton': function() {
+			var prodId = this.value;
+
+			var infoLink = $('<a class="demozoo-info" title="Open this prod\'s Demozoo entry" target="_blank">info</button>');
+			infoLink.attr('href', $(this).data('info-url'));
+			$(this).after(infoLink);
+		},
+
 		'rightSelector': 'button.pouet_prod',
+		'initRightButton': function() {
+			var prodId = this.value;
+
+			var infoLink = $('<a class="pouet-info" title="Open this prod\'s Pouet entry" target="_blank">info</button>');
+			infoLink.attr('href', $(this).data('info-url'));
+			$(this).after(infoLink);
+		},
+
 		'unlinkAction': function(leftVal, rightVal) {
 			$.ajax({
 				type: 'POST',
