@@ -76,5 +76,10 @@ def pull_group(pouet_id, releaser_id):
 
 @task(ignore_result=True)
 def automatch_all_groups():
-	for link in ReleaserExternalLink.objects.filter(link_class='PouetGroup').select_related('releaser'):
-		automatch_productions(link.releaser)
+	for releaser_id in ReleaserExternalLink.objects.filter(link_class='PouetGroup').values_list('releaser_id', flat=True):
+		automatch_group.delay(releaser_id)
+
+
+@task(ignore_result=True)
+def automatch_group(releaser_id):
+	automatch_productions(Releaser.objects.get(id=releaser_id))
