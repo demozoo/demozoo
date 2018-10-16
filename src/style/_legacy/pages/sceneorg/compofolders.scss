@@ -1,120 +1,142 @@
 .sceneorg {
 
-	h2 {
-		margin-bottom: 1em;
-	}
+  h2 {
+    margin-bottom: 1em;
+  }
 
-	h3 {
-		clear: both;
-	}
+  h3 {
+    clear: both;
+  }
 
-	ul.parties a {
-		color: #bbe;
-	}
+  ul.parties a {
+    color: #bbe;
+  }
 
-	ul.parties strong a {
-		color: #448;
-	}
+  ul.parties strong a {
+    color: #448;
+  }
 
-	ul.folders a {
-		color: #bbe;
-	}
+  ul.folders a {
+    color: #bbe;
+  }
 
-	ul.folders strong a {
-		color: #448;
-	}
+  ul.folders strong a {
+    color: #448;
+  }
 
-	.button {
-		width: 300px;
-		padding: 4px;
-		border-radius: 6px;
-	}
+  .button {
+    width: 300px;
+    padding: 4px;
+    border-radius: 6px;
+  }
 
-	.white_button,
-	button.directory, button.file,
-	button.competition, button.production {
-		width: 300px;
-		padding: 4px;
-		border-radius: 6px;
-		color: #606060;
-		border: solid 1px #b7b7b7;
-		background: #fff;
-		background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
-		background: -moz-linear-gradient(top, #fff, #ededed);
+  .white_button {
+    .button
+  ;
+    color: #606060;
+    border: solid 1px #b7b7b7;
+    background: #fff;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+    background: -moz-linear-gradient(top, #fff, #ededed);
 
-		&:hover {
-			background: #ededed;
-			background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
-			background: -moz-linear-gradient(top, #fff, #dcdcdc);
-		}
-	}
+    &:hover {
+      background: #ededed;
+      background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+      background: -moz-linear-gradient(top, #fff, #dcdcdc);
+    }
+  }
 
-	.red_button,
-	button.directory.selected, button.file.selected,
-	button.competition.selected, button.production.selected {
-		width: 300px;
-		padding: 4px;
-		border-radius: 6px;
-		color: #faddde;
-		border: solid 1px #980c10;
-		background: #d81b21;
-		background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
-		background: -moz-linear-gradient(top, #ed1c24, #aa1317);
-		&:hover {
-			background: #b61318;
-			background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
-			background: -moz-linear-gradient(top, #c9151b, #a11115);
-		}
-	}
+  .red_button {
+    .button
+  ;
+    color: #faddde;
+    border: solid 1px #980c10;
+    background: #d81b21;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+    background: -moz-linear-gradient(top, #ed1c24, #aa1317);
+    &:hover {
+      background: #b61318;
+      background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
+      background: -moz-linear-gradient(top, #c9151b, #a11115);
+    }
+  }
 
-	.unmatched_directories, .unmatched_files {
-		width: 50%;
-		float: left;
-		> li {
-			margin: 8px;
-			text-align: center;
-		}
-	}
+  .unmatched_left {
+    width: 50%;
+    float: left;
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
 
-	.unmatched_competitions, .unmatched_productions {
-		width: 50%;
-		float: left;
-		> li {
-			margin: 8px;
-			text-align: center;
-		}
-	}
+  .unmatched_right {
+    width: 50%;
+    float: left;
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
 
-	.matches {
-		> li {
-			margin: 8px;
-			text-align: center;
-		}
-	}
+  .matches {
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
 
-	.button_wrapper {
-		display: inline-block;
-		vertical-align: top;
-	}
+  .button_wrapper {
+    display: inline-block;
+    vertical-align: top;
+  }
 
-	button.unlink {
-		width: 24px;
-		background-image: url(/static/images/icons/cross.png);
-		text-indent: -5000px;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
+  button.matchable {
+    .white_button
+  ;
+  }
+  button.matchable.selected, button.file.selected {
+    .red_button
+  ;
+  }
 
-	button.expand {
-		width: 24px;
-		background-image: url(/static/images/icons/arrow_down.png);
-		background-color: transparent;
-		border: none;
-		text-indent: -5000px;
-		background-repeat: no-repeat;
+  button.unlink {
+    width: 24px;
+    background-image: url(/static/images/icons/cross.png);
+    text-indent: -5000px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  button.expand {
+    width: 24px;
+    background-image: url(/static/images/icons/arrow_down.png);
+    background-color: transparent;
+    border: none;
+    text-indent: -5000px;
+    background-repeat: no-repeat;
+    background-position: top;
+  }
+}
+
+	a.demozoo-info {
+		background-image: url(/static/images/favicon/favicon-16x16.png);
 		background-position: top;
+		background-repeat: no-repeat;
+		display: inline-block;
+		text-indent: -5000px;
+		width: 24px;
+	}
+	a.pouet-info {
+		background-image: url(/static/images/icons/external_sites/pouet.png);
+		background-position: top;
+		background-repeat: no-repeat;
+		display: inline-block;
+		text-indent: -5000px;
+		width: 24px;
 	}
 
+.sceneorg {
 	.details {
 		border: 1px solid #ccc;
 		padding: 4px;
