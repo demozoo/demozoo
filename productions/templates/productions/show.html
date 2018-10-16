@@ -4,6 +4,12 @@
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
+{% block extra_css %}
+	{% compress css %}
+		<link rel="stylesheet" href="/static/css/responsivegrid/6cols.css" type="text/css" />
+	{% endcompress %}
+{% endblock %}
+
 {% block extra_js %}
 	{% compress js %}
 		<script src="/static/js/modal_workflow.js"></script>

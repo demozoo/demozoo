@@ -73,6 +73,7 @@ su - vagrant -c "gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo"
 # migrate (in case master's db schema is ahead of the live export)
 su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
 
-# Install project dependencies for grunt tasks and run a first time
-su - vagrant -c "cd ~/demozoo/ && npm install"
-# su - vagrant -c "cd ~/demozoo/ && grunt"
+# Install project dependencies for node and run a first time
+su - vagrant -c "mkdir ~/demozoo/static/svg && touch ~/demozoo/static/icons.svg"
+su - vagrant -c "cd ~/demozoo/ && npm i && npm run css && npm run icons"
+
