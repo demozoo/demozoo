@@ -125,6 +125,7 @@ INSTALLED_APPS = (
 	'maintenance',
 	'pages',
 	'sceneorg',
+	'pouet',
 	'mirror',
 	'screenshots',
 	'homepage',
@@ -201,6 +202,16 @@ CELERYBEAT_SCHEDULE = {
 	},
 	"fetch-remote-screenshots": {
 		"task": "screenshots.tasks.fetch_remote_screenshots",
+		"schedule": timedelta(days=1),
+		"args": ()
+	},
+	"pull-pouet-groups": {
+		"task": "pouet.tasks.pull_groups",
+		"schedule": timedelta(days=14),
+		"args": ()
+	},
+	"automatch-pouet-groups": {
+		"task": "pouet.tasks.automatch_all_groups",
 		"schedule": timedelta(days=1),
 		"args": ()
 	},

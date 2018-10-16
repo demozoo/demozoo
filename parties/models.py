@@ -107,7 +107,7 @@ class Party(Commentable):
 	share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
 
 	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-	search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
 
 	search_result_template = 'search/results/party.html'
 
@@ -215,6 +215,10 @@ class Party(Commentable):
 	@property
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
+
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
 	# return the sceneorg.models.File instance for our best guess at the results textfile in this
 	# party's folder on scene.org

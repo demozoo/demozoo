@@ -49,8 +49,8 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
-	search_document = SearchVectorField(null=True)
-	admin_search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
+	admin_search_document = SearchVectorField(null=True, editable=False)
 
 	def save(self, *args, **kwargs):
 		# auto-populate updated_at; this will only happen on creation
@@ -122,6 +122,10 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 	def members(self):
 		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
+
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
 	def name_with_affiliations(self):
 		groups = self.current_groups()

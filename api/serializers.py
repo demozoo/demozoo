@@ -176,7 +176,7 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
 	member_of = serializers.SerializerMethodField('get_group_memberships', read_only=True)
 	members = serializers.SerializerMethodField(read_only=True)
 	subgroups = serializers.SerializerMethodField(read_only=True)
-	external_links = ReleaserExternalLinkSerializer(many=True, read_only=True)
+	external_links = ReleaserExternalLinkSerializer(many=True, read_only=True, source='active_external_links')
 
 	def get_demozoo_url(self, releaser):
 		return settings.BASE_URL + releaser.get_absolute_url()

@@ -5,7 +5,10 @@
 {% block html_title %}scene.org file matching for {{ directory.path }} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	{% if site_is_writeable %}{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}{% endif %}
+	{% if site_is_writeable %}
+		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+		{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}
+	{% endif %}
 {% endblock %}
 
 {% block base_main %}
@@ -30,16 +33,16 @@
 	<br />
 	<h3>Unmatched:</h3>
 
-	<ul class="unmatched_files">
+	<ul class="unmatched_left unmatched_files">
 		{% for file in unmatched_files %}
-			<li><button class="file unmatched" value="{{ file.id }}">{{ file.filename }}</button></li>
+			<li><button class="matchable file unmatched" value="{{ file.id }}">{{ file.filename }}</button></li>
 		{% endfor %}
 	</ul>
 
-	<ul class="unmatched_productions">
+	<ul class="unmatched_right unmatched_productions">
 		{% for prod in unmatched_productions %}
 			{% with prod.byline_string as byline %}
-				<li><button class="production unmatched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button></li>
+				<li><button class="matchable production unmatched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button></li>
 			{% endwith %}
 		{% endfor %}
 	</ul>
@@ -48,10 +51,10 @@
 	<ul class="matches">
 		{% for file, prod in matches %}
 			<li>
-				<button class="file matched" value="{{ file.id }}">{{ file.filename }}</button>
+				<button class="matchable file matched" value="{{ file.id }}">{{ file.filename }}</button>
 				=
 				{% with prod.byline_string as byline %}
-					<button class="production matched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button>
+					<button class="matchable production matched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button>
 				{% endwith %}
 				<button class="unlink" title="Delete this match">unlink</button>
 			</li>

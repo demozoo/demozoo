@@ -108,7 +108,7 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	tags = TaggableManager(blank=True)
 
-	search_document = SearchVectorField(null=True)
+	search_document = SearchVectorField(null=True, editable=False)
 
 	search_result_template = 'search/results/production.html'
 
@@ -330,12 +330,12 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	@property
 	def external_links(self):
-		external_links = self.links.filter(is_download_link=False)
+		external_links = self.links.filter(is_download_link=False).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 		return sorted(external_links, key=lambda obj: obj.sort_key)
 
 	@property
 	def download_links(self):
-		return self.links.filter(is_download_link=True)
+		return self.links.filter(is_download_link=True).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
 	def index_components(self):
 		return {
@@ -559,6 +559,7 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 	has_bad_image = models.BooleanField(default=False, help_text="Indicates that an attempt to create a screenshot from this link has failed at the image processing stage")
+	source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
 
 	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)

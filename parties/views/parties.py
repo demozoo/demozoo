@@ -68,7 +68,7 @@ def show(request, party_id):
 
 	releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-	external_links = sorted(party.external_links.select_related('party'), key=lambda obj: obj.sort_key)
+	external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
 	if request.user.is_authenticated:
 		comment = Comment(commentable=party, user=request.user)

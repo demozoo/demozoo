@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load compress %}
+
+
+{% block extra_css %}
+	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
+{% endblock %}
+
+{% block extra_js %}
+	{% if site_is_writeable %}
+		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+		{% compress js %}<script src="/static/pouet/js/match.js"></script>{% endcompress %}
+	{% endif %}
+{% endblock %}
+
+{% block base_main %}
+	<h2>Pouet release matching: {{ releaser.name }}</h2>
+
+	<h3>Unmatched:</h3>
+
+	<ul class="unmatched_left unmatched_demozoo_prods">
+		<li>Demozoo prods:</li>
+		{% for id, title, url in unmatched_demozoo_prods %}
+			<li>
+				<button class="matchable demozoo_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{{ title }}</button>
+			</li>
+		{% endfor %}
+	</ul>
+
+	<ul class="unmatched_right unmatched_pouet_prods">
+		<li>Pouet prods:</li>
+		{% for id, title, url in unmatched_pouet_prods %}
+			<li><button class="matchable pouet_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{{ title }}</button></li>
+		{% endfor %}
+	</ul>
+
+	<h3>Matched:</h3>
+	<ul class="matches">
+		{% for dz_id, dz_title, dz_url, pouet_id, pouet_title, pouet_url in matched_prods %}
+			<li>
+				<button class="matchable demozoo_prod matched" value="{{ dz_id }}" data-info-url="{{ dz_url }}">{{ dz_title }}</button>
+				=
+				<button class="matchable pouet_prod matched" value="{{ pouet_id }}" data-info-url="{{ pouet_url }}">{{ pouet_title }}</button>
+				<button class="unlink" title="Delete this match">unlink</button>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

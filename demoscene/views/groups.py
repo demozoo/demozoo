@@ -28,7 +28,7 @@ def show(request, group_id):
 	if not group.is_group:
 		return HttpResponseRedirect(group.get_absolute_url())
 
-	external_links = group.external_links.select_related('releaser').defer('releaser__notes')
+	external_links = group.active_external_links.select_related('releaser').defer('releaser__notes')
 	external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
 	return render(request, 'groups/show.html', {

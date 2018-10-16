@@ -3,7 +3,10 @@
 
 
 {% block extra_js %}
-	{% if site_is_writeable %}{% compress js %}<script src="/static/sceneorg/js/compofolders.js"></script>{% endcompress %}{% endif %}
+	{% if site_is_writeable %}
+		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+		{% compress js %}<script src="/static/sceneorg/js/compofolders.js"></script>{% endcompress %}
+	{% endif %}
 {% endblock %}
 
 {% block base_main %}
@@ -23,15 +26,15 @@
 	<br />
 	<h3>Unmatched:</h3>
 
-	<ul class="unmatched_directories">
+	<ul class="unmatched_left unmatched_directories">
 		{% for dir in unmatched_directories %}
-			<li><button class="directory unmatched" value="{{ dir.id }}">{{ dir.path }}</button></li>
+			<li><button class="matchable directory unmatched" value="{{ dir.id }}">{{ dir.path }}</button></li>
 		{% endfor %}
 	</ul>
 
-	<ul class="unmatched_competitions">
+	<ul class="unmatched_right unmatched_competitions">
 		{% for compo in unmatched_competitions %}
-			<li><button class="competition unmatched" value="{{ compo.id }}">{{ compo.name }}</button></li>
+			<li><button class="matchable competition unmatched" value="{{ compo.id }}">{{ compo.name }}</button></li>
 		{% endfor %}
 	</ul>
 
@@ -40,9 +43,9 @@
 		{% for dir in matched_directories %}
 			{% for compo in dir.competitions.all %}
 				<li>
-					<button class="directory matched" value="{{ dir.id }}">{{ dir.path }}</button>
+					<button class="matchable directory matched" value="{{ dir.id }}">{{ dir.path }}</button>
 					=
-					<button class="competition matched" value="{{ compo.id }}">{{ compo.name }}</button>
+					<button class="matchable competition matched" value="{{ compo.id }}">{{ compo.name }}</button>
 					<button class="unlink" title="Delete this match">unlink</button>
 				</li>
 			{% endfor %}
