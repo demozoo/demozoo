@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import re
 
 from django.contrib.postgres.indexes import GinIndex
@@ -12,7 +11,7 @@ from lib.fuzzy_date import FuzzyDate
 from lib.strip_markup import strip_markup
 from unidecode import unidecode
 
-from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink
+from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, TextFile
 from demoscene.utils import groklinks
 from demoscene.utils.files import random_path
 from demoscene.utils.text import generate_search_title
@@ -383,56 +382,6 @@ class CompetitionPlacing(models.Model):
 			return "(CompetitionPlacing)"
 
 
-class ResultsFile(models.Model):
+class ResultsFile(TextFile):
 	party = models.ForeignKey(Party, related_name='results_files', on_delete=models.CASCADE)
-	filename = models.CharField(max_length=255, blank=True)
 	file = models.FileField(storage=FileSystemStorage(), upload_to='results', blank=True)
-	filesize = models.IntegerField()
-	sha1 = models.CharField(max_length=40)
-	encoding = models.CharField(blank=True, null=True, max_length=32)
-
-	def save(self, *args, **kwargs):
-		data = self.data
-		self.filesize = len(data)
-		self.sha1 = hashlib.sha1(data).hexdigest()
-		if not self.encoding:
-			decode = self.guess_encoding(data)
-			if decode:
-				self.encoding = decode[0]
-		super(ResultsFile, self).save(*args, **kwargs)
-
-	@staticmethod
-	def guess_encoding(data, fuzzy=False):
-		"""
-		Make a best guess at what character encoding this data is in.
-		Returns a tuple of (encoding, decoded_data).
-		If fuzzy=False, we return None if the encoding is uncertain;
-		if fuzzy=True, we make a wild guess.
-		"""
-		# Try to decode the data using several candidate encodings, least permissive first.
-		# Accept the first one that doesn't break.
-		if fuzzy:
-			candidate_encodings = ['ascii', 'utf-8', 'windows-1252', 'iso-8859-1']
-		else:
-			candidate_encodings = ['ascii', 'utf-8']
-
-		for encoding in candidate_encodings:
-			try:
-				return (encoding, data.decode(encoding))
-			except UnicodeDecodeError:
-				pass
-
-	@property
-	def data(self):
-		self.file.open()
-		data = self.file.read()
-		self.file.close()
-		return data
-
-	@property
-	def text(self):
-		if self.encoding:
-			return self.data.decode(self.encoding)
-		else:
-			encoding, output = self.guess_encoding(self.data, fuzzy=True)
-			return output

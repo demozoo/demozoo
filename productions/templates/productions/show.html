@@ -64,6 +64,10 @@
 				{% include "productions/_downloads.html" %}
 			{% endif %}
 
+			{% if info_files %}
+				{% include "productions/_info_files.html" %}
+			{% endif %}
+
 			{% if external_links %}
 				{% include "productions/_external_links.html" %}
 			{% endif %}
@@ -86,6 +90,7 @@
 									<li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add a screenshot</a></li>
 								{% endif %}
 								<li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
+								<li><a href="{% url 'production_edit_info_files' production.id %}" class="open_in_lightbox">Add an info file</a></li>
 								{% if production.can_have_soundtracks %}
 									<li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
 								{% endif %}

@@ -76,6 +76,7 @@ def show(request, production_id, edit_mode=False):
 		'carousel': Carousel(production, request.user),
 		'download_links': production.download_links,
 		'external_links': production.external_links,
+		'info_files': production.info_files.all(),
 		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
 		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
 		'release_parties': production.release_parties.order_by('start_date_date'),

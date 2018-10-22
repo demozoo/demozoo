@@ -76,6 +76,7 @@ def show(request, production_id, edit_mode=False):
 		'production': production,
 		'download_links': production.download_links,
 		'external_links': production.external_links,
+		'info_files': production.info_files.all(),
 		'credits': production.credits_for_listing(),
 		'carousel': Carousel(production, request.user),
 		'featured_in_productions': [

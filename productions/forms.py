@@ -2,7 +2,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
 
-from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember
+from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember, InfoFile
 from demoscene.models import BlacklistedTag, Edit
 from platforms.models import Platform
 from demoscene.utils import groklinks
@@ -498,3 +498,7 @@ class MusicIndexFilterForm(forms.Form):
 	def __init__(self, *args, **kwargs):
 		super(MusicIndexFilterForm, self).__init__(*args, **kwargs)
 		self.fields['production_type'].queryset = ProductionType.music_types()
+
+
+ProductionInfoFileFormset = inlineformset_factory(Production, InfoFile,
+	fields=[], extra=0)

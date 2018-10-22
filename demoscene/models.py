@@ -1,5 +1,6 @@
 from collections import OrderedDict as SortedDict
 import datetime
+import hashlib
 import re
 
 from django.contrib.auth.models import User
@@ -673,3 +674,65 @@ class BlacklistedTag(models.Model):
 class SceneID(models.Model):
 	user = models.OneToOneField(User)
 	sceneid = models.IntegerField()
+
+
+class TextFile(models.Model):
+	filename = models.CharField(max_length=255, blank=True)
+	filesize = models.IntegerField()
+	sha1 = models.CharField(max_length=40)
+	encoding = models.CharField(blank=True, null=True, max_length=32)
+
+	def save(self, *args, **kwargs):
+		data = self.data
+		self.filesize = len(data)
+		self.sha1 = hashlib.sha1(data).hexdigest()
+
+		if not self.filename:
+			self.filename = self.file.name
+
+		if not self.encoding:
+			decode = self.guess_encoding(data)
+			if decode:
+				self.encoding = decode[0]
+		super(TextFile, self).save(*args, **kwargs)
+
+	@staticmethod
+	def guess_encoding(data, fuzzy=False):
+		"""
+		Make a best guess at what character encoding this data is in.
+		Returns a tuple of (encoding, decoded_data).
+		If fuzzy=False, we return None if the encoding is uncertain;
+		if fuzzy=True, we make a wild guess.
+		"""
+		# Try to decode the data using several candidate encodings, least permissive first.
+		# Accept the first one that doesn't break.
+		if fuzzy:
+			candidate_encodings = ['ascii', 'utf-8', 'windows-1252', 'iso-8859-1']
+		else:
+			candidate_encodings = ['ascii', 'utf-8']
+
+		for encoding in candidate_encodings:
+			try:
+				return (encoding, data.decode(encoding))
+			except UnicodeDecodeError:
+				pass
+
+	@property
+	def data(self):
+#		self.file.open()
+		self.file.seek(0)
+		data = self.file.read()
+		self.file.seek(0)
+#		self.file.close()
+		return data
+
+	@property
+	def text(self):
+		if self.encoding:
+			return self.data.decode(self.encoding)
+		else:
+			encoding, output = self.guess_encoding(self.data, fuzzy=True)
+			return output
+
+	class Meta:
+		abstract = True

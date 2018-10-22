@@ -50,4 +50,6 @@ urlpatterns = [
 	url(r'^productions/(\d+)/add_blurb/$', production_views.add_blurb, {}, 'production_add_blurb'),
 	url(r'^productions/(\d+)/edit_blurb/(\d+)/$', production_views.edit_blurb, {}, 'production_edit_blurb'),
 	url(r'^productions/(\d+)/delete_blurb/(\d+)/$', production_views.delete_blurb, {}, 'production_delete_blurb'),
+	url(r'^productions/(\d+)/edit_info/$', production_views.edit_info_files, {}, 'production_edit_info_files'),
+	url(r'^productions/(\d+)/info/(\d+)/$', production_views.info_file, {}, 'production_info_file'),
 ]

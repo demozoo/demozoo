@@ -1,5 +1,6 @@
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -18,7 +19,7 @@ from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 
 from comments.models import Commentable
-from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
+from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink, TextFile
 from demoscene.utils import groklinks
 from demoscene.utils.text import generate_search_title, generate_sort_key
 from mirror.models import Download, ArchiveMember
@@ -29,6 +30,7 @@ SUPERTYPE_CHOICES = (
 	('graphics', _('Graphics')),
 	('music', _('Music')),
 )
+
 
 class ProductionType(MP_Node):
 	name = models.CharField(max_length=255)
@@ -704,3 +706,8 @@ class ProductionLink(ExternalLink):
 class Ansi(models.Model):
 	production = models.ForeignKey(Production, related_name='ansis', on_delete=models.CASCADE)
 	url = models.URLField(max_length=255)
+
+
+class InfoFile(TextFile):
+	production = models.ForeignKey(Production, related_name='info_files', on_delete=models.CASCADE)
+	file = models.FileField(upload_to='nfo', blank=True)

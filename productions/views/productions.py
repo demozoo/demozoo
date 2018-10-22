@@ -19,10 +19,10 @@ from modal_workflow import render_modal_workflow
 
 from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation, modal_workflow_confirmation
 from demoscene.models import Nick, Edit, BlacklistedTag
-from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset
+from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset, ProductionInfoFileFormset
 from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
-from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb
+from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb, InfoFile
 from productions.carousel import Carousel
 
 from screenshots.tasks import capture_upload_for_processing
@@ -133,6 +133,7 @@ def show(request, production_id, edit_mode=False):
 
 		'download_links': production.download_links,
 		'external_links': production.external_links,
+		'info_files': production.info_files.all(),
 		'soundtracks': [
 			link.soundtrack for link in
 			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')
@@ -908,3 +909,68 @@ def carousel(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 	carousel = Carousel(production, request.user)
 	return HttpResponse(carousel.get_slides_json(), content_type='text/javascript')
+
+
+@writeable_site_required
+@login_required
+def edit_info_files(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+
+	if request.POST:
+		action_descriptions = []
+		all_valid = True
+
+		if request.user.is_staff:  # only staff members can edit/delete existing nfo files
+			formset = ProductionInfoFileFormset(request.POST, instance=production)
+			all_valid = formset.is_valid()
+			if all_valid:
+				formset.save()
+				if formset.deleted_objects:
+					deleted_files = [info_file.filename for info_file in formset.deleted_objects]
+					if len(deleted_files) > 1:
+						action_descriptions.append(u"Deleted info files: %s" % ", ".join(deleted_files))
+					else:
+						action_descriptions.append(u"Deleted info file %s" % ", ".join(deleted_files))
+
+		if all_valid:
+			uploaded_files = request.FILES.getlist('info_file')
+			file_count = len(uploaded_files)
+			for f in uploaded_files:
+				production.info_files.create(file=f)
+
+			if file_count:
+				if file_count == 1:
+					action_descriptions.append("Added info file")
+				else:
+					action_descriptions.append("Added %s info files" % file_count)
+
+			if action_descriptions:
+				# at least one change was made
+				action_description = '; '.join(action_descriptions)
+
+				production.updated_at = datetime.datetime.now()
+				production.has_bonafide_edits = True
+				production.save()
+
+				Edit.objects.create(action_type='edit_info_files', focus=production,
+					description=action_description, user=request.user)
+
+			return HttpResponseRedirect(production.get_absolute_url())
+
+	else:
+		formset = ProductionInfoFileFormset(instance=production)
+
+	return render(request, 'productions/edit_info_files.html', {
+		'production': production,
+		'formset': formset,
+		'add_only': (not request.user.is_staff) or (production.info_files.count() == 0),
+	})
+
+
+def info_file(request, production_id, file_id):
+	production = get_object_or_404(Production, id=production_id)
+	info_file = get_object_or_404(InfoFile, production=production, id=file_id)
+	return render(request, 'productions/show_info_file.html', {
+		'production': production,
+		'info_file': info_file
+	})
