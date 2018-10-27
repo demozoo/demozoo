@@ -56,6 +56,7 @@ def do_auth_redirect(request):
 	response = redirect(settings.SCENEID_HOST + 'oauth/authorize/')
 
 	request.session['sceneid_state'] = get_random_string(length=32)
+	request.session['next'] = request.GET['next']
 
 	params = {
 		'client_id': settings.SCENEID_KEY,
@@ -120,7 +121,7 @@ def process_response(request):
 		request.session['sceneid_login_userdata'] = response_data["user"]
 		return redirect(reverse('sceneid_connect'))
 
-	return redirect('home')
+	return redirect('home') if request.session['next'] is None else redirect(request.session['next'])
 
 
 @writeable_site_required
