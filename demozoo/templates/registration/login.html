@@ -5,6 +5,7 @@
 
 {# suppress the 'next' field in the header login form - we don't want to end up back here on login #}
 {% block login_next_field %}{% endblock %}
+{% block login_sceneid_next_param %}{% endblock %}
 
 {% block base_main %}
 	{% if form.errors %}
@@ -34,7 +35,7 @@
 
 			<div class='login_sceneid'>
 				...or log in with
-				<a class='sceneid' href="{% url 'sceneid_auth' %}?next={{ request.GET.next|urlencode }}">Log in with SceneID</a>
+				<a class='sceneid' href="{% url 'sceneid_auth' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in with SceneID</a>
 			</div>
 		</div>
 	</form>
