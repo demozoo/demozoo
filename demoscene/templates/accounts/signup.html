@@ -5,6 +5,10 @@
 
 {% block body_class %}signup{% endblock %}
 
+{# suppress the 'next' field in the header login form - we don't want to end up back here on login #}
+{% block login_next_field %}{% endblock %}
+{% block login_sceneid_next_param %}{% endblock %}
+
 {% block base_main %}
 	<h1>New account</h1>
 
