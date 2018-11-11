@@ -5,12 +5,12 @@
   }
 
   h2 {
+    color: demozoo-color('body-text');
     font-size: 1.75rem;
-    line-height: 1.25;
     font-weight: 500;
-    padding: 1ex 0;
+    line-height: 1.25;
     margin: 1em 0 0;
-    color: demozoo-color('primary');
+    padding: 1ex 0;
   }
 
   @media (min-width: 768px) {
