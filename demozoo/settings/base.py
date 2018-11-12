@@ -110,7 +110,6 @@ INSTALLED_APPS = (
 	'django.contrib.admin',
 	'django.contrib.humanize',
 	'django.contrib.staticfiles',
-	'djapian',
 	'treebeard',
 	'taggit',
 	'compressor',
@@ -126,6 +125,7 @@ INSTALLED_APPS = (
 	'maintenance',
 	'pages',
 	'sceneorg',
+	'pouet',
 	'mirror',
 	'screenshots',
 	'homepage',
@@ -162,8 +162,6 @@ LOGGING = {
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 
-DJAPIAN_DATABASE_PATH = os.path.join(FILEROOT, 'data', 'djapian')
-
 DEFAULT_FILE_STORAGE = 's3boto.S3BotoStorage'
 
 AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
@@ -176,7 +174,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = (
-	('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
+#	('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
 )
 
 REDIS_URL = 'redis://localhost:6379/0'
@@ -204,6 +202,16 @@ CELERYBEAT_SCHEDULE = {
 	},
 	"fetch-remote-screenshots": {
 		"task": "screenshots.tasks.fetch_remote_screenshots",
+		"schedule": timedelta(days=1),
+		"args": ()
+	},
+	"pull-pouet-groups": {
+		"task": "pouet.tasks.pull_groups",
+		"schedule": timedelta(days=14),
+		"args": ()
+	},
+	"automatch-pouet-groups": {
+		"task": "pouet.tasks.automatch_all_groups",
 		"schedule": timedelta(days=1),
 		"args": ()
 	},

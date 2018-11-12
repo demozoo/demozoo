@@ -4,13 +4,6 @@
 
 {% block html_title %}{{ platform.name }} - Demozoo{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/platforms/css/pages/show_platform.less" type="text/less" />
-		<link rel="stylesheet" href="/static/platforms/css/pages/platform-overview.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
 <div class="platform-overview">
 
@@ -31,7 +24,7 @@
 		<aside class="platform-overview__aside">
 			{% if active_groups %}
 			<div class="panel">
-				<h3 class="panel__heading">
+				<h3 class="panel__title">
 					<span>Groups active on {{ platform.name }}&hellip;</span>
 				</h3>
 				<ul class="list list--groups">
@@ -53,7 +46,7 @@
 		<div class="platform-overview__main">
 			{% if productions %}
 				<div class="panel">
-					<h3 class="panel__heading">
+					<h3 class="panel__title">
 						<span class="icon-legacy icon-legacy--releases"></span>
 						<span>Recent releases:</span>
 					</h3>

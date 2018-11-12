@@ -1,3 +1,5 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -18,7 +20,7 @@ from lib.strip_markup import strip_markup
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink
 from demoscene.utils import groklinks
-from demoscene.utils.text import generate_sort_key
+from demoscene.utils.text import generate_search_title, generate_sort_key
 from mirror.models import Download, ArchiveMember
 
 
@@ -99,11 +101,14 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
 
 	sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
 
 	tags = TaggableManager(blank=True)
+
+	search_document = SearchVectorField(null=True, editable=False)
 
 	search_result_template = 'search/results/production.html'
 
@@ -125,9 +130,10 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 		if self.id and not self.supertype:
 			self.supertype = self.inferred_supertype
 
-		# populate sortable_title from title
+		# populate search_title and sortable_title from title
 		if self.title:
 			self.title = self.title.strip()
+			self.search_title = generate_search_title(self.title)
 			self.sortable_title = generate_sort_key(self.title)
 
 		# auto-populate updated_at; this will only happen on creation
@@ -289,26 +295,6 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 	def tags_string(self):
 		return ', '.join([tag.name for tag in self.tags.all()])
 
-	def search_result_json(self):
-		screenshot = self.random_screenshot
-		if screenshot:
-			width, height = screenshot.thumb_dimensions_to_fit(48, 36)
-			thumbnail = {
-				'url': screenshot.thumbnail_url,
-				'width': width, 'height': height,
-				'natural_width': screenshot.thumbnail_width,
-				'natural_height': screenshot.thumbnail_height,
-			}
-		else:
-			thumbnail = None
-
-		return {
-			'type': self.supertype,
-			'url': self.get_absolute_url(),
-			'value': self.title_with_byline,
-			'thumbnail': thumbnail
-		}
-
 	def credits_for_listing(self):
 		return self.credits.select_related('nick__releaser').extra(
 			select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
@@ -344,20 +330,24 @@ class Production(ModelWithPrefetchSnooping, Commentable):
 
 	@property
 	def external_links(self):
-		external_links = self.links.filter(is_download_link=False)
+		external_links = self.links.filter(is_download_link=False).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 		return sorted(external_links, key=lambda obj: obj.sort_key)
 
 	@property
 	def download_links(self):
-		return self.links.filter(is_download_link=True)
+		return self.links.filter(is_download_link=True).exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
-	@property
-	def random_screenshot(self):
-		if self.has_screenshot:
-			return self.screenshots.order_by('?').first()
+	def index_components(self):
+		return {
+			'A': self.asciified_title,
+			'C': self.tags_string + ' ' + self.indexed_notes
+		}
 
 	class Meta:
 		ordering = ['sortable_title']
+		indexes = [
+			GinIndex(fields=['search_document']),
+		]
 		index_together = [
 			['release_date_date', 'created_at']
 		]
@@ -569,6 +559,7 @@ class ProductionLink(ExternalLink):
 	file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
 	is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
 	has_bad_image = models.BooleanField(default=False, help_text="Indicates that an attempt to create a screenshot from this link has failed at the image processing stage")
+	source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
 
 	thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
 	thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)

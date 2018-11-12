@@ -216,3 +216,25 @@ class PartyReleaseForm(forms.Form):
 
 PartyReleaseFormset = formset_factory(PartyReleaseForm,
 	can_delete=True, extra=1)
+
+
+class PartyShareImageForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(PartyShareImageForm, self).__init__(*args, **kwargs)
+		self.fields['share_screenshot'] = forms.ModelChoiceField(
+			required=False, queryset=self.instance.get_screenshots(), widget=forms.RadioSelect,
+			empty_label=None
+		)
+
+	def options_with_screenshots(self):
+		screenshots_by_id = {
+			s.id: s for s in self['share_screenshot'].field.queryset
+		}
+		return [
+			(screenshots_by_id[option.data['value']], option)
+			for option in list(self['share_screenshot'])
+		]
+
+	class Meta:
+		model = Party
+		fields = ['share_image_file', 'share_screenshot']

@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
 from demoscene.models import Edit
+from demoscene.utils.groklinks import ARCHIVED_LINK_TYPES
 from productions.models import Credit
 from django.forms.models import modelformset_factory
 from django.core.exceptions import ValidationError
@@ -26,6 +27,10 @@ class ExternalLinkForm(forms.ModelForm):
 
 
 class BaseExternalLinkFormSet(BaseInlineFormSet):
+	def __init__(self, *args, **kwargs):
+		super(BaseExternalLinkFormSet, self).__init__(*args, **kwargs)
+		self.queryset = self.queryset.exclude(link_class__in=ARCHIVED_LINK_TYPES)
+
 	def log_edit(self, user, action_type):
 		descriptions = []
 

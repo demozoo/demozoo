@@ -2,9 +2,11 @@ import datetime
 import hashlib
 import re
 
-from django.db import models
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
+from django.db import models
 
 from lib.fuzzy_date import FuzzyDate
 from lib.strip_markup import strip_markup
@@ -12,6 +14,8 @@ from unidecode import unidecode
 
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink
 from demoscene.utils import groklinks
+from demoscene.utils.files import random_path
+from demoscene.utils.text import generate_search_title
 from comments.models import Commentable
 from productions.models import Production, Screenshot
 
@@ -63,6 +67,10 @@ class PartySeriesDemozoo0Reference(models.Model):
 	demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
 
+def party_share_image_upload_to(i, f):
+	return random_path('party_share_images', f)
+
+
 class Party(Commentable):
 	party_series = models.ForeignKey(PartySeries, related_name='parties', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255, unique=True)
@@ -88,10 +96,39 @@ class Party(Commentable):
 	invitations = models.ManyToManyField('productions.Production', related_name='invitation_parties', blank=True)
 	releases = models.ManyToManyField('productions.Production', related_name='release_parties', blank=True)
 
+	share_image_file = models.ImageField(
+		upload_to=party_share_image_upload_to, blank=True,
+		width_field='share_image_file_width', height_field='share_image_file_height',
+		help_text="Upload an image file to display when sharing this party page on social media"
+	)
+	share_image_file_width = models.IntegerField(editable=False, null=True)
+	share_image_file_height = models.IntegerField(editable=False, null=True)
+	share_image_file_url = models.CharField(max_length=255, blank=True, editable=False)
+	share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+	search_document = SearchVectorField(null=True, editable=False)
+
 	search_result_template = 'search/results/party.html'
 
 	def __unicode__(self):
 		return self.name
+
+	def save(self, *args, **kwargs):
+		# populate search_title from name
+		if self.name:
+			self.search_title = generate_search_title(self.name)
+
+		super(Party, self).save(*args, **kwargs)
+
+		if self.share_image_file_url and not self.share_image_file:
+			# clear the previous share_image_file_url field
+			Party.objects.filter(pk=self.pk).update(share_image_file_url='')
+			self.share_image_file_url = ''
+		elif self.share_image_file and self.share_image_file.url != self.share_image_file_url:
+			# update the share_image_file_url field with the URL from share_image_file
+			Party.objects.filter(pk=self.pk).update(share_image_file_url=self.share_image_file.url)
+			self.share_image_file_url = self.share_image_file.url
 
 	@property
 	def title(self):
@@ -144,6 +181,13 @@ class Party(Commentable):
 		self.end_date_precision = fuzzy_date.precision
 	end_date = property(_get_end_date, _set_end_date)
 
+	def get_screenshots(self):
+		compo_entry_prod_ids = Production.objects.filter(competition_placings__competition__party=self).values_list('id', flat=True)
+		invitation_prod_ids = self.invitations.values_list('id', flat=True)
+		non_compo_release_prod_ids = self.releases.values_list('id', flat=True)
+		prod_ids = list(compo_entry_prod_ids) + list(invitation_prod_ids) + list(non_compo_release_prod_ids)
+		return Screenshot.objects.filter(production_id__in=prod_ids)
+
 	def random_screenshot(self):
 		screenshots = Screenshot.objects.filter(production__competition_placings__competition__party=self)
 		try:
@@ -172,6 +216,10 @@ class Party(Commentable):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
+
 	# return the sceneorg.models.File instance for our best guess at the results textfile in this
 	# party's folder on scene.org
 	def sceneorg_results_file(self):
@@ -194,22 +242,34 @@ class Party(Commentable):
 		results_file.file.save(self.clean_name + '.txt', ContentFile(sceneorg_file.fetched_data()))
 		# this also commits the ResultsFile record to the database
 
-	def search_result_json(self):
-		return {
-			'type': 'party',
-			'url': self.get_absolute_url(),
-			'value': self.name,
-		}
-
 	@property
 	def clean_name(self):
 		"""a name for this party that can be used in filenames (used to give results.txt files
 			meaningful names on disk)"""
 		return re.sub(r'\W+', '_', self.name.lower())
 
+	@property
+	def share_image_url(self):
+		if self.share_image_file_url:
+			return self.share_image_file_url
+		elif self.share_screenshot:
+			return self.share_screenshot.standard_url
+		else:
+			return 'https://demozoo.org/static/images/fb-1200x627.png'
+
+	def index_components(self):
+		return {
+			'A': self.asciified_name,
+			'B': self.tagline,
+			'C': self.asciified_location + ' ' + self.plaintext_notes,
+		}
+
 	class Meta:
 		verbose_name_plural = "Parties"
 		ordering = ("name",)
+		indexes = [
+			GinIndex(fields=['search_document']),
+		]
 
 
 class PartyExternalLink(ExternalLink):

@@ -7,12 +7,6 @@
 
 {% block body_class %}show_party_series{% endblock %}
 
-{% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/parties/css/pages/show_series.less" type="text/less" />
-	{% endcompress %}
-{% endblock %}
-
 {% block extra_js %}
 	{% compress js %}
 		<script src="/static/js/components/notes_panel.js"></script>
@@ -38,7 +32,7 @@
 
 		{% if party_series.has_any_external_links %}
 			<div class="panel external_links_panel">
-				<h3>External links</h3>
+				<h3 class="panel__title">External links</h3>
 				<ul class="list list--external-links">
 					{% if party_series.website %}
 						<li class="list__item">

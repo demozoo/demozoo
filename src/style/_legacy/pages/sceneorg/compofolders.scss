@@ -1,0 +1,154 @@
+.sceneorg {
+
+  h2 {
+    margin-bottom: 1em;
+  }
+
+  h3 {
+    clear: both;
+  }
+
+  ul.parties a {
+    color: #bbe;
+  }
+
+  ul.parties strong a {
+    color: #448;
+  }
+
+  ul.folders a {
+    color: #bbe;
+  }
+
+  ul.folders strong a {
+    color: #448;
+  }
+
+  @mixin button() {
+    width: 300px;
+    padding: 4px;
+    border-radius: 6px;
+  }
+
+  @mixin white_button() {
+    @include button();
+    color: #606060;
+    border: solid 1px #b7b7b7;
+    background: #fff;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+    background: -moz-linear-gradient(top, #fff, #ededed);
+
+    &:hover {
+      background: #ededed;
+      background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+      background: -moz-linear-gradient(top, #fff, #dcdcdc);
+    }
+  }
+
+  @mixin red_button() {
+    @include button();
+    color: #faddde;
+    border: solid 1px #980c10;
+    background: #d81b21;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+    background: -moz-linear-gradient(top, #ed1c24, #aa1317);
+    &:hover {
+      background: #b61318;
+      background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
+      background: -moz-linear-gradient(top, #c9151b, #a11115);
+    }
+  }
+
+  .unmatched_left {
+    width: 50%;
+    float: left;
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
+
+  .unmatched_right {
+    width: 50%;
+    float: left;
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
+
+  .matches {
+    > li {
+      margin: 8px;
+      text-align: center;
+    }
+  }
+
+  .button_wrapper {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  button.matchable {
+    @include white_button();
+  }
+  button.matchable.selected, button.file.selected {
+    @include red_button();
+  }
+
+  button.unlink {
+    width: 24px;
+    background-image: url(/static/images/icons/cross.png);
+    text-indent: -5000px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  button.expand {
+    width: 24px;
+    background-image: url(/static/images/icons/arrow_down.png);
+    background-color: transparent;
+    border: none;
+    text-indent: -5000px;
+    background-repeat: no-repeat;
+    background-position: top;
+  }
+}
+
+	a.demozoo-info {
+		background-image: url(/static/images/favicon/favicon-16x16.png);
+		background-position: top;
+		background-repeat: no-repeat;
+		display: inline-block;
+		text-indent: -5000px;
+		width: 24px;
+	}
+	a.pouet-info {
+		background-image: url(/static/images/icons/external_sites/pouet.png);
+		background-position: top;
+		background-repeat: no-repeat;
+		display: inline-block;
+		text-indent: -5000px;
+		width: 24px;
+	}
+
+.sceneorg {
+	.details {
+		border: 1px solid #ccc;
+		padding: 4px;
+		text-align: left;
+	}
+
+	.details li {
+		height: 20px;
+		background-repeat: no-repeat;
+		background-position: left top;
+		padding-left: 24px;
+	}
+	.details li.dir {
+		background-image: url(/static/images/icons/folder.png);
+	}
+	.details li.file {
+		background-image: url(/static/images/icons/page.png);
+	}
+}

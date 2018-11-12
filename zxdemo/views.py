@@ -164,8 +164,14 @@ def production(request, production_id):
 		'download_links': production.links.filter(is_download_link=True),
 	})
 
+
 def production_redirect(request):
-	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=request.GET.get('id'))
+	try:
+		id = int(request.GET.get('id'))
+	except (TypeError, ValueError, UnicodeEncodeError):
+		raise Http404
+
+	prod_link = get_object_or_404(ProductionLink, link_class='ZxdemoItem', parameter=id)
 	return redirect('zxdemo_production', prod_link.production_id, permanent=True)
 
 
@@ -260,7 +266,12 @@ def author(request, releaser_id):
 	})
 
 def author_redirect(request):
-	releaser_link = get_object_or_404(ReleaserExternalLink, link_class='ZxdemoAuthor', parameter=request.GET.get('id'))
+	try:
+		id = int(request.GET.get('id'))
+	except (TypeError, ValueError, UnicodeEncodeError):
+		raise Http404
+
+	releaser_link = get_object_or_404(ReleaserExternalLink, link_class='ZxdemoAuthor', parameter=id)
 	return redirect('zxdemo_author', releaser_link.releaser_id, permanent=True)
 
 
@@ -360,7 +371,12 @@ def party(request, party_id):
 
 
 def party_redirect(request):
-	party_link = get_object_or_404(PartyExternalLink, link_class='ZxdemoParty', parameter=request.GET.get('id'))
+	try:
+		id = int(request.GET.get('id'))
+	except (TypeError, ValueError, UnicodeEncodeError):
+		raise Http404
+
+	party_link = get_object_or_404(PartyExternalLink, link_class='ZxdemoParty', parameter=id)
 	return redirect('zxdemo_party', party_link.party_id, permanent=True)
 
 

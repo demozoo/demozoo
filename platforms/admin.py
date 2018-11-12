@@ -1,5 +1,9 @@
 from django.contrib import admin
 
-from platforms.models import Platform
+from platforms.models import Platform, PlatformAlias
 
-admin.site.register(Platform, search_fields=['name'])
+
+class PlatformAliasInline(admin.StackedInline):
+	model = PlatformAlias
+
+admin.site.register(Platform, inlines=[PlatformAliasInline], search_fields=['name'])

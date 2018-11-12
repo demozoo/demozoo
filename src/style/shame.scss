@@ -1,0 +1,9 @@
+// shame.scss
+// ----------
+// Shamelessly pilfered from https://csswizardry.com/2013/04/shame-css/
+// Hic sunt pulices :)
+
+.ui-widget-content a:visited {
+  // Deals with the pesky a:visited color for now.
+  color: currentColor;
+}

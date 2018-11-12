@@ -11,9 +11,9 @@
 
 	{% comment %} --- CORE CSS --- {% endcomment %}
 	{% compress css %}
-		<link rel="stylesheet" href="/static/css/layout.less" type="text/less" />
 		<link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
 	{% endcompress %}
+	<link rel="stylesheet" href="/static/css/dz.css" type="text/css" />
 
 	{% block extra_css %}{% endblock %}
 
@@ -75,7 +75,12 @@
 					{% block global_search_form %}
 						<form class="search" id="global_search" method="get" action="{% url 'search' %}">
 							{{ global_search_form.q }}
-							<input type="submit" value="Search" />
+							{{ global_search_form.category }}
+							<button type="submit">
+								<svg class="icon">
+									<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
+								</svg>
+							</button>
 						</form>
 					{% endblock %}
 				</nav>
@@ -115,7 +120,7 @@
 							</ul>
 							<div class="login_sceneid">
 								...or log in with
-								<a class='sceneid' href="{% url 'sceneid_auth' %}">Log in with SceneID</a>
+								<a class='sceneid' href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}">Log in with SceneID</a>
 							</div>
 						</div>
 						{% endif %}

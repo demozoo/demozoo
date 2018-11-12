@@ -2,8 +2,21 @@
 {% load compress %}
 
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/search/css/pages/search.less" type="text/less" />{% endcompress %}
+
+{% block extra_js %}
+	<script>
+		$(function() {
+			var advancedSearchHelp = $('#advanced_search_help');
+			advancedSearchHelp.hide();
+			var advancedSearchLink = $('<small><a href="javascript:void(0)">Advanced search help</a></small>');
+			$('.search-results form.search').append(advancedSearchLink);
+			advancedSearchLink.find('a').toggle(function() {
+				advancedSearchHelp.slideDown();
+			}, function() {
+				advancedSearchHelp.slideUp();
+			});
+		});
+	</script>
 {% endblock %}
 
 {% block base_main %}
@@ -18,7 +31,7 @@
 					   name="q"
 					   placeholder="Search Demozoo"
 					   type="search"
-					   value="{{ global_search_query }}" />
+					   value="{{ query }}" />
 				<svg class="icon">
 					<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
 				</svg>
@@ -29,41 +42,33 @@
 		</fieldset>
 	</form>
 
+	<div id="advanced_search_help" class="long_help">
+		<h3>Search filtering options</h3>
+		<ul>
+			<li><kbd>cocio type:music</kbd> - restrict search results to a specific type. Recognised types are <kbd>production</kbd>, <kbd>music</kbd>, <kbd>graphics</kbd>, <kbd>scener</kbd>, <kbd>group</kbd>, <kbd>party</kbd> or any production type, e.g. <kbd>type:"64K Intro"</kbd></li>
+			<li><kbd>deus on:"Commodore 64"</kbd> or <kbd>deus platform:"Commodore 64"</kbd> - search releases on a specific platform</li>
+			<li><kbd>horse by:farbrausch</kbd> or <kbd>horse author:farbrausch</kbd> - search releases by a specific author</li>
+			<li><kbd>smash of:flt</kbd> - search members of a specific group</li>
+			<li><kbd>rob group:aardbei</kbd> - search members and releases of a specific group</li>
+			<li><kbd>heart [scene-poetry]</kbd> or <kbd>heart tagged:scene-poetry</kbd> - search releases with a specific tag</li>
+			<li><kbd>inercia year:2005</kbd> - search releases and parties from a specific year</li>
+		</ul>
+	</div>
+
 	{% if query %}
 		<section>
-			<h2 class="search-results__heading">Exact name matches</h2>
-			{% if name_results %}
+			{% if results %}
+				<h2 class="search-results__heading">Results {{ page.start_index }} - {{ page.end_index }} of {{ page.paginator.count }}</h2>
 				<ul class="list list--results">
-					{% for result in name_results %}
+					{% for result in results %}
 						<li class="list__item">
-							{% if result.instance.search_result_template %}
-								{% include result.instance.search_result_template %}
+							{% if result.search_result_template %}
+								{% include result.search_result_template %}
 							{% else %}
-								<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
+								<a href="{{ result.get_absolute_url }}">{{ result }}</a>
 							{% endif %}
 						</li>
 					{% endfor %}
-				</ul>
-			{% else %}
-				<p>No exact matches found.</p>
-			{% endif %}
-		</section>
-
-		<section>
-			<h2 class="search-results__heading">Other matches</h2>
-			{% if page.object_list %}
-				<ul class="list list--results">
-					{% with 1 as show_snippet %}
-						{% for result in page.object_list %}
-							<li class="list__item">
-								{% if result.instance.search_result_template %}
-									{% include result.instance.search_result_template %}
-								{% else %}
-									<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-								{% endif %}
-							</li>
-						{% endfor %}
-					{% endwith %}
 				</ul>
 			{% else %}
 				<p>No results found.</p>
@@ -76,7 +81,7 @@
 			|
 			{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
 		</div>
-	{% endif %}
+		{% endif %}
 	{% else %}
 		{# Show some example queries to run, maybe query syntax, something else? #}
 	{% endif %}

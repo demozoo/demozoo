@@ -1,25 +1,23 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="result">
-	{% with result.instance.random_screenshot as screenshot %}
-		{% if screenshot %}
-			{% microthumb screenshot %}
+	{% if result.selected_screenshot %}
+		{% microthumb result.selected_screenshot %}
 
-		{% else %}
-			<div class="media media--thumbnail">
-				{% icon result.instance.supertype %}
-			</div>
+	{% else %}
+		<div class="media media--thumbnail">
+			{% icon result.supertype %}
+		</div>
 
-		{% endif %}
-	{% endwith %}
+	{% endif %}
 	<div class="result__content">
-		<a href="{{ result.instance.get_absolute_url }}">{{ result.instance }}</a>
-		{% if result.instance.author_nicks.all %}
-			<small>by <span>{% byline result.instance %}</span></small>
+		<a href="{{ result.get_absolute_url }}">{{ result }}</a>
+		{% if result.author_nicks.all %}
+			<small>by <span>{% byline result %}</span></small>
 		{% endif %}
-		{% if show_snippet %}
+		{% if result.has_search_snippet %}
 			<div class="result__snippet">
-				{{ result.instance.plaintext_notes|search_snippet:resultset }}
+				<p class="snippet">{{ result.search_snippet|safe }}</p>
 			</div>
 		{% endif %}
 	</div>

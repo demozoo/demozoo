@@ -1,20 +1,21 @@
 from collections import OrderedDict as SortedDict
+import datetime
+import re
 
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
-# from django.utils.datastructures import SortedDict
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-
-import re
-import datetime
 
 from unidecode import unidecode
 
 from lib.strip_markup import strip_markup
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
+from demoscene.utils.text import generate_search_title
 
 DATE_PRECISION_CHOICES = [
 	('d', 'Day'),
@@ -47,6 +48,9 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField()
+
+	search_document = SearchVectorField(null=True, editable=False)
+	admin_search_document = SearchVectorField(null=True, editable=False)
 
 	def save(self, *args, **kwargs):
 		# auto-populate updated_at; this will only happen on creation
@@ -118,6 +122,10 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 	def members(self):
 		return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
+
+	@property
+	def active_external_links(self):
+		return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
 	def name_with_affiliations(self):
 		groups = self.current_groups()
@@ -230,21 +238,26 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 	def plaintext_notes(self):
 		return strip_markup(self.notes)
 
-	def search_result_json(self):
-		primary_nick = self.primary_nick
-		if primary_nick.differentiator:
-			differentiator = " (%s)" % primary_nick.differentiator
-		else:
-			differentiator = ""
-
+	def index_components(self):
 		return {
-			'type': 'group' if self.is_group else 'scener',
-			'url': self.get_absolute_url(),
-			'value': self.name_with_affiliations() + differentiator,
+			'A': self.asciified_all_names_string,
+			'B': self.asciified_public_real_name,
+			'C': self.asciified_location + ' ' + self.plaintext_notes,
+		}
+
+	def admin_index_components(self):
+		return {
+			'A': self.asciified_all_names_string,
+			'B': self.asciified_real_name,
+			'C': self.asciified_location + ' ' + self.plaintext_notes,
 		}
 
 	class Meta:
 		ordering = ['name']
+		indexes = [
+			GinIndex(fields=['search_document']),
+			GinIndex(fields=['admin_search_document']),
+		]
 		permissions = (
 			("view_releaser_real_names", "Can view non-public real names"),
 		)
@@ -375,6 +388,14 @@ class Nick(models.Model):
 class NickVariant(models.Model):
 	nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
 	name = models.CharField(max_length=255)
+	search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
+
+	def save(self, *args, **kwargs):
+		# populate search_title from name
+		if self.name:
+			self.search_title = generate_search_title(self.name)
+
+		return super(NickVariant, self).save(*args, **kwargs)
 
 	def __unicode__(self):
 		return self.name

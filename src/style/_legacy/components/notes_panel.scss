@@ -1,0 +1,15 @@
+.notes_panel {
+	border: 1px solid #eee;
+	color: #444;
+	margin-bottom: 20px;
+	margin-top: 8px;
+	padding-left: 8px;
+	padding-right: 8px;
+
+	.notes {
+		width: 90%;
+		margin: auto;
+
+		@include markdown();
+	}
+}

@@ -2,11 +2,8 @@
 {% load compress %}
 
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block base_main %}
+<section class="sceneorg">
 	<h2>scene.org compo folder matching</h2>
 	<p>...so here's the deal. To help us on the way to having download links for all compo entries, we need to match up each individual compo to its corresponding folder on scene.org. Select a party to get started - the ones in bold are the ones not already marked as 'done'.</p>
 	<p>
@@ -24,6 +21,7 @@
 					{% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
 				</li>
 			{% endfor %}
-		<ul>
+		</ul>
 	{% endfor %}
+</section>
 {% endblock %}

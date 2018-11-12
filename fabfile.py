@@ -15,7 +15,8 @@ def deploy():
 		run('git pull')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
 		run('npm install')
-		run('grunt')
+		run('npm run css')
+		run('npm run icons')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
 		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
@@ -32,7 +33,8 @@ def deploy_staging():
 		run('git pull')
 		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
 		run('npm install')
-		run('grunt')
+		run('npm run css')
+		run('npm run icons')
 		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
 		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
 		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
@@ -50,9 +52,14 @@ def sanity():
 def reindex():
 	"""Rebuild the search index from scratch. WARNING:SLOW"""
 	with cd('/home/demozoo/demozoo'):
-		run('sudo supervisorctl stop demozoo-djapian')
-		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py force_rebuild_index --settings=demozoo.settings.productionvm')
-		run('sudo supervisorctl start demozoo-djapian')
+		run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.productionvm')
+
+
+@hosts(STAGING_HOSTS)
+def reindex_staging():
+	"""Rebuild the search index on staging from scratch. WARNING:SLOW"""
+	with cd('/home/demozoo/demozoo-staging'):
+		run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py reindex --settings=demozoo.settings.staging')
 
 
 @hosts(PRODUCTION_HOSTS)
@@ -86,6 +93,6 @@ def exportdb():
 	local("""psql -U%s demozoo_dump -c "UPDATE auth_user SET email='', password='!', first_name='', last_name='';" """ % db_username)
 	local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET first_name='' WHERE show_first_name='f';" """ % db_username)
 	local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';" """ % db_username)
-	local("""psql -U%s demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session; DROP TABLE djapian_change;" """ % db_username)
+	local("""psql -U%s demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session;" """ % db_username)
 	local('pg_dump -Z1 -cf demozoo-export.sql.gz demozoo_dump')
 	#local('dropdb -U%s demozoo_dump' % db_username)
