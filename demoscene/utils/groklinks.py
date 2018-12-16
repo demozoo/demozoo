@@ -760,7 +760,7 @@ class ModlandFile(BaseUrl):
 class FujiologyFile(BaseUrl):
 	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
 	tests = [
-		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
+		regex_match(r'ftp://(?:fujiology\.|ftp\.)untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
 	]
 	html_link_class = "fujiology"
 	html_link_text = "Fujiology"
@@ -770,7 +770,7 @@ class FujiologyFile(BaseUrl):
 class FujiologyFolder(BaseUrl):
 	canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
 	tests = [
-		regex_match(r'ftp://(?:fujiology|ftp)\.untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
+		regex_match(r'ftp://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
 	]
 	html_link_class = "fujiology"
 	html_link_text = "Fujiology"
@@ -780,7 +780,7 @@ class FujiologyFolder(BaseUrl):
 class UntergrundFile(BaseUrl):
 	canonical_format = "ftp://ftp.untergrund.net%s"
 	tests = [
-		regex_match(r'ftp://ftp\.untergrund\.net(/.*)', re.I),
+		regex_match(r'ftp://(?:ftp\.)?untergrund\.net(/.*)', re.I),
 	]
 	html_link_class = "untergrund"
 	html_link_text = "untergrund.net"
