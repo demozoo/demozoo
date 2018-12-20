@@ -1,5 +1,7 @@
 import os
 import mimetypes
+import random
+import string
 
 try:
 	from cStringIO import StringIO
@@ -155,8 +157,13 @@ class S3BotoStorage(Storage):
 			bucket=self.bucket.name, key=name, query_auth=QUERYSTRING_AUTH, force_http=FORCE_HTTP)
 
 	def get_available_name(self, name, max_length=None):
-		""" Overwrite existing file with the same name. """
+		""" DON'T overwrite existing file with the same name. """
 		name = self._clean_name(name)
+		base_name, base_ext = os.path.splitext(name)
+		while self.exists(name):
+			rand_string = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+			name = base_name + '.' + rand_string + base_ext
+
 		return name
 
 
