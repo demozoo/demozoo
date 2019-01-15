@@ -1,7 +1,7 @@
 {% extends base_template_with_ajax_option %}
 
 {% block base_main %}
-	<p>This page has been protected and you cannot edit it directly. If you know something we don't, please <a href="https://demozoo.org/forums/3/">let us know in this thread</a>.</p>
+	<p>This page has been protected and you cannot edit it directly. If you know something we don't, please <a href="/forums/3/">let us know in this thread</a>.</p>
 	{% if request.user.is_staff %}
 		<form action="{% url 'production_protected' production.id %}" class="confirmation_form" method="post">
 			{% csrf_token %}
