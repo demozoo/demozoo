@@ -1,6 +1,6 @@
 <div class="editable_chunk panel external_links_panel">
 	<h3 class="panel__title">External links</h3>
-	{% if site_is_writeable %}
+	{% if prompt_to_edit %}
 		<ul class="actions">
 			<li>
 				<a href="{% url 'production_edit_external_links' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>

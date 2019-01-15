@@ -3,6 +3,7 @@ from __future__ import absolute_import  # ensure that 'from productions.* import
 import datetime
 import random
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -128,6 +129,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
+		'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
 		'editing_credits': (request.GET.get('editing') == 'credits'),
 		'credits': production.credits_for_listing(),
 		'carousel': Carousel(production, request.user),

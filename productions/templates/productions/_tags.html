@@ -1,7 +1,7 @@
-<div class="editable_chunk panel tags_panel {% if site_is_writeable and user.is_authenticated %}edit_toggle{% endif %}">
+<div class="editable_chunk panel tags_panel {% if prompt_to_edit and user.is_authenticated %}edit_toggle{% endif %}">
 	<h3 class="panel__title">Tags</h3>
 
-	{% if site_is_writeable and not user.is_authenticated %}
+	{% if prompt_to_edit and not user.is_authenticated %}
 		{% comment %} Provide an 'edit' button that takes them to the login page.
 			For logged-in users, the 'edit' button will be added via JS
 			(because non-JS users will see the edit controls on the tags anyhow).
@@ -15,7 +15,7 @@
 
 	<div id="tags_message"></div>
 	{% include "productions/_tags_list.html" with tags=tags only %}
-	{% if tags_form %}
+	{% if prompt_to_edit and tags_form %}
 		<form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">
 			{% csrf_token %}
 			{{ tags_form.tags }}

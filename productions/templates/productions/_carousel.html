@@ -19,7 +19,7 @@
 			<div class="no_screenshot">
 				<p>
 					No screenshot yet!
-					{% if site_is_writeable %}
+					{% if prompt_to_edit %}
 						<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
 					{% endif %}
 				</p>

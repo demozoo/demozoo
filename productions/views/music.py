@@ -2,6 +2,7 @@ from __future__ import absolute_import  # ensure that 'from productions.* import
 
 import random
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 
@@ -74,6 +75,7 @@ def show(request, production_id, edit_mode=False):
 
 	return render(request, 'productions/show.html', {
 		'production': production,
+		'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
 		'download_links': production.download_links,
 		'external_links': production.external_links,
 		'info_files': production.info_files.all(),
@@ -87,9 +89,6 @@ def show(request, production_id, edit_mode=False):
 			pack_member.pack for pack_member in
 			production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
 		],
-		'competition_placings': production.competition_placings.order_by('competition__party__start_date_date'),
-		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
-		'release_parties': production.release_parties.order_by('start_date_date'),
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'comment_form': comment_form,
