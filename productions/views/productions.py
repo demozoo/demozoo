@@ -5,6 +5,7 @@ import random
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.db.models import Count
@@ -170,6 +171,9 @@ def history(request, production_id):
 def edit_core_details(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
 
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
+
 	use_invitation_formset = False
 	invitation_formset = None
 
@@ -330,6 +334,8 @@ def delete_blurb(request, production_id, blurb_id):
 @login_required
 def edit_external_links(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.method == 'POST':
 		formset = ProductionExternalLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=False))
@@ -355,6 +361,8 @@ def edit_external_links(request, production_id):
 @login_required
 def edit_download_links(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.method == 'POST':
 		formset = ProductionDownloadLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=True))
@@ -441,6 +449,8 @@ def edit_artwork(request, production_id):
 @login_required
 def add_screenshot(request, production_id, is_artwork_view=False):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.method == 'POST':
 		uploaded_files = request.FILES.getlist('screenshot')
@@ -560,6 +570,8 @@ def create(request):
 @login_required
 def add_credit(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	if request.method == 'POST':
 		nick_form = ProductionCreditedNickForm(request.POST, production=production)
 		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
@@ -607,6 +619,8 @@ def add_credit(request, production_id):
 @login_required
 def edit_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	nick = get_object_or_404(Nick, id=nick_id)
 	credits = production.credits.filter(nick=nick).extra(
 		select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
@@ -671,6 +685,8 @@ def edit_credit(request, production_id, nick_id):
 @login_required
 def delete_credit(request, production_id, nick_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	nick = get_object_or_404(Nick, id=nick_id)
 	if request.method == 'POST':
 		if request.POST.get('yes'):
@@ -694,6 +710,8 @@ def delete_credit(request, production_id, nick_id):
 @login_required
 def edit_soundtracks(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	if request.method == 'POST':
 		formset = ProductionSoundtrackLinkFormset(request.POST, instance=production)
 		if formset.is_valid():
@@ -728,6 +746,8 @@ def edit_soundtracks(request, production_id):
 @login_required
 def edit_pack_contents(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	if request.method == 'POST':
 		formset = PackMemberFormset(request.POST, instance=production)
 		if formset.is_valid():
@@ -762,6 +782,8 @@ def edit_pack_contents(request, production_id):
 @login_required
 def edit_tags(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	old_tags = set(production.tags.names())
 	form = ProductionTagsForm(request.POST, instance=production)
 	form.save()
@@ -784,6 +806,8 @@ def add_tag(request, production_id):
 	# Only used in AJAX calls.
 
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	tag_name = slugify_tag(request.POST.get('tag_name'))
 
 	try:
@@ -819,6 +843,8 @@ def remove_tag(request, production_id):
 	# Only used in AJAX calls.
 
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 	if request.method == 'POST':
 		tag_name = slugify_tag(request.POST.get('tag_name'))
 		existing_tag = production.tags.filter(name=tag_name)
@@ -915,6 +941,8 @@ def carousel(request, production_id):
 @login_required
 def edit_info_files(request, production_id):
 	production = get_object_or_404(Production, id=production_id)
+	if not production.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.POST:
 		action_descriptions = []

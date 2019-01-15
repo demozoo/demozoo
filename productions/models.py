@@ -15,6 +15,7 @@ from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
 from lib.fuzzy_date import FuzzyDate
+from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 
@@ -81,7 +82,7 @@ class ProductionType(MP_Node):
 			return 'production'
 
 
-class Production(ModelWithPrefetchSnooping, Commentable):
+class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
 	title = models.CharField(max_length=255)
 	platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
 	supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
