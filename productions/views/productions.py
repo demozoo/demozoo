@@ -139,9 +139,6 @@ def show(request, production_id, edit_mode=False):
 			link.soundtrack for link in
 			production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')
 		],
-		'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
-		'invitation_parties': production.invitation_parties.order_by('start_date_date'),
-		'release_parties': production.release_parties.order_by('start_date_date'),
 		'tags': production.tags.order_by('name'),
 		'blurbs': production.blurbs.all() if request.user.is_staff else None,
 		'pack_members': pack_members,
