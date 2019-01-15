@@ -189,7 +189,9 @@ class Carousel(object):
 			manage_screenshots_label = "Manage screenshots"
 
 		show_all_screenshots_link = len(screenshots) > 1
-		if settings.SITE_IS_WRITEABLE:
+
+		prompt_to_edit = settings.SITE_IS_WRITEABLE and (self.user.is_staff or not self.production.locked)
+		if prompt_to_edit:
 			# always show the 'add screenshot' / 'add artwork' button, except for the special case
 			# that supertype is graphics or production and there are no carousel slides -
 			# in which case the 'add a screenshot' call-to-action will be in the carousel area instead
@@ -201,7 +203,7 @@ class Carousel(object):
 
 		return render_to_string('productions/_carousel.html', {
 			'production': self.production,
-			'site_is_writeable': settings.SITE_IS_WRITEABLE,
+			'prompt_to_edit': prompt_to_edit,
 
 			'initial_screenshot': initial_screenshot,
 

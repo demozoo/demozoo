@@ -1,7 +1,7 @@
-<div class="editable_chunk credits_panel panel {% if not credits %}hidden{% endif %} {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
+<div class="editable_chunk credits_panel panel {% if not credits %}hidden{% endif %} {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
 	<h3 class="panel__title">Credits</h3>
 
-	{% if site_is_writeable and not user.is_authenticated %}
+	{% if prompt_to_edit and not user.is_authenticated %}
 		{% comment %} Provide an 'edit' button that takes them to the login page.
 			For logged-in users, the 'edit' button will be added via JS
 			(because non-JS users will see the edit controls on the tags anyhow).
@@ -23,7 +23,7 @@
 					{{ credit.description }}{% if not forloop.last %},{% endif %}
 				{% endfor %}
 
-				{% if site_is_writeable and user.is_authenticated %}
+				{% if prompt_to_edit and user.is_authenticated %}
 					<a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="edit_credit">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
 					</a>
@@ -31,7 +31,7 @@
 			</li>
 		{% endfor %}
 	</ul>
-	{% if site_is_writeable and user.is_authenticated %}
+	{% if prompt_to_edit and user.is_authenticated %}
 		<a href="{% url 'production_add_credit' production.id %}" class="action_button icon add add_credit">Add credit</a>
 	{% endif %}
 </div>
