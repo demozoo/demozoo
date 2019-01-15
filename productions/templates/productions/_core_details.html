@@ -3,8 +3,14 @@
 
 
 <div class="production_core_details editable_chunk">
-	{% if show_edit_button or show_back_button %}
+	{% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
 		<ul class="actions">
+			{% if show_lock_button %}
+				<li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_production' production.id %}" title="Lock this production">Unlocked</a></li>
+			{% endif %}
+			{% if show_locked_button %}
+				<li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'production_protected' production.id %}">Protected</a></li>
+			{% endif %}
 			{% if show_edit_button %}
 				<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details">Edit</a></li>
 			{% endif %}

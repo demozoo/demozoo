@@ -113,4 +113,12 @@ a.action_button {
 	&.back {
 		background-image: url('/static/images/icons/back.png');
 	}
+
+	&.locked {
+		background-image: url('/static/images/icons/lock.png');
+	}
+
+	&.unlocked {
+		background-image: url('/static/images/icons/lock_open.png');
+	}
 }
