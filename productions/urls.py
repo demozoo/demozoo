@@ -52,4 +52,6 @@ urlpatterns = [
 	url(r'^productions/(\d+)/delete_blurb/(\d+)/$', production_views.delete_blurb, {}, 'production_delete_blurb'),
 	url(r'^productions/(\d+)/edit_info/$', production_views.edit_info_files, {}, 'production_edit_info_files'),
 	url(r'^productions/(\d+)/info/(\d+)/$', production_views.info_file, {}, 'production_info_file'),
+	url(r'^productions/(\d+)/lock/$', production_views.lock, {}, 'lock_production'),
+	url(r'^productions/(\d+)/protected/$', production_views.protected, {}, 'production_protected'),
 ]

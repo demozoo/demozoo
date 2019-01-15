@@ -912,6 +912,60 @@ def delete(request, production_id):
 			html_title="Deleting %s" % production.title)
 
 
+@writeable_site_required
+@login_required
+def lock(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(production.get_absolute_url())
+
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			Edit.objects.create(action_type='lock_production', focus=production,
+				description=(u"Protected production '%s'" % production.title), user=request.user)
+
+			production.locked = True
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+
+			production.save()
+			messages.success(request, "'%s' locked" % production.title)
+
+		return HttpResponseRedirect(production.get_absolute_url())
+
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('lock_production', args=[production_id]),
+			"Locking down a page is a serious decision and shouldn't be done on a whim - "
+			"remember that we want to keep Demozoo as open as possible. "
+			"Are you absolutely sure you want to lock '%s'?" % production.title,
+			html_title="Locking %s" % production.title)
+
+
+@login_required
+def protected(request, production_id):
+	production = get_object_or_404(Production, id=production_id)
+
+	if request.user.is_staff and request.method == 'POST':
+		if request.POST.get('yes'):
+			Edit.objects.create(action_type='unlock_production', focus=production,
+				description=(u"Unprotected production '%s'" % production.title), user=request.user)
+
+			production.locked = False
+			production.updated_at = datetime.datetime.now()
+			production.has_bonafide_edits = True
+
+			production.save()
+			messages.success(request, "'%s' unlocked" % production.title)
+
+		return HttpResponseRedirect(production.get_absolute_url())
+
+	else:
+		return render(request, 'productions/protected.html', {
+			'production': production,
+		})
+
+
 def render_credits_update(request, production):
 	if request.is_ajax():
 		credits_html = render_to_string('productions/_credits.html', {
