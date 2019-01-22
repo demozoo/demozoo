@@ -76,6 +76,11 @@ def pull_group(pouet_id, releaser_id):
 
 @task(ignore_result=True)
 def automatch_all_groups():
+	# garbage-collect productions / groups that haven't been seen for 30 days (i.e. have been deleted from Pouet)
+	last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+	Production.objects.filter(last_seen_at__lt=last_month).delete()
+	Group.objects.filter(last_seen_at__lt=last_month).delete()
+
 	for releaser_id in ReleaserExternalLink.objects.filter(link_class='PouetGroup').values_list('releaser_id', flat=True):
 		automatch_group.delay(releaser_id)
 
@@ -83,10 +88,3 @@ def automatch_all_groups():
 @task(ignore_result=True)
 def automatch_group(releaser_id):
 	automatch_productions(Releaser.objects.get(id=releaser_id))
-
-
-@task(ignore_result=True)
-def garbage_collect():
-	last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-	Production.objects.filter(last_seen_at__lt=last_month).delete()
-	Group.objects.filter(last_seen_at__lt=last_month).delete()

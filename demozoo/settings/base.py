@@ -215,11 +215,6 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(days=1),
 		"args": ()
 	},
-	"garbage-collect-pouet-data": {
-		"task": "pouet.tasks.garbage_collect",
-		"schedule": timedelta(days=1),
-		"args": ()
-	},
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
