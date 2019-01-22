@@ -83,3 +83,10 @@ def automatch_all_groups():
 @task(ignore_result=True)
 def automatch_group(releaser_id):
 	automatch_productions(Releaser.objects.get(id=releaser_id))
+
+
+@task(ignore_result=True)
+def garbage_collect():
+	last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+	Production.objects.filter(last_seen_at__lt=last_month).delete()
+	Group.objects.filter(last_seen_at__lt=last_month).delete()
