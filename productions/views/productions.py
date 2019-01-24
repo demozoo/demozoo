@@ -974,6 +974,7 @@ def render_credits_update(request, production):
 			'production': production,
 			'credits': production.credits_for_listing(),
 			'editing_credits': True,
+			'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
 		}, request=request)
 		return render_modal_workflow(
 			request, None, 'productions/edit_credit_done.js', {
