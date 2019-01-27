@@ -133,6 +133,7 @@ INSTALLED_APPS = (
 	'forums',
 	'zxdemo',
 	'users',
+	'janeway',
 )
 
 LOGGING = {
