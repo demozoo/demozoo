@@ -599,6 +599,7 @@ class ExternalLink(models.Model):
 class ReleaserExternalLink(ExternalLink):
 	releaser = models.ForeignKey(Releaser, related_name='external_links', on_delete=models.CASCADE)
 	link_types = groklinks.RELEASER_LINK_TYPES
+	source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
 
 	def html_link(self):
 		return self.link.as_html(self.releaser.name)
