@@ -516,35 +516,20 @@ class SceneOrgFile(BaseUrl):
 		urldecoded_regex_match(r'ftp://ftp\.ua\.scene\.org/pub/mirrors/sceneorg(/.*)', re.I),
 	]
 
-	def __unicode__(self):
+	@property
+	def info_url(self):
 		return u"https://files.scene.org/view%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	@property
+	def auto_mirror_url(self):
+		return u"https://files.scene.org/get%s" % urllib.quote(self.param.encode('iso-8859-1'))
+
+	def __unicode__(self):
+		return self.info_url
+
 	html_link_class = "sceneorg"
 	html_link_text = "scene.org"
 	html_title_format = "%s on scene.org"
-
-	@property
-	def mirror_links(self):
-		links = [
-			'<li class="country country_nl"><a href="%s">nl/ftp</a> | <a href="%s">nl/http</a></li>' % (
-				escape(self.nl_url), escape(self.nl_http_url)
-			),
-			'<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
-		]
-		if not self.param.startswith('/mirrors/'):
-			links += [
-				'<li class="country country_no"><a href="%s">no/ftp</a> | <a href="%s">no/http</a></li>' % (
-					escape(self.no_ftp_url), escape(self.no_http_url)
-				),
-				'<li class="country country_pl"><a href="%s">pl/ftp</a> | <a href="%s">pl/http</a></li>' % (
-					escape(self.pl_ftp_url), escape(self.pl_http_url)
-				),
-				'<li class="country country_hu"><a href="%s">hu/ftp</a> | <a href="%s">hu/http</a></li>' % (
-					escape(self.hu_ftp_url), escape(self.hu_http_url)
-				),
-				'<li><a class="country country_ua" href="%s">ua</a></li>' % escape(self.ua_ftp_url),
-			]
-
-		return links
 
 	@property
 	def nl_url(self):
@@ -562,45 +547,11 @@ class SceneOrgFile(BaseUrl):
 	def download_url(self):
 		return self.nl_url
 
-	@property
-	def no_ftp_url(self):
-		return u"ftp://ftp.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def no_http_url(self):
-		return u"http://http.no.scene.org/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def us_http_url(self):
-		return u"http://http.us.scene.org/pub/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def hu_ftp_url(self):
-		return u"ftp://ftp.hu.scene.org/mirrors/scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def hu_http_url(self):
-		return u"http://http.hu.scene.org%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def pl_ftp_url(self):
-		return u"ftp://ftp.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def pl_http_url(self):
-		return u"http://http.pl.scene.org/pub/demos%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
-	@property
-	def ua_ftp_url(self):
-		return u"ftp://ftp.ua.scene.org/pub/mirrors/sceneorg%s" % urllib.quote(self.param.encode('iso-8859-1'))
-
 	def as_download_link(self):
-		mirrors_html = ' '.join(self.mirror_links)
 		return '''
-			<div class="primary"><a href="%s">Download from scene.org</a></div>
-			<div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
+			<div><a href="%s" class="primary">Download (scene.org)</a> - <a href="%s" class="secondary">file info</a></div>
 		''' % (
-			escape(str(self)), mirrors_html
+			escape(self.auto_mirror_url), escape(self.info_url)
 		)
 
 
