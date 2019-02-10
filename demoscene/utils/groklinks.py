@@ -1570,6 +1570,7 @@ ARCHIVED_LINK_TYPES = [
 	'PushnpopProduction', 'PushnpopParty', 'PushnpopGroup', 'PushnpopProfile',
 	'DemosceneTvVideo',
 	'LanyrdEvent',
+	'GooglePlusPage', 'GooglePlusEvent',
 ]
 
 
