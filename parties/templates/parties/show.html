@@ -125,9 +125,9 @@
 			{% endif %}
 
 			{% if party.website %}
-				<li><a href="{{ party.website }}">{{ party.website }}</a></li>
+				<br/><a href="{{ party.website }}">{{ party.website }}</a>
 			{% elif party.party_series.website %}
-				<li><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
+				<br/><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a>
 			{% endif %}
 		</ul>
 	</div>
