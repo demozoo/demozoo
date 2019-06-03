@@ -8,7 +8,7 @@ from janeway.models import Author, Name
 
 
 class Command(BaseCommand):
-	"""Find cross-links between Janeway and Demozoo data"""
+	"""Find author cross-links between Janeway and Demozoo data"""
 	def handle(self, *args, **kwargs):
 		creation_count = 0
 
