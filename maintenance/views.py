@@ -644,13 +644,13 @@ class DuplicateReleaserKestraLinks(StaffOnlyMixin, Report):
 
 		context.update({
 			'releasers': Releaser.objects.raw('''
-				SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
+				SELECT DISTINCT demoscene_releaser.id, demoscene_releaser.name, demoscene_releaser.is_group, demoscene_releaserexternallink.parameter
 				FROM demoscene_releaser
 				INNER JOIN demoscene_releaserexternallink ON (
 					demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
 					AND demoscene_releaserexternallink.link_class = 'KestraBitworldAuthor')
 				INNER JOIN demoscene_releaserexternallink AS other_link ON (
-					demoscene_releaserexternallink.link_class = 'KestraBitworldAuthor'
+					demoscene_releaserexternallink.link_class = other_link.link_class
 					AND demoscene_releaserexternallink.parameter = other_link.parameter
 					AND demoscene_releaserexternallink.id <> other_link.id
 				)
