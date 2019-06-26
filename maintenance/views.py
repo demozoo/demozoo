@@ -634,6 +634,33 @@ class DuplicateExternalLinks(StaffOnlyMixin, Report):
 		return context
 
 
+class DuplicateReleaserKestraLinks(StaffOnlyMixin, Report):
+	title = "Releasers with duplicate Kestra links"
+	template_name = 'maintenance/releaser_report.html'
+	name = 'duplicate_releaser_kestra_links'
+
+	def get_context_data(self, **kwargs):
+		context = super(DuplicateReleaserKestraLinks, self).get_context_data(**kwargs)
+
+		context.update({
+			'releasers': Releaser.objects.raw('''
+				SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
+				FROM demoscene_releaser
+				INNER JOIN demoscene_releaserexternallink ON (
+					demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
+					AND demoscene_releaserexternallink.link_class = 'KestraBitworldAuthor')
+				INNER JOIN demoscene_releaserexternallink AS other_link ON (
+					demoscene_releaserexternallink.link_class = 'KestraBitworldAuthor'
+					AND demoscene_releaserexternallink.parameter = other_link.parameter
+					AND demoscene_releaserexternallink.id <> other_link.id
+				)
+				WHERE demoscene_releaser.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+				ORDER BY demoscene_releaserexternallink.parameter
+			''', [self.exclusion_name]),
+		})
+		return context
+
+
 class MatchingRealNames(StaffOnlyMixin, Report):
 	title = "Sceners with matching real names"
 	template_name = 'maintenance/matching_real_names.html'
@@ -1405,6 +1432,7 @@ reports = [
 			SameNamedProdsBySameReleaser,
 			SameNamedProdsWithoutSpecialChars,
 			DuplicateExternalLinks,
+			DuplicateReleaserKestraLinks,
 			MatchingRealNames,
 			MatchingSurnames,
 			GroupsWithSameNamedMembers,
