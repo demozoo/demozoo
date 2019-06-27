@@ -913,16 +913,17 @@ class YoutubeVideo(BaseUrl):
 		else:
 			return u"https://www.youtube.com/watch?v=%s" % self.param
 
-	def get_embed_data(self):
+	def get_embed_data(self, oembed_only=False):
 		embed_data = {}
 
-		url = str(self)
-		response = urllib2.urlopen(url)
-		response_data = response.read()
-		response.close()
-		soup = BeautifulSoup(response_data)
-		embed_data['video_width'] = int(soup.find('meta', {'property': 'og:video:width'})['content'])
-		embed_data['video_height'] = int(soup.find('meta', {'property': 'og:video:height'})['content'])
+		if not oembed_only:
+			url = str(self)
+			response = urllib2.urlopen(url)
+			response_data = response.read()
+			response.close()
+			soup = BeautifulSoup(response_data)
+			embed_data['video_width'] = int(soup.find('meta', {'property': 'og:video:width'})['content'])
+			embed_data['video_height'] = int(soup.find('meta', {'property': 'og:video:height'})['content'])
 
 		oembed_thumbnail_url = self.get_oembed_url(max_width=400, max_height=300)
 		response = urllib2.urlopen(oembed_thumbnail_url)
