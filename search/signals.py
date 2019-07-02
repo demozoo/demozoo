@@ -29,15 +29,15 @@ def on_m2m_changed(sender, **kwargs):
 
 
 def make_updater(instance):
-	components = instance.index_components()
-	try:
-		admin_components = instance.admin_index_components()
-	except AttributeError:
-		admin_components = None
-
 	pk = instance.pk
 
 	def on_commit():
+		components = instance.index_components()
+		try:
+			admin_components = instance.admin_index_components()
+		except AttributeError:
+			admin_components = None
+
 		search_vectors = []
 		for weight, text in components.items():
 			search_vectors.append(

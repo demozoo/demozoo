@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 import datetime
 
@@ -21,12 +22,16 @@ class CreateGroupForm(forms.ModelForm):
 		self.updated_at = datetime.datetime.now()
 
 	def save(self, commit=True):
-		instance = super(CreateGroupForm, self).save(commit=commit)
 		if commit:
-			primary_nick = instance.primary_nick
-			primary_nick.abbreviation = self.cleaned_data['abbreviation']
-			primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
-			primary_nick.save()
+			with transaction.atomic():
+				instance = super(CreateGroupForm, self).save(commit=True)
+				primary_nick = instance.primary_nick
+				primary_nick.abbreviation = self.cleaned_data['abbreviation']
+				primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
+				primary_nick.save()
+		else:
+			instance = super(CreateGroupForm, self).save(commit=False)
+
 		return instance
 
 	def log_creation(self, user):
@@ -48,11 +53,15 @@ class CreateScenerForm(forms.ModelForm):
 		self.updated_at = datetime.datetime.now()
 
 	def save(self, commit=True):
-		instance = super(CreateScenerForm, self).save(commit=commit)
 		if commit:
-			primary_nick = instance.primary_nick
-			primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
-			primary_nick.save()
+			with transaction.atomic():
+				instance = super(CreateScenerForm, self).save(commit=True)
+				primary_nick = instance.primary_nick
+				primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
+				primary_nick.save()
+		else:
+			instance = super(CreateScenerForm, self).save(commit=False)
+
 		return instance
 
 	def log_creation(self, user):

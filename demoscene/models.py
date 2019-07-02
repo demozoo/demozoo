@@ -8,7 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 
 from unidecode import unidecode
@@ -59,10 +59,11 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 		if self.updated_at is None:
 			self.updated_at = datetime.datetime.now()
 
-		super(Releaser, self).save(*args, **kwargs)  # Call the "real" save() method
+		with transaction.atomic():
+			super(Releaser, self).save(*args, **kwargs)  # Call the "real" save() method
 
-		# ensure that a Nick with matching name exists for this releaser
-		nick, created = Nick.objects.get_or_create(releaser=self, name=self.name)
+			# ensure that a Nick with matching name exists for this releaser
+			nick, created = Nick.objects.get_or_create(releaser=self, name=self.name)
 
 	def __unicode__(self):
 		return self.name
@@ -369,7 +370,7 @@ class Nick(models.Model):
 		if primary_nick == self:
 			raise Exception("attempted to delete a releaser's primary nick through reassign_references_and_delete!")
 
-		from django.db import connection, transaction
+		from django.db import connection
 		with transaction.atomic():
 			cursor = connection.cursor()
 			cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
