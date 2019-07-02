@@ -1,12 +1,11 @@
-import operator
-
-from django.contrib.postgres.search import SearchVector
 from django.db import transaction
 from django.db.models import Value
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
 from taggit.models import Tag
+
+from search.indexing import index
 
 
 @receiver(post_save)
@@ -29,32 +28,7 @@ def on_m2m_changed(sender, **kwargs):
 
 
 def make_updater(instance):
-	pk = instance.pk
-
 	def on_commit():
-		components = instance.index_components()
-		try:
-			admin_components = instance.admin_index_components()
-		except AttributeError:
-			admin_components = None
+		index(instance)
 
-		search_vectors = []
-		for weight, text in components.items():
-			search_vectors.append(
-				SearchVector(Value(text), weight=weight)
-			)
-		if admin_components:
-			admin_search_vectors = []
-			for weight, text in admin_components.items():
-				admin_search_vectors.append(
-					SearchVector(Value(text), weight=weight)
-				)
-			instance.__class__.objects.filter(pk=pk).update(
-				search_document=reduce(operator.add, search_vectors),
-				admin_search_document=reduce(operator.add, admin_search_vectors),
-			)
-		else:
-			instance.__class__.objects.filter(pk=pk).update(
-				search_document=reduce(operator.add, search_vectors)
-			)
 	return on_commit

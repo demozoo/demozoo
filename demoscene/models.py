@@ -204,7 +204,14 @@ class Releaser(models.Model, ModelWithPrefetchSnooping):
 
 	@property
 	def all_names_string(self):
-		all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser=self)]
+		if self.has_prefetched('nicks'):
+			all_names = [
+				nv.name
+				for nick in self.nicks.all()
+				for nv in nick.variants.all()
+			]
+		else:
+			all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser=self)]
 		return ', '.join(all_names)
 
 	@property
