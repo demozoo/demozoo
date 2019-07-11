@@ -1,6 +1,7 @@
 import datetime
 
 from django.shortcuts import get_object_or_404, render
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -62,6 +63,9 @@ def history(request, scener_id):
 def edit_location(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 
+	if not scener.editable_by_user(request.user):
+		raise PermissionDenied
+
 	def success(form):
 		form.log_edit(request.user)
 
@@ -109,6 +113,10 @@ def create(request):
 @login_required
 def add_group(request, scener_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+
+	if not scener.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = ScenerMembershipForm(request.POST)
 		if form.is_valid():
@@ -139,6 +147,10 @@ def add_group(request, scener_id):
 def remove_group(request, scener_id, group_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
+
+	if not scener.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		deletion_type = request.POST.get('deletion_type')
 		if deletion_type == 'ex_member':
@@ -176,6 +188,10 @@ def remove_group(request, scener_id, group_id):
 def edit_membership(request, scener_id, membership_id):
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 	membership = get_object_or_404(Membership, member=scener, id=membership_id)
+
+	if not scener.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = ScenerMembershipForm(request.POST)
 		if form.is_valid():

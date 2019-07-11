@@ -13,6 +13,7 @@ from django.db.models import Q
 
 from unidecode import unidecode
 
+from lib.lockable import Lockable
 from lib.strip_markup import strip_markup
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
@@ -25,7 +26,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(models.Model, ModelWithPrefetchSnooping):
+class Releaser(ModelWithPrefetchSnooping, Lockable):
 	name = models.CharField(max_length=255)
 	is_group = models.BooleanField(db_index=True)
 	notes = models.TextField(blank=True)

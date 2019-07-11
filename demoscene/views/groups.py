@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
 from demoscene.shortcuts import get_page, simple_ajax_confirmation
@@ -76,6 +77,10 @@ def create(request):
 @login_required
 def add_member(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = GroupMembershipForm(request.POST)
 		if form.is_valid():
@@ -105,6 +110,10 @@ def add_member(request, group_id):
 def remove_member(request, group_id, scener_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		deletion_type = request.POST.get('deletion_type')
 		if deletion_type == 'ex_member':
@@ -142,6 +151,10 @@ def remove_member(request, group_id, scener_id):
 def edit_membership(request, group_id, membership_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	membership = get_object_or_404(Membership, group=group, id=membership_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = GroupMembershipForm(request.POST, initial={
 			'scener_nick': membership.member.primary_nick,
@@ -175,6 +188,10 @@ def edit_membership(request, group_id, membership_id):
 @login_required
 def add_subgroup(request, group_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = GroupSubgroupForm(request.POST)
 		if form.is_valid():
@@ -204,6 +221,10 @@ def add_subgroup(request, group_id):
 def remove_subgroup(request, group_id, subgroup_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	subgroup = get_object_or_404(Releaser, is_group=True, id=subgroup_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			group.member_memberships.filter(member=subgroup).delete()
@@ -225,6 +246,10 @@ def remove_subgroup(request, group_id, subgroup_id):
 def edit_subgroup(request, group_id, membership_id):
 	group = get_object_or_404(Releaser, is_group=True, id=group_id)
 	membership = get_object_or_404(Membership, group=group, id=membership_id)
+
+	if not group.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = GroupSubgroupForm(request.POST)
 		if form.is_valid():
