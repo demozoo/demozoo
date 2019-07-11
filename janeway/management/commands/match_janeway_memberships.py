@@ -1,5 +1,3 @@
-import csv
-
 from django.core.management.base import BaseCommand
 
 from demoscene.models import ReleaserExternalLink, Membership as DZMembership, Edit
