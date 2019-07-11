@@ -2,6 +2,7 @@ from __future__ import absolute_import  # ensure that 'from productions.* import
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 
 from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
@@ -19,6 +20,10 @@ from read_only_mode import writeable_site_required
 @login_required
 def add_credit(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		form = ReleaserCreditForm(releaser, request.POST)
 		credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
@@ -61,6 +66,9 @@ def edit_credit(request, releaser_id, nick_id, production_id):
 	nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
 	production = get_object_or_404(Production, id=production_id)
 	credits = Credit.objects.filter(nick=nick, production=production)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.method == 'POST':
 		form = ReleaserCreditForm(releaser, request.POST, initial={
@@ -122,6 +130,10 @@ def delete_credit(request, releaser_id, nick_id, production_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
 	production = get_object_or_404(Production, id=production_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		if request.POST.get('yes'):
 			credits = Credit.objects.filter(nick=nick, production=production)
@@ -162,6 +174,10 @@ def edit_notes(request, releaser_id):
 def edit_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	primary_nick = releaser.primary_nick
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if releaser.is_group:
 		nick_form_class = GroupNickForm
 	else:
@@ -192,6 +208,10 @@ def edit_nick(request, releaser_id, nick_id):
 @login_required
 def add_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if releaser.is_group:
 		nick_form_class = GroupNickForm
 	else:
@@ -223,6 +243,10 @@ def add_nick(request, releaser_id):
 @login_required
 def edit_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	return render(request, 'releasers/confirm_edit_nick.html', {
 		'releaser': releaser,
 	})
@@ -232,6 +256,10 @@ def edit_primary_nick(request, releaser_id):
 @login_required
 def change_primary_nick(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if request.method == 'POST':
 		nick = get_object_or_404(Nick, releaser=releaser, id=request.POST['nick_id'])
 		releaser.name = nick.name
@@ -247,6 +275,10 @@ def change_primary_nick(request, releaser_id):
 def delete_nick(request, releaser_id, nick_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
 	nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
+
 	if nick.is_primary_nick():  # not allowed to delete primary nick
 		return HttpResponseRedirect(releaser.get_absolute_edit_url())
 
@@ -311,6 +343,9 @@ def delete(request, releaser_id):
 @login_required
 def edit_external_links(request, releaser_id):
 	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if not releaser.editable_by_user(request.user):
+		raise PermissionDenied
 
 	if request.method == 'POST':
 		formset = ReleaserExternalLinkFormSet(request.POST, instance=releaser)
