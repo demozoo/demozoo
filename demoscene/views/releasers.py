@@ -360,3 +360,55 @@ def edit_external_links(request, releaser_id):
 		'releaser': releaser,
 		'formset': formset,
 	})
+
+
+@writeable_site_required
+@login_required
+def lock(request, releaser_id):
+	releaser = get_object_or_404(Releaser, id=releaser_id)
+	if not request.user.is_staff:
+		return HttpResponseRedirect(releaser.get_absolute_url())
+
+	if request.method == 'POST':
+		if request.POST.get('yes'):
+			Edit.objects.create(action_type='lock_releaser', focus=releaser,
+				description=(u"Protected releaser '%s'" % releaser.name), user=request.user)
+
+			releaser.locked = True
+			releaser.updated_at = datetime.datetime.now()
+
+			releaser.save()
+			messages.success(request, "'%s' locked" % releaser.name)
+
+		return HttpResponseRedirect(releaser.get_absolute_url())
+
+	else:
+		return simple_ajax_confirmation(request,
+			reverse('lock_releaser', args=[releaser_id]),
+			"Locking down a page is a serious decision and shouldn't be done on a whim - "
+			"remember that we want to keep Demozoo as open as possible. "
+			"Are you absolutely sure you want to lock '%s'?" % releaser.name,
+			html_title="Locking %s" % releaser.name)
+
+
+@login_required
+def protected(request, releaser_id):
+	releaser = get_object_or_404(Releaser, id=releaser_id)
+
+	if request.user.is_staff and request.method == 'POST':
+		if request.POST.get('yes'):
+			Edit.objects.create(action_type='unlock_releaser', focus=releaser,
+				description=(u"Unprotected releaser '%s'" % releaser.name), user=request.user)
+
+			releaser.locked = False
+			releaser.updated_at = datetime.datetime.now()
+
+			releaser.save()
+			messages.success(request, "'%s' unlocked" % releaser.name)
+
+		return HttpResponseRedirect(releaser.get_absolute_url())
+
+	else:
+		return render(request, 'releasers/protected.html', {
+			'releaser': releaser,
+		})

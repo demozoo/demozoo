@@ -72,6 +72,8 @@ urlpatterns += [
 	url(r'^releasers/(\d+)/delete_nick/(\d+)/$', demoscene_views.releasers.delete_nick, {}, 'releaser_delete_nick'),
 	url(r'^releasers/(\d+)/delete/$', demoscene_views.releasers.delete, {}, 'delete_releaser'),
 	url(r'^releasers/(\d+)/edit_external_links/$', demoscene_views.releasers.edit_external_links, {}, 'releaser_edit_external_links'),
+	url(r'^releasers/(\d+)/lock/$', demoscene_views.releasers.lock, {}, 'lock_releaser'),
+	url(r'^releasers/(\d+)/protected/$', demoscene_views.releasers.protected, {}, 'releaser_protected'),
 
 	url(r'^nicks/match/$', demoscene_views.nicks.match, {}),
 	url(r'^nicks/byline_match/$', demoscene_views.nicks.byline_match, {}),

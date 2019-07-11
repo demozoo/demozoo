@@ -18,11 +18,19 @@
 	<div class="editable_chunk">
 		<div class="signpost">Scener</div>
 
-		{% if site_is_writeable %}
+		{% if prompt_to_edit or show_lock_button or show_locked_button %}
 			<ul class="actions">
-				<li>
-					<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name">Edit</a>
-				</li>
+				{% if show_lock_button %}
+					<li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_releaser' scener.id %}" title="Lock this scener">Unlocked</a></li>
+				{% endif %}
+				{% if show_locked_button %}
+					<li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' scener.id %}">Protected</a></li>
+				{% endif %}
+				{% if prompt_to_edit %}
+					<li>
+						<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name">Edit</a>
+					</li>
+				{% endif %}
 			</ul>
 		{% endif %}
 
@@ -38,10 +46,10 @@
 
 	{% with scener.alternative_nicks as alternative_nicks %}
 		{% if alternative_nicks %}
-			<div class="panel alternative_nicks_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+			<div class="panel alternative_nicks_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
 				<h3 class="panel__title">Also known as</h3>
 
-				{% if site_is_writeable and not user.is_authenticated %}
+				{% if prompt_to_edit and not user.is_authenticated %}
 					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 					<ul class="actions">
 						<li>
@@ -54,7 +62,7 @@
 					{% for nick in alternative_nicks %}
 						<li>
 							<b>{{ nick.name }}</b> {% nick_variants nick %}
-							{% if site_is_writeable and user.is_authenticated %}
+							{% if prompt_to_edit and user.is_authenticated %}
 								<a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox edit_nick">
 									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
 								</a>
@@ -62,7 +70,7 @@
 						</li>
 					{% endfor %}
 				</ul>
-				{% if site_is_writeable and user.is_authenticated %}
+				{% if prompt_to_edit and user.is_authenticated %}
 					<a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
 				{% endif %}
 			</div>
@@ -105,7 +113,7 @@
 					<img src="/static/images/icons/flags/{{ scener.country_code|lower }}.png" alt="" />
 				{% endif %}
 			{% endif %}
-			{% if site_is_writeable %}
+			{% if prompt_to_edit %}
 				<a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
 				</a>
@@ -117,7 +125,7 @@
 	<div class="editable_chunk panel external_links_panel">
 		<h3 class="panel__title">External links</h3>
 
-		{% if site_is_writeable %}
+		{% if prompt_to_edit %}
 			<ul class="actions">
 				<li>
 					<a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
@@ -145,10 +153,10 @@
 	{% endif %}
 
 	<div id="side_column">
-		<div class="panel groups_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
+		<div class="panel groups_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
 			<h3 class="panel__title">Member of</h3>
 
-			{% if site_is_writeable and not user.is_authenticated %}
+			{% if prompt_to_edit and not user.is_authenticated %}
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 				<ul class="actions">
 					<li>
@@ -161,7 +169,7 @@
 				{% for membership in memberships %}
 					<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
 						<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
-						{% if site_is_writeable and user.is_authenticated %}
+						{% if prompt_to_edit and user.is_authenticated %}
 							<a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="open_in_lightbox edit_membership">
 								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
 							</a>
@@ -169,7 +177,7 @@
 					</li>
 				{% endfor %}
 			</ul>
-			{% if site_is_writeable and user.is_authenticated %}
+			{% if prompt_to_edit and user.is_authenticated %}
 				<a href="{% url 'scener_add_group' scener.id %}" class="action_button icon add open_in_lightbox add_group">Add group</a>
 			{% endif %}
 		</div>
@@ -178,7 +186,7 @@
 	<div id="main_column">
 		<div class="panel editable_chunk">
 			<h3 class="panel__title productions_header">Productions</h3>
-			{% if site_is_writeable %}
+			{% if prompt_to_edit %}
 				<ul class="actions">
 					<li>
 						<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="action_button icon add open_in_lightbox edit_chunk">Add production</a>

@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -46,7 +47,10 @@ def show(request, scener_id, edit_mode=False):
 		'external_links': external_links,
 		'editing_groups': (request.GET.get('editing') == 'groups'),
 		'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
-		'user_has_real_name_access': user_has_real_name_access
+		'user_has_real_name_access': user_has_real_name_access,
+		'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked),
+		'show_locked_button': request.user.is_authenticated and scener.locked,
+		'show_lock_button': request.user.is_staff and settings.SITE_IS_WRITEABLE and not scener.locked,
 	})
 
 
