@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
@@ -42,6 +43,9 @@ def show(request, group_id):
 		'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
 		'member_productions': group.member_productions().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', 'release_date_precision', '-sortable_title'),
 		'external_links': external_links,
+		'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not group.locked),
+		'show_locked_button': request.user.is_authenticated and group.locked,
+		'show_lock_button': request.user.is_staff and settings.SITE_IS_WRITEABLE and not group.locked,
 	})
 
 
