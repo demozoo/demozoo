@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from demoscene.models import Releaser, ReleaserExternalLink, Membership as DZMembership
-from demoscene.utils.text import generate_search_title
-from janeway.models import Author, Name
+from demoscene.models import ReleaserExternalLink, Membership as DZMembership
+from janeway import matching
+from janeway.models import Author
 
 
 class Command(BaseCommand):
@@ -14,23 +14,16 @@ class Command(BaseCommand):
 			if (index % 100 == 0):
 				print("processed %d groups" % index)
 
-			# find releasers in the Demozoo data that match any of this author's names (excluding abbreviations)
-			# and are groups
-			candidate_releaser_ids = list(Releaser.objects.filter(
-				is_group=True,
-				nicks__variants__search_title__in=[generate_search_title(name.name) for name in author.names.all()]
-			).distinct().values_list('id', flat=True))
-			# print("-> %d name matches found: %r" % (len(candidate_releaser_ids), candidate_releaser_ids))
+			# find groups in the Demozoo data that match any of this group's names
+			candidate_releaser_ids = matching.get_dz_releaser_ids_matching_by_name_and_type(author)
+			# skip ones that already have a cross-link to this scener
+			candidate_releaser_ids = matching.exclude_dz_releasers_with_crosslink(candidate_releaser_ids, author)
 
 			if not candidate_releaser_ids:
 				continue
 
 			# get this group's member memberships
-			member_ids = Author.objects.filter(group_memberships__group=author).values_list('janeway_id', flat=True)
-			member_names = [
-				generate_search_title(name.name)
-				for name in Name.objects.filter(author__group_memberships__group=author)
-			]
+			member_ids = author.get_member_ids()
 
 			member_demozoo_ids = list(ReleaserExternalLink.objects.filter(
 				link_class='KestraBitworldAuthor', parameter__in=[str(id) for id in member_ids]
@@ -40,6 +33,8 @@ class Command(BaseCommand):
 				group_id__in=candidate_releaser_ids,
 				member_id__in=member_demozoo_ids
 			).distinct().values_list('group_id', flat=True))
+
+			member_names = author.get_member_clean_names()
 
 			# see if any candidate releasers have TWO or more matching members by name
 			# (>=2 avoids false positives such as JP/Mayhem:
@@ -58,18 +53,13 @@ class Command(BaseCommand):
 					print("group match: %s (%d) matches %d on %d member names" % (author.name, author.janeway_id, candidate_releaser_id, name_match_count))
 					matching_releaser_ids.add(candidate_releaser_id)
 
-			already_linked_releasers = list(ReleaserExternalLink.objects.filter(
-				link_class='KestraBitworldAuthor', parameter=author.janeway_id
-			).values_list('releaser_id', flat=True))
-
 			for releaser_id in matching_releaser_ids:
-				if releaser_id not in already_linked_releasers:
-					ReleaserExternalLink.objects.create(
-						releaser_id=releaser_id,
-						link_class='KestraBitworldAuthor',
-						parameter=author.janeway_id,
-						source='janeway-automatch',
-					)
-					creation_count += 1
+				ReleaserExternalLink.objects.create(
+					releaser_id=releaser_id,
+					link_class='KestraBitworldAuthor',
+					parameter=author.janeway_id,
+					source='janeway-automatch',
+				)
+				creation_count += 1
 
 		print("%d cross-links created" % creation_count)

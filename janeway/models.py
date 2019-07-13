@@ -1,4 +1,5 @@
 from django.db import models
+from demoscene.utils.text import generate_search_title
 
 
 class Author(models.Model):
@@ -10,6 +11,38 @@ class Author(models.Model):
 
 	def __str__(self):
 		return self.name
+
+	def get_member_ids(self):
+		return Author.objects.filter(group_memberships__group=self).values_list('janeway_id', flat=True)
+
+	def get_member_clean_names(self):
+		"""
+		return a list of cleaned versions of all names used by members of this group
+		(excluding ones of <=3 letters)
+		"""
+		return list(
+			filter(lambda s: len(s) > 3, [
+				generate_search_title(name.name)
+				for name in Name.objects.filter(author__group_memberships__group=self)
+			])
+		)
+
+	def get_group_ids(self):
+		return Author.objects.filter(
+			is_group=True, member_memberships__member=self
+		).values_list('janeway_id', flat=True)
+
+	def get_group_clean_names(self):
+		"""
+		return a list of cleaned versions of all names of groups this scener is a member of
+		(excluding ones of <=3 letters)
+		"""
+		return list(
+			filter(lambda s: len(s) > 3, [
+				generate_search_title(name.name)
+				for name in Name.objects.filter(author__is_group=True, author__member_memberships__member=self)
+			])
+		)
 
 
 class Name(models.Model):
