@@ -79,12 +79,12 @@ def get_production_match_data(releaser):
 	]
 
 	unmatched_demozoo_prods = [
-		(prod.id, prod.title, prod.get_absolute_url()) for prod in dz_prod_candidates
+		(prod.id, prod.title, prod.get_absolute_url(), prod.supertype) for prod in dz_prod_candidates
 		if prod.id not in matched_dz_ids
 	]
 
 	unmatched_janeway_releases = [
-		(prod.janeway_id, prod.title, "http://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id) for prod in janeway_release_candidates
+		(prod.janeway_id, prod.title, "http://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id, prod.supertype) for prod in janeway_release_candidates
 		if prod.janeway_id not in matched_janeway_ids
 	]
 
@@ -100,15 +100,15 @@ def automatch_productions(releaser):
 
 	# mapping of lowercased prod title to a pair of lists of demozoo IDs and pouet IDs of
 	# prods with that name
-	prods_by_name = defaultdict(lambda: ([], []))
+	prods_by_name_and_supertype = defaultdict(lambda: ([], []))
 
-	for id, title, url in unmatched_demozoo_prods:
-		prods_by_name[title.lower()][0].append(id)
+	for id, title, url, supertype in unmatched_demozoo_prods:
+		prods_by_name_and_supertype[(title.lower(), supertype)][0].append(id)
 
-	for id, title, url in unmatched_janeway_prods:
-		prods_by_name[title.lower()][1].append(id)
+	for id, title, url, supertype in unmatched_janeway_prods:
+		prods_by_name_and_supertype[(title.lower(), supertype)][1].append(id)
 
-	for title, (demozoo_ids, janeway_ids) in prods_by_name.items():
+	for (title, supertype), (demozoo_ids, janeway_ids) in prods_by_name_and_supertype.items():
 		if len(demozoo_ids) == 1 and len(janeway_ids) == 1:
 			ProductionLink.objects.create(
 				production_id=demozoo_ids[0],
