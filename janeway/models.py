@@ -3,7 +3,7 @@ from demoscene.utils.text import generate_search_title
 
 
 class Author(models.Model):
-	janeway_id = models.IntegerField()
+	janeway_id = models.IntegerField(unique=True, db_index=True)
 	name = models.CharField(max_length=255)
 	real_name = models.CharField(blank=True, max_length=255)
 	real_name_hidden = models.BooleanField(default=False)
@@ -47,7 +47,7 @@ class Author(models.Model):
 
 class Name(models.Model):
 	author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='names')
-	janeway_id = models.IntegerField()
+	janeway_id = models.IntegerField(unique=True, db_index=True)
 	name = models.CharField(max_length=255)
 	abbreviation = models.CharField(max_length=255, blank=True)
 
@@ -68,7 +68,7 @@ SUPERTYPE_CHOICES = (
 
 
 class Release(models.Model):
-	janeway_id = models.IntegerField()
+	janeway_id = models.IntegerField(unique=True, db_index=True)
 	title = models.CharField(max_length=255)
 	supertype = models.CharField(max_length=20, choices=SUPERTYPE_CHOICES)
 	author_names = models.ManyToManyField(Name, related_name='authored_releases')
@@ -80,7 +80,7 @@ class ReleaseType(models.Model):
 
 
 class Credit(models.Model):
-	janeway_id = models.IntegerField()
+	janeway_id = models.IntegerField(unique=True, db_index=True)
 	release = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='credits')
 	name = models.ForeignKey(Name, on_delete=models.CASCADE, related_name='credits')
 	category = models.CharField(max_length=50)
