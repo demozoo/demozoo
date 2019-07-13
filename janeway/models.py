@@ -85,3 +85,10 @@ class Credit(models.Model):
 	name = models.ForeignKey(Name, on_delete=models.CASCADE, related_name='credits')
 	category = models.CharField(max_length=50)
 	description = models.CharField(max_length=255, blank=True)
+
+
+class AuthorMatchInfo(models.Model):
+	releaser = models.OneToOneField('demoscene.Releaser', on_delete=models.CASCADE)
+	matched_production_count = models.IntegerField()
+	unmatched_demozoo_production_count = models.IntegerField()
+	unmatched_janeway_production_count = models.IntegerField()

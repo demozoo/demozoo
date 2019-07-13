@@ -4,7 +4,7 @@ from django.db.models import Q
 
 from demoscene.models import Releaser, ReleaserExternalLink
 from demoscene.utils.text import generate_search_title
-from janeway.models import Release as JanewayRelease
+from janeway.models import AuthorMatchInfo, Release as JanewayRelease
 from platforms.models import Platform
 from productions.models import Production, ProductionLink
 
@@ -120,3 +120,11 @@ def automatch_productions(releaser):
 			matched_production_count += 1
 			unmatched_demozoo_production_count -= 1
 			unmatched_janeway_production_count -= 1
+
+	AuthorMatchInfo.objects.update_or_create(
+		releaser_id=releaser.id, defaults={
+			'matched_production_count': matched_production_count,
+			'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
+			'unmatched_janeway_production_count': unmatched_janeway_production_count,
+		}
+	)
