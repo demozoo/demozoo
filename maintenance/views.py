@@ -1399,6 +1399,7 @@ reports = [
 			ProdsWithBlurbs,
 			TinyIntrosWithoutDownloadLinks,
 			ExternalReport('pouet_groups', "Pouet link matching"),
+			ExternalReport('janeway_authors', "Janeway link matching"),
 		]
 	),
 	(

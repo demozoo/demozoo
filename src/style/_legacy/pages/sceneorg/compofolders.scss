@@ -96,6 +96,11 @@
     @include red_button();
   }
 
+  svg.icon {
+    @include size(16px);
+    padding: 0;
+  }
+
   button.unlink {
     width: 24px;
     background-image: url(/static/images/icons/cross.png);
@@ -125,6 +130,14 @@
 	}
 	a.pouet-info {
 		background-image: url(/static/images/icons/external_sites/pouet.png);
+		background-position: top;
+		background-repeat: no-repeat;
+		display: inline-block;
+		text-indent: -5000px;
+		width: 24px;
+	}
+	a.janeway-info {
+		background-image: url(/static/images/icons/external_sites/kestra_bitworld.png);
 		background-position: top;
 		background-repeat: no-repeat;
 		display: inline-block;

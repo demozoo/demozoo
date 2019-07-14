@@ -90,6 +90,7 @@ urlpatterns += [
 	url(r'^pages/', include('pages.urls')),
 	url(r'^sceneorg/', include('sceneorg.urls')),
 	url(r'^pouet/', include('pouet.urls')),
+	url(r'^janeway/', include('janeway.urls')),
 	url(r'^forums/', include('forums.urls')),
 	url(r'^api/', include('api.urls')),
 	url(r'^users/', include('users.urls')),
