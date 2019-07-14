@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load compress demoscene_tags %}
+
+
+{% block extra_js %}
+	{% if site_is_writeable %}
+		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+		{% compress js %}<script src="/static/janeway/js/match.js"></script>{% endcompress %}
+	{% endif %}
+{% endblock %}
+
+{% block base_main %}
+<section class="sceneorg">
+	<h2>Janeway release matching: {{ releaser.name }}</h2>
+
+	<h3>Unmatched:</h3>
+
+	<ul class="unmatched_left unmatched_demozoo_prods">
+		<li>Demozoo prods:</li>
+		{% for id, title, url, supertype in unmatched_demozoo_prods %}
+			<li>
+				<button class="matchable demozoo_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button>
+			</li>
+		{% endfor %}
+	</ul>
+
+	<ul class="unmatched_right unmatched_janeway_prods">
+		<li>Janeway prods:</li>
+		{% for id, title, url, supertype in unmatched_janeway_prods %}
+			<li><button class="matchable janeway_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button></li>
+		{% endfor %}
+	</ul>
+
+	<h3>Matched:</h3>
+	<ul class="matches">
+		{% for dz_id, dz_title, dz_url, janeway_id, janeway_title, janeway_url, supertype in matched_prods %}
+			<li>
+				<button class="matchable demozoo_prod matched" value="{{ dz_id }}" data-info-url="{{ dz_url }}">{% icon supertype %} {{ dz_title }}</button>
+				=
+				<button class="matchable janeway_prod matched" value="{{ janeway_id }}" data-info-url="{{ janeway_url }}">{% icon supertype %} {{ janeway_title }}</button>
+				<button class="unlink" title="Delete this match">unlink</button>
+			</li>
+		{% endfor %}
+	</ul>
+</section>
+{% endblock %}

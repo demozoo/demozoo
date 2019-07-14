@@ -2,10 +2,6 @@
 {% load compress %}
 
 
-{% block extra_css %}
-	{% compress css %}<link rel="stylesheet" href="/static/sceneorg/css/compofolders.less" type="text/less" />{% endcompress %}
-{% endblock %}
-
 {% block extra_js %}
 	{% if site_is_writeable %}
 		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}

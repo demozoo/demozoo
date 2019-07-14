@@ -74,6 +74,7 @@ def get_production_match_data(releaser):
 			link.parameter,  # janeway ID
 			matched_janeway_release_names_by_id.get(int(link.parameter), "(Janeway release #%s)" % link.parameter),  # Janeway title with fallback
 			"http://janeway.exotica.org.uk/release.php?id=%s" % link.parameter,
+			link.production.supertype,
 		)
 		for link in matched_links
 	]
