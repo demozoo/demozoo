@@ -216,6 +216,11 @@ CELERYBEAT_SCHEDULE = {
 		"schedule": timedelta(days=1),
 		"args": ()
 	},
+	"automatch-janeway-authors": {
+		"task": "janeway.tasks.automatch_all_authors",
+		"schedule": timedelta(days=1),
+		"args": ()
+	}
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')
