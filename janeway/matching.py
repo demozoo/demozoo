@@ -6,7 +6,7 @@ from demoscene.models import Releaser, ReleaserExternalLink
 from demoscene.utils.text import generate_search_title
 from janeway.models import AuthorMatchInfo, Release as JanewayRelease
 from platforms.models import Platform
-from productions.models import Production, ProductionLink
+from productions.models import Production, ProductionLink, ProductionType
 
 
 def get_dz_releaser_ids_matching_by_name_and_type(janeway_author):
@@ -36,15 +36,20 @@ def exclude_dz_releasers_with_crosslink(releaser_ids, janeway_author):
 
 def get_production_match_data(releaser):
 	amiga_platform_ids = list(Platform.objects.filter(name__startswith='Amiga').values_list('id', flat=True))
+	tracked_music_prodtype = ProductionType.objects.get(internal_name='tracked-music')
 
 	releaser_janeway_ids = [
 		int(param)
 		for param in releaser.external_links.filter(link_class='KestraBitworldAuthor').values_list('parameter', flat=True)
 	]
 
+	q_match_by_author = (Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser))
+	q_match_amiga_platform = Q(platforms__in=amiga_platform_ids)
+	q_match_platformless_tracked_music = Q(platforms__isnull=True, types=tracked_music_prodtype)
+
 	dz_prod_candidates = list(Production.objects.filter(
-		(Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser)) &
-		Q(platforms__in=amiga_platform_ids)
+		q_match_by_author &
+		(q_match_amiga_platform | q_match_platformless_tracked_music)
 	).distinct().only('id', 'title', 'supertype'))
 
 	janeway_release_candidates = list(
