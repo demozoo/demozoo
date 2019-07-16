@@ -13,6 +13,8 @@ from read_only_mode import writeable_site_required
 
 from demoscene.models import Nick, Releaser, Membership, ReleaserExternalLink
 from comments.models import Comment
+from janeway.importing import import_author as import_janeway_author
+from janeway.models import Author as JanewayAuthor, Credit as JanewayCredit, Release as JanewayRelease
 from parties.models import Competition, PartyExternalLink, Party, ResultsFile
 from productions.models import Production, Credit, ProductionLink, ProductionBlurb, ProductionType
 from sceneorg.models import Directory
@@ -1373,6 +1375,72 @@ class TinyIntrosWithoutDownloadLinks(Report):
 		return context
 
 
+class UniqueAuthorNameMatchesOnJaneway(StaffOnlyMixin, Report):
+	title = "Unique author name matches on Janeway"
+	template_name = 'maintenance/janeway_unique_author_name_matches.html'
+	name = 'janeway_unique_author_name_matches'
+
+	def get_context_data(self, **kwargs):
+		context = super(UniqueAuthorNameMatchesOnJaneway, self).get_context_data(**kwargs)
+		context['matches'] = Releaser.objects.raw('''
+			SELECT unique_janeway_names.name, janeway_id, min(demoscene_nick.releaser_id) AS id
+			FROM (
+			SELECT lower(janeway_name.name) as name, min(janeway_author.janeway_id) as janeway_id
+			FROM janeway_name
+			INNER JOIN janeway_author on (author_id = janeway_author.id)
+			WHERE length(janeway_name.name) > 3
+			GROUP BY lower(janeway_name.name)
+			HAVING count(distinct janeway_name.author_id) = 1
+			) AS unique_janeway_names
+			INNER JOIN demoscene_nickvariant on (lower(unique_janeway_names.name) = lower(demoscene_nickvariant.name))
+			INNER JOIN demoscene_nick on (demoscene_nickvariant.nick_id = demoscene_nick.id)
+			WHERE janeway_id NOT IN (select cast(parameter as int) from demoscene_releaserexternallink where link_class='KestraBitworldAuthor')
+			GROUP BY unique_janeway_names.name, janeway_id
+			HAVING count(distinct demoscene_nick.releaser_id) = 1
+		''')
+		return context
+
+
+@writeable_site_required
+def janeway_authors_same(request, demozoo_id, janeway_id):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	if request.POST:
+		ReleaserExternalLink.objects.get_or_create(
+			link_class='KestraBitworldAuthor', parameter=janeway_id, releaser_id=demozoo_id,
+			defaults={'source': 'match'}
+		)
+	return HttpResponse('OK', content_type='text/plain')
+
+
+def janeway_authors_different(request, demozoo_id, janeway_id):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	if request.POST:
+		author = JanewayAuthor.objects.get(janeway_id=janeway_id)
+		import_janeway_author(author)
+
+	return HttpResponse('OK', content_type='text/plain')
+
+
+def janeway_authors_detail(request, demozoo_id, janeway_id):
+	if not request.user.is_staff:
+		return redirect('home')
+
+	demozoo_releaser = get_object_or_404(Releaser, id=demozoo_id)
+	janeway_author = get_object_or_404(JanewayAuthor, janeway_id=janeway_id)
+	return render(request, 'maintenance/janeway_authors_detail.html', {
+		'demozoo_releaser': demozoo_releaser,
+		'demozoo_releases': Production.objects.filter(author_nicks__releaser=demozoo_releaser)[:10],
+		'demozoo_credits': Credit.objects.filter(nick__releaser=demozoo_releaser).select_related('production')[:10],
+		'janeway_author': janeway_author,
+		'janeway_releases': JanewayRelease.objects.filter(author_names__author=janeway_author)[:10],
+		'janeway_credits': JanewayCredit.objects.filter(name__author=janeway_author).select_related('release')[:10],
+	})
+
+
 class ExternalReport(object):
 	# placeholder for an item in the reports menu that doesn't live here
 	def __init__(self, url_name, title):
@@ -1400,6 +1468,7 @@ reports = [
 			TinyIntrosWithoutDownloadLinks,
 			ExternalReport('pouet_groups', "Pouet link matching"),
 			ExternalReport('janeway_authors', "Janeway link matching"),
+			UniqueAuthorNameMatchesOnJaneway,
 		]
 	),
 	(

@@ -13,6 +13,10 @@ urlpatterns = [
 	url(r'^exclude$', views.exclude, name='exclude'),
 	url(r'^archive_member/(\d+)/$', views.view_archive_member, name='view_archive_member'),
 	url(r'^resolve_screenshot/(\d+)/(\d+)/$', views.resolve_screenshot, name='resolve_screenshot'),
+
+	url(r'^janeway_unique_author_name_matches/same/(\d+)/(\d+)/$', views.janeway_authors_same, name='janeway_authors_same'),
+	url(r'^janeway_unique_author_name_matches/different/(\d+)/(\d+)/$', views.janeway_authors_different, name='janeway_authors_different'),
+	url(r'^janeway_unique_author_name_matches/detail/(\d+)/(\d+)/$', views.janeway_authors_detail, name='janeway_authors_detail'),
 ]
 
 for section_title, reports in views.reports:
