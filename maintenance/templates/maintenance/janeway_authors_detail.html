@@ -52,6 +52,11 @@
 		{% else %}
 			<img src="/static/images/icons/scener.png" alt="Scener" />
 		{% endif %}
+
+		{% if janeway_author.country_code %}
+			<img src="/static/images/icons/flags/{{ janeway_author.country_code|lower }}.png" alt="from {{ janeway_author.country_code }}" />
+		{% endif %}
+
 		{{ janeway_author.name }}
 		{% with memberships=janeway_author.group_memberships.all %}
 			{% if memberships %}

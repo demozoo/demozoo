@@ -8,6 +8,8 @@ class Author(models.Model):
 	real_name = models.CharField(blank=True, max_length=255)
 	real_name_hidden = models.BooleanField(default=False)
 	is_group = models.BooleanField()
+	country_code = models.CharField(max_length=5, blank=True)
+	is_company = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.name
