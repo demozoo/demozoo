@@ -1436,8 +1436,8 @@ def janeway_authors_detail(request, demozoo_id, janeway_id):
 		'demozoo_releases': Production.objects.filter(author_nicks__releaser=demozoo_releaser)[:10],
 		'demozoo_credits': Credit.objects.filter(nick__releaser=demozoo_releaser).select_related('production')[:10],
 		'janeway_author': janeway_author,
-		'janeway_releases': JanewayRelease.objects.filter(author_names__author=janeway_author)[:10],
-		'janeway_credits': JanewayCredit.objects.filter(name__author=janeway_author).select_related('release')[:10],
+		'janeway_releases': JanewayRelease.objects.filter(author_names__author=janeway_author).order_by('title')[:10],
+		'janeway_credits': JanewayCredit.objects.filter(name__author=janeway_author).select_related('release').order_by('release__title')[:10],
 	})
 
 
