@@ -82,11 +82,28 @@ class ReleaseType(models.Model):
 
 
 class Credit(models.Model):
-	janeway_id = models.IntegerField(unique=True, db_index=True)
+	janeway_id = models.IntegerField(db_index=True)
 	release = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='credits')
 	name = models.ForeignKey(Name, on_delete=models.CASCADE, related_name='credits')
 	category = models.CharField(max_length=50)
 	description = models.CharField(max_length=255, blank=True)
+
+
+class DownloadLink(models.Model):
+	janeway_id = models.IntegerField(unique=True, db_index=True)
+	release = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='download_links')
+	url = models.URLField(max_length=255)
+	comment = models.TextField(blank=True)
+
+
+class PackContent(models.Model):
+	pack = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='pack_contents')
+	content = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='packed_in')
+
+
+class SoundtrackLink(models.Model):
+	release = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='soundtrack_links')
+	soundtrack = models.ForeignKey(Release, on_delete=models.CASCADE, related_name='appearances_as_soundtrack')
 
 
 class AuthorMatchInfo(models.Model):
