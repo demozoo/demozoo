@@ -535,6 +535,7 @@ class SoundtrackLink(models.Model):
 	production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
 	soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
 	position = models.IntegerField()
+	data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
 	def __unicode__(self):
 		return "%s on %s" % (self.soundtrack, self.production)
@@ -547,6 +548,7 @@ class PackMember(models.Model):
 	pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
 	member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)
 	position = models.IntegerField()
+	data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
 	def __unicode__(self):
 		return "%s packed in %s" % (self.member, self.pack)
