@@ -558,7 +558,7 @@ class SceneOrgFile(BaseUrl):
 class AmigascneFile(BaseUrl):
 	canonical_format = "ftp://ftp.amigascne.org/pub/amiga%s"
 	tests = [
-		regex_match(r'(?:http|ftp)://ftp\.amigascne\.org/pub/amiga(/.*)', re.I),
+		regex_match(r'(?:http|ftp)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)', re.I),
 		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub/mirrors/amigascne(/.*)', re.I),
 		regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
@@ -658,7 +658,8 @@ class ModlandFile(BaseUrl):
 		return wrapped_fn
 
 	tests = [
-		regex_match(r'ftp://ftp\.modland\.com(/.*)', re.I),
+		regex_match(r'(?:ftp|http)://(?:ftp\.)?modland\.com(/.*)', re.I),
+		regex_match(r'ftp://modland\.ziphoid\.com(/.*)', re.I),
 		regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
 		regex_match(r'ftp://aero.exotica.org.uk/pub/mirrors/modland(/.*)', re.I),
 		regex_match(r'(?:ftp|http)://modland\.ziphoid\.com(/.*)', re.I),
