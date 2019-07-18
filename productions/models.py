@@ -423,6 +423,7 @@ class Credit(models.Model):
 	nick = models.ForeignKey(Nick, related_name='credits', on_delete=models.CASCADE)
 	category = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
 	role = models.CharField(max_length=255, blank=True)
+	data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
 	@property
 	def description(self):
