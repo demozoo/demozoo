@@ -85,8 +85,8 @@
 	{% endif %}
 	{% if janeway_credits %}
 		<p>Credited on:
-			{% for credit in janeway_credits %}
-				<a href="http://janeway.exotica.org.uk/release.php?id={{ credit.release.janeway_id }}" target="_blank">{{ credit.release.title }}</a> ({{ credit.category }}){% if not forloop.last %},{% endif %}
+			{% for release_id, release_title, category in janeway_credits %}
+				<a href="http://janeway.exotica.org.uk/release.php?id={{ release_id }}" target="_blank">{{ release_title }}</a> ({{ category }}){% if not forloop.last %},{% endif %}
 			{% endfor %}
 		</p>
 	{% endif %}
