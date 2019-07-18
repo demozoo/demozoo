@@ -68,12 +68,19 @@ SUPERTYPE_CHOICES = (
 	('music', 'Music'),
 )
 
+PLATFORM_CHOICES = (
+	('ocs', 'Amiga OCS/ECS'),
+	('aga', 'Amiga AGA'),
+	('ppc', 'Amiga PPC/RTG'),
+)
+
 
 class Release(models.Model):
 	janeway_id = models.IntegerField(unique=True, db_index=True)
 	title = models.CharField(max_length=255)
 	supertype = models.CharField(max_length=20, choices=SUPERTYPE_CHOICES)
 	author_names = models.ManyToManyField(Name, related_name='authored_releases')
+	platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, blank=True)
 
 
 class ReleaseType(models.Model):
