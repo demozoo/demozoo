@@ -109,10 +109,12 @@ def automatch_productions(releaser):
 	prods_by_name_and_supertype = defaultdict(lambda: ([], []))
 
 	for id, title, url, supertype in unmatched_demozoo_prods:
-		prods_by_name_and_supertype[(title.lower(), supertype)][0].append(id)
+		prods_by_name_and_supertype[(generate_search_title(title), supertype)][0].append(id)
 
 	for id, title, url, supertype in unmatched_janeway_prods:
-		prods_by_name_and_supertype[(title.lower(), supertype)][1].append(id)
+		if title.startswith('mod.') and supertype == 'music':
+			title = title[4:]
+		prods_by_name_and_supertype[(generate_search_title(title), supertype)][1].append(id)
 
 	for (title, supertype), (demozoo_ids, janeway_ids) in prods_by_name_and_supertype.items():
 		if len(demozoo_ids) == 1 and len(janeway_ids) == 1:
