@@ -185,7 +185,7 @@ def import_release(release):
 			except (ProductionLink.DoesNotExist, ProductionLink.MultipleObjectsReturned):
 				continue
 
-			next_position = pack_link.production.pack_members.aggregate(pos=Max('position'))['pos'] + 1
+			next_position = (pack_link.production.pack_members.aggregate(pos=Max('position'))['pos'] or 0) + 1
 
 			pack_link.production.pack_members.create(
 				data_source='janeway',
@@ -223,7 +223,7 @@ def import_release(release):
 			except (ProductionLink.DoesNotExist, ProductionLink.MultipleObjectsReturned):
 				continue
 
-			next_position = prod_link.production.soundtrack_links.aggregate(pos=Max('position'))['pos'] + 1
+			next_position = (prod_link.production.soundtrack_links.aggregate(pos=Max('position'))['pos'] or 0) + 1
 
 			prod_link.production.soundtrack_links.create(
 				data_source='janeway',
