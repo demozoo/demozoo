@@ -98,8 +98,12 @@ def get_nick_for_name(name):
 
 def import_release(release):
 	with transaction.atomic():
+		title = release.title
+		if release.supertype == 'music' and title.startswith('mod.'):
+			title = title[4:]
+
 		prod = Production.objects.create(
-			title=release.title,
+			title=title,
 			supertype=release.supertype,
 			data_source='janeway'
 		)
