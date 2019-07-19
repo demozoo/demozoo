@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from demoscene.models import Releaser, ReleaserExternalLink
 from demoscene.utils.text import generate_search_title
+from janeway.importing import import_release
 from janeway.models import AuthorMatchInfo, Release as JanewayRelease
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
@@ -116,6 +117,8 @@ def automatch_productions(releaser):
 			title = title[4:]
 		prods_by_name_and_supertype[(generate_search_title(title), supertype)][1].append(id)
 
+	just_matched_janeway_ids = set()
+
 	for (title, supertype), (demozoo_ids, janeway_ids) in prods_by_name_and_supertype.items():
 		if len(demozoo_ids) == 1 and len(janeway_ids) == 1:
 			ProductionLink.objects.create(
@@ -125,8 +128,19 @@ def automatch_productions(releaser):
 				is_download_link=False,
 				source='janeway-automatch',
 			)
+			just_matched_janeway_ids.add(janeway_ids[0])
 			matched_production_count += 1
 			unmatched_demozoo_production_count -= 1
+			unmatched_janeway_production_count -= 1
+
+	if unmatched_demozoo_production_count == 0:
+		# all matchable prods are accounted for, so let's go on and import the remaining ones from janeway
+		for id, title, url, supertype in unmatched_janeway_prods:
+			if id in just_matched_janeway_ids:
+				continue
+
+			import_release(JanewayRelease.objects.get(janeway_id=id))
+			matched_production_count += 1
 			unmatched_janeway_production_count -= 1
 
 	AuthorMatchInfo.objects.update_or_create(
