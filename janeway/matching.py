@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.db.models import Q
 
 from demoscene.models import Releaser, ReleaserExternalLink
-from demoscene.utils.text import generate_search_title
+from demoscene.utils.text import generate_search_title, strip_music_extensions
 from janeway.importing import import_release
 from janeway.models import AuthorMatchInfo, Release as JanewayRelease
 from platforms.models import Platform
@@ -113,8 +113,8 @@ def automatch_productions(releaser):
 		prods_by_name_and_supertype[(generate_search_title(title), supertype)][0].append(id)
 
 	for id, title, url, supertype in unmatched_janeway_prods:
-		if title.startswith('mod.') and supertype == 'music':
-			title = title[4:]
+		if supertype == 'music':
+			title = strip_music_extensions(title)
 		prods_by_name_and_supertype[(generate_search_title(title), supertype)][1].append(id)
 
 	just_matched_janeway_ids = set()

@@ -39,3 +39,14 @@ def generate_sort_key(s):
 	s = re.sub(r'^(the|a|an)\s+(.*)$', r'\2 \1', s)
 
 	return s
+
+
+def strip_music_extensions(s):
+	original_title = s
+	# strip suffixes
+	s = re.sub(r'\.(mod|gz)$', '', s, flags=re.I)
+	# strip prefixes
+	s = re.sub(r'^(mod|ahx|okt|med|dbm|stm|bp|mkii|tfmx|abk|aon|ay|bp3|bss|digi|dm1|dm2|dmu|dw|emod|fc13|fc14|fp|fred|gmc|hip|hipc|hvl|iff|jam|jcb|ml|mmd0|mmd1|mon|oss|psid|puma|qc|raw|rk|s3m|sa|sfx|sid1|sid2|smus|spl|ss|sun|tme|wav|xm)\.', '', s, flags=re.I)
+
+	# revert to original title if there's nothing left
+	return s if s.strip() else original_title

@@ -4,6 +4,7 @@ from django.db import transaction
 from django.db.models import Max
 
 from demoscene.models import Releaser, ReleaserExternalLink
+from demoscene.utils.text import strip_music_extensions
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
 
@@ -99,8 +100,8 @@ def get_nick_for_name(name):
 def import_release(release):
 	with transaction.atomic():
 		title = release.title
-		if release.supertype == 'music' and title.startswith('mod.'):
-			title = title[4:]
+		if release.supertype == 'music':
+			title = strip_music_extensions(title)
 
 		prod = Production.objects.create(
 			title=title,
