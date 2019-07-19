@@ -25,7 +25,13 @@
 	</ul>
 
 	<ul class="unmatched_right unmatched_janeway_prods">
-		<li>Janeway prods:</li>
+		<li>Janeway prods:
+			<form action="{% url 'janeway_import_all_author_productions' %}" method="POST" style="display: inline">
+				<input type="hidden" name="releaser_id" value="{{ releaser.id }}">
+				{% csrf_token %}
+				<input type="submit" value="Import all">
+			</form>
+		</li>
 		{% for id, title, url, supertype in unmatched_janeway_prods %}
 			<li><button class="matchable janeway_prod unmatched {% if request.user.is_staff %}importable{% endif %}" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button></li>
 		{% endfor %}

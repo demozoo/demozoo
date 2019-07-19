@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render, redirect
 
 from demoscene.models import Edit, Releaser
 from janeway.importing import import_release
@@ -102,3 +102,17 @@ def production_import(request):
 		'janeway_url': "http://janeway.exotica.org.uk/release.php?id=%s" % release.janeway_id,
 		'supertype': production.supertype,
 	})
+
+
+@writeable_site_required
+@login_required
+def import_all_author_productions(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	releaser = get_object_or_404(Releaser, id=request.POST['releaser_id'])
+	unmatched_demozoo_prods, unmatched_janeway_prods, matched_prods = get_production_match_data(releaser)
+
+	for janeway_id, title, url, supertype in unmatched_janeway_prods:
+		import_release(JanewayRelease.objects.get(janeway_id=janeway_id))
+
+	return redirect('janeway_match_author', releaser.id)

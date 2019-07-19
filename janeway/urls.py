@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'^production-link/$', views.production_link, {}, 'janeway_production_link'),
 	url(r'^production-unlink/$', views.production_unlink, {}, 'janeway_production_unlink'),
 	url(r'^production-import/$', views.production_import, {}, 'janeway_production_import'),
+	url(r'^import-all-author-productions/$', views.import_all_author_productions, {}, 'janeway_import_all_author_productions'),
 ]
