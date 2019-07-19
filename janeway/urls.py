@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'^authors/(\d+)/$', views.match_author, {}, 'janeway_match_author'),
 	url(r'^production-link/$', views.production_link, {}, 'janeway_production_link'),
 	url(r'^production-unlink/$', views.production_unlink, {}, 'janeway_production_unlink'),
+	url(r'^production-import/$', views.production_import, {}, 'janeway_production_import'),
 ]

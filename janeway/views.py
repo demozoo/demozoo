@@ -2,12 +2,13 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 from demoscene.models import Edit, Releaser
+from janeway.importing import import_release
 from janeway.matching import get_production_match_data
-from janeway.models import AuthorMatchInfo
+from janeway.models import AuthorMatchInfo, Release as JanewayRelease
 from productions.models import Production, ProductionLink
 from read_only_mode import writeable_site_required
 
@@ -78,3 +79,26 @@ def production_unlink(request):
 		links.delete()
 
 	return HttpResponse("OK", content_type="text/plain")
+
+
+@writeable_site_required
+@login_required
+def production_import(request):
+	if not request.user.is_staff:
+		return redirect('home')
+	release = get_object_or_404(JanewayRelease, janeway_id=request.POST['janeway_id'])
+
+	production = import_release(release)
+
+	Edit.objects.create(action_type='create_production', focus=production,
+		description=(u"Added production '%s' from Janeway import" % production.title), user=request.user)
+
+	return render(request, 'janeway/_matched_production.html', {
+		'dz_id': production.id,
+		'dz_title': production.title,
+		'dz_url': production.get_absolute_url(),
+		'janeway_id': release.janeway_id,
+		'janeway_title': release.title,
+		'janeway_url': "http://janeway.exotica.org.uk/release.php?id=%s" % release.janeway_id,
+		'supertype': production.supertype,
+	})

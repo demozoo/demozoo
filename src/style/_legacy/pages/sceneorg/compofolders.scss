@@ -109,6 +109,14 @@
     background-position: center;
   }
 
+  button.import {
+    width: 24px;
+    background-image: url(/static/images/icons/add.png);
+    text-indent: -5000px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
   button.expand {
     width: 24px;
     background-image: url(/static/images/icons/arrow_down.png);

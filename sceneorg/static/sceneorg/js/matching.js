@@ -103,6 +103,21 @@ function constructMatchingInterface(opts) {
 	$(opts.rightSelector).addRightButtonBehaviour();
 	$('button.unlink').addUnlinkButtonBehaviour();
 
+	function removeLeftButton(leftButton) {
+		$(leftButton).closest('li').fadeOut('fast');
+		buttonCountByLeftValue[leftButton.value] -= 1;
+	}
+	function removeRightButton(rightButton) {
+		$(rightButton).closest('li').fadeOut('fast');
+		buttonCountByRightValue[rightButton.value] -= 1;
+	}
+	function addMatchElement(matchElement) {
+		$('ul.matches').append(matchElement);
+		$(opts.leftSelector, matchElement).addLeftButtonBehaviour();
+		$(opts.rightSelector, matchElement).addRightButtonBehaviour();
+		$('button.unlink', matchElement).addUnlinkButtonBehaviour();
+	}
+
 	function makeLink(leftButton, rightButton) {
 		/* discard attempts to match two buttons that are already linked */
 		var alreadyMatched = $(leftButton).closest('li').get(0) == $(rightButton).closest('li').get(0);
@@ -121,14 +136,12 @@ function constructMatchingInterface(opts) {
 			already in the 'matched' list in which they should remain (because that means the
 			item is now linked to multiple partners) */
 		if ($(leftButton).hasClass('unmatched')) {
-			$(leftButton).closest('li').fadeOut('fast');
-			buttonCountByLeftValue[leftButton.value] -= 1;
+			removeLeftButton(leftButton);
 		} else {
 			$(leftButton).removeClass('selected');
 		}
 		if ($(rightButton).hasClass('unmatched')) {
-			$(rightButton).closest('li').fadeOut('fast');
-			buttonCountByRightValue[rightButton.value] -= 1;
+			removeRightButton(rightButton);
 		} else {
 			$(rightButton).removeClass('selected');
 		}
@@ -141,10 +154,13 @@ function constructMatchingInterface(opts) {
 			var newUnlinkButton = $('<button class="unlink" title="Delete this match">unlink</button>');
 
 			var matchElement = $('<li></li>').append(newLeftButton, ' = ', newRightButton, ' ', newUnlinkButton);
-			$('ul.matches').append(matchElement);
-			newLeftButton.addLeftButtonBehaviour();
-			newRightButton.addRightButtonBehaviour();
-			newUnlinkButton.addUnlinkButtonBehaviour();
+			addMatchElement(matchElement);
 		}
+	}
+
+	return {
+		'removeLeftButton': removeLeftButton,
+		'removeRightButton': removeRightButton,
+		'addMatchElement': addMatchElement
 	}
 }
