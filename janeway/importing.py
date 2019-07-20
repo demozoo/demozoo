@@ -106,7 +106,9 @@ def import_release(release):
 		prod = Production.objects.create(
 			title=title,
 			supertype=release.supertype,
-			data_source='janeway'
+			data_source='janeway',
+			release_date_date=release.release_date_date,
+			release_date_precision=release.release_date_precision,
 		)
 		prod.links.create(
 			link_class='KestraBitworldRelease', parameter=release.janeway_id, is_download_link=False
