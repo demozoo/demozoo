@@ -74,6 +74,12 @@ PLATFORM_CHOICES = (
 	('ppc', 'Amiga PPC/RTG'),
 )
 
+DATE_PRECISION_CHOICES = (
+	('d', 'Day'),
+	('m', 'Month'),
+	('y', 'Year'),
+)
+
 
 class Release(models.Model):
 	janeway_id = models.IntegerField(unique=True, db_index=True)
@@ -81,6 +87,8 @@ class Release(models.Model):
 	supertype = models.CharField(max_length=20, choices=SUPERTYPE_CHOICES)
 	author_names = models.ManyToManyField(Name, related_name='authored_releases')
 	platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, blank=True)
+	release_date_date = models.DateField(null=True, blank=True)
+	release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
 
 
 class ReleaseType(models.Model):
