@@ -111,12 +111,12 @@
 		</div>
 
 		<ul class="attributes">
-			<li>{% date_range party.start_date party.end_date %}</li>
+			<li class="date">{% date_range party.start_date party.end_date %}</li>
 
 			{% if party.is_online %}
-				<li>Online <img src="/static/images/icons/computer.png" alt="" /></li>
+				<li class="location">Online <img src="/static/images/icons/computer.png" alt="" /></li>
 			{% elif party.location %}
-				<li>
+				<li class="location">
 					{{ party.location }}
 					{% if party.country_code %}
 						<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
@@ -125,9 +125,9 @@
 			{% endif %}
 
 			{% if party.website %}
-				<li><a href="{{ party.website }}">{{ party.website }}</a></li>
+				<li class="website"><a href="{{ party.website }}">{{ party.website }}</a></li>
 			{% elif party.party_series.website %}
-				<li><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
+				<li class="website"><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
 			{% endif %}
 		</ul>
 	</div>
