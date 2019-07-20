@@ -6,6 +6,7 @@
 		{% spawningformset download_link_formset %}
 			{% spawningform as dl_form %}
 				{{ dl_form.url }}
+				{{ dl_form.url.errors }}
 				{% for hidden in dl_form.hidden_fields %}
 					{{ hidden }}
 				{% endfor %}

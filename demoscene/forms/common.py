@@ -12,6 +12,15 @@ class ExternalLinkForm(forms.ModelForm):
 		super(ExternalLinkForm, self).__init__(*args, **kwargs)
 		self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url)
 
+	def clean_url(self):
+		data = self.cleaned_data['url']
+		try:
+			str(data)
+		except UnicodeEncodeError:
+			raise ValidationError("URL must be pure ASCII - try copying it from your browser location bar")
+
+		return data
+
 	def save(self, commit=True):
 		instance = super(ExternalLinkForm, self).save(commit=False)
 		instance.url = self.cleaned_data['url']
