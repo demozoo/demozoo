@@ -100,7 +100,7 @@
 							</ul>
 						{% else %}
 							<div class="tell_us_something_title">
-								<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">Tell us something!</a>
+								<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" rel="nofollow">Tell us something!</a>
 							</div>
 						{% endif %}
 					</div>
@@ -123,7 +123,7 @@
 				{% if prompt_to_edit %}
 					<ul class="actions">
 						<li>
-							<a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents">Edit</a>
+							<a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents" rel="nofollow">Edit</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -153,7 +153,7 @@
 				{% if prompt_to_edit %}
 					<ul class="actions">
 						<li>
-							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details">Edit</a>
+							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details" rel="nofollow">Edit</a>
 						</li>
 					</ul>
 				{% endif %}

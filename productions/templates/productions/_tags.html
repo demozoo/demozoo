@@ -8,7 +8,7 @@
 		{% endcomment %}
 		<ul class="actions">
 			<li>
-				<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" title="Edit tags">Edit</a>
+				<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" title="Edit tags" rel="nofollow">Edit</a>
 			</li>
 		</ul>
 	{% endif %}

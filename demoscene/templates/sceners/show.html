@@ -28,7 +28,7 @@
 				{% endif %}
 				{% if prompt_to_edit %}
 					<li>
-						<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name">Edit</a>
+						<a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
 					</li>
 				{% endif %}
 			</ul>
@@ -53,7 +53,7 @@
 					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 					<ul class="actions">
 						<li>
-							<a href="{% url 'log_in' %}?next={{ scener.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+							<a href="{% url 'log_in' %}?next={{ scener.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -94,7 +94,7 @@
 					<em>not set</em>
 				{% endif %}
 				{% if site_is_writeable %}
-					<a href="{% url 'scener_edit_real_name' scener.id %}" class="open_in_lightbox">
+					<a href="{% url 'scener_edit_real_name' scener.id %}" class="open_in_lightbox" rel="nofollow">
 						<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
 					</a>
 				{% endif %}
@@ -114,7 +114,7 @@
 				{% endif %}
 			{% endif %}
 			{% if prompt_to_edit %}
-				<a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox">
+				<a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox" rel="nofollow">
 					<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
 				</a>
 			{% endif %}
@@ -128,7 +128,7 @@
 		{% if prompt_to_edit %}
 			<ul class="actions">
 				<li>
-					<a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+					<a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
 				</li>
 			</ul>
 		{% endif %}
@@ -160,7 +160,7 @@
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 				<ul class="actions">
 					<li>
-						<a href="{% url 'log_in' %}?next={{ scener.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+						<a href="{% url 'log_in' %}?next={{ scener.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
 					</li>
 				</ul>
 			{% endif %}
@@ -189,7 +189,7 @@
 			{% if prompt_to_edit %}
 				<ul class="actions">
 					<li>
-						<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="action_button icon add open_in_lightbox edit_chunk">Add production</a>
+						<a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
 					</li>
 				</ul>
 			{% endif %}

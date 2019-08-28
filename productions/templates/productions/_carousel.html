@@ -20,7 +20,7 @@
 				<p>
 					No screenshot yet!
 					{% if prompt_to_edit %}
-						<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox">Add one</a>
+						<a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox" rel="nofollow">Add one</a>
 					{% endif %}
 				</p>
 			</div>
@@ -36,12 +36,12 @@
 			{% endif %}
 			{% if show_add_screenshot_link %}
 				<li>
-					<a href="{{ production.get_add_screenshot_url }}" class="action_button icon add open_in_lightbox">{{ add_screenshot_label }}</a>
+					<a href="{{ production.get_add_screenshot_url }}" class="action_button icon add open_in_lightbox" rel="nofollow">{{ add_screenshot_label }}</a>
 				</li>
 			{% endif %}
 			{% if show_manage_screenshots_link %}
 				<li>
-					<a href="{{ production.get_edit_screenshots_url }}" class="action_button icon edit">{{ manage_screenshots_label }}</a>
+					<a href="{{ production.get_edit_screenshots_url }}" class="action_button icon edit" rel="nofollow">{{ manage_screenshots_label }}</a>
 				</li>
 			{% endif %}
 		</ul>

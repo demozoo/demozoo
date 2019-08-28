@@ -28,7 +28,7 @@
 				{% endif %}
 				{% if prompt_to_edit %}
 					<li>
-						<a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name">Edit</a>
+						<a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
 					</li>
 				{% endif %}
 			</ul>
@@ -58,7 +58,7 @@
 					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 					<ul class="actions">
 						<li>
-							<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+							<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
 						</li>
 					</ul>
 				{% endif %}
@@ -87,7 +87,7 @@
 		{% if prompt_to_edit %}
 			<ul class="actions">
 				<li>
-					<a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+					<a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
 				</li>
 			</ul>
 		{% endif %}
@@ -133,7 +133,7 @@
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 				<ul class="actions">
 					<li>
-						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
 					</li>
 				</ul>
 			{% endif %}
@@ -163,7 +163,7 @@
 				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
 				<ul class="actions">
 					<li>
-						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk">Edit</a>
+						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
 					</li>
 				</ul>
 			{% endif %}
@@ -193,7 +193,7 @@
 			{% if prompt_to_edit %}
 				<ul class="actions">
 					<li>
-						<a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="action_button icon add open_in_lightbox edit_chunk">Add production</a>
+						<a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
 					</li>
 				</ul>
 			{% endif %}
