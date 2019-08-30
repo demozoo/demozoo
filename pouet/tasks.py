@@ -85,6 +85,6 @@ def automatch_all_groups():
 		automatch_group.delay(releaser_id)
 
 
-@task(ignore_result=True)
+@task(rate_limit='6/m', ignore_result=True)
 def automatch_group(releaser_id):
 	automatch_productions(Releaser.objects.get(id=releaser_id))

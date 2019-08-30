@@ -10,6 +10,6 @@ def automatch_all_authors():
 		automatch_author.delay(releaser_id)
 
 
-@task(ignore_result=True)
+@task(rate_limit='6/m', ignore_result=True)
 def automatch_author(releaser_id):
 	automatch_productions(Releaser.objects.get(id=releaser_id))
