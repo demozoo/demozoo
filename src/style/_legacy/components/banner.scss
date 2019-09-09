@@ -44,12 +44,7 @@
 	}
 
 	.banner_text.hidden {
-		text-indent: -1000px;
-
-		h1, p {
-			right: auto;
-			background: none;
-		}
+		visibility: hidden;
 	}
 }
 
@@ -77,12 +72,6 @@
 			width: auto;
 			margin: 0;
 			font-size: 11pt;
-		}
-
-		.banner_text.hidden {
-			h1, p {
-				text-align: left;
-			}
 		}
 	}
 }
