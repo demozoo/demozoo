@@ -1503,14 +1503,32 @@ class Plus4WorldMember(BaseUrl):
 	html_title_format = "%s on Plus/4 World"
 
 
-class BandcampArtist(BaseUrl):
+class BandcampEntry(BaseUrl):  # Bandcamp abstract superclass
+	html_link_class = "bandcamp"
+	html_link_text = "Bandcamp"
+	html_title_format = "%s on Bandcamp"
+
+
+class BandcampArtist(BandcampEntry):
 	canonical_format = "https://%s.bandcamp.com/"
 	tests = [
 		regex_match(r'https?://([\w-]+)\.bandcamp\.com/?$', re.I),
 	]
-	html_link_class = "bandcamp"
-	html_link_text = "Bandcamp"
-	html_title_format = "%s on Bandcamp"
+
+
+class BandcampTrack(BandcampEntry):
+	def match_bandcamp_release(urlstring, url):
+		regex = re.compile(r'https?://([\w-]+)\.bandcamp\.com/track/([\w-]+)', re.I)
+		match = regex.match(urlstring)
+		if match:
+			domain, name = match.groups()
+			return "%s/%s" % (domain, name)
+
+	tests = [match_bandcamp_release]
+
+	def __unicode__(self):
+		(domain, name) = self.param.split('/')
+		return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
 RELEASER_LINK_TYPES = [
@@ -1533,7 +1551,7 @@ PRODUCTION_LINK_TYPES = [
 	PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
 	YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
 	AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
-	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, CsdbMusic, NectarineSong,
+	ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
 	ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
 	AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
 	SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
@@ -1552,7 +1570,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 	'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
 	'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
 	'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
-	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'StonishDisk',
+	'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
 	'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
 	'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
 	'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
