@@ -13,7 +13,7 @@ from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
 from platforms.models import Platform
-from productions.models import Production, Screenshot
+from productions.models import Production, ProductionType, Screenshot
 
 
 class TSHeadline(Func):
@@ -187,8 +187,13 @@ class SearchForm(forms.Form):
 					production_types.add(val)
 
 			if production_types:
+				prod_type_names_q = Q()
+				for name in production_types:
+					prod_type_names_q |= Q(name__iexact=name)
+				prod_type_ids = ProductionType.objects.filter(prod_type_names_q).values_list('id', flat=True)
+
 				subqueries_from_type.add('production')
-				production_filter_q &= Q(types__name__in=production_types)
+				production_filter_q &= Q(types__in=prod_type_ids)
 
 			subqueries_to_perform &= subqueries_from_type
 
