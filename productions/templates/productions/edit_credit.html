@@ -5,30 +5,30 @@
 {% block html_title %}Editing credit for {{ production.title }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.edit_credit_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.edit_credit_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing credit for {{ production.title }}</h2>
+    <h2>Editing credit for {{ production.title }}</h2>
 
-	<form action="{% url 'production_edit_credit' production.id nick.id %}" method="post" class="entry_form edit_credit_form">
-		{% csrf_token %}
+    <form action="{% url 'production_edit_credit' production.id nick.id %}" method="post" class="entry_form edit_credit_form">
+        {% csrf_token %}
 
-		{% include "productions/credit_form.html" %}
+        {% include "productions/credit_form.html" %}
 
-		<div class="field">
-			<input type="submit" value="Update credit"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Update credit"/>
+        </div>
+    </form>
 
-	{% comment %} FIXME: a 'delete' button under the submit button is just ICK. {% endcomment %}
-	<p>
-		<a href="{% url 'production_delete_credit' production.id nick.id %}" class="action_button icon delete delete_credit">Delete credit</a>
-	</p>
+    {% comment %} FIXME: a 'delete' button under the submit button is just ICK. {% endcomment %}
+    <p>
+        <a href="{% url 'production_delete_credit' production.id nick.id %}" class="action_button icon delete delete_credit">Delete credit</a>
+    </p>
 {% endblock %}

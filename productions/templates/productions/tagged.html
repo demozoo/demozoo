@@ -4,26 +4,26 @@
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
 {% block base_main %}
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><a href="{% url 'new_production' %}" class="action_button icon add open_in_lightbox">New production</a></li>
-		</ul>
-	{% endif %}
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><a href="{% url 'new_production' %}" class="action_button icon add open_in_lightbox">New production</a></li>
+        </ul>
+    {% endif %}
 
-	<h2>Productions tagged '{{ tag.name }}'</h2>
-	{% if tag.description %}
-		<div class="notes">
-			{{ tag.description.description|safe_markdown }}
-		</div>
-	{% endif %}
+    <h2>Productions tagged '{{ tag.name }}'</h2>
+    {% if tag.description %}
+        <div class="notes">
+            {{ tag.description.description|safe_markdown }}
+        </div>
+    {% endif %}
 
-	{% include "shared/production_reorder_links.html" %}
+    {% include "shared/production_reorder_links.html" %}
 
-	<ul>
-		{% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
-	</ul>
-	
-	{% with production_page as page %}
-		{% include "shared/pagination_links.html" %}
-	{% endwith %}
+    <ul>
+        {% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
+    </ul>
+    
+    {% with production_page as page %}
+        {% include "shared/pagination_links.html" %}
+    {% endwith %}
 {% endblock %}

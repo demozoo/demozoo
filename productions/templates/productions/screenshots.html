@@ -5,35 +5,35 @@
 {% block html_title %}{{ model_label }} for {{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/productions/js/components/media_lightbox.js"></script>
-	{% endcompress %}
-	<script>
-		$(function() {
-			$('a.open_image_in_lightbox').openImageInLightbox();
-		});
-	</script>
+    {% compress js %}
+        <script src="/static/productions/js/components/media_lightbox.js"></script>
+    {% endcompress %}
+    <script>
+        $(function() {
+            $('a.open_image_in_lightbox').openImageInLightbox();
+        });
+    </script>
 {% endblock %}
 
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	{% production_core_details production subpage=1 %}
+    {% production_core_details production subpage=1 %}
 
-	<ul class="list list--screenshots">
-		{% for pic in screenshots %}
-			{% if pic.original_url %}
-				<li class="list__item">
-					<div class="media">
-						<a href="{{ pic.original_url }}" class="screenshot open_image_in_lightbox">
-							<img src="{{ pic.standard_url }}"
-							     data-standard-width="{{ pic.standard_width }}"
-							     data-standard-height="{{ pic.standard_height }}"
-							     alt="" />
-						</a>
-					</div>
-				</li>
-			{% endif %}
-		{% endfor %}
-	</ul>
+    <ul class="list list--screenshots">
+        {% for pic in screenshots %}
+            {% if pic.original_url %}
+                <li class="list__item">
+                    <div class="media">
+                        <a href="{{ pic.original_url }}" class="screenshot open_image_in_lightbox">
+                            <img src="{{ pic.standard_url }}"
+                                 data-standard-width="{{ pic.standard_width }}"
+                                 data-standard-height="{{ pic.standard_height }}"
+                                 alt="" />
+                        </a>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
 {% endblock %}

@@ -7,37 +7,37 @@
 {% block body_class %}show_competition{% endblock %}
 
 {% block base_main %}
-	<div class="panel">
-		<div class="competition_details">
-			<h2>
-				{{ competition }}
-				{% if site_is_writeable %}
-					<a href="{% url 'competition_edit' competition.id %}"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" /></a>
-				{% endif %}
-			</h2>
-			
-			{% with competition.party.competitions.all as compos_at_party %}
-				{% if compos_at_party.count > 1 %}
-					<div>
-						Other compos at <a href="{{ competition.party.get_absolute_url }}">{{ competition.party.name }}</a>:
-						<ul class="compos_at_party">
-							{% for compo in compos_at_party %}
-								{% if compo == competition %}
-									<li class="current">{{ compo.name }}</li>
-								{% else %}
-									<li>
-										<a href="{{ compo.get_absolute_url }}">{{ compo.name }}</a>
-									</li>
-								{% endif %}
-							{% endfor %}
-						</ul>
-					</div>
-				{% endif %}
-			{% endwith %}
-		</div>
-	</div>
-	
-	{% include "shared/competition_results.html" %}
+    <div class="panel">
+        <div class="competition_details">
+            <h2>
+                {{ competition }}
+                {% if site_is_writeable %}
+                    <a href="{% url 'competition_edit' competition.id %}"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" /></a>
+                {% endif %}
+            </h2>
+            
+            {% with competition.party.competitions.all as compos_at_party %}
+                {% if compos_at_party.count > 1 %}
+                    <div>
+                        Other compos at <a href="{{ competition.party.get_absolute_url }}">{{ competition.party.name }}</a>:
+                        <ul class="compos_at_party">
+                            {% for compo in compos_at_party %}
+                                {% if compo == competition %}
+                                    <li class="current">{{ compo.name }}</li>
+                                {% else %}
+                                    <li>
+                                        <a href="{{ compo.get_absolute_url }}">{{ compo.name }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    
+    {% include "shared/competition_results.html" %}
 
-	{% last_edited_by competition %}
+    {% last_edited_by competition %}
 {% endblock %}

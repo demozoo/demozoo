@@ -1,93 +1,93 @@
 <div class="info">
-	<p>
-		<b>On Demozoo:</b>
-		{% if demozoo_releaser.is_group %}
-			<img src="/static/images/icons/group.png" alt="Group" />
-		{% else %}
-			<img src="/static/images/icons/scener.png" alt="Scener" />
-		{% endif %}
+    <p>
+        <b>On Demozoo:</b>
+        {% if demozoo_releaser.is_group %}
+            <img src="/static/images/icons/group.png" alt="Group" />
+        {% else %}
+            <img src="/static/images/icons/scener.png" alt="Scener" />
+        {% endif %}
 
-		{% if demozoo_releaser.country_code %}
-			<img src="/static/images/icons/flags/{{ demozoo_releaser.country_code|lower }}.png" alt="from {{ demozoo_releaser.country_code }}" />
-		{% endif %}
+        {% if demozoo_releaser.country_code %}
+            <img src="/static/images/icons/flags/{{ demozoo_releaser.country_code|lower }}.png" alt="from {{ demozoo_releaser.country_code }}" />
+        {% endif %}
 
-		{{ demozoo_releaser.name }}
-		{% if demozoo_releaser.primary_nick.differentiator %}({{ demozoo_releaser.primary_nick.differentiator }}){% endif %}
-		{% with memberships=demozoo_releaser.group_memberships.all %}
-			{% if memberships %}
-				/
-				{% for membership in memberships %}
-					{{ membership.group.name }} {% if not forloop.last %}^{% endif %}
-				{% endfor %}
-			{% endif %}
-		{% endwith %}
+        {{ demozoo_releaser.name }}
+        {% if demozoo_releaser.primary_nick.differentiator %}({{ demozoo_releaser.primary_nick.differentiator }}){% endif %}
+        {% with memberships=demozoo_releaser.group_memberships.all %}
+            {% if memberships %}
+                /
+                {% for membership in memberships %}
+                    {{ membership.group.name }} {% if not forloop.last %}^{% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-		{% with memberships=demozoo_releaser.member_memberships.all %}
-			{% if memberships %}
-				, members: 
-				{% for membership in memberships %}
-					{{ membership.member.name }} {% if not forloop.last %},{% endif %}
-				{% endfor %}
-			{% endif %}
-		{% endwith %}
-	</p>
-	{% if demozoo_releases %}
-		<p>Releases:
-			{% for release in demozoo_releases %}
-				<a href="{% url 'production' release.id %}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</p>
-	{% endif %}
-	{% if demozoo_credits %}
-		<p>Credited on:
-			{% for credit in demozoo_credits %}
-				<a href="{% url 'production' credit.production.id %}" target="_blank">{{ credit.production.title }}</a> ({{ credit.category }}){% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</p>
-	{% endif %}
-	<p>
-		<b>On Janeway:</b>
-		{% if janeway_author.is_group %}
-			<img src="/static/images/icons/group.png" alt="Group" />
-		{% else %}
-			<img src="/static/images/icons/scener.png" alt="Scener" />
-		{% endif %}
+        {% with memberships=demozoo_releaser.member_memberships.all %}
+            {% if memberships %}
+                , members: 
+                {% for membership in memberships %}
+                    {{ membership.member.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </p>
+    {% if demozoo_releases %}
+        <p>Releases:
+            {% for release in demozoo_releases %}
+                <a href="{% url 'production' release.id %}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+    {% if demozoo_credits %}
+        <p>Credited on:
+            {% for credit in demozoo_credits %}
+                <a href="{% url 'production' credit.production.id %}" target="_blank">{{ credit.production.title }}</a> ({{ credit.category }}){% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+    <p>
+        <b>On Janeway:</b>
+        {% if janeway_author.is_group %}
+            <img src="/static/images/icons/group.png" alt="Group" />
+        {% else %}
+            <img src="/static/images/icons/scener.png" alt="Scener" />
+        {% endif %}
 
-		{% if janeway_author.country_code %}
-			<img src="/static/images/icons/flags/{{ janeway_author.country_code|lower }}.png" alt="from {{ janeway_author.country_code }}" />
-		{% endif %}
+        {% if janeway_author.country_code %}
+            <img src="/static/images/icons/flags/{{ janeway_author.country_code|lower }}.png" alt="from {{ janeway_author.country_code }}" />
+        {% endif %}
 
-		{{ janeway_author.name }}
-		{% with memberships=janeway_author.group_memberships.all %}
-			{% if memberships %}
-				/
-				{% for membership in memberships %}
-					{{ membership.group.name }} {% if not forloop.last %}^{% endif %}
-				{% endfor %}
-			{% endif %}
-		{% endwith %}
+        {{ janeway_author.name }}
+        {% with memberships=janeway_author.group_memberships.all %}
+            {% if memberships %}
+                /
+                {% for membership in memberships %}
+                    {{ membership.group.name }} {% if not forloop.last %}^{% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-		{% with memberships=janeway_author.member_memberships.all %}
-			{% if memberships %}
-				, members: 
-				{% for membership in memberships %}
-					{{ membership.member.name }} {% if not forloop.last %},{% endif %}
-				{% endfor %}
-			{% endif %}
-		{% endwith %}
-	</p>
-	{% if janeway_releases %}
-		<p>Releases:
-			{% for release in janeway_releases %}
-				<a href="http://janeway.exotica.org.uk/release.php?id={{ release.janeway_id }}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</p>
-	{% endif %}
-	{% if janeway_credits %}
-		<p>Credited on:
-			{% for release_id, release_title, category in janeway_credits %}
-				<a href="http://janeway.exotica.org.uk/release.php?id={{ release_id }}" target="_blank">{{ release_title }}</a> ({{ category }}){% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</p>
-	{% endif %}
+        {% with memberships=janeway_author.member_memberships.all %}
+            {% if memberships %}
+                , members: 
+                {% for membership in memberships %}
+                    {{ membership.member.name }} {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </p>
+    {% if janeway_releases %}
+        <p>Releases:
+            {% for release in janeway_releases %}
+                <a href="http://janeway.exotica.org.uk/release.php?id={{ release.janeway_id }}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
+    {% if janeway_credits %}
+        <p>Credited on:
+            {% for release_id, release_title, category in janeway_credits %}
+                <a href="http://janeway.exotica.org.uk/release.php?id={{ release_id }}" target="_blank">{{ release_title }}</a> ({{ category }}){% if not forloop.last %},{% endif %}
+            {% endfor %}
+        </p>
+    {% endif %}
 </div>

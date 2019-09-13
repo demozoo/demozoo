@@ -6,24 +6,24 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<h2>{{ title }}:</h2>
-	<div id="main_column">
-		<div class="panel report" data-report-name="{{ exclusion_name }}">
+    <h2>{{ title }}:</h2>
+    <div id="main_column">
+        <div class="panel report" data-report-name="{{ exclusion_name }}">
 
-			<table width="100%">
-				<col width="40%" />
-				<col width="20%" />
-				<col width="40%" />
-				{% for credit in credits %}
-					<tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
-						<td class="icon icon_production">
-							<a href="{% url 'production' credit.production_id %}">{{ credit.title }}</a>
-						</td>
-						<td>{{ credit.nick_name }}</td>
-						<td>{{ credit.description }}</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
+            <table width="100%">
+                <col width="40%" />
+                <col width="20%" />
+                <col width="40%" />
+                {% for credit in credits %}
+                    <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
+                        <td class="icon icon_production">
+                            <a href="{% url 'production' credit.production_id %}">{{ credit.title }}</a>
+                        </td>
+                        <td>{{ credit.nick_name }}</td>
+                        <td>{{ credit.description }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

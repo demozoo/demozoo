@@ -7,30 +7,30 @@
 {% block body_class %}show_topic{% endblock %}
 
 {% block base_main %}
-	<a href="{% url 'forums' %}"><div class="signpost">Discussions</div></a>
+    <a href="{% url 'forums' %}"><div class="signpost">Discussions</div></a>
 
-	<div class="focus_title">
-		<h2>{{ topic.title }}</h2>
-	</div>
+    <div class="focus_title">
+        <h2>{{ topic.title }}</h2>
+    </div>
 
-	<div class="posts_panel">
-		{% include 'forums/_pagination.html' %}
+    <div class="posts_panel">
+        {% include 'forums/_pagination.html' %}
 
-		<div class="posts">
-			{% for post in posts %}
-				<div class="post" id="post-{{ post.id }}">
-					<b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
-					<a href="{{ post.get_absolute_url }}#post-{{ post.id }}" title="permalink">#</a>
-					<p>{{ post.body|urlize|linebreaks }}</p>
-				</div>
-			{% endfor %}
-		</div>
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
+                    <a href="{{ post.get_absolute_url }}#post-{{ post.id }}" title="permalink">#</a>
+                    <p>{{ post.body|urlize|linebreaks }}</p>
+                </div>
+            {% endfor %}
+        </div>
 
-		{% include 'forums/_pagination.html' %}
+        {% include 'forums/_pagination.html' %}
 
-		{% if form and site_is_writeable %}
-			{% include "forums/_reply_form.html" %}
-		{% endif %}
-	</div>
+        {% if form and site_is_writeable %}
+            {% include "forums/_reply_form.html" %}
+        {% endif %}
+    </div>
 
 {% endblock %}

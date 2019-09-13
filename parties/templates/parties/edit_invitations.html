@@ -4,29 +4,29 @@
 
 {% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.party_invitation_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.party_invitation_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing invitations for {{ party.name }}:</h2>
+    <h2>Editing invitations for {{ party.name }}:</h2>
 
-	<form action="{% url 'party_edit_invitations' party.id %}" method="post" class="entry_form party_invitation_form">
-		{% csrf_token %}
+    <form action="{% url 'party_edit_invitations' party.id %}" method="post" class="entry_form party_invitation_form">
+        {% csrf_token %}
 
-		{% spawningformset formset %}
-			{% spawningform as form %}
-				{{ form.production }}
-			{% endspawningform %}
-		{% endspawningformset %}
+        {% spawningformset formset %}
+            {% spawningform as form %}
+                {{ form.production }}
+            {% endspawningform %}
+        {% endspawningformset %}
 
-		<div class="field">
-			<input type="submit" value="Update invitations"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Update invitations"/>
+        </div>
+    </form>
 {% endblock %}

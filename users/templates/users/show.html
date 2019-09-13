@@ -5,15 +5,15 @@
 
 {% block base_main %}
 <div class="user">
-	<h1>{{ user.username }}</h1>
+    <h1>{{ user.username }}</h1>
 
-	<section class="user__edits">
-		<h2>Edits</h2>
-		{% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
+    <section class="user__edits">
+        <h2>Edits</h2>
+        {% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
 
-		{% with edits_page as page %}
-		{% include "shared/pagination_links.html" %}
-		{% endwith %}
-	</section>
+        {% with edits_page as page %}
+        {% include "shared/pagination_links.html" %}
+        {% endwith %}
+    </section>
 </div>
 {% endblock %}

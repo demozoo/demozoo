@@ -6,38 +6,38 @@
 {% block meta_keywords %}spectrum speccy demo scene demoscene zx party calendar schedule dates compo competition{% endblock %}
 
 {% block sidebar %}
-	<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
-	<div style="margin-bottom: 8px"><strong>Forthcoming parties:</strong></div>
-	{% forthcoming_parties %}
+    <a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
+    <div style="margin-bottom: 8px"><strong>Forthcoming parties:</strong></div>
+    {% forthcoming_parties %}
 {% endblock %}
 
 {% block body %}
-	<div align="center">
-		{% for y in all_years %}
-			{% if y.year == year %}
-				<span class="nolink">{{ y.year }}</span>
-			{% else %}
-				<a href="{% url 'zxdemo_parties_year' y.year %}">{{ y.year }}</a>
-			{% endif %}
-		{% endfor %}
-	</div>
+    <div align="center">
+        {% for y in all_years %}
+            {% if y.year == year %}
+                <span class="nolink">{{ y.year }}</span>
+            {% else %}
+                <a href="{% url 'zxdemo_parties_year' y.year %}">{{ y.year }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-	<h1>Party calendar - {{ year }}</h1>
+    <h1>Party calendar - {{ year }}</h1>
 
-	{% for party in parties %}
-		<table width="100%" cellspacing="0" cellpadding="3" border="0">
-			<col width="30%" /><col width="70%" />
-			<tr>
-				<td><h2><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></h2></td>
-				<td><em>
-					{% if party.is_online %}
-						{% date_range party.start_date party.end_date %}; Online
-					{% elif party.location %}
-						{% date_range party.start_date party.end_date %}; {{ party.location }}
-					{% endif %}
-				</em></td>
-			</tr>
-		</table>
-	{% endfor %}
+    {% for party in parties %}
+        <table width="100%" cellspacing="0" cellpadding="3" border="0">
+            <col width="30%" /><col width="70%" />
+            <tr>
+                <td><h2><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></h2></td>
+                <td><em>
+                    {% if party.is_online %}
+                        {% date_range party.start_date party.end_date %}; Online
+                    {% elif party.location %}
+                        {% date_range party.start_date party.end_date %}; {{ party.location }}
+                    {% endif %}
+                </em></td>
+            </tr>
+        </table>
+    {% endfor %}
 
 {% endblock %}

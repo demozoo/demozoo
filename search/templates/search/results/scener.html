@@ -1,16 +1,16 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="result">
-	<div class="media media--thumbnail">
-		{% icon 'scener' %}
-	</div>
-	<div class="result__content">
-		{% scener_with_affiliations result %}
-		{% releaser_flag result %}
-		{% if result.has_search_snippet %}
-			<div class="result__snippet">
-				<p class="snippet">{{ result.search_snippet|safe }}</p>
-			</div>
-		{% endif %}
-	</div>
+    <div class="media media--thumbnail">
+        {% icon 'scener' %}
+    </div>
+    <div class="result__content">
+        {% scener_with_affiliations result %}
+        {% releaser_flag result %}
+        {% if result.has_search_snippet %}
+            <div class="result__snippet">
+                <p class="snippet">{{ result.search_snippet|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
 </div>

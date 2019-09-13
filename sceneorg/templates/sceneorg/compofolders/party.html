@@ -3,53 +3,53 @@
 
 
 {% block extra_js %}
-	{% if site_is_writeable %}
-		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
-		{% compress js %}<script src="/static/sceneorg/js/compofolders.js"></script>{% endcompress %}
-	{% endif %}
+    {% if site_is_writeable %}
+        {% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+        {% compress js %}<script src="/static/sceneorg/js/compofolders.js"></script>{% endcompress %}
+    {% endif %}
 {% endblock %}
 
 {% block base_main %}
 <section class="sceneorg">
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<a href="javascript:void($('#compofolders_done').submit())" class="action_button icon done">All done</a></form></li>
-		</ul>
-	{% endif %}
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<a href="javascript:void($('#compofolders_done').submit())" class="action_button icon done">All done</a></form></li>
+        </ul>
+    {% endif %}
 
-	<h2><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h2>
+    <h2><a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h2>
 
-	{% if site_is_writeable %}
-		<p style="color: #666;">To match a folder to a compo, select one item in each column and that pair will be moved to the "matched" section. If necessary, you can select an item that's already in the "matched" list (in case a folder is serving dual purpose, for example). When you've matched all the ones you can, hit 'All done' (don't worry if there are leftovers like 'info' or 'Invitation').</p>
-	{% endif %}
+    {% if site_is_writeable %}
+        <p style="color: #666;">To match a folder to a compo, select one item in each column and that pair will be moved to the "matched" section. If necessary, you can select an item that's already in the "matched" list (in case a folder is serving dual purpose, for example). When you've matched all the ones you can, hit 'All done' (don't worry if there are leftovers like 'info' or 'Invitation').</p>
+    {% endif %}
 
-	<br />
-	<h3>Unmatched:</h3>
+    <br />
+    <h3>Unmatched:</h3>
 
-	<ul class="unmatched_left unmatched_directories">
-		{% for dir in unmatched_directories %}
-			<li><button class="matchable directory unmatched" value="{{ dir.id }}">{{ dir.path }}</button></li>
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_left unmatched_directories">
+        {% for dir in unmatched_directories %}
+            <li><button class="matchable directory unmatched" value="{{ dir.id }}">{{ dir.path }}</button></li>
+        {% endfor %}
+    </ul>
 
-	<ul class="unmatched_right unmatched_competitions">
-		{% for compo in unmatched_competitions %}
-			<li><button class="matchable competition unmatched" value="{{ compo.id }}">{{ compo.name }}</button></li>
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_right unmatched_competitions">
+        {% for compo in unmatched_competitions %}
+            <li><button class="matchable competition unmatched" value="{{ compo.id }}">{{ compo.name }}</button></li>
+        {% endfor %}
+    </ul>
 
-	<h3>Matched:</h3>
-	<ul class="matches">
-		{% for dir in matched_directories %}
-			{% for compo in dir.competitions.all %}
-				<li>
-					<button class="matchable directory matched" value="{{ dir.id }}">{{ dir.path }}</button>
-					=
-					<button class="matchable competition matched" value="{{ compo.id }}">{{ compo.name }}</button>
-					<button class="unlink" title="Delete this match">unlink</button>
-				</li>
-			{% endfor %}
-		{% endfor %}
-	</ul>
+    <h3>Matched:</h3>
+    <ul class="matches">
+        {% for dir in matched_directories %}
+            {% for compo in dir.competitions.all %}
+                <li>
+                    <button class="matchable directory matched" value="{{ dir.id }}">{{ dir.path }}</button>
+                    =
+                    <button class="matchable competition matched" value="{{ compo.id }}">{{ compo.name }}</button>
+                    <button class="unlink" title="Delete this match">unlink</button>
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
 </section>
 {% endblock %}

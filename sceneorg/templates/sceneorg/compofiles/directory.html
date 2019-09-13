@@ -5,61 +5,61 @@
 {% block html_title %}scene.org file matching for {{ directory.path }} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	{% if site_is_writeable %}
-		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
-		{% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}
-	{% endif %}
+    {% if site_is_writeable %}
+        {% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+        {% compress js %}<script src="/static/sceneorg/js/compofiles.js"></script>{% endcompress %}
+    {% endif %}
 {% endblock %}
 
 {% block base_main %}
 <section class="sceneorg">
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><a href="{% url 'sceneorg_compofiles' %}" class="action_button icon done">Done</a></li>
-		</ul>
-	{% endif %}
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><a href="{% url 'sceneorg_compofiles' %}" class="action_button icon done">Done</a></li>
+        </ul>
+    {% endif %}
 
-	<h2>scene.org party file matching: <a href="{{ directory.web_url }}">{{ directory.path }}</a></h2>
+    <h2>scene.org party file matching: <a href="{{ directory.web_url }}">{{ directory.path }}</a></h2>
 
-	<ul>
-		{% for compo in competitions %}
-			<li><b>Linked to: <a href="{{ compo.party.get_absolute_url }}#competition_{{ compo.id }}">{{ compo.party.name }} {{ compo.name }} competition</a></b></li>
-		{% endfor %}
-	</ul>
+    <ul>
+        {% for compo in competitions %}
+            <li><b>Linked to: <a href="{{ compo.party.get_absolute_url }}#competition_{{ compo.id }}">{{ compo.party.name }} {{ compo.name }} competition</a></b></li>
+        {% endfor %}
+    </ul>
 
-	{% if site_is_writeable %}
-		<p style="color: #666;">To match a file to its corresponding production, click on one item in each column and that pair will be moved to the "matched" section. Items in the 'matched' list are still clickable, so if a production has multiple download links, simply select that production title again. Match up as many as you can, and don't worry if there are leftover entries on either side. Thanks!</p>
-	{% endif %}
+    {% if site_is_writeable %}
+        <p style="color: #666;">To match a file to its corresponding production, click on one item in each column and that pair will be moved to the "matched" section. Items in the 'matched' list are still clickable, so if a production has multiple download links, simply select that production title again. Match up as many as you can, and don't worry if there are leftover entries on either side. Thanks!</p>
+    {% endif %}
 
-	<br />
-	<h3>Unmatched:</h3>
+    <br />
+    <h3>Unmatched:</h3>
 
-	<ul class="unmatched_left unmatched_files">
-		{% for file in unmatched_files %}
-			<li><button class="matchable file unmatched" value="{{ file.id }}">{{ file.filename }}</button></li>
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_left unmatched_files">
+        {% for file in unmatched_files %}
+            <li><button class="matchable file unmatched" value="{{ file.id }}">{{ file.filename }}</button></li>
+        {% endfor %}
+    </ul>
 
-	<ul class="unmatched_right unmatched_productions">
-		{% for prod in unmatched_productions %}
-			{% with prod.byline_string as byline %}
-				<li><button class="matchable production unmatched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button></li>
-			{% endwith %}
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_right unmatched_productions">
+        {% for prod in unmatched_productions %}
+            {% with prod.byline_string as byline %}
+                <li><button class="matchable production unmatched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button></li>
+            {% endwith %}
+        {% endfor %}
+    </ul>
 
-	<h3>Matched:</h3>
-	<ul class="matches">
-		{% for file, prod in matches %}
-			<li>
-				<button class="matchable file matched" value="{{ file.id }}">{{ file.filename }}</button>
-				=
-				{% with prod.byline_string as byline %}
-					<button class="matchable production matched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button>
-				{% endwith %}
-				<button class="unlink" title="Delete this match">unlink</button>
-			</li>
-		{% endfor %}
-	</ul>
+    <h3>Matched:</h3>
+    <ul class="matches">
+        {% for file, prod in matches %}
+            <li>
+                <button class="matchable file matched" value="{{ file.id }}">{{ file.filename }}</button>
+                =
+                {% with prod.byline_string as byline %}
+                    <button class="matchable production matched" value="{{ prod.id }}"><b>{{ prod.title }}</b>{% if byline %} by {{ byline }}{% endif %}</button>
+                {% endwith %}
+                <button class="unlink" title="Delete this match">unlink</button>
+            </li>
+        {% endfor %}
+    </ul>
 </section>
 {% endblock %}

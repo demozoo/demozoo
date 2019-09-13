@@ -4,9 +4,9 @@
 {% block html_title %}Account settings - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>{{ user.username }} - Account settings</h2>
-	
-	<ul style="padding-top: 1em;">
-		<li><a href="{% url 'account_change_password' %}">Change password</a></li>
-	</ul>
+    <h2>{{ user.username }} - Account settings</h2>
+    
+    <ul style="padding-top: 1em;">
+        <li><a href="{% url 'account_change_password' %}">Change password</a></li>
+    </ul>
 {% endblock %}

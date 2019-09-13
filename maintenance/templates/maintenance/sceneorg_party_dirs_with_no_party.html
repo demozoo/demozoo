@@ -7,97 +7,97 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<h2>The scene.org unmatched party report of doom</h2>
-	<p>{{ matched_count }} of {{ total_count }} directories matched so far!</p>
-	
-	<div style="width: 800px; height: 20px; background-color: #eee; border: 1px solid black;">
-		<div style="width:{% widthratio matched_count total_count 800 %}px; height: 20px; background-color: #080"></div>
-	</div>
-	
-	<script>
-		$(function() {
-			$('form.add_sceneorg_link').submit(function() {
-				var row = $(this).parents('tr:first');
-				$.post(this.action,
-					$(this).serialize(),
-					function() {
-						row.fadeOut();
-					}
-				);
-				return false;
-			})
-			$('form.create_party').submit(function() {
-				var createButtonForm = $(this);
-				
-				function ajaxifyCreatePartyForm(context) {
-					applyGlobalBehaviours(context);
-					$('form', context).submit(function() {
-						$.post(this.action,
-							$(this).serialize(),
-							function(response) {
-								var match = response.match(/^OK: (.*)/);
-								if (match) {
-									Lightbox.close();
-									var createdLink = $('<a>Created</a>').attr('href', match[1]);
-									createButtonForm.replaceWith(createdLink);
-								} else {
-									/* reshow response (probably validation error) in lightbox */
-									Lightbox.openContent(response, ajaxifyCreatePartyForm);
-								}
-							}
-						);
-						return false;
-					})
-				}
-				
-				Lightbox.openUrl(this.action + '?' + $(this).serialize(), ajaxifyCreatePartyForm);
-				return false;
-			})
-		})
-	</script>
-	
-	<h3 style="padding-top: 0.5em">{{ title }}:</h3>
-	<div id="main_column">
-		<table>
-			<tr>
-				<th>Path</th><th>Best guess at party series</th><th>Best guess at party</th>
-			</tr>
-			{% for dir in directories %}
-				<tr>
-					<td><a href="{{ dir.web_url }}">{{ dir.path }}</a></td>
-					<td>
-						{% if dir.suggested_series_name %}
-							<a href="{% url 'party_series' dir.suggested_series_id %}">{{ dir.suggested_series_name }}</a>
-						{% endif %}
-					</td>
-					<td>
-						{% if dir.suggested_party_name %}
-							<a href="{% url 'party' dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
-						{% endif %}
-					</td>
-					<td>
-						{% if site_is_writeable %}
-							{% if dir.suggested_party_id %}
-								<form class="add_sceneorg_link" action="{% url 'maintenance:add_sceneorg_link_to_party' %}" method="post">
-									{% csrf_token %}
-									<input type="hidden" name="path" value="{{ dir.path }}" />
-									<input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />
-									<input type="submit" value="Accept suggestion" />
-								</form>
-							{% else %}
-								<form class="create_party" action="{% url 'new_party' %}" method="GET">
-									<input type="hidden" name="scene_org_folder" value="{{ dir.path }}" />
-									{% if dir.suggested_series_name %}
-										<input type="hidden" name="name" value="{{ dir.suggested_series_name }} {{ dir.party_year }}" />
-										<input type="hidden" name="party_series_name" value="{{ dir.suggested_series_name }}" />
-									{% endif %}
-									<input type="submit" value="Create" />
-								</form>
-							{% endif %}
-						{% endif %}
-					</td>
-				</tr>
-			{% endfor %}
-		</table>
-	</div>
+    <h2>The scene.org unmatched party report of doom</h2>
+    <p>{{ matched_count }} of {{ total_count }} directories matched so far!</p>
+    
+    <div style="width: 800px; height: 20px; background-color: #eee; border: 1px solid black;">
+        <div style="width:{% widthratio matched_count total_count 800 %}px; height: 20px; background-color: #080"></div>
+    </div>
+    
+    <script>
+        $(function() {
+            $('form.add_sceneorg_link').submit(function() {
+                var row = $(this).parents('tr:first');
+                $.post(this.action,
+                    $(this).serialize(),
+                    function() {
+                        row.fadeOut();
+                    }
+                );
+                return false;
+            })
+            $('form.create_party').submit(function() {
+                var createButtonForm = $(this);
+                
+                function ajaxifyCreatePartyForm(context) {
+                    applyGlobalBehaviours(context);
+                    $('form', context).submit(function() {
+                        $.post(this.action,
+                            $(this).serialize(),
+                            function(response) {
+                                var match = response.match(/^OK: (.*)/);
+                                if (match) {
+                                    Lightbox.close();
+                                    var createdLink = $('<a>Created</a>').attr('href', match[1]);
+                                    createButtonForm.replaceWith(createdLink);
+                                } else {
+                                    /* reshow response (probably validation error) in lightbox */
+                                    Lightbox.openContent(response, ajaxifyCreatePartyForm);
+                                }
+                            }
+                        );
+                        return false;
+                    })
+                }
+                
+                Lightbox.openUrl(this.action + '?' + $(this).serialize(), ajaxifyCreatePartyForm);
+                return false;
+            })
+        })
+    </script>
+    
+    <h3 style="padding-top: 0.5em">{{ title }}:</h3>
+    <div id="main_column">
+        <table>
+            <tr>
+                <th>Path</th><th>Best guess at party series</th><th>Best guess at party</th>
+            </tr>
+            {% for dir in directories %}
+                <tr>
+                    <td><a href="{{ dir.web_url }}">{{ dir.path }}</a></td>
+                    <td>
+                        {% if dir.suggested_series_name %}
+                            <a href="{% url 'party_series' dir.suggested_series_id %}">{{ dir.suggested_series_name }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if dir.suggested_party_name %}
+                            <a href="{% url 'party' dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if site_is_writeable %}
+                            {% if dir.suggested_party_id %}
+                                <form class="add_sceneorg_link" action="{% url 'maintenance:add_sceneorg_link_to_party' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="path" value="{{ dir.path }}" />
+                                    <input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />
+                                    <input type="submit" value="Accept suggestion" />
+                                </form>
+                            {% else %}
+                                <form class="create_party" action="{% url 'new_party' %}" method="GET">
+                                    <input type="hidden" name="scene_org_folder" value="{{ dir.path }}" />
+                                    {% if dir.suggested_series_name %}
+                                        <input type="hidden" name="name" value="{{ dir.suggested_series_name }} {{ dir.party_year }}" />
+                                        <input type="hidden" name="party_series_name" value="{{ dir.suggested_series_name }}" />
+                                    {% endif %}
+                                    <input type="submit" value="Create" />
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}

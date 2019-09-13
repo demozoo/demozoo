@@ -2,18 +2,18 @@
 
 {{ credit_formset.management_form }}
 <div class="field credit_formset">
-	<label class="field_label">Credited for</label>
-	<div class="field_input">
-		<span class="category_header">Category</span>
-		<span class="detail_header">Detail (optional)</span>
-		{% spawningformset credit_formset %}
-			{% spawningform as form %}
-				{% for field in form.hidden_fields %}{{ field }}{% endfor %}
-				{{ form.category }}
-				{{ form.role }}
-				{{ form.category.errors }} {{ form.role.errors }}
-			{% endspawningform %}
-		{% endspawningformset %}
-		<div class="help_text" style="clear: both;">(Add as many categories as are relevant)</div>
-	</div>
+    <label class="field_label">Credited for</label>
+    <div class="field_input">
+        <span class="category_header">Category</span>
+        <span class="detail_header">Detail (optional)</span>
+        {% spawningformset credit_formset %}
+            {% spawningform as form %}
+                {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                {{ form.category }}
+                {{ form.role }}
+                {{ form.category.errors }} {{ form.role.errors }}
+            {% endspawningform %}
+        {% endspawningformset %}
+        <div class="help_text" style="clear: both;">(Add as many categories as are relevant)</div>
+    </div>
 </div>

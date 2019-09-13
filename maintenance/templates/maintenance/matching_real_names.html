@@ -6,23 +6,23 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<div id="main_column">
-		<h1>{{ title }}</h1>
-		
-		{% regroup releasers by real_name as name_list %}
-		<div class="panel report">
-			{% for name in name_list %}
-				<h3 class="panel__title">{{ name.grouper }}</h3>
-				<ul class="releaser_list" style="margin-bottom: 0.5em; border-bottom: 1px solid #ccc;">
-					{% for releaser in name.list %}
-						<li class="scener">
-							{% scener_with_affiliations releaser %}
-							{% releaser_flag releaser %}
-							({{ releaser.real_name }})
-						</li>
-					{% endfor %}
-				</ul>
-			{% endfor %}
-		</div>
-	</div>
+    <div id="main_column">
+        <h1>{{ title }}</h1>
+        
+        {% regroup releasers by real_name as name_list %}
+        <div class="panel report">
+            {% for name in name_list %}
+                <h3 class="panel__title">{{ name.grouper }}</h3>
+                <ul class="releaser_list" style="margin-bottom: 0.5em; border-bottom: 1px solid #ccc;">
+                    {% for releaser in name.list %}
+                        <li class="scener">
+                            {% scener_with_affiliations releaser %}
+                            {% releaser_flag releaser %}
+                            ({{ releaser.real_name }})
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

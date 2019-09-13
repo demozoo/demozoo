@@ -5,172 +5,172 @@
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	{% compress css %}
-		<link rel="stylesheet" href="/static/css/responsivegrid/6cols.css" type="text/css" />
-	{% endcompress %}
+    {% compress css %}
+        <link rel="stylesheet" href="/static/css/responsivegrid/6cols.css" type="text/css" />
+    {% endcompress %}
 {% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/js/modal_workflow.js"></script>
-		<script src="/static/js/tag-it.js"></script>
-		<script src="/static/js/components/editable_chunk.js"></script>
-		<script src="/static/productions/js/components/media_lightbox.js"></script>
-		<script src="/static/productions/js/components/carousel.js"></script>
-		<script src="/static/js/components/notes_panel.js"></script>
-		<script src="/static/js/components/comments_panel.js"></script>
-		<script src="/static/productions/js/pages/show_production.js"></script>
-	{% endcompress %}
+    {% compress js %}
+        <script src="/static/js/modal_workflow.js"></script>
+        <script src="/static/js/tag-it.js"></script>
+        <script src="/static/js/components/editable_chunk.js"></script>
+        <script src="/static/productions/js/components/media_lightbox.js"></script>
+        <script src="/static/productions/js/components/carousel.js"></script>
+        <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/comments_panel.js"></script>
+        <script src="/static/productions/js/pages/show_production.js"></script>
+    {% endcompress %}
 {% endblock %}
 
 {% block extra_head %}
-	{{ carousel.media }}
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@demozoo">
-	{% with production.author_twitter_handle as twitter_handle %}
-		{% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
-	{% endwith %}
-	<meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
-	<meta property="og:title" content="{{ production.title }}">
-	<meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
-	{% if not meta_screenshot %}
-		<meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
-	{% else %}
-		<meta property="og:image" content="{{ meta_screenshot.standard_url }}">
-	{% endif %}
+    {{ carousel.media }}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@demozoo">
+    {% with production.author_twitter_handle as twitter_handle %}
+        {% if twitter_handle %}<meta name="twitter:creator" content="@{{ twitter_handle }}">{% endif %}
+    {% endwith %}
+    <meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
+    <meta property="og:title" content="{{ production.title }}">
+    <meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
+    {% if not meta_screenshot %}
+        <meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
+    {% else %}
+        <meta property="og:image" content="{{ meta_screenshot.standard_url }}">
+    {% endif %}
 {% endblock %}
 
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
-	{% production_core_details production %}
+    {% production_core_details production %}
 
-	{% if request.user.is_staff %}
-		{% for blurb in blurbs %}
-			<div class="blurb">
-				<ul class="actions">
-					<li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit open_in_lightbox">Edit</a></li>
-				</ul>
-				<p>{{ blurb.body }}</p>
-			</div>
-		{% endfor %}
-	{% endif %}
+    {% if request.user.is_staff %}
+        {% for blurb in blurbs %}
+            <div class="blurb">
+                <ul class="actions">
+                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit open_in_lightbox">Edit</a></li>
+                </ul>
+                <p>{{ blurb.body }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
 
-	<div class="mainstage">
-		{{ carousel.render }}
+    <div class="mainstage">
+        {{ carousel.render }}
 
-		<div class="right">
-			{% if download_links %}
-				{% include "productions/_downloads.html" %}
-			{% endif %}
+        <div class="right">
+            {% if download_links %}
+                {% include "productions/_downloads.html" %}
+            {% endif %}
 
-			{% if info_files %}
-				{% include "productions/_info_files.html" %}
-			{% endif %}
+            {% if info_files %}
+                {% include "productions/_info_files.html" %}
+            {% endif %}
 
-			{% if external_links %}
-				{% include "productions/_external_links.html" %}
-			{% endif %}
+            {% if external_links %}
+                {% include "productions/_external_links.html" %}
+            {% endif %}
 
-			{% include "productions/_tags.html" %}
+            {% include "productions/_tags.html" %}
 
-			{% if prompt_to_edit %}
-				<div class="panel tell_us_something_panel">
-					<p>Know something about this production that we don't?</p>
+            {% if prompt_to_edit %}
+                <div class="panel tell_us_something_panel">
+                    <p>Know something about this production that we don't?</p>
 
-					<div class="tell_us_something">
-						{% if user.is_authenticated %}
-							<div class="tell_us_something_title">Add other information</div>
-							<ul class="tell_us_something_options">
-								<li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox focus_empty_input">Add a download link</a></li>
-								<li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
-								{% if production.supertype == 'music' %}
-									<li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add artwork</a></li>
-								{% else %}
-									<li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add a screenshot</a></li>
-								{% endif %}
-								<li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
-								<li><a href="{% url 'production_edit_info_files' production.id %}" class="open_in_lightbox">Add an info file</a></li>
-								{% if production.can_have_soundtracks %}
-									<li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
-								{% endif %}
-								{% if request.user.is_staff and not blurbs %}
-									<li><a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add a 'blurb'</a></li>
-								{% endif %}
-							</ul>
-						{% else %}
-							<div class="tell_us_something_title">
-								<a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" rel="nofollow">Tell us something!</a>
-							</div>
-						{% endif %}
-					</div>
-				</div>
-			{% endif %}
-		</div>
-	</div>
+                    <div class="tell_us_something">
+                        {% if user.is_authenticated %}
+                            <div class="tell_us_something_title">Add other information</div>
+                            <ul class="tell_us_something_options">
+                                <li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox focus_empty_input">Add a download link</a></li>
+                                <li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
+                                {% if production.supertype == 'music' %}
+                                    <li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add artwork</a></li>
+                                {% else %}
+                                    <li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add a screenshot</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
+                                <li><a href="{% url 'production_edit_info_files' production.id %}" class="open_in_lightbox">Add an info file</a></li>
+                                {% if production.can_have_soundtracks %}
+                                    <li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
+                                {% endif %}
+                                {% if request.user.is_staff and not blurbs %}
+                                    <li><a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add a 'blurb'</a></li>
+                                {% endif %}
+                            </ul>
+                        {% else %}
+                            <div class="tell_us_something_title">
+                                <a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}" rel="nofollow">Tell us something!</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-	<div style="clear: both;"></div>
+    <div style="clear: both;"></div>
 
-	{% include "productions/_notes.html" %}
+    {% include "productions/_notes.html" %}
 
-	<div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-		{% include "productions/_credits.html" %}
+    <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
+        {% include "productions/_credits.html" %}
 
-		{% if production.can_have_pack_members %}
-			<div class="pack_contents_panel panel editable_chunk">
-				<h3 class="panel__title">Pack contents</h3>
+        {% if production.can_have_pack_members %}
+            <div class="pack_contents_panel panel editable_chunk">
+                <h3 class="panel__title">Pack contents</h3>
 
-				{% if prompt_to_edit %}
-					<ul class="actions">
-						<li>
-							<a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents" rel="nofollow">Edit</a>
-						</li>
-					</ul>
-				{% endif %}
+                {% if prompt_to_edit %}
+                    <ul class="actions">
+                        <li>
+                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents" rel="nofollow">Edit</a>
+                        </li>
+                    </ul>
+                {% endif %}
 
-				{% production_listing pack_members show_screenshots=1 %}
-			</div>
-		{% endif %}
+                {% production_listing pack_members show_screenshots=1 %}
+            </div>
+        {% endif %}
 
-		{% if packed_in_productions %}
-			<div class="packed_in_panel panel">
-				<h3 class="panel__title">Packed in:</h3>
-				{% production_listing packed_in_productions show_screenshots=1 %}
-			</div>
-		{% endif %}
+        {% if packed_in_productions %}
+            <div class="packed_in_panel panel">
+                <h3 class="panel__title">Packed in:</h3>
+                {% production_listing packed_in_productions show_screenshots=1 %}
+            </div>
+        {% endif %}
 
-		{% if featured_in_productions %}
-			<div class="featured_in_panel panel">
-				<h3 class="panel__title">Featured in:</h3>
-				{% production_listing featured_in_productions show_screenshots=1 %}
-			</div>
-		{% endif %}
+        {% if featured_in_productions %}
+            <div class="featured_in_panel panel">
+                <h3 class="panel__title">Featured in:</h3>
+                {% production_listing featured_in_productions show_screenshots=1 %}
+            </div>
+        {% endif %}
 
-		{% if soundtracks %}
-			<div class="soundtracks_panel panel editable_chunk">
-				<h3 class="panel__title">Soundtrack</h3>
+        {% if soundtracks %}
+            <div class="soundtracks_panel panel editable_chunk">
+                <h3 class="panel__title">Soundtrack</h3>
 
-				{% if prompt_to_edit %}
-					<ul class="actions">
-						<li>
-							<a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details" rel="nofollow">Edit</a>
-						</li>
-					</ul>
-				{% endif %}
+                {% if prompt_to_edit %}
+                    <ul class="actions">
+                        <li>
+                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details" rel="nofollow">Edit</a>
+                        </li>
+                    </ul>
+                {% endif %}
 
-				{% production_listing soundtracks %}
+                {% production_listing soundtracks %}
 
-			</div>
-		{% endif %}
-	</div>
+            </div>
+        {% endif %}
+    </div>
 
-	{% last_edited_by production %}
+    {% last_edited_by production %}
 
-	{% include "comments/_comments.html" with commentable=production edit_action='edit_production_comment' delete_action='delete_production_comment' no_comments_message='Be the first to comment on this production...' add_action='add_production_comment' %}
+    {% include "comments/_comments.html" with commentable=production edit_action='edit_production_comment' delete_action='delete_production_comment' no_comments_message='Be the first to comment on this production...' add_action='add_production_comment' %}
 
-	{% if request.user.is_staff and site_is_writeable %}
-		<ul class="maintenance_actions">
-			<li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
-		</ul>
-	{% endif %}
+    {% if request.user.is_staff and site_is_writeable %}
+        <ul class="maintenance_actions">
+            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
+        </ul>
+    {% endif %}
 {% endblock %}

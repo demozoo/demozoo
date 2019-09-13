@@ -6,92 +6,92 @@
 {% block meta_keywords %}spectrum speccy demo scene demoscene zx party calendar schedule dates compo competition{% endblock %}
 
 {% block outer_body %}
-	<table border="0" cellpadding="0" cellspacing="0" width="100%" />
-		<col width="224" />
-		<col width="*" />
-		<tr>
-			<td bgcolor="#dedeff" valign="top" align="center" width="224">
-				<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
-				<h2>{{ party.name }}</h2>
-			</td>
-			<td valign="top" width="100%">
-				<p align="right" style="margin-top: 6px"><a href="http://demozoo.org/parties/{{ party.id }}/">{{ party.name }} on Demozoo&nbsp;&raquo;</a></p>
-				<h1 align="center">{{ party.name }}</h1>
-				{% if party.location %}<h2>{{ party.location }}</h2>{% endif %}
-				<h2>{% date_range party.start_date party.end_date %}</h2>
-				<hr />
-			</td>
-		</tr>
-		{% if invitations %}
-			<tr>
-				<td bgcolor="#dedeff" valign="top" align="center">
-					<h2 style="text-align: right; margin-right: 8pt;" id="invitations">Invitation{{ invitations|length|pluralize }}&nbsp;&raquo;</h2>
-				</td>
-				<td valign="top">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-						<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
-						{% for production in invitations %}
-							<tr class="{% cycle 'odd' 'even' %}">
-								<td align="right" style="padding-right: 6pt;"></td>
-								<td>
-									<a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a>
-								</td>
-								<td>
-									{% include "zxdemo/include/production_listing_item_links.html" %}
-								</td>
-								<td>
-									{% byline production %}
-								</td>
-								<td align="right">{{ placing.score }}</td>
-							</tr>
-						{% endfor %}
-					</table>
-					<hr />
-				</td>
-			</tr>
-		{% endif %}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" />
+        <col width="224" />
+        <col width="*" />
+        <tr>
+            <td bgcolor="#dedeff" valign="top" align="center" width="224">
+                <a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /></a><br />
+                <h2>{{ party.name }}</h2>
+            </td>
+            <td valign="top" width="100%">
+                <p align="right" style="margin-top: 6px"><a href="http://demozoo.org/parties/{{ party.id }}/">{{ party.name }} on Demozoo&nbsp;&raquo;</a></p>
+                <h1 align="center">{{ party.name }}</h1>
+                {% if party.location %}<h2>{{ party.location }}</h2>{% endif %}
+                <h2>{% date_range party.start_date party.end_date %}</h2>
+                <hr />
+            </td>
+        </tr>
+        {% if invitations %}
+            <tr>
+                <td bgcolor="#dedeff" valign="top" align="center">
+                    <h2 style="text-align: right; margin-right: 8pt;" id="invitations">Invitation{{ invitations|length|pluralize }}&nbsp;&raquo;</h2>
+                </td>
+                <td valign="top">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+                        <col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
+                        {% for production in invitations %}
+                            <tr class="{% cycle 'odd' 'even' %}">
+                                <td align="right" style="padding-right: 6pt;"></td>
+                                <td>
+                                    <a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a>
+                                </td>
+                                <td>
+                                    {% include "zxdemo/include/production_listing_item_links.html" %}
+                                </td>
+                                <td>
+                                    {% byline production %}
+                                </td>
+                                <td align="right">{{ placing.score }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <hr />
+                </td>
+            </tr>
+        {% endif %}
 
-		{% for compo, placings, screenshots in competitions_with_placings %}
-			<tr>
-				<td bgcolor="#dedeff" valign="top" align="center">
-					<h2 style="text-align: right; margin-right: 8pt;" id="competition-{{ compo.id }}">{{ compo.name }}&nbsp;&raquo;</h2>
-					{% for screen in screenshots %}
-						{% include "zxdemo/include/screenshot_thumb.html" with screenshot=screen %}
-					{% endfor %}
-				</td>
-				<td valign="top">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-						<col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
-						{% for placing in placings %}
-							<tr class="{% cycle 'odd' 'even' %}">
-								<td align="right" style="padding-right: 6pt;">{{ placing.ranking }}</td>
-								<td>
-									{% if placing.production|is_spectrum_production %}
-										<a href="{% url 'zxdemo_production' placing.production.id %}">{{ placing.production.title }}</a>
-									{% else %}
-										{{ placing.production.title }}
-									{% endif %}
-								</td>
-								<td>
-									{% if placing.production|is_spectrum_production %}
-										{% include "zxdemo/include/production_listing_item_links.html" with production=placing.production %}
-									{% endif %}
-								</td>
-								<td>
-									{% if placing.production|is_spectrum_production %}
-										{% byline placing.production %}
-									{% else %}
-										{% byline placing.production check_spectrum=1 %}
-									{% endif %}
-								</td>
-								<td align="right">{{ placing.score }}</td>
-							</tr>
-						{% endfor %}
-					</table>
-					<hr />
-				</td>
-			</tr>
+        {% for compo, placings, screenshots in competitions_with_placings %}
+            <tr>
+                <td bgcolor="#dedeff" valign="top" align="center">
+                    <h2 style="text-align: right; margin-right: 8pt;" id="competition-{{ compo.id }}">{{ compo.name }}&nbsp;&raquo;</h2>
+                    {% for screen in screenshots %}
+                        {% include "zxdemo/include/screenshot_thumb.html" with screenshot=screen %}
+                    {% endfor %}
+                </td>
+                <td valign="top">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+                        <col width="10%" /><col width="35%"><col width="15%" /><col width="30%" /><col width="10%" />
+                        {% for placing in placings %}
+                            <tr class="{% cycle 'odd' 'even' %}">
+                                <td align="right" style="padding-right: 6pt;">{{ placing.ranking }}</td>
+                                <td>
+                                    {% if placing.production|is_spectrum_production %}
+                                        <a href="{% url 'zxdemo_production' placing.production.id %}">{{ placing.production.title }}</a>
+                                    {% else %}
+                                        {{ placing.production.title }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if placing.production|is_spectrum_production %}
+                                        {% include "zxdemo/include/production_listing_item_links.html" with production=placing.production %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if placing.production|is_spectrum_production %}
+                                        {% byline placing.production %}
+                                    {% else %}
+                                        {% byline placing.production check_spectrum=1 %}
+                                    {% endif %}
+                                </td>
+                                <td align="right">{{ placing.score }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <hr />
+                </td>
+            </tr>
 
-		{% endfor %}
-	</table>
+        {% endfor %}
+    </table>
 {% endblock %}

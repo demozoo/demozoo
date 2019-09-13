@@ -4,34 +4,34 @@
 {% block html_title %}Editing {{ membership.member.name }} as a subgroup of {{ group.name }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.edit_subgroup_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.edit_subgroup_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}</h2>
+    <h2>Editing {{ membership.member.name }} as a subgroup of {{ group.name }}</h2>
 
-	<form action="{% url 'group_edit_subgroup' group.id membership.id %}" method="post" class="entry_form edit_subgroup_form">
-		{% csrf_token %}
+    <form action="{% url 'group_edit_subgroup' group.id membership.id %}" method="post" class="entry_form edit_subgroup_form">
+        {% csrf_token %}
 
-		{% for field in form.visible_fields %}
-			{% include "shared/form_field.html" %}
-		{% endfor %}
-		{% for field in form.hidden_fields %}
-			{{ field }}
-		{% endfor %}
+        {% for field in form.visible_fields %}
+            {% include "shared/form_field.html" %}
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
 
-		<div class="field">
-			<input type="submit" value="Submit edit"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Submit edit"/>
+        </div>
+    </form>
 
-	<p>
-		<a href="{% url 'group_remove_subgroup' group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
-	</p>
+    <p>
+        <a href="{% url 'group_remove_subgroup' group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
+    </p>
 {% endblock %}

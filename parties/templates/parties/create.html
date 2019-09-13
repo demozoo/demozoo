@@ -6,153 +6,153 @@
 {% block html_title %}New party - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.add_party_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.add_party_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>New party</h2>
+    <h2>New party</h2>
 
-	<form action="{% url 'new_party' %}" method="post" class="entry_form add_party_form">
-		{% csrf_token %}
-		{% include "shared/form_field.html" with field=form.name %}
-		{% include "shared/form_field.html" with field=form.start_date %}
-		{% include "shared/form_field.html" with field=form.end_date %}
-		{% include "shared/form_field.html" with field=form.tagline %}
+    <form action="{% url 'new_party' %}" method="post" class="entry_form add_party_form">
+        {% csrf_token %}
+        {% include "shared/form_field.html" with field=form.name %}
+        {% include "shared/form_field.html" with field=form.start_date %}
+        {% include "shared/form_field.html" with field=form.end_date %}
+        {% include "shared/form_field.html" with field=form.tagline %}
 
-		<div class="field">
-			{% field_label form.location %}
-			<div class="field_input">
-				{{ form.location.errors }}
-				{{ form.location }}<br>
-				{{ form.is_online }} <label for="id_is_online">Online</label>
-			</div>
-		</div>
+        <div class="field">
+            {% field_label form.location %}
+            <div class="field_input">
+                {{ form.location.errors }}
+                {{ form.location }}<br>
+                {{ form.is_online }} <label for="id_is_online">Online</label>
+            </div>
+        </div>
 
-		{% include "shared/form_field.html" with field=form.website %}
-		{% include "shared/form_field.html" with field=form.party_series_name %}
-		{% for field in form.hidden_fields %}
-			{{ field }}
-		{% endfor %}
-		<div class="field">
-			<input type="submit" value="Add new party"/>
-		</div>
-	</form>
-	<script>/* <![CDATA[ */
-		var partySeriesNames = {{ party_series_names|json|safe }};
-		var partySeriesNameMatches = {};
-		for (var i = 0; i < partySeriesNames.length; i++) {
-			var name = partySeriesNames[i];
-			partySeriesNameMatches[name.toLowerCase()] = name;
-		}
+        {% include "shared/form_field.html" with field=form.website %}
+        {% include "shared/form_field.html" with field=form.party_series_name %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+        <div class="field">
+            <input type="submit" value="Add new party"/>
+        </div>
+    </form>
+    <script>/* <![CDATA[ */
+        var partySeriesNames = {{ party_series_names|json|safe }};
+        var partySeriesNameMatches = {};
+        for (var i = 0; i < partySeriesNames.length; i++) {
+            var name = partySeriesNames[i];
+            partySeriesNameMatches[name.toLowerCase()] = name;
+        }
 
-		var partySeriesEdited = false;
-		$('#id_party_series_name').change(function() {
-			partySeriesEdited = true;
-		})
+        var partySeriesEdited = false;
+        $('#id_party_series_name').change(function() {
+            partySeriesEdited = true;
+        })
 
-		/* given a party name, decide on the most likely party series name */
-		function guessPartySeriesName(name) {
-			var words = name.split(/\s+/);
-			for (var i = words.length; i > 0; i--) {
-				var candidate = words.slice(0, i).join(' ').toLowerCase();
-				var match = partySeriesNameMatches[candidate];
-				if (match) {
-					return match;
-				}
-			}
-			/* no matches, so use base name without numeric prefix */
-			var baseName = name.replace(/\s+\d+$/, '');
-			return baseName;
-		}
+        /* given a party name, decide on the most likely party series name */
+        function guessPartySeriesName(name) {
+            var words = name.split(/\s+/);
+            for (var i = words.length; i > 0; i--) {
+                var candidate = words.slice(0, i).join(' ').toLowerCase();
+                var match = partySeriesNameMatches[candidate];
+                if (match) {
+                    return match;
+                }
+            }
+            /* no matches, so use base name without numeric prefix */
+            var baseName = name.replace(/\s+\d+$/, '');
+            return baseName;
+        }
 
-		var previousDefaultStartYear = null;
+        var previousDefaultStartYear = null;
 
-		/* try to extract a year value from the party name, and set the initial value of the
-		start date's datepicker accordingly */
-		function refreshDefaultStartDate() {
-			var name = $('#id_name').val();
-			var yearMatch = name.match(/\b(\d{4})\s*$/);
-			var currentYear = new Date().getFullYear();
-			var partyYear;
+        /* try to extract a year value from the party name, and set the initial value of the
+        start date's datepicker accordingly */
+        function refreshDefaultStartDate() {
+            var name = $('#id_name').val();
+            var yearMatch = name.match(/\b(\d{4})\s*$/);
+            var currentYear = new Date().getFullYear();
+            var partyYear;
 
-			if (yearMatch) {
-				partyYear = parseInt(yearMatch[1], 10);
-			} else {
-				partyYear = null;
-			}
+            if (yearMatch) {
+                partyYear = parseInt(yearMatch[1], 10);
+            } else {
+                partyYear = null;
+            }
 
-			var newDefaultStartDate;
-			if (partyYear !== null && partyYear != currentYear) {
-				/* avoid setting defaultDate unless it's an actual change, otherwise we'll fail to respond to clicks on the date picker button sometimes. Specifically, if we enter a party name and immediately click away to the date picker button, the text field's 'change' event will fire, set defaultDate, and have the side effect of blocking the 'open date picker' action. To fix this, we perform refreshDefaultStartDate on every keypress, so that there's no new action to perform on the final 'change' event. */
-				if (previousDefaultStartYear != partyYear) {
-					$('#id_start_date').datepicker("option", "defaultDate", new Date(partyYear, 0, 1));
-					previousDefaultStartYear = partyYear;
-				}
-			} else {
-				if (previousDefaultStartYear != null) {
-					$('#id_start_date').datepicker("option", "defaultDate", 0); /* default date = today */
-					previousDefaultStartYear = null;
-				}
-			}
-		}
+            var newDefaultStartDate;
+            if (partyYear !== null && partyYear != currentYear) {
+                /* avoid setting defaultDate unless it's an actual change, otherwise we'll fail to respond to clicks on the date picker button sometimes. Specifically, if we enter a party name and immediately click away to the date picker button, the text field's 'change' event will fire, set defaultDate, and have the side effect of blocking the 'open date picker' action. To fix this, we perform refreshDefaultStartDate on every keypress, so that there's no new action to perform on the final 'change' event. */
+                if (previousDefaultStartYear != partyYear) {
+                    $('#id_start_date').datepicker("option", "defaultDate", new Date(partyYear, 0, 1));
+                    previousDefaultStartYear = partyYear;
+                }
+            } else {
+                if (previousDefaultStartYear != null) {
+                    $('#id_start_date').datepicker("option", "defaultDate", 0); /* default date = today */
+                    previousDefaultStartYear = null;
+                }
+            }
+        }
 
-		/* copy the entered start date to be the default datepicker value for the end date */
-		function refreshDefaultEndDate(date) {
-			$('#id_end_date').datepicker("option", "defaultDate", date);
-		}
+        /* copy the entered start date to be the default datepicker value for the end date */
+        function refreshDefaultEndDate(date) {
+            $('#id_end_date').datepicker("option", "defaultDate", date);
+        }
 
-		function showDayOfWeek(dateField, dayLabel) {
-			var date;
-			try {
-				date = parseStrictDate(dateField.val());
-			} catch(e) {
-				date = null;
-			}
-			dayLabel.text(date === null ? '' : dayName[date.getDay()])
-		}
-		var dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-		var startDateDayOfWeek = $('<span class="day_of_week"></span>');
-		$('#id_start_date').after(startDateDayOfWeek);
-		var endDateDayOfWeek = $('<span class="day_of_week"></span>');
-		$('#id_end_date').after(endDateDayOfWeek);
+        function showDayOfWeek(dateField, dayLabel) {
+            var date;
+            try {
+                date = parseStrictDate(dateField.val());
+            } catch(e) {
+                date = null;
+            }
+            dayLabel.text(date === null ? '' : dayName[date.getDay()])
+        }
+        var dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        var startDateDayOfWeek = $('<span class="day_of_week"></span>');
+        $('#id_start_date').after(startDateDayOfWeek);
+        var endDateDayOfWeek = $('<span class="day_of_week"></span>');
+        $('#id_end_date').after(endDateDayOfWeek);
 
-		$('#id_name').change(function() {
-			var name = $(this).val();
-			if (!partySeriesEdited) {
-				$('#id_party_series_name').val(guessPartySeriesName(name));
-			}
-			refreshDefaultStartDate();
-		});
-		$('#id_name').keypress(function() {
-			setTimeout(refreshDefaultStartDate, 1);
-		});
+        $('#id_name').change(function() {
+            var name = $(this).val();
+            if (!partySeriesEdited) {
+                $('#id_party_series_name').val(guessPartySeriesName(name));
+            }
+            refreshDefaultStartDate();
+        });
+        $('#id_name').keypress(function() {
+            setTimeout(refreshDefaultStartDate, 1);
+        });
 
-		$('#id_start_date').change(function() {
-			refreshDefaultEndDate($(this).val());
+        $('#id_start_date').change(function() {
+            refreshDefaultEndDate($(this).val());
 
-			showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
-		});
-		showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
+            showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
+        });
+        showDayOfWeek($("#id_start_date"), startDateDayOfWeek);
 
-		$('#id_end_date').change(function() {
-			showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
-		});
-		showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+        $('#id_end_date').change(function() {
+            showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
+        });
+        showDayOfWeek($("#id_end_date"), endDateDayOfWeek);
 
-		function refreshLocationDisabledState() {
-			if ($('#id_is_online').is(':checked')) {
-				$('#id_location').val('').attr('disabled', true);
-			} else {
-				$('#id_location').removeAttr('disabled');
-			}
-		}
-		refreshLocationDisabledState();
-		$('#id_is_online').change(refreshLocationDisabledState);
-	/* ]]> */</script>
+        function refreshLocationDisabledState() {
+            if ($('#id_is_online').is(':checked')) {
+                $('#id_location').val('').attr('disabled', true);
+            } else {
+                $('#id_location').removeAttr('disabled');
+            }
+        }
+        refreshLocationDisabledState();
+        $('#id_is_online').change(refreshLocationDisabledState);
+    /* ]]> */</script>
 {% endblock %}

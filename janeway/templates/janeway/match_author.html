@@ -3,45 +3,45 @@
 
 
 {% block extra_js %}
-	{% if site_is_writeable %}
-		{% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
-		{% compress js %}<script src="/static/janeway/js/match.js"></script>{% endcompress %}
-	{% endif %}
+    {% if site_is_writeable %}
+        {% compress js %}<script src="/static/sceneorg/js/matching.js"></script>{% endcompress %}
+        {% compress js %}<script src="/static/janeway/js/match.js"></script>{% endcompress %}
+    {% endif %}
 {% endblock %}
 
 {% block base_main %}
 <section class="sceneorg">
-	<h2>Janeway release matching: {{ releaser.name }}</h2>
+    <h2>Janeway release matching: {{ releaser.name }}</h2>
 
-	<h3>Unmatched:</h3>
+    <h3>Unmatched:</h3>
 
-	<ul class="unmatched_left unmatched_demozoo_prods">
-		<li>Demozoo prods:</li>
-		{% for id, title, url, supertype in unmatched_demozoo_prods %}
-			<li>
-				<button class="matchable demozoo_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button>
-			</li>
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_left unmatched_demozoo_prods">
+        <li>Demozoo prods:</li>
+        {% for id, title, url, supertype in unmatched_demozoo_prods %}
+            <li>
+                <button class="matchable demozoo_prod unmatched" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button>
+            </li>
+        {% endfor %}
+    </ul>
 
-	<ul class="unmatched_right unmatched_janeway_prods">
-		<li>Janeway prods:
-			<form action="{% url 'janeway_import_all_author_productions' %}" method="POST" style="display: inline">
-				<input type="hidden" name="releaser_id" value="{{ releaser.id }}">
-				{% csrf_token %}
-				<input type="submit" value="Import all">
-			</form>
-		</li>
-		{% for id, title, url, supertype in unmatched_janeway_prods %}
-			<li><button class="matchable janeway_prod unmatched {% if request.user.is_staff %}importable{% endif %}" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button></li>
-		{% endfor %}
-	</ul>
+    <ul class="unmatched_right unmatched_janeway_prods">
+        <li>Janeway prods:
+            <form action="{% url 'janeway_import_all_author_productions' %}" method="POST" style="display: inline">
+                <input type="hidden" name="releaser_id" value="{{ releaser.id }}">
+                {% csrf_token %}
+                <input type="submit" value="Import all">
+            </form>
+        </li>
+        {% for id, title, url, supertype in unmatched_janeway_prods %}
+            <li><button class="matchable janeway_prod unmatched {% if request.user.is_staff %}importable{% endif %}" value="{{ id }}" data-info-url="{{ url }}">{% icon supertype %} {{ title }}</button></li>
+        {% endfor %}
+    </ul>
 
-	<h3>Matched:</h3>
-	<ul class="matches">
-		{% for dz_id, dz_title, dz_url, janeway_id, janeway_title, janeway_url, supertype in matched_prods %}
-			{% include "janeway/_matched_production.html" %}
-		{% endfor %}
-	</ul>
+    <h3>Matched:</h3>
+    <ul class="matches">
+        {% for dz_id, dz_title, dz_url, janeway_id, janeway_title, janeway_url, supertype in matched_prods %}
+            {% include "janeway/_matched_production.html" %}
+        {% endfor %}
+    </ul>
 </section>
 {% endblock %}

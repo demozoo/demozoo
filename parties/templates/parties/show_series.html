@@ -8,113 +8,113 @@
 {% block body_class %}show_party_series{% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/js/components/notes_panel.js"></script>
-		<script src="/static/js/components/editable_chunk.js"></script>
-	{% endcompress %}
+    {% compress js %}
+        <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/editable_chunk.js"></script>
+    {% endcompress %}
 {% endblock %}
 
 {% block base_main %}
-	<div class="editable_chunk">
-		<div class="signpost">Party</div>
+    <div class="editable_chunk">
+        <div class="signpost">Party</div>
 
-		{% if site_is_writeable %}
-			<ul class="actions">
-				<li>
-					<a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
-				</li>
-			</ul>
-		{% endif %}
+        {% if site_is_writeable %}
+            <ul class="actions">
+                <li>
+                    <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
+                </li>
+            </ul>
+        {% endif %}
 
-		<div class="focus_title party_name">
-			<h2>{{ party_series.name }}</h2>
-		</div>
+        <div class="focus_title party_name">
+            <h2>{{ party_series.name }}</h2>
+        </div>
 
-		{% if party_series.has_any_external_links %}
-			<div class="panel external_links_panel">
-				<h3 class="panel__title">External links</h3>
-				<ul class="external_links">
-					{% if party_series.website %}
-						<li>
-							<a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a>
-						</li>
-					{% endif %}
-					{% if party_series.twitter_url %}
-						<li>
-							<a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a>
-						</li>
-					{% endif %}
-					{% if party_series.pouet_url %}
-						<li>
-							<a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a>
-						</li>
-					{% endif %}
-				</ul>
-			</div>
-		{% endif %}
+        {% if party_series.has_any_external_links %}
+            <div class="panel external_links_panel">
+                <h3 class="panel__title">External links</h3>
+                <ul class="external_links">
+                    {% if party_series.website %}
+                        <li>
+                            <a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a>
+                        </li>
+                    {% endif %}
+                    {% if party_series.twitter_url %}
+                        <li>
+                            <a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a>
+                        </li>
+                    {% endif %}
+                    {% if party_series.pouet_url %}
+                        <li>
+                            <a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
 
-	</div>
+    </div>
 
-	{% if party_series.notes or request.user.is_staff %}
-		<div class="editable_chunk panel notes_panel">
-			{% if request.user.is_staff and site_is_writeable %}
-				<ul class="actions">
-					<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
-				</ul>
-			{% endif %}
-			<div class="notes">
-				{{ party_series.notes|safe_markdown }}
-			</div>
-		</div>
-	{% endif %}
+    {% if party_series.notes or request.user.is_staff %}
+        <div class="editable_chunk panel notes_panel">
+            {% if request.user.is_staff and site_is_writeable %}
+                <ul class="actions">
+                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
+                </ul>
+            {% endif %}
+            <div class="notes">
+                {{ party_series.notes|safe_markdown }}
+            </div>
+        </div>
+    {% endif %}
 
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
-		</ul>
-	{% endif %}
-	<div style="clear: both;"></div>
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
+        </ul>
+    {% endif %}
+    <div style="clear: both;"></div>
 
-	{% if parties %}
-		<ul class="list list--party-editions">
-			{% for party in parties %}
-				{% with party.random_screenshot as pic %}
-					<li class="list__item">
-						<div class="party-edition">
-							<div class="media">
-								{% if pic %}
-									{% megathumb pic %}
-								{% elif not pic %}
-									{% icon 'event' %}
-								{% endif %}
-							</div>
-							<h3 class="party-edition__name">{{ party.name }}</h3>
-							<div class="meta">
-								<span class="meta__item">{% date_range party.start_date party.end_date %}</span>
-								&bull;
-								<span class="meta__item">
-									{% if party.is_online %}
-										Online
-										<img src="/static/images/icons/computer.png"
-										     alt=""
-										/>
-									{% elif party.location %}
-										{{ party.location }}
-										{% if party.country_code %}
-											<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png"
-											     alt=""
-											/>
-										{% endif %}
-									{% endif %}
-								</span>
-							</div>
-							<a class="more" href="{{ party.get_absolute_url }}"><span>See details for {{ party.name }}</span></a>
-						</div>
-					</li>
-				{% endwith %}
-			{% endfor %}
-		</ul>
-	{% endif %}
+    {% if parties %}
+        <ul class="list list--party-editions">
+            {% for party in parties %}
+                {% with party.random_screenshot as pic %}
+                    <li class="list__item">
+                        <div class="party-edition">
+                            <div class="media">
+                                {% if pic %}
+                                    {% megathumb pic %}
+                                {% elif not pic %}
+                                    {% icon 'event' %}
+                                {% endif %}
+                            </div>
+                            <h3 class="party-edition__name">{{ party.name }}</h3>
+                            <div class="meta">
+                                <span class="meta__item">{% date_range party.start_date party.end_date %}</span>
+                                &bull;
+                                <span class="meta__item">
+                                    {% if party.is_online %}
+                                        Online
+                                        <img src="/static/images/icons/computer.png"
+                                             alt=""
+                                        />
+                                    {% elif party.location %}
+                                        {{ party.location }}
+                                        {% if party.country_code %}
+                                            <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png"
+                                                 alt=""
+                                            />
+                                        {% endif %}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <a class="more" href="{{ party.get_absolute_url }}"><span>See details for {{ party.name }}</span></a>
+                        </div>
+                    </li>
+                {% endwith %}
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-	{% last_edited_by party_series %}
+    {% last_edited_by party_series %}
 {% endblock %}

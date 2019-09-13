@@ -1,20 +1,20 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="result">
-	<div class="media media--thumbnail">
-		{% icon 'group' %}
-	</div>
-	<div class="result__content">
-		<a href="{{ result.get_absolute_url }}" class="result__link">
-			<span>{{ result }}</span>
-			{% if result.primary_nick.differentiator %}
-				(<span>{{ result.primary_nick.differentiator }}</span>)
-			{% endif %}
-		</a>
-		{% if result.has_search_snippet %}
-			<div class="result__snippet">
-				<p class="snippet">{{ result.search_snippet|safe }}</p>
-			</div>
-		{% endif %}
-	</div>
+    <div class="media media--thumbnail">
+        {% icon 'group' %}
+    </div>
+    <div class="result__content">
+        <a href="{{ result.get_absolute_url }}" class="result__link">
+            <span>{{ result }}</span>
+            {% if result.primary_nick.differentiator %}
+                (<span>{{ result.primary_nick.differentiator }}</span>)
+            {% endif %}
+        </a>
+        {% if result.has_search_snippet %}
+            <div class="result__snippet">
+                <p class="snippet">{{ result.search_snippet|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
 </div>

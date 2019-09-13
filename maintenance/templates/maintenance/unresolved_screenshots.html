@@ -7,36 +7,36 @@
 {% block body_class %}maintenance_report unresolved_screenshots{% endblock %}
 
 {% block base_main %}
-	<h2>{{ title }}:</h2>
-	<div id="main_column">
-		<br />
-		<h3>Total remaining: {{ link_count }}</h3>
-		<br />
-		{% for link, archive_members in entries %}
-			<div style="margin-bottom: 1em;">
-				<h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
-				<ul>
-					{% for file in archive_members %}
-						<li>
-							{% if site_is_writeable %}
-								<a href="{% url 'maintenance:resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
-							{% else %}
-								{{ file.filename }} ({{ file.file_size }} bytes)
-							{% endif %}
-							- <a href="{% url 'maintenance:view_archive_member' file.id %}" target="_blank">view</a>
-						</li>
-					{% endfor %}
-				<ul>
-			</div>
-		{% endfor %}
-		<script>
-			$('a.resolve').click(function() {
-				var a = this;
-				$.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
-					$(a).closest('ul').fadeOut();
-				});
-				return false;
-			})
-		</script>
-	</div>
+    <h2>{{ title }}:</h2>
+    <div id="main_column">
+        <br />
+        <h3>Total remaining: {{ link_count }}</h3>
+        <br />
+        {% for link, archive_members in entries %}
+            <div style="margin-bottom: 1em;">
+                <h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
+                <ul>
+                    {% for file in archive_members %}
+                        <li>
+                            {% if site_is_writeable %}
+                                <a href="{% url 'maintenance:resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
+                            {% else %}
+                                {{ file.filename }} ({{ file.file_size }} bytes)
+                            {% endif %}
+                            - <a href="{% url 'maintenance:view_archive_member' file.id %}" target="_blank">view</a>
+                        </li>
+                    {% endfor %}
+                <ul>
+            </div>
+        {% endfor %}
+        <script>
+            $('a.resolve').click(function() {
+                var a = this;
+                $.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
+                    $(a).closest('ul').fadeOut();
+                });
+                return false;
+            })
+        </script>
+    </div>
 {% endblock %}

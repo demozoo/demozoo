@@ -4,42 +4,42 @@
 {% block html_title %}Edit social share image for {{ party.name }} - Demozoo{% endblock %}
 
 {% block extra_css %}
-	<style type="text/css">
-		/* relax width constraint on the file upload field, so that the 'clear' checkbox doesn't wrap */
-		.entry_form .field_input {
-			width: auto;
-		}
-		.thumbnail {
-			float: left;
-			width: 250px;
-			height: 160px;
-		}
-	</style>
+    <style type="text/css">
+        /* relax width constraint on the file upload field, so that the 'clear' checkbox doesn't wrap */
+        .entry_form .field_input {
+            width: auto;
+        }
+        .thumbnail {
+            float: left;
+            width: 250px;
+            height: 160px;
+        }
+    </style>
 {% endblock %}
 
 {% block base_main %}
-	<h1>Editing social share image for: {{ party.name }}</h1>
-	<p>Currently: <img src="{{ party.share_image_url }}"></p>
-	<form action="{% url 'party_edit_share_image' party.id %}" method="post" enctype="multipart/form-data" class="entry_form">
-		{% csrf_token %}
+    <h1>Editing social share image for: {{ party.name }}</h1>
+    <p>Currently: <img src="{{ party.share_image_url }}"></p>
+    <form action="{% url 'party_edit_share_image' party.id %}" method="post" enctype="multipart/form-data" class="entry_form">
+        {% csrf_token %}
 
-		{% include "shared/form_field.html" with field=form.share_image_file %}
+        {% include "shared/form_field.html" with field=form.share_image_file %}
 
-		{% with form.share_screenshot as field %}
-			<div class="field">
-				<label for="{{ field.id_for_label }}" class="field_label">Or choose a screenshot:</label>
-				<div class="field_input">
-					{{ field.errors }}
+        {% with form.share_screenshot as field %}
+            <div class="field">
+                <label for="{{ field.id_for_label }}" class="field_label">Or choose a screenshot:</label>
+                <div class="field_input">
+                    {{ field.errors }}
 
-					{% for screenshot, option in form.options_with_screenshots %}
-						<div class="thumbnail"><label>{{ option.tag }} <img src="{{ screenshot.thumbnail_url }}" width="{{ screenshot.thumbnail_width }}" height="{{ screenshot.thumbnail_height }}" alt="" /></label></div>
-					{% endfor %}
-				</div>
-			</div>
-		{% endwith %}
+                    {% for screenshot, option in form.options_with_screenshots %}
+                        <div class="thumbnail"><label>{{ option.tag }} <img src="{{ screenshot.thumbnail_url }}" width="{{ screenshot.thumbnail_width }}" height="{{ screenshot.thumbnail_height }}" alt="" /></label></div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endwith %}
 
-		<div class="field">
-			<input type="submit" value="Update" />
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Update" />
+        </div>
+    </form>
 {% endblock %}

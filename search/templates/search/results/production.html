@@ -1,24 +1,24 @@
 {% load demoscene_tags %}
 {% load search_snippet %}
 <div class="result">
-	{% if result.selected_screenshot %}
-		{% microthumb result.selected_screenshot %}
+    {% if result.selected_screenshot %}
+        {% microthumb result.selected_screenshot %}
 
-	{% else %}
-		<div class="media media--thumbnail">
-			{% icon result.supertype %}
-		</div>
+    {% else %}
+        <div class="media media--thumbnail">
+            {% icon result.supertype %}
+        </div>
 
-	{% endif %}
-	<div class="result__content">
-		<a href="{{ result.get_absolute_url }}">{{ result }}</a>
-		{% if result.author_nicks.all %}
-			<small>by <span>{% byline result %}</span></small>
-		{% endif %}
-		{% if result.has_search_snippet %}
-			<div class="result__snippet">
-				<p class="snippet">{{ result.search_snippet|safe }}</p>
-			</div>
-		{% endif %}
-	</div>
+    {% endif %}
+    <div class="result__content">
+        <a href="{{ result.get_absolute_url }}">{{ result }}</a>
+        {% if result.author_nicks.all %}
+            <small>by <span>{% byline result %}</span></small>
+        {% endif %}
+        {% if result.has_search_snippet %}
+            <div class="result__snippet">
+                <p class="snippet">{{ result.search_snippet|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
 </div>

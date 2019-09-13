@@ -6,49 +6,49 @@
 {% block meta_keywords %}zx spectrum speccy demo scene demoscene scener download information info party compo music gfx intros{% endblock %}
 
 {% block sidebar %}
-	<div style="margin-top: 8pt;">
-		{% include "zxdemo/include/screenshot_thumb.html" with screenshot=random_screenshot %}
-	</div>
+    <div style="margin-top: 8pt;">
+        {% include "zxdemo/include/screenshot_thumb.html" with screenshot=random_screenshot %}
+    </div>
 
-	<div><a href="{% url 'zxdemo_production' random_screenshot.production_id %}">{{ random_screenshot.production.title }}</a></div>
-	<div class="annotation">{% byline random_screenshot.production %}</div>
+    <div><a href="{% url 'zxdemo_production' random_screenshot.production_id %}">{{ random_screenshot.production.title }}</a></div>
+    <div class="annotation">{% byline random_screenshot.production %}</div>
 
-	<a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />
-	{% forthcoming_parties %}
+    <a href="{% url 'zxdemo_parties' %}"><img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" border="0" /></a><br />
+    {% forthcoming_parties %}
 
-	<a href="{% url 'zxdemo_productions' %}"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
-	<div style="margin-bottom: 4pt;"><strong>Latest releases</strong></div>
-	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
-	<div style="margin-bottom: 4pt;"><strong>Latest additions</strong></div>
-	{% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_additions %}
+    <a href="{% url 'zxdemo_productions' %}"><img src="/static/zxdemo/images/section/head_releases.gif" alt="Releases" width="224" height="42" border="0" /></a><br />
+    <div style="margin-bottom: 4pt;"><strong>Latest releases</strong></div>
+    {% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_releases %}
+    <div style="margin-bottom: 4pt;"><strong>Latest additions</strong></div>
+    {% include "zxdemo/include/sidebar_production_listing.html" with productions=latest_additions %}
 
-	<div class="small">
-		<strong>Spectrum Webring</strong><br />
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev5">&lt;&lt;</a>
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev">&lt;</a>
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;random">rand</a>
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;list">list</a>
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next">&gt;</a>
-		<a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next5">&gt;&gt;</a>
-	</div>
+    <div class="small">
+        <strong>Spectrum Webring</strong><br />
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev5">&lt;&lt;</a>
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;prev">&lt;</a>
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;random">rand</a>
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;list">list</a>
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next">&gt;</a>
+        <a href="http://www.webring.org/cgi-bin/webring?ring=spectrum;id=30;next5">&gt;&gt;</a>
+    </div>
 {% endblock %}
 
 {% block body %}
-	<div align="center"><a href="{% url 'zxdemo_productions' %}?graphics=&amp;music=">{{ stats.demo_count }}</a> demos - <a href="{% url 'zxdemo_productions' %}?demos=&amp;graphics=">{{ stats.music_count }}</a> musics - <a href="{% url 'zxdemo_productions' %}?demos=&amp;music=">{{ stats.graphics_count }}</a> graphics - <a href="{% url 'zxdemo_authors' %}">{{ stats.releaser_count }}</a> sceners</div><br />
+    <div align="center"><a href="{% url 'zxdemo_productions' %}?graphics=&amp;music=">{{ stats.demo_count }}</a> demos - <a href="{% url 'zxdemo_productions' %}?demos=&amp;graphics=">{{ stats.music_count }}</a> musics - <a href="{% url 'zxdemo_productions' %}?demos=&amp;music=">{{ stats.graphics_count }}</a> graphics - <a href="{% url 'zxdemo_authors' %}">{{ stats.releaser_count }}</a> sceners</div><br />
 
-	{% for news in news_items %}
-		<table width="100%" border="0" cellpadding="2" cellspacing="0" style="border: 1px solid #666666;">
-			<col width="*" />
-			<tr><td bgcolor="#ffffbb">
-				<h3>{{ news.title }}</h3>
-			</td></tr>
-			<tr><td>
-				{{ news.body|safe }}
-			</td></tr>
-			<tr><td bgcolor="#dedeff">
-				<em><b>{{ news.author.username }}</b> - {{ news.created_at|date:"d / m / Y" }}</em>
-			</td></tr>
-		</table><br />
-	{% endfor %}
+    {% for news in news_items %}
+        <table width="100%" border="0" cellpadding="2" cellspacing="0" style="border: 1px solid #666666;">
+            <col width="*" />
+            <tr><td bgcolor="#ffffbb">
+                <h3>{{ news.title }}</h3>
+            </td></tr>
+            <tr><td>
+                {{ news.body|safe }}
+            </td></tr>
+            <tr><td bgcolor="#dedeff">
+                <em><b>{{ news.author.username }}</b> - {{ news.created_at|date:"d / m / Y" }}</em>
+            </td></tr>
+        </table><br />
+    {% endfor %}
 
 {% endblock %}

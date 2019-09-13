@@ -3,17 +3,17 @@
 {% block html_title %}Choose news image - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
+    {% include "shared/editor_css.html" %}
 {% endblock %}
 
 {% block base_main %}
-	<ul>
-		{% for image in images %}
-			<li style="float: left; padding: 5px;">
-				<a href="javascript:void(0);" class="choose-image" data-id="{{ image.id }}" data-url="{{ image.image_url }}">
-					<img src="{{ image.image_url }}" width="100" alt="">
-				</a>
-			</li>
-		{% endfor %}
-	</ul>
+    <ul>
+        {% for image in images %}
+            <li style="float: left; padding: 5px;">
+                <a href="javascript:void(0);" class="choose-image" data-id="{{ image.id }}" data-url="{{ image.image_url }}">
+                    <img src="{{ image.image_url }}" width="100" alt="">
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

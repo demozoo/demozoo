@@ -1,8 +1,8 @@
 {% load demoscene_tags %}
 
 <li>
-	<button class="matchable demozoo_prod matched" value="{{ dz_id }}" data-info-url="{{ dz_url }}">{% icon supertype %} {{ dz_title }}</button>
-	=
-	<button class="matchable janeway_prod matched {% if request.user.is_staff %}importable{% endif %}" value="{{ janeway_id }}" data-info-url="{{ janeway_url }}">{% icon supertype %} {{ janeway_title }}</button>
-	<button class="unlink" title="Delete this match">unlink</button>
+    <button class="matchable demozoo_prod matched" value="{{ dz_id }}" data-info-url="{{ dz_url }}">{% icon supertype %} {{ dz_title }}</button>
+    =
+    <button class="matchable janeway_prod matched {% if request.user.is_staff %}importable{% endif %}" value="{{ janeway_id }}" data-info-url="{{ janeway_url }}">{% icon supertype %} {{ janeway_title }}</button>
+    <button class="unlink" title="Delete this match">unlink</button>
 </li>

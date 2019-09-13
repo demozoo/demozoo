@@ -5,33 +5,33 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
-	{% if site_is_writeable %}
-		<ul class="actions">
-			<li><a href="{% url 'new_party' %}" class="action_button icon add open_in_lightbox">New party</a></li>
-		</ul>
-	{% endif %}
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><a href="{% url 'new_party' %}" class="action_button icon add open_in_lightbox">New party</a></li>
+        </ul>
+    {% endif %}
 
-	<h2>Parties</h2>
-	
-	<p>
-		<strong>By name</strong> | <a href="{% url 'parties_by_date' %}">By date</a>
-	</p>
-	
-	{% regroup parties by party_series as party_series_list %}
-	<table class="party_series_index">
-		{% for item in party_series_list %}
-			<tr class="{% cycle 'odd' 'even' %}">
-				<th>
-					<a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
-				</th>
-				<td>
-					<ul class="parties">
-						{% for party in item.list %}
-							<li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
-						{% endfor %}
-					</ul>
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
+    <h2>Parties</h2>
+    
+    <p>
+        <strong>By name</strong> | <a href="{% url 'parties_by_date' %}">By date</a>
+    </p>
+    
+    {% regroup parties by party_series as party_series_list %}
+    <table class="party_series_index">
+        {% for item in party_series_list %}
+            <tr class="{% cycle 'odd' 'even' %}">
+                <th>
+                    <a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
+                </th>
+                <td>
+                    <ul class="parties">
+                        {% for party in item.list %}
+                            <li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

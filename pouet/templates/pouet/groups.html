@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 
 {% block base_main %}
-	<h2>Pouet release matching</h2>
+    <h2>Pouet release matching</h2>
 
-	<p>
-		Show:
-		{% if showing_full %}
-			<a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
-			<strong>All groups</strong>
-		{% else %}
-			<strong>Groups with potential matches</strong> |
-			<a href="{% url 'pouet_groups' %}?full=1">All groups</a>
-		{% endif %}
-	</p>
+    <p>
+        Show:
+        {% if showing_full %}
+            <a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
+            <strong>All groups</strong>
+        {% else %}
+            <strong>Groups with potential matches</strong> |
+            <a href="{% url 'pouet_groups' %}?full=1">All groups</a>
+        {% endif %}
+    </p>
 
-	<ul>
-		{% for group in groups %}
-			<li>
-				<a href="{% url 'pouet_match_group' group.releaser.id %}">{{ group.releaser.name }}{% if group.releaser.primary_nick.differentiator %} ({{ group.releaser.primary_nick.differentiator }}){% endif %}</a>
-				- {{ group.unmatched_demozoo_production_count }} vs {{ group.unmatched_pouet_production_count }} unmatched, {{ group.matched_production_count }} matched
-			</li>
-		{% endfor %}
-	<ul>
+    <ul>
+        {% for group in groups %}
+            <li>
+                <a href="{% url 'pouet_match_group' group.releaser.id %}">{{ group.releaser.name }}{% if group.releaser.primary_nick.differentiator %} ({{ group.releaser.primary_nick.differentiator }}){% endif %}</a>
+                - {{ group.unmatched_demozoo_production_count }} vs {{ group.unmatched_pouet_production_count }} unmatched, {{ group.matched_production_count }} matched
+            </li>
+        {% endfor %}
+    <ul>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% load demoscene_tags %}
 <div class="field">
-	{% field_label field %}
-	<div class="field_input">
-		{{ field.errors }}
-		{{ field }}
-		{% if field.help_text %}
-			<div class="help_text">{{ field.help_text }}</div>
-		{% endif %}
-	</div>
+    {% field_label field %}
+    <div class="field_input">
+        {{ field.errors }}
+        {{ field }}
+        {% if field.help_text %}
+            <div class="help_text">{{ field.help_text }}</div>
+        {% endif %}
+    </div>
 </div>

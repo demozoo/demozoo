@@ -1,33 +1,33 @@
 
 
 {% with commentable.get_comments as comments %}
-	{% if comments or site_is_writeable %}
-		<div class="comments_panel">
-			{% if comments %}
-				<div class="comments">
-					<h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
-					{% for comment in comments %}
-						<div class="comment" id="comment-{{ comment.id }}">
-							{% if request.user.is_staff and site_is_writeable %}
-								<div class="admin_controls">
-									<a href="{% url edit_action commentable.id comment.id %}" class="open_in_lightbox">Edit</a>
-									| <a href="{% url delete_action commentable.id comment.id %}" class="open_in_lightbox">Delete</a>
-								</div>
-							{% endif %}
-							<b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
-							<a href="{{ comment.get_absolute_url }}">#</a>
-							<p>{{ comment.body|urlize|linebreaks }}</p>
-						</div>
-					{% endfor %}
-				</div>
-			{% elif request.user.is_authenticated and site_is_writeable %}
-				<h3 class="comment_form_trigger">{{ no_comments_message }}</h3>
-			{% else %}
-				<h3><a href="{% url 'log_in' %}?next={{ commentable.get_absolute_url|urlencode }}">{{ no_comments_message }}</a></h3>
-			{% endif %}
-			{% if comment_form and site_is_writeable %}
-				{% include "comments/_comment_form.html" with submit_action=add_action %}
-			{% endif %}
-		</div>
-	{% endif %}
+    {% if comments or site_is_writeable %}
+        <div class="comments_panel">
+            {% if comments %}
+                <div class="comments">
+                    <h2>{{ comments|length }} comment{{ comments|length|pluralize }}</h2>
+                    {% for comment in comments %}
+                        <div class="comment" id="comment-{{ comment.id }}">
+                            {% if request.user.is_staff and site_is_writeable %}
+                                <div class="admin_controls">
+                                    <a href="{% url edit_action commentable.id comment.id %}" class="open_in_lightbox">Edit</a>
+                                    | <a href="{% url delete_action commentable.id comment.id %}" class="open_in_lightbox">Delete</a>
+                                </div>
+                            {% endif %}
+                            <b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
+                            <a href="{{ comment.get_absolute_url }}">#</a>
+                            <p>{{ comment.body|urlize|linebreaks }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elif request.user.is_authenticated and site_is_writeable %}
+                <h3 class="comment_form_trigger">{{ no_comments_message }}</h3>
+            {% else %}
+                <h3><a href="{% url 'log_in' %}?next={{ commentable.get_absolute_url|urlencode }}">{{ no_comments_message }}</a></h3>
+            {% endif %}
+            {% if comment_form and site_is_writeable %}
+                {% include "comments/_comment_form.html" with submit_action=add_action %}
+            {% endif %}
+        </div>
+    {% endif %}
 {% endwith %}

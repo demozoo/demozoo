@@ -5,49 +5,49 @@
 {% block html_title %}New graphics - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.production_create_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.production_create_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<div class="form_title">
-		<h2>New graphics</h2>
-		<p>(see also:
-			<a href="{% url 'new_production' %}{% urlsub %}" class="open_in_lightbox">New production</a>
-			| <a href="{% url 'new_music' %}{% urlsub %}" class="open_in_lightbox">New music</a>)</p>
-	</div>
+    <div class="form_title">
+        <h2>New graphics</h2>
+        <p>(see also:
+            <a href="{% url 'new_production' %}{% urlsub %}" class="open_in_lightbox">New production</a>
+            | <a href="{% url 'new_music' %}{% urlsub %}" class="open_in_lightbox">New music</a>)</p>
+    </div>
 
-	<form action="{% url 'new_graphics' %}" method="post" class="entry_form production_create_form">
-		{% csrf_token %}
+    <form action="{% url 'new_graphics' %}" method="post" class="entry_form production_create_form">
+        {% csrf_token %}
 
-		{% with form.title as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
+        {% with form.title as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
 
-		{% with form.byline as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
+        {% with form.byline as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
 
-		{% with form.release_date as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
+        {% with form.release_date as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
 
-		{% with form.type as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
+        {% with form.type as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
 
-		{% with form.platform as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
+        {% with form.platform as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
 
-		{% include "shared/production_download_formset.html" %}
-		<div class="field">
-			<input type="submit" value="Add new graphics prod"/>
-		</div>
-	</form>
+        {% include "shared/production_download_formset.html" %}
+        <div class="field">
+            <input type="submit" value="Add new graphics prod"/>
+        </div>
+    </form>
 {% endblock %}

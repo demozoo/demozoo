@@ -2,18 +2,18 @@
 {% load zxdemo_tags %}
 
 <tr class="{{ rowcolour }}">
-	<td>{% production_type_icon production %}</td>
-	<td><a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a></td>
-	<td>
-		{% include "zxdemo/include/production_listing_item_links.html" %}
-	</td>
-	<td>{{ production.release_date_date|date:"Y" }}</td>
-	<td>{% byline production %}</td>
+    <td>{% production_type_icon production %}</td>
+    <td><a href="{% url 'zxdemo_production' production.id %}">{{ production.title }}</a></td>
+    <td>
+        {% include "zxdemo/include/production_listing_item_links.html" %}
+    </td>
+    <td>{{ production.release_date_date|date:"Y" }}</td>
+    <td>{% byline production %}</td>
 </tr>
 {% if credits %}
-	<tr class="{{ rowcolour }}">
-		<td colspan="5" style="padding-left: 16pt"><i>- 
-			{% for credit in credits %}{{ credit.description }}{% if not forloop.last %}, {% endif %}{% endfor %}</i>
-		</td>
-	</tr>
+    <tr class="{{ rowcolour }}">
+        <td colspan="5" style="padding-left: 16pt"><i>- 
+            {% for credit in credits %}{{ credit.description }}{% if not forloop.last %}, {% endif %}{% endfor %}</i>
+        </td>
+    </tr>
 {% endif %}

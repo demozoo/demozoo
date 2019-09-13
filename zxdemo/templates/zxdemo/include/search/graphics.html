@@ -1,27 +1,27 @@
 <tr>
-	<td bgcolor="#dedeff" valign="top" align="center">
-		<img src="/static/zxdemo/images/section/head_graphics.gif" alt="Graphics" width="224" height="42" /><br />
-	</td>
-	<td valign="top">
-		{% include "zxdemo/include/production_listing.html" with productions=graphics %}
+    <td bgcolor="#dedeff" valign="top" align="center">
+        <img src="/static/zxdemo/images/section/head_graphics.gif" alt="Graphics" width="224" height="42" /><br />
+    </td>
+    <td valign="top">
+        {% include "zxdemo/include/production_listing.html" with productions=graphics %}
 
-		{% if graphics_prev_link or graphics_next_link %}
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
-				<col width="50%" /><col width="50%" />
-				<tr>
-					<td align="left">
-						{% if graphics_prev_link %}
-							<a href="{{ graphics_prev_link }}">&laquo;&nbsp;previous</a>
-						{% endif %}
-					</td>
-					<td align="right">
-						{% if graphics_next_link %}
-							<a href="{{ graphics_next_link }}">next&nbsp;&raquo;</a>
-						{% endif %}
-					</td>
-				</tr>
-			</table>
-		{% endif %}
-		<hr />
-	</td>
+        {% if graphics_prev_link or graphics_next_link %}
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <col width="50%" /><col width="50%" />
+                <tr>
+                    <td align="left">
+                        {% if graphics_prev_link %}
+                            <a href="{{ graphics_prev_link }}">&laquo;&nbsp;previous</a>
+                        {% endif %}
+                    </td>
+                    <td align="right">
+                        {% if graphics_next_link %}
+                            <a href="{{ graphics_next_link }}">next&nbsp;&raquo;</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+        <hr />
+    </td>
 </tr>

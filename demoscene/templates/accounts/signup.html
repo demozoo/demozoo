@@ -10,33 +10,33 @@
 {% block login_sceneid_next_param %}{% endblock %}
 
 {% block base_main %}
-	<h1>New account</h1>
+    <h1>New account</h1>
 
-	<form action="." method="post" class="form form--signup">
-		{% csrf_token %}
-		<fieldset>
-			{% include "shared/form_field.html" with field=form.username %}
-			{% include "shared/form_field.html" with field=form.email %}
-			{% include "shared/form_field.html" with field=form.password1 %}
-			{% include "shared/form_field.html" with field=form.password2 %}
-		</fieldset>
-		<fieldset>
-			<div class="field captcha_field">
-				{% field_label form.captcha %}
-				<div class="field_input">
-					{{ form.captcha.errors }}
-					<p>{{ form.captcha_question.question|safe }}</p>
-					{{ form.captcha }}
-					{% if form.captcha.help_text %}
-						<div class="help_text">{{ form.captcha.help_text }}</div>
-					{% endif %}
-				</div>
-			</div>
-		</fieldset>
-		<div class="form__buttons">
-			<button type="submit">
-				<span>Register new account</span>
-			</button>
-		</div>
-	</form>
+    <form action="." method="post" class="form form--signup">
+        {% csrf_token %}
+        <fieldset>
+            {% include "shared/form_field.html" with field=form.username %}
+            {% include "shared/form_field.html" with field=form.email %}
+            {% include "shared/form_field.html" with field=form.password1 %}
+            {% include "shared/form_field.html" with field=form.password2 %}
+        </fieldset>
+        <fieldset>
+            <div class="field captcha_field">
+                {% field_label form.captcha %}
+                <div class="field_input">
+                    {{ form.captcha.errors }}
+                    <p>{{ form.captcha_question.question|safe }}</p>
+                    {{ form.captcha }}
+                    {% if form.captcha.help_text %}
+                        <div class="help_text">{{ form.captcha.help_text }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </fieldset>
+        <div class="form__buttons">
+            <button type="submit">
+                <span>Register new account</span>
+            </button>
+        </div>
+    </form>
 {% endblock %}
