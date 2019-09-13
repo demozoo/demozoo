@@ -1,245 +1,245 @@
 [
-	{
-		"pk": 1,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "Gasman",
-			"is_group": false,
-			"country_code": "UK",
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 1,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 1, "name": "Gasman"}
-	},
-	{
-		"pk": 2,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 1, "name": "Shingebis"}
-	},
+    {
+        "pk": 1,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Gasman",
+            "is_group": false,
+            "country_code": "UK",
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 1, "name": "Gasman"}
+    },
+    {
+        "pk": 2,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 1, "name": "Shingebis"}
+    },
 
-	{
-		"pk": 2,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "Raww Arse",
-			"is_group": true,
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 3,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 2, "name": "Raww Arse", "abbreviation": "RA"}
-	},
+    {
+        "pk": 2,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Raww Arse",
+            "is_group": true,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 2, "name": "Raww Arse", "abbreviation": "RA"}
+    },
 
-	{
-		"pk": 3,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "Papaya Dezign",
-			"is_group": true,
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 4,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 3, "name": "Papaya Dezign"}
-	},
+    {
+        "pk": 3,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Papaya Dezign",
+            "is_group": true,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 3, "name": "Papaya Dezign"}
+    },
 
-	{
-		"pk": 4,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "Hooy-Program",
-			"is_group": true,
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 5,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 4, "name": "Hooy-Program", "abbreviation": "H-Prg"}
-	},
+    {
+        "pk": 4,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Hooy-Program",
+            "is_group": true,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 4, "name": "Hooy-Program", "abbreviation": "H-Prg"}
+    },
 
-	{
-		"pk": 5,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "Yerzmyey",
-			"is_group": false,
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 6,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 5, "name": "Yerzmyey"}
-	},
+    {
+        "pk": 5,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Yerzmyey",
+            "is_group": false,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 5, "name": "Yerzmyey"}
+    },
 
-	{
-		"pk": 6,
-		"model": "demoscene.releaser",
-		"fields": {
-			"name": "LaesQ",
-			"is_group": false,
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 7,
-		"model": "demoscene.nick",
-		"fields": {"releaser": 6, "name": "LaesQ"}
-	},
+    {
+        "pk": 6,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "LaesQ",
+            "is_group": false,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 6, "name": "LaesQ"}
+    },
 
-	{
-		"pk": 1,
-		"model": "demoscene.membership",
-		"fields": {"member": 1, "group": 2}
-	},
-	{
-		"pk": 2,
-		"model": "demoscene.membership",
-		"fields": {"member": 1, "group": 4}
-	},
-	{
-		"pk": 3,
-		"model": "demoscene.membership",
-		"fields": {"member": 3, "group": 2}
-	},
-	{
-		"pk": 4,
-		"model": "demoscene.membership",
-		"fields": {"member": 5, "group": 4}
-	},
-	{
-		"pk": 5,
-		"model": "demoscene.membership",
-		"fields": {"member": 5, "group": 2, "is_current": false}
-	},
-	{
-		"pk": 6,
-		"model": "demoscene.membership",
-		"fields": {"member": 6, "group": 2}
-	},
-	{
-		"pk": 7,
-		"model": "demoscene.membership",
-		"fields": {"member": 6, "group": 3}
-	},
+    {
+        "pk": 1,
+        "model": "demoscene.membership",
+        "fields": {"member": 1, "group": 2}
+    },
+    {
+        "pk": 2,
+        "model": "demoscene.membership",
+        "fields": {"member": 1, "group": 4}
+    },
+    {
+        "pk": 3,
+        "model": "demoscene.membership",
+        "fields": {"member": 3, "group": 2}
+    },
+    {
+        "pk": 4,
+        "model": "demoscene.membership",
+        "fields": {"member": 5, "group": 4}
+    },
+    {
+        "pk": 5,
+        "model": "demoscene.membership",
+        "fields": {"member": 5, "group": 2, "is_current": false}
+    },
+    {
+        "pk": 6,
+        "model": "demoscene.membership",
+        "fields": {"member": 6, "group": 2}
+    },
+    {
+        "pk": 7,
+        "model": "demoscene.membership",
+        "fields": {"member": 6, "group": 3}
+    },
 
-	{
-		"pk": 1,
-		"model": "productions.production",
-		"fields": {
-			"title": "Madrielle",
-			"supertype": "production",
-			"release_date_date": "2000-03-18",
-			"release_date_precision": "d",
-			"author_nicks": [1],
-			"author_affiliation_nicks": [3],
-			"platforms": [1],
-			"types": [3],
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 2,
-		"model": "productions.production",
-		"fields": {
-			"title": "Mooncheese",
-			"supertype": "production",
-			"author_nicks": [2],
-			"types": [1],
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 3,
-		"model": "productions.production",
-		"fields": {
-			"title": "Laesq24 Giftro",
-			"supertype": "production",
-			"author_nicks": [4],
-			"platforms": [1],
-			"types": [2],
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
-	{
-		"pk": 4,
-		"model": "productions.production",
-		"fields": {
-			"title": "Pondlife",
-			"supertype": "production",
-			"author_nicks": [3, 5],
-			"platforms": [1],
-			"types": [1],
-			"created_at": "2014-01-01",
-			"updated_at": "2014-01-01"
-		}
-	},
+    {
+        "pk": 1,
+        "model": "productions.production",
+        "fields": {
+            "title": "Madrielle",
+            "supertype": "production",
+            "release_date_date": "2000-03-18",
+            "release_date_precision": "d",
+            "author_nicks": [1],
+            "author_affiliation_nicks": [3],
+            "platforms": [1],
+            "types": [3],
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "productions.production",
+        "fields": {
+            "title": "Mooncheese",
+            "supertype": "production",
+            "author_nicks": [2],
+            "types": [1],
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "productions.production",
+        "fields": {
+            "title": "Laesq24 Giftro",
+            "supertype": "production",
+            "author_nicks": [4],
+            "platforms": [1],
+            "types": [2],
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "productions.production",
+        "fields": {
+            "title": "Pondlife",
+            "supertype": "production",
+            "author_nicks": [3, 5],
+            "platforms": [1],
+            "types": [1],
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
 
-	{
-		"pk": 1,
-		"model": "productions.credit",
-		"fields": {
-			"production": 4,
-			"nick": 1,
-			"category": "Code"
-		}
-	},
+    {
+        "pk": 1,
+        "model": "productions.credit",
+        "fields": {
+            "production": 4,
+            "nick": 1,
+            "category": "Code"
+        }
+    },
 
-	{
-		"pk": 1,
-		"model": "parties.partyseries",
-		"fields": {
-			"name": "Forever"
-		}
-	},
+    {
+        "pk": 1,
+        "model": "parties.partyseries",
+        "fields": {
+            "name": "Forever"
+        }
+    },
 
-	{
-		"pk": 1,
-		"model": "parties.party",
-		"fields": {
-			"party_series": 1,
-			"name": "Forever 2e3",
-			"start_date_date": "2000-03-17",
-			"start_date_precision": "d",
-			"end_date_date": "2000-03-19",
-			"end_date_precision": "d"
-		}
-	},
+    {
+        "pk": 1,
+        "model": "parties.party",
+        "fields": {
+            "party_series": 1,
+            "name": "Forever 2e3",
+            "start_date_date": "2000-03-17",
+            "start_date_precision": "d",
+            "end_date_date": "2000-03-19",
+            "end_date_precision": "d"
+        }
+    },
 
-	{
-		"pk": 1,
-		"model": "parties.competition",
-		"fields": {
-			"party": 1,
-			"name": "ZX 1K Intro"
-		}
-	},
-	{
-		"pk": 1,
-		"model": "parties.competitionplacing",
-		"fields": {
-			"competition": 1,
-			"production": 1,
-			"ranking": "2",
-			"position": 2,
-			"score": "96"
-		}
-	}
+    {
+        "pk": 1,
+        "model": "parties.competition",
+        "fields": {
+            "party": 1,
+            "name": "ZX 1K Intro"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "parties.competitionplacing",
+        "fields": {
+            "competition": 1,
+            "production": 1,
+            "ranking": "2",
+            "position": 2,
+            "score": "96"
+        }
+    }
 ]
