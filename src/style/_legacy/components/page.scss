@@ -1,18 +1,18 @@
 .page {
 
-  &__header {
+    &__header {
 
-    &::after {
-      clear: both;
-      content: "";
-      display: table;
-      margin: 1.5em;
+        &::after {
+            clear: both;
+            content: "";
+            display: table;
+            margin: 1.5em;
+        }
     }
-  }
 
-  &__title {
-    font-size: 3rem;
-    font-weight: 300;
-    margin: .3rem 0;
-  }
+    &__title {
+        font-size: 3rem;
+        font-weight: 300;
+        margin: .3rem 0;
+    }
 }
