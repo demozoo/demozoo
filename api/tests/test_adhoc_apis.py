@@ -189,3 +189,11 @@ class TestScenesat(TestCase):
         response = self.client.get('/api/adhoc/scenesat/monthly-releases/?month=2001-03')
         self.assertEqual(response.status_code, 200)
         self.assertIn("Cybernoid's Revenge", response.content)
+
+
+class TestGroupAbbreviations(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_group_abbreviations(self):
+        response = self.client.get('/api/adhoc/group-abbreviations/')
+        self.assertEqual(response.status_code, 200)
