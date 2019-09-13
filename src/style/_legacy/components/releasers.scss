@@ -1,18 +1,18 @@
 .releasers {
-  font-size: 14px;
-  line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.5;
 
-  .group {
-    display: flex;
-    align-items: center;
-  }
+    .group {
+        display: flex;
+        align-items: center;
+    }
 
-  .media--thumbnail {
-    @include size(36px);
-    margin-right: 1ex;
-  }
+    .media--thumbnail {
+        @include size(36px);
+        margin-right: 1ex;
+    }
 
-  .annotation {
-    color: #888;
-  }
+    .annotation {
+        color: #888;
+    }
 }

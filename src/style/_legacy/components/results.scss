@@ -1,20 +1,20 @@
 .result {
 
-  &__ranking {
-    display: block;
-    text-align: center;
-  }
+    &__ranking {
+        display: block;
+        text-align: center;
+    }
 
-  &__score {
-    text-align: right;
-    padding-right: 8px;
-  }
+    &__score {
+        text-align: right;
+        padding-right: 8px;
+    }
 
-  &__title {
-    font-weight: 600;
-  }
+    &__title {
+        font-weight: 600;
+    }
 
-  .meta {
-    font-weight: 300;
-  }
+    .meta {
+        font-weight: 300;
+    }
 }

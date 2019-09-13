@@ -1,19 +1,19 @@
 .col {
 
-  &--production {
-    width: 40%;
-  }
+    &--production {
+        width: 40%;
+    }
 
-  &--ranking,
-  &--score {
-    width: 3em;
-  }
+    &--ranking,
+    &--score {
+        width: 3em;
+    }
 
-  &--thumb {
-    width: 48px;
-  }
+    &--thumb {
+        width: 48px;
+    }
 
-  &--date {
-    width: 6em;
-  }
+    &--date {
+        width: 6em;
+    }
 }
