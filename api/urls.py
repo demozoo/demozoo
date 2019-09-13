@@ -13,20 +13,20 @@ router.register(r'parties', generic.PartyViewSet)
 
 
 urlpatterns = [
-	url(r'^adhoc/pouet-credits/$', adhoc.pouet.credits, {}),
-	url(r'^adhoc/pouet/prod-demozoo-ids-by-pouet-id/$', adhoc.pouet.prod_demozoo_ids_by_pouet_id, {}),
-	url(r'^adhoc/pouet/group-demozoo-ids-by-pouet-id/$', adhoc.pouet.group_demozoo_ids_by_pouet_id, {}),
-	url(r'^adhoc/pouet/party-demozoo-ids-by-pouet-id/$', adhoc.pouet.party_demozoo_ids_by_pouet_id, {}),
+    url(r'^adhoc/pouet-credits/$', adhoc.pouet.credits, {}),
+    url(r'^adhoc/pouet/prod-demozoo-ids-by-pouet-id/$', adhoc.pouet.prod_demozoo_ids_by_pouet_id, {}),
+    url(r'^adhoc/pouet/group-demozoo-ids-by-pouet-id/$', adhoc.pouet.group_demozoo_ids_by_pouet_id, {}),
+    url(r'^adhoc/pouet/party-demozoo-ids-by-pouet-id/$', adhoc.pouet.party_demozoo_ids_by_pouet_id, {}),
 
-	url(r'^adhoc/zxdemo/prod-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.prod_demozoo_ids_by_zxdemo_id, {}),
-	url(r'^adhoc/zxdemo/group-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.group_demozoo_ids_by_zxdemo_id, {}),
-	url(r'^adhoc/zxdemo/party-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.party_demozoo_ids_by_zxdemo_id, {}),
+    url(r'^adhoc/zxdemo/prod-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.prod_demozoo_ids_by_zxdemo_id, {}),
+    url(r'^adhoc/zxdemo/group-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.group_demozoo_ids_by_zxdemo_id, {}),
+    url(r'^adhoc/zxdemo/party-demozoo-ids-by-zxdemo-id/$', adhoc.zxdemo.party_demozoo_ids_by_zxdemo_id, {}),
 
-	url(r'^adhoc/klubi/demoshow-prods/$', adhoc.klubi.demoshow, {}),
-	url(r'^adhoc/scenesat/monthly-releases/$', adhoc.scenesat.monthly, {}),
+    url(r'^adhoc/klubi/demoshow-prods/$', adhoc.klubi.demoshow, {}),
+    url(r'^adhoc/scenesat/monthly-releases/$', adhoc.scenesat.monthly, {}),
 
-	url(r'^adhoc/eq/demos/$', adhoc.eq.demos, {}),
-	url(r'^adhoc/group-abbreviations/$', adhoc.group_abbreviations.group_abbreviations, {}),
+    url(r'^adhoc/eq/demos/$', adhoc.eq.demos, {}),
+    url(r'^adhoc/group-abbreviations/$', adhoc.group_abbreviations.group_abbreviations, {}),
 
-	url(r'^v1/', include(router.urls)),
+    url(r'^v1/', include(router.urls)),
 ]

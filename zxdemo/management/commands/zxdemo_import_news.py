@@ -10,17 +10,17 @@ from BeautifulSoup import BeautifulSoup
 
 class Command(NoArgsCommand):
 
-	def handle_noargs(self, **options):
-		gasman = User.objects.get(username='gasman')
-		NewsItem.objects.all().delete()
+    def handle_noargs(self, **options):
+        gasman = User.objects.get(username='gasman')
+        NewsItem.objects.all().delete()
 
-		req = urllib2.Request('http://zxdemo.org/api/news.php')
-		page = urllib2.urlopen(req)
-		soup = BeautifulSoup(page, fromEncoding="ISO-8859-1", convertEntities=BeautifulSoup.HTML_ENTITIES)
+        req = urllib2.Request('http://zxdemo.org/api/news.php')
+        page = urllib2.urlopen(req)
+        soup = BeautifulSoup(page, fromEncoding="ISO-8859-1", convertEntities=BeautifulSoup.HTML_ENTITIES)
 
-		for news_item in soup.findAll('news_item'):
-			title = unicode(news_item.find('title').string or '')
-			body = unicode(news_item.find('article').string)
-			created_at = parse(news_item.find('date').text)
+        for news_item in soup.findAll('news_item'):
+            title = unicode(news_item.find('title').string or '')
+            body = unicode(news_item.find('article').string)
+            created_at = parse(news_item.find('date').text)
 
-			NewsItem.objects.create(title=title, body=body, created_at=created_at, author=gasman)
+            NewsItem.objects.create(title=title, body=body, created_at=created_at, author=gasman)

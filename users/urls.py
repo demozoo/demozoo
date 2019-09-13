@@ -4,6 +4,6 @@ from django.views.generic import RedirectView
 from users.views import show, index
 
 urlpatterns = [
-	url(r'^$', index, {}, 'users_index'),
-	url(r'^(\d+)/$', show, {}, 'user'),
+    url(r'^$', index, {}, 'users_index'),
+    url(r'^(\d+)/$', show, {}, 'user'),
 ]

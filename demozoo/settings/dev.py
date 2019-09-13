@@ -26,10 +26,10 @@ INSTALLED_APPS = list(INSTALLED_APPS) + ['django_extensions']
 DEBUG_TOOLBAR_ENABLED = True  # set to False in local.py to disable
 
 try:
-	from .local import *
+    from .local import *
 except ImportError:
-	pass
+    pass
 
 if DEBUG_TOOLBAR_ENABLED:
-	INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
-	MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
+    MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']

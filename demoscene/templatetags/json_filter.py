@@ -8,8 +8,8 @@ register = Library()
 
 
 def jsonify(object):
-	if isinstance(object, QuerySet):
-		return serialize('json', object)
-	return json.dumps(object)
+    if isinstance(object, QuerySet):
+        return serialize('json', object)
+    return json.dumps(object)
 
 register.filter('json', jsonify)

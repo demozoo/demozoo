@@ -7,8 +7,8 @@ from screenshots.tasks import rebuild_screenshot
 
 
 class Command(NoArgsCommand):
-	def handle_noargs(self, **options):
-		screens = Screenshot.objects.filter(original_url__contains='/screenshots/')
-		for screen in screens:
-			print "rebuilding %s" % screen
-			rebuild_screenshot.delay(screen.id)
+    def handle_noargs(self, **options):
+        screens = Screenshot.objects.filter(original_url__contains='/screenshots/')
+        for screen in screens:
+            print "rebuilding %s" % screen
+            rebuild_screenshot.delay(screen.id)

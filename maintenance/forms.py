@@ -5,5 +5,5 @@ from productions.models import ProductionType
 
 
 class ProductionFilterForm(forms.Form):
-	platform = forms.ModelMultipleChoiceField(required=False, queryset=Platform.objects.all())
-	production_type = forms.ModelMultipleChoiceField(required=False, queryset=ProductionType.objects.all())
+    platform = forms.ModelMultipleChoiceField(required=False, queryset=Platform.objects.all())
+    production_type = forms.ModelMultipleChoiceField(required=False, queryset=ProductionType.objects.all())

@@ -4,25 +4,25 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 
 class AnyFormatDateField(forms.DateField):
-	widget = forms.DateInput(format = '%e %b %Y', attrs={'class':'date'})
-	def to_python(self, value):
-		"""
-		Validates that the input can be converted to a date. Returns a Python
-		datetime.date object.
-		"""
-		if value in validators.EMPTY_VALUES:
-			return None
-		if isinstance(value, datetime.datetime):
-			return value.date()
-		if isinstance(value, datetime.date):
-			return value
-		try:
-			result = timelib.strtodatetime(value).date()
-		except ValueError:
-			raise ValidationError(self.error_messages['invalid'])
-		
-		if result.year < 1900:
-			# strftime can't handle years before 1900
-			raise ValidationError(self.error_messages['invalid'])
-		
-		return result
+    widget = forms.DateInput(format = '%e %b %Y', attrs={'class':'date'})
+    def to_python(self, value):
+        """
+        Validates that the input can be converted to a date. Returns a Python
+        datetime.date object.
+        """
+        if value in validators.EMPTY_VALUES:
+            return None
+        if isinstance(value, datetime.datetime):
+            return value.date()
+        if isinstance(value, datetime.date):
+            return value
+        try:
+            result = timelib.strtodatetime(value).date()
+        except ValueError:
+            raise ValidationError(self.error_messages['invalid'])
+        
+        if result.year < 1900:
+            # strftime can't handle years before 1900
+            raise ValidationError(self.error_messages['invalid'])
+        
+        return result

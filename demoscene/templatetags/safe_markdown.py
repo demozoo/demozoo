@@ -10,8 +10,8 @@ md = markdown.Markdown(extensions=['nl2br', 'autolink'])
 
 @register.filter(is_safe=True)
 def safe_markdown(value, arg=''):
-	return mark_safe(
-		scrubber.scrub(
-			md.reset().convert(value)
-		)
-	)
+    return mark_safe(
+        scrubber.scrub(
+            md.reset().convert(value)
+        )
+    )
