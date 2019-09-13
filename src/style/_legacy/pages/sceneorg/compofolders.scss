@@ -128,48 +128,48 @@
     }
 }
 
-	a.demozoo-info {
-		background-image: url(/static/images/favicon/favicon-16x16.png);
-		background-position: top;
-		background-repeat: no-repeat;
-		display: inline-block;
-		text-indent: -5000px;
-		width: 24px;
-	}
-	a.pouet-info {
-		background-image: url(/static/images/icons/external_sites/pouet.png);
-		background-position: top;
-		background-repeat: no-repeat;
-		display: inline-block;
-		text-indent: -5000px;
-		width: 24px;
-	}
-	a.janeway-info {
-		background-image: url(/static/images/icons/external_sites/kestra_bitworld.png);
-		background-position: top;
-		background-repeat: no-repeat;
-		display: inline-block;
-		text-indent: -5000px;
-		width: 24px;
-	}
+    a.demozoo-info {
+        background-image: url(/static/images/favicon/favicon-16x16.png);
+        background-position: top;
+        background-repeat: no-repeat;
+        display: inline-block;
+        text-indent: -5000px;
+        width: 24px;
+    }
+    a.pouet-info {
+        background-image: url(/static/images/icons/external_sites/pouet.png);
+        background-position: top;
+        background-repeat: no-repeat;
+        display: inline-block;
+        text-indent: -5000px;
+        width: 24px;
+    }
+    a.janeway-info {
+        background-image: url(/static/images/icons/external_sites/kestra_bitworld.png);
+        background-position: top;
+        background-repeat: no-repeat;
+        display: inline-block;
+        text-indent: -5000px;
+        width: 24px;
+    }
 
 .sceneorg {
-	.details {
-		border: 1px solid #ccc;
-		padding: 4px;
-		text-align: left;
-	}
+    .details {
+        border: 1px solid #ccc;
+        padding: 4px;
+        text-align: left;
+    }
 
-	.details li {
-		height: 20px;
-		background-repeat: no-repeat;
-		background-position: left top;
-		padding-left: 24px;
-	}
-	.details li.dir {
-		background-image: url(/static/images/icons/folder.png);
-	}
-	.details li.file {
-		background-image: url(/static/images/icons/page.png);
-	}
+    .details li {
+        height: 20px;
+        background-repeat: no-repeat;
+        background-position: left top;
+        padding-left: 24px;
+    }
+    .details li.dir {
+        background-image: url(/static/images/icons/folder.png);
+    }
+    .details li.file {
+        background-image: url(/static/images/icons/page.png);
+    }
 }

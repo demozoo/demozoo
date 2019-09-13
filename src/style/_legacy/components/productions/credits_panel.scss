@@ -1,35 +1,35 @@
 .credits_panel {
-	ul.credits li {
-		line-height: 1.5em;
-		padding: 2px 0 2px 24px;
-		margin-right: 20px;
+    ul.credits li {
+        line-height: 1.5em;
+        padding: 2px 0 2px 24px;
+        margin-right: 20px;
 
-		&.scener {
-			background-image: url(/static/images/icons/scener.png);
-			background-position: left center;
-			background-repeat: no-repeat;
-		}
-		&.group {
-			background-image: url(/static/images/icons/group.png);
-			background-position: left center;
-			background-repeat: no-repeat;
-		}
+        &.scener {
+            background-image: url(/static/images/icons/scener.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+        }
+        &.group {
+            background-image: url(/static/images/icons/group.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+        }
 
-		a.edit_credit {
-			float: right;
-		}
-	}
+        a.edit_credit {
+            float: right;
+        }
+    }
 }
 
 /* hide edit controls whenever javascript adds the hide_edit_controls class */
 .credits_panel.hide_edit_controls {
-	a.edit_credit, a.add_credit {
-		display: none;
-	}
+    a.edit_credit, a.add_credit {
+        display: none;
+    }
 }
 
 .credits_panel.editing {
-	ul.credits li:hover {
-		background-color: #ddd;
-	}
+    ul.credits li:hover {
+        background-color: #ddd;
+    }
 }

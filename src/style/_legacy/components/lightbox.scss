@@ -1,181 +1,181 @@
 #lightbox_outer {
-	display: table;
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	height: 100%;
-	padding-bottom: 16px;
-	width: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
+    display: table;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    height: 100%;
+    padding-bottom: 16px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 #lightbox_middle {
-	display: table-cell;
-	vertical-align: middle;
-	padding-top: 8px;
+    display: table-cell;
+    vertical-align: middle;
+    padding-top: 8px;
 }
 
 #lightbox {
-	margin: auto;
-	width: 620px;
-	overflow: auto;
-	border: 1px solid #444;
-	background-color: #EEE;
-	color: #333;
-	padding: 12px;
+    margin: auto;
+    width: 620px;
+    overflow: auto;
+    border: 1px solid #444;
+    background-color: #EEE;
+    color: #333;
+    padding: 12px;
 }
 
 .media_lightbox_wrapper {
-	position: fixed;
-	z-index: 1001;
-	padding: 8px;
-	border: 1px solid #444;
-	background-color: #eee;
-	background-repeat: no-repeat;
-	background-position: center;
+    position: fixed;
+    z-index: 1001;
+    padding: 8px;
+    border: 1px solid #444;
+    background-color: #eee;
+    background-repeat: no-repeat;
+    background-position: center;
 
-	&.loading {
-		background-image: url('/static/images/screenshot_loading.gif');
-	}
+    &.loading {
+        background-image: url('/static/images/screenshot_loading.gif');
+    }
 
-	.lightbox_close {
-		margin-top: -4px;
-		margin-bottom: 4px;
-	}
+    .lightbox_close {
+        margin-top: -4px;
+        margin-bottom: 4px;
+    }
 
-	img {
-		float: left;
-		clear: both;
+    img {
+        float: left;
+        clear: both;
 
-		&.pixelated {
-			image-rendering: pixelated; // Chrome 41+ and Opera 26+
-		}
-	}
+        &.pixelated {
+            image-rendering: pixelated; // Chrome 41+ and Opera 26+
+        }
+    }
 
-	.navbar {
-		top: 50%;
-		position: absolute;
-		width: 100%;
-		margin-left: -8px;
-	}
+    .navbar {
+        top: 50%;
+        position: absolute;
+        width: 100%;
+        margin-left: -8px;
+    }
 
-	a.nav {
-		position: absolute;
-		display: block;
-		width: 50px;
-		top: -40px;
-		height: 80px;
-		background-color: rgba(32, 32, 32, 0.5);
-		background-repeat: no-repeat;
-		background-position: center;
-		border-radius: 5px;
-		border: 1px solid rgba(192, 192, 192, 0.5);
-		opacity: 0;
-		transition: opacity 0.2s ease-in-out;
-		text-indent: -5000px;
-		overflow: hidden;
+    a.nav {
+        position: absolute;
+        display: block;
+        width: 50px;
+        top: -40px;
+        height: 80px;
+        background-color: rgba(32, 32, 32, 0.5);
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 5px;
+        border: 1px solid rgba(192, 192, 192, 0.5);
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        text-indent: -5000px;
+        overflow: hidden;
 
-		&:hover {
-			background-color: rgba(16, 16, 16, 0.7);
-		}
-	}
+        &:hover {
+            background-color: rgba(16, 16, 16, 0.7);
+        }
+    }
 
-	a.prev {
-		left: -24px;
-		background-image: url(/static/images/screenshot_nav_left.png);
-	}
+    a.prev {
+        left: -24px;
+        background-image: url(/static/images/screenshot_nav_left.png);
+    }
 
-	a.next {
-		right: -24px;
-		background-image: url(/static/images/screenshot_nav_right.png);
-	}
-	&:hover .nav {
-		opacity: 1;
-	}
+    a.next {
+        right: -24px;
+        background-image: url(/static/images/screenshot_nav_right.png);
+    }
+    &:hover .nav {
+        opacity: 1;
+    }
 }
 
 .media_lightbox_overlay {
-	position: fixed;
-	z-index: 1000;
-	left: 0px;
-	top: 0px;
-	background-color: #000;
+    position: fixed;
+    z-index: 1000;
+    left: 0px;
+    top: 0px;
+    background-color: #000;
 }
 
 a.lightbox_close {
-	float: right;
-	width: 16px;
-	height: 16px;
-	text-indent: -5000px;
-	background-image: url('/static/images/icons/cross.png');
+    float: right;
+    width: 16px;
+    height: 16px;
+    text-indent: -5000px;
+    background-image: url('/static/images/icons/cross.png');
 }
 
 body.loading {
-	cursor: progress;
+    cursor: progress;
 }
 
 /* screenshot viewer */
 .screenshot-wrapper {
-	overflow: auto;
+    overflow: auto;
 }
 .zoom-controls {
-	position: absolute;
-	top: 75%;
-	left: 50%;
-	margin-left: -72px;
-	margin-top: -24px;
-	width: 149px;
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    margin-left: -72px;
+    margin-top: -24px;
+    width: 149px;
 
-	a {
-		display: block;
-		float: left;
-		background-color: rgba(32, 32, 32, 0.5);
-		height: 48px;
-		width: 48px;
-		border: 1px solid rgba(192, 192, 192, 0.5);
-		opacity: 0;
-		transition: opacity 0.2s ease-in-out;
-		text-align: center;
-		line-height: 48px;
-		text-decoration: none;
-		font-weight: bold;
-		font-size: 16pt;
+    a {
+        display: block;
+        float: left;
+        background-color: rgba(32, 32, 32, 0.5);
+        height: 48px;
+        width: 48px;
+        border: 1px solid rgba(192, 192, 192, 0.5);
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        text-align: center;
+        line-height: 48px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16pt;
 
-		&:hover {
-			background-color: rgba(16, 16, 16, 0.7);
-		}
+        &:hover {
+            background-color: rgba(16, 16, 16, 0.7);
+        }
 
-		&.zoom-out {
-			border-top-left-radius: 5px;
-			border-bottom-left-radius: 5px;
-		}
-		&.zoom-original {
-			border-left: none;
-		}
-		&.zoom-in {
-			border-left: none;
-			border-top-right-radius: 5px;
-			border-bottom-right-radius: 5px;
-		}
+        &.zoom-out {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        &.zoom-original {
+            border-left: none;
+        }
+        &.zoom-in {
+            border-left: none;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
 
-		svg.icon {
-			fill: #fff;
-		}
-	}
+        svg.icon {
+            fill: #fff;
+        }
+    }
 }
 .media_lightbox_wrapper:hover .zoom-controls.visible a {
-	opacity: 1;
+    opacity: 1;
 }
 .zoom-controls:hover a {
-	opacity: 1;
+    opacity: 1;
 }
 
 /* Detect scrollbar width: https://davidwalsh.name/detect-scrollbar-width */
 /* way the hell off screen */
 .scrollbar-measure {
-	width: 100px;
-	height: 100px;
-	overflow: scroll;
-	position: absolute;
-	top: -9999px;
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
 }

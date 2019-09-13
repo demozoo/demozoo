@@ -1,139 +1,139 @@
 .show_scener {
 
-	@media screen and (min-width: 800px) {
-		#side_column {
-			float: left;
-			width: 30%;
-		}
+    @media screen and (min-width: 800px) {
+        #side_column {
+            float: left;
+            width: 30%;
+        }
 
-		#main_column {
-			float: left;
-			width: 70%;
-		}
-	}
+        #main_column {
+            float: left;
+            width: 70%;
+        }
+    }
 
-	.external_links_panel {
-		margin-bottom: 20px;
+    .external_links_panel {
+        margin-bottom: 20px;
 
-		ul.external_links {
-			padding-top: 8px;
-			padding-bottom: 8px;
-			clear: both;
-		}
-	}
+        ul.external_links {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            clear: both;
+        }
+    }
 
-	.alternative_nicks_panel {
-		padding-bottom: 8px;
+    .alternative_nicks_panel {
+        padding-bottom: 8px;
 
-		&.hide_edit_controls {
+        &.hide_edit_controls {
 
-			.edit_nick,
-			.add_nick {
-				display: none;
-			}
-		}
+            .edit_nick,
+            .add_nick {
+                display: none;
+            }
+        }
 
-		ul.nicks {
-			clear: both;
-			padding-top: 8px;
-		}
-	}
+        ul.nicks {
+            clear: both;
+            padding-top: 8px;
+        }
+    }
 
-	.notes_panel {
-		border: 1px solid #eee;
-		margin-top: 8px;
-		margin-bottom: 20px;
-		padding-left: 8px;
-		padding-right: 8px;
-		color: #444;
+    .notes_panel {
+        border: 1px solid #eee;
+        margin-top: 8px;
+        margin-bottom: 20px;
+        padding-left: 8px;
+        padding-right: 8px;
+        color: #444;
 
-		.notes {
-			width: 90%;
-			margin: auto;
+        .notes {
+            width: 90%;
+            margin: auto;
 
-			p {
-				line-height: 1.5em;
-				margin-bottom: 2em;
-			}
+            p {
+                line-height: 1.5em;
+                margin-bottom: 2em;
+            }
 
-			a:link {
-				text-decoration: none;
-				border-bottom: 1px solid #000088;
-			}
-			a:visited {
-				text-decoration: none;
-				border-bottom: 1px solid #880088;
-			}
-		}
-	}
+            a:link {
+                text-decoration: none;
+                border-bottom: 1px solid #000088;
+            }
+            a:visited {
+                text-decoration: none;
+                border-bottom: 1px solid #880088;
+            }
+        }
+    }
 
-	.groups_panel {
+    .groups_panel {
 
-		&.hide_edit_controls {
+        &.hide_edit_controls {
 
-			.edit_membership, .add_group {
-				display: none;
-			}
-		}
+            .edit_membership, .add_group {
+                display: none;
+            }
+        }
 
-		&.editing {
+        &.editing {
 
-			ul.memberships li:hover {
-				background-color: #ddd;
-			}
-		}
+            ul.memberships li:hover {
+                background-color: #ddd;
+            }
+        }
 
-		ul.actions {
-			padding-right: 8px;
-		}
-	}
+        ul.actions {
+            padding-right: 8px;
+        }
+    }
 
-	ul.memberships {
-		margin-bottom: 8px;
-		clear: both;
+    ul.memberships {
+        margin-bottom: 8px;
+        clear: both;
 
-		li {
-			padding-left: 24px;
-			padding-top: 2px;
-			padding-bottom: 3px;
-			background-position: left center;
-			background-repeat: no-repeat;
+        li {
+            padding-left: 24px;
+            padding-top: 2px;
+            padding-bottom: 3px;
+            background-position: left center;
+            background-repeat: no-repeat;
 
-			a {
-				color: #008;
-			}
+            a {
+                color: #008;
+            }
 
-			&.previous_membership a {
-				color: #bbe;
-			}
+            &.previous_membership a {
+                color: #bbe;
+            }
 
-			&.group {
-				background-image: url(/static/images/icons/group.png);
-				&.previous_membership {
-					background-image: url(/static/images/icons/group_grey.png);
-				}
-			}
+            &.group {
+                background-image: url(/static/images/icons/group.png);
+                &.previous_membership {
+                    background-image: url(/static/images/icons/group_grey.png);
+                }
+            }
 
-			a.edit_membership {
-				float: right;
-			}
-		}
-	}
+            a.edit_membership {
+                float: right;
+            }
+        }
+    }
 
-	.last_edited_by {
-		clear: both;
-		padding-top: 16px;
-		border-top: 1px dotted #ddd;
+    .last_edited_by {
+        clear: both;
+        padding-top: 16px;
+        border-top: 1px dotted #ddd;
 
-		a.user {
-			font-weight: bold;
-			color: #333;
-			text-decoration: none;
+        a.user {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
 
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
 
 }

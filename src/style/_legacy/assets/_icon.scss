@@ -1,31 +1,31 @@
 span.icon {
-	@include size(16px);
-	display: inline-block;
-	vertical-align: middle;
+    @include size(16px);
+    display: inline-block;
+    vertical-align: middle;
 
-	svg {
-		@include size(100%);
-		display: block;
-		fill: inherit;
-	}
+    svg {
+        @include size(100%);
+        display: block;
+        fill: inherit;
+    }
 }
 
 svg.icon {
-	@include size(36px);
-	fill: #aaa;
-	box-sizing: border-box;
-	padding: 6px;
-	vertical-align: middle;
+    @include size(36px);
+    fill: #aaa;
+    box-sizing: border-box;
+    padding: 6px;
+    vertical-align: middle;
 }
 
 .icon-legacy {
-	@include size(16px);
-	display: inline-block;
-	vertical-align: middle;
-	background: no-repeat 50% 50% transparent;
-	margin-right: 0.25em;
+    @include size(16px);
+    display: inline-block;
+    vertical-align: middle;
+    background: no-repeat 50% 50% transparent;
+    margin-right: 0.25em;
 
-	&--releases {
-		background-image: url('/static/images/icons/package.png');
-	}
+    &--releases {
+        background-image: url('/static/images/icons/package.png');
+    }
 }

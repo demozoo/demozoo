@@ -1,25 +1,25 @@
 /* Action buttons bar */
 ul.actions {
-	float: right;
+    float: right;
 
-	li {
-		display: inline-block;
+    li {
+        display: inline-block;
 
-		a.action_button {
-			margin-left: 4px;
-		}
-	}
+        a.action_button {
+            margin-left: 4px;
+        }
+    }
 }
 
 ul.maintenance_actions {
-	clear: both;
-	padding-top: 16px;
+    clear: both;
+    padding-top: 16px;
 
-	li {
-		display: inline;
+    li {
+        display: inline;
 
-		a.action_button {
-			margin-left: 4px;
-		}
-	}
+        a.action_button {
+            margin-left: 4px;
+        }
+    }
 }

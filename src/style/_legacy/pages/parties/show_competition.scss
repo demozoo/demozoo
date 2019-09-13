@@ -1,22 +1,22 @@
 .show_competition {
-	.panel {
-		border: 1px solid #ccc;
-		margin-top: 16px;
-		padding: 16px;
-		position: relative;
-	}
+    .panel {
+        border: 1px solid #ccc;
+        margin-top: 16px;
+        padding: 16px;
+        position: relative;
+    }
 
-	.last_edited_by {
-		clear: both;
-		padding-top: 16px;
-		border-top: 1px dotted #ddd;
-		a.user {
-			font-weight: bold;
-			color: #333;
-			text-decoration: none;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
+    .last_edited_by {
+        clear: both;
+        padding-top: 16px;
+        border-top: 1px dotted #ddd;
+        a.user {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
 }

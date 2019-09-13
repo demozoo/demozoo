@@ -7,146 +7,146 @@ fieldset {
 /* data entry forms */
 .form_title {
 
-	h2 {
-		display: inline;
-	}
+    h2 {
+        display: inline;
+    }
 
-	p {
-		padding-left: 16px;
-		display: inline;
-	}
+    p {
+        padding-left: 16px;
+        display: inline;
+    }
 }
 
 .help_text {
-	font-size: 0.8em;
-	color: #444;
+    font-size: 0.8em;
+    color: #444;
 }
 
 .hover_help {
-	display: inline-block;
-	position: relative;
-	width: 16px;
-	height: 16px;
-	background-image: url('/static/images/icons/information.png');
-	cursor: help;
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    background-image: url('/static/images/icons/information.png');
+    cursor: help;
 
-	.help_text {
-		position: absolute;
-		display: none;
-		bottom: 0px;
-		margin-bottom: 20px;
-		font-size: 0.8em;
-		width: 300px;
-		border: 1px solid #008;
-		padding: 4px;
-		background-color: #ddf;
-	}
-	&:hover .help_text,
-	&:focus .help_text {
-		display: block;
-	}
+    .help_text {
+        position: absolute;
+        display: none;
+        bottom: 0px;
+        margin-bottom: 20px;
+        font-size: 0.8em;
+        width: 300px;
+        border: 1px solid #008;
+        padding: 4px;
+        background-color: #ddf;
+    }
+    &:hover .help_text,
+    &:focus .help_text {
+        display: block;
+    }
 }
 
 .entry_form {
 
-	.field {
-		clear: both;
-		padding-top: 12px;
-	}
+    .field {
+        clear: both;
+        padding-top: 12px;
+    }
 
-	label.field_label {
-		width: 150px;
-		float: left;
-	}
+    label.field_label {
+        width: 150px;
+        float: left;
+    }
 
-	.field_input {
-		width: 450px;
-		max-width: 90vw;
-		float: left;
+    .field_input {
+        width: 450px;
+        max-width: 90vw;
+        float: left;
 
-		input[type=text] {
-			width: 400px;
-			max-width: 80vw;
-		}
+        input[type=text] {
+            width: 400px;
+            max-width: 80vw;
+        }
 
-		input.date[type=text] {
-			width: 150px;
-		}
+        input.date[type=text] {
+            width: 150px;
+        }
 
-		.day_of_week {
-			padding-left: 0.5em;
-			color: #888;
-		}
+        .day_of_week {
+            padding-left: 0.5em;
+            color: #888;
+        }
 
-		input.numeric[type=text] {
-			width: 100px;
-		}
+        input.numeric[type=text] {
+            width: 100px;
+        }
 
-		input.short[type=text] {
-			width: 150px;
-		}
+        input.short[type=text] {
+            width: 150px;
+        }
 
-		textarea {
-			width: 420px;
-			height: 300px;
-		}
+        textarea {
+            width: 420px;
+            height: 300px;
+        }
 
-		textarea.short_notes {
-			height: 50px;
-		}
-	}
+        textarea.short_notes {
+            height: 50px;
+        }
+    }
 
-	.unlabelled_field_input {
-		padding-left: 150px;
-	}
+    .unlabelled_field_input {
+        padding-left: 150px;
+    }
 
-	.formset_header {
-		padding-left: 32px;
-	}
+    .formset_header {
+        padding-left: 32px;
+    }
 
-	&.sceneid_connect {
-		display: inline-block;
-		vertical-align: top;
-		margin-right: 50px;
-	}
+    &.sceneid_connect {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 50px;
+    }
 }
 
 /* external links form needs bigger labels */
 .external_links_form .field {
 
-	label.field_label {
-		width: 200px;
-	}
+    label.field_label {
+        width: 200px;
+    }
 
-	.field_input {
-		width: 400px;
-	}
+    .field_input {
+        width: 400px;
+    }
 }
 
 .entry_form {
 
-	.credit_formset {
+    .credit_formset {
 
-		.category_header {
-			float: left;
-			font-weight: bold;
-			width: 100px;
-		}
+        .category_header {
+            float: left;
+            font-weight: bold;
+            width: 100px;
+        }
 
-		.detail_header {
-			float: left;
-			font-weight: bold;
-		}
+        .detail_header {
+            float: left;
+            font-weight: bold;
+        }
 
-		.field_input {
+        .field_input {
 
-			select {
-				width: 100px;
-			}
+            select {
+                width: 100px;
+            }
 
-			input[type="text"] {
-				width: 250px;
-			}
-		}
-	}
+            input[type="text"] {
+                width: 250px;
+            }
+        }
+    }
 }
