@@ -1,4 +1,4 @@
 function(modal) {
-	modal.respond('creditsUpdated', '{{ credits_html|escapejs }}');
-	modal.close();
+    modal.respond('creditsUpdated', '{{ credits_html|escapejs }}');
+    modal.close();
 }
