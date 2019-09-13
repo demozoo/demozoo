@@ -128,7 +128,7 @@ class Command(NoArgsCommand):
 		# skip this. it takes ages.
 		# print "Recursively marking children of deleted scene.org dirs as deleted"
 		# for dir in Directory.objects.filter(is_deleted=True):
-		#	dir.mark_deleted()
+		#    dir.mark_deleted()
 
 		print "Converting invitation competitions to party invitation relations"
 		invitation_compos = Competition.objects.filter(name__istartswith='invitation').select_related('party')

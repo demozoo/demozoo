@@ -974,23 +974,23 @@ function createFlags( flags ) {
 /*
  * Create a callback list using the following parameters:
  *
- *	flags:	an optional list of space-separated flags that will change how
- *			the callback list behaves
+ * flags:   an optional list of space-separated flags that will change how
+ *          the callback list behaves
  *
  * By default a callback list will act like an event callback list and can be
  * "fired" multiple times.
  *
  * Possible flags:
  *
- *	once:			will ensure the callback list can only be fired once (like a Deferred)
+ *  once:           will ensure the callback list can only be fired once (like a Deferred)
  *
- *	memory:			will keep track of previous values and will call any callback added
- *					after the list has been fired right away with the latest "memorized"
- *					values (like a Deferred)
+ *  memory:         will keep track of previous values and will call any callback added
+ *                  after the list has been fired right away with the latest "memorized"
+ *                  values (like a Deferred)
  *
- *	unique:			will ensure a callback can only be added once (no duplicate in the list)
+ *  unique:         will ensure a callback can only be added once (no duplicate in the list)
  *
- *	stopOnFalse:	interrupt callings when a callback returns false
+ *  stopOnFalse:    interrupt callings when a callback returns false
  *
  */
 jQuery.Callbacks = function( flags ) {
@@ -4633,22 +4633,22 @@ var Expr = Sizzle.selectors = {
 			switch ( type ) {
 				case "only":
 				case "first":
-					while ( (node = node.previousSibling) )	 {
-						if ( node.nodeType === 1 ) { 
-							return false; 
+					while ( (node = node.previousSibling) ) {
+						if ( node.nodeType === 1 ) {
+							return false;
 						}
 					}
 
-					if ( type === "first" ) { 
-						return true; 
+					if ( type === "first" ) {
+						return true;
 					}
 
 					node = elem;
 
 				case "last":
-					while ( (node = node.nextSibling) )	 {
-						if ( node.nodeType === 1 ) { 
-							return false; 
+					while ( (node = node.nextSibling) ) {
+						if ( node.nodeType === 1 ) {
+							return false;
 						}
 					}
 

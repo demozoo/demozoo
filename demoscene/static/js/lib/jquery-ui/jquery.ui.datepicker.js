@@ -8,7 +8,7 @@
  * http://docs.jquery.com/UI/Datepicker
  *
  * Depends:
- *	jquery.ui.core.js
+ *    jquery.ui.core.js
  */
 (function( $, undefined ) {
 
@@ -1605,7 +1605,7 @@ $.extend(Datepicker.prototype, {
 			var inMaxYear = (maxDate && maxDate.getFullYear() == drawYear);
 			monthHtml += '<select class="ui-datepicker-month" ' +
 				'onchange="DP_jQuery_' + dpuuid + '.datepicker._selectMonthYear(\'#' + inst.id + '\', this, \'M\');" ' +
-			 	'>';
+				'>';
 			for (var month = 0; month < 12; month++) {
 				if ((!inMinYear || month >= minDate.getMonth()) &&
 						(!inMaxYear || month <= maxDate.getMonth()))

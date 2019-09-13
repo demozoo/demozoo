@@ -33,4 +33,4 @@ class SubmitButtonField(forms.Field):
 
 # example usage:
 #class SubmittableForm(forms.Form):
-#	lookup = SubmitButtonField(button_text = 'Look up name')
+#    lookup = SubmitButtonField(button_text = 'Look up name')

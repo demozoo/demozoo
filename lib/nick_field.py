@@ -162,7 +162,7 @@ class NickField(forms.Field):
 # test stuff
 #
 #class RaForm(forms.Form):
-#	matched_nick = MatchedNickField('ra')
+#    matched_nick = MatchedNickField('ra')
 #
 #raww_arse = Nick.objects.get(id = 7)
 #
@@ -173,6 +173,6 @@ class NickField(forms.Field):
 #mischosen_ra_form = RaForm({'matched_nick_id': '1', 'matched_nick_name': 'ra'})
 #
 #class NewCreditForm(forms.Form):
-#	nick = NickField()
+#    nick = NickField()
 #
 #f = NewCreditForm(initial = {'nick': raww_arse})

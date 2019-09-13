@@ -729,11 +729,11 @@ class TextFile(models.Model):
 
 	@property
 	def data(self):
-#		self.file.open()
+		# self.file.open()
 		self.file.seek(0)
 		data = self.file.read()
 		self.file.seek(0)
-#		self.file.close()
+		# self.file.close()
 		return data
 
 	@property
