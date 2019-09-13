@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
-	<channel>
-		<title>Demotopia</title>
-		<link>http://www.zxdemo.org/</link>
-		<description>Updates to Demotopia, the world's largest source of information and downloads from the ZX Spectrum demo scene.</description>
-		<language>en-gb</language>
-		<copyright>Copyright {% now "Y" %} Matt Westcott</copyright>
-		<managingEditor>gasman&#064;raww.org</managingEditor>
-		<webMaster>gasman&#064;raww.org</webMaster>
-		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
-		<image>
-			<url>http://www.zxdemo.org/static/images/generic/mainlogo_small.gif</url>
-			<title>Demotopia</title>
-			<link>http://www.zxdemo.org/</link>
-			<width>144</width>
-			<height>41</height>
-		</image>
-		{% for news in news_items %}
-			<item>
-				{% if news.title %}
-					<title>{{ news.title }}</title>
-				{% endif %}
-				<description>
-					{{ news.body }}
-				</description>
-				<pubDate>{{ news.created_at|date:'D, d M Y H:i:s' }}</pubDate>
-				<link>http://www.zxdemo.org/</link>
-				<source url="http://www.zxdemo.org/rss.php">Demotopia</source>
-			</item>
-		{% endfor %}
-	</channel>
+    <channel>
+        <title>Demotopia</title>
+        <link>http://www.zxdemo.org/</link>
+        <description>Updates to Demotopia, the world's largest source of information and downloads from the ZX Spectrum demo scene.</description>
+        <language>en-gb</language>
+        <copyright>Copyright {% now "Y" %} Matt Westcott</copyright>
+        <managingEditor>gasman&#064;raww.org</managingEditor>
+        <webMaster>gasman&#064;raww.org</webMaster>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <image>
+            <url>http://www.zxdemo.org/static/images/generic/mainlogo_small.gif</url>
+            <title>Demotopia</title>
+            <link>http://www.zxdemo.org/</link>
+            <width>144</width>
+            <height>41</height>
+        </image>
+        {% for news in news_items %}
+            <item>
+                {% if news.title %}
+                    <title>{{ news.title }}</title>
+                {% endif %}
+                <description>
+                    {{ news.body }}
+                </description>
+                <pubDate>{{ news.created_at|date:'D, d M Y H:i:s' }}</pubDate>
+                <link>http://www.zxdemo.org/</link>
+                <source url="http://www.zxdemo.org/rss.php">Demotopia</source>
+            </item>
+        {% endfor %}
+    </channel>
 </rss>
