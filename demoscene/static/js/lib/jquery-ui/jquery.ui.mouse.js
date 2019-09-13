@@ -8,7 +8,7 @@
  * http://docs.jquery.com/UI/Mouse
  *
  * Depends:
- *	jquery.ui.widget.js
+ *    jquery.ui.widget.js
  */
 (function( $, undefined ) {
 

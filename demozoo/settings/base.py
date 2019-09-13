@@ -175,7 +175,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_PRECOMPILERS = (
-#	('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
+	# ('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
 )
 
 REDIS_URL = 'redis://localhost:6379/0'
@@ -212,14 +212,14 @@ CELERYBEAT_SCHEDULE = {
 		"args": ()
 	},
 	#"automatch-pouet-groups": {
-	#	"task": "pouet.tasks.automatch_all_groups",
-	#	"schedule": timedelta(days=1),
-	#	"args": ()
+	#    "task": "pouet.tasks.automatch_all_groups",
+	#    "schedule": timedelta(days=1),
+	#    "args": ()
 	#},
 	#"automatch-janeway-authors": {
-	#	"task": "janeway.tasks.automatch_all_authors",
-	#	"schedule": timedelta(days=1),
-	#	"args": ()
+	#    "task": "janeway.tasks.automatch_all_authors",
+	#    "schedule": timedelta(days=1),
+	#    "args": ()
 	#}
 }
 

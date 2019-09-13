@@ -8,9 +8,9 @@
  * http://docs.jquery.com/UI/Autocomplete
  *
  * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.widget.js
- *	jquery.ui.position.js
+ *    jquery.ui.core.js
+ *    jquery.ui.widget.js
+ *    jquery.ui.position.js
  */
 (function( $, undefined ) {
 
@@ -441,8 +441,8 @@ $.extend( $.ui.autocomplete, {
  * http://docs.jquery.com/UI/Menu
  *
  * Depends:
- *	jquery.ui.core.js
- *  jquery.ui.widget.js
+ *    jquery.ui.core.js
+ *    jquery.ui.widget.js
  */
 (function($) {
 

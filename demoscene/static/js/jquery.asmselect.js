@@ -15,27 +15,27 @@
 
 		var options = {
 
-			listType: 'ol',						// Ordered list 'ol', or unordered list 'ul'
-			sortable: false, 					// Should the list be sortable?
-			highlight: false,					// Use the highlight feature? 
-			animate: false,						// Animate the the adding/removing of items in the list?
-			addItemTarget: 'bottom',				// Where to place new selected items in list: top or bottom
-			hideWhenAdded: false,					// Hide the option when added to the list? works only in FF
-			debugMode: false,					// Debug mode keeps original select visible 
+			listType: 'ol',  // Ordered list 'ol', or unordered list 'ul'
+			sortable: false,  // Should the list be sortable?
+			highlight: false,  // Use the highlight feature? 
+			animate: false,  // Animate the the adding/removing of items in the list?
+			addItemTarget: 'bottom',  // Where to place new selected items in list: top or bottom
+			hideWhenAdded: false,  // Hide the option when added to the list? works only in FF
+			debugMode: false,  // Debug mode keeps original select visible 
 
-			removeLabel: 'remove',					// Text used in the "remove" link
-			highlightAddedLabel: 'Added: ',				// Text that precedes highlight of added item
-			highlightRemovedLabel: 'Removed: ',			// Text that precedes highlight of removed item
+			removeLabel: 'remove',  // Text used in the "remove" link
+			highlightAddedLabel: 'Added: ',  // Text that precedes highlight of added item
+			highlightRemovedLabel: 'Removed: ',  // Text that precedes highlight of removed item
 
-			containerClass: 'asmContainer',				// Class for container that wraps this widget
-			selectClass: 'asmSelect',				// Class for the newly created <select>
-			optionDisabledClass: 'asmOptionDisabled',		// Class for items that are already selected / disabled
-			listClass: 'asmList',					// Class for the list ($ol)
-			listSortableClass: 'asmListSortable',			// Another class given to the list when it is sortable
-			listItemClass: 'asmListItem',				// Class for the <li> list items
-			listItemLabelClass: 'asmListItemLabel',			// Class for the label text that appears in list items
-			removeClass: 'asmListItemRemove',			// Class given to the "remove" link
-			highlightClass: 'asmHighlight'				// Class given to the highlight <span>
+			containerClass: 'asmContainer',  // Class for container that wraps this widget
+			selectClass: 'asmSelect',  // Class for the newly created <select>
+			optionDisabledClass: 'asmOptionDisabled',  // Class for items that are already selected / disabled
+			listClass: 'asmList',  // Class for the list ($ol)
+			listSortableClass: 'asmListSortable',  // Another class given to the list when it is sortable
+			listItemClass: 'asmListItem',  // Class for the <li> list items
+			listItemLabelClass: 'asmListItemLabel',  // Class for the label text that appears in list items
+			removeClass: 'asmListItemRemove',  // Class given to the "remove" link
+			highlightClass: 'asmHighlight'  // Class given to the highlight <span>
 
 			};
 
@@ -43,13 +43,13 @@
 
 		return this.each(function(index) {
 
-			var $original = $(this); 				// the original select multiple
-			var $container; 					// a container that is wrapped around our widget
-			var $select; 						// the new select we have created
-			var $ol; 						// the list that we are manipulating
-			var buildingSelect = false; 				// is the new select being constructed right now?
-			var ieClick = false;					// in IE, has a click event occurred? ignore if not
-			var ignoreOriginalChangeEvent = false;			// originalChangeEvent bypassed when this is true
+			var $original = $(this);  // the original select multiple
+			var $container;  // a container that is wrapped around our widget
+			var $select;  // the new select we have created
+			var $ol;  // the list that we are manipulating
+			var buildingSelect = false;  // is the new select being constructed right now?
+			var ieClick = false;  // in IE, has a click event occurred? ignore if not
+			var ignoreOriginalChangeEvent = false;  // originalChangeEvent bypassed when this is true
 
 			function init() {
 
@@ -124,7 +124,7 @@
 
 				if($.browser.msie && $.browser.version < 7 && !ieClick) return;
 				var id = $(this).children("option:selected").slice(0,1).attr('rel'); 
-				addListItem(id); 	
+				addListItem(id);
 				ieClick = false; 
 				triggerOriginalChange(id, 'add'); // for use by user-defined callbacks
 			}
@@ -145,7 +145,7 @@
 
 				if(ignoreOriginalChangeEvent) {
 					ignoreOriginalChangeEvent = false; 
-					return; 
+					return;
 				}
 
 				$select.empty();
@@ -170,14 +170,14 @@
 				$original.children("option").each(function(n) {
 
 					var $t = $(this); 
-					var id; 
+					var id;
 
 					if(!$t.attr('id')) $t.attr('id', 'asm' + index + 'option' + n); 
 					id = $t.attr('id'); 
 
 					if($t.is(":selected")) {
 						addListItem(id); 
-						addSelectOption(id, true); 						
+						addSelectOption(id, true);
 					} else {
 						addSelectOption(id); 
 					}
@@ -285,7 +285,7 @@
 				if(!buildingSelect) {
 					setHighlight($item, options.highlightAddedLabel); 
 					selectFirstItem();
-					if(options.sortable) $ol.sortable("refresh"); 	
+					if(options.sortable) $ol.sortable("refresh");
 				}
 
 			}

@@ -8,9 +8,9 @@
  * http://docs.jquery.com/UI/Sortables
  *
  * Depends:
- *	jquery.ui.core.js
- *	jquery.ui.mouse.js
- *	jquery.ui.widget.js
+ *    jquery.ui.core.js
+ *    jquery.ui.mouse.js
+ *    jquery.ui.widget.js
  */
 (function( $, undefined ) {
 
@@ -293,8 +293,8 @@ $.widget("ui.sortable", $.ui.mouse, {
 			if (!intersection) continue;
 
 			if(itemElement != this.currentItem[0] //cannot intersect with itself
-				&&	this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-				&&	!$.ui.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+				&& this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
+				&& !$.ui.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
 				&& (this.options.type == 'semi-dynamic' ? !$.ui.contains(this.element[0], itemElement) : true)
 				//&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
 			) {
@@ -447,7 +447,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		var isOverElement = (y1 + dyClick) > t && (y1 + dyClick) < b && (x1 + dxClick) > l && (x1 + dxClick) < r;
 
-		if(	   this.options.tolerance == "pointer"
+		if(this.options.tolerance == "pointer"
 			|| this.options.forcePointerForContainers
 			|| (this.options.tolerance != "pointer" && this.helperProportions[this.floating ? 'width' : 'height'] > item[this.floating ? 'width' : 'height'])
 		) {
@@ -638,7 +638,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 				var p = this.containers[i].element.offset();
 				this.containers[i].containerCache.left = p.left;
 				this.containers[i].containerCache.top = p.top;
-				this.containers[i].containerCache.width	= this.containers[i].element.outerWidth();
+				this.containers[i].containerCache.width = this.containers[i].element.outerWidth();
 				this.containers[i].containerCache.height = this.containers[i].element.outerHeight();
 			};
 		}
@@ -691,7 +691,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 	_contactContainers: function(event) {
 		
 		// get innermost container that intersects with item 
-		var innermostContainer = null, innermostIndex = null;		
+		var innermostContainer = null, innermostIndex = null;
 		
 		
 		for (var i = this.containers.length - 1; i >= 0; i--){
@@ -884,15 +884,15 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		return {
 			top: (
-				pos.top																	// The absolute mouse position
-				+ this.offset.relative.top * mod										// Only for relative positioned nodes: Relative offset from element to offset parent
-				+ this.offset.parent.top * mod											// The offsetParent's offset without borders (offset + border)
+				pos.top  // The absolute mouse position
+				+ this.offset.relative.top * mod  // Only for relative positioned nodes: Relative offset from element to offset parent
+				+ this.offset.parent.top * mod  // The offsetParent's offset without borders (offset + border)
 				- ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : ( scrollIsRootNode ? 0 : scroll.scrollTop() ) ) * mod)
 			),
 			left: (
-				pos.left																// The absolute mouse position
-				+ this.offset.relative.left * mod										// Only for relative positioned nodes: Relative offset from element to offset parent
-				+ this.offset.parent.left * mod											// The offsetParent's offset without borders (offset + border)
+				pos.left  // The absolute mouse position
+				+ this.offset.relative.left * mod  // Only for relative positioned nodes: Relative offset from element to offset parent
+				+ this.offset.parent.left * mod  // The offsetParent's offset without borders (offset + border)
 				- ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft() ) * mod)
 			)
 		};
@@ -940,17 +940,17 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		return {
 			top: (
-				pageY																// The absolute mouse position
-				- this.offset.click.top													// Click offset (relative to the element)
-				- this.offset.relative.top												// Only for relative positioned nodes: Relative offset from element to offset parent
-				- this.offset.parent.top												// The offsetParent's offset without borders (offset + border)
+				pageY  // The absolute mouse position
+				- this.offset.click.top  // Click offset (relative to the element)
+				- this.offset.relative.top  // Only for relative positioned nodes: Relative offset from element to offset parent
+				- this.offset.parent.top  // The offsetParent's offset without borders (offset + border)
 				+ ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollTop() : ( scrollIsRootNode ? 0 : scroll.scrollTop() ) ))
 			),
 			left: (
-				pageX																// The absolute mouse position
-				- this.offset.click.left												// Click offset (relative to the element)
-				- this.offset.relative.left												// Only for relative positioned nodes: Relative offset from element to offset parent
-				- this.offset.parent.left												// The offsetParent's offset without borders (offset + border)
+				pageX  // The absolute mouse position
+				- this.offset.click.left  // Click offset (relative to the element)
+				- this.offset.relative.left  // Only for relative positioned nodes: Relative offset from element to offset parent
+				- this.offset.parent.left  // The offsetParent's offset without borders (offset + border)
 				+ ($.browser.safari && this.cssPosition == 'fixed' ? 0 : ( this.cssPosition == 'fixed' ? -this.scrollParent.scrollLeft() : scrollIsRootNode ? 0 : scroll.scrollLeft() ))
 			)
 		};
