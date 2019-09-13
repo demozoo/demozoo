@@ -6,271 +6,271 @@
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/js/components/notes_panel.js"></script>
-		<script src="/static/js/components/comments_panel.js"></script>
-		<script src="/static/js/components/editable_chunk.js"></script>
-	{% endcompress %}
+    {% compress js %}
+        <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/comments_panel.js"></script>
+        <script src="/static/js/components/editable_chunk.js"></script>
+    {% endcompress %}
 {% endblock %}
 
 {% block extra_head %}
-	<meta name="twitter:site" content="@demozoo">
-	<meta property="og:url" content="https://demozoo.org{{ party.get_absolute_url }}" />
-	<meta property="og:title" content="{{ party.title }}{% if party.tagline %}: &quot;{{ party.tagline }}&quot;{% endif %}" />
-	<meta property="og:description" content="Check out the results and releases from {{ party.name}}, held {% date_range party.start_date party.end_date %} in {{ party.location }} on Demozoo." />
-	{% comment %}
-		todo: add randomly chosen(?) image
-	{% endcomment %}
-	<meta property="og:image" content="{{ party.share_image_url }}"/>
+    <meta name="twitter:site" content="@demozoo">
+    <meta property="og:url" content="https://demozoo.org{{ party.get_absolute_url }}" />
+    <meta property="og:title" content="{{ party.title }}{% if party.tagline %}: &quot;{{ party.tagline }}&quot;{% endif %}" />
+    <meta property="og:description" content="Check out the results and releases from {{ party.name}}, held {% date_range party.start_date party.end_date %} in {{ party.location }} on Demozoo." />
+    {% comment %}
+        todo: add randomly chosen(?) image
+    {% endcomment %}
+    <meta property="og:image" content="{{ party.share_image_url }}"/>
 {% endblock %}
 
 {% block body_class %}show_party{% endblock %}
 
 {% block base_main %}
-	<script>
-		$(function() {
-			var resultsMenuList = $('.results-menu__list');
+    <script>
+        $(function() {
+            var resultsMenuList = $('.results-menu__list');
 
-			if (resultsMenuList.length) {
-				var resultsMenu = $('.results_menu');
-				var resultsMenuColumn = $('.results_menu_column');
-				var resultsPanel = $('.results_panel');
+            if (resultsMenuList.length) {
+                var resultsMenu = $('.results_menu');
+                var resultsMenuColumn = $('.results_menu_column');
+                var resultsPanel = $('.results_panel');
 
-				var scrollY = 0,
-					ticking = false,
-					resultsPanelY,
-					resultsPanelBottom,
-					maxResultsMenuY;
+                var scrollY = 0,
+                    ticking = false,
+                    resultsPanelY,
+                    resultsPanelBottom,
+                    maxResultsMenuY;
 
-				function requestTick(event) {
-					if(!ticking) {
-						requestAnimationFrame(event);
-					}
-					ticking = true;
-				}
+                function requestTick(event) {
+                    if(!ticking) {
+                        requestAnimationFrame(event);
+                    }
+                    ticking = true;
+                }
 
-				function handleScroll() {
-					scrollY = window.scrollY;
-					requestTick(update);
-				}
+                function handleScroll() {
+                    scrollY = window.scrollY;
+                    requestTick(update);
+                }
 
-				function handleResize() {
-					requestTick(menuResize);
-				}
+                function handleResize() {
+                    requestTick(menuResize);
+                }
 
-				function menuResize() {
-					ticking = false;
+                function menuResize() {
+                    ticking = false;
 
-					resultsMenu.css({
-						'width': resultsMenuColumn.width() + 'px'
-					});
-				}
+                    resultsMenu.css({
+                        'width': resultsMenuColumn.width() + 'px'
+                    });
+                }
 
-				function update() {
-					ticking = false;
-					resultsPanelY = resultsPanel.offset().top;
-					resultsPanelBottom = resultsPanelY + resultsPanel.height();
-					maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
+                function update() {
+                    ticking = false;
+                    resultsPanelY = resultsPanel.offset().top;
+                    resultsPanelBottom = resultsPanelY + resultsPanel.height();
+                    maxResultsMenuY = resultsPanelBottom - resultsMenu.height();
 
-					if (scrollY <= resultsPanelY) {
-						resultsPanel.removeClass('fixed bottom');
-					} else if (scrollY <= maxResultsMenuY - 10) {
-						resultsPanel.removeClass('bottom').addClass('fixed');
-					} else {
-						resultsPanel.removeClass('fixed').addClass('bottom');
-					}
-				}
+                    if (scrollY <= resultsPanelY) {
+                        resultsPanel.removeClass('fixed bottom');
+                    } else if (scrollY <= maxResultsMenuY - 10) {
+                        resultsPanel.removeClass('bottom').addClass('fixed');
+                    } else {
+                        resultsPanel.removeClass('fixed').addClass('bottom');
+                    }
+                }
 
-				window.addEventListener('scroll', handleScroll, false);
-				window.addEventListener('resize', handleResize, false);
-				update();
-				menuResize();
-			}
-		})
-	</script>
+                window.addEventListener('scroll', handleScroll, false);
+                window.addEventListener('resize', handleResize, false);
+                update();
+                menuResize();
+            }
+        })
+    </script>
 
-	<div class="editable_chunk party_core_details">
-		<div class="signpost">Party</div>
+    <div class="editable_chunk party_core_details">
+        <div class="signpost">Party</div>
 
-		{% if site_is_writeable %}
-			<ul class="actions">
-				<li>
-					<a href="{% url 'edit_party' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
-				</li>
-				{% if request.user.is_staff %}
-					<li>
-						<a href="{% url 'party_edit_share_image' party.id %}" class="action_button icon picture_edit">Edit social share image</a>
-					</li>
-				{% endif %}
-			</ul>
-		{% endif %}
+        {% if site_is_writeable %}
+            <ul class="actions">
+                <li>
+                    <a href="{% url 'edit_party' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
+                </li>
+                {% if request.user.is_staff %}
+                    <li>
+                        <a href="{% url 'party_edit_share_image' party.id %}" class="action_button icon picture_edit">Edit social share image</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
 
-		<div class="focus_title party_name">
-			<h2>{{ party.name }}{% if party.tagline %}:{% endif %}</h2>
-			{% if party.tagline %}<h3>"{{ party.tagline }}"</h3>{% endif %}
-		</div>
+        <div class="focus_title party_name">
+            <h2>{{ party.name }}{% if party.tagline %}:{% endif %}</h2>
+            {% if party.tagline %}<h3>"{{ party.tagline }}"</h3>{% endif %}
+        </div>
 
-		<ul class="attributes">
-			<li class="date">{% date_range party.start_date party.end_date %}</li>
+        <ul class="attributes">
+            <li class="date">{% date_range party.start_date party.end_date %}</li>
 
-			{% if party.is_online %}
-				<li class="location">Online <img src="/static/images/icons/computer.png" alt="" /></li>
-			{% elif party.location %}
-				<li class="location">
-					{{ party.location }}
-					{% if party.country_code %}
-						<img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
-					{% endif %}
-				</li>
-			{% endif %}
+            {% if party.is_online %}
+                <li class="location">Online <img src="/static/images/icons/computer.png" alt="" /></li>
+            {% elif party.location %}
+                <li class="location">
+                    {{ party.location }}
+                    {% if party.country_code %}
+                        <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
+                    {% endif %}
+                </li>
+            {% endif %}
 
-			{% if party.website %}
-				<li class="website"><a href="{{ party.website }}">{{ party.website }}</a></li>
-			{% elif party.party_series.website %}
-				<li class="website"><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
-			{% endif %}
-		</ul>
-	</div>
+            {% if party.website %}
+                <li class="website"><a href="{{ party.website }}">{{ party.website }}</a></li>
+            {% elif party.party_series.website %}
+                <li class="website"><a href="{{ party.party_series.website }}">{{ party.party_series.website }}</a></li>
+            {% endif %}
+        </ul>
+    </div>
 
-	{% if results_files %}
-		<div class="panel results_file_panel">
-			<h3 class="panel__title">Results file</h3>
-			<ul class="results_files">
-				{% for file in results_files %}
-					<li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
-				{% endfor %}
-			</ul>
-		</div>
-	{% endif %}
+    {% if results_files %}
+        <div class="panel results_file_panel">
+            <h3 class="panel__title">Results file</h3>
+            <ul class="results_files">
+                {% for file in results_files %}
+                    <li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-	<div class="editable_chunk panel external_links_panel">
-		<h3 class="panel__title">External links</h3>
-		{% if site_is_writeable %}
-			<ul class="actions">
-				<li>
-					<a href="{% url 'party_edit_external_links' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
-				</li>
-			</ul>
-		{% endif %}
-		<ul class="external_links">
-			{% for link in external_links %}
-				<li>{{ link.html_link|safe }}</li>
-			{% endfor %}
-		</ul>
-	</div>
+    <div class="editable_chunk panel external_links_panel">
+        <h3 class="panel__title">External links</h3>
+        {% if site_is_writeable %}
+            <ul class="actions">
+                <li>
+                    <a href="{% url 'party_edit_external_links' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+                </li>
+            </ul>
+        {% endif %}
+        <ul class="external_links">
+            {% for link in external_links %}
+                <li>{{ link.html_link|safe }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-	{% if parties_in_series.count > 1 %}
-		<div class="parties_in_series">
-			<strong>Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:</strong>
-			<ul>
-				{% for party_in_series in parties_in_series %}
-					<li>
-						{% if party_in_series == party %}
-							<strong>{{ party_in_series.suffix }}</strong>
-						{% else %}
-							<a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
-						{% endif %}
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	{% endif %}
+    {% if parties_in_series.count > 1 %}
+        <div class="parties_in_series">
+            <strong>Other <a href="{{ party.party_series.get_absolute_url }}">{{ party.party_series.name }}</a> parties:</strong>
+            <ul>
+                {% for party_in_series in parties_in_series %}
+                    <li>
+                        {% if party_in_series == party %}
+                            <strong>{{ party_in_series.suffix }}</strong>
+                        {% else %}
+                            <a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-	{% if party.notes or request.user.is_staff %}
-		<div class="editable_chunk panel notes_panel">
-			{% if request.user.is_staff and site_is_writeable %}
-				<ul class="actions">
-					<li>
-						<a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a>
-					</li>
-				</ul>
-			{% endif %}
-			<div class="notes">
-				{{ party.notes|safe_markdown }}
-			</div>
-		</div>
-	{% endif %}
+    {% if party.notes or request.user.is_staff %}
+        <div class="editable_chunk panel notes_panel">
+            {% if request.user.is_staff and site_is_writeable %}
+                <ul class="actions">
+                    <li>
+                        <a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a>
+                    </li>
+                </ul>
+            {% endif %}
+            <div class="notes">
+                {{ party.notes|safe_markdown }}
+            </div>
+        </div>
+    {% endif %}
 
-	{% if invitations or user.is_authenticated %}
-		<div class="panel invitations_panel editable_chunk">
-			<h3 class="panel__title">
-				Invitation{{ invitations|length|pluralize }}
-			</h3>
-			{% if site_is_writeable %}
-				<ul class="actions">
-					<li><a href="{% url 'party_edit_invitations' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit invitations</a></li>
-				</ul>
-			{% endif %}
+    {% if invitations or user.is_authenticated %}
+        <div class="panel invitations_panel editable_chunk">
+            <h3 class="panel__title">
+                Invitation{{ invitations|length|pluralize }}
+            </h3>
+            {% if site_is_writeable %}
+                <ul class="actions">
+                    <li><a href="{% url 'party_edit_invitations' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit invitations</a></li>
+                </ul>
+            {% endif %}
 
-			{% if invitations %}
-				{% production_listing invitations show_screenshots=1 show_prod_types=1 %}
-			{% endif %}
-		</div>
-	{% endif %}
+            {% if invitations %}
+                {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
+            {% endif %}
+        </div>
+    {% endif %}
 
-	{% if releases or user.is_authenticated %}
-		<div class="panel releases_panel editable_chunk">
-			<h3 class="panel__title">Releases</h3>
-			{% if site_is_writeable %}
-				<ul class="actions">
-					<li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit releases</a></li>
-				</ul>
-			{% endif %}
+    {% if releases or user.is_authenticated %}
+        <div class="panel releases_panel editable_chunk">
+            <h3 class="panel__title">Releases</h3>
+            {% if site_is_writeable %}
+                <ul class="actions">
+                    <li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit releases</a></li>
+                </ul>
+            {% endif %}
 
-			{% if releases %}
-				{% production_listing releases show_screenshots=1 show_prod_types=1 %}
-			{% endif %}
-		</div>
-	{% endif %}
+            {% if releases %}
+                {% production_listing releases show_screenshots=1 show_prod_types=1 %}
+            {% endif %}
+        </div>
+    {% endif %}
 
-	{% if competitions_with_placings_and_screenshots or user.is_authenticated %}
-		<div class="panel results_panel">
-			<div class="results_menu_column">
-				<div class="results_menu">
-					<h3 class="panel__title">Results</h3>
-					{% if competitions_with_placings_and_screenshots %}
-						<ul class="results-menu__list">
-							{% for compo, placings in competitions_with_placings_and_screenshots %}
-								<li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
-							{% endfor %}
-						</ul>
-					{% endif %}
-				</div>
-			</div>
+    {% if competitions_with_placings_and_screenshots or user.is_authenticated %}
+        <div class="panel results_panel">
+            <div class="results_menu_column">
+                <div class="results_menu">
+                    <h3 class="panel__title">Results</h3>
+                    {% if competitions_with_placings_and_screenshots %}
+                        <ul class="results-menu__list">
+                            {% for compo, placings in competitions_with_placings_and_screenshots %}
+                                <li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
 
-			<div class="results_body">
-				{% for compo, placings in competitions_with_placings_and_screenshots %}
-					<section class="competition editable_chunk" id="competition_{{ compo.id }}">
+            <div class="results_body">
+                {% for compo, placings in competitions_with_placings_and_screenshots %}
+                    <section class="competition editable_chunk" id="competition_{{ compo.id }}">
 
-						{% if site_is_writeable %}
-							<ul class="actions">
-								<li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
-								{% if request.user.is_staff and not placings %}
-									<li><a class="action_button icon delete open_in_lightbox" href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
-								{% endif %}
-							</ul>
-						{% endif %}
+                        {% if site_is_writeable %}
+                            <ul class="actions">
+                                <li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+                                {% if request.user.is_staff and not placings %}
+                                    <li><a class="action_button icon delete open_in_lightbox" href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
 
-						<h4 class="competition__heading">{{ compo.name }}</h4>
+                        <h4 class="competition__heading">{{ compo.name }}</h4>
 
-						{% if placings %}
-							{% include "shared/competition_results.html" %}
-						{% endif %}
-					</section>
-				{% endfor %}
+                        {% if placings %}
+                            {% include "shared/competition_results.html" %}
+                        {% endif %}
+                    </section>
+                {% endfor %}
 
-				{% if site_is_writeable %}
-					<ul class="actions">
-						<li>
-							<a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
-						</li>
-					</ul>
-				{% endif %}
-			</div>
-		</div>
-	{% endif %}
+                {% if site_is_writeable %}
+                    <ul class="actions">
+                        <li>
+                            <a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
 
-	{% last_edited_by party %}
+    {% last_edited_by party %}
 
-	{% include "comments/_comments.html" with commentable=party edit_action='edit_party_comment' delete_action='delete_party_comment' no_comments_message='Be the first to comment on this party...' add_action='add_party_comment' %}
+    {% include "comments/_comments.html" with commentable=party edit_action='edit_party_comment' delete_action='delete_party_comment' no_comments_message='Be the first to comment on this party...' add_action='add_party_comment' %}
 {% endblock %}

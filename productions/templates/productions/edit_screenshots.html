@@ -5,22 +5,22 @@
 {% block html_title %}Editing {{ model_label }} for {{ production.title }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<div class="panel">
-		<ul class="actions">
-			<li><a href="{% url 'production' production.id %}" class="action_button icon done">Back to production</a></li>
-		</ul>
-		
-		<h2>Editing {{ model_label }} for {{ production.title }}</h2>
-		
-		<ul>
-			{% for pic in screenshots %}
-				<li>
-					{% thumbnail pic %}
-					<a href="{% url delete_url_name production.id pic.id %}" class="open_in_lightbox">
-						<img src="/static/images/icons/delete.png" width="16" height="16" />
-					</a>
-				</li>
-			{% endfor %}
-		</ul>
-	</div>
+    <div class="panel">
+        <ul class="actions">
+            <li><a href="{% url 'production' production.id %}" class="action_button icon done">Back to production</a></li>
+        </ul>
+        
+        <h2>Editing {{ model_label }} for {{ production.title }}</h2>
+        
+        <ul>
+            {% for pic in screenshots %}
+                <li>
+                    {% thumbnail pic %}
+                    <a href="{% url delete_url_name production.id pic.id %}" class="open_in_lightbox">
+                        <img src="/static/images/icons/delete.png" width="16" height="16" />
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

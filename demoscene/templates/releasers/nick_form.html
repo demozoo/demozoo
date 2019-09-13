@@ -1,45 +1,45 @@
 {% if title %}
-	<h2>{{ title }}</h2>
+    <h2>{{ title }}</h2>
 {% endif %}
 
 <form action="{{ action_url }}" method="post" class="entry_form nick_form {{ html_form_class }}">
-	{% csrf_token %}
-	
-	{{ form.non_field_errors }}
-	{% with form.name as field %}
-		{% include "shared/form_field.html" %}
-	{% endwith %}
-	
-	{% if form.abbreviation %}
-		{% with form.abbreviation as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
-	{% endif %}
-	
-	{% with form.nick_variant_list as field %}
-		{% include "shared/form_field.html" %}
-	{% endwith %}
+    {% csrf_token %}
+    
+    {{ form.non_field_errors }}
+    {% with form.name as field %}
+        {% include "shared/form_field.html" %}
+    {% endwith %}
+    
+    {% if form.abbreviation %}
+        {% with form.abbreviation as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
+    {% endif %}
+    
+    {% with form.nick_variant_list as field %}
+        {% include "shared/form_field.html" %}
+    {% endwith %}
 
-	{% if form.differentiator %}
-		{% with form.differentiator as field %}
-			{% include "shared/form_field.html" %}
-		{% endwith %}
-	{% endif %}
+    {% if form.differentiator %}
+        {% with form.differentiator as field %}
+            {% include "shared/form_field.html" %}
+        {% endwith %}
+    {% endif %}
 
-	{% with form.override_primary_nick as field %}
-		<div class="field">
-			<div class="field_input unlabelled_field_input">
-				{{ field.errors }}
-				{{ field }}
-				<label for="id_{{ field.html_name }}">{{ field.label }}</label>
-				{% if field.help_text %}
-					<div class="help_text">{{ field.help_text }}</div>
-				{% endif %}
-			</div>
-		</div>
-	{% endwith %}
-	
-	<div class="field">
-		<input type="submit" />
-	</div>
+    {% with form.override_primary_nick as field %}
+        <div class="field">
+            <div class="field_input unlabelled_field_input">
+                {{ field.errors }}
+                {{ field }}
+                <label for="id_{{ field.html_name }}">{{ field.label }}</label>
+                {% if field.help_text %}
+                    <div class="help_text">{{ field.help_text }}</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endwith %}
+    
+    <div class="field">
+        <input type="submit" />
+    </div>
 </form>

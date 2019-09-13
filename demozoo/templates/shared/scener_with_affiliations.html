@@ -1,12 +1,12 @@
 <a href="{{ releaser.get_absolute_url }}">{{ name }}</a>
 {% if groups %}
-	/
-	{% for group in groups %}
-		{% if abbreviate_groups and group.abbreviation %}
-			<a href="{{ group.get_absolute_url }}" title="{{ group.name }}">{{ group.abbreviation }}</a>
-		{% else %}
-			<a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
-		{% endif %}
-		{% if not forloop.last %}^{% endif %}
-	{% endfor %}
+    /
+    {% for group in groups %}
+        {% if abbreviate_groups and group.abbreviation %}
+            <a href="{{ group.get_absolute_url }}" title="{{ group.name }}">{{ group.abbreviation }}</a>
+        {% else %}
+            <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+        {% endif %}
+        {% if not forloop.last %}^{% endif %}
+    {% endfor %}
 {% endif %}

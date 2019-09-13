@@ -4,27 +4,27 @@
 {% block html_title %}Edit news - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
+    {% include "shared/editor_css.html" %}
 {% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/js/modal_workflow.js"></script>
-	{% endcompress %}
+    {% compress js %}
+        <script src="/static/js/modal_workflow.js"></script>
+    {% endcompress %}
 {% endblock %}
 
 {% block base_main %}
-	<ul class="actions">
-		<li>
-			<a href="{% url 'delete_news' news_story.id %}" class="action_button icon delete open_in_lightbox" title="Delete this news story">Delete</a>
-		</li>
-	</ul>
-	<h1>Edit news item</h1>
-	<form action="{% url 'edit_news' news_story.id %}" class="entry_form" method="POST" enctype="multipart/form-data">
-		{% csrf_token %}
-		{% include "homepage/news/_news_form.html" %}
-		<div class="field">
-			<input type="submit" value="Update" />
-		</div>
-	</form>
+    <ul class="actions">
+        <li>
+            <a href="{% url 'delete_news' news_story.id %}" class="action_button icon delete open_in_lightbox" title="Delete this news story">Delete</a>
+        </li>
+    </ul>
+    <h1>Edit news item</h1>
+    <form action="{% url 'edit_news' news_story.id %}" class="entry_form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% include "homepage/news/_news_form.html" %}
+        <div class="field">
+            <input type="submit" value="Update" />
+        </div>
+    </form>
 {% endblock %}

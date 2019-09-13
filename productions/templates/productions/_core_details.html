@@ -3,68 +3,68 @@
 
 
 <div class="production_core_details editable_chunk">
-	{% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
-		<ul class="actions">
-			{% if show_lock_button %}
-				<li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_production' production.id %}" title="Lock this production">Unlocked</a></li>
-			{% endif %}
-			{% if show_locked_button %}
-				<li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'production_protected' production.id %}" rel="nofollow">Protected</a></li>
-			{% endif %}
-			{% if show_edit_button %}
-				<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details" rel="nofollow">Edit</a></li>
-			{% endif %}
-			{% if show_back_button %}
-				<li><a class="action_button icon back" href="{{ production.get_absolute_url }}">Back to production</a></li>
-			{% endif %}
-		</ul>
-	{% endif %}
+    {% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
+        <ul class="actions">
+            {% if show_lock_button %}
+                <li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_production' production.id %}" title="Lock this production">Unlocked</a></li>
+            {% endif %}
+            {% if show_locked_button %}
+                <li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'production_protected' production.id %}" rel="nofollow">Protected</a></li>
+            {% endif %}
+            {% if show_edit_button %}
+                <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{{ production.get_edit_core_details_url }}" title="Edit production details" rel="nofollow">Edit</a></li>
+            {% endif %}
+            {% if show_back_button %}
+                <li><a class="action_button icon back" href="{{ production.get_absolute_url }}">Back to production</a></li>
+            {% endif %}
+        </ul>
+    {% endif %}
 
-	<ul class="production_types">
-		{% for production_type in production.types.all %}
-			<li class="signpost">{{ production_type.name }}</li>
-		{% endfor %}
-	</ul>
-	<div class="production_title focus_title">
-		<h2>{{ production.title }}</h2>
-		{% if production.byline_string %}
-			<h3>
-				by {% byline production %}
-			</h3>
-		{% endif %}
-	</div>
+    <ul class="production_types">
+        {% for production_type in production.types.all %}
+            <li class="signpost">{{ production_type.name }}</li>
+        {% endfor %}
+    </ul>
+    <div class="production_title focus_title">
+        <h2>{{ production.title }}</h2>
+        {% if production.byline_string %}
+            <h3>
+                by {% byline production %}
+            </h3>
+        {% endif %}
+    </div>
 
-	{% for party in invitation_parties %}
-		<h4>Invitation for <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h4>
-	{% endfor %}
+    {% for party in invitation_parties %}
+        <h4>Invitation for <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h4>
+    {% endfor %}
 
-	<ul class="attributes">
-		{% if production.release_date and release_parties|length == 1 %}
-			<li>Released {{ production.release_date }} at <a href="{{ release_parties.0.get_absolute_url }}">{{ release_parties.0.name }}</a></li>
-		{% else %}
-			{% if production.release_date %}
-				<li>Released {{ production.release_date }}</li>
-			{% endif %}
-			{% for party in release_parties %}
-				<li>Released at <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
-			{% endfor %}
-		{% endif %}
+    <ul class="attributes">
+        {% if production.release_date and release_parties|length == 1 %}
+            <li>Released {{ production.release_date }} at <a href="{{ release_parties.0.get_absolute_url }}">{{ release_parties.0.name }}</a></li>
+        {% else %}
+            {% if production.release_date %}
+                <li>Released {{ production.release_date }}</li>
+            {% endif %}
+            {% for party in release_parties %}
+                <li>Released at <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></li>
+            {% endfor %}
+        {% endif %}
 
-		{% for placing in competition_placings %}
-			<li>
-				{{ placing.ranking|ordinal }} in the
-				<a href="{{ placing.competition.party.get_absolute_url }}#competition_{{ placing.competition.id }}">{{ placing.competition.party.name }} {{ placing.competition.name }} competition</a>
-			</li>
-		{% endfor %}
+        {% for placing in competition_placings %}
+            <li>
+                {{ placing.ranking|ordinal }} in the
+                <a href="{{ placing.competition.party.get_absolute_url }}#competition_{{ placing.competition.id }}">{{ placing.competition.party.name }} {{ placing.competition.name }} competition</a>
+            </li>
+        {% endfor %}
 
-		{% with production.platforms.all as platforms %}
-			{% if platforms %}
-				<li>
-					{% for platform in platforms %}
-						<a href="{% url 'platform' platform.id %}">{{ platform.name }}</a>{% if not forloop.last %},{% endif %}
-					{% endfor %}
-				</li>
-			{% endif %}
-		{% endwith %}
-	</ul>
+        {% with production.platforms.all as platforms %}
+            {% if platforms %}
+                <li>
+                    {% for platform in platforms %}
+                        <a href="{% url 'platform' platform.id %}">{{ platform.name }}</a>{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                </li>
+            {% endif %}
+        {% endwith %}
+    </ul>
 </div>

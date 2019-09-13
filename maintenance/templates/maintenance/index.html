@@ -7,18 +7,18 @@
 
 {% block base_main %}
 
-	<header>
-		<h1>Maintenance</h1>
-	</header>
-	{% for section_title, section_reports in reports %}
-		<section>
-			<h2>{{ section_title }}</h2>
-			<ul>
-				{% for report in section_reports %}
-					<li><a href="{{ report.get_url }}">{{ report.title }}</a></li>
-				{% endfor %}
-			</ul>
-		</section>
-	{% endfor %}
+    <header>
+        <h1>Maintenance</h1>
+    </header>
+    {% for section_title, section_reports in reports %}
+        <section>
+            <h2>{{ section_title }}</h2>
+            <ul>
+                {% for report in section_reports %}
+                    <li><a href="{{ report.get_url }}">{{ report.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endfor %}
 
 {% endblock %}

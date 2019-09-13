@@ -1,8 +1,8 @@
 {% load safe_markdown %}
 
 <a href="{{ banner_url }}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">
-	<div class="banner_text {% if banner.hide_text %}hidden{% endif %}">
-		<h1>{{ banner.title }}</h1>
-		{{ banner.text|safe_markdown }}
-	</div>
+    <div class="banner_text {% if banner.hide_text %}hidden{% endif %}">
+        <h1>{{ banner.title }}</h1>
+        {{ banner.text|safe_markdown }}
+    </div>
 </a>

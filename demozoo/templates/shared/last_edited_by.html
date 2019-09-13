@@ -1,6 +1,6 @@
 {% if edit %}
-	<p class="last_edited_by">
-		Last edited on {{ edit.timestamp|date:"j M Y" }} by <a class="user" href="{% url 'user' edit.user.id %}">{{ edit.user.username }}</a>.
-		<a href="{{ item.get_history_url }}">See all edits</a>
-	</p>
+    <p class="last_edited_by">
+        Last edited on {{ edit.timestamp|date:"j M Y" }} by <a class="user" href="{% url 'user' edit.user.id %}">{{ edit.user.username }}</a>.
+        <a href="{{ item.get_history_url }}">See all edits</a>
+    </p>
 {% endif %}

@@ -5,14 +5,14 @@
 {% block html_title %}Editing comment for {{ commentable_name }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>Editing comment for {{ commentable_name }}</h2>
+    <h2>Editing comment for {{ commentable_name }}</h2>
 
-	<form action="{% url submit_action commentable.id comment.id %}" method="POST" class="comment_form">
-		{% csrf_token %}
-		<div>
-			{{ comment_form.body }}
-			<p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
-		</div>
-		<input type="submit" value="Update comment">
-	</form>
+    <form action="{% url submit_action commentable.id comment.id %}" method="POST" class="comment_form">
+        {% csrf_token %}
+        <div>
+            {{ comment_form.body }}
+            <p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
+        </div>
+        <input type="submit" value="Update comment">
+    </form>
 {% endblock %}

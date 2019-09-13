@@ -4,7 +4,7 @@
 {% block html_title %}{{ production.title }} info: {{ info_file.filename }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>{{ production.title }} info: {{ info_file.filename }}</h2>
-	<p><a href="{{ production.get_absolute_url }}">Back to production</a></p>
-	<pre>{{ info_file.text }}</pre>
+    <h2>{{ production.title }} info: {{ info_file.filename }}</h2>
+    <p><a href="{{ production.get_absolute_url }}">Back to production</a></p>
+    <pre>{{ info_file.text }}</pre>
 {% endblock %}

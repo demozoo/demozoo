@@ -8,187 +8,187 @@
 <h2>Import results - {{ competition.party.name }} {{ competition.name }} competition</h2>
 
 <form action="{% url 'competition_import_text' competition.id %}" method="post">
-	{% csrf_token %}
+    {% csrf_token %}
 
-	<div class="field">
-		<label for="results_format">Format</label>
-		<select id="results_format" name="format">
-			<option value="tsv">Tab-separated values</option>
-			<option value="pm1">Partymeister v1</option>
-			<option value="pm2">Partymeister v2</option>
-			<option value="wuhu">Wuhu</option>
-		</select>
-	</div>
+    <div class="field">
+        <label for="results_format">Format</label>
+        <select id="results_format" name="format">
+            <option value="tsv">Tab-separated values</option>
+            <option value="pm1">Partymeister v1</option>
+            <option value="pm2">Partymeister v2</option>
+            <option value="wuhu">Wuhu</option>
+        </select>
+    </div>
 
-	<textarea id="results_text" name="results" style="width: 100%; height: 400px; font-family: monospace;"></textarea>
-	<div class="field" style="float: right;">
-		<input type="submit" value="Import" />
-	</div>
+    <textarea id="results_text" name="results" style="width: 100%; height: 400px; font-family: monospace;"></textarea>
+    <div class="field" style="float: right;">
+        <input type="submit" value="Import" />
+    </div>
 </form>
 
 <div id="preview" style="clear: both;">
 </div>
 
 <script>
-	var resultsTextarea = $('#results_text');
-	var resultsFormatSelector = $('#results_format');
-	var previewContainer = $('#preview');
+    var resultsTextarea = $('#results_text');
+    var resultsFormatSelector = $('#results_format');
+    var previewContainer = $('#preview');
 
-	function refreshPreview() {
-		var results = resultsTextarea.val();
-		previewContainer.html('<h3>Preview:</h3><table border="1"><tr><th>Ranking</th><th>Title</th><th>Author</th><th>Score</th></tr></table>');
-		var table = previewContainer.find('table');
+    function refreshPreview() {
+        var results = resultsTextarea.val();
+        previewContainer.html('<h3>Preview:</h3><table border="1"><tr><th>Ranking</th><th>Title</th><th>Author</th><th>Score</th></tr></table>');
+        var table = previewContainer.find('table');
 
-		function addRow(ranking, title, author, score) {
-			if (title) {
-				var tr = $('<tr></tr>');
-				tr.append($('<td></td>').text(ranking));
-				tr.append($('<td></td>').text(title));
-				tr.append($('<td></td>').text(author));
-				tr.append($('<td></td>').text(score));
-				table.append(tr);
-			}
-		}
+        function addRow(ranking, title, author, score) {
+            if (title) {
+                var tr = $('<tr></tr>');
+                tr.append($('<td></td>').text(ranking));
+                tr.append($('<td></td>').text(title));
+                tr.append($('<td></td>').text(author));
+                tr.append($('<td></td>').text(score));
+                table.append(tr);
+            }
+        }
 
-		/* Generalised Partymeister and Wuhu results exporting.
-		Any non-blank line in the results is one of the following:
-		1) A ranked result, with values given for ranking, score and title/author
-		2) An unranked result, where ranking is blank to indicate that it tied with the result above
-			(and thus we should populate it with the previously seen ranking)
-		3) A continuation of the name/author field from the previous line
+        /* Generalised Partymeister and Wuhu results exporting.
+        Any non-blank line in the results is one of the following:
+        1) A ranked result, with values given for ranking, score and title/author
+        2) An unranked result, where ranking is blank to indicate that it tied with the result above
+            (and thus we should populate it with the previously seen ranking)
+        3) A continuation of the name/author field from the previous line
 
-		To determine which one it is, we use the first line (which should always be a ranked result -
-		if not, we keep scanning until we find one) as a reference, and compare its indent level.
-		*/
+        To determine which one it is, we use the first line (which should always be a ranked result -
+        if not, we keep scanning until we find one) as a reference, and compare its indent level.
+        */
 
-		function parseAsPartymeisterV1() {
-			parseAsGenericResultsTxt(
-				/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
-				/^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
-				' - ');  /* title / author separator */
-		}
-		function parseAsPartymeisterV2() {
-			parseAsGenericResultsTxt(
-				/^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
-				/^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
-				' by ');  /* title / author separator */
-		}
-		function parseAsWuhu() {
-			parseAsGenericResultsTxt(
-				/^(\s*)(\S+)(\s+\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for ranked result */
-				/^(\s*\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for unranked result */
-				' - ');  /* title / author separator */
-		}
+        function parseAsPartymeisterV1() {
+            parseAsGenericResultsTxt(
+                /^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
+                /^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
+                ' - ');  /* title / author separator */
+        }
+        function parseAsPartymeisterV2() {
+            parseAsGenericResultsTxt(
+                /^(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)/,  /* regexp for ranked result */
+                /^(\s*)(\S+)(\s+)(\S.*)/,  /* regexp for unranked result */
+                ' by ');  /* title / author separator */
+        }
+        function parseAsWuhu() {
+            parseAsGenericResultsTxt(
+                /^(\s*)(\S+)(\s+\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for ranked result */
+                /^(\s*\#\d+\s+)(\S+)( pts\s+)(\S.*)/,  /* regexp for unranked result */
+                ' - ');  /* title / author separator */
+        }
 
-		function parseAsGenericResultsTxt(rankedResultRegexp, unrankedResultRegexp, authorSeparator) {
-			/* The first line (barring any blank ones) should be a  first text line to establish column positions */
-			var lines = results.split(/\n/);
-			var rankingIndent = null;
-			var scoreIndent = null;
-			var titleIndent = null;
-			for (var i = 0; i < lines.length; i++) {
-				var match = lines[i].match(rankedResultRegexp);
-				if (!match) continue;
-				rankingIndent = match[1].length;
-				scoreIndent = rankingIndent + match[2].length + match[3].length;
-				titleIndent = scoreIndent + match[4].length + match[5].length;
-				break;
-			}
-			if (rankingIndent == null) {
-				/* no usable result lines found at all */
-				return;
-			}
+        function parseAsGenericResultsTxt(rankedResultRegexp, unrankedResultRegexp, authorSeparator) {
+            /* The first line (barring any blank ones) should be a  first text line to establish column positions */
+            var lines = results.split(/\n/);
+            var rankingIndent = null;
+            var scoreIndent = null;
+            var titleIndent = null;
+            for (var i = 0; i < lines.length; i++) {
+                var match = lines[i].match(rankedResultRegexp);
+                if (!match) continue;
+                rankingIndent = match[1].length;
+                scoreIndent = rankingIndent + match[2].length + match[3].length;
+                titleIndent = scoreIndent + match[4].length + match[5].length;
+                break;
+            }
+            if (rankingIndent == null) {
+                /* no usable result lines found at all */
+                return;
+            }
 
-			/* now loop over the lines properly, compiling a list of (ranking, score, title_and_author) tuples */
-			var rows = [];
-			var lastRanking = null;
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				var match = line.match(/^(\s*)\S/);
-				if (!match) continue;
-				var indent = match[1].length;
-				if (indent >= titleIndent) {
-					/* continuation of previous entry */
-					if (rows.length == 0) continue;
-					rows[rows.length - 1][2] += ' ' + line.trim();
-				} else if (indent > rankingIndent) {
-					/* unranked result */
-					if (!lastRanking) continue;
-					var match = line.match(unrankedResultRegexp);
-					if (!match) continue;
-					rows.push([lastRanking, match[2], match[4]])
-				} else {
-					/* ranked result */
-					var match = line.match(rankedResultRegexp);
-					if (!match) continue;
-					rows.push([match[2], match[4], match[6]]);
-					lastRanking = match[2];
-				}
-			}
+            /* now loop over the lines properly, compiling a list of (ranking, score, title_and_author) tuples */
+            var rows = [];
+            var lastRanking = null;
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var match = line.match(/^(\s*)\S/);
+                if (!match) continue;
+                var indent = match[1].length;
+                if (indent >= titleIndent) {
+                    /* continuation of previous entry */
+                    if (rows.length == 0) continue;
+                    rows[rows.length - 1][2] += ' ' + line.trim();
+                } else if (indent > rankingIndent) {
+                    /* unranked result */
+                    if (!lastRanking) continue;
+                    var match = line.match(unrankedResultRegexp);
+                    if (!match) continue;
+                    rows.push([lastRanking, match[2], match[4]])
+                } else {
+                    /* ranked result */
+                    var match = line.match(rankedResultRegexp);
+                    if (!match) continue;
+                    rows.push([match[2], match[4], match[6]]);
+                    lastRanking = match[2];
+                }
+            }
 
-			/* now clean up individual fields and build the preview table */
-			for (var i = 0; i < rows.length; i++) {
-				var row = rows[i];
+            /* now clean up individual fields and build the preview table */
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
 
-				var ranking = row[0].replace(/\.$/, ''); /* remove trailing dot */
-				if (ranking.match(/^[o\d]+$/i)) {
-					/* replace any oh-so-l33t letter 'o's within numbers by digit '0', and remove leading zeroes */
-					ranking = ranking.replace(/o/gi, '0').replace(/^0+/, '');
-				}
-				var score = row[1];
+                var ranking = row[0].replace(/\.$/, ''); /* remove trailing dot */
+                if (ranking.match(/^[o\d]+$/i)) {
+                    /* replace any oh-so-l33t letter 'o's within numbers by digit '0', and remove leading zeroes */
+                    ranking = ranking.replace(/o/gi, '0').replace(/^0+/, '');
+                }
+                var score = row[1];
 
-				/* split title and author on the final ' - ', on the assumption that titles are more likely to have an embedded ' - ' than author strings */
-				/* ...but allow other separators in place of ' - ', as Partymeister v2 uses ' by ' */
-				var titleAndAuthor = row[2].split(authorSeparator);
-				if (titleAndAuthor.length > 1) {
-					var author = titleAndAuthor.pop();
-					author = author.replace(/\s+\[REMOTE\]\s*$/, '');
-					var title = titleAndAuthor.join(authorSeparator);
-				} else {
-					var author = '';
-					var title = titleAndAuthor[0];
-				}
+                /* split title and author on the final ' - ', on the assumption that titles are more likely to have an embedded ' - ' than author strings */
+                /* ...but allow other separators in place of ' - ', as Partymeister v2 uses ' by ' */
+                var titleAndAuthor = row[2].split(authorSeparator);
+                if (titleAndAuthor.length > 1) {
+                    var author = titleAndAuthor.pop();
+                    author = author.replace(/\s+\[REMOTE\]\s*$/, '');
+                    var title = titleAndAuthor.join(authorSeparator);
+                } else {
+                    var author = '';
+                    var title = titleAndAuthor[0];
+                }
 
-				addRow(ranking, title, author, score);
-			}
-		}
+                addRow(ranking, title, author, score);
+            }
+        }
 
-		switch (resultsFormatSelector.val()) {
-			case 'tsv':
-				var rows = results.split(/\n/);
-				for (var i = 0; i < rows.length; i++) {
-					var row = rows[i];
-					var cells = row.split(/\t/);
-					var ranking = cells[0] && cells[0].trim();
-					var title = cells[1] && cells[1].trim();
-					var author = cells[2] && cells[2].trim();
-					var score = cells[3] && cells[3].trim();
-					addRow(ranking, title, author, score);
-				}
-				break;
-			case 'pm1':
-				parseAsPartymeisterV1();
-				break;
-			case 'pm2':
-				parseAsPartymeisterV2();
-				break;
-			case 'wuhu':
-				parseAsWuhu();
-				break;
-		}
-	}
-	var refreshScheduled = false;
-	function scheduleRefreshPreview() {
-		if (refreshScheduled) return;
-		refreshScheduled = true;
-		setTimeout(function() {
-			refreshScheduled = false;
-			refreshPreview();
-		}, 100);
-	}
-	resultsTextarea.change(refreshPreview).keydown(scheduleRefreshPreview);
-	resultsFormatSelector.change(refreshPreview);
-	refreshPreview();
+        switch (resultsFormatSelector.val()) {
+            case 'tsv':
+                var rows = results.split(/\n/);
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var cells = row.split(/\t/);
+                    var ranking = cells[0] && cells[0].trim();
+                    var title = cells[1] && cells[1].trim();
+                    var author = cells[2] && cells[2].trim();
+                    var score = cells[3] && cells[3].trim();
+                    addRow(ranking, title, author, score);
+                }
+                break;
+            case 'pm1':
+                parseAsPartymeisterV1();
+                break;
+            case 'pm2':
+                parseAsPartymeisterV2();
+                break;
+            case 'wuhu':
+                parseAsWuhu();
+                break;
+        }
+    }
+    var refreshScheduled = false;
+    function scheduleRefreshPreview() {
+        if (refreshScheduled) return;
+        refreshScheduled = true;
+        setTimeout(function() {
+            refreshScheduled = false;
+            refreshPreview();
+        }, 100);
+    }
+    resultsTextarea.change(refreshPreview).keydown(scheduleRefreshPreview);
+    resultsFormatSelector.change(refreshPreview);
+    refreshPreview();
 </script>
 
 {% endblock %}

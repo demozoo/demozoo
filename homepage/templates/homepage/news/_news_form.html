@@ -3,46 +3,46 @@
 {% include "shared/form_field.html" with field=form.title %}
 
 <div class="field">
-	{% field_label form.image %}
-	<div class="field_input">
-		{{ form.image.errors }}
-		{{ form.image }}
+    {% field_label form.image %}
+    <div class="field_input">
+        {{ form.image.errors }}
+        {{ form.image }}
 
-		{% with form.instance.image as image %}
-			<img id="image-preview" src="{{ image.image_url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
-			<button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
-			<button id="clear-image" type="button">clear</button>
-		{% endwith %}
+        {% with form.instance.image as image %}
+            <img id="image-preview" src="{{ image.image_url }}" width="100" alt="" {% if not image %}style="display: none;"{% endif %}>
+            <button id="choose-image" type="button" data-url="{% url 'news_images_browse' %}">choose</button>
+            <button id="clear-image" type="button">clear</button>
+        {% endwith %}
 
-		<div>
-			Upload new:
-			{{ image_form.image }}
-			<div class="help_text">{{ image_form.image.help_text }}</div>
-		</div>
-	</div>
+        <div>
+            Upload new:
+            {{ image_form.image }}
+            <div class="help_text">{{ image_form.image.help_text }}</div>
+        </div>
+    </div>
 </div>
 
 {% include "shared/form_field.html" with field=form.text %}
 {% include "shared/form_field.html" with field=form.is_public %}
 
 <script>
-	$(function() {
-		$('#clear-image').click(function() {
-			$('#id_image').val('');
-			$('#id_news_image-image').val('');
-			$('#image-preview').hide();
-		});
-		$('#choose-image').click(function() {
-			ModalWorkflow({
-				'url': $(this).data('url'),
-				'responses': {
-					'imageChosen': function(data) {
-						$('#id_image').val(data.id);
-						$('#id_news_image-image').val('');
-						$('#image-preview').show().attr({'src': data.url});
-					}
-				}
-			});
-		})
-	})
+    $(function() {
+        $('#clear-image').click(function() {
+            $('#id_image').val('');
+            $('#id_news_image-image').val('');
+            $('#image-preview').hide();
+        });
+        $('#choose-image').click(function() {
+            ModalWorkflow({
+                'url': $(this).data('url'),
+                'responses': {
+                    'imageChosen': function(data) {
+                        $('#id_image').val(data.id);
+                        $('#id_news_image-image').val('');
+                        $('#image-preview').show().attr({'src': data.url});
+                    }
+                }
+            });
+        })
+    })
 </script>

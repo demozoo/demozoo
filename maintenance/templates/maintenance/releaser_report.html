@@ -5,16 +5,16 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<h2>{{ title }}:</h2>
-	<div id="main_column">
-		<div class="panel report" data-report-name="{{ exclusion_name }}">
-			<ul class="releaser_list">
-				{% for releaser in releasers %}
-					<li class="{% if releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}excludable{% endif %}" data-record-id="{{ releaser.id }}">
-						<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
-					</li>
-				{% endfor %}
-			</ul>
-		</div>
-	</div>
+    <h2>{{ title }}:</h2>
+    <div id="main_column">
+        <div class="panel report" data-report-name="{{ exclusion_name }}">
+            <ul class="releaser_list">
+                {% for releaser in releasers %}
+                    <li class="{% if releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}excludable{% endif %}" data-record-id="{{ releaser.id }}">
+                        <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}

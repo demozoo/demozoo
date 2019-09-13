@@ -1,17 +1,17 @@
 {% load urlsub %}
 
 <div class="pagination">
-	<span class="step-links">
-		{% if page.has_previous %}
-		<a href="{% urlsub page=page.previous_page_number %}">previous</a>
-		{% endif %}
-		
-		<span class="current">
-			Page {{ page.number }} of {{ page.paginator.num_pages }}.
-		</span>
-		
-		{% if page.has_next %}
-			<a href="{% urlsub page=page.next_page_number %}">next</a>
-		{% endif %}
-	</span>
+    <span class="step-links">
+        {% if page.has_previous %}
+        <a href="{% urlsub page=page.previous_page_number %}">previous</a>
+        {% endif %}
+        
+        <span class="current">
+            Page {{ page.number }} of {{ page.paginator.num_pages }}.
+        </span>
+        
+        {% if page.has_next %}
+            <a href="{% urlsub page=page.next_page_number %}">next</a>
+        {% endif %}
+    </span>
 </div>

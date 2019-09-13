@@ -1,25 +1,25 @@
 {% load urlsub %}
 
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
-	{% for letter in letters %}
-		<col width="*" />
-	{% endfor %}
-	<tr>
-		{% for letter in letters %}
-			<td align="center" style="font-size: 16pt"><a href="{% urlsub page=1 letter=letter %}">{{ letter }}</a></td>
-		{% endfor %}
-	</tr>
+    {% for letter in letters %}
+        <col width="*" />
+    {% endfor %}
+    <tr>
+        {% for letter in letters %}
+            <td align="center" style="font-size: 16pt"><a href="{% urlsub page=1 letter=letter %}">{{ letter }}</a></td>
+        {% endfor %}
+    </tr>
 
-	<tr>
-		<td colspan="13" align="left">
-			{% if listing.has_previous %}
-				<a href="{% urlsub page=listing.previous_page_number %}">&laquo;&nbsp;back</a>
-			{% endif %}
-		</td>
-		<td colspan="14" align="right">
-			{% if listing.has_next %}
-				<a href="{% urlsub page=listing.next_page_number %}">next&nbsp;&raquo;</a>
-			{% endif %}
-		</td>
-	</tr>
+    <tr>
+        <td colspan="13" align="left">
+            {% if listing.has_previous %}
+                <a href="{% urlsub page=listing.previous_page_number %}">&laquo;&nbsp;back</a>
+            {% endif %}
+        </td>
+        <td colspan="14" align="right">
+            {% if listing.has_next %}
+                <a href="{% urlsub page=listing.next_page_number %}">next&nbsp;&raquo;</a>
+            {% endif %}
+        </td>
+    </tr>
 </table>

@@ -5,37 +5,37 @@
 {% block html_title %}Removing {{ scener.name }} as a member of {{ group.name }} - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h2>Removing {{ scener.name }} as a member of {{ group.name }}</h2>
+    <h2>Removing {{ scener.name }} as a member of {{ group.name }}</h2>
 
-	<p>To help us keep our data accurate, please let us know the reason for this removal:</p>
+    <p>To help us keep our data accurate, please let us know the reason for this removal:</p>
 
-	<form action="{% url 'scener_remove_group' scener.id group.id %}" method="post" class="remove_group_form">
-		{% csrf_token %}
+    <form action="{% url 'scener_remove_group' scener.id group.id %}" method="post" class="remove_group_form">
+        {% csrf_token %}
 
-		{% if show_error_message %}
-			<ul class="errorlist"><li>Please select one of the options.</li></ul>
-		{% endif %}
-		<ul class="deletion_types">
-			<li>
-				<input type="radio" name="deletion_type" value="ex_member" id="deletion_type_ex_member">
-				<label for="deletion_type_ex_member">
-					{{ scener.name }} was a member of {{ group.name }}, but isn't any more
-				</label>
-			</li>
-			<li>
-				<input type="radio" name="deletion_type" value="full" id="deletion_type_full">
-				<label for="deletion_type_full">
-					It's a mistake: {{ scener.name }} was never a member of {{ group.name }}
-				</label>
-			</li>
-		</ul>
+        {% if show_error_message %}
+            <ul class="errorlist"><li>Please select one of the options.</li></ul>
+        {% endif %}
+        <ul class="deletion_types">
+            <li>
+                <input type="radio" name="deletion_type" value="ex_member" id="deletion_type_ex_member">
+                <label for="deletion_type_ex_member">
+                    {{ scener.name }} was a member of {{ group.name }}, but isn't any more
+                </label>
+            </li>
+            <li>
+                <input type="radio" name="deletion_type" value="full" id="deletion_type_full">
+                <label for="deletion_type_full">
+                    It's a mistake: {{ scener.name }} was never a member of {{ group.name }}
+                </label>
+            </li>
+        </ul>
 
-		<div class="long_help">
-			<h3>Pro tip:</h3>
-			<p>Incorrect membership entries often creep in because a party results file mentioned "{{ scener.name }} / {{ group.name }}" at some point. After you've made this fix, it's worth looking out for things in the productions list that need fixing up too.</p>
-		</div>
+        <div class="long_help">
+            <h3>Pro tip:</h3>
+            <p>Incorrect membership entries often creep in because a party results file mentioned "{{ scener.name }} / {{ group.name }}" at some point. After you've made this fix, it's worth looking out for things in the productions list that need fixing up too.</p>
+        </div>
 
-		<input type="submit" value="Remove membership">
+        <input type="submit" value="Remove membership">
 
-	</form>
+    </form>
 {% endblock %}

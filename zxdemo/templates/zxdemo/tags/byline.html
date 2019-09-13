@@ -1,25 +1,25 @@
 
 
 {% if unparsed_byline %}
-	{{ unparsed_byline }}
+    {{ unparsed_byline }}
 {% else %}
-	{% for nick, is_spectrum in authors %}
-		{% if not forloop.first %} and {% endif %}
-		{% if is_spectrum %}
-			<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
-		{% else %}
-			{{ nick }}
-		{% endif %}
-	{% endfor %}
-	{% if affiliations %}
-		/
-		{% for nick, is_spectrum in affiliations %}
-			{% if not forloop.first %} ^ {% endif %}
-			{% if is_spectrum %}
-				<a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
-			{% else %}
-				{{ nick }}
-			{% endif %}
-		{% endfor %}
-	{% endif %}
+    {% for nick, is_spectrum in authors %}
+        {% if not forloop.first %} and {% endif %}
+        {% if is_spectrum %}
+            <a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+        {% else %}
+            {{ nick }}
+        {% endif %}
+    {% endfor %}
+    {% if affiliations %}
+        /
+        {% for nick, is_spectrum in affiliations %}
+            {% if not forloop.first %} ^ {% endif %}
+            {% if is_spectrum %}
+                <a href="{% url 'zxdemo_author' nick.releaser_id %}">{{ nick }}</a>
+            {% else %}
+                {{ nick }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 {% endif %}

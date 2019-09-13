@@ -5,36 +5,36 @@
 {% block html_title %}Editing external links for {{ party.name }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.party_external_links_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.party_external_links_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing external links for {{ party.name }}:</h2>
+    <h2>Editing external links for {{ party.name }}:</h2>
 
-	<form action="{% url 'party_edit_external_links' party.id %}" method="post" class="entry_form party_external_links_form">
-		{% csrf_token %}
-		<div class="field">
-			<label for="id_external_links-0-url" class="field_label">Link URLs</label>
-			<div class="field_input">
-				{% spawningformset formset %}
-					{% spawningform as form %}
-						{{ form.url }}
-						{{ form.url.errors }}
-						{% for hidden in form.hidden_fields %}
-							{{ hidden }}
-						{% endfor %}
-					{% endspawningform %}
-				{% endspawningformset %}
-			</div>
-		</div>
-		<div class="field">
-			<input type="submit" Value="Submit edit"/>
-		</div>
-	</form>
+    <form action="{% url 'party_edit_external_links' party.id %}" method="post" class="entry_form party_external_links_form">
+        {% csrf_token %}
+        <div class="field">
+            <label for="id_external_links-0-url" class="field_label">Link URLs</label>
+            <div class="field_input">
+                {% spawningformset formset %}
+                    {% spawningform as form %}
+                        {{ form.url }}
+                        {{ form.url.errors }}
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                    {% endspawningform %}
+                {% endspawningformset %}
+            </div>
+        </div>
+        <div class="field">
+            <input type="submit" Value="Submit edit"/>
+        </div>
+    </form>
 {% endblock %}

@@ -6,31 +6,31 @@
 {% block meta_keywords %}spectrum speccy demo scene demoscene zx party calendar schedule dates compo competition{% endblock %}
 
 {% block sidebar %}
-	<img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /><br />
-	<div style="margin-bottom: 8px"><strong>Forthcoming parties:</strong></div>
-	{% forthcoming_parties %}
+    <img src="/static/zxdemo/images/section/head_parties.gif" alt="Parties" width="224" height="42" /><br />
+    <div style="margin-bottom: 8px"><strong>Forthcoming parties:</strong></div>
+    {% forthcoming_parties %}
 {% endblock %}
 
 {% block body %}
-	<h1>Party calendar</h1>
-	<table width="100%" border="0" cellpadding="6" cellspacing="0">
-		<col width="25%" /><col width="25%" /><col width="25%" /><col width="25%" />
-		{% regroup parties by start_date.date.year as year_list %}
+    <h1>Party calendar</h1>
+    <table width="100%" border="0" cellpadding="6" cellspacing="0">
+        <col width="25%" /><col width="25%" /><col width="25%" /><col width="25%" />
+        {% regroup parties by start_date.date.year as year_list %}
 
-		{% cycle 'even' 'odd' as cellcolour silent %}
-		{% for year_row in year_list|in_groups_of:4 %}
-			<tr>
-				{% for year in year_row %}
-					{% cycle cellcolour %}
-					<td valign="top" class="{{ cellcolour }}">
-						<h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
-						{% for party in year.list %}
-							<div style="margin-bottom: 4pt;"><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
-						{% endfor %}
-					</td>
-				{% endfor %}
-				{% cycle cellcolour %}
-			</tr>
-		{% endfor %}
-	</table>
+        {% cycle 'even' 'odd' as cellcolour silent %}
+        {% for year_row in year_list|in_groups_of:4 %}
+            <tr>
+                {% for year in year_row %}
+                    {% cycle cellcolour %}
+                    <td valign="top" class="{{ cellcolour }}">
+                        <h2><a href="{% url 'zxdemo_parties_year' year.grouper %}">{{ year.grouper }}</a></h2>
+                        {% for party in year.list %}
+                            <div style="margin-bottom: 4pt;"><a href="{% url 'zxdemo_party' party.id %}">{{ party.name }}</a></div>
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+                {% cycle cellcolour %}
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

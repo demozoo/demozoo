@@ -6,219 +6,219 @@
 {% block html_title %}{{ group.name }} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	{% compress js %}
-		<script src="/static/js/components/notes_panel.js"></script>
-		<script src="/static/js/components/editable_chunk.js"></script>
-	{% endcompress %}
+    {% compress js %}
+        <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/editable_chunk.js"></script>
+    {% endcompress %}
 {% endblock %}
 
 {% block body_class %}show_group{% endblock %}
 
 {% block base_main %}
-	<div class="editable_chunk">
-		<div class="signpost">Group</div>
+    <div class="editable_chunk">
+        <div class="signpost">Group</div>
 
-		{% if prompt_to_edit or show_lock_button or show_locked_button %}
-			<ul class="actions">
-				{% if show_lock_button %}
-					<li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_releaser' group.id %}" title="Lock this group">Unlocked</a></li>
-				{% endif %}
-				{% if show_locked_button %}
-					<li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' group.id %}">Protected</a></li>
-				{% endif %}
-				{% if prompt_to_edit %}
-					<li>
-						<a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
-					</li>
-				{% endif %}
-			</ul>
-		{% endif %}
+        {% if prompt_to_edit or show_lock_button or show_locked_button %}
+            <ul class="actions">
+                {% if show_lock_button %}
+                    <li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_releaser' group.id %}" title="Lock this group">Unlocked</a></li>
+                {% endif %}
+                {% if show_locked_button %}
+                    <li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' group.id %}">Protected</a></li>
+                {% endif %}
+                {% if prompt_to_edit %}
+                    <li>
+                        <a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
 
-		<div class="focus_title group_name">
-			<h2>{{ group.name }}</h2>
-			{% with group.primary_nick.nick_variant_and_abbreviation_list as nick_variants %}
-				{% if group.primary_nick.differentiator %}
-					<h3>
-						({{ group.primary_nick.differentiator }})
-						{% if nick_variants %}- {{ nick_variants }}{% endif %}
-					</h3>
-				{% elif nick_variants %}
-					<h3>- {{ nick_variants }}</h3>
-				{% endif %}
-			{% endwith %}
-		</div>
-	</div>
+        <div class="focus_title group_name">
+            <h2>{{ group.name }}</h2>
+            {% with group.primary_nick.nick_variant_and_abbreviation_list as nick_variants %}
+                {% if group.primary_nick.differentiator %}
+                    <h3>
+                        ({{ group.primary_nick.differentiator }})
+                        {% if nick_variants %}- {{ nick_variants }}{% endif %}
+                    </h3>
+                {% elif nick_variants %}
+                    <h3>- {{ nick_variants }}</h3>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
 
-	{% with group.alternative_nicks as alternative_nicks %}
-		{% if alternative_nicks %}
-			<div class="panel alternative_nicks_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-				<h3 class="panel__title">Also known as</h3>
+    {% with group.alternative_nicks as alternative_nicks %}
+        {% if alternative_nicks %}
+            <div class="panel alternative_nicks_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+                <h3 class="panel__title">Also known as</h3>
 
-				{% if prompt_to_edit and not user.is_authenticated %}
-					{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
-					<ul class="actions">
-						<li>
-							<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
-						</li>
-					</ul>
-				{% endif %}
+                {% if prompt_to_edit and not user.is_authenticated %}
+                    {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+                    <ul class="actions">
+                        <li>
+                            <a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
+                        </li>
+                    </ul>
+                {% endif %}
 
-				<ul class="nicks">
-					{% for nick in alternative_nicks %}
-						<li>
-							<b>{{ nick.name }}</b> {% nick_variants nick %}
-							{% if prompt_to_edit and user.is_authenticated %}
-								<a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
-									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
-								</a>
-							{% endif %}
-						</li>
-					{% endfor %}
-				</ul>
-				{% if prompt_to_edit and user.is_authenticated %}
-					<a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
-				{% endif %}
-			</div>
-		{% endif %}
-	{% endwith %}
+                <ul class="nicks">
+                    {% for nick in alternative_nicks %}
+                        <li>
+                            <b>{{ nick.name }}</b> {% nick_variants nick %}
+                            {% if prompt_to_edit and user.is_authenticated %}
+                                <a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
+                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if prompt_to_edit and user.is_authenticated %}
+                    <a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
-	<div class="editable_chunk panel external_links_panel">
-		<h3 class="panel__title">External links</h3>
-		{% if prompt_to_edit %}
-			<ul class="actions">
-				<li>
-					<a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
-				</li>
-			</ul>
-		{% endif %}
-		<ul class="external_links">
-			{% for link in external_links %}
-				<li>{{ link.html_link|safe }}</li>
-			{% endfor %}
-		</ul>
-	</div>
+    <div class="editable_chunk panel external_links_panel">
+        <h3 class="panel__title">External links</h3>
+        {% if prompt_to_edit %}
+            <ul class="actions">
+                <li>
+                    <a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
+                </li>
+            </ul>
+        {% endif %}
+        <ul class="external_links">
+            {% for link in external_links %}
+                <li>{{ link.html_link|safe }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-	{% if group.notes or request.user.is_staff %}
-		<div class="editable_chunk panel notes_panel">
-			{% if request.user.is_staff and site_is_writeable %}
-				<ul class="actions">
-					<li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}" title="Edit notes">Edit notes</a></li>
-				</ul>
-			{% endif %}
-			<div class="notes">
-				{{ group.notes|safe_markdown }}
-			</div>
-		</div>
-	{% endif %}
+    {% if group.notes or request.user.is_staff %}
+        <div class="editable_chunk panel notes_panel">
+            {% if request.user.is_staff and site_is_writeable %}
+                <ul class="actions">
+                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}" title="Edit notes">Edit notes</a></li>
+                </ul>
+            {% endif %}
+            <div class="notes">
+                {{ group.notes|safe_markdown }}
+            </div>
+        </div>
+    {% endif %}
 
-	<div id="side_column">
-		{% if supergroupships %}
-			<div class="panel supergroups_panel">
-				<h3 class="panel__title">Subgroup of</h3>
-				<ul class="memberships">
-					{% for membership in supergroupships %}
-						<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-							<a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
-							{% releaser_flag membership.group %}
-						</li>
-					{% endfor %}
-				</ul>
-			</div>
-		{% endif %}
+    <div id="side_column">
+        {% if supergroupships %}
+            <div class="panel supergroups_panel">
+                <h3 class="panel__title">Subgroup of</h3>
+                <ul class="memberships">
+                    {% for membership in supergroupships %}
+                        <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+                            <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
+                            {% releaser_flag membership.group %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-		<div class="panel members_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-			<h3 class="panel__title">Members</h3>
+        <div class="panel members_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
+            <h3 class="panel__title">Members</h3>
 
-			{% if prompt_to_edit and not user.is_authenticated %}
-				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
-				<ul class="actions">
-					<li>
-						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
-					</li>
-				</ul>
-			{% endif %}
+            {% if prompt_to_edit and not user.is_authenticated %}
+                {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
+                    </li>
+                </ul>
+            {% endif %}
 
-			<ul class="memberships">
-				{% for membership in memberships %}
-					<li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-						<a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-						{% releaser_flag membership.member %}
-						{% if prompt_to_edit and user.is_authenticated %}
-							<a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
-								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
-							</a>
-						{% endif %}
-					</li>
-				{% endfor %}
-			</ul>
-			{% if prompt_to_edit and user.is_authenticated %}
-				<a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox add_member">Add member</a>
-			{% endif %}
-		</div>
+            <ul class="memberships">
+                {% for membership in memberships %}
+                    <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
+                        <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+                        {% releaser_flag membership.member %}
+                        {% if prompt_to_edit and user.is_authenticated %}
+                            <a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
+                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if prompt_to_edit and user.is_authenticated %}
+                <a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox add_member">Add member</a>
+            {% endif %}
+        </div>
 
-		<div class="panel subgroups_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-			<h3 class="panel__title">Subgroups</h3>
+        <div class="panel subgroups_panel editable_chunk {% if prompt_to_edit and user.is_authenticated %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
+            <h3 class="panel__title">Subgroups</h3>
 
-			{% if prompt_to_edit and not user.is_authenticated %}
-				{% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
-				<ul class="actions">
-					<li>
-						<a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
-					</li>
-				</ul>
-			{% endif %}
+            {% if prompt_to_edit and not user.is_authenticated %}
+                {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'log_in' %}?next={{ group.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
+                    </li>
+                </ul>
+            {% endif %}
 
-			<ul class="memberships">
-				{% for membership in subgroupships %}
-					<li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-						<a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
-						{% releaser_flag membership.member %}
-						{% if prompt_to_edit and user.is_authenticated %}
-							<a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
-								<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
-							</a>
-						{% endif %}
-					</li>
-				{% endfor %}
-			</ul>
-			{% if prompt_to_edit and user.is_authenticated %}
-				<a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
-			{% endif %}
-		</div>
-	</div>
+            <ul class="memberships">
+                {% for membership in subgroupships %}
+                    <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+                        <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
+                        {% releaser_flag membership.member %}
+                        {% if prompt_to_edit and user.is_authenticated %}
+                            <a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
+                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if prompt_to_edit and user.is_authenticated %}
+                <a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
+            {% endif %}
+        </div>
+    </div>
 
-	<div id="main_column">
-		<div class="panel editable_chunk">
-			<h3 class="panel__title productions_header">Productions</h3>
-			{% if prompt_to_edit %}
-				<ul class="actions">
-					<li>
-						<a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
-					</li>
-				</ul>
-			{% endif %}
-			{% combined_releases group %}
-		</div>
+    <div id="main_column">
+        <div class="panel editable_chunk">
+            <h3 class="panel__title productions_header">Productions</h3>
+            {% if prompt_to_edit %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
+                    </li>
+                </ul>
+            {% endif %}
+            {% combined_releases group %}
+        </div>
 
-		{% if member_productions %}
-			<div class="panel">
-				<h3 class="panel__title member_productions_header">Member productions</h3>
+        {% if member_productions %}
+            <div class="panel">
+                <h3 class="panel__title member_productions_header">Member productions</h3>
 
-				{% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
-			</div>
-		{% endif %}
-	</div>
+                {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
+            </div>
+        {% endif %}
+    </div>
 
-	{% last_edited_by group %}
+    {% last_edited_by group %}
 
-	{% if request.user.is_staff and site_is_writeable %}
-		<ul class="maintenance_actions">
-			{% if not group.is_referenced %}
-				<li><a href="{% url 'delete_releaser' group.id %}" class="action_button icon delete open_in_lightbox">Delete group</a></li>
-			{% endif %}
-			{% if group.can_be_converted_to_scener %}
-				<li><a href="{% url 'group_convert_to_scener' group.id %}" class="action_button icon switch open_in_lightbox">Convert to scener</a></li>
-			{% endif %}
-		</ul>
-	{% endif %}
+    {% if request.user.is_staff and site_is_writeable %}
+        <ul class="maintenance_actions">
+            {% if not group.is_referenced %}
+                <li><a href="{% url 'delete_releaser' group.id %}" class="action_button icon delete open_in_lightbox">Delete group</a></li>
+            {% endif %}
+            {% if group.can_be_converted_to_scener %}
+                <li><a href="{% url 'group_convert_to_scener' group.id %}" class="action_button icon switch open_in_lightbox">Convert to scener</a></li>
+            {% endif %}
+        </ul>
+    {% endif %}
 {% endblock %}

@@ -6,41 +6,41 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<h2>{{ title }}: <a href="?">all</a> | <a href="?without_note=true">without notes</a></h2>
-	<div id="main_column">
-		<div class="panel report" data-report-name="{{ exclusion_name }}">
-			<table>
-				{% for releaser in sceners %}
-					<tr {% if releaser.real_name_note %}style="background-color: #ccc"{% endif %}>
-						<td>
-							<a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
-						</td>
-						<td>
-							{% if releaser.show_first_name %}
-								{{ releaser.first_name }}
-							{% else %}
-								<del class="redacted">{{ releaser.first_name }}</del>
-							{% endif %}
-							{% if releaser.show_surname %}
-								{{ releaser.surname }}
-							{% else %}
-								<del class="redacted">{{ releaser.surname }}</del>{% endif %}
-						</td>
-						<td>
-							{% if site_is_writeable %}
-								<a href="{% url 'scener_edit_real_name' releaser.id %}?ajax_submit=true" class="open_in_lightbox">
-									<img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
-								</a>
-							{% endif %}
-						</td>
-						<td style="width: 80%;">
-							<div style="display:block; max-width: 600px; word-wrap: break-word;">
-								{{ releaser.real_name_note }}
-							</div>
-						</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
+    <h2>{{ title }}: <a href="?">all</a> | <a href="?without_note=true">without notes</a></h2>
+    <div id="main_column">
+        <div class="panel report" data-report-name="{{ exclusion_name }}">
+            <table>
+                {% for releaser in sceners %}
+                    <tr {% if releaser.real_name_note %}style="background-color: #ccc"{% endif %}>
+                        <td>
+                            <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
+                        </td>
+                        <td>
+                            {% if releaser.show_first_name %}
+                                {{ releaser.first_name }}
+                            {% else %}
+                                <del class="redacted">{{ releaser.first_name }}</del>
+                            {% endif %}
+                            {% if releaser.show_surname %}
+                                {{ releaser.surname }}
+                            {% else %}
+                                <del class="redacted">{{ releaser.surname }}</del>{% endif %}
+                        </td>
+                        <td>
+                            {% if site_is_writeable %}
+                                <a href="{% url 'scener_edit_real_name' releaser.id %}?ajax_submit=true" class="open_in_lightbox">
+                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td style="width: 80%;">
+                            <div style="display:block; max-width: 600px; word-wrap: break-word;">
+                                {{ releaser.real_name_note }}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

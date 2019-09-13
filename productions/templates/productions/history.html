@@ -5,11 +5,11 @@
 
 {% block base_main %}
 <h1>
-	Edit history for
-	<a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
-	{% if production.byline_string %}
-		<small>by {% byline production %}</small>
-	{% endif %}
+    Edit history for
+    <a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+    {% if production.byline_string %}
+        <small>by {% byline production %}</small>
+    {% endif %}
 </h1>
 
 {% include "shared/history_table.html" %}

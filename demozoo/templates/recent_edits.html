@@ -3,11 +3,11 @@
 
 {% block html_title %}Recent edits - Demozoo{% endblock %}
 {% block base_main %}
-	<h1>Recent edits</h1>
+    <h1>Recent edits</h1>
 
-	{% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
+    {% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
 
-	{% with edits_page as page %}
-		{% include "shared/pagination_links.html" %}
-	{% endwith %}
+    {% with edits_page as page %}
+        {% include "shared/pagination_links.html" %}
+    {% endwith %}
 {% endblock %}

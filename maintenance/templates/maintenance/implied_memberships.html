@@ -8,57 +8,57 @@
 
 {% block base_main %}
 <section class="implied_memberships">
-	<script>
-		$(function() {
-			$('form.add_membership').submit(function() {
-				var row = $(this).parents('tr:first');
-				$.post(this.action,
-					$(this).serialize() + '&' + $.param({'csrfmiddlewaretoken': $.cookie('csrftoken')}),
-					function() {
-						row.fadeOut();
-					});
-				return false;
-			})
-		})
-	</script>
-	<h2>{{ title }}:</h2>
-	<div id="main_column">
-		{% regroup records by membership as membership_list %}
-		<table>
-			<tr>
-				<th>Suggested membership</th>
-				<th>According to releases</th>
-			</tr>
-			{% for membership in membership_list %}
-				<tr>
-					{% with membership.list.0 as record %}
-						<td style="border-bottom: 1px solid #888; padding: 4px;">
-							<img src="{% if record.member_is_group %}/static/images/icons/group.png{% else %}/static/images/icons/scener.png{% endif %}" />
-							<a href="/{% if record.member_is_group %}groups{% else %}sceners{% endif %}/{{ record.member_id }}/">{{ record.member_name }}</a>
-							/ <a href="/groups/{{ record.group_id }}/">{{ record.group_name }}</a>
-						</td>
-					{% endwith %}
-					<td style="border-bottom: 1px solid #888; padding: 4px;">
-						<ul>
-							{% for record in membership.list %}
-								<li class="{{ record.production_supertype }}"><a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a></li>
-							{% endfor %}
-						</ul>
-					</td>
-					{% with membership.list.0 as record %}
-						<td style="border-bottom: 1px solid #888; padding: 4px;">
-							{% if site_is_writeable %}
-								<form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
-									<input type="hidden" name="member_id" value="{{ record.member_id }}" />
-									<input type="hidden" name="group_id" value="{{ record.group_id }}" />
-									<input type="submit" value="Add" />
-								</form>
-							{% endif %}
-						</td>
-					{% endwith %}
-				</tr>
-			{% endfor %}
-		</table>
-	</div>
+    <script>
+        $(function() {
+            $('form.add_membership').submit(function() {
+                var row = $(this).parents('tr:first');
+                $.post(this.action,
+                    $(this).serialize() + '&' + $.param({'csrfmiddlewaretoken': $.cookie('csrftoken')}),
+                    function() {
+                        row.fadeOut();
+                    });
+                return false;
+            })
+        })
+    </script>
+    <h2>{{ title }}:</h2>
+    <div id="main_column">
+        {% regroup records by membership as membership_list %}
+        <table>
+            <tr>
+                <th>Suggested membership</th>
+                <th>According to releases</th>
+            </tr>
+            {% for membership in membership_list %}
+                <tr>
+                    {% with membership.list.0 as record %}
+                        <td style="border-bottom: 1px solid #888; padding: 4px;">
+                            <img src="{% if record.member_is_group %}/static/images/icons/group.png{% else %}/static/images/icons/scener.png{% endif %}" />
+                            <a href="/{% if record.member_is_group %}groups{% else %}sceners{% endif %}/{{ record.member_id }}/">{{ record.member_name }}</a>
+                            / <a href="/groups/{{ record.group_id }}/">{{ record.group_name }}</a>
+                        </td>
+                    {% endwith %}
+                    <td style="border-bottom: 1px solid #888; padding: 4px;">
+                        <ul>
+                            {% for record in membership.list %}
+                                <li class="{{ record.production_supertype }}"><a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    {% with membership.list.0 as record %}
+                        <td style="border-bottom: 1px solid #888; padding: 4px;">
+                            {% if site_is_writeable %}
+                                <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
+                                    <input type="hidden" name="member_id" value="{{ record.member_id }}" />
+                                    <input type="hidden" name="group_id" value="{{ record.group_id }}" />
+                                    <input type="submit" value="Add" />
+                                </form>
+                            {% endif %}
+                        </td>
+                    {% endwith %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 </section>
 {% endblock %}

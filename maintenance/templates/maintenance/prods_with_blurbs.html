@@ -5,19 +5,19 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-	<h2>Productions with blurbs:</h2>
-	<div id="main_column">
-		<div class="panel report">
-			<table>
-				<col width="20%">
-				<col width="80%">
-				{% for blurb in blurbs %}
-					<tr>
-						<td><a href="{{ blurb.production.get_absolute_url }}">{{ blurb.production.title }}</a></td>
-						<td>"{{ blurb.body }}"</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
+    <h2>Productions with blurbs:</h2>
+    <div id="main_column">
+        <div class="panel report">
+            <table>
+                <col width="20%">
+                <col width="80%">
+                {% for blurb in blurbs %}
+                    <tr>
+                        <td><a href="{{ blurb.production.get_absolute_url }}">{{ blurb.production.title }}</a></td>
+                        <td>"{{ blurb.body }}"</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

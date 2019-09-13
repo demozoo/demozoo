@@ -1,43 +1,43 @@
 {% load demoscene_tags %}
 
 <table class="table" summary="">
-	<colgroup>
-		<col class="col--ranking"/>
-		<col class="col--thumb" />
-		<col class="col--production" />
-		<col />
-		<col class="col--score" />
-	</colgroup>
-	<tbody>
-		{% for result, screenshot in placings %}
-			<tr class="result">
-				<td>
-					<span class="result__ranking">{{ result.ranking }}</span>
-				</td>
-				<td>
-					{% if screenshot %}
-						{% microthumb screenshot %}
+    <colgroup>
+        <col class="col--ranking"/>
+        <col class="col--thumb" />
+        <col class="col--production" />
+        <col />
+        <col class="col--score" />
+    </colgroup>
+    <tbody>
+        {% for result, screenshot in placings %}
+            <tr class="result">
+                <td>
+                    <span class="result__ranking">{{ result.ranking }}</span>
+                </td>
+                <td>
+                    {% if screenshot %}
+                        {% microthumb screenshot %}
 
-					{% else %}
-						<div class="media media--thumbnail">
-							{% icon result.production.supertype %}
-						</div>
-					{% endif %}
+                    {% else %}
+                        <div class="media media--thumbnail">
+                            {% icon result.production.supertype %}
+                        </div>
+                    {% endif %}
 
-				</td>
-				<td>
-					<div class="result__title">
-						<a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a>
-					</div>
-					<div class="meta">{{ result.production.platforms_and_types_list }}</div>
-				</td>
-				<td>
-					<div class="result__author">{% byline result.production %}</div>
-				</td>
-				<td>
-					<div class="result__score">{{ result.score }}</div>
-				</td>
-			</tr>
-		{% endfor %}
-	</tbody>
+                </td>
+                <td>
+                    <div class="result__title">
+                        <a href="{{ result.production.get_absolute_url }}">{{ result.production.title }}</a>
+                    </div>
+                    <div class="meta">{{ result.production.platforms_and_types_list }}</div>
+                </td>
+                <td>
+                    <div class="result__author">{% byline result.production %}</div>
+                </td>
+                <td>
+                    <div class="result__score">{{ result.score }}</div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
 </table>

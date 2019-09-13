@@ -5,32 +5,32 @@
 {% block html_title %}Adding credit for {{ releaser.name }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.add_credit_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.add_credit_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Add credit for {{ releaser.name }}</h2>
+    <h2>Add credit for {{ releaser.name }}</h2>
 
-	<form action="{% url 'releaser_add_credit' releaser.id %}" method="post" class="entry_form add_credit_form">
-		{% csrf_token %}
+    <form action="{% url 'releaser_add_credit' releaser.id %}" method="post" class="entry_form add_credit_form">
+        {% csrf_token %}
 
-		{% for field in form.visible_fields %}
-			{% include "shared/form_field.html" %}
-		{% endfor %}
-		{% for field in form.hidden_fields %}
-			{{ field }}
-		{% endfor %}
+        {% for field in form.visible_fields %}
+            {% include "shared/form_field.html" %}
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
 
-		{% include "shared/credit_formset.html" %}
+        {% include "shared/credit_formset.html" %}
 
-		<div class="field">
-			<input type="submit" value="Add credit"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Add credit"/>
+        </div>
+    </form>
 {% endblock %}

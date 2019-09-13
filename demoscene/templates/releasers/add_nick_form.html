@@ -3,15 +3,15 @@
 {% block html_title %}Adding another nick for {{ releaser.name }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.nick_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.nick_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	{% include "releasers/nick_form.html" %}
+    {% include "releasers/nick_form.html" %}
 {% endblock %}

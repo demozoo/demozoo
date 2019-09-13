@@ -1,11 +1,11 @@
 
 
 <form action="{% url 'forums_topic_reply' topic.id %}" method="POST" class="reply_form">
-	{% csrf_token %}
-	<h2><label for="{{ reply_form.body.id_for_label }}">Add a reply</label></h2>
-	<div>
-		{{ form.body }}
-		<p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
-	</div>
-	<input type="submit" value="Post reply">
+    {% csrf_token %}
+    <h2><label for="{{ reply_form.body.id_for_label }}">Add a reply</label></h2>
+    <div>
+        {{ form.body }}
+        <p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
+    </div>
+    <input type="submit" value="Post reply">
 </form>

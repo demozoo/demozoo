@@ -4,34 +4,34 @@
 {% block html_title %}Editing {{ scener.name }}'s membership of {{ membership.group.name }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.edit_membership_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.edit_membership_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}</h2>
+    <h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}</h2>
 
-	<form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" class="entry_form edit_membership_form">
-		{% csrf_token %}
+    <form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" class="entry_form edit_membership_form">
+        {% csrf_token %}
 
-		{% for field in form.visible_fields %}
-			{% include "shared/form_field.html" %}
-		{% endfor %}
-		{% for field in form.hidden_fields %}
-			{{ field }}
-		{% endfor %}
+        {% for field in form.visible_fields %}
+            {% include "shared/form_field.html" %}
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
 
-		<div class="field">
-			<input type="submit" value="Edit membership"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" value="Edit membership"/>
+        </div>
+    </form>
 
-	<p>
-		<a href="{% url 'scener_remove_group' scener.id membership.group.id %}" class="open_in_lightbox">Remove from group</a>
-	</p>
+    <p>
+        <a href="{% url 'scener_remove_group' scener.id membership.group.id %}" class="open_in_lightbox">Remove from group</a>
+    </p>
 {% endblock %}

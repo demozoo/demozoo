@@ -6,66 +6,66 @@
 {% block meta_description %}Listing of Spectrum demoscene productions by {{ releaser.name }}{% endblock %}
 
 {% block sidebar %}
-	<img src="/static/zxdemo/images/section/head_sceners.gif" alt="Sceners" width="224" height="42" /><br />
-	<h2>{{ releaser.name }}</h2>
+    <img src="/static/zxdemo/images/section/head_sceners.gif" alt="Sceners" width="224" height="42" /><br />
+    <h2>{{ releaser.name }}</h2>
 
-	{% if member_memberships %}
-		<div><strong>Members:</strong></div>
-		<div align="left"><ul>
-			{% for membership in member_memberships %}
-				{% if membership.is_current %}
-					<li><a href="{% url 'zxdemo_author' membership.member_id %}">{{ membership.member.name }}</a></li>
-				{% else %}
-					<li><a href="{% url 'zxdemo_author' membership.member_id %}" style="text-decoration: line-through;">{{ membership.member.name }}</a> <span class="annotation">(former member)</span></li>
-				{% endif %}
-			{% endfor %}
-		</ul></div>
-	{% endif %}
+    {% if member_memberships %}
+        <div><strong>Members:</strong></div>
+        <div align="left"><ul>
+            {% for membership in member_memberships %}
+                {% if membership.is_current %}
+                    <li><a href="{% url 'zxdemo_author' membership.member_id %}">{{ membership.member.name }}</a></li>
+                {% else %}
+                    <li><a href="{% url 'zxdemo_author' membership.member_id %}" style="text-decoration: line-through;">{{ membership.member.name }}</a> <span class="annotation">(former member)</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul></div>
+    {% endif %}
 
-	{% if group_memberships %}
-		<div><strong>Member of:</strong></div>
-		<div align="left"><ul>
-			{% for membership in group_memberships %}
-				{% if membership.is_current %}
-					<li><a href="{% url 'zxdemo_author' membership.group_id %}">{{ membership.group.name }}</a></li>
-				{% else %}
-					<li><a href="{% url 'zxdemo_author' membership.group_id %}" style="text-decoration: line-through;">{{ membership.group.name }}</a> <span class="annotation">(former member)</span></li>
-				{% endif %}
-			{% endfor %}
-		</ul></div>
-	{% endif %}
+    {% if group_memberships %}
+        <div><strong>Member of:</strong></div>
+        <div align="left"><ul>
+            {% for membership in group_memberships %}
+                {% if membership.is_current %}
+                    <li><a href="{% url 'zxdemo_author' membership.group_id %}">{{ membership.group.name }}</a></li>
+                {% else %}
+                    <li><a href="{% url 'zxdemo_author' membership.group_id %}" style="text-decoration: line-through;">{{ membership.group.name }}</a> <span class="annotation">(former member)</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul></div>
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-	<p align="right" style="margin-top: 0"><a href="http://demozoo.org/{% if releaser.is_group %}groups{% else %}sceners{% endif %}/{{ releaser.id }}/">{{ releaser.name }} on Demozoo&nbsp;&raquo;</a></p>
-	<h1 align="center">Scener profile - {{ releaser.name }}</h1>
-	{% if releaser.location %}
-		<p align="center"><b>Location:</b> <img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /> {{ releaser.location }}</p>
-	{% endif %}
+    <p align="right" style="margin-top: 0"><a href="http://demozoo.org/{% if releaser.is_group %}groups{% else %}sceners{% endif %}/{{ releaser.id }}/">{{ releaser.name }} on Demozoo&nbsp;&raquo;</a></p>
+    <h1 align="center">Scener profile - {{ releaser.name }}</h1>
+    {% if releaser.location %}
+        <p align="center"><b>Location:</b> <img src="/static/zxdemo/images/flag/{{ releaser.country_code|lower }}.gif" align="absmiddle" width="32" height="20" alt="" /> {{ releaser.location }}</p>
+    {% endif %}
 
-	{% if releases_with_credits %}
-		<h2>Releases</h2>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-			<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
-			{% for release in releases_with_credits %}
-				{% cycle 'odd' 'even' as rowcolour silent %}
-				{% include "zxdemo/include/production_listing_item.html" with production=release.production credits=release.credits %}
-			{% endfor %}
-		</table>
-		<br />
-	{% endif %}
+    {% if releases_with_credits %}
+        <h2>Releases</h2>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+            <col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
+            {% for release in releases_with_credits %}
+                {% cycle 'odd' 'even' as rowcolour silent %}
+                {% include "zxdemo/include/production_listing_item.html" with production=release.production credits=release.credits %}
+            {% endfor %}
+        </table>
+        <br />
+    {% endif %}
 
-	{% if non_releaser_credits %}
-		<h2>Credits</h2>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
-			<col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
-			{% regroup non_releaser_credits by production as credits_by_production %}
+    {% if non_releaser_credits %}
+        <h2>Credits</h2>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="itemlist">
+            <col width="5%" /><col width="45%" /><col width="10%" /><col width="5%" /><col width="35%" />
+            {% regroup non_releaser_credits by production as credits_by_production %}
 
-			{% for production_with_credits in credits_by_production %}
-				{% cycle 'odd' 'even' as rowcolour silent %}
-				{% include "zxdemo/include/production_listing_item.html" with production=production_with_credits.grouper credits=production_with_credits.list %}
-			{% endfor %}
-		</table>
-		<br />
-	{% endif %}
+            {% for production_with_credits in credits_by_production %}
+                {% cycle 'odd' 'even' as rowcolour silent %}
+                {% include "zxdemo/include/production_listing_item.html" with production=production_with_credits.grouper credits=production_with_credits.list %}
+            {% endfor %}
+        </table>
+        <br />
+    {% endif %}
 {% endblock %}

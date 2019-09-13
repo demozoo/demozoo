@@ -4,37 +4,37 @@
 {% block html_title %}Homepage banners - Demozoo{% endblock %}
 
 {% block base_main %}
-	<h1>Banners</h1>
+    <h1>Banners</h1>
 
-	<ul class="actions">
-		<li>
-			<a href="{% url 'add_banner' %}" class="action_button icon add">Add new banner</a>
-		</li>
-	</ul>
+    <ul class="actions">
+        <li>
+            <a href="{% url 'add_banner' %}" class="action_button icon add">Add new banner</a>
+        </li>
+    </ul>
 
-	<table width="100%">
-		<tr>
-			<th></th>
-			<th>Show for anon</th>
-			<th>Show for logged-in</th>
-		</tr>
-		{% for banner in banners %}
-			<tr>
-				<td style="width: 600px;">
-					{% url 'edit_banner' banner.id as banner_url %}
-					{% include 'homepage/_banner.html' with banner=banner banner_url=banner_url %}
-				</td>
-				<td align="center">
-					{% if banner.show_for_anonymous_users %}
-						<img src="/static/images/icons/tick.png" alt="Yes">
-					{% endif %}
-				</td>
-				<td align="center">
-					{% if banner.show_for_logged_in_users %}
-						<img src="/static/images/icons/tick.png" alt="Yes">
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
+    <table width="100%">
+        <tr>
+            <th></th>
+            <th>Show for anon</th>
+            <th>Show for logged-in</th>
+        </tr>
+        {% for banner in banners %}
+            <tr>
+                <td style="width: 600px;">
+                    {% url 'edit_banner' banner.id as banner_url %}
+                    {% include 'homepage/_banner.html' with banner=banner banner_url=banner_url %}
+                </td>
+                <td align="center">
+                    {% if banner.show_for_anonymous_users %}
+                        <img src="/static/images/icons/tick.png" alt="Yes">
+                    {% endif %}
+                </td>
+                <td align="center">
+                    {% if banner.show_for_logged_in_users %}
+                        <img src="/static/images/icons/tick.png" alt="Yes">
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

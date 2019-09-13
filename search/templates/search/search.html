@@ -4,86 +4,86 @@
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
 
 {% block extra_js %}
-	<script>
-		$(function() {
-			var advancedSearchHelp = $('#advanced_search_help');
-			advancedSearchHelp.hide();
-			var advancedSearchLink = $('<small><a href="javascript:void(0)">Advanced search help</a></small>');
-			$('.search-results form.search').append(advancedSearchLink);
-			advancedSearchLink.find('a').toggle(function() {
-				advancedSearchHelp.slideDown();
-			}, function() {
-				advancedSearchHelp.slideUp();
-			});
-		});
-	</script>
+    <script>
+        $(function() {
+            var advancedSearchHelp = $('#advanced_search_help');
+            advancedSearchHelp.hide();
+            var advancedSearchLink = $('<small><a href="javascript:void(0)">Advanced search help</a></small>');
+            $('.search-results form.search').append(advancedSearchLink);
+            advancedSearchLink.find('a').toggle(function() {
+                advancedSearchHelp.slideDown();
+            }, function() {
+                advancedSearchHelp.slideUp();
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block base_main %}
 <section class="search-results">
-	<h1 class="search-results__title">Search</h1>
+    <h1 class="search-results__title">Search</h1>
 
-	<form class="search search--inline" method="get" action=".">
-		<fieldset>
-			<div class="search__input">
-				<input class="input input--search"
-					   id="id_q"
-					   name="q"
-					   placeholder="Search Demozoo"
-					   type="search"
-					   value="{{ query }}" />
-				<svg class="icon">
-					<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
-				</svg>
-				<button type="submit" class="button button--search">
-					<span class="button__text">Search</span>
-				</button>
-			</div>
-		</fieldset>
-	</form>
+    <form class="search search--inline" method="get" action=".">
+        <fieldset>
+            <div class="search__input">
+                <input class="input input--search"
+                       id="id_q"
+                       name="q"
+                       placeholder="Search Demozoo"
+                       type="search"
+                       value="{{ query }}" />
+                <svg class="icon">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
+                </svg>
+                <button type="submit" class="button button--search">
+                    <span class="button__text">Search</span>
+                </button>
+            </div>
+        </fieldset>
+    </form>
 
-	<div id="advanced_search_help" class="long_help">
-		<h3>Search filtering options</h3>
-		<ul>
-			<li><kbd>cocio type:music</kbd> - restrict search results to a specific type. Recognised types are <kbd>production</kbd>, <kbd>music</kbd>, <kbd>graphics</kbd>, <kbd>scener</kbd>, <kbd>group</kbd>, <kbd>party</kbd> or any production type, e.g. <kbd>type:"64K Intro"</kbd></li>
-			<li><kbd>deus on:"Commodore 64"</kbd> or <kbd>deus platform:"Commodore 64"</kbd> - search releases on a specific platform</li>
-			<li><kbd>horse by:farbrausch</kbd> or <kbd>horse author:farbrausch</kbd> - search releases by a specific author</li>
-			<li><kbd>smash of:flt</kbd> - search members of a specific group</li>
-			<li><kbd>rob group:aardbei</kbd> - search members and releases of a specific group</li>
-			<li><kbd>heart [scene-poetry]</kbd> or <kbd>heart tagged:scene-poetry</kbd> - search releases with a specific tag</li>
-			<li><kbd>inercia year:2005</kbd> - search releases and parties from a specific year</li>
-		</ul>
-	</div>
+    <div id="advanced_search_help" class="long_help">
+        <h3>Search filtering options</h3>
+        <ul>
+            <li><kbd>cocio type:music</kbd> - restrict search results to a specific type. Recognised types are <kbd>production</kbd>, <kbd>music</kbd>, <kbd>graphics</kbd>, <kbd>scener</kbd>, <kbd>group</kbd>, <kbd>party</kbd> or any production type, e.g. <kbd>type:"64K Intro"</kbd></li>
+            <li><kbd>deus on:"Commodore 64"</kbd> or <kbd>deus platform:"Commodore 64"</kbd> - search releases on a specific platform</li>
+            <li><kbd>horse by:farbrausch</kbd> or <kbd>horse author:farbrausch</kbd> - search releases by a specific author</li>
+            <li><kbd>smash of:flt</kbd> - search members of a specific group</li>
+            <li><kbd>rob group:aardbei</kbd> - search members and releases of a specific group</li>
+            <li><kbd>heart [scene-poetry]</kbd> or <kbd>heart tagged:scene-poetry</kbd> - search releases with a specific tag</li>
+            <li><kbd>inercia year:2005</kbd> - search releases and parties from a specific year</li>
+        </ul>
+    </div>
 
-	{% if query %}
-		<section>
-			{% if results %}
-				<h2 class="search-results__heading">Results {{ page.start_index }} - {{ page.end_index }} of {{ page.paginator.count }}</h2>
-				<ul class="list list--results">
-					{% for result in results %}
-						<li class="list__item">
-							{% if result.search_result_template %}
-								{% include result.search_result_template %}
-							{% else %}
-								<a href="{{ result.get_absolute_url }}">{{ result }}</a>
-							{% endif %}
-						</li>
-					{% endfor %}
-				</ul>
-			{% else %}
-				<p>No results found.</p>
-			{% endif %}
-		</section>
+    {% if query %}
+        <section>
+            {% if results %}
+                <h2 class="search-results__heading">Results {{ page.start_index }} - {{ page.end_index }} of {{ page.paginator.count }}</h2>
+                <ul class="list list--results">
+                    {% for result in results %}
+                        <li class="list__item">
+                            {% if result.search_result_template %}
+                                {% include result.search_result_template %}
+                            {% else %}
+                                <a href="{{ result.get_absolute_url }}">{{ result }}</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        </section>
 
-		{% if page.has_previous or page.has_next %}
-		<div class="search-results__footer">
-			{% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-			|
-			{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
-		</div>
-		{% endif %}
-	{% else %}
-		{# Show some example queries to run, maybe query syntax, something else? #}
-	{% endif %}
+        {% if page.has_previous or page.has_next %}
+        <div class="search-results__footer">
+            {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+            |
+            {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+        </div>
+        {% endif %}
+    {% else %}
+        {# Show some example queries to run, maybe query syntax, something else? #}
+    {% endif %}
 </section>
 {% endblock %}

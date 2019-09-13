@@ -5,29 +5,29 @@
 {% block html_title %}Editing soundtrack details for {{ production.title }} - Demozoo{% endblock %}
 
 {% block extra_head %}
-	{% include "shared/editor_css.html" %}
-	{% include "shared/editor_js.html" %}
-	<script>
-		$(function() {
-			applyEditControls($('form.production_soundtrack_form'));
-		})
-	</script>
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.production_soundtrack_form'));
+        })
+    </script>
 {% endblock %}
 
 {% block base_main %}
-	<h2>Editing soundtrack details for {{ production.title }}:</h2>
+    <h2>Editing soundtrack details for {{ production.title }}:</h2>
 
-	<form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form production_soundtrack_form">
-		{% csrf_token %}
+    <form action="{% url 'production_edit_soundtracks' production.id %}" method="post" class="entry_form production_soundtrack_form">
+        {% csrf_token %}
 
-		{% spawningformset sortable formset %}
-			{% spawningform as form %}
-				{{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
-			{% endspawningform %}
-		{% endspawningformset %}
+        {% spawningformset sortable formset %}
+            {% spawningform as form %}
+                {{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
+            {% endspawningform %}
+        {% endspawningformset %}
 
-		<div class="field">
-			<input type="submit" Value="Submit edit"/>
-		</div>
-	</form>
+        <div class="field">
+            <input type="submit" Value="Submit edit"/>
+        </div>
+    </form>
 {% endblock %}
