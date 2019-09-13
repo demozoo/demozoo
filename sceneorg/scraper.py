@@ -5,22 +5,22 @@ from django.conf import settings
 
 
 def scrape_dir(url):
-	req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
-	page = urllib2.urlopen(req)
-	soup = BeautifulSoup(page)
+    req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+    page = urllib2.urlopen(req)
+    soup = BeautifulSoup(page)
 
-	files = []
-	for entry in soup.findAll('li', 'file'):
-		try:
-			classnames = entry['class'].split(' ')
-		except KeyError:
-			classnames = []
+    files = []
+    for entry in soup.findAll('li', 'file'):
+        try:
+            classnames = entry['class'].split(' ')
+        except KeyError:
+            classnames = []
 
-		if 'parent' in classnames:
-			continue
-		is_dir = ('directory' in classnames)
-		filename = entry.find('span', 'filename').text
+        if 'parent' in classnames:
+            continue
+        is_dir = ('directory' in classnames)
+        filename = entry.find('span', 'filename').text
 
-		files.append((filename, is_dir, None))
+        files.append((filename, is_dir, None))
 
-	return files
+    return files

@@ -4,10 +4,10 @@ from forums.models import Topic, Post
 
 
 class PostInline(admin.TabularInline):
-	model = Post
+    model = Post
 
 admin.site.register(
-	Topic,
-	inlines=[PostInline],
-	search_fields=['title']
+    Topic,
+    inlines=[PostInline],
+    search_fields=['title']
 )

@@ -16,8 +16,8 @@ ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'matilda.demozoo.org', '46.4.213.51
 # django-compressor offline compression
 COMPRESS_OFFLINE = True
 COMPRESS_OFFLINE_CONTEXT = {
-	'base_template_with_ajax_option': 'base.html',
-	'site_is_writeable': True,
+    'base_template_with_ajax_option': 'base.html',
+    'site_is_writeable': True,
 }
 
 LOGGING = {
@@ -58,6 +58,6 @@ LOGGING = {
 # ANSILOVE_C_PATH = '/usr/local/bin/ansilove'
 
 try:
-	from .local import *
+    from .local import *
 except ImportError:
-	pass
+    pass

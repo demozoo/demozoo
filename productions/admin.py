@@ -5,26 +5,26 @@ from productions.models import ProductionType, Production, Credit, Screenshot, S
 
 
 class ProductionTypeAdmin(TreeAdmin):
-	pass
+    pass
 
 
 class CreditInline(admin.TabularInline):
-	model = Credit
-	raw_id_fields = ['nick']
+    model = Credit
+    raw_id_fields = ['nick']
 
 
 class ScreenshotInline(admin.StackedInline):
-	model = Screenshot
+    model = Screenshot
 
 
 class SoundtrackLinkInline(admin.TabularInline):
-	model = SoundtrackLink
-	fk_name = 'production'
-	raw_id_fields = ['soundtrack']
+    model = SoundtrackLink
+    fk_name = 'production'
+    raw_id_fields = ['soundtrack']
 
 
 admin.site.register(ProductionType, ProductionTypeAdmin)
 admin.site.register(Production,
-	inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
-	raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
-	search_fields=['title'])
+    inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
+    raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
+    search_fields=['title'])
