@@ -1,29 +1,29 @@
 .edit_competition {
-	.last_edited_by {
-		clear: both;
-		padding-top: 16px;
-		border-top: 1px dotted #ddd;
-		a.user {
-			font-weight: bold;
-			color: #333;
-			text-decoration: none;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
+    .last_edited_by {
+        clear: both;
+        padding-top: 16px;
+        border-top: 1px dotted #ddd;
+        a.user {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
 
-	h2 {
-		margin-bottom: 1em;
-	}
+    h2 {
+        margin-bottom: 1em;
+    }
 
-	form.entry_form {
-		border: 1px solid #ccc;
-		padding: 10px;
-		margin-bottom: 10px;
-	}
+    form.entry_form {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
 
-	form.entry_form input[type=submit] {
-		margin-left: 150px;
-	}
+    form.entry_form input[type=submit] {
+        margin-left: 150px;
+    }
 }

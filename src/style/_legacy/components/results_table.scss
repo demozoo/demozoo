@@ -1,189 +1,189 @@
 /* Generic styles for editable_grid */
 
 ul.editable_grid {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 ul:focus.editable_grid {
-	outline: none;
+    outline: none;
 }
 ul.editable_grid > li {
-	margin-bottom: 4px;
-	padding-left: 24px;
-	position: relative;
+    margin-bottom: 4px;
+    padding-left: 24px;
+    position: relative;
 }
 
 ul.editable_grid > li > a.insert {
-	position: absolute;
-	top: -10px;
-	left: 0px;
-	width: 16px;
-	height: 16px;
-	background-image: url(/static/images/icons/arrow_right.png);
-	text-indent: -5000px;
+    position: absolute;
+    top: -10px;
+    left: 0px;
+    width: 16px;
+    height: 16px;
+    background-image: url(/static/images/icons/arrow_right.png);
+    text-indent: -5000px;
 }
 
 ul.editable_grid ul.fields {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 ul.editable_grid ul.fields > li {
-	float: left;
-	border-right: 1px solid #888;
-	border-bottom: 1px solid #888;
-	min-height: 20px;
+    float: left;
+    border-right: 1px solid #888;
+    border-bottom: 1px solid #888;
+    min-height: 20px;
 }
 
 ul.editable_grid ul.fields > li > .show {
-	margin-top: 2px;
-	margin-bottom: 2px;
-	margin-left: 2px;
-	margin-right: 2px;
-	padding-left: 2px;
-	padding-right: 2px;
-	min-height: 17px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    min-height: 17px;
 }
 ul.editable_grid.focused ul.fields > li.cursor > .show {
-	outline: 2px solid blue;
+    outline: 2px solid blue;
 }
 ul.editable_grid ul.fields > li > .show.invalid {
-	color: red;
-	background-image: url(/static/images/icons/error.png);
-	background-repeat: no-repeat;
-	background-position: left middle;
-	padding-left: 20px;
+    color: red;
+    background-image: url(/static/images/icons/error.png);
+    background-repeat: no-repeat;
+    background-position: left middle;
+    padding-left: 20px;
 }
 ul.editable_grid ul.fields > li > .edit {
-	padding-left: 2px;
-	padding-right: 8px;
+    padding-left: 2px;
+    padding-right: 8px;
 }
 
 ul.editable_grid li.data_row ul.fields > li {
-	border-left: 1px solid #eee;
-	background-color: #ddd;
-	cursor: default;
+    border-left: 1px solid #eee;
+    background-color: #ddd;
+    cursor: default;
 }
 ul.editable_grid li.data_row ul.fields > li.locked {
-	color: #777;
+    color: #777;
 }
 
 ul.editable_grid li.header_row ul.fields > li {
-	border-left: 1px solid #bbb;
-	background-color: #bbc;
+    border-left: 1px solid #bbb;
+    background-color: #bbc;
 }
 ul.editable_grid ul.fields > li input[type=text] {
-	width: 100%;
+    width: 100%;
 }
 ul.editable_grid ul.fields > li select {
-	width: 100%;
+    width: 100%;
 }
 ul.editable_grid > li > a.delete {
-	float: left;
-	width: 16px;
-	height: 16px;
-	text-indent: -5000px;
-	margin: 2px;
-	margin-left: 4px;
-	background-image: url(/static/images/icons/delete_cross.png);
+    float: left;
+    width: 16px;
+    height: 16px;
+    text-indent: -5000px;
+    margin: 2px;
+    margin-left: 4px;
+    background-image: url(/static/images/icons/delete_cross.png);
 }
 ul.editable_grid > li > .status {
-	float: left;
-	width: 16px;
-	height: 16px;
-	text-indent: -5000px;
-	margin: 2px;
-	margin-left: 4px;
+    float: left;
+    width: 16px;
+    height: 16px;
+    text-indent: -5000px;
+    margin: 2px;
+    margin-left: 4px;
 }
 ul.editable_grid > li > .status_unsaved {
-	background-image: url(/static/images/icons/bullet_green.png);
+    background-image: url(/static/images/icons/bullet_green.png);
 }
 ul.editable_grid > li > .status_saving {
-	background-image: url(/static/images/icons/ticker.gif);
+    background-image: url(/static/images/icons/ticker.gif);
 }
 ul.editable_grid > li > .status_error {
-	background-image: url(/static/images/icons/exclamation.png);
+    background-image: url(/static/images/icons/exclamation.png);
 }
 ul.editable_grid > li > a:hover.delete {
-	background-position: 0 100%;
+    background-position: 0 100%;
 }
 .editable_grid_insert input {
-	margin-left: 24px;
+    margin-left: 24px;
 }
 .editable_grid_insert {
-	padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 
 /* Specific styles for results_table */
 ul#results_table ul.fields > li.placing_field {
-	width: 60px;
-	text-align: right;
-	margin-right: 4px;
+    width: 60px;
+    text-align: right;
+    margin-right: 4px;
 }
 ul#results_table ul.fields > li.placing_field input[type=text] {
-	text-align: right;
+    text-align: right;
 }
 
 ul#results_table ul.fields > li.title_field {
-	width: 250px;
+    width: 250px;
 }
 ul#results_table ul.fields > li.locked > .show {
-	padding-right: 0;
+    padding-right: 0;
 }
 ul#results_table ul.fields > li > .show > a.clear_button {
-	float: right;
-	width: 14px;
-	height: 14px;
-	text-indent: -5000px;
-	background-image: url(/static/images/icons/delete_mini_button.png);
-	border: 2px solid #ddd;
+    float: right;
+    width: 14px;
+    height: 14px;
+    text-indent: -5000px;
+    background-image: url(/static/images/icons/delete_mini_button.png);
+    border: 2px solid #ddd;
 }
 ul#results_table ul.fields > li > .show > a:hover.clear_button {
-	border-left: 2px solid #eee;
-	border-top: 2px solid #eee;
-	border-right: 2px solid #888;
-	border-bottom: 2px solid #888;
+    border-left: 2px solid #eee;
+    border-top: 2px solid #eee;
+    border-right: 2px solid #888;
+    border-bottom: 2px solid #888;
 }
 ul#results_table ul.fields > li.by_field {
-	width: 250px;
-	position: relative;
+    width: 250px;
+    position: relative;
 }
 ul#results_table ul.fields > li.by_field .byline_field.ajaxified .byline_search input[type="text"] {
-	width: 100%;
+    width: 100%;
 }
 
 ul#results_table ul.fields > li.by_field .byline_match_container {
-	position: absolute;
-	top: 20px;
-	z-index: 10;
-	border: 1px solid #222;
-	background-color: #eee;
-	padding: 4px;
-	width: 400px;
+    position: absolute;
+    top: 20px;
+    z-index: 10;
+    border: 1px solid #222;
+    background-color: #eee;
+    padding: 4px;
+    width: 400px;
 }
 
 ul#results_table > li.stable > ul.fields > li.by_field {
-	color: #666;
+    color: #666;
 }
 ul#results_table ul.fields > li.platform_field {
-	width: 150px;
+    width: 150px;
 }
 ul#results_table > li.stable > ul.fields > li.platform_field {
-	color: #666;
+    color: #666;
 }
 ul#results_table ul.fields > li.type_field {
-	width: 150px;
+    width: 150px;
 }
 ul#results_table > li.stable > ul.fields > li.type_field {
-	color: #666;
+    color: #666;
 }
 ul#results_table ul.fields > li.score_field {
-	width: 60px;
-	text-align: right;
-	margin-left: 4px;
+    width: 60px;
+    text-align: right;
+    margin-left: 4px;
 }
 ul#results_table ul.fields > li.score_field input[type=text] {
-	text-align: right;
+    text-align: right;
 }

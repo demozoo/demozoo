@@ -1,27 +1,27 @@
 .production_listing_filters {
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	background-color: #eee;
-	overflow: hidden;
-	padding: 10px;
-	clear: both;
-	text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+    overflow: hidden;
+    padding: 10px;
+    clear: both;
+    text-align: center;
 
-	.fields {
-		display: inline;
+    .fields {
+        display: inline;
 
-			li {
-			display: inline;
-			width: 50%;
+            li {
+            display: inline;
+            width: 50%;
 
-			select {
-				font-size: 12pt;
-				max-width: 100%;
-			}
-		}
-	}
+            select {
+                font-size: 12pt;
+                max-width: 100%;
+            }
+        }
+    }
 
-	input[type='submit'] {
-		display: inline;
-	}
+    input[type='submit'] {
+        display: inline;
+    }
 }

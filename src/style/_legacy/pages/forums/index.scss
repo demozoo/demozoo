@@ -1,40 +1,40 @@
 .forums_index {
 
-	.topics {
+    .topics {
 
-		li {
-			a {
-				display: block;
-				padding: 8px;
-				text-decoration: none;
-				color: #222;
-			}
+        li {
+            a {
+                display: block;
+                padding: 8px;
+                text-decoration: none;
+                color: #222;
+            }
 
-			&.even {
-				background-color: #eee;
-				&:hover {
-					background-color: #ddd;
-				}
-			}
+            &.even {
+                background-color: #eee;
+                &:hover {
+                    background-color: #ddd;
+                }
+            }
 
-			&.odd {
-				background-color: #fff;
+            &.odd {
+                background-color: #fff;
 
-				&:hover {
-					background-color: #ddd;
-				}
-			}
+                &:hover {
+                    background-color: #ddd;
+                }
+            }
 
-			.title {
-				font-size: 14pt;
-				font-weight: bold;
-			}
+            .title {
+                font-size: 14pt;
+                font-weight: bold;
+            }
 
-			.meta {
-				color: #888;
-				font-size: 9pt;
-			}
-		}
+            .meta {
+                color: #888;
+                font-size: 9pt;
+            }
+        }
 
-	}
+    }
 }

@@ -1,33 +1,33 @@
 /* notification messages */
 ul.messages {
 
-	li {
-		padding: 4px;
-		margin-bottom: 36px;
+    li {
+        padding: 4px;
+        margin-bottom: 36px;
 
-		&.success {
-			background-color: #bfb;
-			color: #040;
-			border: 1px solid #040;
-		}
+        &.success {
+            background-color: #bfb;
+            color: #040;
+            border: 1px solid #040;
+        }
 
-		&.error {
-			background-color: #fbb;
-			color: #400;
-			border: 1px solid #400;
-		}
-	}
+        &.error {
+            background-color: #fbb;
+            color: #400;
+            border: 1px solid #400;
+        }
+    }
 }
 
 ul.errorlist {
-	margin: 1em;
-	padding: 0.5em;
-	background-color: #fbb;
+    margin: 1em;
+    padding: 0.5em;
+    background-color: #fbb;
 }
 
 .maintenance {
-	background-color: black;
-	color: #ffc;
-	padding: 2px;
-	text-align: center
+    background-color: black;
+    color: #ffc;
+    padding: 2px;
+    text-align: center
 }

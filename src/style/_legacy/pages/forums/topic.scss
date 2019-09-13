@@ -1,35 +1,35 @@
 .show_topic {
-	.posts_panel {
-		background-color: #eee;
-		border: 1px solid #ccc;
-		padding: 10px;
-		width: 70%;
-		margin: auto;
-		margin-bottom: 16px;
-	}
-	.posts {
-		h2 {
-			margin-bottom: 0.5em;
-		}
-		.admin_controls {
-			float: right;
-		}
-		.post {
-			border-bottom: 1px solid #ccc;
-			margin-bottom: 0.5em;
-		}
-	}
-	.reply_form {
-		margin-top: 16px;
-		textarea {
-			width: 100%;
-		}
-	}
+    .posts_panel {
+        background-color: #eee;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 70%;
+        margin: auto;
+        margin-bottom: 16px;
+    }
+    .posts {
+        h2 {
+            margin-bottom: 0.5em;
+        }
+        .admin_controls {
+            float: right;
+        }
+        .post {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 0.5em;
+        }
+    }
+    .reply_form {
+        margin-top: 16px;
+        textarea {
+            width: 100%;
+        }
+    }
 }
 @media screen and (max-width: 600px) {
-	.show_topic {
-		.posts_panel {
-			width: 100%;
-		}
-	}
+    .show_topic {
+        .posts_panel {
+            width: 100%;
+        }
+    }
 }

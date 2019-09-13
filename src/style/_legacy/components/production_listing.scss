@@ -1,31 +1,31 @@
 .production_listing {
 
-	&.listing_with_screenshots tr {
-		height: 36px;
-	}
+    &.listing_with_screenshots tr {
+        height: 36px;
+    }
 
-	td.icon {
-		background-position: left center;
-		background-repeat: no-repeat;
-		padding-bottom: 3px;
-		padding-left: 24px;
-		padding-top: 2px;
-	}
+    td.icon {
+        background-position: left center;
+        background-repeat: no-repeat;
+        padding-bottom: 3px;
+        padding-left: 24px;
+        padding-top: 2px;
+    }
 
-	td.icon_production {
-		background-image: url(/static/images/icons/disk.png);
-	}
+    td.icon_production {
+        background-image: url(/static/images/icons/disk.png);
+    }
 
-	td.icon_music {
-		background-image: url(/static/images/icons/music.png);
-	}
+    td.icon_music {
+        background-image: url(/static/images/icons/music.png);
+    }
 
-	td.icon_graphics {
-		background-image: url(/static/images/icons/palette.png);
-	}
+    td.icon_graphics {
+        background-image: url(/static/images/icons/palette.png);
+    }
 
-	.prod_type {
-		color: #888;
-		font-size: 9pt;
-	}
+    .prod_type {
+        color: #888;
+        font-size: 9pt;
+    }
 }

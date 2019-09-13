@@ -1,31 +1,31 @@
 ul.pagination {
-	border-left: 1px solid #888;
-	clear: both; /* self-clear */
-	margin-bottom: 8px;
-	overflow: hidden;
+    border-left: 1px solid #888;
+    clear: both; /* self-clear */
+    margin-bottom: 8px;
+    overflow: hidden;
 
-	li {
-		border: 1px solid #888;
-		border-left: none;
-		float: left;
-		line-height: 24px;
-		text-align: center;
+    li {
+        border: 1px solid #888;
+        border-left: none;
+        float: left;
+        line-height: 24px;
+        text-align: center;
 
-		&.current {
-			background-color: white;
-			width: 24px;
-			font-weight: bold;
-			color: #444;
-		}
+        &.current {
+            background-color: white;
+            width: 24px;
+            font-weight: bold;
+            color: #444;
+        }
 
-		a {
-			background-color: white;
-			display: block;
-			width: 24px;
+        a {
+            background-color: white;
+            display: block;
+            width: 24px;
 
-			&:hover {
-				background-color: #ddd;
-			}
-		}
-	}
+            &:hover {
+                background-color: #ddd;
+            }
+        }
+    }
 }

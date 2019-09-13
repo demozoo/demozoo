@@ -1,68 +1,68 @@
 .production_core_details {
-	overflow: hidden; /* self-clear */
-	padding-bottom: 10px;
+    overflow: hidden; /* self-clear */
+    padding-bottom: 10px;
 
-	.production_types li {
-		background-color: #6bc7f1;
-		color: white;
-		float: left;
-		padding: 4px 6px;
-		margin: 0 10px 10px 0;
-		width: 120px;
-		text-transform: uppercase;
-		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-		font-size: 10pt;
-	}
+    .production_types li {
+        background-color: #6bc7f1;
+        color: white;
+        float: left;
+        padding: 4px 6px;
+        margin: 0 10px 10px 0;
+        width: 120px;
+        text-transform: uppercase;
+        font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+        font-size: 10pt;
+    }
 
-	.production_title {
-		clear: both;
-		padding: 5px 0 10px 0;
+    .production_title {
+        clear: both;
+        padding: 5px 0 10px 0;
 
-		h2 {
-			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-			font-size: 26pt;
-			padding-right: 8px;
-			display: inline;
-			line-height: 28pt;
-		}
+        h2 {
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            font-size: 26pt;
+            padding-right: 8px;
+            display: inline;
+            line-height: 28pt;
+        }
 
-		h3 {
-			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-			font-size: 14pt;
-			display: inline;
-			letter-spacing: -1px;
-			line-height: 20pt;
-		}
-	}
+        h3 {
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            font-size: 14pt;
+            display: inline;
+            letter-spacing: -1px;
+            line-height: 20pt;
+        }
+    }
 
-	h4 {
-		font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-		font-size: 11pt;
-		letter-spacing: -1px;
-		padding-left: 10px;
-		line-height: 1.5em;
-	}
+    h4 {
+        font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+        font-size: 11pt;
+        letter-spacing: -1px;
+        padding-left: 10px;
+        line-height: 1.5em;
+    }
 
-	.attributes {
-		width: 100%;
-		border-top: 1px solid #ccc;
-		padding-top: 10px;
+    .attributes {
+        width: 100%;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
 
-		li {
-			color: #555;
-			float: left;
-			padding-left: 16px;
-			background-image: url(/static/images/icons/mini_bullet.png);
-			background-repeat: no-repeat;
-			background-position: left center;
-			font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-			letter-spacing: 1px;
-			text-transform: uppercase;
+        li {
+            color: #555;
+            float: left;
+            padding-left: 16px;
+            background-image: url(/static/images/icons/mini_bullet.png);
+            background-repeat: no-repeat;
+            background-position: left center;
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
 
-			&:first-child {
-				background-image: none;
-				padding-left: 0;
-			}
-		}
-	}
+            &:first-child {
+                background-image: none;
+                padding-left: 0;
+            }
+        }
+    }
 }
