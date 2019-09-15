@@ -113,3 +113,33 @@ class TestDeleteCredit(TestCase):
         )
         self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
         self.assertEqual(Credit.objects.filter(production=self.pondlife, nick=self.gasman.primary_nick).count(), 0)
+
+
+class TestEditNotes(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+
+    def test_not_superuser(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/releasers/%d/edit_notes/' % self.gasman.id)
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+
+    def test_get(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/releasers/%d/edit_notes/' % self.gasman.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/releasers/%d/edit_notes/' % self.gasman.id, {
+            'notes': "the world's number 1 ZX Spectrum rockstar",
+        })
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+        self.assertEqual(
+            Releaser.objects.get(name='Gasman').notes,
+            "the world's number 1 ZX Spectrum rockstar"
+        )
