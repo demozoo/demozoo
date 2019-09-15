@@ -16,9 +16,19 @@
         "fields": {"releaser": 1, "name": "Gasman"}
     },
     {
+        "pk": 1,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 1, "name": "Gasman", "search_title": "gasman"}
+    },
+    {
         "pk": 2,
         "model": "demoscene.nick",
         "fields": {"releaser": 1, "name": "Shingebis"}
+    },
+    {
+        "pk": 2,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 2, "name": "Shingebis", "search_title": "shingebis"}
     },
 
     {
@@ -36,6 +46,11 @@
         "model": "demoscene.nick",
         "fields": {"releaser": 2, "name": "Raww Arse", "abbreviation": "RA"}
     },
+    {
+        "pk": 3,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 3, "name": "Raww Arse", "search_title": "raww arse"}
+    },
 
     {
         "pk": 3,
@@ -43,6 +58,7 @@
         "fields": {
             "name": "Papaya Dezign",
             "is_group": true,
+            "locked": true,
             "created_at": "2014-01-01",
             "updated_at": "2014-01-01"
         }
@@ -51,6 +67,11 @@
         "pk": 4,
         "model": "demoscene.nick",
         "fields": {"releaser": 3, "name": "Papaya Dezign"}
+    },
+    {
+        "pk": 4,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 4, "name": "Papaya Dezign", "search_title": "papaya dezign"}
     },
 
     {
@@ -68,6 +89,11 @@
         "model": "demoscene.nick",
         "fields": {"releaser": 4, "name": "Hooy-Program", "abbreviation": "H-Prg"}
     },
+    {
+        "pk": 5,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 5, "name": "Hooy-Program", "search_title": "hooy-program"}
+    },
 
     {
         "pk": 5,
@@ -84,6 +110,11 @@
         "model": "demoscene.nick",
         "fields": {"releaser": 5, "name": "Yerzmyey"}
     },
+    {
+        "pk": 6,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 6, "name": "Yerzmyey", "search_title": "yerzmyey"}
+    },
 
     {
         "pk": 6,
@@ -99,6 +130,11 @@
         "pk": 7,
         "model": "demoscene.nick",
         "fields": {"releaser": 6, "name": "LaesQ"}
+    },
+    {
+        "pk": 7,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 7, "name": "LaesQ", "search_title": "laesq"}
     },
 
     {
