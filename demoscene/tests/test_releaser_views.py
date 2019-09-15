@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from demoscene.models import Releaser
+from demoscene.models import Nick, Releaser
 from productions.models import Credit, Production
 
 
@@ -143,3 +143,37 @@ class TestEditNotes(TestCase):
             Releaser.objects.get(name='Gasman').notes,
             "the world's number 1 ZX Spectrum rockstar"
         )
+
+
+class TestEditNick(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.shingebis = Nick.objects.get(name='Shingebis')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+        self.raww_arse = Releaser.objects.get(name='Raww Arse')
+
+    def test_locked(self):
+        npd = self.papaya_dezign.nicks.create(name='Not Papaya Design')
+        response = self.client.get('/releasers/%d/edit_nick/%d/' % (self.papaya_dezign.id, npd.id))
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_scener(self):
+        response = self.client.get('/releasers/%d/edit_nick/%d/' % (self.gasman.id, self.shingebis.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_group(self):
+        response = self.client.get('/releasers/%d/edit_nick/%d/' % (self.raww_arse.id, self.raww_arse.primary_nick.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/releasers/%d/edit_nick/%d/' % (self.gasman.id, self.shingebis.id), {
+            'name': 'Shingebis',
+            'nick_variant_list': '',
+            'override_primary_nick': 'true',
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
+        self.assertEqual(Releaser.objects.get(id=self.gasman.id).name, 'Shingebis')
