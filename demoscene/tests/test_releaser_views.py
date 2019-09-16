@@ -291,3 +291,47 @@ class TestDeleteNick(TestCase):
         })
         self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
         self.assertEqual(Nick.objects.filter(name='Gasman').count(), 1)
+
+
+class TestDeleteReleaser(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.raww_arse = Releaser.objects.get(name='Raww Arse')
+
+    def test_not_superuser(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/releasers/%d/delete/' % self.gasman.id)
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+
+    def test_get(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/releasers/%d/delete/' % self.gasman.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_scener(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/releasers/%d/delete/' % self.gasman.id, {
+            'yes': 'yes',
+        })
+        self.assertEqual(Releaser.objects.filter(name='Gasman').count(), 0)
+        self.assertRedirects(response, '/sceners/')
+
+    def test_post_group(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/releasers/%d/delete/' % self.raww_arse.id, {
+            'yes': 'yes',
+        })
+        self.assertEqual(Releaser.objects.filter(name='Raww Arse').count(), 0)
+        self.assertRedirects(response, '/groups/')
+
+    def test_no_confirm(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/releasers/%d/delete/' % self.gasman.id, {
+            'no': 'no',
+        })
+        self.assertEqual(Releaser.objects.filter(name='Gasman').count(), 1)
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
