@@ -177,3 +177,117 @@ class TestEditNick(TestCase):
         })
         self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
         self.assertEqual(Releaser.objects.get(id=self.gasman.id).name, 'Shingebis')
+
+
+class TestAddNick(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+        self.raww_arse = Releaser.objects.get(name='Raww Arse')
+
+    def test_locked(self):
+        response = self.client.get('/releasers/%d/add_nick/' % self.papaya_dezign.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_scener(self):
+        response = self.client.get('/releasers/%d/add_nick/' % self.gasman.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_group(self):
+        response = self.client.get('/releasers/%d/add_nick/' % self.raww_arse.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/releasers/%d/add_nick/' % self.gasman.id, {
+            'name': 'dj.mo0nbug',
+            'nick_variant_list': '',
+            'override_primary_nick': 'true',
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
+        self.assertEqual(Releaser.objects.get(id=self.gasman.id).name, 'dj.mo0nbug')
+
+
+class TestEditPrimaryNick(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+    def test_locked(self):
+        response = self.client.get('/releasers/%d/edit_primary_nick/' % self.papaya_dezign.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_scener(self):
+        response = self.client.get('/releasers/%d/edit_primary_nick/' % self.gasman.id)
+        self.assertEqual(response.status_code, 200)
+
+
+class TestChangePrimaryNick(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.shingebis = Nick.objects.get(name='Shingebis')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+    def test_locked(self):
+        npd = self.papaya_dezign.nicks.create(name='Not Papaya Design')
+        response = self.client.post('/releasers/%d/change_primary_nick/' % self.papaya_dezign.id, {
+            'nick_id': npd.id,
+        })
+        self.assertEqual(response.status_code, 403)
+
+    def test_post(self):
+        response = self.client.post('/releasers/%d/change_primary_nick/' % self.gasman.id, {
+            'nick_id': self.shingebis.id,
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
+        self.assertEqual(Releaser.objects.get(id=self.gasman.id).name, 'Shingebis')
+
+
+class TestDeleteNick(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.shingebis = Nick.objects.get(name='Shingebis')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+    def test_locked(self):
+        npd = self.papaya_dezign.nicks.create(name='Not Papaya Design')
+        response = self.client.get('/releasers/%d/delete_nick/%d/' % (self.papaya_dezign.id, npd.id))
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        response = self.client.get('/releasers/%d/delete_nick/%d/' % (self.gasman.id, self.shingebis.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_unreferenced(self):
+        moonbug = self.gasman.nicks.create(name='dj.mo0nbug')
+        response = self.client.get('/releasers/%d/delete_nick/%d/' % (self.gasman.id, moonbug.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/releasers/%d/delete_nick/%d/' % (self.gasman.id, self.shingebis.id), {
+            'yes': 'yes',
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
+        self.assertEqual(Nick.objects.filter(name='Shingebis').count(), 0)
+
+    def test_cannot_delete_primary_nick(self):
+        response = self.client.post('/releasers/%d/delete_nick/%d/' % (self.gasman.id, self.gasman.primary_nick.id), {
+            'yes': 'yes',
+        })
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+        self.assertEqual(Nick.objects.filter(name='Gasman').count(), 1)
