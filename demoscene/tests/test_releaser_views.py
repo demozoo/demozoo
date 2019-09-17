@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from demoscene.models import Nick, Releaser
+from demoscene.models import Nick, Releaser, ReleaserExternalLink
 from productions.models import Credit, Production
 
 
@@ -335,3 +335,36 @@ class TestDeleteReleaser(TestCase):
         })
         self.assertEqual(Releaser.objects.filter(name='Gasman').count(), 1)
         self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+
+
+class TestEditExternalLinks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+    def test_locked(self):
+        response = self.client.get('/releasers/%d/edit_external_links/' % self.papaya_dezign.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        response = self.client.get('/releasers/%d/edit_external_links/' % self.gasman.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/releasers/%d/edit_external_links/' % self.gasman.id, {
+            'external_links-TOTAL_FORMS': 1,
+            'external_links-INITIAL_FORMS': 0,
+            'external_links-MIN_NUM_FORMS': 0,
+            'external_links-MAX_NUM_FORMS': 1000,
+            'external_links-0-url': 'https://twitter.com/gasmanic',
+            'external_links-0-releaser': self.gasman.id,
+        })
+        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+        self.assertEqual(
+            ReleaserExternalLink.objects.filter(releaser=self.gasman, link_class='TwitterAccount').count(),
+            1
+        )
