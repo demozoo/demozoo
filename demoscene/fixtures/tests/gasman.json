@@ -5,7 +5,12 @@
         "fields": {
             "name": "Gasman",
             "is_group": false,
+            "location": "Kidlington, UK",
             "country_code": "UK",
+            "first_name": "Matt",
+            "show_first_name": true,
+            "surname": "Westcott",
+            "show_surname": false,
             "created_at": "2014-01-01",
             "updated_at": "2014-01-01"
         }
@@ -101,6 +106,7 @@
         "fields": {
             "name": "Yerzmyey",
             "is_group": false,
+            "locked": true,
             "created_at": "2014-01-01",
             "updated_at": "2014-01-01"
         }
