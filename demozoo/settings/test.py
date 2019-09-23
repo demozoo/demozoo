@@ -6,6 +6,10 @@ from StringIO import StringIO
 
 SECRET_KEY = 'BOOOOM'
 
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.MD5PasswordHasher',  # don't use the intentionally slow default password hasher
+)
+
 
 # set up mock opener for urllib2
 

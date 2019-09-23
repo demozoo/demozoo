@@ -1,0 +1,36 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "gasman",
+            "password": "md5$7eu7cBooz2Co$d96eb758ba908d114f49cf6f5c3f231b",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2019-01-01"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "forums.topic",
+        "fields": {
+            "title": "fix me beautifull",
+            "created_at": "2019-01-01",
+            "created_by_user_id": 1,
+            "last_post_at": "2019-01-01",
+            "last_post_by_user_id": 1,
+            "reply_count": 0
+        }
+    },
+    {
+        "pk": 1,
+        "model": "forums.post",
+        "fields": {
+            "user_id": 1,
+            "topic_id": 1,
+            "body": "everything is broken",
+            "created_at": "2019-01-01",
+            "updated_at": "2019-01-01"
+        }
+    }
+]

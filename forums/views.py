@@ -10,6 +10,7 @@ from forums.forms import NewTopicForm, ReplyForm
 
 POSTS_PER_PAGE = 50
 
+
 def index(request):
     topics = Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')
 
@@ -17,6 +18,7 @@ def index(request):
         'menu_section': 'forums',
         'topics': topics,
     })
+
 
 @writeable_site_required
 @login_required
@@ -40,6 +42,7 @@ def new_topic(request):
         'form': form,
     })
 
+
 def topic(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     posts = topic.posts.order_by('created_at').select_related('user')
@@ -59,6 +62,7 @@ def topic(request, topic_id):
         'form': ReplyForm(),
     })
 
+
 def post(request, post_id):
     """ topic view but ensuring that we display the page that contains the given post """
     post = get_object_or_404(Post, id=post_id)
@@ -69,11 +73,7 @@ def post(request, post_id):
     paginator = Paginator(posts, POSTS_PER_PAGE)
 
     page = (post_offset / POSTS_PER_PAGE) + 1
-    try:
-        posts_page = paginator.page(page)
-    except (PageNotAnInteger, EmptyPage):
-        # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
-        posts_page = paginator.page(paginator.num_pages)
+    posts_page = paginator.page(page)
 
     return render(request, 'forums/topic.html', {
         'menu_section': 'forums',
@@ -81,6 +81,7 @@ def post(request, post_id):
         'posts': posts_page,
         'form': ReplyForm(),
     })
+
 
 @writeable_site_required
 @login_required
