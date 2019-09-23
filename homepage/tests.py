@@ -1,5 +1,10 @@
+from __future__ import absolute_import, unicode_literals
+
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+
+from freezegun import freeze_time
 
 from homepage.models import Banner, NewsStory
 
@@ -42,3 +47,22 @@ class SimpleTest(TestCase):
         self.assertContains(response, 'with a <a href="http://example.com/" class="external">link</a> in it')
 
         self.assertNotContains(response, 'Secret news item')
+
+    def test_fetch_homepage_as_superuser(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertNotContains(response, 'Hello anonymous people')
+        self.assertContains(response, 'Hello logged in people')
+        self.assertContains(response, 'First news item')
+        self.assertContains(response, 'with a <a href="http://example.com/" class="external">link</a> in it')
+        self.assertContains(response, 'Secret news item')
+
+    @freeze_time('2018-12-30')
+    def test_date_rollover(self):
+        # test separate code path for when 'three months time' rolls over into next year
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
