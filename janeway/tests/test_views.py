@@ -3,7 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from demoscene.models import Releaser
+from demoscene.models import Releaser, ReleaserExternalLink
+from janeway.models import Author, Release
 from productions.models import Production, ProductionLink
 
 
@@ -74,3 +75,49 @@ class TestProductionUnlink(TestCase):
         self.assertFalse(
             ProductionLink.objects.filter(link_class='KestraBitworldRelease', parameter='123', production=self.pondlife).exists()
         )
+
+
+class TestProductionImport(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.sota = Release.objects.get(title="State Of The Art")
+
+    def test_non_superuser(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/janeway/production-import/', {'janeway_id': self.sota.janeway_id})
+        self.assertRedirects(response, '/')
+        self.assertFalse(Production.objects.filter(title="State Of The Art").exists())
+
+    def test_post(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/janeway/production-import/', {'janeway_id': self.sota.janeway_id})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Production.objects.filter(title="State Of The Art").exists())
+
+
+class TestAuthorProductionsImport(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        janeway_spb = Author.objects.get(name="Spaceballs")
+        self.demozoo_spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        ReleaserExternalLink.objects.create(
+            link_class='KestraBitworldAuthor', parameter=janeway_spb.janeway_id, releaser=self.demozoo_spb
+        )
+
+    def test_non_superuser(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/janeway/import-all-author-productions/', {'releaser_id': self.demozoo_spb.id})
+        self.assertRedirects(response, '/')
+        self.assertFalse(Production.objects.filter(title="State Of The Art").exists())
+
+    def test_post(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/janeway/import-all-author-productions/', {'releaser_id': self.demozoo_spb.id})
+        self.assertRedirects(response, '/janeway/authors/%d/' % self.demozoo_spb.id)
+        self.assertTrue(Production.objects.filter(title="State Of The Art").exists())

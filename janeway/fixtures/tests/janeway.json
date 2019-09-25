@@ -1,0 +1,40 @@
+[
+    {
+        "pk": 1,
+        "model": "janeway.author",
+        "fields": {
+            "janeway_id": 123,
+            "name": "Spaceballs",
+            "is_group": false
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.name",
+        "fields": {
+            "author": 1,
+            "janeway_id": 234,
+            "name": "Spaceballs",
+            "abbreviation": "SPB"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 345,
+            "title": "State Of The Art",
+            "supertype": "production",
+            "author_names": [1],
+            "platform": "ocs"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 1,
+            "type_name": "Demo"
+        }
+    }
+]
