@@ -23,3 +23,4 @@ python-dateutil==1.5
 uWSGI==2.0.15
 six==1.9.0
 freezegun>=0.3,<0.4
+mock>=3.0,<4.0

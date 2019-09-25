@@ -4,7 +4,13 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from mock import patch
 
+from demoscene.models import Releaser
+from maintenance.models import Exclusion
+from mirror.models import ArchiveMember
+from parties.models import Party
+from productions.models import Production, ProductionLink
 from sceneorg.models import Directory
 
 
@@ -23,6 +29,10 @@ class TestReports(TestCase):
         response = self.client.get('/maintenance/prods_without_screenshots')
         self.assertEqual(response.status_code, 200)
 
+        # test with invalid filter form
+        response = self.client.get('/maintenance/prods_without_screenshots?platform=999')
+        self.assertEqual(response.status_code, 200)
+
     def test_prods_without_videos(self):
         response = self.client.get('/maintenance/prods_without_videos')
         self.assertEqual(response.status_code, 200)
@@ -38,6 +48,12 @@ class TestReports(TestCase):
     def test_prods_without_external_links(self):
         response = self.client.get('/maintenance/prods_without_external_links')
         self.assertEqual(response.status_code, 200)
+
+    def test_staff_only_report(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/maintenance/prods_without_external_links')
+        self.assertRedirects(response, '/')
 
     def test_prods_without_release_date(self):
         response = self.client.get('/maintenance/prods_without_release_date')
@@ -68,10 +84,12 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_release_date_with_placement(self):
+        Production.objects.filter(title="Madrielle").update(release_date_date=None, release_date_precision='')
         response = self.client.get('/maintenance/prods_without_release_date_with_placement')
         self.assertEqual(response.status_code, 200)
 
     def test_prod_soundtracks_without_release_date(self):
+        Production.objects.filter(title="Cybernoid's Revenge").update(release_date_date=None, release_date_precision='')
         response = self.client.get('/maintenance/prod_soundtracks_without_release_date')
         self.assertEqual(response.status_code, 200)
 
@@ -84,6 +102,9 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_prods_with_release_date_outside_party(self):
+        Production.objects.filter(title="Madrielle").update(
+            release_date_date=datetime.date(2001, 1, 1), release_date_precision='d'
+        )
         response = self.client.get('/maintenance/prods_with_release_date_outside_party')
         self.assertEqual(response.status_code, 200)
 
@@ -100,6 +121,11 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_duplicate_external_links(self):
+        Production.objects.get(title='Pondlife').links.create(link_class='PouetProduction', parameter='123')
+        Production.objects.get(title='Madrielle').links.create(link_class='PouetProduction', parameter='123')
+
+        Releaser.objects.get(name='Gasman').external_links.create(link_class='PouetGroup', parameter='123')
+        Releaser.objects.get(name='Raww Arse').external_links.create(link_class='PouetGroup', parameter='123')
         response = self.client.get('/maintenance/duplicate_external_links')
         self.assertEqual(response.status_code, 200)
 
@@ -149,11 +175,18 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_unresolved_screenshots(self):
+        Production.objects.get(title='Pondlife').links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife.zip',
+            is_download_link=True, is_unresolved_for_screenshotting=True
+        )
         response = self.client.get('/maintenance/unresolved_screenshots')
         self.assertEqual(response.status_code, 200)
 
     def test_public_real_names(self):
         response = self.client.get('/maintenance/public_real_names')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/maintenance/public_real_names?without_note=1')
         self.assertEqual(response.status_code, 200)
 
     def test_prods_with_blurbs(self):
@@ -162,6 +195,9 @@ class TestReports(TestCase):
 
     def test_prod_comments(self):
         response = self.client.get('/maintenance/prod_comments')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/maintenance/prod_comments?page=amigaaaa')
         self.assertEqual(response.status_code, 200)
 
     def test_credits_to_move_to_text(self):
@@ -179,3 +215,128 @@ class TestReports(TestCase):
     def test_janeway_unique_author_name_matches(self):
         response = self.client.get('/maintenance/janeway_unique_author_name_matches')
         self.assertEqual(response.status_code, 200)
+
+    def test_fix_release_dates_nonadmin(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+        madrielle = Production.objects.get(title='Madrielle')
+        response = self.client.post('/maintenance/fix_release_dates', {
+            'production_id': madrielle.id,
+            ('production_%d_release_date_date' % madrielle.id): '2000-01-01',
+            ('production_%d_release_date_precision' % madrielle.id): 'd',
+            'return_to': '/maintenance/',
+        })
+        self.assertRedirects(response, '/')
+
+    def test_fix_release_dates(self):
+        madrielle = Production.objects.get(title='Madrielle')
+        response = self.client.post('/maintenance/fix_release_dates', {
+            'production_id': madrielle.id,
+            ('production_%d_release_date_date' % madrielle.id): '2000-01-01',
+            ('production_%d_release_date_precision' % madrielle.id): 'd',
+            'return_to': '/maintenance/',
+        })
+        self.assertRedirects(response, '/maintenance/')
+        self.assertEqual(
+            Production.objects.get(title='Madrielle').release_date_date,
+            datetime.date(2000, 1, 1)
+        )
+
+    def test_exclude_nonadmin(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+        response = self.client.post('/maintenance/exclude', {
+            'report_name': 'streets_with_no_names',
+            'record_id': 22
+        })
+        self.assertRedirects(response, '/')
+        self.assertFalse(Exclusion.objects.filter(report_name='streets_with_no_names').exists())
+
+    def test_exclude(self):
+        response = self.client.post('/maintenance/exclude', {
+            'report_name': 'streets_with_no_names',
+            'record_id': 22
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Exclusion.objects.filter(report_name='streets_with_no_names').exists())
+
+    def test_add_membership_nonadmin(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+        gasman = Releaser.objects.get(name='Gasman')
+        papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+        response = self.client.post('/maintenance/add_membership', {
+            'member_id': gasman.id,
+            'group_id': papaya_dezign.id
+        })
+        self.assertRedirects(response, '/')
+        self.assertFalse(gasman.group_memberships.filter(group=papaya_dezign).exists())
+
+    def test_add_membership(self):
+        gasman = Releaser.objects.get(name='Gasman')
+        papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
+
+        response = self.client.post('/maintenance/add_membership', {
+            'member_id': gasman.id,
+            'group_id': papaya_dezign.id
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(gasman.group_memberships.filter(group=papaya_dezign).exists())
+
+    def test_add_sceneorg_party_link_nonadmin(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+        forever = Party.objects.get(name='Forever 2e3')
+
+        response = self.client.post('/maintenance/add_sceneorg_link_to_party', {
+            'party_id': forever.id,
+            'path': '/parties/2000/forever2000/'
+        })
+        self.assertRedirects(response, '/')
+        self.assertFalse(forever.external_links.filter(link_class='SceneOrgFolder').exists())
+
+    def test_add_sceneorg_party_link(self):
+        forever = Party.objects.get(name='Forever 2e3')
+
+        response = self.client.post('/maintenance/add_sceneorg_link_to_party', {
+            'party_id': forever.id,
+            'path': '/parties/2000/forever2000/'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(forever.external_links.filter(link_class='SceneOrgFolder').exists())
+
+    @patch('maintenance.views.create_screenshot_from_production_link')
+    def test_resolve_screenshot_nonadmin(self, create_screenshot_from_production_link):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+        pondlife_link = Production.objects.get(title='Pondlife').links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife.zip',
+            is_download_link=True, is_unresolved_for_screenshotting=True
+        )
+        archive_member = ArchiveMember.objects.create(
+            archive_sha1='123123123', filename='screenshot.png', file_size=6912
+        )
+        response = self.client.post('/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id), {'1': 1})
+        self.assertRedirects(response, '/')
+        self.assertTrue(ProductionLink.objects.get(id=pondlife_link.id).is_unresolved_for_screenshotting)
+        self.assertFalse(create_screenshot_from_production_link.delay.called)
+
+    @patch('maintenance.views.create_screenshot_from_production_link')
+    def test_resolve_screenshot(self, create_screenshot_from_production_link):
+        pondlife_link = Production.objects.get(title='Pondlife').links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife.zip',
+            is_download_link=True, is_unresolved_for_screenshotting=True
+        )
+        archive_member = ArchiveMember.objects.create(
+            archive_sha1='123123123', filename='screenshot.png', file_size=6912
+        )
+        response = self.client.post('/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id), {'1': 1})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(ProductionLink.objects.get(id=pondlife_link.id).is_unresolved_for_screenshotting)
+        self.assertTrue(create_screenshot_from_production_link.delay.called)

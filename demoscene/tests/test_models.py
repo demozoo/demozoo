@@ -66,7 +66,8 @@ class TestReleaserProductions(TestCase):
     def test_get_productions(self):
         gasman = Releaser.objects.get(name="Gasman")
         gasman_productions = sorted([prod.title for prod in gasman.productions()])
-        self.assertEqual(gasman_productions, ["Madrielle", "Mooncheese"])
+        self.assertIn("Madrielle", gasman_productions)
+        self.assertIn("Mooncheese", gasman_productions)
 
     def test_get_member_productions(self):
         raww_arse = Releaser.objects.get(name="Raww Arse")
