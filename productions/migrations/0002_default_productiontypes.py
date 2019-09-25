@@ -233,7 +233,7 @@ def create_productiontypes(apps, schema):
         "numchild": 0,
         "name": "Tracked Music",
         "position": 0,
-        "internal_name": ""
+        "internal_name": "tracked-music"
     },
     {
         "path": "000E0005",
