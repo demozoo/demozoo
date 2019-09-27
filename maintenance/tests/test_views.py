@@ -1,17 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+from io import BytesIO
 import os.path
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.test import TestCase
 from mock import patch
 
 from demoscene.models import Releaser
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember, Download, DownloadBlob
-from parties.models import Party
+from parties.models import Party, ResultsFile
 from productions.models import Production, ProductionLink
 from sceneorg.models import Directory
 
@@ -365,3 +367,42 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'image/jpeg')
         self.assertEqual(len(response.content), 6617)
+
+    def test_fix_results_file_encoding(self):
+        party = Party.objects.get(name="Forever 2e3")
+        results_file = ResultsFile.objects.create(
+            party=party,
+            file=File(
+                name="forever2e3.txt",
+                file=BytesIO(b"a m\xf6\xf6se bit me \xf6nce\nWe apologise for the fault in the results. Those responsible have been sacked.")
+            ),
+            filename="forever2e3.txt", filesize=100, sha1="1234123412341234"
+        )
+
+        # non-superuser
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/maintenance/result_file_encoding/%d/' % results_file.id)
+        self.assertRedirects(response, '/')
+
+        # default encoding (iso-8859-1)
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/maintenance/result_file_encoding/%d/' % results_file.id)
+        self.assertEqual(response.status_code, 200)
+
+        # unrecognised encoding
+        response = self.client.get('/maintenance/result_file_encoding/%d/?encoding=iso-3103-1' % results_file.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<option value="iso-8859-1" selected="selected">')
+
+        # invalid encoding for the text
+        response = self.client.get('/maintenance/result_file_encoding/%d/?encoding=utf-8' % results_file.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The chosen encoding is not valid for this file")
+
+        # post
+        response = self.client.post('/maintenance/result_file_encoding/%d/' % results_file.id, {
+            'encoding': 'iso-8859-2'
+        })
+        self.assertRedirects(response, '/maintenance/results_with_no_encoding')
+        self.assertEqual(ResultsFile.objects.get(id=results_file.id).encoding, 'iso-8859-2')
