@@ -19,7 +19,7 @@ from sceneorg.models import Directory
 
 
 class TestReports(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ['tests/gasman.json', 'tests/janeway.json']
 
     def setUp(self):
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -406,3 +406,70 @@ class TestReports(TestCase):
         })
         self.assertRedirects(response, '/maintenance/results_with_no_encoding')
         self.assertEqual(ResultsFile.objects.get(id=results_file.id).encoding, 'iso-8859-2')
+
+    def test_janeway_authors_same(self):
+        raww_arse_dz_id = Releaser.objects.get(name="Raww Arse").id
+        spaceballs_jw_id = 123
+
+        # non-superuser
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post(
+            '/maintenance/janeway_unique_author_name_matches/same/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id),
+            {'1': 1}
+        )
+        self.assertRedirects(response, '/')
+
+        # superuser
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post(
+            '/maintenance/janeway_unique_author_name_matches/same/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id),
+            {'1': 1}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            Releaser.objects.get(name="Raww Arse").external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+        )
+
+    def test_janeway_authors_different(self):
+        raww_arse_dz_id = Releaser.objects.get(name="Raww Arse").id
+        spaceballs_jw_id = 123
+
+        # non-superuser
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post(
+            '/maintenance/janeway_unique_author_name_matches/different/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id),
+            {'1': 1}
+        )
+        self.assertRedirects(response, '/')
+
+        # superuser
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post(
+            '/maintenance/janeway_unique_author_name_matches/different/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id),
+            {'1': 1}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            Releaser.objects.get(name="Spaceballs").external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+        )
+
+    def test_janeway_authors_detail(self):
+        raww_arse_dz_id = Releaser.objects.get(name="Raww Arse").id
+        spaceballs_jw_id = 123
+
+        # non-superuser
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(
+            '/maintenance/janeway_unique_author_name_matches/detail/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id)
+        )
+        self.assertRedirects(response, '/')
+
+        # superuser
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get(
+            '/maintenance/janeway_unique_author_name_matches/detail/%d/%d/' % (raww_arse_dz_id, spaceballs_jw_id)
+        )
+        self.assertEqual(response.status_code, 200)
