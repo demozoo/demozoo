@@ -1,14 +1,16 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import os.path
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from mock import patch
 
 from demoscene.models import Releaser
 from maintenance.models import Exclusion
-from mirror.models import ArchiveMember
+from mirror.models import ArchiveMember, Download, DownloadBlob
 from parties.models import Party
 from productions.models import Production, ProductionLink
 from sceneorg.models import Directory
@@ -340,3 +342,26 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(ProductionLink.objects.get(id=pondlife_link.id).is_unresolved_for_screenshotting)
         self.assertTrue(create_screenshot_from_production_link.delay.called)
+
+    @patch('mirror.models.Download.fetch_from_s3')
+    def test_view_archive_member(self, fetch_from_s3):
+        Download.objects.create(
+            downloaded_at=datetime.datetime.now(), sha1='1234123412341234', mirror_s3_key='test.zip'
+        )
+        archive_member = ArchiveMember.objects.create(
+            archive_sha1='1234123412341234', filename='happycat.jpg', file_size=6617
+        )
+
+        with open(os.path.join(settings.FILEROOT, 'maintenance', 'fixtures', 'test.zip')) as f:
+            fetch_from_s3.return_value = DownloadBlob('test.zip', f.read())
+
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/maintenance/archive_member/%d/' % (archive_member.id))
+        self.assertRedirects(response, '/')
+
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/maintenance/archive_member/%d/' % (archive_member.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'image/jpeg')
+        self.assertEqual(len(response.content), 6617)
