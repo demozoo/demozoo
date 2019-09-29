@@ -254,6 +254,22 @@
     },
 
     {
+        "pk": 6,
+        "model": "productions.production",
+        "fields": {
+            "title": "Skyrider",
+            "supertype": "graphics",
+            "release_date_date": "2001-03-19",
+            "release_date_precision": "d",
+            "author_nicks": [1],
+            "platforms": [1],
+            "types": [23],
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+
+    {
         "pk": 1,
         "model": "productions.credit",
         "fields": {
