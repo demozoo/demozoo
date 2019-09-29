@@ -192,7 +192,8 @@
             "platforms": [1],
             "types": [3],
             "created_at": "2014-01-01",
-            "updated_at": "2014-01-01"
+            "updated_at": "2014-01-01",
+            "has_bonafide_edits": true
         }
     },
     {
@@ -308,7 +309,7 @@
             "competition": 1,
             "production": 1,
             "ranking": "2",
-            "position": 2,
+            "position": 1,
             "score": "96"
         }
     }
