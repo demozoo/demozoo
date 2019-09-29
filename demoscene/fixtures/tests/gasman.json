@@ -204,6 +204,7 @@
             "supertype": "production",
             "author_nicks": [2],
             "types": [1],
+            "locked": true,
             "created_at": "2014-01-01",
             "updated_at": "2014-01-01"
         }
