@@ -1,11 +1,13 @@
 from __future__ import with_statement
-from fabric.api import hosts, cd, run, get, local
+from fabric.api import hosts, cd, run, get, local, with_settings
 
 from demozoo.settings.dev import DATABASES
 db_username = DATABASES['default']['USER']
 
 PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
 STAGING_HOSTS = ['demozoo@www2.demozoo.org']
+DB_HOSTS = ['demozoo@db1']
+DB_GATEWAY = 'demozoo@www1.demozoo.org'
 
 
 @hosts(PRODUCTION_HOSTS)
@@ -69,7 +71,8 @@ def bump_external_links():
         run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm')
 
 
-@hosts(PRODUCTION_HOSTS)
+@with_settings(forward_agent=True, gateway=DB_GATEWAY)
+@hosts(DB_HOSTS)
 def fetchdb():
     """Pull the live database to the local copy"""
     run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
@@ -81,7 +84,8 @@ def fetchdb():
     local('rm /tmp/demozoo-fetchdb.sql.gz')
 
 
-@hosts(PRODUCTION_HOSTS)
+@with_settings(forward_agent=True, gateway=DB_GATEWAY)
+@hosts(DB_HOSTS)
 def exportdb():
     """Dump the live DB with personal info redacted"""
     run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
