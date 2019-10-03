@@ -263,7 +263,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         return (self.supertype == 'production')
 
     def can_have_pack_members(self):
-        return any([typ.internal_name == 'pack' for typ in self.types.all()])
+        return any([typ.internal_name in ('pack', 'artpack') for typ in self.types.all()])
 
     def _get_release_date(self):
         if self.release_date_date and self.release_date_precision:
