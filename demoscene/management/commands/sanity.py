@@ -3,13 +3,13 @@ from parties.models import Competition, ResultsFile
 # from sceneorg.models import Directory
 from taggit.models import Tag
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import Count
 
 
-class Command(NoArgsCommand):
-    def handle_noargs(self, **options):
+class Command(BaseCommand):
+    def handle(self, *args, **kwargs):
         print "Looking for releasers without their name as a Nick"
 
         releasers = Releaser.objects.raw('''
