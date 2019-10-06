@@ -1,11 +1,15 @@
-from demoscene.models import Releaser, Nick, NickVariant
-from parties.models import Competition, ResultsFile
-# from sceneorg.models import Directory
-from taggit.models import Tag
+from itertools import groupby
 
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import Count
+
+from taggit.models import Tag
+
+from demoscene.models import Releaser, Nick, NickVariant
+from parties.models import Competition, ResultsFile
+from productions.models import PackMember, Production, ProductionType, SoundtrackLink
+# from sceneorg.models import Directory
 
 
 class Command(BaseCommand):
@@ -157,15 +161,44 @@ class Command(BaseCommand):
         print "Deleting unused tags"
         Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 
-        print "Setting has_screenshots flag on productions"
-        cursor.execute('''
-            UPDATE productions_production SET has_screenshot = (
-                id IN (
-                    SELECT DISTINCT production_id
-                    FROM productions_screenshot
-                    WHERE thumbnail_url <> ''
-                )
-            )
-        ''')
+        # print "Setting has_screenshots flag on productions"
+        # cursor.execute('''
+        #     UPDATE productions_production SET has_screenshot = (
+        #         id IN (
+        #             SELECT DISTINCT production_id
+        #             FROM productions_screenshot
+        #             WHERE thumbnail_url <> ''
+        #         )
+        #     )
+        # ''')
+
+        print "Closing gaps in pack member sequences"
+        for k, pms in groupby(PackMember.objects.order_by('pack_id', 'position'), lambda pm: pm.pack_id):
+            for i, pm in enumerate(pms):
+                if i + 1 != pm.position:
+                    pm.position = i + 1
+                    pm.save()
+
+        print "Closing gaps in soundtrack sequences"
+        for k, stls in groupby(SoundtrackLink.objects.order_by('production_id', 'position'), lambda stl: stl.production_id):
+            for i, stl in enumerate(stls):
+                if i + 1 != stl.position:
+                    stl.position = i + 1
+                    stl.save()
+
+        print "Marking diskmags with pack contents as packs"
+        diskmag_id = ProductionType.objects.get(name='Diskmag').id
+        artpack_id = ProductionType.objects.get(internal_name='artpack').id
+        pack = ProductionType.objects.get(internal_name='pack')
+        for prod in Production.objects.raw('''
+            SELECT distinct pack_id AS id
+            FROM productions_packmember
+            INNER JOIN productions_production AS packmember ON (member_id = packmember.id)
+            WHERE
+            pack_id NOT IN (select production_id from productions_production_types where productiontype_id in (%(pack)s, %(artpack)s))
+            AND pack_id IN (select production_id from productions_production_types where productiontype_id = %(diskmag)s)
+            AND packmember.supertype <> 'music'
+        ''', {'pack': pack.id, 'artpack': artpack_id, 'diskmag': diskmag_id}):
+            prod.types.add(pack)
 
         print "done."
