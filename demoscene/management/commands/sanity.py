@@ -201,4 +201,20 @@ class Command(BaseCommand):
         ''', {'pack': pack.id, 'artpack': artpack_id, 'diskmag': diskmag_id}):
             prod.types.add(pack)
 
+        print "Reassigning musicdisk contents from pack contents to soundtrack links"
+        musicdisk_id = ProductionType.objects.get(name='Musicdisk').id
+        pack_contents = PackMember.objects.filter(pack__types=musicdisk_id, member__supertype='music').order_by('pack_id', 'position')
+        for pack_id, pack_members in groupby(pack_contents, lambda pm: pm.pack_id):
+            soundtrack_ids = list(
+                SoundtrackLink.objects.filter(production_id=pack_id).order_by('position').values_list('soundtrack_id', flat=True)
+            )
+            for pack_member in pack_members:
+                if pack_member.member_id not in soundtrack_ids:
+                    SoundtrackLink.objects.create(
+                        production_id=pack_id, soundtrack_id=pack_member.member_id,
+                        position=len(soundtrack_ids) + 1, data_source=pack_member.data_source
+                    )
+                    soundtrack_ids.append(pack_member.member_id)
+                pack_member.delete()
+
         print "done."
