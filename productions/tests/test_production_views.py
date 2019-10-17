@@ -883,3 +883,28 @@ class TestRemoveTag(TestCase):
         })
         self.assertEqual(response.status_code, 403)
         self.assertEqual(self.mooncheese.tags.count(), 1)
+
+
+class TestAutocompleteTags(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.tags.add('fish')
+        pondlife.tags.add('ducks')
+
+    def test_get(self):
+        response = self.client.get('/productions/autocomplete_tags/', {'term': 'fis'})
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json, ['fish'])
+
+
+class TestAutocomplete(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/productions/autocomplete/', {'term': 'cyberno', 'supertype': 'music'})
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
