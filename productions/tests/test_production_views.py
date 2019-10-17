@@ -1,12 +1,26 @@
 from __future__ import absolute_import, unicode_literals
 
+from io import BytesIO
+import os
+
 from django.contrib.auth.models import User
+from django.core.files.images import ImageFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from mock import patch
+import PIL.Image
 
 from demoscene.models import Nick
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
+
+
+def get_test_image():
+    f = BytesIO()
+    image = PIL.Image.new('RGBA', (200, 200), 'white')
+    image.save(f, 'PNG')
+    return ImageFile(f, name='test.png')
 
 
 class TestIndex(TestCase):
@@ -422,3 +436,94 @@ class TestEditArtwork(TestCase):
         pondlife = Production.objects.get(title="Pondlife")
         response = self.client.get('/productions/%d/artwork/edit/' % pondlife.id)
         self.assertRedirects(response, '/productions/%d/screenshots/edit/' % pondlife.id)
+
+
+class TestAddScreenshot(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_locked(self):
+        mooncheese = Production.objects.get(title='Mooncheese')
+        response = self.client.get('/productions/%d/add_screenshot/' % mooncheese.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_production(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get('/productions/%d/add_screenshot/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_production(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get('/productions/%d/add_artwork/' % pondlife.id)
+        self.assertRedirects(response, '/productions/%d/add_screenshot/' % pondlife.id)
+
+    def test_get_music(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        response = self.client.get('/productions/%d/add_artwork/' % cybrev.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_music(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        response = self.client.get('/productions/%d/add_screenshot/' % cybrev.id)
+        self.assertRedirects(response, '/productions/%d/add_artwork/' % cybrev.id)
+
+    @patch('screenshots.tasks.create_screenshot_versions_from_local_file')
+    def test_post_production_single(self, create_screenshot_versions_from_local_file):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/add_screenshot/' % pondlife.id, {
+            'screenshot': SimpleUploadedFile('test.png', get_test_image().file.getvalue()),
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        self.assertEqual(pondlife.screenshots.count(), 1)
+        self.assertEqual(create_screenshot_versions_from_local_file.delay.call_count, 1)
+        screenshot_id, filename = create_screenshot_versions_from_local_file.delay.call_args.args
+        self.assertEqual(screenshot_id, pondlife.screenshots.get().id)
+        os.remove(filename)
+
+    @patch('screenshots.tasks.create_screenshot_versions_from_local_file')
+    def test_post_production_multiple(self, create_screenshot_versions_from_local_file):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/add_screenshot/' % pondlife.id, {
+            'screenshot': [
+                SimpleUploadedFile('test1.png', get_test_image().file.getvalue()),
+                SimpleUploadedFile('test2.png', get_test_image().file.getvalue()),
+            ],
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        self.assertEqual(pondlife.screenshots.count(), 2)
+        self.assertEqual(create_screenshot_versions_from_local_file.delay.call_count, 2)
+        for call in create_screenshot_versions_from_local_file.delay.call_args_list:
+            _, filename = call.args
+            os.remove(filename)
+
+    @patch('screenshots.tasks.create_screenshot_versions_from_local_file')
+    def test_post_music_single(self, create_screenshot_versions_from_local_file):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        response = self.client.post('/productions/%d/add_artwork/' % cybrev.id, {
+            'screenshot': SimpleUploadedFile('test.png', get_test_image().file.getvalue()),
+        })
+        self.assertRedirects(response, '/music/%d/' % cybrev.id)
+        self.assertEqual(cybrev.screenshots.count(), 1)
+        self.assertEqual(create_screenshot_versions_from_local_file.delay.call_count, 1)
+        screenshot_id, filename = create_screenshot_versions_from_local_file.delay.call_args.args
+        self.assertEqual(screenshot_id, cybrev.screenshots.get().id)
+        os.remove(filename)
+
+    @patch('screenshots.tasks.create_screenshot_versions_from_local_file')
+    def test_post_music_multiple(self, create_screenshot_versions_from_local_file):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        response = self.client.post('/productions/%d/add_artwork/' % cybrev.id, {
+            'screenshot': [
+                SimpleUploadedFile('test1.png', get_test_image().file.getvalue()),
+                SimpleUploadedFile('test2.png', get_test_image().file.getvalue()),
+            ],
+        })
+        self.assertRedirects(response, '/music/%d/' % cybrev.id)
+        self.assertEqual(cybrev.screenshots.count(), 2)
+        self.assertEqual(create_screenshot_versions_from_local_file.delay.call_count, 2)
+        for call in create_screenshot_versions_from_local_file.delay.call_args_list:
+            _, filename = call.args
+            os.remove(filename)
