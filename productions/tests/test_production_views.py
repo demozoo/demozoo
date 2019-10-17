@@ -674,3 +674,33 @@ class TestEditCredit(TestCase):
         )
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % self.pondlife.id)
         self.assertEqual('Music', pondlife.credits.get(nick=self.gasman).category)
+
+
+class TestDeleteCredit(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.gasman = Nick.objects.get(name='Gasman')
+        self.pondlife_credit = self.pondlife.credits.get(nick=self.gasman)
+
+    def test_locked(self):
+        mooncheese = Production.objects.get(title='Mooncheese')
+        mooncheese_credit = mooncheese.credits.create(nick=Nick.objects.get(name='Shingebis'), category='Code')
+        response = self.client.get('/productions/%d/delete_credit/%d/' % (mooncheese.id, mooncheese_credit.id))
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        response = self.client.get(
+            '/productions/%d/delete_credit/%d/' % (self.pondlife.id, self.pondlife_credit.id)
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/productions/%d/delete_credit/%d/' % (self.pondlife.id, self.pondlife_credit.id), {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % self.pondlife.id)
+        self.assertEqual(self.pondlife.credits.count(), 0)
