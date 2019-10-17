@@ -575,3 +575,47 @@ class TestDeleteScreenshot(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/artwork/edit/' % self.cybrev.id)
         self.assertEqual(self.cybrev.screenshots.count(), 0)
+
+
+class TestAddCredit(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_locked(self):
+        mooncheese = Production.objects.get(title='Mooncheese')
+        response = self.client.get('/productions/%d/add_credit/' % mooncheese.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get('/productions/%d/add_credit/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_ajax(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get(
+            '/productions/%d/add_credit/' % pondlife.id, HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        yerz = Nick.objects.get(name='Yerzmyey')
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': 'yerzmyey',
+            'nick_match_id': yerz.id,
+            'nick_match_name': 'yerzmyey',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 2',
+        })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
+        self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
