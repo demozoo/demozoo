@@ -798,3 +798,27 @@ class TestEditPackContents(TestCase):
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertEqual(self.pondlife.pack_members.count(), 1)
         self.assertEqual(self.pondlife.pack_members.first().member.title, 'Froob')
+
+
+class TestEditTags(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.mooncheese = Production.objects.get(title='Mooncheese')
+
+    def test_post(self):
+        response = self.client.post('/productions/%d/edit_tags/' % self.pondlife.id, {
+            'tags': "fish, ducks"
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(self.pondlife.tags.count(), 2)
+
+    def test_post_locked(self):
+        response = self.client.post('/productions/%d/edit_tags/' % self.mooncheese.id, {
+            'tags': "wensleydale, stilton"
+        })
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.mooncheese.tags.count(), 0)
