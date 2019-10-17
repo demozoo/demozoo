@@ -1008,3 +1008,12 @@ class TestLocking(TestCase):
             'yes': 'yes'
         })
         self.assertTrue(Production.objects.get(title='Mooncheese').locked)
+
+
+class TestCarousel(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get('/productions/%d/carousel/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
