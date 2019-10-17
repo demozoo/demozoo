@@ -857,3 +857,29 @@ class TestAddTag(TestCase):
         })
         self.assertEqual(response.status_code, 403)
         self.assertEqual(self.mooncheese.tags.count(), 0)
+
+
+class TestRemoveTag(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.pondlife.tags.add('fish')
+        self.mooncheese = Production.objects.get(title='Mooncheese')
+        self.mooncheese.tags.add('wensleydale')
+
+    def test_post(self):
+        response = self.client.post('/productions/%d/remove_tag/' % self.pondlife.id, {
+            'tag_name': "fish"
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pondlife.tags.count(), 0)
+
+    def test_post_locked(self):
+        response = self.client.post('/productions/%d/remove_tag/' % self.mooncheese.id, {
+            'tag_name': "wensleydale"
+        })
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.mooncheese.tags.count(), 1)
