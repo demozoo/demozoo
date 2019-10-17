@@ -704,3 +704,48 @@ class TestDeleteCredit(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % self.pondlife.id)
         self.assertEqual(self.pondlife.credits.count(), 0)
+
+
+class TestEditSoundtracks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+
+    def test_locked(self):
+        mooncheese = Production.objects.get(title='Mooncheese')
+        response = self.client.get('/productions/%d/edit_soundtracks/' % mooncheese.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        response = self.client.get('/productions/%d/edit_soundtracks/' % self.pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        soundtrack_link = self.pondlife.soundtrack_links.get()
+        response = self.client.post('/productions/%d/edit_soundtracks/' % self.pondlife.id, {
+            'form-TOTAL_FORMS': 3,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-ORDER': 1,
+            'form-0-id': soundtrack_link.id,
+            'form-0-soundtrack_id': soundtrack_link.soundtrack_id,
+            'form-0-DELETE': 'form-0-DELETE',
+            'form-1-ORDER': 2,
+            'form-1-id': '',
+            'form-1-soundtrack_id': '',
+            'form-1-soundtrack_title': 'Fantasia',
+            'form-1-soundtrack_byline_search': '',
+            'form-2-ORDER': 3,
+            'form-2-id': '',
+            'form-2-soundtrack_id': '',
+            'form-2-soundtrack_title': '',
+            'form-2-soundtrack_byline_search': '',
+            'form-2-DELETE': 'form-2-DELETE',
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(self.pondlife.soundtrack_links.count(), 1)
+        self.assertEqual(self.pondlife.soundtrack_links.first().soundtrack.title, 'Fantasia')
