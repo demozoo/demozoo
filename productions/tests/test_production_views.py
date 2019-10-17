@@ -941,3 +941,51 @@ class TestDelete(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertTrue(Production.objects.filter(title='Pondlife').exists())
+
+
+class TestLocking(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.mooncheese = Production.objects.get(title='Mooncheese')
+
+    def test_not_superuser(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/lock/' % self.pondlife.id)
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+
+    def test_get_lock(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/productions/%d/lock/' % self.pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_lock(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/productions/%d/lock/' % self.pondlife.id, {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertTrue(Production.objects.get(title='Pondlife').locked)
+
+    def test_get_protected_view(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/protected/' % self.mooncheese.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_unlock(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/productions/%d/protected/' % self.mooncheese.id, {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.mooncheese.id)
+        self.assertFalse(Production.objects.get(title='Mooncheese').locked)
+
+    def test_non_superuser_cannot_unlock(self):
+        self.client.login(username='testuser', password='12345')
+        self.client.post('/productions/%d/protected/' % self.mooncheese.id, {
+            'yes': 'yes'
+        })
+        self.assertTrue(Production.objects.get(title='Mooncheese').locked)
