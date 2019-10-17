@@ -522,7 +522,11 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
             else:
                 Edit.objects.create(action_type='delete_screenshot', focus=production,
                     description="Deleted screenshot", user=request.user)
-        return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
+
+        if is_artwork_view:
+            return HttpResponseRedirect(reverse('production_edit_artwork', args=[production.id]))
+        else:
+            return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
     else:
         if is_artwork_view:
             if production.supertype != 'music':

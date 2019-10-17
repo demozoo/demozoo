@@ -527,3 +527,51 @@ class TestAddScreenshot(TestCase):
         for call in create_screenshot_versions_from_local_file.delay.call_args_list:
             _, filename = call.args
             os.remove(filename)
+
+
+class TestDeleteScreenshot(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.pondlife_screenshot = self.pondlife.screenshots.create()
+        self.cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        self.cybrev_artwork = self.cybrev.screenshots.create()
+
+    def test_non_superuser(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+
+    def test_get_production(self):
+        response = self.client.get('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_production(self):
+        response = self.client.get('/productions/%d/delete_artwork/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        self.assertRedirects(response, '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+
+    def test_get_music(self):
+        response = self.client.get('/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_music(self):
+        response = self.client.get('/productions/%d/delete_screenshot/%d/' % (self.cybrev.id, self.cybrev_artwork.id))
+        self.assertRedirects(response, '/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id))
+
+    def test_post_production(self):
+        response = self.client.post('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id), {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/%d/screenshots/edit/' % self.pondlife.id)
+        self.assertEqual(self.pondlife.screenshots.count(), 0)
+
+    def test_post_music(self):
+        response = self.client.post('/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id), {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/%d/artwork/edit/' % self.cybrev.id)
+        self.assertEqual(self.cybrev.screenshots.count(), 0)
