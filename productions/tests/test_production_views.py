@@ -908,3 +908,36 @@ class TestAutocomplete(TestCase):
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.content)
         self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
+
+
+class TestDelete(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+
+    def test_non_superuser(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/delete/' % self.pondlife.id)
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+
+    def test_get(self):
+        response = self.client.get('/productions/%d/delete/' % self.pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/productions/%d/delete/' % self.pondlife.id, {
+            'yes': 'yes'
+        })
+        self.assertRedirects(response, '/productions/')
+        self.assertFalse(Production.objects.filter(title='Pondlife').exists())
+
+    def test_cancel(self):
+        response = self.client.post('/productions/%d/delete/' % self.pondlife.id, {
+            'no': 'no'
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertTrue(Production.objects.filter(title='Pondlife').exists())
