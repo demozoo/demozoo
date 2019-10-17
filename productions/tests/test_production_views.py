@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from io import BytesIO
+import json
 import os
 
 from django.contrib.auth.models import User
@@ -10,7 +11,7 @@ from django.test import TestCase
 from mock import patch
 import PIL.Image
 
-from demoscene.models import Nick
+from demoscene.models import BlacklistedTag, Nick
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
@@ -819,6 +820,40 @@ class TestEditTags(TestCase):
     def test_post_locked(self):
         response = self.client.post('/productions/%d/edit_tags/' % self.mooncheese.id, {
             'tags': "wensleydale, stilton"
+        })
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.mooncheese.tags.count(), 0)
+
+
+class TestAddTag(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.mooncheese = Production.objects.get(title='Mooncheese')
+        BlacklistedTag.objects.create(tag='demo', message="Tagging things as demo is really stupid.")
+
+    def test_post(self):
+        response = self.client.post('/productions/%d/add_tag/' % self.pondlife.id, {
+            'tag_name': "fish"
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pondlife.tags.count(), 1)
+
+    def test_post_blacklisted(self):
+        response = self.client.post('/productions/%d/add_tag/' % self.pondlife.id, {
+            'tag_name': "demo"
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pondlife.tags.count(), 0)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json['message'], "Tagging things as demo is really stupid.")
+
+    def test_post_locked(self):
+        response = self.client.post('/productions/%d/add_tag/' % self.mooncheese.id, {
+            'tag_name': "wensleydale"
         })
         self.assertEqual(response.status_code, 403)
         self.assertEqual(self.mooncheese.tags.count(), 0)
