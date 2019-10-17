@@ -26,6 +26,12 @@ class TestShowGraphics(TestCase):
         response = self.client.get('/graphics/%d/' % skyrider.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_pack(self):
+        skyrider = Production.objects.get(title="Skyrider")
+        skyrider.types.add(ProductionType.objects.get(name='Artpack'))
+        response = self.client.get('/graphics/%d/' % skyrider.id)
+        self.assertEqual(response.status_code, 200)
+
     def test_redirect_non_graphics(self):
         pondlife = Production.objects.get(title="Pondlife")
         response = self.client.get('/graphics/%d/' % pondlife.id)

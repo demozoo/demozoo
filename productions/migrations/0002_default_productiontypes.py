@@ -182,7 +182,7 @@ def create_productiontypes(apps, schema):
     {
         "path": "0009",
         "depth": 1,
-        "numchild": 5,
+        "numchild": 6,
         "name": "Graphics",
         "position": 0,
         "internal_name": "graphics"
@@ -210,6 +210,14 @@ def create_productiontypes(apps, schema):
         "name": "ANSI",
         "position": 10,
         "internal_name": "ansi"
+    },
+    {
+        "path": "0009000F",
+        "depth": 2,
+        "numchild": 0,
+        "name": "Artpack",
+        "position": 20,
+        "internal_name": "artpack"
     },
     {
         "path": "0009000G",
