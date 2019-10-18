@@ -1,0 +1,56 @@
+[
+    {
+        "pk": 1,
+        "model": "sceneorg.directory",
+        "fields": {
+            "path": "/",
+            "parent_id": null,
+            "last_seen_at": "2019-01-01"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "sceneorg.directory",
+        "fields": {
+            "path": "/parties/",
+            "parent_id": 1,
+            "last_seen_at": "2019-01-01"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "sceneorg.directory",
+        "fields": {
+            "path": "/parties/2000/",
+            "parent_id": 2,
+            "last_seen_at": "2019-01-01"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "sceneorg.directory",
+        "fields": {
+            "path": "/parties/2000/forever00/",
+            "parent_id": 3,
+            "last_seen_at": "2019-01-01"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "sceneorg.directory",
+        "fields": {
+            "path": "/parties/2000/forever00/zx_demo/",
+            "parent_id": 4,
+            "last_seen_at": "2019-01-01"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "sceneorg.file",
+        "fields": {
+            "path": "/parties/2000/forever00/zx_1k/madrielle.zip",
+            "directory_id": 5,
+            "last_seen_at": "2019-01-01"
+        }
+    }
+]
