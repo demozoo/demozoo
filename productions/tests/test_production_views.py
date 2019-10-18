@@ -1099,3 +1099,20 @@ class TestEditInfoFiles(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertEqual(0, self.pondlife.info_files.count())
+
+
+class TestInfoFile(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.info = self.pondlife.info_files.create(
+            file=File(name="pondlife1.txt", file=BytesIO(b"First info file for Pondlife")),
+            filename="pondlife1.txt", filesize=100, sha1="1234123412341234"
+        )
+
+    def test_get(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/info/%d/' % (self.pondlife.id, self.info.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First info file for Pondlife")
