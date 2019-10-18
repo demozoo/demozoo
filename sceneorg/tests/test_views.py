@@ -49,11 +49,11 @@ class TestCompoFolderLink(TestCase):
         forever2e3 = Party.objects.get(name='Forever 2e3')
         zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
         response = self.client.post('/sceneorg/compofolders/link/', {
-            'directory_id': Directory.objects.get(path='/parties/2000/forever00/zx_demo/').id,
+            'directory_id': Directory.objects.get(path='/parties/2000/forever00/zx_1k/').id,
             'competition_id': zx1k.id
         })
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(zx1k.sceneorg_directories.filter(path='/parties/2000/forever00/zx_demo/').exists())
+        self.assertTrue(zx1k.sceneorg_directories.filter(path='/parties/2000/forever00/zx_1k/').exists())
 
 
 class TestCompoFolderUnLink(TestCase):
@@ -66,7 +66,7 @@ class TestCompoFolderUnLink(TestCase):
     def test_post(self):
         forever2e3 = Party.objects.get(name='Forever 2e3')
         zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
-        directory = Directory.objects.get(path='/parties/2000/forever00/zx_demo/')
+        directory = Directory.objects.get(path='/parties/2000/forever00/zx_1k/')
         zx1k.sceneorg_directories.add(directory)
 
         response = self.client.post('/sceneorg/compofolders/unlink/', {
@@ -74,7 +74,7 @@ class TestCompoFolderUnLink(TestCase):
             'competition_id': zx1k.id
         })
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(zx1k.sceneorg_directories.filter(path='/parties/2000/forever00/zx_demo/').exists())
+        self.assertFalse(zx1k.sceneorg_directories.filter(path='/parties/2000/forever00/zx_1k/').exists())
 
 
 class TestCompoFoldersDone(TestCase):
@@ -89,3 +89,30 @@ class TestCompoFoldersDone(TestCase):
         response = self.client.post('/sceneorg/compofolders/done/%d/' % forever2e3.id)
         self.assertRedirects(response, '/sceneorg/compofolders/')
         self.assertTrue(Party.objects.get(name='Forever 2e3').sceneorg_compofolders_done)
+
+
+class TestCompoFoldersShowDirectory(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_get(self):
+        directory = Directory.objects.get(path='/parties/2000/forever00/zx_1k/')
+        response = self.client.get('/sceneorg/compofolders/directory/%d/' % directory.id)
+        self.assertEqual(response.status_code, 200)
+
+
+class TestCompoFoldersShowCompetition(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_get(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
+        response = self.client.get('/sceneorg/compofolders/competition/%d/' % zx1k.id)
+        self.assertEqual(response.status_code, 200)

@@ -39,7 +39,7 @@
         "pk": 5,
         "model": "sceneorg.directory",
         "fields": {
-            "path": "/parties/2000/forever00/zx_demo/",
+            "path": "/parties/2000/forever00/zx_1k/",
             "parent_id": 4,
             "last_seen_at": "2019-01-01"
         }
