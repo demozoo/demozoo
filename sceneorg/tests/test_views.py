@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from parties.models import Party
-from sceneorg.models import Directory
+from productions.models import Production
+from sceneorg.models import Directory, File
 
 
 class TestCompoFolders(TestCase):
@@ -150,3 +151,47 @@ class TestCompoFileDirectory(TestCase):
 
         response = self.client.get('/sceneorg/compofiles/dir/%d/' % directory.id)
         self.assertEqual(response.status_code, 200)
+
+
+class TestCompoFileLink(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_post(self):
+        madrielle = Production.objects.get(title='Madrielle')
+        response = self.client.post('/sceneorg/compofiles/link/', {
+            'file_id': File.objects.get(path='/parties/2000/forever00/zx_1k/madrielle.zip').id,
+            'production_id': madrielle.id
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(madrielle.download_links.filter(
+            link_class='SceneOrgFile', parameter='/parties/2000/forever00/zx_1k/madrielle.zip'
+        ).exists())
+
+
+class TestCompoFileUnlink(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_post(self):
+        madrielle = Production.objects.get(title='Madrielle')
+        madrielle.links.create(
+            is_download_link=True,
+            link_class='SceneOrgFile', parameter='/parties/2000/forever00/zx_1k/madrielle.zip'
+        )
+        madrielle_file = File.objects.get(path='/parties/2000/forever00/zx_1k/madrielle.zip')
+
+        response = self.client.post('/sceneorg/compofiles/unlink/', {
+            'file_id': madrielle_file.id,
+            'production_id': madrielle.id
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(madrielle.download_links.filter(
+            link_class='SceneOrgFile', parameter='/parties/2000/forever00/zx_1k/madrielle.zip'
+        ).exists())
