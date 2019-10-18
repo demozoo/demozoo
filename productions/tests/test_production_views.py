@@ -5,6 +5,7 @@ import json
 import os
 
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -1017,3 +1018,84 @@ class TestCarousel(TestCase):
         pondlife = Production.objects.get(title='Pondlife')
         response = self.client.get('/productions/%d/carousel/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
+
+
+class TestEditInfoFiles(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.pondlife = Production.objects.get(title='Pondlife')
+        self.mooncheese = Production.objects.get(title='Mooncheese')
+
+        self.info1 = self.pondlife.info_files.create(
+            file=File(name="pondlife1.txt", file=BytesIO(b"First info file for Pondlife")),
+            filename="pondlife1.txt", filesize=100, sha1="1234123412341234"
+        )
+        self.info2 = self.pondlife.info_files.create(
+            file=File(name="pondlife2.txt", file=BytesIO(b"Second info file for Pondlife")),
+            filename="pondlife2.txt", filesize=100, sha1="1234123412341234"
+        )
+
+    def test_get_locked(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/edit_info/' % self.mooncheese.id)
+        self.assertEqual(response.status_code, 403)
+
+    def test_get(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/productions/%d/edit_info/' % self.pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_one(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/productions/%d/edit_info/' % self.pondlife.id, {
+            'info_file': SimpleUploadedFile('pondlife3.txt', b"Third info file", content_type="text/plain")
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(3, self.pondlife.info_files.count())
+
+    def test_add_multiple(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/productions/%d/edit_info/' % self.pondlife.id, {
+            'info_file': [
+                SimpleUploadedFile('pondlife3.txt', b"Third info file", content_type="text/plain"),
+                SimpleUploadedFile('pondlife4.txt', b"Fourth info file", content_type="text/plain"),
+            ]
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(4, self.pondlife.info_files.count())
+
+    def test_delete_one(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/productions/%d/edit_info/' % self.pondlife.id, {
+            'info_files-TOTAL_FORMS': 2,
+            'info_files-INITIAL_FORMS': 2,
+            'info_files-MIN_NUM_FORMS': 0,
+            'info_files-MAX_NUM_FORMS': 1000,
+            'info_files-0-DELETE': 'info_files-0-DELETE',
+            'info_files-0-id': self.info1.id,
+            'info_files-0-production': self.pondlife.id,
+            'info_files-1-id': self.info2.id,
+            'info_files-1-production': self.pondlife.id,
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(1, self.pondlife.info_files.count())
+
+    def test_delete_multiple(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/productions/%d/edit_info/' % self.pondlife.id, {
+            'info_files-TOTAL_FORMS': 2,
+            'info_files-INITIAL_FORMS': 2,
+            'info_files-MIN_NUM_FORMS': 0,
+            'info_files-MAX_NUM_FORMS': 1000,
+            'info_files-0-DELETE': 'info_files-0-DELETE',
+            'info_files-0-id': self.info1.id,
+            'info_files-0-production': self.pondlife.id,
+            'info_files-1-DELETE': 'info_files-1-DELETE',
+            'info_files-1-id': self.info2.id,
+            'info_files-1-production': self.pondlife.id,
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(0, self.pondlife.info_files.count())

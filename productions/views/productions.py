@@ -1002,7 +1002,7 @@ def edit_info_files(request, production_id):
     if not production.editable_by_user(request.user):
         raise PermissionDenied
 
-    if request.POST:
+    if request.method == 'POST':
         action_descriptions = []
         all_valid = True
 
