@@ -75,3 +75,17 @@ class TestCompoFolderUnLink(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(zx1k.sceneorg_directories.filter(path='/parties/2000/forever00/zx_demo/').exists())
+
+
+class TestCompoFoldersDone(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_post(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        response = self.client.post('/sceneorg/compofolders/done/%d/' % forever2e3.id)
+        self.assertRedirects(response, '/sceneorg/compofolders/')
+        self.assertTrue(Party.objects.get(name='Forever 2e3').sceneorg_compofolders_done)
