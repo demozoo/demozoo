@@ -116,3 +116,37 @@ class TestCompoFoldersShowCompetition(TestCase):
         zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
         response = self.client.get('/sceneorg/compofolders/competition/%d/' % zx1k.id)
         self.assertEqual(response.status_code, 200)
+
+
+class TestCompoFiles(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_get(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
+        directory = Directory.objects.get(path='/parties/2000/forever00/zx_1k/')
+        zx1k.sceneorg_directories.add(directory)
+
+        response = self.client.get('/sceneorg/compofiles/')
+        self.assertEqual(response.status_code, 200)
+
+
+class TestCompoFileDirectory(TestCase):
+    fixtures = ['tests/sceneorg.json', 'tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_get(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        zx1k = forever2e3.competitions.get(name='ZX 1K Intro')
+        directory = Directory.objects.get(path='/parties/2000/forever00/zx_1k/')
+        zx1k.sceneorg_directories.add(directory)
+
+        response = self.client.get('/sceneorg/compofiles/dir/%d/' % directory.id)
+        self.assertEqual(response.status_code, 200)
