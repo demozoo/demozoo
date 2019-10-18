@@ -6,6 +6,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from demoscene.models import Releaser
+from parties.models import Party
 from productions.models import Production
 
 
@@ -172,4 +173,64 @@ class TestAuthorRedirect(TestCase):
 
     def test_bad_id(self):
         response = self.client.get('/author.php?id=potato')
+        self.assertEqual(response.status_code, 404)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestParties(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/parties/')
+        self.assertEqual(response.status_code, 200)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestPartyYear(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/parties/2000/')
+        self.assertEqual(response.status_code, 200)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestPartyCalendarRedirect(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/partycalendar.php')
+        self.assertRedirects(response, '/parties/', status_code=301)
+
+    def test_get_year(self):
+        response = self.client.get('/partycalendar.php?year=2000')
+        self.assertRedirects(response, '/parties/2000/', status_code=301)
+
+    def test_bad_year(self):
+        response = self.client.get('/partycalendar.php?year=patarty')
+        self.assertRedirects(response, '/parties/', status_code=301)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestParty(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        forever = Party.objects.get(name='Forever 2e3')
+        response = self.client.get('/party/%d/' % forever.id)
+        self.assertEqual(response.status_code, 200)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestPartyRedirect(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        forever = Party.objects.get(name='Forever 2e3')
+        forever.external_links.create(link_class='ZxdemoParty', parameter='123')
+        response = self.client.get('/party.php?id=123')
+        self.assertRedirects(response, '/party/%d/' % forever.id, status_code=301)
+
+    def test_bad_id(self):
+        response = self.client.get('/party.php?id=patarty')
         self.assertEqual(response.status_code, 404)
