@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from demoscene.models import Releaser
 from parties.models import Party
+from platforms.models import Platform
 from productions.models import Production
 
 
@@ -234,3 +235,59 @@ class TestPartyRedirect(TestCase):
     def test_bad_id(self):
         response = self.client.get('/party.php?id=patarty')
         self.assertEqual(response.status_code, 404)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestRss(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/rss/')
+        self.assertEqual(response.status_code, 200)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestSearch(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/search/?search=gasman&demoskip=zzz&musicskip=zzz&gfxskip=zzz&scenerskip=zzz')
+        self.assertEqual(response.status_code, 200)
+
+    def test_demo_paging(self):
+        zx = Platform.objects.get(name='ZX Spectrum')
+        for i in range(1, 20):
+            prod = Production.objects.create(title="Dupa Biskupa part %d" % i, supertype='production')
+            prod.platforms.add(zx)
+
+        response = self.client.get('/search/?search=dupa&demoskip=5')
+        self.assertEqual(response.status_code, 200)
+
+    def test_music_paging(self):
+        zx = Platform.objects.get(name='ZX Spectrum')
+        for i in range(1, 20):
+            prod = Production.objects.create(title="Oxygene %d" % i, supertype='music')
+            prod.platforms.add(zx)
+
+        response = self.client.get('/search/?search=oxygene&musicskip=5')
+        self.assertEqual(response.status_code, 200)
+
+    def test_gfx_paging(self):
+        zx = Platform.objects.get(name='ZX Spectrum')
+        for i in range(1, 20):
+            prod = Production.objects.create(title="Vallejo valkyrie chick %d" % i, supertype='graphics')
+            prod.platforms.add(zx)
+
+        response = self.client.get('/search/?search=vallejo&gfxskip=5')
+        self.assertEqual(response.status_code, 200)
+
+    def test_scener_paging(self):
+        zx = Platform.objects.get(name='ZX Spectrum')
+        for i in range(1, 20):
+            prod = Production.objects.create(title="Dupa Biskupa part %d" % i, supertype='production')
+            releaser = Releaser.objects.create(name="razor %d" % i, is_group=True)
+            prod.platforms.add(zx)
+            prod.author_nicks.add(releaser.primary_nick)
+
+        response = self.client.get('/search/?search=razor&scenerskip=5')
+        self.assertEqual(response.status_code, 200)
