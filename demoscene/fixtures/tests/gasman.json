@@ -227,6 +227,7 @@
         "model": "productions.production",
         "fields": {
             "title": "Pondlife",
+            "search_title": "pondlife",
             "supertype": "production",
             "release_date_date": "2001-03-19",
             "release_date_precision": "d",
@@ -243,6 +244,7 @@
         "model": "productions.production",
         "fields": {
             "title": "Cybernoid's Revenge",
+            "search_title": "cybernoids revenge",
             "supertype": "music",
             "release_date_date": "2001-03-19",
             "release_date_precision": "d",
@@ -259,6 +261,7 @@
         "model": "productions.production",
         "fields": {
             "title": "Skyrider",
+            "search_title": "skyrider",
             "supertype": "graphics",
             "release_date_date": "2001-03-19",
             "release_date_precision": "d",
@@ -304,6 +307,7 @@
         "fields": {
             "party_series": 1,
             "name": "Forever 2e3",
+            "search_title": "forever 2e3",
             "start_date_date": "2000-03-17",
             "start_date_precision": "d",
             "end_date_date": "2000-03-19",
