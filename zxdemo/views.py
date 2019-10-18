@@ -575,4 +575,4 @@ def article_redirect(request):
 
 
 def page_not_found(request):
-    return render(request, 'zxdemo/404.html')
+    return render(request, 'zxdemo/404.html', status=404)
