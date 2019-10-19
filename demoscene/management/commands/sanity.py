@@ -185,6 +185,19 @@ class Command(BaseCommand):
         for (prod_id, soundtrack_id, position) in cursor.fetchall():
             SoundtrackLink.objects.filter(production_id=prod_id, soundtrack_id=soundtrack_id, position__gt=position).delete()
 
+        print "Deleting duplicate pack members"
+        cursor.execute('''
+            select p1.pack_id, p1.member_id, min(p1.position) AS position
+            from productions_packmember as p1
+            inner join productions_packmember as p2 on (
+                p1.pack_id = p2.pack_id and p1.member_id = p2.member_id
+                and p1.id <> p2.id
+            )
+            group by p1.pack_id, p1.member_id
+        ''')
+        for (pack_id, member_id, position) in cursor.fetchall():
+            PackMember.objects.filter(pack_id=pack_id, member_id=member_id, position__gt=position).delete()
+
         print "Closing gaps in pack member sequences"
         for k, pms in groupby(PackMember.objects.order_by('pack_id', 'position'), lambda pm: pm.pack_id):
             for i, pm in enumerate(pms):
