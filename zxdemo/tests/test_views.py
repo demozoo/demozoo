@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
 import unittest
 
 from django.conf import settings
@@ -9,6 +10,7 @@ from demoscene.models import Releaser
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production
+from zxdemo.models import Article
 
 
 @unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
@@ -291,3 +293,32 @@ class TestSearch(TestCase):
 
         response = self.client.get('/search/?search=razor&scenerskip=5')
         self.assertEqual(response.status_code, 200)
+
+
+@unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")
+class TestArticles(TestCase):
+    def setUp(self):
+        self.article = Article.objects.create(
+            zxdemo_id=99, created_at=datetime.datetime.now(), title="An article",
+            summary="it's going to be good", content="oh actually it wasn't"
+        )
+
+    def test_get_listing(self):
+        response = self.client.get('/articles/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_article(self):
+        response = self.client.get('/article/99/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_article_redirect(self):
+        response = self.client.get('/article.php?id=99')
+        self.assertRedirects(response, '/article/99/')
+
+    def test_article_redirect_no_id(self):
+        response = self.client.get('/article.php')
+        self.assertRedirects(response, '/articles/')
+
+    def test_article_redirect_bad(self):
+        response = self.client.get('/article.php?id=potato')
+        self.assertEqual(response.status_code, 404)
