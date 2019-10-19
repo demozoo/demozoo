@@ -4,6 +4,8 @@ import json
 
 from django.test import TestCase, override_settings
 
+from parties.models import Party, PartySeries
+
 
 class TestApiRoot(TestCase):
     def test_get_root(self):
@@ -99,3 +101,41 @@ class TestReleasers(TestCase):
 
         response_data = json.loads(response.content)
         self.assertIn("Madrielle", [result['title'] for result in response_data])
+
+
+class TestPartySeries(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get_serieses(self):
+        response = self.client.get('/api/v1/party_series/')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertIn("Forever", [result['name'] for result in response_data['results']])
+
+    def test_get_series(self):
+        forever = PartySeries.objects.get(name='Forever')
+        response = self.client.get('/api/v1/party_series/%d/' % forever.id)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['name'], "Forever")
+
+
+class TestParties(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get_parties(self):
+        response = self.client.get('/api/v1/parties/')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertIn("Forever 2e3", [result['name'] for result in response_data['results']])
+
+    def test_get_party(self):
+        forever = Party.objects.get(name='Forever 2e3')
+        response = self.client.get('/api/v1/parties/%d/' % forever.id)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['name'], "Forever 2e3")
