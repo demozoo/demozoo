@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from demoscene.models import Membership, Releaser
+from demoscene.models import Edit, Membership, Releaser
 
 
 class TestScenersIndex(TestCase):
@@ -199,7 +199,7 @@ class TestEditMembership(TestCase):
         response = self.client.get('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id))
         self.assertEqual(response.status_code, 200)
 
-    def test_post(self):
+    def test_post_make_ex_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
         response = self.client.post('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id), {
             'group_nick_search': 'hooy-program',
@@ -208,6 +208,24 @@ class TestEditMembership(TestCase):
         })
         self.assertRedirects(response, '/sceners/%d/?editing=groups' % self.gasman.id)
         self.assertFalse(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
+        edit = Edit.for_model(self.gasman, True).first()
+        self.assertIn("set as ex-member", edit.description)
+
+    def test_post_make_current_member(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        membership.is_current = False
+        membership.save()
+
+        response = self.client.post('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id), {
+            'group_nick_search': 'hooy-program',
+            'group_nick_match_id': self.hooy_program.primary_nick.id,
+            'group_nick_match_name': 'hooy-program',
+            'is_current': 'is_current',
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=groups' % self.gasman.id)
+        self.assertTrue(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
+        edit = Edit.for_model(self.gasman, True).first()
+        self.assertIn("set as current member", edit.description)
 
 
 class TestConvertToGroup(TestCase):

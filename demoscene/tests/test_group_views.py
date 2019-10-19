@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from demoscene.models import Membership, Nick, Releaser
+from demoscene.models import Edit, Membership, Nick, Releaser
 
 
 class TestGroupsIndex(TestCase):
@@ -145,7 +145,7 @@ class TestEditMembership(TestCase):
         response = self.client.get('/groups/%d/edit_membership/%d/' % (self.hooy_program.id, membership.id))
         self.assertEqual(response.status_code, 200)
 
-    def test_post(self):
+    def test_post_make_ex_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
         response = self.client.post('/groups/%d/edit_membership/%d/' % (self.hooy_program.id, membership.id), {
             'scener_nick_search': 'gasman',
@@ -154,6 +154,24 @@ class TestEditMembership(TestCase):
         })
         self.assertRedirects(response, '/groups/%d/?editing=members' % self.hooy_program.id)
         self.assertFalse(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
+        edit = Edit.for_model(self.gasman, True).first()
+        self.assertIn("set as ex-member", edit.description)
+
+    def test_post_make_current_member(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        membership.is_current = False
+        membership.save()
+
+        response = self.client.post('/groups/%d/edit_membership/%d/' % (self.hooy_program.id, membership.id), {
+            'scener_nick_search': 'gasman',
+            'scener_nick_match_id': self.gasman.primary_nick.id,
+            'scener_nick_match_name': 'gasman',
+            'is_current': 'is_current',
+        })
+        self.assertRedirects(response, '/groups/%d/?editing=members' % self.hooy_program.id)
+        self.assertTrue(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
+        edit = Edit.for_model(self.gasman, True).first()
+        self.assertIn("set as current member", edit.description)
 
 
 class TestAddSubgroup(TestCase):
@@ -231,7 +249,7 @@ class TestEditSubgroup(TestCase):
         response = self.client.get('/groups/%d/edit_subgroup/%d/' % (self.raww_arse.id, membership.id))
         self.assertEqual(response.status_code, 200)
 
-    def test_post(self):
+    def test_post_make_ex_subgroup(self):
         membership = Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse)
         response = self.client.post('/groups/%d/edit_subgroup/%d/' % (self.raww_arse.id, membership.id), {
             'subgroup_nick_search': 'papaya dezign',
@@ -240,6 +258,24 @@ class TestEditSubgroup(TestCase):
         })
         self.assertRedirects(response, '/groups/%d/?editing=subgroups' % self.raww_arse.id)
         self.assertFalse(Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse).is_current)
+        edit = Edit.for_model(self.papaya_dezign, True).first()
+        self.assertIn("set as ex-subgroup", edit.description)
+
+    def test_post_make_current_subgroup(self):
+        membership = Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse)
+        membership.is_current = False
+        membership.save()
+
+        response = self.client.post('/groups/%d/edit_subgroup/%d/' % (self.raww_arse.id, membership.id), {
+            'subgroup_nick_search': 'papaya dezign',
+            'subgroup_nick_match_id': self.papaya_dezign.primary_nick.id,
+            'subgroup_nick_match_name': 'papaya dezign',
+            'is_current': 'is_current'
+        })
+        self.assertRedirects(response, '/groups/%d/?editing=subgroups' % self.raww_arse.id)
+        self.assertTrue(Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse).is_current)
+        edit = Edit.for_model(self.papaya_dezign, True).first()
+        self.assertIn("set as current subgroup", edit.description)
 
 
 class TestConvertToScener(TestCase):

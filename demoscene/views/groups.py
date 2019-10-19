@@ -255,7 +255,10 @@ def edit_subgroup(request, group_id, membership_id):
         raise PermissionDenied
 
     if request.method == 'POST':
-        form = GroupSubgroupForm(request.POST)
+        form = GroupSubgroupForm(request.POST, initial={
+            'subgroup_nick': membership.member.primary_nick,
+            'is_current': membership.is_current,
+        })
         if form.is_valid():
             member = form.cleaned_data['subgroup_nick'].commit().releaser
             if not group.member_memberships.exclude(id=membership_id).filter(member=member).count():

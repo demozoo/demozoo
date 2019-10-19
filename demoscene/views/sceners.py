@@ -197,7 +197,10 @@ def edit_membership(request, scener_id, membership_id):
         raise PermissionDenied
 
     if request.method == 'POST':
-        form = ScenerMembershipForm(request.POST)
+        form = ScenerMembershipForm(request.POST, initial={
+            'group_nick': membership.group.primary_nick,
+            'is_current': membership.is_current,
+        })
         if form.is_valid():
             group = form.cleaned_data['group_nick'].commit().releaser
             if not scener.group_memberships.exclude(id=membership_id).filter(group=group).count():

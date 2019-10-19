@@ -43,6 +43,16 @@ class TestCreateGroupForm(TestCase):
         )
         self.assertEqual(log_entry.user, self.user)
 
+    def test_no_commit(self):
+        form = CreateGroupForm({
+            'name': 'Poo-Brain',
+            'abbreviation': 'PB',
+            'nick_variant_list': 'Poo Brain, PooBrain'
+        })
+        self.assertTrue(form.is_valid())
+        form.save(commit=False)
+        self.assertFalse(Releaser.objects.filter(name='Poo-Brain').exists())
+
 
 class TestCreateScenerForm(TestCase):
     def setUp(self):
@@ -73,6 +83,15 @@ class TestCreateScenerForm(TestCase):
             focus_object_id=releaser.id
         )
         self.assertEqual(log_entry.user, self.user)
+
+    def test_no_commit(self):
+        form = CreateScenerForm({
+            'name': 'Factor6',
+            'nick_variant_list': 'Factor 6, F6'
+        })
+        self.assertTrue(form.is_valid())
+        form.save(commit=False)
+        self.assertFalse(Releaser.objects.filter(name='Factor6').exists())
 
 
 class TestScenerEditLocationForm(TestCase):
