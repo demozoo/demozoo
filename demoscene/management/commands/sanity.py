@@ -230,7 +230,7 @@ class Command(BaseCommand):
         print "Reassigning music in pack contents that looks like it should be soundtrack links"
         # get the most common prodtypes that have soundtracks mis-categorised as pack contents
         non_pack_type_ids = ProductionType.objects.filter(
-            name__in=['Musicdisk', 'Chip Music Pack', 'Demo']
+            name__in=['Musicdisk', 'Chip Music Pack', 'Demo', 'Diskmag']
         ).values_list('id', flat=True)
         pack_type_id = ProductionType.objects.get(name='Pack').id
         actual_pack_ids = Production.objects.filter(types__id=pack_type_id).values_list('id', flat=True)
