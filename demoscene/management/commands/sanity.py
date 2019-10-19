@@ -202,8 +202,11 @@ class Command(BaseCommand):
             prod.types.add(pack)
 
         print "Reassigning musicdisk contents from pack contents to soundtrack links"
-        musicdisk_id = ProductionType.objects.get(name='Musicdisk').id
-        pack_contents = PackMember.objects.filter(pack__types=musicdisk_id, member__supertype='music').order_by('pack_id', 'position')
+        pack_type_ids = ProductionType.objects.filter(
+            name__in=['Musicdisk', 'Chip Music Pack']
+        ).values_list('id', flat=True)
+
+        pack_contents = PackMember.objects.filter(pack__types__in=pack_type_ids, member__supertype='music').order_by('pack_id', 'position')
         for pack_id, pack_members in groupby(pack_contents, lambda pm: pm.pack_id):
             soundtrack_ids = list(
                 SoundtrackLink.objects.filter(production_id=pack_id).order_by('position').values_list('soundtrack_id', flat=True)
