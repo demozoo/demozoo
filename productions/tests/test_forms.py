@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
-from ..forms import ProductionIndexFilterForm, ProductionExternalLinkFormSet
-from ..models import ProductionType, Production
+from ..forms import ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet
+from ..models import ProductionType, Production, ProductionLink
 
 
 class ProductionsFormsTests(TestCase):
@@ -22,3 +22,11 @@ class ProductionsFormsTests(TestCase):
         self.assertTrue(formset.is_valid())
         formset.save_ignoring_uniqueness()
         self.assertEqual(production.links.filter(is_download_link=False).count(), 0)
+
+    def test_save_external_link_form_with_commit(self):
+        production = Production.objects.create(title='State of the Art')
+        external_link = ProductionLink(production=production, is_download_link=False)
+        form = ProductionExternalLinkForm({'url': 'https://demozoo.org'}, instance=external_link)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(production.links.filter(is_download_link=False).count(), 1)

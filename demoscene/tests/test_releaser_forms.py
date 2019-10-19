@@ -6,9 +6,9 @@ from django.test import TestCase
 
 from demoscene.forms.releaser import (
     CreateGroupForm, CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm,
-    ReleaserEditNotesForm, ScenerNickForm, GroupNickForm
+    ReleaserEditNotesForm, ReleaserExternalLinkForm, ScenerNickForm, GroupNickForm
 )
-from demoscene.models import Releaser, Edit, Nick
+from demoscene.models import Releaser, Edit, Nick, ReleaserExternalLink
 
 
 class TestCreateGroupForm(TestCase):
@@ -545,3 +545,13 @@ class TestGroupNickForm(TestCase):
             log_entry.description,
             "Edited nick 'Obecalp': changed name to 'Obecalp'; changed abbreviation to 'BCP'; changed differentiator to 'ZX'; changed aliases to 'Ob3calp'; set as primary nick"
         )
+
+
+class TestExternalLinkForm(TestCase):
+    def test_save_external_link_form_with_commit(self):
+        releaser = Releaser.objects.create(name='Gasman', is_group=False)
+        external_link = ReleaserExternalLink(releaser=releaser)
+        form = ReleaserExternalLinkForm({'url': 'https://demozoo.org'}, instance=external_link)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(releaser.external_links.count(), 1)

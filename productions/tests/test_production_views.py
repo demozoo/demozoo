@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 from io import BytesIO
@@ -360,6 +361,18 @@ class TestEdiDownloadLinks(TestCase):
             ProductionLink.objects.filter(production=self.pondlife, link_class='SceneOrgFile').count(),
             1
         )
+
+    def test_post_unicode(self):
+        response = self.client.post('/productions/%d/edit_download_links/' % self.pondlife.id, {
+            'links-TOTAL_FORMS': 1,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+            'links-0-url': 'https://files.scene.org/get/parties/2001/forever01/spectrum/pöndlife.zip',
+            'links-0-production': self.pondlife.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
 
 
 class TestShowScreenshots(TestCase):
