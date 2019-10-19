@@ -227,12 +227,19 @@ class Command(BaseCommand):
         ''', {'pack': pack.id, 'artpack': artpack_id, 'diskmag': diskmag_id}):
             prod.types.add(pack)
 
-        print "Reassigning musicdisk contents from pack contents to soundtrack links"
-        pack_type_ids = ProductionType.objects.filter(
-            name__in=['Musicdisk', 'Chip Music Pack']
+        print "Reassigning music in pack contents that looks like it should be soundtrack links"
+        # get the most common prodtypes that have soundtracks mis-categorised as pack contents
+        non_pack_type_ids = ProductionType.objects.filter(
+            name__in=['Musicdisk', 'Chip Music Pack', 'Demo']
         ).values_list('id', flat=True)
-
-        pack_contents = PackMember.objects.filter(pack__types__in=pack_type_ids, member__supertype='music').order_by('pack_id', 'position')
+        pack_type_id = ProductionType.objects.get(name='Pack').id
+        actual_pack_ids = Production.objects.filter(types__id=pack_type_id).values_list('id', flat=True)
+        # get packmembers which are music, inside productions that are one of our target types, but not actual packs
+        pack_contents = PackMember.objects.filter(
+            pack__types__in=non_pack_type_ids, member__supertype='music'
+        ).exclude(
+            pack_id__in=actual_pack_ids
+        ).order_by('pack_id', 'position')
         for pack_id, pack_members in groupby(pack_contents, lambda pm: pm.pack_id):
             soundtrack_ids = list(
                 SoundtrackLink.objects.filter(production_id=pack_id).order_by('position').values_list('soundtrack_id', flat=True)
