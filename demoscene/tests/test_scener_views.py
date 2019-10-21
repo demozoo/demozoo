@@ -13,6 +13,12 @@ class TestScenersIndex(TestCase):
         response = self.client.get('/sceners/')
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get('/sceners/?page=potato')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/sceners/?page=9999')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestShowScener(TestCase):
     fixtures = ['tests/gasman.json']
@@ -108,6 +114,17 @@ class TestEditRealName(TestCase):
             'real_name_note': "yes really",
         })
         self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+        self.assertEqual(Releaser.objects.get(name='Gasman').surname, "Gustavsson")
+
+    def test_post_ajax(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/sceners/%d/edit_real_name/?ajax_submit=true' % self.gasman.id, {
+            'first_name': "Matt",
+            'show_first_name': True,
+            'surname': "Gustavsson",
+            'real_name_note': "yes really",
+        }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(Releaser.objects.get(name='Gasman').surname, "Gustavsson")
 
 
