@@ -15,6 +15,27 @@ class TestLogin(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), "Your account was disabled.")
 
+    def test_get(self):
+        response = self.client.get('/account/login/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        response = self.client.post('/account/login/', {
+            'username': 'testuser',
+            'password': '12345',
+        })
+        self.assertRedirects(response, '/')
+
+    def test_post_disabled(self):
+        self.user = User.objects.create_user(username='testuser', password='12345', is_active=False)
+        response = self.client.post('/account/login/', {
+            'username': 'testuser',
+            'password': '12345',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your username and password didn't match. Please try again.")
+
 
 class TestAccountIndex(TestCase):
     def setUp(self):
@@ -27,6 +48,12 @@ class TestAccountIndex(TestCase):
         self.client.login(username='testuser', password='12345')
         response = self.client.get('/account/')
         self.assertEqual(response.status_code, 200)
+
+        user = User.objects.get(username='testuser')
+        user.is_active = False
+        user.save()
+        response = self.client.get('/account/')
+        self.assertRedirects(response, '/account/login/?next=/account/')
 
 
 class TestSignup(TestCase):

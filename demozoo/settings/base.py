@@ -239,7 +239,7 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     'sceneid.backends.SceneIDBackend',
-    'demoscene.utils.accounts.ActiveModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 BASE_URL = 'https://demozoo.org'
