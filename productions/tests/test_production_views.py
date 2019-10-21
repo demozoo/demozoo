@@ -32,6 +32,12 @@ class TestIndex(TestCase):
     def test_get(self):
         demo = ProductionType.objects.get(name='Demo').id
         zx = Platform.objects.get(name='ZX Spectrum').id
+
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.screenshots.create(
+            thumbnail_url='http://example.com/pondlife.thumb.png', thumbnail_width=130, thumbnail_height=100
+        )
+
         response = self.client.get('/productions/?platform=%d&production_type=%d' % (zx, demo))
         self.assertEqual(response.status_code, 200)
 

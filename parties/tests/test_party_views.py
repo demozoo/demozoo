@@ -55,6 +55,13 @@ class TestShowPartySeries(TestCase):
 
     def test_get(self):
         party_series = PartySeries.objects.get(name='Forever')
+
+        madrielle = Production.objects.get(title='Madrielle')
+        madrielle.screenshots.create(
+            thumbnail_url='http://example.com/madrielle.thumb.png', thumbnail_width=130, thumbnail_height=100,
+            standard_url='http://example.com/madrielle.standard.png', standard_width=320, standard_height=240
+        )
+
         response = self.client.get('/parties/series/%d/' % party_series.id)
         self.assertEqual(response.status_code, 200)
 

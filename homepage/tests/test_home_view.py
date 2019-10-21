@@ -7,9 +7,12 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from homepage.models import Banner, NewsStory
+from productions.models import Production
 
 
 class SimpleTest(TestCase):
+    fixtures = ['tests/gasman.json']
+
     def setUp(self):
         Banner.objects.create(
             title='Hello anonymous people',
@@ -32,6 +35,10 @@ class SimpleTest(TestCase):
             title='Secret news item',
             text='wooo',
             is_public=False,
+        )
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.screenshots.create(
+            thumbnail_url='http://example.com/pondlife.thumb.png', thumbnail_width=130, thumbnail_height=100
         )
 
     def test_fetch_homepage(self):
