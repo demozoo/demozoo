@@ -1,17 +1,25 @@
 from __future__ import absolute_import, unicode_literals
 
+from django.core.management import call_command
 from django.test import TestCase
 
-from demoscene.models import Nick
+from demoscene.models import Nick, Releaser
 from productions.models import Production
 
 
 class TestSearch(TestCase):
     fixtures = ['tests/gasman.json']
 
+    def setUp(self):
+        gasman = Releaser.objects.get(name='Gasman')
+        gasman.notes = "Gasman once made a demo called Pondlife."
+        gasman.save()
+        call_command('reindex')
+
     def test_get(self):
         response = self.client.get('/search/?q=pondlife')
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "demo called <b>Pondlife</b>")
 
     def test_bad_page_number(self):
         response = self.client.get('/search/?q=pondlife&page=amigaaaa')
