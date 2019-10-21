@@ -16,7 +16,6 @@ psycopg2>=2.5.4,<3.0
 pyrecoil==0.2
 redis==2.10.5
 scrubber==1.6.1
-timelib==0.2.1
 unidecode==0.04.14
 bcrypt==1.0.2
 python-dateutil==1.5
