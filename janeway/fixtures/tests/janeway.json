@@ -36,5 +36,24 @@
             "release": 1,
             "type_name": "Demo"
         }
+    },
+    {
+        "pk": 2,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 346,
+            "title": "MOD.patarty.gz",
+            "supertype": "music",
+            "author_names": [],
+            "platform": "ocs"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 2,
+            "type_name": "Music"
+        }
     }
 ]

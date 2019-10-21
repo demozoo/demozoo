@@ -84,6 +84,7 @@ class TestProductionImport(TestCase):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
         self.sota = Release.objects.get(title="State Of The Art")
+        self.patarty = Release.objects.get(title="MOD.patarty.gz")
 
     def test_non_superuser(self):
         self.client.login(username='testuser', password='12345')
@@ -96,6 +97,12 @@ class TestProductionImport(TestCase):
         response = self.client.post('/janeway/production-import/', {'janeway_id': self.sota.janeway_id})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Production.objects.filter(title="State Of The Art").exists())
+
+    def test_clean_music_title(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/janeway/production-import/', {'janeway_id': self.patarty.janeway_id})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Production.objects.filter(title="patarty").exists())
 
 
 class TestAuthorProductionsImport(TestCase):
