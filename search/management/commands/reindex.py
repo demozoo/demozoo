@@ -27,8 +27,8 @@ class Command(BaseCommand):
                     for obj in batch:
                         index(obj)
                         i += 1
-                        if i % 100 == 0:
-                            print klass, i
+                        if i % 100 == 0:  # pragma: no cover
+                            print(klass, i)
 
                 if len(batch) < BATCH_SIZE:
                     break
