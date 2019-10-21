@@ -581,7 +581,7 @@ class ExternalLink(models.Model):
             if self.link:
                 self.link_class = self.link.__class__.__name__
                 self.parameter = self.link.param
-            else:
+            else:  # pragma: no cover
                 self.link_class = None
                 self.parameter = None
         else:

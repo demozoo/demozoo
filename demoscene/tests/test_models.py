@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.test import TestCase
+from taggit.models import Tag
 
-from demoscene.models import Releaser, Nick
+from demoscene.models import (
+    AccountProfile, BlacklistedTag, CaptchaQuestion, Membership, Nick, Releaser,
+    ReleaserExternalLink, TagDescription
+)
 from productions.models import Production
 
 
@@ -290,3 +295,48 @@ class TestReleaserNicks(TestCase):
         with self.assertRaises(Exception):
             gasman_nick.reassign_references_and_delete()
         self.assertTrue(Nick.objects.filter(name="Gasman").exists())
+
+
+class TestMembership(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_string_representation(self):
+        membership = Membership.objects.get(member__name='Gasman', group__name='Hooy-Program')
+        self.assertEqual(str(membership), "Gasman / Hooy-Program")
+
+
+class TestAccountProfile(TestCase):
+    def test_string_representation(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+        profile = AccountProfile(user=user)
+        self.assertEqual(str(profile), "testuser")
+
+        null_profile = AccountProfile()
+        self.assertEqual(str(null_profile), "(AccountProfile)")
+
+
+class TestExternalLink(TestCase):
+    def test_empty_link(self):
+        rel = ReleaserExternalLink()
+        rel.url = None
+        self.assertEqual(rel.link_class, None)
+        self.assertEqual(rel.parameter, None)
+
+
+class TestCaptchaQuestion(TestCase):
+    def test_string_representation(self):
+        q = CaptchaQuestion.objects.create(question="How many legs do cows have?", answer="4")
+        self.assertEqual(str(q), "How many legs do cows have?")
+
+
+class TestTagDescription(TestCase):
+    def test_string_representation(self):
+        tag = Tag.objects.create(name='cowbell')
+        desc = TagDescription(tag=tag, description="For soundtracks with cowbell in them")
+        self.assertEqual(str(desc), "cowbell")
+
+
+class TestBlacklistedTag(TestCase):
+    def test_string_representation(self):
+        desc = BlacklistedTag(tag="demo", message="srsly tho")
+        self.assertEqual(str(desc), "demo")

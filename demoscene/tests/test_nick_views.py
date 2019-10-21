@@ -24,6 +24,12 @@ class TestMatchNick(TestCase):
         response = self.client.get('/nicks/match/?q=gasman&autocomplete=false&sceners_only=true')
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get('/nicks/match/?q=gasman&autocomplete=true')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/nicks/match/?q=adsfasdfasdfsf&autocomplete=true')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestMatchByline(TestCase):
     fixtures = ['tests/gasman.json']
@@ -32,5 +38,11 @@ class TestMatchByline(TestCase):
         response = self.client.get('/nicks/byline_match/?q=gasman%2fhoo&autocomplete=true')
         self.assertEqual(response.status_code, 200)
 
+        response = self.client.get('/nicks/byline_match/?q=gasman&autocomplete=true')
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get('/nicks/byline_match/?q=gasman%2fhprg&autocomplete=false')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/nicks/byline_match/?q=zxcvzxcv&autocomplete=true')
         self.assertEqual(response.status_code, 200)

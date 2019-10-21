@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import, unicode_literals
 
 from io import BytesIO
@@ -286,6 +288,22 @@ class TestShowResultsFile(TestCase):
 
         response = self.client.get('/parties/%d/results_file/%d/' % (party.id, results_file.id))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You get a car! You get a car! Everybody gets a car!")
+
+    def test_get_with_unknown_encoding(self):
+        party = Party.objects.get(name="Forever 2e3")
+        results_file = ResultsFile.objects.create(
+            party=party,
+            file=File(
+                name="forever2e3.txt",
+                file=BytesIO(b"You get a c\xe5r! You get a c\xe5r! Everybody gets a c\xe5r!")
+            ),
+            filename="forever2e3.txt", filesize=100, sha1="1234123412341234"
+        )
+
+        response = self.client.get('/parties/%d/results_file/%d/' % (party.id, results_file.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, u"You get a cår! You get a cår! Everybody gets a cår!")
 
 
 class TestAutocomplete(TestCase):
