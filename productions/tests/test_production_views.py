@@ -67,6 +67,9 @@ class TestShowProduction(TestCase):
 
     def test_get(self):
         pondlife = Production.objects.get(title="Pondlife")
+        pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=True)
+        pondlife.links.create(link_class='AmigascneFile', parameter='/demos/pondlife.zip', is_download_link=True)
+        pondlife.links.create(link_class='PaduaOrgFile', parameter='/demos/pondlife.zip', is_download_link=True)
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
 

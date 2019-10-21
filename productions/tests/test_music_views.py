@@ -23,6 +23,7 @@ class TestShowMusic(TestCase):
 
     def test_get(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        cybrev.links.create(link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True)
         response = self.client.get('/music/%d/' % cybrev.id)
         self.assertEqual(response.status_code, 200)
 

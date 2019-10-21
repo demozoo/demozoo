@@ -1,0 +1,136 @@
+from __future__ import absolute_import, unicode_literals
+
+from django.test import TestCase
+
+from demoscene.models import Releaser, ReleaserExternalLink
+from parties.models import Party, PartyExternalLink
+from productions.models import Production, ProductionLink
+
+
+class TestLinkRecognition(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_sceneorg_folder(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        link = PartyExternalLink(party=forever2e3)
+        link.url = 'ftp://ftp.scene.org/pub/parties/2000/forever00'
+        self.assertEqual(link.link_class, 'SceneOrgFolder')
+        self.assertEqual(link.parameter, '/parties/2000/forever00/')
+        self.assertEqual(str(link.link), 'https://files.scene.org/browse/parties/2000/forever00/')
+
+    def test_fujiology_folder(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        link = PartyExternalLink(party=forever2e3)
+        link.url = 'ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology/parties/2000/forever00'
+        self.assertEqual(link.link_class, 'FujiologyFolder')
+        self.assertEqual(link.parameter, '/parties/2000/forever00/')
+
+    def test_pouet_party_needs_query_params(self):
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        link = PartyExternalLink(party=forever2e3)
+        link.url = 'https://www.pouet.net/party.php?when=2000'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://www.pouet.net/party.php?when=2000')
+
+    def test_artcity_artist(self):
+        gasman = Releaser.objects.get(name='Gasman')
+
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'http://artcity.bitfellas.org/index.php?a=artist&id=42'
+        self.assertEqual(link.link_class, 'ArtcityArtist')
+        self.assertEqual(link.parameter, '42')
+
+        # 'a' query param must be present
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'http://artcity.bitfellas.org/index.php?x=artist&id=42'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'http://artcity.bitfellas.org/index.php?x=artist&id=42')
+
+        # 'a' query param must be the expected value for the link type ('artist')
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'http://artcity.bitfellas.org/index.php?a=artichoke&id=42'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'http://artcity.bitfellas.org/index.php?a=artichoke&id=42')
+
+    def test_sceneorg_file(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=True)
+        link.url = 'https://www.scene.org/file_dl.php?url=ftp%3A//ftp.scene.org/pub/parties/2001/forever01/pondlife.zip'
+        self.assertEqual(link.link_class, 'SceneOrgFile')
+        self.assertEqual(link.parameter, '/parties/2001/forever01/pondlife.zip')
+        self.assertEqual(link.link.nl_url, 'ftp://ftp.scene.org/pub/parties/2001/forever01/pondlife.zip')
+        self.assertEqual(link.link.download_url, 'ftp://ftp.scene.org/pub/parties/2001/forever01/pondlife.zip')
+        self.assertEqual(link.link.nl_http_url, 'http://archive.scene.org/pub/parties/2001/forever01/pondlife.zip')
+        self.assertEqual(link.link.nl_https_url, 'https://archive.scene.org/pub/parties/2001/forever01/pondlife.zip')
+
+        link.url = 'https://www.scene.org/file_dl.php?foo=http%3A//example.com/pondlife.zip'
+        self.assertEqual(link.link_class, 'BaseUrl')
+
+        with self.assertRaises(TypeError):
+            link.url = b'https://unicode.example.com/'
+
+    def test_modland_file(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        link = ProductionLink(production=cybrev, is_download_link=True)
+        link.url = 'https://files.exotica.org.uk/modland/?file=artists/gasman/cybernoids_revenge.zip'
+        self.assertEqual(link.link_class, 'ModlandFile')
+        self.assertEqual(link.parameter, '/artists/gasman/cybernoids_revenge.zip')
+
+    def test_youtube_video(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw')
+        self.assertEqual(str(link.link), 'https://www.youtube.com/watch?v=ldoVS0idTBw')
+
+        link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=250'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw/250')
+        self.assertEqual(str(link.link), 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=250')
+
+        link.url = 'https://www.youtu.be/ldoVS0idTBw'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw')
+
+        link.url = 'https://www.youtu.be/ldoVS0idTBw?t=250'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw/250')
+
+        link.url = 'https://www.youtube.com/embed/ldoVS0idTBw'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw')
+
+        link.url = 'https://www.youtube.com/embed/ldoVS0idTBw?start=250'
+        self.assertEqual(link.link_class, 'YoutubeVideo')
+        self.assertEqual(link.parameter, 'ldoVS0idTBw/250')
+
+        link.url = 'https://www.youtube.com/watch?t=250'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://www.youtube.com/watch?t=250')
+
+    def test_discogs_release(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        link = ProductionLink(production=cybrev, is_download_link=True)
+        link.url = 'https://discogs.com/gasman/release/42'
+        self.assertEqual(link.link_class, 'DiscogsRelease')
+        self.assertEqual(link.parameter, '42/gasman')
+        self.assertEqual(str(link.link), 'http://www.discogs.com/gasman/release/42')
+
+    def test_github_directory(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'http://github.com/gasman/demos/tree/master/pondlife'
+        self.assertEqual(link.link_class, 'GithubDirectory')
+        self.assertEqual(link.parameter, 'gasman/demos/master/pondlife')
+        self.assertEqual(str(link.link), 'http://github.com/gasman/demos/tree/master/pondlife')
+
+    def test_bandcamp_track(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        link = ProductionLink(production=cybrev, is_download_link=True)
+        link.url = 'https://gasman.bandcamp.com/track/cybernoids-revenge'
+        self.assertEqual(link.link_class, 'BandcampTrack')
+        self.assertEqual(link.parameter, 'gasman/cybernoids-revenge')
+        self.assertEqual(str(link.link), 'https://gasman.bandcamp.com/track/cybernoids-revenge')
