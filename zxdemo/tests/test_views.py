@@ -6,7 +6,7 @@ import unittest
 from django.conf import settings
 from django.test import TestCase
 
-from demoscene.models import Releaser
+from demoscene.models import Nick, Releaser
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production
@@ -89,6 +89,10 @@ class TestProduction(TestCase):
 
     def test_get(self):
         pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='https://example.com/pondlife.zip', is_download_link=True,
+            description='TAP'
+        )
 
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
@@ -220,6 +224,14 @@ class TestParty(TestCase):
 
     def test_get(self):
         forever = Party.objects.get(name='Forever 2e3')
+        compo = forever.competitions.first()
+        prod = Production.objects.create(title="Not a Spectrum demo")
+        prod.platforms.add(Platform.objects.get(name='Windows'))
+        limp_ninja = Releaser.objects.create(name='Limp Ninja', is_group='t')
+        prod.author_nicks.add(limp_ninja.primary_nick)
+        prod.author_nicks.add(Nick.objects.get(name='Gasman'))
+        compo.placings.create(production=prod, ranking='2', position=2, score='42')
+
         response = self.client.get('/party/%d/' % forever.id)
         self.assertEqual(response.status_code, 200)
 
