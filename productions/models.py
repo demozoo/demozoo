@@ -466,6 +466,10 @@ class Screenshot(models.Model):
     # for diagnostics: ID of the mirror.models.Download instance that this screen was generated from
     source_download_id = models.IntegerField(editable=False, null=True, blank=True)
 
+    data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
+    janeway_id = models.IntegerField(editable=False, null=True, blank=True)
+    janeway_suffix = models.CharField(max_length=5, blank=True, null=True, editable=False)
+
     def thumb_dimensions_to_fit(self, width, height):
         # return the width and height to render the thumbnail image at in order to fit within the given
         # width/height while preserving aspect ratio
