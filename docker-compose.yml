@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  demozoo-web:
+    container_name: demozoo-web
+    build: .
+    ports:
+    - "8000:8000"
+    # working_dir: ./
+    volumes:
+      - type: bind
+        source: $PWD
+        target: /home/demozoo
