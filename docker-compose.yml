@@ -4,9 +4,14 @@ services:
     container_name: demozoo-web
     build: .
     ports:
-    - "8000:8000"
-    # working_dir: ./
+      - "8000:8000"
     volumes:
       - type: bind
         source: $PWD
         target: /home/demozoo
+  demozoo-db:
+    container_name: demozoo-db
+    image: postgres:10.10
+    restart: always
+    env_file:
+      - db.env
