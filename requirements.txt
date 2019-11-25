@@ -15,7 +15,7 @@ django-treebeard==4.1.0
 djangorestframework==3.5.4
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
-pyrecoil==0.2
+pyrecoil==0.3
 redis==2.10.5
 scrubber==1.6.1
 unidecode==0.04.14
