@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.0
-Django>=1.11.0,<=1.11.99
+Django>=1.11.27,<=1.11.99
 Markdown==2.4
 Pillow==2.2.2
 boto==2.8.0
