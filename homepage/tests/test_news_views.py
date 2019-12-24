@@ -9,6 +9,7 @@ from django.test import TestCase
 
 import PIL.Image
 
+from demoscene.tests.utils import MediaTestMixin
 from homepage.models import NewsStory, NewsImage
 
 
@@ -19,7 +20,7 @@ def get_test_image():
     return ImageFile(f, name='test.png')
 
 
-class TestAddNews(TestCase):
+class TestAddNews(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -49,7 +50,7 @@ class TestAddNews(TestCase):
         self.assertTrue(NewsStory.objects.filter(title='Those are the headlines').exists())
 
 
-class TestEditNews(TestCase):
+class TestEditNews(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -87,7 +88,7 @@ class TestEditNews(TestCase):
         self.assertTrue(NewsStory.objects.filter(title='Those are the edited headlines').exists())
 
 
-class TestDeleteNews(TestCase):
+class TestDeleteNews(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -131,7 +132,7 @@ class TestDeleteNews(TestCase):
         self.assertTrue(NewsStory.objects.filter(title="Peter, you've lost the news!").exists())
 
 
-class TestBrowseImages(TestCase):
+class TestBrowseImages(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')

@@ -12,6 +12,7 @@ from django.test import TestCase
 
 import PIL.Image
 
+from demoscene.tests.utils import MediaTestMixin
 from parties.models import Competition, Party, PartyExternalLink, PartySeries, ResultsFile
 from productions.models import Production
 
@@ -279,7 +280,7 @@ class TestAddCompetition(TestCase):
         )
 
 
-class TestShowResultsFile(TestCase):
+class TestShowResultsFile(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     def test_get(self):
@@ -389,7 +390,7 @@ class TestEditCompetition(TestCase):
         self.assertRedirects(response, '/competitions/%d/edit' % competition.id)
 
 
-class TestEditShareImage(TestCase):
+class TestEditShareImage(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):

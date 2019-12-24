@@ -9,6 +9,7 @@ from django.test import TestCase
 
 import PIL.Image
 
+from demoscene.tests.utils import MediaTestMixin
 from homepage.models import Banner, BannerImage
 
 
@@ -35,7 +36,7 @@ class TestBannerIndex(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestAddBanner(TestCase):
+class TestAddBanner(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -67,7 +68,7 @@ class TestAddBanner(TestCase):
         self.assertTrue(Banner.objects.filter(title='A new banner').exists())
 
 
-class TestEditBanner(TestCase):
+class TestEditBanner(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -109,7 +110,7 @@ class TestEditBanner(TestCase):
         self.assertTrue(Banner.objects.filter(title='An edited banner').exists())
 
 
-class TestDeleteBanner(TestCase):
+class TestDeleteBanner(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -155,7 +156,7 @@ class TestDeleteBanner(TestCase):
         self.assertTrue(Banner.objects.filter(title='A new banner').exists())
 
 
-class TestBrowseImages(TestCase):
+class TestBrowseImages(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')

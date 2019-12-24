@@ -14,6 +14,7 @@ from mock import patch
 import PIL.Image
 
 from demoscene.models import BlacklistedTag, Nick
+from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
@@ -1042,7 +1043,7 @@ class TestCarousel(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestEditInfoFiles(TestCase):
+class TestEditInfoFiles(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
@@ -1123,7 +1124,7 @@ class TestEditInfoFiles(TestCase):
         self.assertEqual(0, self.pondlife.info_files.count())
 
 
-class TestInfoFile(TestCase):
+class TestInfoFile(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
