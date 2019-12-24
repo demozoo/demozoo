@@ -432,16 +432,6 @@ class ZxdemoItem(BaseUrl):
     html_title_format = "%s on zxdemo.org"
 
 
-class BitworldDemo(BaseUrl):
-    canonical_format = "http://bitworld.bitfellas.org/demo.php?id=%s"
-    tests = [
-        querystring_match(r'https?://bitworld\.bitfellas\.org/demo\.php', 'id', re.I),
-    ]
-    html_link_class = "bitworld"
-    html_link_text = "BitWorld"
-    html_title_format = "%s on BitWorld"
-
-
 class KestraBitworldRelease(BaseUrl):
     canonical_format = "http://janeway.exotica.org.uk/release.php?id=%s"
     tests = [
@@ -788,16 +778,6 @@ class PouetParty(BaseUrl):
     html_link_class = "pouet"
     html_link_text = u"Pouët"
     html_title_format = u"%s on Pouët"
-
-
-class BitworldParty(BaseUrl):
-    canonical_format = "http://bitworld.bitfellas.org/party.php?id=%s"
-    tests = [
-        querystring_match(r'https?://bitworld\.bitfellas\.org/party\.php', 'id', re.I),
-    ]
-    html_link_class = "bitworld"
-    html_link_text = "BitWorld"
-    html_title_format = "%s on BitWorld"
 
 
 class CsdbEvent(BaseUrl):
@@ -1548,7 +1528,7 @@ RELEASER_LINK_TYPES = [
 ]
 
 PRODUCTION_LINK_TYPES = [
-    PouetProduction, CsdbRelease, ZxdemoItem, BitworldDemo,
+    PouetProduction, CsdbRelease, ZxdemoItem,
     YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
@@ -1567,7 +1547,7 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 ]
 
 PRODUCTION_EXTERNAL_LINK_TYPES = [
-    'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'BitworldDemo', 'YoutubeVideo',
+    'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'YoutubeVideo',
     'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
@@ -1577,7 +1557,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 ]
 
 PARTY_LINK_TYPES = [
-    DemopartyNetParty, SlengpungParty, PouetParty, BitworldParty,
+    DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
