@@ -134,3 +134,77 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BandcampTrack')
         self.assertEqual(link.parameter, 'gasman/cybernoids-revenge')
         self.assertEqual(str(link.link), 'https://gasman.bandcamp.com/track/cybernoids-revenge')
+
+
+class TestEmbeds(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_base_url(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'http://example.com/gfsdfgsdf'
+        self.assertEqual(link.link.get_embed_data(), None)
+
+    def test_youtube(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw'
+
+        oembed_url = link.link.get_oembed_url(max_width=800, max_height=600)
+        self.assertTrue(oembed_url.startswith('http://www.youtube.com/oembed'))
+        self.assertIn('format=json', oembed_url)
+        self.assertIn('maxwidth=800', oembed_url)
+        self.assertIn('maxheight=600', oembed_url)
+
+        embed_data = link.link.get_embed_data()
+        self.assertEqual(embed_data['video_width'], 1280)
+        self.assertEqual(embed_data['video_height'], 720)
+        self.assertEqual(embed_data['thumbnail_width'], 480)
+        self.assertEqual(embed_data['thumbnail_height'], 360)
+
+        embed_html = link.link.get_embed_html(640, 480)
+        self.assertEqual(
+            embed_html,
+            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+        )
+
+        link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=60'
+        self.assertEqual(link.parameter, 'ldoVS0idTBw/60')
+        embed_html = link.link.get_embed_html(640, 480)
+        self.assertEqual(
+            embed_html,
+            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=60&amp;autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+        )
+
+        link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=1m30'
+        self.assertEqual(link.parameter, 'ldoVS0idTBw/1m30')
+        embed_html = link.link.get_embed_html(640, 480)
+        self.assertEqual(
+            embed_html,
+            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=90&amp;autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+        )
+
+    def test_vimeo(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'https://vimeo.com/3156959'
+
+        oembed_url = link.link.get_oembed_url(max_width=800, max_height=600)
+        self.assertTrue(oembed_url.startswith('https://vimeo.com/api/oembed.json'))
+        self.assertIn('maxwidth=800', oembed_url)
+        self.assertIn('maxheight=600', oembed_url)
+
+        embed_data = link.link.get_embed_data()
+        self.assertEqual(embed_data['video_width'], 480)
+        self.assertEqual(embed_data['video_height'], 270)
+        self.assertEqual(embed_data['thumbnail_width'], 295)
+        self.assertEqual(embed_data['thumbnail_height'], 166)
+
+        embed_html = link.link.get_embed_html(640, 480)
+        self.assertEqual(
+            embed_html,
+            """<iframe width="640" height="480" src="https://player.vimeo.com/video/3156959?autoplay=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"""
+        )
