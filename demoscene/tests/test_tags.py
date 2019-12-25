@@ -1,6 +1,7 @@
 from fuzzy_date import FuzzyDate
 from demoscene.templatetags.demoscene_tags import date_range
 
+from django import forms, template
 from django.test import TestCase
 
 
@@ -78,3 +79,37 @@ class TestDateRangeTag(TestCase):
         end_date = FuzzyDate.parse("11 june 1991")
         result = date_range(start_date, end_date)
         self.assertEqual(result, "11th June 1990 - 11th June 1991")
+
+
+class TestSpawningFormsetTag(TestCase):
+    def test_spawningformset_without_param(self):
+        with self.assertRaises(template.TemplateSyntaxError):
+            template.Template('{% load spawning_formset %}{% spawningformset %}{% endspawningformset %}')
+
+    def test_spawningformset_with_undefined_var(self):
+        tpl = template.Template('{% load spawning_formset %}{% spawningformset foo %}{% endspawningformset %}')
+        context = template.Context({})
+        result = tpl.render(context)
+        self.assertEqual(result, '')
+
+    def test_spawningform_without_param(self):
+        with self.assertRaises(template.TemplateSyntaxError):
+            template.Template('{% load spawning_formset %}{% spawningformset foo %}{% spawningform %}{% endspawningform %}{% endspawningformset %}')
+
+    def test_spawningform_with_malformed_param(self):
+        with self.assertRaises(template.TemplateSyntaxError):
+            template.Template('{% load spawning_formset %}{% spawningformset foo %}{% spawningform bar %}{% endspawningform %}{% endspawningformset %}')
+
+    def test_spawningformset_without_delete(self):
+        class NameForm(forms.Form):
+            name = forms.CharField()
+
+        NameFormSet = forms.formset_factory(NameForm)
+        formset = NameFormSet(initial=[{'name': "Raymond Luxury-Yacht"}])
+
+        tpl = template.Template('{% load spawning_formset %}{% spawningformset formset %}{% spawningform as form %}{{ form.name }}{% endspawningform %}{% endspawningformset %}')
+        context = template.Context({'formset': formset})
+        result = tpl.render(context)
+
+        self.assertIn('<div class="formset_item">', result)
+        self.assertNotIn('<span class="delete">', result)
