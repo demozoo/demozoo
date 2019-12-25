@@ -157,6 +157,18 @@ class TestEditMembership(TestCase):
         edit = Edit.for_model(self.gasman, True).first()
         self.assertIn("set as ex-member", edit.description)
 
+    def test_post_change_member(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.post('/groups/%d/edit_membership/%d/' % (self.hooy_program.id, membership.id), {
+            'scener_nick_search': 'laesq',
+            'scener_nick_match_id': self.laesq.primary_nick.id,
+            'scener_nick_match_name': 'laesq',
+        })
+        self.assertRedirects(response, '/groups/%d/?editing=members' % self.hooy_program.id)
+        self.assertFalse(Membership.objects.get(member=self.laesq, group=self.hooy_program).is_current)
+        edit = Edit.for_model(self.hooy_program, True).first()
+        self.assertIn("changed member to LaesQ", edit.description)
+
     def test_post_make_current_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
         membership.is_current = False
@@ -250,6 +262,7 @@ class TestEditSubgroup(TestCase):
         self.hooy_program = Releaser.objects.get(name='Hooy-Program')
         self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
         self.raww_arse = Releaser.objects.get(name='Raww Arse')
+        self.limp_ninja = Releaser.objects.create(name='Limp Ninja', is_group=True)
 
     def test_locked(self):
         membership = Membership.objects.create(member=self.hooy_program, group=self.papaya_dezign)
@@ -288,6 +301,20 @@ class TestEditSubgroup(TestCase):
         self.assertTrue(Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse).is_current)
         edit = Edit.for_model(self.papaya_dezign, True).first()
         self.assertIn("set as current subgroup", edit.description)
+
+    def test_post_change_subgroup(self):
+        membership = Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse)
+
+        response = self.client.post('/groups/%d/edit_subgroup/%d/' % (self.raww_arse.id, membership.id), {
+            'subgroup_nick_search': 'limp ninja',
+            'subgroup_nick_match_id': self.limp_ninja.primary_nick.id,
+            'subgroup_nick_match_name': 'limp ninja',
+            'is_current': 'is_current'
+        })
+        self.assertRedirects(response, '/groups/%d/?editing=subgroups' % self.raww_arse.id)
+        self.assertTrue(Membership.objects.get(member=self.limp_ninja, group=self.raww_arse).is_current)
+        edit = Edit.for_model(self.raww_arse, True).first()
+        self.assertIn("changed subgroup to Limp Ninja", edit.description)
 
 
 class TestConvertToScener(TestCase):

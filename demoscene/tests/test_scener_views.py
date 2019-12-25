@@ -205,6 +205,7 @@ class TestEditMembership(TestCase):
         self.gasman = Releaser.objects.get(name='Gasman')
         self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
         self.hooy_program = Releaser.objects.get(name='Hooy-Program')
+        self.limp_ninja = Releaser.objects.create(name='Limp Ninja', is_group=True)
 
     def test_locked(self):
         membership = Membership.objects.get(member=self.yerzmyey, group=self.hooy_program)
@@ -243,6 +244,19 @@ class TestEditMembership(TestCase):
         self.assertFalse(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
         edit = Edit.for_model(self.gasman, True).first()
         self.assertIn("set as ex-member", edit.description)
+
+    def test_post_change_group(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.post('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id), {
+            'group_nick_search': 'limp ninja',
+            'group_nick_match_id': self.limp_ninja.primary_nick.id,
+            'group_nick_match_name': 'limp ninja',
+            'is_current': 'is_current',
+        })
+        self.assertRedirects(response, '/sceners/%d/?editing=groups' % self.gasman.id)
+        self.assertTrue(Membership.objects.get(member=self.gasman, group=self.limp_ninja).is_current)
+        edit = Edit.for_model(self.gasman, True).first()
+        self.assertIn("changed group to Limp Ninja", edit.description)
 
     def test_post_make_current_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
