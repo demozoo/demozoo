@@ -133,11 +133,6 @@ class NickWidget(forms.Widget):
         ]
         return mark_safe(u'<div class="' + root_classname + u'"' + root_attrs + u'>' + u''.join(output) + u'</div>')
 
-    def _has_changed(self, initial, data):
-        initial = NickLookup.from_value(initial)
-        data = NickLookup.from_value(data)
-        return data != initial
-
 
 class NickField(forms.Field):
     def __init__(self, sceners_only=False, groups_only=False, prefer_members_of=None, *args, **kwargs):
@@ -158,6 +153,12 @@ class NickField(forms.Field):
                 return clean_nick_selection
             else:
                 raise ValidationError("Please select the appropriate nick from the list.")
+
+    def has_changed(self, initial, data):
+        initial = NickLookup.from_value(initial)
+        data = NickLookup.from_value(data)
+        return data != initial
+
 
 # test stuff
 #

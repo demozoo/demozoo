@@ -115,11 +115,6 @@ class PartyWidget(forms.Widget):
         else:
             return party_lookup
 
-    def _has_changed(self, initial, data):
-        initial = PartyLookup.from_value(initial)
-        data = PartyLookup.from_value(data)
-        return data != initial
-
 
 class PartyField(forms.Field):
     widget = PartyWidget
@@ -135,3 +130,8 @@ class PartyField(forms.Field):
 
             party_lookup.validate()
             return party_lookup
+
+    def has_changed(self, initial, data):
+        initial = PartyLookup.from_value(initial)
+        data = PartyLookup.from_value(data)
+        return data != initial

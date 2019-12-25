@@ -173,6 +173,18 @@ class TestEditMembership(TestCase):
         edit = Edit.for_model(self.gasman, True).first()
         self.assertIn("set as current member", edit.description)
 
+        # no change => no edit log entry added
+        edit_count = Edit.for_model(self.gasman, True).count()
+
+        response = self.client.post('/groups/%d/edit_membership/%d/' % (self.hooy_program.id, membership.id), {
+            'scener_nick_search': 'gasman',
+            'scener_nick_match_id': self.gasman.primary_nick.id,
+            'scener_nick_match_name': 'gasman',
+            'is_current': 'is_current',
+        })
+        self.assertRedirects(response, '/groups/%d/?editing=members' % self.hooy_program.id)
+        self.assertEqual(edit_count, Edit.for_model(self.gasman, True).count())
+
 
 class TestAddSubgroup(TestCase):
     fixtures = ['tests/gasman.json']

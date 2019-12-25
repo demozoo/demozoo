@@ -158,11 +158,6 @@ class ProductionWidget(forms.Widget):
         ]
         return mark_safe(u''.join(output))
 
-    def _has_changed(self, initial, data):
-        initial = ProductionSelection.from_value(initial)
-        data = ProductionSelection.from_value(data)
-        return data != initial
-
 
 class ProductionField(forms.Field):
     def __init__(self, *args, **kwargs):
@@ -186,3 +181,8 @@ class ProductionField(forms.Field):
             value.byline = self.byline_field.clean(value.byline_lookup)
 
         return super(ProductionField, self).clean(value)
+
+    def has_changed(self, initial, data):
+        initial = ProductionSelection.from_value(initial)
+        data = ProductionSelection.from_value(data)
+        return data != initial

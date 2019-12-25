@@ -181,11 +181,6 @@ class BylineWidget(forms.Widget):
         root_classname = u'byline_field'
         return mark_safe(u'<div class="' + root_classname + u'">' + u''.join(output) + u'</div>')
 
-    def _has_changed(self, initial, data):
-        initial = BylineLookup.from_value(initial)
-        data = BylineLookup.from_value(data)
-        return initial != data
-
 
 class BylineField(forms.Field):
     def __init__(self, *args, **kwargs):
@@ -228,3 +223,8 @@ class BylineField(forms.Field):
 
             return Byline(
                 clean_author_nick_selections, clean_affiliation_nick_selections)
+
+    def has_changed(self, initial, data):
+        initial = BylineLookup.from_value(initial)
+        data = BylineLookup.from_value(data)
+        return initial != data

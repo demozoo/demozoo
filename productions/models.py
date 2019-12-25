@@ -14,7 +14,7 @@ import random
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
-from lib.fuzzy_date import FuzzyDate
+from fuzzy_date import FuzzyDate
 from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup

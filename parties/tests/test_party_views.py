@@ -12,6 +12,7 @@ from django.test import TestCase
 
 import PIL.Image
 
+from demoscene.models import Edit
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Competition, Party, PartyExternalLink, PartySeries, ResultsFile
 from productions.models import Production
@@ -130,6 +131,22 @@ class TestEditParty(TestCase):
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(Party.objects.get(id=self.party.id).name, "Forever 2000")
         self.assertEqual(PartySeries.objects.get(name='Forever').website, 'http://forever.zeroteam.sk/')
+
+        edit = Edit.for_model(self.party, True).first()
+        self.assertIn("Set name to 'Forever 2000'", edit.description)
+
+        # no change => no edit log entry added
+        edit_count = Edit.for_model(self.party, True).count()
+
+        response = self.client.post('/parties/%d/edit/' % self.party.id, {
+            'name': 'Forever 2000',
+            'start_date': '17 march 2000',
+            'end_date': '19 march 2000',
+            'party_series_name': 'Forever',
+            'website': 'http://forever.zeroteam.sk/',
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(edit_count, Edit.for_model(self.party, True).count())
 
 
 class TestEditNotes(TestCase):
@@ -347,6 +364,23 @@ class TestEditInvitations(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(self.party.invitations.count(), 1)
+
+        edit = Edit.for_model(self.party, True).first()
+        self.assertEqual("Set invitations to Pondlife", edit.description)
+
+        # no change => no edit log entry added
+        edit_count = Edit.for_model(self.party, True).count()
+        response = self.client.post('/parties/%d/edit_invitations/' % self.party.id, {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-production_id': pondlife.id,
+            'form-0-production_title': 'Pondlife',
+            'form-0-production_byline_search': ''
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(edit_count, Edit.for_model(self.party, True).count())
 
 
 class TestEditReleases(TestCase):

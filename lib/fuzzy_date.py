@@ -7,7 +7,7 @@ YEAR_REGEX = re.compile(r"^\s*\d{4}\s*$")
 MONTH_REGEX = re.compile(r"^\s*(%s|%s\W+\d{4}|\d{4}\W+%s|\d{1,2}\W+\d{4}|\d{4}\W+\d{1,2})\s*$" % (MONTHS, MONTHS, MONTHS), re.I)
 
 
-class FuzzyDate():
+class FuzzyDate(object):
     def __init__(self, date, precision):
         self.date = date
         if precision == 'd' or precision == 'day':

@@ -5,13 +5,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 
-class FuzzyDateInput(forms.DateInput):
-    def _has_changed(self, initial, data):
-        return initial != FuzzyDate.parse(data)
-
-
 class FuzzyDateField(forms.Field):
-    widget = FuzzyDateInput(format='%e %b %Y', attrs={'class': 'date'})
+    widget = forms.DateInput(format='%e %b %Y', attrs={'class': 'date'})
 
     default_error_messages = {
         'invalid': _('Enter a valid date.'),
@@ -35,3 +30,6 @@ class FuzzyDateField(forms.Field):
             raise ValidationError(self.error_messages['invalid'])
 
         return result
+
+    def has_changed(self, initial, data):
+        return initial != FuzzyDate.parse(data)

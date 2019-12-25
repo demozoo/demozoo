@@ -13,7 +13,7 @@ from django.test import TestCase
 from mock import patch
 import PIL.Image
 
-from demoscene.models import BlacklistedTag, Nick
+from demoscene.models import BlacklistedTag, Edit, Nick
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
 from platforms.models import Platform
@@ -200,6 +200,31 @@ class TestEditCoreDetails(TestCase):
         self.assertRedirects(response, '/productions/%d/' % pondlife.id)
         self.assertTrue(Production.objects.filter(title='P0ndlife').exists())
         self.assertEqual(pondlife.invitation_parties.count(), 1)
+
+        edit = Edit.for_model(pondlife, True).first()
+        self.assertIn("Set title to 'P0ndlife'", edit.description)
+
+        # no change => no edit log entry added
+        edit_count = Edit.for_model(pondlife, True).count()
+
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': 'Forever 2e3',
+            'form-0-party_party_id': Party.objects.get(name='Forever 2e3').id,
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        edit = Edit.for_model(pondlife, True).first()
+        self.assertEqual(edit_count, Edit.for_model(pondlife, True).count())
 
     def test_post_unset_invitation(self):
         pondlife = Production.objects.get(title='Pondlife')
@@ -856,6 +881,9 @@ class TestEditSoundtracks(TestCase):
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertEqual(self.pondlife.soundtrack_links.count(), 1)
         self.assertEqual(self.pondlife.soundtrack_links.first().soundtrack.title, 'Fantasia')
+
+        edit = Edit.for_model(self.pondlife, True).first()
+        self.assertIn("Edited soundtrack details for Pondlife", edit.description)
 
 
 class TestEditPackContents(TestCase):
