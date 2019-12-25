@@ -216,6 +216,22 @@ class TestEditMembership(TestCase):
         response = self.client.get('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id))
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_differentiator(self):
+        hprg_nick = self.hooy_program.primary_nick
+        hprg_nick.differentiator = 'ZX'
+        hprg_nick.save()
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.get('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_alias(self):
+        ra = Releaser.objects.get(name='Raww Arse').primary_nick
+        ra.variants.create(name='Hooy-Program')
+
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.get('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id))
+        self.assertEqual(response.status_code, 200)
+
     def test_post_make_ex_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
         response = self.client.post('/sceners/%d/edit_membership/%d/' % (self.gasman.id, membership.id), {

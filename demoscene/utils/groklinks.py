@@ -1584,7 +1584,3 @@ def grok_link_by_types(urlstring, link_types):
         link = link_type.match(urlstring, url)
         if link:
             return link
-
-
-def grok_production_link(urlstring):
-    return grok_link_by_types(urlstring, PRODUCTION_LINK_TYPES)

@@ -127,6 +127,31 @@ class TestCreateProduction(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/' % Production.objects.get(title='Ultraviolet').id)
 
+    def test_post_with_unspaced_author_separators(self):
+        response = self.client.post('/productions/new/', {
+            'title': 'Ultraviolet',
+            'byline_search': 'Gasman+Yerzmyey / Hooy-Program+Raww Arse',
+            'byline_author_match_0_id': Nick.objects.get(name='Gasman').id,
+            'byline_author_match_0_name': 'Gasman',
+            'byline_author_match_1_id': Nick.objects.get(name='Yerzmyey').id,
+            'byline_author_match_1_name': 'Yerzmyey',
+            'byline_author_affiliation_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_affiliation_match_0_name': 'Hooy-Program',
+            'byline_author_affiliation_match_1_id': Nick.objects.get(name='Raww Arse').id,
+            'byline_author_affiliation_match_1_name': 'Raww Arse',
+            'release_date': 'march 2017',
+            'type': ProductionType.objects.get(name='Demo').id,
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'links-TOTAL_FORMS': 0,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+        })
+        ultraviolet = Production.objects.get(title='Ultraviolet')
+        self.assertRedirects(response, '/productions/%d/' % ultraviolet.id)
+        self.assertIn(Nick.objects.get(name='Yerzmyey'), ultraviolet.author_nicks.all())
+        self.assertIn(Nick.objects.get(name='Hooy-Program'), ultraviolet.author_affiliation_nicks.all())
+
 
 class TestEditCoreDetails(TestCase):
     fixtures = ['tests/gasman.json']
@@ -340,7 +365,7 @@ class TestEditExternalLinks(TestCase):
         )
 
 
-class TestEdiDownloadLinks(TestCase):
+class TestEditDownloadLinks(TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
@@ -644,6 +669,44 @@ class TestAddCredit(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
+
+    def test_post_new_scener(self):
+        pondlife = Production.objects.get(title='Pondlife')
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': 'Justinas',
+            'nick_match_id': 'newscener',
+            'nick_match_name': 'Justinas',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 5',
+        })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
+        self.assertEqual(1, pondlife.credits.filter(nick__name='Justinas').count())
+        self.assertFalse(Nick.objects.get(name='Justinas').releaser.is_group)
+
+    def test_post_new_group(self):
+        pondlife = Production.objects.get(title='Pondlife')
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': 'ZeroTeam',
+            'nick_match_id': 'newgroup',
+            'nick_match_name': 'ZeroTeam',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 5',
+        })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
+        self.assertEqual(1, pondlife.credits.filter(nick__name='ZeroTeam').count())
+        self.assertTrue(Nick.objects.get(name='ZeroTeam').releaser.is_group)
 
     def test_post_ajax(self):
         pondlife = Production.objects.get(title='Pondlife')
