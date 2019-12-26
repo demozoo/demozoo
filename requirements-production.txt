@@ -10,7 +10,7 @@ django-compressor>=2.1,<2.2
 django-cors-headers==1.1.0
 django-taggit==0.22.0
 django-treebeard==4.1.0
-djangorestframework==3.5.4
+djangorestframework==3.9.1
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
 pyrecoil==0.2
