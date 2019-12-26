@@ -21,7 +21,8 @@ def on_m2m_changed(sender, **kwargs):
     model = kwargs['model']
     if model is Tag:
         transaction.on_commit(make_updater(instance))
-    elif isinstance(instance, Tag):
+    elif isinstance(instance, Tag):  # pragma: no cover
+        # only applicable to tag relations with non-generic TaggedItem through models?
         for obj in model.objects.filter(pk__in=kwargs['pk_set']):
             if hasattr(obj, 'index_components'):
                 transaction.on_commit(make_updater(obj))

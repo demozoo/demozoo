@@ -761,6 +761,7 @@ class TestEditCredit(TestCase):
         self.client.login(username='testuser', password='12345')
         self.pondlife = Production.objects.get(title='Pondlife')
         self.gasman = Nick.objects.get(name='Gasman')
+        self.laesq = Nick.objects.get(name='LaesQ')
         self.pondlife_credit = self.pondlife.credits.get(nick=self.gasman)
 
     def test_locked(self):
@@ -806,6 +807,31 @@ class TestEditCredit(TestCase):
         )
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % self.pondlife.id)
         self.assertEqual('Music', pondlife.credits.get(nick=self.gasman).category)
+
+    def test_change_nick(self):
+        pondlife = Production.objects.get(title='Pondlife')
+
+        response = self.client.post(
+            '/productions/%d/edit_credit/%d/' % (self.pondlife.id, self.pondlife_credit.id),
+            {
+                'nick_search': 'laesq',
+                'nick_match_id': self.laesq.id,
+                'nick_match_name': 'laesq',
+                'credit-TOTAL_FORMS': 2,
+                'credit-INITIAL_FORMS': 1,
+                'credit-MIN_NUM_FORMS': 0,
+                'credit-MAX_NUM_FORMS': 1000,
+                'credit-0-id': self.pondlife_credit.id,
+                'credit-0-category': 'Code',
+                'credit-0-role': '',
+                'credit-0-DELETE': 'credit-0-DELETE',
+                'credit-1-id': '',
+                'credit-1-category': 'Music',
+                'credit-1-role': 'Part 1',
+            }
+        )
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % self.pondlife.id)
+        self.assertEqual('Music', pondlife.credits.get(nick=self.laesq).category)
 
 
 class TestDeleteCredit(TestCase):

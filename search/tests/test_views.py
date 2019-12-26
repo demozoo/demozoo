@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 
+from taggit.models import Tag, TaggedItem
+
 from demoscene.models import Nick, Releaser
 from productions.models import Production
 
@@ -15,9 +17,14 @@ class TestSearch(TestCase):
         gasman = Releaser.objects.get(name='Gasman')
         gasman.notes = "Gasman once made a demo called Pondlife."
         gasman.save()
+
+        call_command('reindex')
+
         pondlife = Production.objects.get(title='Pondlife')
         pondlife.tags.add('fish')
-        call_command('reindex')
+
+        madrielle = Production.objects.get(title='Madrielle')
+        TaggedItem.objects.create(content_object=madrielle, tag=Tag.objects.get(name='fish'))
 
     def test_get(self):
         response = self.client.get('/search/?q=pondlife')
@@ -36,10 +43,9 @@ class TestSearch(TestCase):
         self.assertContains(response, "Pondlife")
         self.assertNotContains(response, "demo called <b>Pondlife</b>")
 
-        response = self.client.get('/search/?q=pondlife+tagged:fish')
+        response = self.client.get('/search/?q=madrielle+tagged:fish')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Pondlife")
-        self.assertNotContains(response, "demo called <b>Pondlife</b>")
+        self.assertContains(response, "Madrielle")
 
     def test_admin_search(self):
         response = self.client.get('/search/?q=westcott')
