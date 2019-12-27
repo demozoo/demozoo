@@ -97,6 +97,42 @@ class TestCreateParty(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/' % Party.objects.get(name='Revision 2011').id)
 
+    def test_inherit_party_series_data(self):
+        ps = PartySeries.objects.get(name='Forever')
+        ps.website = "http://forever8.net/"
+        ps.twitter_username = "forever8party"
+        ps.pouet_party_id = 181
+        ps.save()
+
+        response = self.client.post('/parties/new/', {
+            'name': 'Forever 2005',
+            'start_date': '18 mar 2005',
+            'end_date': '20 mar 2005',
+            'party_series_name': 'Forever',
+            'scene_org_folder': '/parties/2005/forever05/'
+        })
+        party = Party.objects.get(name='Forever 2005')
+        self.assertRedirects(response, '/parties/%d/' % party.id)
+        self.assertEqual(party.website, "http://forever8.net/")
+        self.assertEqual(party.external_links.get(link_class='TwitterAccount').parameter, 'forever8party')
+        self.assertEqual(party.external_links.get(link_class='PouetParty').parameter, '181/2005')
+        self.assertEqual(party.external_links.get(link_class='SceneOrgFolder').parameter, '/parties/2005/forever05/')
+
+    def test_party_series_inherits_website(self):
+        ps = PartySeries.objects.get(name='Forever')
+        ps.save()
+
+        response = self.client.post('/parties/new/', {
+            'name': 'Forever 2005',
+            'start_date': '18 mar 2005',
+            'end_date': '20 mar 2005',
+            'party_series_name': 'Forever',
+            'website': 'http://forever8.net/'
+        })
+        party = Party.objects.get(name='Forever 2005')
+        self.assertRedirects(response, '/parties/%d/' % party.id)
+        self.assertEqual(PartySeries.objects.get(name='Forever').website, "http://forever8.net/")
+
     def test_post_ajax(self):
         response = self.client.post('/parties/new/', {
             'name': 'Revision 2011',
@@ -147,6 +183,25 @@ class TestEditParty(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(edit_count, Edit.for_model(self.party, True).count())
+
+    def test_edit_all_fields(self):
+        response = self.client.post('/parties/%d/edit/' % self.party.id, {
+            'name': 'Forever 2000',
+            'start_date': '18 march 2000',
+            'end_date': '20 march 2000',
+            'party_series_name': 'Forever',
+            'tagline': "doo doo doo do do doo",
+            'location': 'Oxford',
+            'website': 'http://forever8.net/',
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(Party.objects.get(id=self.party.id).name, "Forever 2000")
+
+        edit = Edit.for_model(self.party, True).first()
+        self.assertIn("start date to 18 March 2000", edit.description)
+        self.assertIn("end date to 20 March 2000", edit.description)
+        self.assertIn("tagline to 'doo doo doo do do doo'", edit.description)
+        self.assertIn("location to Oxford", edit.description)
 
 
 class TestEditNotes(TestCase):
@@ -267,11 +322,16 @@ class TestEditSeries(TestCase):
 
     def test_post(self):
         response = self.client.post('/parties/series/%d/edit/' % self.party_series.id, {
-            'name': "Forever",
+            'name': "For8ver",
             'website': 'http://forever.zeroteam.sk/',
+            'twitter_username': 'forever8party',
+            'pouet_party_id': 181,
         })
         self.assertRedirects(response, '/parties/series/%d/' % self.party_series.id)
-        self.assertEqual(PartySeries.objects.get(id=self.party_series.id).website, 'http://forever.zeroteam.sk/')
+        ps = PartySeries.objects.get(id=self.party_series.id)
+        self.assertEqual(ps.website, 'http://forever.zeroteam.sk/')
+        self.assertEqual(ps.twitter_username, 'forever8party')
+        self.assertEqual(ps.pouet_party_id, 181)
 
 
 class TestAddCompetition(TestCase):

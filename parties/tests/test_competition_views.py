@@ -44,8 +44,8 @@ class TestEditCompetition(TestCase):
         response = self.client.post('/competitions/%d/edit' % self.competition.id, {
             'name': "Speccy 1K Intro",
             'shown_date': "18 march 2000",
-            'platform': '',
-            'production_type': '',
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'production_type': ProductionType.objects.get(name='1K Intro').id,
         })
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertTrue(Competition.objects.filter(party__name="Forever 2e3", name="Speccy 1K Intro").exists())
