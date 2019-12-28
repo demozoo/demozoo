@@ -22,7 +22,6 @@ class PartyLookup():
         if self.redisplay:
             # force a redisplay of the form; i.e. produce a ValidationError whatever happens
             if not self.search_term:
-                self.is_empty = True
                 self.validation_error = ValidationError("No party selected")
             else:
                 # look for a party matching the search term
@@ -81,7 +80,7 @@ class PartyLookup():
         elif isinstance(value, Party):
             return PartyLookup(search_term=value.name, party_id=value.id, redisplay=False)
         else:
-            raise Exception("Don't know how to handle %s as a party lookup" % repr(value))
+            raise ValidationError("Don't know how to handle %s as a party lookup" % repr(value))
 
 
 class PartyWidget(forms.Widget):

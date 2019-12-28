@@ -198,7 +198,7 @@ class TestEditCoreDetails(TestCase):
             'form-0-party_party_id': Party.objects.get(name='Forever 2e3').id,
         })
         self.assertRedirects(response, '/productions/%d/' % pondlife.id)
-        self.assertTrue(Production.objects.filter(title='P0ndlife').exists())
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'P0ndlife')
         self.assertEqual(pondlife.invitation_parties.count(), 1)
 
         edit = Edit.for_model(pondlife, True).first()
@@ -247,8 +247,159 @@ class TestEditCoreDetails(TestCase):
             'form-0-DELETE': 'form-0-DELETE'
         })
         self.assertRedirects(response, '/productions/%d/' % pondlife.id)
-        self.assertTrue(Production.objects.filter(title='P0ndlife').exists())
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'P0ndlife')
         self.assertEqual(pondlife.invitation_parties.count(), 0)
+
+    def test_post_with_valid_party_lookup(self):
+        # If the "Find party" button (visible without JS) is pressed, redisplay the form even if
+        # the submission is valid
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': 'Forever 2e3',
+            'form-0-party_party_id': '',
+            'form-0-party_lookup': "Find party",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Party &#39;Forever 2e3&#39; found.")
+        self.assertContains(
+            response,
+            '<input type="hidden" name="form-0-party_party_id" class="party_field_party_id" id="id_form-0-party" value="%d">' % Party.objects.get(name='Forever 2e3').id,
+            html=True
+        )
+        self.assertContains(
+            response,
+            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            html=True
+        )
+
+        # changes not committed yet
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'Pondlife')
+        self.assertEqual(pondlife.invitation_parties.count(), 0)
+
+    def test_post_with_unknown_party_lookup(self):
+        # If the "Find party" button (visible without JS) is pressed, redisplay the form even if
+        # the submission is valid
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': 'inerciademoparty 1963',
+            'form-0-party_party_id': '',
+            'form-0-party_lookup': "Find party",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
+        self.assertContains(
+            response,
+            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            html=True
+        )
+
+        # changes not committed yet
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'Pondlife')
+        self.assertEqual(pondlife.invitation_parties.count(), 0)
+
+    def test_post_with_empty_party_lookup(self):
+        # If the "Find party" button (visible without JS) is pressed, redisplay the form even if
+        # the submission is valid
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': '',
+            'form-0-party_party_id': '',
+            'form-0-party_lookup': "Find party",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No party selected")
+        self.assertContains(
+            response,
+            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            html=True
+        )
+
+        # changes not committed yet
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'Pondlife')
+        self.assertEqual(pondlife.invitation_parties.count(), 0)
+
+    def test_post_with_bad_party_id_and_name(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': 'inerciademoparty 1963',
+            'form-0-party_party_id': '9999',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
+        self.assertContains(
+            response,
+            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            html=True
+        )
+
+        # changes not committed yet
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'Pondlife')
+        self.assertEqual(pondlife.invitation_parties.count(), 0)
+
+    def test_post_with_bad_party_id_but_good_name(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': Platform.objects.get(name='ZX Spectrum').id,
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-party_search': 'forever 2e3',
+            'form-0-party_party_id': '9999',
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        self.assertEqual(Production.objects.get(id=pondlife.id).title, 'P0ndlife')
+        self.assertEqual(pondlife.invitation_parties.count(), 1)
 
 
 class TestEditNotes(TestCase):
