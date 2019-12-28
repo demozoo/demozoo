@@ -68,7 +68,6 @@ def generic_results_txt(results_text, ranked_result_re, unranked_result_re, auth
             # treat this as a continuation of the previous entry
             if len(rough_rows) == 0:
                 continue
-            print "appending to: %s" % repr(rough_rows[-1][2])
             rough_rows[-1][2] += ' ' + line.strip()
         elif indent > ranking_indent:
             # treat this as a new row with the same ranking as the previous entry

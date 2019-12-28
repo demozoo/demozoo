@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from parties.models import Competition, Party
 from platforms.models import Platform
-from productions.models import ProductionType
+from productions.models import Production, ProductionType
 
 
 class TestShowCompetition(TestCase):
@@ -104,10 +104,27 @@ class TestImportResults(TestCase):
 01 108 Artifice by SerzhSoft
 02  96 Madrielle by Gasman
 03  77 Mathricks by 3SC
+04  60 Uncredited Goose Demo
+"""
+        })
+        self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
+        self.assertEqual(self.competition.placings.count(), 4)
+        self.assertEqual(self.competition.placings.get(position=3).production.title, 'Mathricks')
+        self.assertEqual(self.competition.placings.get(position=4).production.title, 'Uncredited Goose Demo')
+
+    def test_import_pm2_with_continuations(self):
+        response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
+            'format': 'pm2',
+            'results': """
+01 108 Artifice by SerzhSoft
+02  96 Madrielle by Gasman
+03  77 A horse, a horse, my kingdom for a horse or
+       a Scotsman on a horse by Hooy-Program
 """
         })
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
+        self.assertTrue(Production.objects.filter(title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse").exists())
 
     def test_import_wuhu(self):
         response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
@@ -120,6 +137,38 @@ class TestImportResults(TestCase):
         })
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
+
+    def test_import_wuhu_with_split_placing_and_continuations(self):
+        response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
+            'format': 'wuhu',
+            'results': """
+                            This is not a continuation
+        #06    96 pts    A missing placing
+    1.  #04   108 pts    Artifice - SerzhSoft
+    2.  #05    96 pts    Madrielle - Gasman
+        #06    96 pts    Mathricks - 3SC
+        #06    96 btc    Not a real entry
+    4.  #01    66 pts    A horse, a horse, my kingdom for a horse or
+                            a Scotsman on a horse - Hooy-Program
+    6.  #06    96 btc    Not a real entry either
+"""
+        })
+        self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
+        self.assertEqual(self.competition.placings.count(), 4)
+        self.assertEqual(self.competition.placings.get(production__title='Mathricks').ranking, '2')
+        self.assertTrue(Production.objects.filter(title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse").exists())
+
+    def test_import_broken_wuhu(self):
+        response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
+            'format': 'wuhu',
+            'results': """
+3 french hens
+2 turtle doves
+1 partridge in a pear tree
+"""
+        })
+        self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
+        self.assertEqual(self.competition.placings.count(), 0)
 
     def test_import_unknown_format(self):
         response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
