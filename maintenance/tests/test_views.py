@@ -14,7 +14,8 @@ from demoscene.models import Releaser
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember, Download, DownloadBlob
 from parties.models import Party, ResultsFile
-from productions.models import Production, ProductionLink
+from platforms.models import Platform
+from productions.models import Production, ProductionLink, ProductionType
 from sceneorg.models import Directory
 
 
@@ -31,6 +32,11 @@ class TestReports(TestCase):
 
     def test_prods_without_screenshots(self):
         response = self.client.get('/maintenance/prods_without_screenshots')
+        self.assertEqual(response.status_code, 200)
+
+        zx = Platform.objects.get(name='ZX Spectrum')
+        demo = ProductionType.objects.get(name='Demo')
+        response = self.client.get('/maintenance/prods_without_screenshots?platform=%d&production_type=%d' % (zx.id, demo.id))
         self.assertEqual(response.status_code, 200)
 
         # test with invalid filter form

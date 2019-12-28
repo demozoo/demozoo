@@ -14,6 +14,8 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
 
+REDIS_URL = 'redis://localhost:6379/2'
+
 
 # set up mock opener for urllib2
 
