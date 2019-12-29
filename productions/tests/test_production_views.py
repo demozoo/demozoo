@@ -68,11 +68,23 @@ class TestShowProduction(TestCase):
 
     def test_get(self):
         pondlife = Production.objects.get(title="Pondlife")
+        pondlife.screenshots.create()
         pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=True)
         pondlife.links.create(link_class='AmigascneFile', parameter='/demos/pondlife.zip', is_download_link=True)
         pondlife.links.create(link_class='PaduaOrgFile', parameter='/demos/pondlife.zip', is_download_link=True)
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '/productions/%d/screenshots/edit/' % pondlife.id)
+
+    def test_get_as_admin(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+
+        pondlife = Production.objects.get(title="Pondlife")
+        pondlife.screenshots.create()
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '/productions/%d/screenshots/edit/' % pondlife.id)
 
     def test_get_pack(self):
         pondlife = Production.objects.get(title="Pondlife")
