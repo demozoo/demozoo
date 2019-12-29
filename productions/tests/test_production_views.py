@@ -127,6 +127,23 @@ class TestCreateProduction(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/' % Production.objects.get(title='Ultraviolet').id)
 
+    def test_post_empty_title(self):
+        response = self.client.post('/productions/new/', {
+            'title': '     ',
+            'byline_search': 'Gasman',
+            'byline_author_match_0_id': Nick.objects.get(name='Gasman').id,
+            'byline_author_match_0_name': 'Gasman',
+            'release_date': 'march 2017',
+            'type': ProductionType.objects.get(name='Demo').id,
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'links-TOTAL_FORMS': 0,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
     def test_post_with_unspaced_author_separators(self):
         response = self.client.post('/productions/new/', {
             'title': 'Ultraviolet',
@@ -401,6 +418,128 @@ class TestEditCoreDetails(TestCase):
         self.assertEqual(Production.objects.get(id=pondlife.id).title, 'P0ndlife')
         self.assertEqual(pondlife.invitation_parties.count(), 1)
 
+    def test_set_type_and_platform(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'Pondlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': [
+                ProductionType.objects.get(name='Intro').id,
+                ProductionType.objects.get(name='Musicdisk').id,
+            ],
+            'platforms': Platform.objects.get(name='Commodore 64').id,
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        log_message = Edit.for_model(pondlife).first().description
+        self.assertIn('types to Intro, Musicdisk', log_message)
+        self.assertIn('platform to Commodore 64', log_message)
+
+    def test_unset_type_and_platform(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'Pondlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        log_message = Edit.for_model(pondlife).first().description
+        self.assertIn('type to none', log_message)
+        self.assertIn('platform to none', log_message)
+
+    def test_set_empty_title(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': '    ',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
+    def test_set_empty_byline(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'Pondlife',
+            'byline_search': '',
+            'release_date': '18 March 2001',
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+
+    def test_set_music_type_and_platform(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        response = self.client.post('/productions/%d/edit_core_details/' % cybrev.id, {
+            'title': "Cybernoid's Revenge",
+            'byline_search': 'Gasman',
+            'byline_author_match_0_id': Nick.objects.get(name='Gasman').id,
+            'byline_author_match_0_name': 'Gasman',
+            'release_date': '18 March 2001',
+            'type': ProductionType.objects.get(name='Streaming Music').id,
+            'platforms': Platform.objects.get(name='Commodore 64').id,
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/music/%d/' % cybrev.id)
+        log_message = Edit.for_model(cybrev).first().description
+        self.assertIn('type to Streaming Music', log_message)
+        self.assertIn('platform to Commodore 64', log_message)
+
+    def test_set_music_without_initial_type(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        cybrev.types.clear()
+        response = self.client.get('/productions/%d/edit_core_details/' % cybrev.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_graphics_without_initial_type(self):
+        skyrider = Production.objects.get(title="Skyrider")
+        skyrider.types.clear()
+        response = self.client.get('/productions/%d/edit_core_details/' % skyrider.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_set_graphics_type_and_platform(self):
+        skyrider = Production.objects.get(title="Skyrider")
+        response = self.client.post('/productions/%d/edit_core_details/' % skyrider.id, {
+            'title': "Skyrider",
+            'byline_search': 'Gasman',
+            'byline_author_match_0_id': Nick.objects.get(name='Gasman').id,
+            'byline_author_match_0_name': 'Gasman',
+            'release_date': '18 March 2001',
+            'type': ProductionType.objects.get(name='Photo').id,
+            'platforms': Platform.objects.get(name='Commodore 64').id,
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/graphics/%d/' % skyrider.id)
+        log_message = Edit.for_model(skyrider).first().description
+        self.assertIn('type to Photo', log_message)
+        self.assertIn('platform to Commodore 64', log_message)
+
 
 class TestEditNotes(TestCase):
     fixtures = ['tests/gasman.json']
@@ -540,6 +679,20 @@ class TestEditExternalLinks(TestCase):
             1
         )
 
+    def test_post_download_link(self):
+        response = self.client.post('/productions/%d/edit_external_links/' % self.pondlife.id, {
+            'links-TOTAL_FORMS': 1,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+            'links-0-url': 'https://files.scene.org/get/parties/2001/forever01/spectrum/f2speccy.zip',
+            'links-0-production': self.pondlife.id,
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertTrue(
+            ProductionLink.objects.get(production=self.pondlife, link_class='SceneOrgFile').is_download_link
+        )
+
 
 class TestEditDownloadLinks(TestCase):
     fixtures = ['tests/gasman.json']
@@ -584,6 +737,20 @@ class TestEditDownloadLinks(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
+
+    def test_post_external_link(self):
+        response = self.client.post('/productions/%d/edit_download_links/' % self.pondlife.id, {
+            'links-TOTAL_FORMS': 1,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+            'links-0-url': 'https://www.pouet.net/prod.php?which=2611',
+            'links-0-production': self.pondlife.id,
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertFalse(
+            ProductionLink.objects.get(production=self.pondlife, link_class='PouetProduction').is_download_link
+        )
 
 
 class TestShowScreenshots(TestCase):
@@ -1120,6 +1287,7 @@ class TestEditTags(TestCase):
         self.client.login(username='testuser', password='12345')
         self.pondlife = Production.objects.get(title='Pondlife')
         self.mooncheese = Production.objects.get(title='Mooncheese')
+        BlacklistedTag.objects.create(tag='48k', replacement='zx-spectrum-48k')
 
     def test_post(self):
         response = self.client.post('/productions/%d/edit_tags/' % self.pondlife.id, {
@@ -1127,6 +1295,14 @@ class TestEditTags(TestCase):
         })
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertEqual(self.pondlife.tags.count(), 2)
+
+    def test_tag_replacement(self):
+        response = self.client.post('/productions/%d/edit_tags/' % self.pondlife.id, {
+            'tags': "fish, 48k"
+        })
+        self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
+        self.assertEqual(self.pondlife.tags.count(), 2)
+        self.assertTrue(self.pondlife.tags.filter(name='zx-spectrum-48k').exists())
 
     def test_post_locked(self):
         response = self.client.post('/productions/%d/edit_tags/' % self.mooncheese.id, {
