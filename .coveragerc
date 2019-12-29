@@ -2,5 +2,6 @@
 source = .
 omit = 
     */migrations/*
+    wsgi*.py
 [html]
 directory = coverage_html_report
