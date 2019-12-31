@@ -6,7 +6,7 @@ import urllib2
 import cStringIO
 import zipfile
 
-from productions.models import Screenshot, ProductionLink, Ansi
+from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3, select_screenshot_file
 from mirror.actions import fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics
@@ -189,24 +189,3 @@ def fetch_remote_screenshots():
         create_screenshot_from_production_link.delay(prod_link.id)
     for prod_link in find_zipped_screenshottable_graphics():
         create_screenshot_from_production_link.delay(prod_link.id)
-
-
-@task(rate_limit='6/m', ignore_result=True)
-def create_ansi_from_production_link(production_link_id):
-    try:
-        prod_link = ProductionLink.objects.get(id=production_link_id)
-    except ProductionLink.DoesNotExist:
-        # guess it was deleted in the meantime, then.
-        return
-
-    if prod_link.production.ansis.count():
-        return  # don't create an ANSI if there's one already
-
-    blob = fetch_link(prod_link)
-    sha1 = blob.sha1
-
-    file_ext = prod_link.download_file_extension()
-    filename = 'ansi/' + sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.' + file_ext
-    url = upload_to_s3(blob.as_io_buffer(), filename, file_ext, reduced_redundancy=True)
-
-    Ansi.objects.create(production_id=prod_link.production_id, url=url)

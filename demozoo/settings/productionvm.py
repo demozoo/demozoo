@@ -55,8 +55,6 @@ LOGGING = {
     }
 }
 
-# ANSILOVE_C_PATH = '/usr/local/bin/ansilove'
-
 try:
     from .local import *
 except ImportError:

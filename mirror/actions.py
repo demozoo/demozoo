@@ -11,7 +11,7 @@ from boto.s3.key import Key
 from django.conf import settings
 from django.db.models import Count
 from mirror.models import ArchiveMember, Download, DownloadBlob
-from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS, USABLE_ANSI_FILE_EXTENSIONS
+from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import select_screenshot_file
 from productions.models import Production
 
@@ -207,26 +207,5 @@ def find_zipped_screenshottable_graphics():
 
             prod_links.append(link)
             break  # success, so ignore any remaining links for this prod
-
-    return prod_links
-
-
-def find_ansis():
-    """Find ANSI/ASCII productions that do not yet have an Ansi record, but have a non-zipped
-    download link that one could be taken from"""
-
-    prods = Production.objects.filter(
-        supertype='graphics', types__internal_name__in=['ascii', 'ansi'], links__is_download_link=True
-    ).annotate(ansi_count=Count('ansis')).filter(ansi_count=0).prefetch_related('links')
-
-    prod_links = []
-    for prod in prods:
-        for link in prod.links.all():
-            if (
-                link.is_download_link
-                and link.download_file_extension() in USABLE_ANSI_FILE_EXTENSIONS and link.is_believed_downloadable()
-            ):
-                prod_links.append(link)
-                break  # ignore any remaining links for this prod
 
     return prod_links
