@@ -99,6 +99,10 @@ class PILConvertibleImage(object):
             img.save(output, format='PNG', optimize=True)
             return output, img.size, 'png'
         else:
+            if img.mode == 'RGBA':
+                # saving RGBA images as JPEG will fail
+                img = img.convert('RGB')
+
             try:
                 img.save(output, format='JPEG', optimize=True, quality=90)
             except IOError:
