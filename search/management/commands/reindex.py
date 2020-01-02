@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
         for klass, qs in [
             (Party, Party.objects.order_by('pk').defer('search_document')),
-            (Releaser, Releaser.objects.order_by('pk').prefetch_related('nicks__variants').defer('search_document', 'admin_search_document')),
+            (Releaser, Releaser.objects.order_by('pk').prefetch_related('nicks__variants').defer('search_document')),
             (Production, Production.objects.order_by('pk').prefetch_related('tags').defer('search_document'))
         ]:
             i = 0

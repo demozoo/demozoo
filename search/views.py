@@ -15,8 +15,6 @@ def search(request):
     if form.is_valid():
         query = form.cleaned_data['q']
 
-        has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
-
         page_number = request.GET.get('page', '1')
         # Make sure page request is an int. If not, deliver first page.
         try:
@@ -24,7 +22,7 @@ def search(request):
         except ValueError:
             page_number = 1
 
-        results, page = form.search(with_real_names=has_real_name_access, page_number=page_number)
+        results, page = form.search(page_number=page_number)
     else:
         query = ''
         page = None
