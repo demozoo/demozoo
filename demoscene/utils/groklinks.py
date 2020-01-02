@@ -882,7 +882,7 @@ class YoutubeVideo(BaseUrl):
     html_title_format = "%s on YouTube"
     is_streaming_video = True
 
-    oembed_base_url = "http://www.youtube.com/oembed"
+    oembed_base_url = "https://www.youtube.com/oembed"
     oembed_add_format_parameter = True
 
     supports_embed_data = True

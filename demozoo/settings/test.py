@@ -37,7 +37,7 @@ def mock_response(req):
         raise Exception("Looking up Adlington is not allowed! :-)")
     elif url == 'http://geocoder.demozoo.org/?q=Royston+Vasey':
         body = "[]"
-    elif url == 'http://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DldoVS0idTBw&maxheight=300&maxwidth=400&format=json':
+    elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DldoVS0idTBw&maxheight=300&maxwidth=400&format=json':
         body = r"""{
             "provider_name":"YouTube",
             "author_url":"https:\/\/www.youtube.com\/user\/sirhadley",

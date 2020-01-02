@@ -153,7 +153,7 @@ class TestEmbeds(TestCase):
         link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw'
 
         oembed_url = link.link.get_oembed_url(max_width=800, max_height=600)
-        self.assertTrue(oembed_url.startswith('http://www.youtube.com/oembed'))
+        self.assertTrue(oembed_url.startswith('https://www.youtube.com/oembed'))
         self.assertIn('format=json', oembed_url)
         self.assertIn('maxwidth=800', oembed_url)
         self.assertIn('maxheight=600', oembed_url)
