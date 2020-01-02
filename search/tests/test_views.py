@@ -47,17 +47,6 @@ class TestSearch(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Madrielle")
 
-    def test_admin_search(self):
-        response = self.client.get('/search/?q=westcott')
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Gasman")
-
-        self.user = User.objects.create_superuser(username='testuser', email='testuser@example.com', password='12345')
-        self.client.login(username='testuser', password='12345')
-        response = self.client.get('/search/?q=westcott')
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Gasman")
-
     def test_get_with_platform(self):
         response = self.client.get('/search/?q=pondlife+platform:"ZX+Spectrum"')
         self.assertEqual(response.status_code, 200)

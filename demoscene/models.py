@@ -52,7 +52,6 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     updated_at = models.DateTimeField()
 
     search_document = SearchVectorField(null=True, editable=False)
-    admin_search_document = SearchVectorField(null=True, editable=False)
 
     def save(self, *args, **kwargs):
         # auto-populate updated_at; this will only happen on creation
@@ -255,18 +254,10 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
             'C': self.asciified_location + ' ' + self.plaintext_notes,
         }
 
-    def admin_index_components(self):
-        return {
-            'A': self.asciified_all_names_string,
-            'B': self.asciified_real_name,
-            'C': self.asciified_location + ' ' + self.plaintext_notes,
-        }
-
     class Meta:
         ordering = ['name']
         indexes = [
             GinIndex(fields=['search_document']),
-            GinIndex(fields=['admin_search_document']),
         ]
         permissions = (
             ("view_releaser_real_names", "Can view non-public real names"),

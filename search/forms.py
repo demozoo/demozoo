@@ -47,7 +47,7 @@ class SearchForm(forms.Form):
         if category:
             self.cleaned_data['q'] += (' type:%s' % category)
 
-    def search(self, with_real_names=False, page_number=1, count=50):
+    def search(self, page_number=1, count=50):
         query = self.cleaned_data['q']
 
         # Look for filter expressions within query
@@ -81,12 +81,8 @@ class SearchForm(forms.Form):
 
         production_filter_q = Q(search_document=psql_query)
 
-        if with_real_names:
-            releaser_filter_q = Q(admin_search_document=psql_query)
-            releaser_rank_annotation = SearchRank(F('admin_search_document'), psql_query)
-        else:
-            releaser_filter_q = Q(search_document=psql_query)
-            releaser_rank_annotation = rank_annotation
+        releaser_filter_q = Q(search_document=psql_query)
+        releaser_rank_annotation = rank_annotation
 
         party_filter_q = Q(search_document=psql_query)
 
