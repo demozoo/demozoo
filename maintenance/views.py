@@ -663,6 +663,25 @@ class DuplicateReleaserKestraLinks(StaffOnlyMixin, Report):
         return context
 
 
+class ScenersWithHiddenRealNamesAndGameDevLinks(StaffOnlyMixin, Report):
+    title = "Sceners with hidden real names and game dev links"
+    template_name = 'maintenance/releaser_report.html'
+    name = 'sceners_with_hidden_real_names_and_game_dev_links'
+
+    def get_context_data(self, **kwargs):
+        context = super(ScenersWithHiddenRealNamesAndGameDevLinks, self).get_context_data(**kwargs)
+
+        context.update({
+            'releasers': (
+                Releaser.objects.exclude(show_first_name=True, show_surname=True)
+                .filter(is_group=False, external_links__link_class__in=['MobygamesDeveloper', 'HallOfLightArtist'])
+                .order_by('name').distinct()
+            ),
+            'exclusion_name': '',
+        })
+        return context
+
+
 class MatchingRealNames(StaffOnlyMixin, Report):
     title = "Sceners with matching real names"
     template_name = 'maintenance/matching_real_names.html'
@@ -1493,6 +1512,7 @@ reports = [
             CreditsToMoveToText,
             SceneorgDownloadLinksWithUnicode,
             EmptyCompetitions,
+            ScenersWithHiddenRealNamesAndGameDevLinks,
         ]
     ),
     (
