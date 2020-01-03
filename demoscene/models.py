@@ -239,7 +239,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
             GinIndex(fields=['search_document']),
         ]
         permissions = (
-            ("view_releaser_real_names", "Can view non-public real names"),
+            ("change_releaser_real_names", "Can change non-public real names"),
         )
 
 

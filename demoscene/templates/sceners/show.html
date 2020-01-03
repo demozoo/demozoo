@@ -78,7 +78,7 @@
     {% endwith %}
 
     <div>
-        {% if user_has_real_name_access %}
+        {% if can_edit_real_names %}
             <p>
                 Real name:
                 {% if scener.has_real_name %}

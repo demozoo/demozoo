@@ -32,7 +32,7 @@ def show(request, scener_id, edit_mode=False):
     if scener.is_group:
         return HttpResponseRedirect(scener.get_absolute_url())
 
-    user_has_real_name_access = request.user.has_perm('demoscene.view_releaser_real_names')
+    can_edit_real_names = request.user.has_perm('demoscene.change_releaser_real_names')
 
     external_links = scener.active_external_links.select_related('releaser').defer('releaser__notes')
     if not request.user.is_staff:
@@ -45,7 +45,7 @@ def show(request, scener_id, edit_mode=False):
         'external_links': external_links,
         'editing_groups': (request.GET.get('editing') == 'groups'),
         'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
-        'user_has_real_name_access': user_has_real_name_access,
+        'can_edit_real_names': can_edit_real_names,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked),
         'show_locked_button': request.user.is_authenticated and scener.locked,
         'show_lock_button': request.user.is_staff and settings.SITE_IS_WRITEABLE and not scener.locked,
