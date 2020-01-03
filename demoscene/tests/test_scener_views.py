@@ -109,7 +109,6 @@ class TestEditRealName(TestCase):
         self.client.login(username='testsuperuser', password='12345')
         response = self.client.post('/sceners/%d/edit_real_name/' % self.gasman.id, {
             'first_name': "Matt",
-            'show_first_name': True,
             'surname': "Gustavsson",
             'real_name_note': "yes really",
         })
@@ -120,7 +119,6 @@ class TestEditRealName(TestCase):
         self.client.login(username='testsuperuser', password='12345')
         response = self.client.post('/sceners/%d/edit_real_name/?ajax_submit=true' % self.gasman.id, {
             'first_name': "Matt",
-            'show_first_name': True,
             'surname': "Gustavsson",
             'real_name_note': "yes really",
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')

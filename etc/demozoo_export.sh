@@ -3,8 +3,6 @@
 pg_dump -h db1 -w -c demozoo -f /home/demozoo/demozoo/data/demozoo-export-raw.sql
 psql -h db1 -w demozoo_export -f /home/demozoo/demozoo/data/demozoo-export-raw.sql
 psql -h db1 -w demozoo_export -c "UPDATE auth_user SET email='', password='"'!'"', first_name='', last_name='';"
-psql -h db1 -w demozoo_export -c "UPDATE demoscene_releaser SET first_name='' WHERE show_first_name='f';"
-psql -h db1 -w demozoo_export -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';"
 psql -h db1 -w demozoo_export -c "UPDATE productions_production SET search_document=NULL;"
 psql -h db1 -w demozoo_export -c "UPDATE demoscene_releaser SET search_document=NULL;"
 psql -h db1 -w demozoo_export -c "UPDATE parties_party SET search_document=NULL;"

@@ -41,9 +41,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     geonames_id = models.BigIntegerField(null=True, blank=True)
 
     first_name = models.CharField(max_length=255, blank=True)
-    show_first_name = models.BooleanField(default=True)
     surname = models.CharField(max_length=255, blank=True)
-    show_surname = models.BooleanField(default=True)
     real_name_note = models.TextField(default='', blank=True, verbose_name='Permission note', help_text="Details of any correspondence / decision about whether this name should be public")
 
     data_source = models.CharField(max_length=32, blank=True, null=True)
@@ -171,18 +169,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     @property
     def real_name(self):
         if self.first_name or self.surname:
-            return "%s %s" % (self.first_name, self.surname)
-        else:
-            return None
-
-    @property
-    def public_real_name(self):
-        if self.first_name and self.show_first_name and self.surname and self.show_surname:
-            return "%s %s" % (self.first_name, self.surname)
-        elif self.first_name and self.show_first_name:
-            return self.first_name
-        elif self.surname and self.show_surname:
-            return self.surname
+            return ("%s %s" % (self.first_name, self.surname)).strip()
         else:
             return None
 
@@ -191,16 +178,8 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         real_name = self.real_name
         return real_name and unidecode(real_name)
 
-    @property
-    def asciified_public_real_name(self):
-        real_name = self.public_real_name
-        return real_name and unidecode(real_name)
-
-    def real_name_available_to_show(self):
-        return (self.first_name and self.show_first_name) or (self.surname and self.show_surname)
-
-    def can_reveal_full_real_name(self):
-        return (self.show_first_name and self.show_surname)
+    def has_real_name(self):
+        return bool(self.first_name or self.surname)
 
     @property
     def all_names_string(self):
@@ -250,7 +229,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     def index_components(self):
         return {
             'A': self.asciified_all_names_string,
-            'B': self.asciified_public_real_name,
+            'B': self.asciified_real_name,
             'C': self.asciified_location + ' ' + self.plaintext_notes,
         }
 

@@ -1044,19 +1044,19 @@ class UnresolvedScreenshots(StaffOnlyMixin, Report):
 
 
 class PublicRealNames(StaffOnlyMixin, Report):
-    title = "Sceners with public real names"
+    title = "Sceners with real names"
     template_name = 'maintenance/public_real_names.html'
     name = 'public_real_names'
 
     def get_context_data(self, **kwargs):
         context = super(PublicRealNames, self).get_context_data(**kwargs)
 
-        has_public_first_name = (~Q(first_name='')) & Q(show_first_name=True)
-        has_public_surname = (~Q(surname='')) & Q(show_surname=True)
+        has_first_name = ~Q(first_name='')
+        has_surname = ~Q(surname='')
 
         sceners = Releaser.objects.filter(
             Q(is_group=False),
-            has_public_first_name | has_public_surname
+            has_first_name | has_surname
         ).order_by('name')
 
         if self.request.GET.get('without_note'):
