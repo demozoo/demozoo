@@ -76,31 +76,24 @@ class TestRealName(TestCase):
     fixtures = ['tests/gasman.json']
 
     def test_full_name(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        gasman.show_surname = True
-        self.assertEqual(gasman.public_real_name, "Matt Westcott")
+        gasman = Releaser(name="Gasman", first_name="Matt", surname="Westcott")
+        self.assertEqual(gasman.real_name, "Matt Westcott")
+
+    def test_first_name_only(self):
+        gasman = Releaser(name="Gasman", first_name="Matt")
+        self.assertEqual(gasman.real_name, "Matt")
 
     def test_surname_only(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        gasman.show_surname = True
-        gasman.show_first_name = False
-        self.assertEqual(gasman.public_real_name, "Westcott")
+        gasman = Releaser(name="Gasman", surname="Westcott")
+        self.assertEqual(gasman.real_name, "Westcott")
 
     def test_no_name(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        gasman.show_surname = False
-        gasman.show_first_name = False
-        self.assertEqual(gasman.public_real_name, None)
+        gasman = Releaser(name="Gasman")
+        self.assertEqual(gasman.real_name, None)
 
     def test_asciified_real_name(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        gasman.first_name = "Bjørn"
+        gasman = Releaser(name="Gasman", first_name="Bjørn", surname="Westcott")
         self.assertEqual(gasman.asciified_real_name, "Bjorn Westcott")
-
-    def test_asciified_public_real_name(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        gasman.first_name = "Bjørn"
-        self.assertEqual(gasman.asciified_public_real_name, "Bjorn")
 
 
 class TestReleaserProductions(TestCase):

@@ -86,19 +86,14 @@ class ScenerEditLocationForm(ModelFormWithLocation):
 class ScenerEditRealNameForm(forms.ModelForm):
     def log_edit(self, user):
         changed_fields = self.changed_data
-        if not changed_fields:
-            return
         if 'first_name' in changed_fields or 'surname' in changed_fields:
             # Don't give the real name in the log description, as we might redact it
             Edit.objects.create(action_type='edit_scener_real_name', focus=self.instance,
                 description="Set real name", user=user)
-        else:
-            Edit.objects.create(action_type='edit_scener_real_name', focus=self.instance,
-                description="Updated visibility of real name", user=user)
 
     class Meta:
         model = Releaser
-        fields = ['first_name', 'show_first_name', 'surname', 'show_surname', 'real_name_note']
+        fields = ['first_name', 'surname', 'real_name_note']
         widgets = {
             'real_name_note': forms.Textarea(attrs={'class': 'short_notes'}),
         }

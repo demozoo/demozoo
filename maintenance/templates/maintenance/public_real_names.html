@@ -16,15 +16,8 @@
                             <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
                         </td>
                         <td>
-                            {% if releaser.show_first_name %}
-                                {{ releaser.first_name }}
-                            {% else %}
-                                <del class="redacted">{{ releaser.first_name }}</del>
-                            {% endif %}
-                            {% if releaser.show_surname %}
-                                {{ releaser.surname }}
-                            {% else %}
-                                <del class="redacted">{{ releaser.surname }}</del>{% endif %}
+                            {{ releaser.first_name }}
+                            {{ releaser.surname }}
                         </td>
                         <td>
                             {% if site_is_writeable %}

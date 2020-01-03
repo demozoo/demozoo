@@ -8,9 +8,7 @@
             "location": "Kidlington, UK",
             "country_code": "UK",
             "first_name": "Matt",
-            "show_first_name": true,
-            "surname": "Westcott",
-            "show_surname": false,
+            "surname": "",
             "created_at": "2014-01-01",
             "updated_at": "2014-01-01"
         }

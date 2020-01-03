@@ -95,8 +95,6 @@ def exportdb():
     local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -U%s demozoo_dump' % db_username)
     local('rm /tmp/demozoo-fetchdb.sql.gz')
     local("""psql -U%s demozoo_dump -c "UPDATE auth_user SET email='', password='!', first_name='', last_name='';" """ % db_username)
-    local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET first_name='' WHERE show_first_name='f';" """ % db_username)
-    local("""psql -U%s demozoo_dump -c "UPDATE demoscene_releaser SET surname='' WHERE show_surname='f';" """ % db_username)
     local("""psql -U%s demozoo_dump -c "DROP TABLE celery_taskmeta; DROP TABLE celery_tasksetmeta; DROP TABLE django_session;" """ % db_username)
     local('pg_dump -Z1 -cf demozoo-export.sql.gz demozoo_dump')
     #local('dropdb -U%s demozoo_dump' % db_username)

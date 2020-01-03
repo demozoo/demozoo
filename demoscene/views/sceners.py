@@ -37,8 +37,6 @@ def show(request, scener_id, edit_mode=False):
     external_links = scener.active_external_links.select_related('releaser').defer('releaser__notes')
     if not request.user.is_staff:
         external_links = external_links.exclude(link_class='SlengpungUser')
-    if not user_has_real_name_access and not scener.can_reveal_full_real_name():
-        external_links = external_links.exclude(link_class__in=['MobygamesDeveloper', 'HallOfLightArtist'])
 
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
