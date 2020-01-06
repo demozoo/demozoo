@@ -1571,6 +1571,7 @@ ARCHIVED_LINK_TYPES = [
     'DemosceneTvVideo',
     'LanyrdEvent',
     'GooglePlusPage', 'GooglePlusEvent',
+    'CappedVideo',
 ]
 
 
