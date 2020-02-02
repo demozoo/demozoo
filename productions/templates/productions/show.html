@@ -56,11 +56,28 @@
         {% endfor %}
     {% endif %}
 
-    {% for event in awards_accepting_recommendations %}
-        <div class="award-recommendation">
-            <h2>Recommend this production for {{ event.name }}!</h2>
-        </div>
-    {% endfor %}
+    {% if site_is_writeable %}
+        {% for event, recommendation_options in awards_accepting_recommendations %}
+            <div class="award-recommendation">
+                <h2>Recommend this production for {{ event.name }}!</h2>
+                {% if request.user.is_authenticated %}
+                    <form action="" method="POST">
+                        <ul>
+                            {% for category_id, category_name, has_recommended in recommendation_options %}
+                                <li>
+                                    <input id="award_recommendation_category_{{ category_id }}" name="category_id" value="{{ category_id }}" type="checkbox" {% if has_recommended %}checked="checked"{% endif %}>
+                                    <label for="award_recommendation_category_{{ category_id }}">{{ category_name }}</label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <input type="submit" value="Make your recommendation!">
+                    </form>
+                {% else %}
+                    (login link)
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="mainstage">
         {{ carousel.render }}

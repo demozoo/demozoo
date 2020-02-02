@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.db import models
+
+from productions.models import Production
 
 
 class Event(models.Model):
@@ -30,6 +33,24 @@ class Event(models.Model):
             eligibility_end_date__gte=production.release_date_date,
         )
 
+    def get_recommendation_options(self, user, production):
+        """
+        Return list of (category_id, category_name, has_recommended) tuples for this
+        event's awards, where has_recommended is a boolean indicating whether this
+        user has already recommended this production for that category
+        """
+        categories = list(self.categories.all())
+        recommendations = set(
+            Recommendation.objects.filter(
+                user=user, production=production,
+                category__in=categories
+            ).values_list('category_id', flat=True)
+        )
+        return [
+            (category.id, category.name, category.id in recommendations)
+            for category in categories
+        ]
+
 
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)
@@ -40,3 +61,15 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "Categories"
+
+
+class Recommendation(models.Model):
+    user = models.ForeignKey(User, related_name='award_recommendations', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name='award_recommendations', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='recommendations', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [
+            ('user', 'production', 'category'),
+        ]

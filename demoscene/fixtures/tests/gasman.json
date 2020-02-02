@@ -360,5 +360,21 @@
             "recommendations_enabled": true,
             "reporting_enabled": true
         }
+    },
+    {
+        "pk": 1,
+        "model": "awards.category",
+        "fields": {
+            "name": "Best High-End Demo",
+            "event": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "awards.category",
+        "fields": {
+            "name": "Best Low-End Production",
+            "event": 1
+        }
     }
 ]

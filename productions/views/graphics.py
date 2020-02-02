@@ -63,11 +63,19 @@ def show(request, production_id, edit_mode=False):
         comment = Comment(commentable=production, user=request.user)
         comment_form = CommentForm(instance=comment, prefix="comment")
         tags_form = ProductionTagsForm(instance=production)
+
+        awards_accepting_recommendations = [
+            (event, event.get_recommendation_options(request.user, production))
+            for event in Event.accepting_recommendations_for(production)
+        ]
     else:
         comment_form = None
         tags_form = None
 
-    awards_accepting_recommendations = Event.accepting_recommendations_for(production)
+        awards_accepting_recommendations = [
+            (event, None)
+            for event in Event.accepting_recommendations_for(production)
+        ]
 
     if production.can_have_pack_members():
         pack_members = [
