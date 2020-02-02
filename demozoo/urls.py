@@ -94,6 +94,7 @@ urlpatterns += [
     url(r'^forums/', include('forums.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^users/', include('users.urls')),
+    url(r'^awards/', include('awards.urls')),
 ]
 
 if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:

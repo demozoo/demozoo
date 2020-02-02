@@ -376,5 +376,13 @@
             "name": "Best Low-End Production",
             "event": 1
         }
+    },
+    {
+        "pk": 3,
+        "model": "awards.category",
+        "fields": {
+            "name": "Outstanding Concept",
+            "event": 1
+        }
     }
 ]

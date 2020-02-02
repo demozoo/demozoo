@@ -61,7 +61,8 @@
             <div class="award-recommendation">
                 <h2>Recommend this production for {{ event.name }}!</h2>
                 {% if request.user.is_authenticated %}
-                    <form action="" method="POST">
+                    <form action="{% url 'awards_recommend' event.id production.id %}" method="POST">
+                        {% csrf_token %}
                         <ul>
                             {% for category_id, category_name, has_recommended in recommendation_options %}
                                 <li>
