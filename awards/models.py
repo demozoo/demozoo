@@ -15,6 +15,21 @@ class Event(models.Model):
     def __unicode__(self):
         return self.name
 
+    @classmethod
+    def accepting_recommendations_for(cls, production):
+        """
+        Return a queryset of award events that it is currently possible
+        to recommend this prod for
+        """
+        if production.supertype != 'production' or production.release_date_date is None:
+            return cls.objects.none()
+
+        return cls.objects.filter(
+            recommendations_enabled=True,
+            eligibility_start_date__lte=production.release_date_date,
+            eligibility_end_date__gte=production.release_date_date,
+        )
+
 
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)

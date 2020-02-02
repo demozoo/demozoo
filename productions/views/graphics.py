@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
+from awards.models import Event
 from demoscene.shortcuts import get_page
 from demoscene.models import Edit
 from productions.carousel import Carousel
@@ -66,6 +67,8 @@ def show(request, production_id, edit_mode=False):
         comment_form = None
         tags_form = None
 
+    awards_accepting_recommendations = Event.accepting_recommendations_for(production)
+
     if production.can_have_pack_members():
         pack_members = [
             link.member for link in
@@ -97,6 +100,7 @@ def show(request, production_id, edit_mode=False):
         'comment_form': comment_form,
         'tags_form': tags_form,
         'meta_screenshot': meta_screenshot,
+        'awards_accepting_recommendations': awards_accepting_recommendations,
     })
 
 

@@ -56,6 +56,12 @@
         {% endfor %}
     {% endif %}
 
+    {% for event in awards_accepting_recommendations %}
+        <div class="award-recommendation">
+            <h2>Recommend this production for {{ event.name }}!</h2>
+        </div>
+    {% endfor %}
+
     <div class="mainstage">
         {{ carousel.render }}
 

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 
+from awards.models import Event
 from demoscene.shortcuts import get_page
 from demoscene.models import Edit
 from productions.carousel import Carousel
@@ -68,6 +69,8 @@ def show(request, production_id, edit_mode=False):
         comment_form = None
         tags_form = None
 
+    awards_accepting_recommendations = Event.accepting_recommendations_for(production)
+
     try:
         meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
     except IndexError:
@@ -94,6 +97,7 @@ def show(request, production_id, edit_mode=False):
         'comment_form': comment_form,
         'tags_form': tags_form,
         'meta_screenshot': meta_screenshot,
+        'awards_accepting_recommendations': awards_accepting_recommendations,
     })
 
 

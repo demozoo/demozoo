@@ -19,6 +19,7 @@ from taggit.models import Tag
 from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
 
+from awards.models import Event
 from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation, modal_workflow_confirmation
 from demoscene.models import Nick, Edit, BlacklistedTag
 from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset, ProductionInfoFileFormset
@@ -114,6 +115,8 @@ def show(request, production_id, edit_mode=False):
         comment_form = None
         tags_form = None
 
+    awards_accepting_recommendations = Event.accepting_recommendations_for(production)
+
     if production.can_have_pack_members():
         pack_members = [
             link.member for link in
@@ -151,6 +154,7 @@ def show(request, production_id, edit_mode=False):
         'comment_form': comment_form,
         'tags_form': tags_form,
         'meta_screenshot': meta_screenshot,
+        'awards_accepting_recommendations': awards_accepting_recommendations,
     })
 
 
