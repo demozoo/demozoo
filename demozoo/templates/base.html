@@ -92,14 +92,7 @@
                             {{ request.user.username }}
                         </div>
                         <div class="login_links">
-                            <ul>
-                                <li><a href="{% url 'account_change_password' %}">Change password</a></li>
-                                <li><a href="{% url 'user' request.user.id %}">Activity</a></li>
-                                {% if request.user.is_staff %}
-                                <li><a href="{% url 'maintenance:index' %}">Maintenance</a></li>
-                                {% endif %}
-                                <li><a href="{% url 'log_out' %}">Log out</a></li>
-                            </ul>
+                            {% user_menu %}
                         </div>
                         {% else %}
                         <div class="login_status logged_out">

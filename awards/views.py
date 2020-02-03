@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import itertools
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -44,3 +46,26 @@ def recommend(request, event_id, production_id):
 
     messages.success(request, "Thank you for your recommendation!")
     return HttpResponseRedirect(production.get_absolute_url())
+
+
+@login_required
+def user_recommendations(request, event_id):
+    event = get_object_or_404(
+        Event.objects.filter(recommendations_enabled=True), id=event_id
+    )
+
+    recommendations = Recommendation.objects.filter(
+        user=request.user, category__event=event
+    ).select_related('category', 'production').prefetch_related(
+        'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
+    ).order_by('category', 'production__sortable_title')
+
+    productions_by_category = [
+        (category, [recommendation.production for recommendation in recommendations_for_category])
+        for category, recommendations_for_category in itertools.groupby(recommendations, lambda r: r.category)
+    ]
+
+    return render(request, 'awards/user_recommendations.html', {
+        'event': event,
+        'productions_by_category': productions_by_category,
+    })

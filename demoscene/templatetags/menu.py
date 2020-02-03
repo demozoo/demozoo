@@ -1,5 +1,8 @@
 from django import template
 from django.core import urlresolvers
+from django.urls import reverse
+
+from awards.models import Event
 
 register = template.Library()
 
@@ -29,3 +32,35 @@ class NavActiveNode(template.Node):
             return "active"
         else:
             return ""
+
+
+@register.inclusion_tag('shared/user_menu.html', takes_context=True)
+def user_menu(context):
+    user = context['request'].user
+
+    menu_items = [
+        (reverse('account_change_password'), "Change password"),
+    ]
+    
+
+    for event in Event.objects.filter(recommendations_enabled=True):
+        menu_items.append(
+            (reverse('awards_user_recommendations', args=(event.id,)), event.name),
+        )
+
+    menu_items.append(
+        (reverse('user', args=(user.id, )), "Activity"),
+    )
+
+    if user.is_staff:
+        menu_items.append(
+            (reverse('maintenance:index'), "Maintenance"),
+        )
+
+    menu_items.append(
+        (reverse('log_out'), "Log out"),
+    )
+
+    return {
+        'menu_items': menu_items,
+    }
