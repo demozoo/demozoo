@@ -60,10 +60,10 @@
     {% if site_is_writeable %}
         {% for event, recommendation_options in awards_accepting_recommendations %}
             <div class="award-recommendation">
-                <div class="header">
-                    <h2>Recommend this production for {{ event.name }}!</h2>
-                </div>
                 {% if request.user.is_authenticated %}
+                    <div class="header">
+                        <h2>Recommend this production for {{ event.name }}!</h2>
+                    </div>
                     <div class="inner">
                         <form action="{% url 'awards_recommend' event.id production.id %}" method="POST">
                             {% csrf_token %}
@@ -79,7 +79,11 @@
                         </form>
                     </div>
                 {% else %}
-                    (login link)
+                    <div class="header">
+                        <a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">
+                            <h2>Recommend this production for {{ event.name }}!</h2>
+                        </a>
+                    </div>
                 {% endif %}
             </div>
         {% endfor %}

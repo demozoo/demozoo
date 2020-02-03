@@ -4,6 +4,15 @@
     margin: auto auto 16px;
     width: 70%;
 
+    .header a {  /* for login link */
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        &:hover {
+            background-color: #ddd;
+        }
+    }
+
     h2 {
         padding: 10px;
     }
