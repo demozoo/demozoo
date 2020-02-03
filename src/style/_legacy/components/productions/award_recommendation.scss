@@ -1,0 +1,48 @@
+.award-recommendation {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    margin: auto auto 16px;
+    width: 70%;
+
+    h2 {
+        padding: 10px;
+    }
+
+    ul {
+        padding-bottom: 10px;
+    }
+
+    form {
+        border-top: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .submit {
+        padding: 10px;
+        font-weight: bold;
+        font-size: 1em;
+        cursor: pointer;
+        &:hover {
+            background-color: #ddd;
+            border: 1px solid #bbb;
+        }
+    }
+}
+
+.award-recommendation.expandable {
+    .header {
+        cursor: pointer;
+        background-image: url(/static/images/icons/arrow_down.png);
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        &:hover {
+            background-color: #ddd;
+        }
+    }
+}
+
+.award-recommendation.closed {
+    .inner {
+        display: none;
+    }
+}

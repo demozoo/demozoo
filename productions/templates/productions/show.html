@@ -17,6 +17,7 @@
         <script src="/static/js/components/editable_chunk.js"></script>
         <script src="/static/productions/js/components/media_lightbox.js"></script>
         <script src="/static/productions/js/components/carousel.js"></script>
+        <script src="/static/productions/js/components/award_recommendation.js"></script>
         <script src="/static/js/components/notes_panel.js"></script>
         <script src="/static/js/components/comments_panel.js"></script>
         <script src="/static/productions/js/pages/show_production.js"></script>
@@ -59,20 +60,24 @@
     {% if site_is_writeable %}
         {% for event, recommendation_options in awards_accepting_recommendations %}
             <div class="award-recommendation">
-                <h2>Recommend this production for {{ event.name }}!</h2>
+                <div class="header">
+                    <h2>Recommend this production for {{ event.name }}!</h2>
+                </div>
                 {% if request.user.is_authenticated %}
-                    <form action="{% url 'awards_recommend' event.id production.id %}" method="POST">
-                        {% csrf_token %}
-                        <ul>
-                            {% for category_id, category_name, has_recommended in recommendation_options %}
-                                <li>
-                                    <input id="award_recommendation_category_{{ category_id }}" name="category_id" value="{{ category_id }}" type="checkbox" {% if has_recommended %}checked="checked"{% endif %}>
-                                    <label for="award_recommendation_category_{{ category_id }}">{{ category_name }}</label>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                        <input type="submit" value="Make your recommendation!">
-                    </form>
+                    <div class="inner">
+                        <form action="{% url 'awards_recommend' event.id production.id %}" method="POST">
+                            {% csrf_token %}
+                            <ul>
+                                {% for category_id, category_name, has_recommended in recommendation_options %}
+                                    <li>
+                                        <input id="award_recommendation_category_{{ category_id }}" name="category_id" value="{{ category_id }}" type="checkbox" {% if has_recommended %}checked="checked"{% endif %}>
+                                        <label for="award_recommendation_category_{{ category_id }}">{{ category_name }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <button class="submit" type="submit">Make your recommendation!</button>
+                        </form>
+                    </div>
                 {% else %}
                     (login link)
                 {% endif %}
