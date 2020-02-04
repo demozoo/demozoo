@@ -1,45 +1,18 @@
-{% load demoscene_tags %}
-
 <table class="table" summary="">
     <colgroup>
-        {% if mark_excludable and site_is_writeable %}<col />{% endif %}
-        <col class="col--thumb" />
-        <col width="40%" />
-        <col />
-        <col class="col--date" />
+        {% block columns %}
+            {% if mark_excludable and site_is_writeable %}<col />{% endif %}
+            <col class="col--thumb" />
+            <col width="40%" />
+            <col />
+            <col class="col--date" />
+        {% endblock %}
     </colgroup>
     <tbody>
-        {% for prod, screenshot in productions_and_screenshots %}
-            <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ prod.id }}"{% endif %}>
-                {% if mark_excludable and site_is_writeable %}<td></td>{% endif %}
-                <td>
-                    {% if show_screenshots and screenshot %}
-                        {% microthumb screenshot %}
-
-                    {% else %}
-                        <div class="media media--thumbnail">
-                            {% icon prod.supertype %}
-                        </div>
-
-                    {% endif %}
-                </td>
-                <td>
-                    <div>
-                        <a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a>
-                    </div>
-                    {% if show_prod_types %}
-                        <div class="meta">
-                            {{ prod.platforms_and_types_list }}
-                        </div>
-                    {% endif %}
-                </td>
-                <td>
-                    {% byline prod %}
-                </td>
-                <td class="col--date">
-                    <span>{{ prod.release_date.short_format }}</span>
-                </td>
-            </tr>
-        {% endfor %}
+        {% block rows %}
+            {% for production, screenshot in productions_and_screenshots %}
+                {% include "shared/production_listing_row.html" %}
+            {% endfor %}
+        {% endblock %}
     </tbody>
 </table>

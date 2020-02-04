@@ -1,0 +1,12 @@
+{% extends "shared/production_listing.html" %}
+
+{% block columns %}
+    {{ block.super }}
+    <col width="10%" />
+{% endblock %}
+
+{% block rows %}
+    {% for production, screenshot in productions_and_screenshots %}
+        {% include "awards/_recommended_production_listing_row.html" %}
+    {% endfor %}
+{% endblock %}
