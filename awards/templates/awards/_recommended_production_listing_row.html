@@ -3,5 +3,12 @@
 {% block cells %}
     {{ block.super }}
 
-    <td>(remove)</td>
+    {% if site_is_writeable %}
+        <td>
+            <form action="{% url 'awards_remove_recommendation' recommendation.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" title="Remove {{ production.title }} from your recommendations">Remove</button>
+            </form>
+        </td>
+    {% endif %}
 {% endblock %}

@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from awards.models import Event, Recommendation
@@ -60,12 +61,25 @@ def user_recommendations(request, event_id):
         'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
     ).order_by('category', 'production__sortable_title')
 
-    productions_by_category = [
-        (category, [recommendation.production for recommendation in recommendations_for_category])
-        for category, recommendations_for_category in itertools.groupby(recommendations, lambda r: r.category)
+    recommendations_by_category = [
+        (category, list(recs))
+        for category, recs in itertools.groupby(recommendations, lambda r: r.category)
     ]
 
     return render(request, 'awards/user_recommendations.html', {
         'event': event,
-        'productions_by_category': productions_by_category,
+        'recommendations_by_category': recommendations_by_category,
     })
+
+
+@require_POST
+@login_required
+@writeable_site_required
+def remove_recommendation(request, recommendation_id):
+    recommendation = get_object_or_404(
+        Recommendation.objects.filter(user=request.user, category__event__recommendations_enabled=True),
+        id=recommendation_id
+    )
+
+    recommendation.delete()
+    return HttpResponseRedirect(reverse('awards_user_recommendations', args=(recommendation.category.event.id, )))

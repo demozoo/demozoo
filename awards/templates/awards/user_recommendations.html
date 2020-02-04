@@ -7,9 +7,9 @@
 {% block base_main %}
 <h1>{{ event.name }} - Your recommendations</h1>
 
-{% for category, productions in productions_by_category %}
+{% for category, recommendations in recommendations_by_category %}
     <h2>{{ category }}</h2>
-    {% recommended_production_listing productions show_screenshots=True show_prod_types=True %}
+    {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}
 {% empty %}
     <p>You haven't made any recommendations yet. Search for your favourite productions of the year and get to it :-)</p>
 {% endfor %}

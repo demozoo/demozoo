@@ -2,11 +2,13 @@
 
 {% block columns %}
     {{ block.super }}
-    <col width="10%" />
+    {% if site_is_writeable %}
+        <col width="10%" />
+    {% endif %}
 {% endblock %}
 
 {% block rows %}
-    {% for production, screenshot in productions_and_screenshots %}
+    {% for recommendation, production, screenshot in rows %}
         {% include "awards/_recommended_production_listing_row.html" %}
     {% endfor %}
 {% endblock %}
