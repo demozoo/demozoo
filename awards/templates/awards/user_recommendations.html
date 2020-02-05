@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 
 {% load awards_tags %}
+{% load safe_markdown %}
 
 {% block html_title %}{{ event.name }} - Your recommendations - Demozoo{% endblock %}
 
 {% block base_main %}
 <h1>{{ event.name }} - Your recommendations</h1>
+
+{% if event.intro %}
+    {{ event.intro|safe_markdown }}
+{% endif %}
 
 {% for category, recommendations in recommendations_by_category %}
     <h2>{{ category }}</h2>
