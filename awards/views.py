@@ -49,22 +49,24 @@ def recommend(request, event_slug, production_id):
     return HttpResponseRedirect(production.get_absolute_url())
 
 
-@login_required
 def user_recommendations(request, event_slug):
     event = get_object_or_404(
         Event.objects.filter(recommendations_enabled=True), slug=event_slug
     )
 
-    recommendations = Recommendation.objects.filter(
-        user=request.user, category__event=event
-    ).select_related('category', 'production').prefetch_related(
-        'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
-    ).order_by('category', 'production__sortable_title')
+    if request.user.is_authenticated():
+        recommendations = Recommendation.objects.filter(
+            user=request.user, category__event=event
+        ).select_related('category', 'production').prefetch_related(
+            'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
+        ).order_by('category', 'production__sortable_title')
 
-    recommendations_by_category = [
-        (category, list(recs))
-        for category, recs in itertools.groupby(recommendations, lambda r: r.category)
-    ]
+        recommendations_by_category = [
+            (category, list(recs))
+            for category, recs in itertools.groupby(recommendations, lambda r: r.category)
+        ]
+    else:
+        recommendations_by_category = []
 
     return render(request, 'awards/user_recommendations.html', {
         'event': event,
