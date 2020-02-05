@@ -94,7 +94,8 @@
                     </div>
                 {% else %}
                     <header class="award-recommendation__header">
-                        <a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">
+                        <a class="award-recommendation__login-link"
+                           href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">
                             <h2 class="award-recommendation__heading">Recommend this production for {{ event.name }}!</h2>
                         </a>
                     </header>

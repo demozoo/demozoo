@@ -1,9 +1,10 @@
 $color-alert-background: gold;
+$color-alert-border: darken($color-alert-background, 12.5%);
 $color-alert-inner-border: darken($color-alert-background, 6.25%);
 
 .award-recommendation {
     background-color: $color-alert-background;
-    border: 1px solid darken($color-alert-background, 12.5%);
+    border: 1px solid $color-alert-border;
     color: black;
     margin: auto auto 16px;
 
@@ -11,6 +12,14 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
         color: currentColor;
         display: block;
         text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &:visited {
+            color: currentColor;
+        }
     }
 
     &__heading {
@@ -90,10 +99,10 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
             }
         }
 
-
         &::after {
             background: no-repeat black url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTkgMTYuMkw0LjggMTJsLTEuNCAxLjRMOSAxOSAyMSA3bC0xLjQtMS40TDkgMTYuMnoiLz48L3N2Zz4=") center / cover;
             content: normal;
+            top: 0;
         }
    }
 
