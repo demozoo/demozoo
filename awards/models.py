@@ -55,12 +55,14 @@ class Event(models.Model):
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    position = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
         verbose_name_plural = "Categories"
+        ordering = ['position']
 
 
 class Recommendation(models.Model):
