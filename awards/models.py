@@ -9,6 +9,7 @@ from productions.models import Production
 
 class Event(models.Model):
     name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, help_text="Used in URLs - /awards/[slug]/")
     eligibility_start_date = models.DateField(help_text="Earliest release date a production can have to be considered for these awards")
     eligibility_end_date = models.DateField(help_text="Latest release date a production can have to be considered for these awards")
 

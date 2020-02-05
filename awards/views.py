@@ -18,10 +18,10 @@ from read_only_mode import writeable_site_required
 @require_POST
 @login_required
 @writeable_site_required
-def recommend(request, event_id, production_id):
+def recommend(request, event_slug, production_id):
     production = get_object_or_404(Production, id=production_id)
     event = get_object_or_404(
-        Event.accepting_recommendations_for(production), id=event_id
+        Event.accepting_recommendations_for(production), slug=event_slug
     )
 
     available_category_ids = event.categories.values_list('id', flat=True)
@@ -50,9 +50,9 @@ def recommend(request, event_id, production_id):
 
 
 @login_required
-def user_recommendations(request, event_id):
+def user_recommendations(request, event_slug):
     event = get_object_or_404(
-        Event.objects.filter(recommendations_enabled=True), id=event_id
+        Event.objects.filter(recommendations_enabled=True), slug=event_slug
     )
 
     recommendations = Recommendation.objects.filter(
@@ -82,4 +82,4 @@ def remove_recommendation(request, recommendation_id):
     )
 
     recommendation.delete()
-    return HttpResponseRedirect(reverse('awards_user_recommendations', args=(recommendation.category.event.id, )))
+    return HttpResponseRedirect(reverse('awards_user_recommendations', args=(recommendation.category.event.slug, )))

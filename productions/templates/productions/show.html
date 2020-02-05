@@ -67,7 +67,7 @@
                         </h2>
                     </header>
                     <div class="award-recommendation__inner">
-                        <form action="{% url 'awards_recommend' event.id production.id %}"
+                        <form action="{% url 'awards_recommend' event.slug production.id %}"
                               class="award-recommendation__form"
                               method="POST">
                             <fieldset class="award-recommendation__fieldset">

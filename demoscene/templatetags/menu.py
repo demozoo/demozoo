@@ -45,7 +45,7 @@ def user_menu(context):
 
     for event in Event.objects.filter(recommendations_enabled=True):
         menu_items.append(
-            (reverse('awards_user_recommendations', args=(event.id,)), event.name),
+            (reverse('awards_user_recommendations', args=(event.slug,)), event.name),
         )
 
     menu_items.append(
