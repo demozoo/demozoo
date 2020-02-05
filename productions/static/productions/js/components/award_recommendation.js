@@ -1,17 +1,13 @@
 $(function() {
     $('.award-recommendation').each(function() {
         var container = $(this);
-        var header = container.find('.header');
-        var inner = container.find('.inner');
+        var header = container.find('.award-recommendation__header');
+        var inner = container.find('.award-recommendation__inner');
         if (inner.length) {
-            container.addClass('closed expandable');
+            container.addClass('is-closed is-expandable');
 
             header.click(function() {
-                if (container.hasClass('closed')) {
-                    inner.slideDown(function() {container.removeClass('closed');});
-                } else {
-                    inner.slideUp('fast', function() {container.addClass('closed');});
-                }
+                container.hasClass('is-closed') ? container.removeClass('is-closed') : container.addClass('is-closed');
             })
         }
     });

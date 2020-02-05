@@ -1,57 +1,153 @@
+$color-alert-background: gold;
+$color-alert-inner-border: darken($color-alert-background, 6.25%);
+
 .award-recommendation {
-    background-color: #eee;
-    border: 1px solid #ccc;
+    background-color: $color-alert-background;
+    border: 1px solid darken($color-alert-background, 12.5%);
+    color: black;
     margin: auto auto 16px;
-    width: 70%;
 
-    .header a {  /* for login link */
+    &__login-link {
+        color: currentColor;
         display: block;
-        color: inherit;
         text-decoration: none;
-        &:hover {
-            background-color: #ddd;
-        }
     }
 
-    h2 {
-        padding: 10px;
+    &__heading {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 24px;
+        padding: 10px 20px;
     }
 
-    ul {
-        padding-bottom: 10px;
+    &__name {
+        font-weight: 700;
     }
 
-    form {
-        border-top: 1px solid #ccc;
-        padding: 10px;
+    &__form {
+        margin: 0 20px 20px;
+        border-top: 1px solid $color-alert-inner-border;
     }
 
-    .submit {
-        padding: 10px;
-        font-weight: bold;
-        font-size: 1em;
+    &__fieldset {
+        margin: 20px 0 10px;
+    }
+
+    &__categories {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &__category {
+        flex: 1 1 (100% / 4);
+        margin: 0 0 10px;
+    }
+
+    &__label {
+        display: block;
+        margin-right: 32px;
+        position: relative;
         cursor: pointer;
-        &:hover {
-            background-color: #ddd;
-            border: 1px solid #bbb;
-        }
     }
-}
 
-.award-recommendation.expandable {
-    .header {
-        cursor: pointer;
-        background-image: url(/static/images/icons/arrow_down.png);
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        &:hover {
-            background-color: #ddd;
-        }
-    }
-}
-
-.award-recommendation.closed {
-    .inner {
+    &__checkbox {
         display: none;
+
+        &:checked ~ .award-recommendation__label-text::after {
+            content: '';
+        }
+    }
+
+    &__label-text {
+        display: block;
+        padding-left: 32px;
+        user-select: none;
+        line-height: 24px;
+        font-size: 16px;
+        font-weight: 700;
+
+        &::before,
+        &::after {
+            @include size(24px);
+
+            left: 0;
+            position: absolute;
+        }
+
+        &::before {
+            background: transparent;
+            border: 2px solid black;
+            box-sizing: border-box;
+            content: '';
+            transition: background-color 125ms linear;
+        }
+
+        &:hover {
+
+            &::before {
+                background-color: white;
+                transition: background-color 250ms linear;
+            }
+        }
+
+
+        &::after {
+            background: no-repeat black url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTkgMTYuMkw0LjggMTJsLTEuNCAxLjRMOSAxOSAyMSA3bC0xLjQtMS40TDkgMTYuMnoiLz48L3N2Zz4=") center / cover;
+            content: normal;
+        }
+   }
+
+    &__buttons {
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid $color-alert-inner-border;
+        padding-top: 20px;
+    }
+
+    .button--ghost {
+        background: transparent;
+        border-color: black;
+        color: black;
+        padding: 0.75em 1em;
+
+        &:hover {
+            background: black;
+            color: white;
+        }
+    }
+
+    &__inner {
+        height: auto;
+    }
+
+    &.is-expandable {
+        .award-recommendation__header {
+            position: relative;
+            cursor: pointer;
+
+            &::after {
+                @include size(24px);
+
+                background: no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBmaWxsPSIjMDAwMDAwIiBkPSJNNy40MSAxNS40MUwxMiAxMC44M2w0LjU5IDQuNThMMTggMTRsLTYtNi02IDZ6Ii8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==") center / cover;
+                content: '';
+                position: absolute;
+                right: ( 20px - (24px / 4) );
+                top: 50%;
+                transform-origin: center;
+                transform: translateY(-50%) scaleY(1);
+                transition: transform 125ms ease-in-out;
+            }
+        }
+    }
+
+    &.is-closed {
+        .award-recommendation__header::after {
+            transform: translateY(-50%) scaleY(-1);
+        }
+
+        .award-recommendation__inner {
+            overflow: hidden;
+            height: 0;
+        }
     }
 }

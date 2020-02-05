@@ -61,29 +61,43 @@
         {% for event, recommendation_options in awards_accepting_recommendations %}
             <div class="award-recommendation">
                 {% if request.user.is_authenticated %}
-                    <div class="header">
-                        <h2>Recommend this production for {{ event.name }}!</h2>
-                    </div>
-                    <div class="inner">
-                        <form action="{% url 'awards_recommend' event.id production.id %}" method="POST">
-                            {% csrf_token %}
-                            <ul>
-                                {% for category_id, category_name, has_recommended in recommendation_options %}
-                                    <li>
-                                        <input id="award_recommendation_category_{{ category_id }}" name="category_id" value="{{ category_id }}" type="checkbox" {% if has_recommended %}checked="checked"{% endif %}>
-                                        <label for="award_recommendation_category_{{ category_id }}">{{ category_name }}</label>
+                    <header class="award-recommendation__header">
+                        <h2 class="award-recommendation__heading">
+                            Recommend this production for <span class="award-recommendation__name">{{ event.name }}</span>!
+                        </h2>
+                    </header>
+                    <div class="award-recommendation__inner">
+                        <form action="{% url 'awards_recommend' event.id production.id %}"
+                              class="award-recommendation__form"
+                              method="POST">
+                            <fieldset class="award-recommendation__fieldset">
+                                {% csrf_token %}
+                                <ul class="award-recommendation__categories">
+                                    {% for category_id, category_name, has_recommended in recommendation_options %}
+                                    <li class="award-recommendation__category">
+                                        <label class="award-recommendation__label">
+                                            <input class="award-recommendation__checkbox"
+                                                   id="award_recommendation_category_{{ category_id }}"
+                                                   name="category_id" value="{{ category_id }}"
+                                                   type="checkbox"
+                                                   {% if has_recommended %}checked="checked"{% endif %} />
+                                            <span class="award-recommendation__label-text">{{ category_name }}</span>
+                                        </label>
                                     </li>
-                                {% endfor %}
-                            </ul>
-                            <button class="submit" type="submit">Make your recommendation!</button>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                            <div class="award-recommendation__buttons">
+                                <button class="button button--ghost" type="submit">Make your recommendation!</button>
+                            </div>
                         </form>
                     </div>
                 {% else %}
-                    <div class="header">
+                    <header class="award-recommendation__header">
                         <a href="{% url 'log_in' %}?next={{ production.get_absolute_url|urlencode }}">
-                            <h2>Recommend this production for {{ event.name }}!</h2>
+                            <h2 class="award-recommendation__heading">Recommend this production for {{ event.name }}!</h2>
                         </a>
-                    </div>
+                    </header>
                 {% endif %}
             </div>
         {% endfor %}
