@@ -26,7 +26,7 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
         font-size: 18px;
         font-weight: 600;
         line-height: 24px;
-        padding: 10px 20px;
+        padding: 10px 54px 10px 20px;
     }
 
     &__name {
@@ -43,13 +43,24 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
     }
 
     &__categories {
-        display: flex;
-        flex-wrap: wrap;
+        display: block;
+
+        @media (min-width:600px) {
+            display: flex;
+            flex-wrap: wrap;
+        }
     }
 
     &__category {
-        flex: 1 1 (100% / 4);
         margin: 0 0 10px;
+
+        @media (min-width: 600px) {
+            flex: 0 0 (100% / 2);
+        }
+
+        @media (min-width: 960px) {
+            flex: 0 0 (100% / 4);
+        }
     }
 
     &__label {
@@ -107,21 +118,31 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
    }
 
     &__buttons {
-        display: flex;
-        justify-content: flex-end;
         border-top: 1px solid $color-alert-inner-border;
         padding-top: 20px;
+
+        @media (min-width: 600px) {
+            display: flex;
+            justify-content: flex-end;
+        }
     }
 
     .button--ghost {
         background: transparent;
         border-color: black;
         color: black;
+        display: block;
         padding: 0.75em 1em;
+        width: 100%;
 
         &:hover {
             background: black;
             color: white;
+        }
+
+        @media (min-width: 600px) {
+            display: inline-block;
+            width: auto;
         }
     }
 
