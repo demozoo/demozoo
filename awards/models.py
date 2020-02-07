@@ -18,6 +18,8 @@ class Event(models.Model):
     recommendations_enabled = models.BooleanField(default=False, help_text="Whether these awards are currently accepting recommendations")
     reporting_enabled = models.BooleanField(default=False, help_text="Whether jurors can currently view reports for these awards")
 
+    juror_feed_url = models.URLField(blank=True, max_length=255, help_text="URL to a list of juror SceneIDs")
+
     def __unicode__(self):
         return self.name
 
@@ -77,4 +79,15 @@ class Recommendation(models.Model):
     class Meta:
         unique_together = [
             ('user', 'production', 'category'),
+        ]
+
+
+class Juror(models.Model):
+    user = models.ForeignKey(User, related_name='juror_appointments', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, related_name='jurors', on_delete=models.CASCADE)
+    is_sticky = models.BooleanField(default=False, help_text="If set, this juror will not be removed in the event that they are absent from the feed of jury members")
+
+    class Meta:
+        unique_together = [
+            ('user', 'event'),
         ]

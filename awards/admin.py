@@ -3,11 +3,16 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from awards.models import Event, Category
+from awards.models import Event, Category, Juror
 
 
 class CategoryInline(admin.TabularInline):
     model = Category
 
 
-admin.site.register(Event, inlines=[CategoryInline])
+class JurorInline(admin.TabularInline):
+    model = Juror
+    raw_id_fields = ['user']
+
+
+admin.site.register(Event, inlines=[CategoryInline, JurorInline])
