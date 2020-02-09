@@ -56,6 +56,9 @@ class Event(models.Model):
             for category in categories
         ]
 
+    def user_can_view_reports(self, user):
+        return user.is_staff or self.jurors.filter(user=user).exists()
+
 
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)

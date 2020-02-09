@@ -71,6 +71,7 @@ def user_recommendations(request, event_slug):
     return render(request, 'awards/user_recommendations.html', {
         'event': event,
         'recommendations_by_category': recommendations_by_category,
+        'can_view_reports': event.user_can_view_reports(request.user),
     })
 
 

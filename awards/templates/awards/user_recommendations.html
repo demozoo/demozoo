@@ -6,22 +6,46 @@
 {% block html_title %}{{ event.name }} - Your recommendations - Demozoo{% endblock %}
 
 {% block base_main %}
-<h1>{{ event.name }} - Your recommendations</h1>
 
-{% if event.intro %}
-    {{ event.intro|safe_markdown }}
+{% if can_view_reports %}
+
+    <h1>{{ event.name }} - Welcome, jury member!</h1>
+
+    <h2>Reports</h2>
+    <ul>
+        {% for category in event.categories.all %}
+            <li>{{ category.name }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if recommendations_by_category %}
+        <h2>Your recommendations</h2>
+        {% for category, recommendations in recommendations_by_category %}
+            <h2>{{ category }}</h2>
+            {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}
+        {% endfor %}
+    {% endif %}
+
+{% else %}
+
+    <h1>{{ event.name }} - Your recommendations</h1>
+    {% if event.intro %}
+        {{ event.intro|safe_markdown }}
+    {% endif %}
+
+    {% for category, recommendations in recommendations_by_category %}
+        <h2>{{ category }}</h2>
+        {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}
+    {% empty %}
+        {% if request.user.is_authenticated %}
+            <p>You haven't made any recommendations yet. Search for your favourite productions of the year and get to it :-)</p>
+        {% else %}
+            {% url 'awards_user_recommendations' event.slug as recommendations_url %}
+            <p><a href="{% url 'log_in' %}?next={{ recommendations_url|urlencode }}">Log in</a> to start making recommendations.</p>
+        {% endif %}
+    {% endfor %}
+
 {% endif %}
 
-{% for category, recommendations in recommendations_by_category %}
-    <h2>{{ category }}</h2>
-    {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}
-{% empty %}
-    {% if request.user.is_authenticated %}
-        <p>You haven't made any recommendations yet. Search for your favourite productions of the year and get to it :-)</p>
-    {% else %}
-        {% url 'awards_user_recommendations' event.slug as recommendations_url %}
-        <p><a href="{% url 'log_in' %}?next={{ recommendations_url|urlencode }}">Log in</a> to start making recommendations.</p>
-    {% endif %}
-{% endfor %}
 
 {% endblock %}
