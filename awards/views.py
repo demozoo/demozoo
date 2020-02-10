@@ -5,6 +5,7 @@ import itertools
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -86,3 +87,25 @@ def remove_recommendation(request, recommendation_id):
 
     recommendation.delete()
     return HttpResponseRedirect(reverse('awards_user_recommendations', args=(recommendation.category.event.slug, )))
+
+
+@login_required
+def report(request, event_slug, category_id):
+    event = get_object_or_404(
+        Event.objects.filter(reporting_enabled=True), slug=event_slug
+    )
+    category = get_object_or_404(
+        event.categories.all(), id=category_id
+    )
+    if not event.user_can_view_reports(request.user):
+        raise PermissionDenied
+
+    productions = category.get_recommendation_report().prefetch_related(
+        'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+    )
+
+    return render(request, 'awards/report.html', {
+        'event': event,
+        'category': category,
+        'productions': productions,
+    })

@@ -14,7 +14,7 @@
     <h2>Reports</h2>
     <ul>
         {% for category in event.categories.all %}
-            <li>{{ category.name }}</li>
+            <li><a href="{% url 'awards_report' event.slug category.id %}">{{ category.name }}</a></li>
         {% endfor %}
     </ul>
 

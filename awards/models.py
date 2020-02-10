@@ -68,6 +68,11 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_recommendation_report(self):
+        return Production.objects.filter(award_recommendations__category=self).\
+            annotate(recommendation_count=models.Count('award_recommendations')).\
+            order_by('-recommendation_count', 'sortable_title')
+
     class Meta:
         verbose_name_plural = "Categories"
         ordering = ['position']

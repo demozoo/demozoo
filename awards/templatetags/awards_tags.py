@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 
+from demoscene.templatetags.demoscene_tags import production_listing
 from productions.models import Production, Screenshot
 
 
@@ -26,3 +27,6 @@ def recommended_production_listing(recommendations, show_screenshots=False, show
         'mark_excludable': mark_excludable,
         'site_is_writeable': settings.SITE_IS_WRITEABLE,
     }
+
+
+register.inclusion_tag('awards/_recommendation_summary_listing.html', name='recommendation_summary_listing')(production_listing)

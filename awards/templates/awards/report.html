@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load awards_tags %}
+
+{% block html_title %}{{ event.name }} - {{ category.name }} recommendations - Demozoo{% endblock %}
+
+{% block base_main %}
+
+<h1>{{ event.name }} - {{ category.name }} recommendations</h1>
+
+<ul>
+    {% for item in event.categories.all %}
+        {% if item == category %}
+        <li><strong>{{ item.name }}</strong></li>
+        {% else %}
+            <li><a href="{% url 'awards_report' event.slug item.id %}">{{ item.name }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% if productions %}
+    {% recommendation_summary_listing productions show_screenshots=True show_prod_types=True %}
+{% else %}
+    <p>No recommendations for this category yet</p>
+{% endif %}
+
+{% endblock %}

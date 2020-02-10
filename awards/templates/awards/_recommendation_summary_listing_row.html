@@ -1,0 +1,8 @@
+{% extends "shared/production_listing_row.html" %}
+
+{% block cells %}
+    {{ block.super }}
+    <td>
+        {{ production.recommendation_count }} recommendation{{ production.recommendation_count|pluralize }}
+    </td>
+{% endblock %}
