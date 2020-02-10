@@ -19,9 +19,6 @@ apt-get install -y postgresql libpq-dev
 # (needed by bcrypt, which some old accounts still use as their password encryption method)
 apt-get install -y libffi-dev
 
-# xapian (search engine)
-apt-get install -y python-xapian
-
 # node.js
 curl -sL https://deb.nodesource.com/setup_8.x | bash -
 apt-get install -y nodejs
@@ -57,9 +54,6 @@ AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
 EOM
 fi
 
-# link xapian into virtualenv
-su - vagrant -c "ln -s /usr/lib/python2.7/dist-packages/xapian $VIRTUALENV_DIR/lib/python2.7/site-packages/"
-
 # Create vagrant pgsql superuser
 su - postgres -c "createuser -s vagrant"
 
@@ -75,5 +69,5 @@ su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.setti
 
 # Install project dependencies for node and run a first time
 su - vagrant -c "mkdir ~/demozoo/static/svg && touch ~/demozoo/static/icons.svg"
-su - vagrant -c "cd ~/demozoo/ && npm i && npm run css && npm run icons"
+su - vagrant -c "cd ~/demozoo/ && npm i --no-save && npm run css && npm run icons"
 

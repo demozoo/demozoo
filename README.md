@@ -26,7 +26,7 @@ Rebuilding indices for the database
 
 If you want to work with the search feature, you have to rebuild your database indices first:
 
-    ./manage.py index --rebuild --verbose
+    ./manage.py reindex
 
 This will take a *long* time, but you only need to do it once.
 
