@@ -11,15 +11,10 @@
 
     <h1>{{ event.name }} - Welcome, jury member!</h1>
 
-    <h2>Reports</h2>
-    <ul>
-        {% for category in event.categories.all %}
-            <li><a href="{% url 'awards_report' event.slug category.id %}">{{ category.name }}</a></li>
-        {% endfor %}
-    </ul>
+    {% include "awards/_report_categories.html" with current_category=None %}
 
     {% if recommendations_by_category %}
-        <h2>Your recommendations</h2>
+        <h1>Your recommendations</h1>
         {% for category, recommendations in recommendations_by_category %}
             <h2>{{ category }}</h2>
             {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}

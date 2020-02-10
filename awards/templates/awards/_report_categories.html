@@ -1,0 +1,11 @@
+<p>
+    <strong>View report for:</strong>
+    {% for category in event.categories.all %}
+        {% if category == current_category %}
+            <strong>{{ category.name }}</strong>
+        {% else %}
+            <a href="{% url 'awards_report' event.slug category.id %}">{{ category.name }}</a>
+        {% endif %}
+        {% if not forloop.last %}|{% endif %}
+    {% endfor %}
+</p>
