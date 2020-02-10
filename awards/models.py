@@ -38,6 +38,23 @@ class Event(models.Model):
             eligibility_end_date__gte=production.release_date_date,
         )
 
+    @classmethod
+    def active_for_user(cls, user):
+        """
+        Return a queryset of award events that are either open for recommendations or have
+        reports open for the given user
+        """
+        if not user.is_authenticated():
+            return cls.objects.filter(recommendations_enabled=True)
+        elif user.is_staff:
+            return cls.objects.filter(
+                models.Q(recommendations_enabled=True) | models.Q(reporting_enabled=True)
+            )
+        else:
+            return Event.objects.filter(
+                models.Q(recommendations_enabled=True) | models.Q(reporting_enabled=True, jurors__user=user)
+            ).distinct()
+
     def get_recommendation_options(self, user, production):
         """
         Return list of (category_id, category_name, has_recommended) tuples for this

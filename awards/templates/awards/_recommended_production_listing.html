@@ -2,7 +2,7 @@
 
 {% block columns %}
     {{ block.super }}
-    {% if site_is_writeable %}
+    {% if can_remove_recommendations %}
         <col width="10%" />
     {% endif %}
 {% endblock %}

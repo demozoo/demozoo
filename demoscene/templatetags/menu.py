@@ -1,5 +1,6 @@
 from django import template
 from django.core import urlresolvers
+from django.db.models import Q
 from django.urls import reverse
 
 from awards.models import Event
@@ -41,9 +42,8 @@ def user_menu(context):
     menu_items = [
         (reverse('account_change_password'), "Change password"),
     ]
-    
 
-    for event in Event.objects.filter(recommendations_enabled=True):
+    for event in Event.active_for_user(user):
         menu_items.append(
             (reverse('awards_user_recommendations', args=(event.slug,)), event.name),
         )

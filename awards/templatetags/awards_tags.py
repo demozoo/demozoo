@@ -25,7 +25,7 @@ def recommended_production_listing(recommendations, show_screenshots=False, show
         'show_screenshots': show_screenshots,
         'show_prod_types': show_prod_types,
         'mark_excludable': mark_excludable,
-        'site_is_writeable': settings.SITE_IS_WRITEABLE,
+        'can_remove_recommendations': settings.SITE_IS_WRITEABLE and rows and rows[0][0].category.event.recommendations_enabled,
     }
 
 

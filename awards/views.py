@@ -52,7 +52,7 @@ def recommend(request, event_slug, production_id):
 
 def user_recommendations(request, event_slug):
     event = get_object_or_404(
-        Event.objects.filter(recommendations_enabled=True), slug=event_slug
+        Event.active_for_user(request.user), slug=event_slug
     )
 
     if request.user.is_authenticated():
@@ -73,6 +73,7 @@ def user_recommendations(request, event_slug):
         'event': event,
         'recommendations_by_category': recommendations_by_category,
         'can_view_reports': event.user_can_view_reports(request.user),
+        'can_remove_recommendations': event.recommendations_enabled,
     })
 
 
