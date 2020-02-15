@@ -656,6 +656,7 @@ class ModlandFile(BaseUrl):
         regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
         regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
         regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
+        regex_match(r'http://modland\.antarctica\.no(/.*)', re.I),
         exotica_querystring_match(),
     ]
     html_link_class = "modland"
@@ -669,6 +670,7 @@ class ModlandFile(BaseUrl):
             '<li><a href="%s" class="country country_se">se</a></li>' % escape(self.se_url),
             '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_url),
             '<li><a href="%s" class="country country_ca">ca</a></li>' % escape(self.ca_url),
+            '<li><a href="%s" class="country country_no">no</a></li>' % escape(self.no_url),
         ]
 
         return links
@@ -688,6 +690,10 @@ class ModlandFile(BaseUrl):
     @property
     def ca_url(self):
         return "ftp://ftp.rave.ca%s" % self.param
+    
+    @property
+    def no_url(self):
+        return "http://modland.antarctica.no%s" % self.param
 
     def as_download_link(self):
         mirrors_html = ' '.join(self.mirror_links)
