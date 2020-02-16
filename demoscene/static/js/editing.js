@@ -87,7 +87,7 @@ function applyEditControls(context) {
         var searchField = $('.party_field_search', this);
         var partyIdField = $('.party_field_party_id', this);
         var helpText = $('.help_text', this);
-        $('.party_field_lookup', this).hide();
+        $('.party_field_lookup', this).remove();
         searchField.autocomplete({
             'source': function(request, response) {
                 $.getJSON('/parties/autocomplete/', {'term': request.term}, function(data) {
