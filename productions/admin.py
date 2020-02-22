@@ -1,4 +1,5 @@
 from django.contrib import admin
+from taggit.admin import TagAdmin
 from treebeard.admin import TreeAdmin
 
 from productions.models import ProductionType, Production, Credit, Screenshot, SoundtrackLink
@@ -28,3 +29,5 @@ admin.site.register(Production,
     inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
     raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
     search_fields=['title'])
+
+TagAdmin.inlines = []
