@@ -68,5 +68,5 @@ su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.setti
 
 # Install project dependencies for node and run a first time
 su - vagrant -c "mkdir ~/demozoo/static/svg && touch ~/demozoo/static/icons.svg"
-su - vagrant -c "cd ~/demozoo/ && npm i --no-save && npm run css && npm run icons"
+su - vagrant -c "cd ~/demozoo/ && npm i --no-save && npm run build"
 
