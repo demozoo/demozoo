@@ -20,9 +20,8 @@ apt-get install -y postgresql libpq-dev
 apt-get install -y libffi-dev
 
 # node.js
-curl -sL https://deb.nodesource.com/setup_8.x | bash -
+curl -sL https://deb.nodesource.com/setup_12.x | bash -
 apt-get install -y nodejs
-# npm install -g less@2.7.3 less-plugin-glob less-plugin-autoprefix less-plugin-clean-css grunt-cli
 
 # virtualenvwrapper
 pip install virtualenvwrapper
