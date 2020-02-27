@@ -139,7 +139,7 @@ def urldecoded_regex_match(pattern, flags=None, add_slash=False):
     return match_fn
 
 
-def querystring_match(pattern, varname, flags=None, othervars={}):
+def querystring_match(pattern, varname, flags=None, othervars={}, numeric=False):
     """
     Build a function that tests a URL against the regexp 'pattern'. If it matches,
     AND all of the query parameters in 'othervars' match, return the query parameter
@@ -154,9 +154,23 @@ def querystring_match(pattern, varname, flags=None, othervars={}):
                 for (key, val) in othervars.items():
                     if querystring[key][0] != val:
                         return None
-                return querystring[varname][0]
+
+                result = querystring[varname][0]
             except KeyError:
                 return None
+
+            if numeric:
+                numeric_match = re.match(r'\d+', querystring[varname][0])
+                if numeric_match:
+                    try:
+                        result = int(numeric_match.group())
+                    except ValueError:
+                        return None
+                else:
+                    return None
+
+            return result
+
     return match_fn
 
 
@@ -174,7 +188,7 @@ class TwitterAccount(BaseUrl):
 class SceneidAccount(BaseUrl):
     canonical_format = "https://www.pouet.net/user.php?who=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I),
+        querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I, numeric=True),
     ]
     html_link_class = "pouet"
     html_link_text = u"Pouët"
@@ -184,7 +198,7 @@ class SceneidAccount(BaseUrl):
 class PouetGroup(BaseUrl):
     canonical_format = "https://www.pouet.net/groups.php?which=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I),
+        querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I, numeric=True),
     ]
     html_link_class = "pouet"
     html_link_text = u"Pouët"
@@ -194,7 +208,7 @@ class PouetGroup(BaseUrl):
 class PouetProduction(BaseUrl):
     canonical_format = "https://www.pouet.net/prod.php?which=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I),
+        querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I, numeric=True),
     ]
     html_link_class = "pouet"
     html_link_text = u"Pouët"
