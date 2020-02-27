@@ -16,9 +16,8 @@ def deploy():
     with cd('/home/demozoo/demozoo'):
         run('git pull')
         run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
-        run('npm install')
-        run('npm run css')
-        run('npm run icons')
+        run('npm i --no-save')
+        run('npm run build')
         run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
         run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
         run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
@@ -34,9 +33,8 @@ def deploy_staging():
     with cd('/home/demozoo/demozoo-staging'):
         run('git pull')
         run('/home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
-        run('npm install')
-        run('npm run css')
-        run('npm run icons')
+        run('npm i --no-save')
+        run('npm run build')
         run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
         run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
         run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
