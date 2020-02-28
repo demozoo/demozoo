@@ -1065,6 +1065,7 @@ def edit_info_files(request, production_id):
     })
 
 
+@login_required
 def info_file(request, production_id, file_id):
     production = get_object_or_404(Production, id=production_id)
     info_file = get_object_or_404(InfoFile, production=production, id=file_id)
