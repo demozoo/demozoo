@@ -885,7 +885,7 @@ TOR_ENDPOINT_IPS = set([
     '97.74.237.196',
 ])
 
-BANNED_IPS = TOR_ENDPOINT_IPS | set(['81.234.236.23', '81.230.148.230'])
+BANNED_IPS = TOR_ENDPOINT_IPS | set(['81.234.236.23', '81.230.148.230', '81.132.17.106'])
 
 
 def is_ip_banned(request):
