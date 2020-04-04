@@ -262,7 +262,7 @@ class ProdsWithoutPlatforms(StaffOnlyMixin, Report):
 
         productions = (
             Production.objects.filter(platforms__isnull=True, supertype='production')
-            .exclude(types__name__in=('Video', 'Performance'))
+            .exclude(types__name__in=('Video', 'Performance', 'Textmag'))
             .extra(
                 where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
                 params=[self.exclusion_name]
@@ -286,7 +286,7 @@ class ProdsWithoutPlatformsExcludingLost(StaffOnlyMixin, Report):
 
         productions = (
             Production.objects.filter(platforms__isnull=True, supertype='production')
-            .exclude(types__name__in=('Video', 'Performance'))
+            .exclude(types__name__in=('Video', 'Performance', 'Textmag'))
             .exclude(tags__name=('lost'))
             .extra(
                 where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
