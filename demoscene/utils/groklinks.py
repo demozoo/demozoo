@@ -1592,6 +1592,7 @@ ARCHIVED_LINK_TYPES = [
     'LanyrdEvent',
     'GooglePlusPage', 'GooglePlusEvent',
     'CappedVideo',
+    'AsciiarenaArtist', 'AsciiarenaCrew', 'AsciiarenaRelease',
 ]
 
 
