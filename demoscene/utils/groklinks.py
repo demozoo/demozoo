@@ -1632,7 +1632,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
-    "Defacto2File", 'RetroSceneRelease'
+    'Defacto2File', 'RetroSceneRelease', 
 ]
 
 PARTY_LINK_TYPES = [
