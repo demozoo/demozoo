@@ -1559,6 +1559,35 @@ class Defacto2Group(Defactro2Entry):
     ]
 
 
+class RetroSceneEntry(BaseUrl): # RetroScene abstract superclass
+    html_link_class = "retroscene"
+    html_link_text = "RetroScene"
+    html_title_format = "%s on RetroScene"
+
+
+class RetroSceneEvent(RetroSceneEntry):
+    canonical_format = "https://events.retroscene.org/%s" # https://events.retroscene.org/cafe2019
+    tests = [
+        regex_match(r'https?://events\.retroscene\.org/([\w-]+)', re.I)
+    ]
+
+
+class RetroSceneRelease(RetroSceneEntry):
+    def match_retroscene_release(urlstring, url):
+        # event, compo, number. Like here: https://events.retroscene.org/cafe2019/modernpixelart/2153
+        regex = re.compile(r'https?://events\.retroscene\.org/([\w-]+)/([\w-]+)/([\w-]+)', re.I)
+        match = regex.match(urlstrings)
+        if match:
+            event, compoName, entryNumber = match.groups()
+            return "%s/%s/%s" % (event, compoName, entryNumber)
+        
+        tests = [match_retroscene_release]
+
+        def __unicode__(self):
+            (event, compoName, entryNumber) = self.param.split('/')
+            return u"https://events.retroscene.org/%s/%s/%s" % (event, compoName, entryNumber)
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1577,7 +1606,7 @@ RELEASER_LINK_TYPES = [
 ]
 
 PRODUCTION_LINK_TYPES = [
-    PouetProduction, CsdbRelease, ZxdemoItem,
+    PouetProduction, CsdbRelease, ZxdemoItem, RetroSceneRelease,
     YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage, Defacto2File,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
@@ -1603,12 +1632,13 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
-    "Defacto2File",
+    "Defacto2File", 'RetroSceneRelease'
 ]
 
 PARTY_LINK_TYPES = [
     DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
+    RetroSceneEvent,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
