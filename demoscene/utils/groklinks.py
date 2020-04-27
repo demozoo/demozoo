@@ -1531,12 +1531,41 @@ class BandcampTrack(BandcampEntry):
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
+class Defactro2Entry(BaseUrl): # Defacto2 abstract superclass
+    html_link_class = "defacto2"
+    html_link_text = "Defacto2"
+    html_title_format = "%s on Defacto2"
+
+
+class Defacto2File(Defactro2Entry):
+    canonical_format = "https://defacto2.net/f/%s"
+    tests = [
+        # XXX: See if this works with DOSee config :/
+        regex_match(r'https?://defacto2\.net/f/([\w-]+)', re.I),
+    ]
+
+
+class Defacto2Person(Defactro2Entry):
+    canonical_format = "https://defacto2.net/p/%s"
+    tests = [
+        regex_match(r'https?://defacto2\.net/p/([\w-]+)', re.I)
+    ]
+
+
+class Defacto2Group(Defactro2Entry):
+    canonical_format = "https://defacto2.net/g/%s"
+    tests = [
+        regex_match(r'https?://defacto2\.net/g/([\w-]+)', re.I)
+    ]
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
     MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
     ScenesatAct, ZxdemoAuthor, FacebookPage,
     PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
+    Defacto2Group, Defacto2Person,
     GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel,
     DeviantartUser, ModarchiveMember, WikipediaPage,
     SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
@@ -1550,7 +1579,7 @@ RELEASER_LINK_TYPES = [
 PRODUCTION_LINK_TYPES = [
     PouetProduction, CsdbRelease, ZxdemoItem,
     YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
-    AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
+    AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage, Defacto2File,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
@@ -1574,6 +1603,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
+    "Defacto2File",
 ]
 
 PARTY_LINK_TYPES = [
