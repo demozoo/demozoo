@@ -1531,7 +1531,7 @@ class BandcampTrack(BandcampEntry):
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
-class Defactro2Entry(BaseUrl): # Defacto2 abstract superclass
+class Defactro2Entry(BaseUrl): # for use as an abstract superclass
     html_link_class = "defacto2"
     html_link_text = "Defacto2"
     html_title_format = "%s on Defacto2"
@@ -1559,14 +1559,14 @@ class Defacto2Group(Defactro2Entry):
     ]
 
 
-class RetroSceneEntry(BaseUrl): # RetroScene abstract superclass
+class RetroSceneEntry(BaseUrl): # for use as an abstract superclass
     html_link_class = "retroscene"
     html_link_text = "RetroScene"
     html_title_format = "%s on RetroScene"
 
 
 class RetroSceneEvent(RetroSceneEntry):
-    canonical_format = "https://events.retroscene.org/%s" # https://events.retroscene.org/cafe2019
+    canonical_format = "https://events.retroscene.org/%s"
     tests = [
         regex_match(r'https?://events\.retroscene\.org/([\w-]+)', re.I)
     ]
@@ -1574,7 +1574,6 @@ class RetroSceneEvent(RetroSceneEntry):
 
 class RetroSceneRelease(RetroSceneEntry):
     def match_retroscene_release(urlstring, url):
-        # event, compo, number. Like here: https://events.retroscene.org/cafe2019/modernpixelart/2153
         regex = re.compile(r'https?://events\.retroscene\.org/([\w-]+)/([\w-]+)/([\w-]+)', re.I)
         match = regex.match(urlstrings)
         if match:
