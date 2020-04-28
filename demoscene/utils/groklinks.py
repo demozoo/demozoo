@@ -1542,20 +1542,21 @@ class Defacto2File(Defactro2Entry):
     tests = [
         # XXX: See if this works with DOSee config :/
         regex_match(r'https?://defacto2\.net/f/([\w-]+)', re.I),
+        regex_match(r'https?://defacto2\.net/file/detail/([\w-]+)', re.I),
     ]
 
 
 class Defacto2Person(Defactro2Entry):
     canonical_format = "https://defacto2.net/p/%s"
     tests = [
-        regex_match(r'https?://defacto2\.net/p/([\w-]+)', re.I)
+        regex_match(r'https?://defacto2\.net/p/([\w-]+)', re.I),
     ]
 
 
 class Defacto2Group(Defactro2Entry):
     canonical_format = "https://defacto2.net/g/%s"
     tests = [
-        regex_match(r'https?://defacto2\.net/g/([\w-]+)', re.I)
+        regex_match(r'https?://defacto2\.net/g/([\w-]+)', re.I),
     ]
 
 
@@ -1568,13 +1569,13 @@ class RetroSceneEntry(BaseUrl): # for use as an abstract superclass
 class RetroSceneEvent(RetroSceneEntry):
     canonical_format = "https://events.retroscene.org/%s"
     tests = [
-        regex_match(r'https?://events\.retroscene\.org/([\w-]+)', re.I)
+        regex_match(r'https?://events\.retroscene\.org/([\w-]+)', re.I),
     ]
 
 
 class RetroSceneRelease(RetroSceneEntry):
     def match_retroscene_release(urlstring, url):
-        regex = re.compile(r'https?://events\.retroscene\.org/([\w-]+)/([\w-]+)/([\w-]+)', re.I)
+        regex = re.compile(r'https?://events\.retroscene\.org/([\w-]+)/([\w-]+)/([\w-]+)', re.I),
         match = regex.match(urlstrings)
         if match:
             event, compoName, entryNumber = match.groups()
