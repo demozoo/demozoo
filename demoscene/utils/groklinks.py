@@ -58,10 +58,13 @@ class BaseUrl():
             escape(self.html_link_text)
         )
 
+    @property
+    def download_link_label(self):
+        return urlparse.urlparse(str(self)).hostname
+
     def as_download_link(self):
-        hostname = urlparse.urlparse(str(self)).hostname
         return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
-            escape(str(self)), escape(hostname)
+            escape(str(self)), escape(self.download_link_label)
         )
 
     @property
@@ -720,19 +723,20 @@ class ModlandFile(BaseUrl):
 
 
 class FujiologyFile(BaseUrl):
-    canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
+    canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
-        regex_match(r'ftp://(?:fujiology\.|ftp\.)untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
+        regex_match(r'(?:https|ftp)://(?:fujiology\.|ftp\.)untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
     ]
     html_link_class = "fujiology"
     html_link_text = "Fujiology"
     html_title_format = "%s on the Fujiology Archive"
+    download_link_label = "Fujiology @ untergrund.net"
 
 
 class FujiologyFolder(BaseUrl):
-    canonical_format = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology%s"
+    canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
-        regex_match(r'ftp://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
+        regex_match(r'(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
     ]
     html_link_class = "fujiology"
     html_link_text = "Fujiology"
@@ -740,9 +744,9 @@ class FujiologyFolder(BaseUrl):
 
 
 class UntergrundFile(BaseUrl):
-    canonical_format = "ftp://ftp.untergrund.net%s"
+    canonical_format = "https://ftp.untergrund.net%s"
     tests = [
-        regex_match(r'ftp://(?:ftp\.)?untergrund\.net(/.*)', re.I),
+        regex_match(r'(?:https|ftp)://(?:ftp\.)?untergrund\.net(/.*)', re.I),
     ]
     html_link_class = "untergrund"
     html_link_text = "untergrund.net"
