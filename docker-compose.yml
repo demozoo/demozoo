@@ -1,8 +1,10 @@
-version: "3.7"
+version: "3.8"
 services:
   demozoo-web:
     container_name: demozoo-web
-    build: .
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
     ports:
       - "8000:8000"
     volumes:
