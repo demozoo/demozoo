@@ -8,7 +8,7 @@ psql -h db1 -w demozoo_export -c "UPDATE demoscene_releaser SET search_document=
 psql -h db1 -w demozoo_export -c "UPDATE parties_party SET search_document=NULL;"
 psql -h db1 -w demozoo_export -c "UPDATE awards_event SET juror_feed_url='';"
 psql -h db1 -w demozoo_export -c "TRUNCATE TABLE celery_taskmeta, celery_tasksetmeta, django_session, djcelery_intervalschedule, djcelery_periodictask, djcelery_crontabschedule, djcelery_periodictasks, djcelery_taskstate, djcelery_workerstate;"
-psql -h db1 -w demozoo_export -c "TRUNCATE TABLE janeway_author, janeway_credit, janeway_downloadlink, janeway_membership, janeway_name, janeway_packcontent, janeway_release, janeway_release_author_names, janeway_releasetype, janeway_soundtracklink;"
+psql -h db1 -w demozoo_export -c "TRUNCATE TABLE janeway_author, janeway_credit, janeway_downloadlink, janeway_membership, janeway_name, janeway_packcontent, janeway_release, janeway_release_author_names, janeway_releasetype, janeway_screenshot, janeway_soundtracklink;"
 psql -h db1 -w demozoo_export -c "TRUNCATE TABLE awards_recommendation, awards_juror;"
 
 pg_dump -h db1 -w -O demozoo_export | gzip - > /home/demozoo/demozoo/data/demozoo-export.sql.gz
