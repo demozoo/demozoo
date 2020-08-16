@@ -36,12 +36,12 @@ class TestRecommendations(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            """<input id="award_recommendation_category_1" name="category_id" value="1" type="checkbox">""",
+            """<input class="award-recommendation__checkbox" id="award_recommendation_category_1" name="category_id" value="1" type="checkbox">""",
             html=True
         )
         self.assertContains(
             response,
-            """<input id="award_recommendation_category_2" name="category_id" value="2" type="checkbox" checked="checked">""",
+            """<input class="award-recommendation__checkbox" id="award_recommendation_category_2" name="category_id" value="2" type="checkbox" checked="checked">""",
             html=True
         )
 
@@ -53,7 +53,7 @@ class TestRecommendations(TestCase):
         Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
 
         self.client.login(username='testuser', password='12345')
-        response = self.client.post('/awards/%d/recommend/%d/' % (meteoriks.id, brexecutable.id), {
+        response = self.client.post('/awards/%s/recommend/%d/' % (meteoriks.slug, brexecutable.id), {
             'category_id': [outstanding_concept.id]
         })
         self.assertRedirects(response, '/productions/%d/' % brexecutable.id)

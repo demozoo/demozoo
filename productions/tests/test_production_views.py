@@ -1584,13 +1584,19 @@ class TestInfoFile(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
         self.pondlife = Production.objects.get(title='Pondlife')
         self.info = self.pondlife.info_files.create(
             file=File(name="pondlife1.txt", file=BytesIO(b"First info file for Pondlife")),
             filename="pondlife1.txt", filesize=100, sha1="1234123412341234"
         )
 
-    def test_get(self):
+    def test_get_without_login(self):
+        url = '/productions/%d/info/%d/' % (self.pondlife.id, self.info.id)
+        response = self.client.get(url)
+        self.assertRedirects(response, '/account/login/?next=%s' % url)
+
+    def test_get_with_login(self):
         self.client.login(username='testuser', password='12345')
         response = self.client.get('/productions/%d/info/%d/' % (self.pondlife.id, self.info.id))
         self.assertEqual(response.status_code, 200)
