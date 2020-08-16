@@ -105,8 +105,7 @@ class MockHTTPSHandler(urllib2.HTTPSHandler):
         return mock_response(req)
 
 
-urllib2.install_opener(urllib2.build_opener(MockHTTPHandler))
-urllib2.install_opener(urllib2.build_opener(MockHTTPSHandler))
+urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler))
 
 try:
     from .test_local import *
