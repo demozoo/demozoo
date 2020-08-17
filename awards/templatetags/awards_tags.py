@@ -14,7 +14,7 @@ def recommended_production_listing(recommendations, show_screenshots=False, show
             recommendation.production.id for recommendation in recommendations
         ])
     else:
-        screenshots = {}
+        screenshots = {}  # pragma: no cover
 
     rows = [
         (recommendation, recommendation.production, screenshots.get(recommendation.production.id))

@@ -29,10 +29,7 @@ class Command(BaseCommand):
             # add Juror records for user accounts matching these sceneids
             users = User.objects.filter(sceneid__sceneid__in=sceneids)
             for user in users:
-                try:
-                    Juror.objects.create(user=user, event=event)
-                except IntegrityError:
-                    pass
+                Juror.objects.get_or_create(user=user, event=event)
 
             # remove non-sticky Juror records for users not in this list
             Juror.objects.filter(event=event, is_sticky=False).exclude(user__in=users).delete()

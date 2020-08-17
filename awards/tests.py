@@ -2,10 +2,27 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.test import TestCase
+from django.test.utils import captured_stdout
 
-from awards.models import Category, Event, Recommendation
+import responses
+from requests.exceptions import HTTPError
+
+from awards.models import Category, Event, Juror, Recommendation
+from demoscene.models import SceneID
 from productions.models import Production
+
+class TestModels(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_event_model(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        self.assertEqual(str(meteoriks), "The Meteoriks 2020")
+
+    def test_category_model(self):
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        self.assertEqual(str(best_lowend), "Best Low-End Production")
 
 
 class TestRecommendations(TestCase):
@@ -64,3 +81,86 @@ class TestRecommendations(TestCase):
         self.assertFalse(
             Recommendation.objects.filter(user=self.testuser, production=brexecutable, category=best_lowend).exists()
         )
+
+    def test_get_recommendations(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/awards/%s/' % meteoriks.slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_recommendations_no_login(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        response = self.client.get('/awards/%s/' % meteoriks.slug)
+        self.assertEqual(response.status_code, 200)
+
+    def test_remove_recommendation(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        rec = Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/awards/remove_recommendation/%d/' % (rec.id, ), {})
+        self.assertRedirects(response, '/awards/%s/' % meteoriks.slug)
+        self.assertEqual(Recommendation.objects.filter(user=self.testuser).count(), 0)
+
+    def test_report_no_access(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/awards/%s/report/%d/' % (meteoriks.slug, best_lowend.id))
+        self.assertEqual(response.status_code, 403)
+
+    def test_report(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+        Juror.objects.create(user=self.testuser, event=meteoriks)
+
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/awards/%s/report/%d/' % (meteoriks.slug, best_lowend.id))
+        self.assertEqual(response.status_code, 200)
+
+
+class TestFetchJurors(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.juror_feed_url = 'http://example.com/meteoriks-jurors.txt'
+        meteoriks.save()
+
+        self.testuser = User.objects.create_user(username='testuser', password='12345')
+        self.truck = User.objects.create_user(username='truck', password='56789')
+        SceneID.objects.create(user=self.testuser, sceneid=4242)
+        SceneID.objects.create(user=self.truck, sceneid=666)
+        Juror.objects.create(user=self.truck, event=meteoriks)
+
+    @responses.activate
+    def test_fetch_fail(self):
+        exception = HTTPError('Something went wrong')
+        responses.add(
+            responses.GET, 'http://example.com/meteoriks-jurors.txt',
+            body=exception
+        )
+        with captured_stdout():
+            call_command('fetch_award_jurors')
+
+        self.assertEqual(Juror.objects.filter(user=self.testuser).count(), 0)
+
+    @responses.activate
+    def test_fetch(self):
+        responses.add(
+            responses.GET, 'http://example.com/meteoriks-jurors.txt',
+            body="4242  # testuser\n666  # truck\n"
+        )
+        call_command('fetch_award_jurors')
+
+        self.assertEqual(Juror.objects.filter(user=self.testuser).count(), 1)
+        self.assertEqual(Juror.objects.filter(user=self.truck).count(), 1)
