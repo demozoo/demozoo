@@ -27,6 +27,19 @@ class TestShowMusic(TestCase):
         response = self.client.get('/music/%d/' % cybrev.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_artwork(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        cybrev.links.create(link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True)
+        cybrev.screenshots.create(
+            original_url="http://example.com/orig.png",
+            standard_url="http://example.com/standard.png",
+            standard_width=400,
+            standard_height=300,
+        )
+
+        response = self.client.get('/music/%d/' % cybrev.id)
+        self.assertEqual(response.status_code, 200)
+
     def test_redirect_non_music(self):
         pondlife = Production.objects.get(title="Pondlife")
         response = self.client.get('/music/%d/' % pondlife.id)

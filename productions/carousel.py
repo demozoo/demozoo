@@ -132,7 +132,7 @@ class Carousel(object):
 
     @property
     def audio_tracks(self):
-        if self._audio_tracks is None:
+        if self._audio_tracks is None:  # pragma: no cover
             self._audio_tracks, self._audio_media = get_playable_track_data(self.production)
         return self._audio_tracks
 

@@ -76,6 +76,89 @@ class TestShowProduction(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, '/productions/%d/screenshots/edit/' % pondlife.id)
 
+    def test_get_locked(self):
+        mooncheese = Production.objects.get(title="Mooncheese")
+        mooncheese.screenshots.create()
+        response = self.client.get('/productions/%d/' % mooncheese.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_video(self):
+        pondlife = Production.objects.get(title="Pondlife")
+
+        # hack to stop ProductionLink.save from clearing embed details on link change
+        pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=False)
+        pondlife.links.update(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            thumbnail_url='http://example.com/yt.png', thumbnail_width=320, thumbnail_height=240
+        )
+
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_big_video(self):
+        pondlife = Production.objects.get(title="Pondlife")
+
+        # hack to stop ProductionLink.save from clearing embed details on link change
+        pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=False)
+        pondlife.links.update(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            thumbnail_url='http://example.com/yt.png', thumbnail_width=640, thumbnail_height=480
+        )
+
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_video_and_screenshot(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        pondlife.screenshots.create(
+            original_url="http://example.com/orig.png",
+            standard_url="http://example.com/standard.png",
+            standard_width=400,
+            standard_height=300,
+        )
+
+        # hack to stop ProductionLink.save from clearing embed details on link change
+        pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=False)
+        pondlife.links.update(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            thumbnail_url='http://example.com/yt.png', thumbnail_width=320, thumbnail_height=240
+        )
+
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_video_and_mosaic(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        for i in range(0, 4):
+            pondlife.screenshots.create(
+                original_url="http://example.com/orig%d.png" % i,
+                standard_url="http://example.com/standard%d.png" % i,
+                standard_width=400,
+                standard_height=300,
+            )
+
+        # hack to stop ProductionLink.save from clearing embed details on link change
+        pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=False)
+        pondlife.links.update(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            thumbnail_url='http://example.com/yt.png', thumbnail_width=320, thumbnail_height=240
+        )
+
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_with_mosaic(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        for i in range(0, 4):
+            pondlife.screenshots.create(
+                original_url="http://example.com/orig%d.png" % i,
+                standard_url="http://example.com/standard%d.png" % i,
+                standard_width=400,
+                standard_height=300,
+            )
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
     def test_get_as_admin(self):
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
         self.client.login(username='testsuperuser', password='12345')
