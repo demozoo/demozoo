@@ -50,6 +50,16 @@ class TestEditCompetition(TestCase):
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertTrue(Competition.objects.filter(party__name="Forever 2e3", name="Speccy 1K Intro").exists())
 
+    def test_post_without_date(self):
+        response = self.client.post('/competitions/%d/edit' % self.competition.id, {
+            'name': "Speccy 1K Intro",
+            'shown_date': "",
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'production_type': ProductionType.objects.get(name='1K Intro').id,
+        })
+        self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
+        self.assertTrue(Competition.objects.filter(party__name="Forever 2e3", name="Speccy 1K Intro").exists())
+
 
 class TestImportResults(TestCase):
     fixtures = ['tests/gasman.json']

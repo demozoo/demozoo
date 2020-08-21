@@ -86,6 +86,8 @@ def mock_response(req):
             "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
             "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
         }"""
+    elif url == 'ftp://ftp.scene.org/pub/parties/2000/forever00/results.txt':
+        body = r"""here are the results of Forever 2000"""
     else:
         raise Exception("No response defined for %s" % req.get_full_url())
 
@@ -105,7 +107,12 @@ class MockHTTPSHandler(urllib2.HTTPSHandler):
         return mock_response(req)
 
 
-urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler))
+class MockFTPHandler(urllib2.FTPHandler):
+    def ftp_open(self, req):
+        return mock_response(req)
+
+
+urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler, MockFTPHandler))
 
 try:
     from .test_local import *

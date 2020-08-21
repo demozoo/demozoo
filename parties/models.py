@@ -299,7 +299,7 @@ class Competition(models.Model):
     def __unicode__(self):
         try:
             return "%s %s" % (self.party.name, self.name)
-        except Party.DoesNotExist:
+        except Party.DoesNotExist:  # pragma: no cover
             return "(unknown party) %s" % self.name
 
     def _get_shown_date(self):
@@ -378,7 +378,7 @@ class CompetitionPlacing(models.Model):
     def __unicode__(self):
         try:
             return self.production.__unicode__()
-        except Production.DoesNotExist:
+        except Production.DoesNotExist:  # pragma: no cover
             return "(CompetitionPlacing)"
 
 
