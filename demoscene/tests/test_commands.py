@@ -1,16 +1,20 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
 from io import BytesIO
 
 from django.core.files import File
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase
 from django.test.utils import captured_stdout
+from mock import patch
 
 from demoscene.models import Nick, NickVariant, Releaser
+from demoscene.tasks import add_sceneorg_results_file_to_party
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party, ResultsFile
 from productions.models import Production, ProductionType
+from sceneorg.models import Directory, File as SceneOrgFile
 
 
 class TestBumpExternalLinks(TransactionTestCase):
@@ -144,3 +148,39 @@ class TestSanity(MediaTestMixin, TestCase):
         self.assertTrue(
             Production.objects.get(title='Subliminal Extacy #1').types.filter(name='Pack').exists()
         )
+
+
+class TestFindSceneorgResultsFiles(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        self.forever = Party.objects.get(name="Forever 2e3")
+        self.forever.external_links.create(
+            link_class='SceneOrgFolder',
+            parameter='/parties/2000/forever00/'
+        )
+        sceneorg_dir = Directory.objects.create(
+            path='/parties/2000/forever00/',
+            last_seen_at=datetime.datetime.now(),
+        )
+        self.resultsfile = SceneOrgFile.objects.create(
+            path='/parties/2000/forever00/results.txt',
+            last_seen_at=datetime.datetime.now(),
+            directory=sceneorg_dir
+        )
+
+    @patch('demoscene.tasks.add_sceneorg_results_file_to_party')
+    def test_run(self, add_sceneorg_results_file_to_party):
+
+        with captured_stdout():
+            call_command('find_sceneorg_results_files')
+
+        self.assertEqual(add_sceneorg_results_file_to_party.delay.call_count, 1)
+        party_id, file_id = add_sceneorg_results_file_to_party.delay.call_args.args
+        self.assertEqual(party_id, self.forever.id)
+        self.assertEqual(file_id, self.resultsfile.id)
+
+    def test_add_results(self):
+        self.assertEqual(self.forever.results_files.count(), 0)
+        add_sceneorg_results_file_to_party(self.forever.id, self.resultsfile.id)
+        self.assertEqual(self.forever.results_files.count(), 1)

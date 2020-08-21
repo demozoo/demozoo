@@ -1,9 +1,9 @@
 from demoscene.tasks import find_sceneorg_results_files
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
-class Command(NoArgsCommand):
-    def handle_noargs(self, **options):
+class Command(BaseCommand):
+    def handle(self, *args, **kwargs):
         def callback(party):
             print "found results.txt for %s" % party
 
