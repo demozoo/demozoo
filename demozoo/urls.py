@@ -97,7 +97,7 @@ urlpatterns += [
     url(r'^awards/', include('awards.urls')),
 ]
 
-if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:
+if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:  # pragma: no cover
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
