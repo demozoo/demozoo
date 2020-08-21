@@ -165,10 +165,7 @@ def querystring_match(pattern, varname, flags=None, othervars={}, numeric=False)
             if numeric:
                 numeric_match = re.match(r'\d+', querystring[varname][0])
                 if numeric_match:
-                    try:
-                        result = int(numeric_match.group())
-                    except ValueError:
-                        return None
+                    result = int(numeric_match.group())
                 else:
                     return None
 

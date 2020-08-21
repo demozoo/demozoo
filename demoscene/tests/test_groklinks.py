@@ -32,6 +32,19 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BaseUrl')
         self.assertEqual(link.parameter, 'https://www.pouet.net/party.php?when=2000')
 
+    def test_pouet_group_id_must_be_numeric(self):
+        gasman = Releaser.objects.get(name='Gasman')
+
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'https://www.pouet.net/groups.php?which=123'
+        self.assertEqual(link.link_class, 'PouetGroup')
+        self.assertEqual(link.parameter, 123)
+
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'https://www.pouet.net/groups.php?which=amigaaaa'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://www.pouet.net/groups.php?which=amigaaaa')
+
     def test_artcity_artist(self):
         gasman = Releaser.objects.get(name='Gasman')
 
