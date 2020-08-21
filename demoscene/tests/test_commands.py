@@ -184,3 +184,48 @@ class TestFindSceneorgResultsFiles(TestCase):
         self.assertEqual(self.forever.results_files.count(), 0)
         add_sceneorg_results_file_to_party(self.forever.id, self.resultsfile.id)
         self.assertEqual(self.forever.results_files.count(), 1)
+
+
+class TestRefetchResultsFiles(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        self.forever = Party.objects.get(name="Forever 2e3")
+        self.forever.external_links.create(
+            link_class='SceneOrgFolder',
+            parameter='/parties/2000/forever00/'
+        )
+        sceneorg_dir = Directory.objects.create(
+            path='/parties/2000/forever00/',
+            last_seen_at=datetime.datetime.now(),
+        )
+        self.sceneorgfile = SceneOrgFile.objects.create(
+            path='/parties/2000/forever00/results.txt',
+            last_seen_at=datetime.datetime.now(),
+            directory=sceneorg_dir
+        )
+        self.resultsfile = self.forever.results_files.create(
+            file=File(
+                name="forever2e3.txt",
+                file=BytesIO(b"You get a car! You get a car! Everybody gets a car!")
+            ),
+            filename="forever2e3.txt", filesize=100, sha1="1234123412341234"
+        )
+
+    def test_run_file_found(self):
+        with captured_stdout():
+            call_command('refetch_results_files')
+
+    def test_run_file_missing(self):
+        self.resultsfile.file.delete(save=False)
+        with captured_stdout():
+            call_command('refetch_results_files')
+
+        new_results = Party.objects.get(name="Forever 2e3").results_files.first()
+        self.assertTrue(new_results.file.size)
+
+    def test_run_sceneorg_file_missing(self):
+        self.resultsfile.file.delete(save=False)
+        self.sceneorgfile.delete()
+        with captured_stdout():
+            call_command('refetch_results_files')

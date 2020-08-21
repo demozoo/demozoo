@@ -1,13 +1,13 @@
 # Fetch results files from scene.org that are in the db as ResultsFile records
 # but missing on the local filesystem
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 
 from parties.models import ResultsFile
 
-class Command(NoArgsCommand):
-    def handle_noargs(self, **options):
+class Command(BaseCommand):
+    def handle(self, *args, **kwargs):
         for results_file in ResultsFile.objects.select_related('party'):
             try:
                 results_file.data
