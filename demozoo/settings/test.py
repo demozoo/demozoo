@@ -33,7 +33,8 @@ def mock_response(req):
             "latitude": 51.75222, "longitude": -1.25596,
             "country_name": "United Kingdom", "name": "Oxford", "id": 2640729, "country_code": "GB"
         }"""
-    elif url == 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom':
+    elif url == 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom':  # pragma: nocover
+        # this is used to verify that we don't look up locations that are unchanged
         raise Exception("Looking up Adlington is not allowed! :-)")
     elif url == 'http://geocoder.demozoo.org/?q=Royston+Vasey':
         body = "[]"
@@ -88,7 +89,7 @@ def mock_response(req):
         }"""
     elif url == 'ftp://ftp.scene.org/pub/parties/2000/forever00/results.txt':
         body = r"""here are the results of Forever 2000"""
-    else:
+    else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
     resp = urllib2.addinfourl(StringIO(body), None, req.get_full_url())
@@ -116,5 +117,5 @@ urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler, M
 
 try:
     from .test_local import *
-except ImportError:
+except ImportError:  # pragma: no cover
     pass
