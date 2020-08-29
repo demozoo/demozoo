@@ -5,7 +5,7 @@
         "fields": {
             "janeway_id": 123,
             "name": "Spaceballs",
-            "is_group": false
+            "is_group": true
         }
     },
     {
@@ -16,6 +16,44 @@
             "janeway_id": 234,
             "name": "Spaceballs",
             "abbreviation": "SPB"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "janeway.author",
+        "fields": {
+            "janeway_id": 124,
+            "name": "TMB Designs",
+            "is_group": false
+        }
+    },
+    {
+        "pk": 2,
+        "model": "janeway.name",
+        "fields": {
+            "author": 2,
+            "janeway_id": 235,
+            "name": "TMB Designs"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "janeway.name",
+        "fields": {
+            "author": 2,
+            "janeway_id": 236,
+            "name": "TMB"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.membership",
+        "fields": {
+            "group": 1,
+            "member": 2,
+            "since": "1990-01-01",
+            "until": "1994-01-01",
+            "founder": false
         }
     },
     {
@@ -35,6 +73,16 @@
         "fields": {
             "release": 1,
             "type_name": "Demo"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.credit",
+        "fields": {
+            "janeway_id": 456,
+            "release": 1,
+            "name": 2,
+            "category": "Graphics"
         }
     },
     {
