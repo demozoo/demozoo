@@ -2,12 +2,13 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 
+from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
 
-from demoscene.models import Releaser
+from demoscene.models import Edit, Releaser
 from productions.models import Production
 
 
@@ -86,4 +87,72 @@ class TestMatchJanewayGroups(TestCase):
 
         self.assertTrue(
             spb.external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+        )
+
+class TestMatchJanewayMemberships(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def test_run(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        spb.external_links.create(link_class='KestraBitworldAuthor', parameter='123')
+
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        slummy.external_links.create(link_class='KestraBitworldAuthor', parameter='126')
+
+        with captured_stdout():
+            call_command('match_janeway_memberships')
+
+        self.assertTrue(
+            spb.member_memberships.filter(member=slummy, data_source='janeway').exists()
+        )
+
+    def test_group_not_found(self):
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        slummy.external_links.create(link_class='KestraBitworldAuthor', parameter='126')
+
+        with captured_stdout():
+            call_command('match_janeway_memberships')
+
+        self.assertEqual(
+            slummy.group_memberships.count(), 0
+        )
+
+    def test_existing_membership(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        spb.external_links.create(link_class='KestraBitworldAuthor', parameter='123')
+
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        slummy.external_links.create(link_class='KestraBitworldAuthor', parameter='126')
+        spb.member_memberships.create(member=slummy, is_current=True)
+
+        with captured_stdout():
+            call_command('match_janeway_memberships')
+
+        self.assertFalse(
+            spb.member_memberships.filter(member=slummy, data_source='janeway').exists()
+        )
+
+    def test_deleted_membership(self):
+        """
+        don't create a membership entry from Janeway data if a membership for that
+        member and group was previously deleted
+        """
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        spb.external_links.create(link_class='KestraBitworldAuthor', parameter='123')
+
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        slummy.external_links.create(link_class='KestraBitworldAuthor', parameter='126')
+
+        user = User.objects.create_user(username='testuser', password='12345')
+        Edit.objects.create(
+            action_type='remove_membership', focus=slummy, focus2=spb,
+            user=user,
+            description="Removed Slummy's membership of Spaceballs"
+        )
+
+        with captured_stdout():
+            call_command('match_janeway_memberships')
+
+        self.assertFalse(
+            spb.member_memberships.filter(member=slummy).exists()
         )
