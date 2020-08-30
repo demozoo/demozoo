@@ -264,5 +264,26 @@
             "release": 1,
             "soundtrack": 6
         }
+    },
+    {
+        "pk": 7,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 351,
+            "title": "mod.New kids on the boot block",
+            "supertype": "music",
+            "author_names": [1],
+            "platform": "ocs",
+            "release_date_date": "2005-03-01",
+            "release_date_precision": "m"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 7,
+            "type_name": "Music"
+        }
     }
 ]

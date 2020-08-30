@@ -9,6 +9,7 @@ from django.test.utils import captured_stdout
 from mock import patch
 
 from demoscene.models import Edit, Releaser
+from platforms.models import Platform
 from productions.models import Production
 
 
@@ -155,4 +156,31 @@ class TestMatchJanewayMemberships(TestCase):
 
         self.assertFalse(
             spb.member_memberships.filter(member=slummy).exists()
+        )
+
+
+class TestMatchJanewayProductions(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def test_run(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        spb.external_links.create(link_class='KestraBitworldAuthor', parameter='123')
+
+        sota = Production.objects.create(
+            title="State Of The Art", supertype="production"
+        )
+        sota.platforms.add(Platform.objects.get(name="Amiga OCS/ECS"))
+        sota.author_nicks.add(spb.primary_nick)
+
+        with captured_stdout():
+            call_command('match_janeway_productions')
+
+        self.assertTrue(
+            sota.links.filter(link_class='KestraBitworldRelease', parameter='345', source='janeway-automatch').exists()
+        )
+
+        nkotbb = Production.objects.get(title="New kids on the boot block")
+        self.assertEqual(nkotbb.data_source, "janeway")
+        self.assertTrue(
+            nkotbb.links.filter(link_class='KestraBitworldRelease', parameter='351').exists()
         )
