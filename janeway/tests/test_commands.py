@@ -56,3 +56,34 @@ class TestImportJanewayUnknownAuthors(TestCase):
             call_command('import_janeway_unknown_authors')
 
         self.assertTrue(Releaser.objects.filter(name="Spaceballs").exists())
+
+
+class TestMatchJanewayGroups(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def test_match_by_member_name(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        tmb = Releaser.objects.create(name="TMB Designs", is_group=False)
+        spb.member_memberships.create(member=tmb)
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        spb.member_memberships.create(member=slummy)
+
+        with captured_stdout():
+            call_command('match_janeway_groups')
+
+        self.assertTrue(
+            spb.external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+        )
+
+    def test_match_by_member_id(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        spb.member_memberships.create(member=slummy)
+        slummy.external_links.create(link_class='KestraBitworldAuthor', parameter='126')
+
+        with captured_stdout():
+            call_command('match_janeway_groups')
+
+        self.assertTrue(
+            spb.external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+        )
