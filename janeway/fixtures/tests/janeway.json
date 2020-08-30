@@ -97,6 +97,16 @@
         }
     },
     {
+        "pk": 1,
+        "model": "janeway.screenshot",
+        "fields": {
+            "janeway_id": 111,
+            "url": "http://kestra.exotica.org.uk/files/screenies/28000/154a.png",
+            "release": 1,
+            "suffix": "a"
+        }
+    },
+    {
         "pk": 2,
         "model": "janeway.release",
         "fields": {
