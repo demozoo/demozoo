@@ -184,3 +184,38 @@ class TestMatchJanewayProductions(TestCase):
         self.assertTrue(
             nkotbb.links.filter(link_class='KestraBitworldRelease', parameter='351').exists()
         )
+
+
+class TestMatchJanewaySceners(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def test_match_by_group_id(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        spb.external_links.create(link_class='KestraBitworldAuthor', parameter='123')
+
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        spb.member_memberships.create(member=slummy)
+
+        with captured_stdout():
+            call_command('match_janeway_sceners')
+
+        link = slummy.external_links.first()
+        self.assertTrue(
+            slummy.external_links.filter(link_class='KestraBitworldAuthor', parameter='126').exists()
+        )
+
+    def test_match_by_group_name(self):
+        spb = Releaser.objects.create(name="Spaceballs", is_group=True)
+        bzh = Releaser.objects.create(name="Boozoholics", is_group=True)
+
+        slummy = Releaser.objects.create(name="Slummy", is_group=False)
+        spb.member_memberships.create(member=slummy)
+        bzh.member_memberships.create(member=slummy)
+
+        with captured_stdout():
+            call_command('match_janeway_sceners')
+
+        link = slummy.external_links.first()
+        self.assertTrue(
+            slummy.external_links.filter(link_class='KestraBitworldAuthor', parameter='126').exists()
+        )
