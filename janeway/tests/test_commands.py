@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
 
+from demoscene.models import Releaser
 from productions.models import Production
 
 
@@ -45,3 +46,13 @@ class TestImportJanewayScreenshots(TestCase):
         self.assertEqual(screenshot_janeway_id, 111)
         self.assertEqual(screenshot_url, "http://kestra.exotica.org.uk/files/screenies/28000/154a.png")
         self.assertEqual(screenshot_suffix, "a")
+
+
+class TestImportJanewayUnknownAuthors(TestCase):
+    fixtures = ['tests/janeway.json']
+
+    def test_run(self):
+        with captured_stdout():
+            call_command('import_janeway_unknown_authors')
+
+        self.assertTrue(Releaser.objects.filter(name="Spaceballs").exists())
