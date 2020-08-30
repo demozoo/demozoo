@@ -20,6 +20,7 @@ class Command(BaseCommand):
             WHERE productions_production.release_date_date IS NULL
         """)
 
+        index = -1
         for (index, prod) in enumerate(prods):
             if (index % 100 == 0):
                 print("added %d release dates" % index)

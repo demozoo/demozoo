@@ -26,12 +26,14 @@ class TestImport(TestCase):
                 member__name="TMB Designs"
             ).exists()
         )
-        self.assertTrue(Production.objects.filter(title="State Of The Art").exists())
-        self.assertTrue(
-            Production.objects.get(title="State Of The Art").credits.filter(
-                nick__name="TMB Designs"
-            ).exists()
-        )
+        sota = Production.objects.get(title="State Of The Art")
+        self.assertTrue(sota.credits.filter(nick__name="TMB Designs").exists())
+        self.assertTrue(sota.platforms.filter(name="Amiga OCS/ECS").exists())
+        self.assertTrue(sota.links.filter(
+            link_class='AmigascneFile',
+            parameter='/Groups/S/Spaceballs/Spaceballs-StateOfTheArt.dms',
+            source='janeway'
+        ).exists())
 
     def test_import_member_first(self):
         import_author(Author.objects.get(name="TMB Designs"))
@@ -48,12 +50,19 @@ class TestImport(TestCase):
                 member__name="TMB Designs"
             ).exists()
         )
-        self.assertTrue(Production.objects.filter(title="State Of The Art").exists())
-        self.assertTrue(
-            Production.objects.get(title="State Of The Art").credits.filter(
-                nick__name="TMB Designs"
-            ).exists()
-        )
+        sota = Production.objects.get(title="State Of The Art")
+        self.assertTrue(sota.credits.filter(nick__name="TMB Designs").exists())
+        self.assertTrue(sota.platforms.filter(name="Amiga OCS/ECS").exists())
+
+    def test_import_aga(self):
+        import_release(Release.objects.get(title="Ocean Machine"))
+        ocean_machine = Production.objects.get(title="Ocean Machine")
+        self.assertTrue(ocean_machine.platforms.filter(name="Amiga AGA").exists())
+
+    def test_import_ppc(self):
+        import_release(Release.objects.get(title="Planet Potion"))
+        planet_potion = Production.objects.get(title="Planet Potion")
+        self.assertTrue(planet_potion.platforms.filter(name="Amiga PPC/RTG").exists())
 
     def test_case_insensitive_nick_match(self):
         tmb_janeway = Author.objects.get(name="TMB Designs")
@@ -81,4 +90,36 @@ class TestImport(TestCase):
             Production.objects.get(title="State Of The Art").credits.filter(
                 nick=tmb_demozoo.primary_nick
             ).exists()
+        )
+
+    def test_import_packcontent_pack_first(self):
+        import_release(Release.objects.get(title="Spaceballs Pack 1"))
+        import_release(Release.objects.get(title="State Of The Art"))
+        pack = Production.objects.get(title="Spaceballs Pack 1")
+        self.assertTrue(
+            pack.pack_members.filter(member__title="State Of The Art").exists()
+        )
+
+    def test_import_packcontent_member_first(self):
+        import_release(Release.objects.get(title="State Of The Art"))
+        import_release(Release.objects.get(title="Spaceballs Pack 1"))
+        pack = Production.objects.get(title="Spaceballs Pack 1")
+        self.assertTrue(
+            pack.pack_members.filter(member__title="State Of The Art").exists()
+        )
+
+    def test_import_soundtracklink_soundtrack_first(self):
+        import_release(Release.objects.get(title="mod.condom_corruption"))
+        import_release(Release.objects.get(title="State Of The Art"))
+        sota = Production.objects.get(title="State Of The Art")
+        self.assertTrue(
+            sota.soundtrack_links.filter(soundtrack__title="condom_corruption").exists()
+        )
+
+    def test_import_soundtracklink_prod_first(self):
+        import_release(Release.objects.get(title="State Of The Art"))
+        import_release(Release.objects.get(title="mod.condom_corruption"))
+        sota = Production.objects.get(title="State Of The Art")
+        self.assertTrue(
+            sota.soundtrack_links.filter(soundtrack__title="condom_corruption").exists()
         )

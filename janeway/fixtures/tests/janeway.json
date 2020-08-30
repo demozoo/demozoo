@@ -64,7 +64,9 @@
             "title": "State Of The Art",
             "supertype": "production",
             "author_names": [1],
-            "platform": "ocs"
+            "platform": "ocs",
+            "release_date_date": "1992-12-29",
+            "release_date_precision": "d"
         }
     },
     {
@@ -86,6 +88,15 @@
         }
     },
     {
+        "pk": 1,
+        "model": "janeway.downloadlink",
+        "fields": {
+            "janeway_id": 567,
+            "release": 1,
+            "url": "http://ftp.amigascne.org/pub/amiga/Groups/S/Spaceballs/Spaceballs-StateOfTheArt.dms"
+        }
+    },
+    {
         "pk": 2,
         "model": "janeway.release",
         "fields": {
@@ -102,6 +113,98 @@
         "fields": {
             "release": 2,
             "type_name": "Music"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 347,
+            "title": "Ocean Machine",
+            "supertype": "production",
+            "author_names": [],
+            "platform": "aga"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 3,
+            "type_name": "Demo"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 348,
+            "title": "Planet Potion",
+            "supertype": "production",
+            "author_names": [],
+            "platform": "ppc"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 4,
+            "type_name": "Demo"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 349,
+            "title": "Spaceballs Pack 1",
+            "supertype": "production",
+            "author_names": [],
+            "platform": "ocs"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 5,
+            "type_name": "Pack"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.packcontent",
+        "fields": {
+            "content": 1,
+            "pack": 5
+        }
+    },
+    {
+        "pk": 6,
+        "model": "janeway.release",
+        "fields": {
+            "janeway_id": 350,
+            "title": "mod.condom_corruption",
+            "supertype": "music",
+            "author_names": [],
+            "platform": "ocs"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "janeway.releasetype",
+        "fields": {
+            "release": 6,
+            "type_name": "Music"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "janeway.soundtracklink",
+        "fields": {
+            "release": 1,
+            "soundtrack": 6
         }
     }
 ]
