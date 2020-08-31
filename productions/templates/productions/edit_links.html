@@ -25,7 +25,9 @@
                 {% spawningformset formset %}
                     {% spawningform as form %}
                         {{ form.url }}
-                        {{ form.url.errors }}
+						{{ form.url.errors }}<br>
+						{{ form.description }}
+						{{ form.description.errors }}
                         {% for hidden in form.hidden_fields %}
                             {{ hidden }}
                         {% endfor %}

@@ -9,7 +9,7 @@
     {% endif %}
     <ul class="external_links">
         {% for link in external_links %}
-            <li>{{ link.html_link|safe }}</li>
+            <li>{{ link.html_link|safe }}{%if link.description %} ({{ link.description }}){% endif %}</li>
         {% endfor %}
     </ul>
 </div>
