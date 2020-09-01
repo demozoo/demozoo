@@ -1,7 +1,10 @@
 from .base import *
 
 import urllib2
+from io import BytesIO
 from StringIO import StringIO
+
+from PIL import Image
 
 
 SECRET_KEY = 'BOOOOM'
@@ -89,6 +92,15 @@ def mock_response(req):
         }"""
     elif url == 'ftp://ftp.scene.org/pub/parties/2000/forever00/results.txt':
         body = r"""here are the results of Forever 2000"""
+    elif url == 'http://kestra.exotica.org.uk/files/screenies/28000/154a.png':
+        io = BytesIO()
+        Image.new('P', (640, 480)).save(io, 'png')
+        io.seek(0)
+        resp = urllib2.addinfourl(io, {'Content-Length': len(io.getvalue())}, req.get_full_url())
+        io.seek(0)
+        resp.code = 200
+        resp.msg = "OK"
+        return resp
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
