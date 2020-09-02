@@ -201,11 +201,6 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     def asciified_location(self):
         return self.location and unidecode(self.location)
 
-    @property
-    def all_affiliation_names_string(self):
-        all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser__member_memberships__member=self)]
-        return ', '.join(all_names)
-
     # Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
     # that should prevent its deletion
     def is_referenced(self):

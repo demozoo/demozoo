@@ -74,10 +74,6 @@ class MatchedNickWidget(forms.Widget):
 
         super(MatchedNickWidget, self).__init__(attrs=attrs)
 
-    @property
-    def match_data(self):
-        return self.nick_search.match_data
-
     def value_from_datadict(self, data, files, name):
         nick_id = self.select_widget.value_from_datadict(data, files, name + '_id')
         nick_name = self.name_widget.value_from_datadict(data, files, name + '_name')
@@ -124,11 +120,10 @@ class MatchedNickField(forms.Field):
             else:
                 if int(value.id) not in [choice['id'] for choice in self.widget.choices]:  # invalid...
                     value = self.nick_search.selection  # ...so start a fresh match
-        elif isinstance(value, Nick):
-            # convert to a NickSelection
-            value = NickSelection(value.id, value.name)
+        elif isinstance(value, Nick):  # pragma: no cover
+            raise Exception("Expected NickSelection, got Nick: %r" % value)
 
         if isinstance(value, NickSelection) or value is None:
             return super(MatchedNickField, self).clean(value)
-        else:
+        else:  # pragma: no cover
             raise Exception("Don't know how to clean %s" % repr(value))

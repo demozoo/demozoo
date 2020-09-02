@@ -4,8 +4,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from demoscene.utils.nick_search import NickSelection
+from demoscene.utils.nick_search import NickSearch, NickSelection
 from demoscene.utils.party_field import PartyField, PartyLookup
+from matched_nick_field import MatchedNickField
 
 
 class TestNickSelection(TestCase):
@@ -48,4 +49,32 @@ class TestPartyField(TestCase):
             party = PartyField(required=False)
 
         form = PartyForm({'party_search': '', 'party_party_id': ''})
+        self.assertTrue(form.is_valid())
+
+
+class TestMatchedNickField(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_render(self):
+        class MatchedNickForm(forms.Form):
+            nick = MatchedNickField(NickSearch('ra'))
+
+        form = MatchedNickForm()
+        form_html = form.as_p()
+        self.assertIn('for="id_nick_id"', form_html)
+
+    def test_clean(self):
+        class MatchedNickForm(forms.Form):
+            nick = MatchedNickField(NickSearch('ra'))
+
+        form = MatchedNickForm({'nick_id': 'newgroup', 'nick_name': 'rah'})
+        self.assertFalse(form.is_valid())
+
+        form = MatchedNickForm({'nick_id': 'newgroup', 'nick_name': 'ra'})
+        self.assertTrue(form.is_valid())
+
+        form = MatchedNickForm({'nick_id': '1', 'nick_name': 'ra'})
+        self.assertFalse(form.is_valid())
+
+        form = MatchedNickForm({'nick_id': '3', 'nick_name': 'ra'})
         self.assertTrue(form.is_valid())

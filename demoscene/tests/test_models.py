@@ -255,10 +255,6 @@ class TestReleaserNicks(TestCase):
         gasman.primary_nick.name = "Gåsman"
         self.assertEqual(gasman.asciified_all_names_string, "Gasman, Shingebis")
 
-    def test_all_affiliation_names_string(self):
-        gasman = Releaser.objects.get(name="Gasman")
-        self.assertEqual(gasman.all_affiliation_names_string, "Hooy-Program, Raww Arse")
-
     def test_nick_from_id_and_name(self):
         okkie = Nick.from_id_and_name("newscener", "Okkie")
         self.assertEqual(okkie.name, "Okkie")

@@ -54,6 +54,11 @@
         "model": "demoscene.nickvariant",
         "fields": {"nick": 3, "name": "Raww Arse", "search_title": "raww arse"}
     },
+    {
+        "pk": 8,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 3, "name": "RA", "search_title": "ra"}
+    },
 
     {
         "pk": 3,
@@ -139,6 +144,27 @@
         "pk": 7,
         "model": "demoscene.nickvariant",
         "fields": {"nick": 7, "name": "LaesQ", "search_title": "laesq"}
+    },
+
+    {
+        "pk": 7,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Ra",
+            "is_group": false,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 7, "name": "Ra"}
+    },
+    {
+        "pk": 9,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 8, "name": "Ra", "search_title": "ra"}
     },
 
     {
