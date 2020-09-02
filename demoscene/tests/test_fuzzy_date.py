@@ -2,9 +2,11 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 
+from django import forms
 from django.test import TestCase
 
 from fuzzy_date import FuzzyDate
+from fuzzy_date_field import FuzzyDateField
 
 class TestFuzzyDate(TestCase):
     def test_invalid_precision(self):
@@ -52,3 +54,27 @@ class TestFuzzyDate(TestCase):
         self.assertFalse(d1 == m1)
         self.assertTrue(m1 == m2)
         self.assertTrue(y1 == y2)
+
+
+class FuzzyDateForm(forms.Form):
+    date = FuzzyDateField()
+
+
+class TestFuzzyDateField(TestCase):
+    def test_valid(self):
+        form = FuzzyDateForm({'date': '15 march 2000'})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['date'], FuzzyDate(datetime.date(2000, 3, 15), 'd'))
+
+    def test_passing_fuzzy_date(self):
+        form = FuzzyDateForm({'date': FuzzyDate(datetime.date(2000, 3, 15), 'd')})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['date'], FuzzyDate(datetime.date(2000, 3, 15), 'd'))
+
+    def test_fail_parsing(self):
+        form = FuzzyDateForm({'date': '15 smarch 2000'})
+        self.assertFalse(form.is_valid())
+
+    def test_out_of_range(self):
+        form = FuzzyDateForm({'date': '15 march 1850'})
+        self.assertFalse(form.is_valid())
