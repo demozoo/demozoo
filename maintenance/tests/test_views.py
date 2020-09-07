@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.test import TestCase
 from mock import patch
+import redis
 
 from demoscene.models import Releaser
 from maintenance.models import Exclusion
@@ -31,6 +32,9 @@ class TestReports(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_screenshots(self):
+        r = redis.StrictRedis.from_url(settings.REDIS_URL)
+        r.flushdb()
+
         response = self.client.get('/maintenance/prods_without_screenshots')
         self.assertEqual(response.status_code, 200)
 
