@@ -8,6 +8,7 @@ from demoscene.utils.nick_search import NickSearch, NickSelection
 from demoscene.utils.party_field import PartyField, PartyLookup
 from matched_nick_field import MatchedNickField
 from nick_field import NickField, NickLookup
+from submit_button_field import SubmitButtonField
 
 
 class TestNickSelection(TestCase):
@@ -106,3 +107,22 @@ class TestNickField(TestCase):
 
         form = NickForm({'nick_search': 'ra'})
         self.assertFalse(form.is_valid())
+
+
+class TestSubmitButtonField(TestCase):
+    def test_val(self):
+        class SubmittableForm(forms.Form): 
+            lookup = SubmitButtonField(button_text='Look up name')
+
+        form = SubmittableForm({})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['lookup'], False)
+
+        form = SubmittableForm({'lookup': "Look up name"})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['lookup'], True)
+
+    def test_render(self):
+        button = SubmitButtonField(button_text='Look up name')
+        html = button.widget.render('lookup', None)
+        self.assertIn("Look up name", html)
