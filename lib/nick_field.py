@@ -54,7 +54,7 @@ class NickLookup():
                 nick_selection=NickSelection(value.id, value.name),
                 sceners_only=sceners_only, groups_only=groups_only,
                 prefer_members_of=prefer_members_of)
-        else:
+        else:  # pragma: no cover
             raise Exception("Don't know how to handle %s as a nick lookup" % repr(value))
 
     def __eq__(self, other):

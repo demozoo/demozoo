@@ -7,6 +7,7 @@ from django.test import TestCase
 from demoscene.utils.nick_search import NickSearch, NickSelection
 from demoscene.utils.party_field import PartyField, PartyLookup
 from matched_nick_field import MatchedNickField
+from nick_field import NickField, NickLookup
 
 
 class TestNickSelection(TestCase):
@@ -78,3 +79,30 @@ class TestMatchedNickField(TestCase):
 
         form = MatchedNickForm({'nick_id': '3', 'nick_name': 'ra'})
         self.assertTrue(form.is_valid())
+
+
+class TestNickLookup(TestCase):
+    def test_eq(self):
+        nl = NickLookup()
+        self.assertFalse(nl == 'fish')
+
+
+class TestNickField(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_clean_blank(self):
+        class NickForm(forms.Form):
+            nick = NickField(required=False)
+
+        form = NickForm({'nick_search': ''})
+        self.assertTrue(form.is_valid())
+
+    def test_clean_autoaccept(self):
+        class NickForm(forms.Form):
+            nick = NickField(required=False)
+
+        form = NickForm({'nick_search': 'gasman'})
+        self.assertTrue(form.is_valid())
+
+        form = NickForm({'nick_search': 'ra'})
+        self.assertFalse(form.is_valid())
