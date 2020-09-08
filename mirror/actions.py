@@ -24,7 +24,7 @@ try:  # create upload_dir if not already present
 except OSError as exc:
     if exc.errno == errno.EEXIST and os.path.isdir(upload_dir):
         pass
-    else:
+    else:  # pragma: no cover
         raise
 
 

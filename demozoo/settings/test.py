@@ -101,10 +101,21 @@ def mock_response(req):
         resp.code = 200
         resp.msg = "OK"
         return resp
+    elif url == 'http://example.com/pretend-big-file.txt':
+        resp = urllib2.addinfourl(
+            StringIO("this file claims to be big but isn't really"),
+            {'Content-Length': 100000000},
+            req.get_full_url()
+        )
+        resp.code = 200
+        resp.msg = "OK"
+        return resp
+    elif url == 'http://example.com/real-big-file.txt':
+        body = "I am a fish " * 1000000
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
-    resp = urllib2.addinfourl(StringIO(body), None, req.get_full_url())
+    resp = urllib2.addinfourl(StringIO(body), {}, req.get_full_url())
     resp.code = 200
     resp.msg = "OK"
     return resp
