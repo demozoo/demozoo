@@ -45,6 +45,9 @@ from .dev import DATABASES
 DATABASES['default']['USER'] = 'vagrant'
 
 AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
+AWS_S3_CUSTOM_DOMAIN = 'media.demozoo.org'
+# AWS_S3_SECURE_URLS = False  # if the above domain is http: only
+
 AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
 AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
 

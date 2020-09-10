@@ -5,7 +5,6 @@ DATABASES['default']['USER'] = 'demozoo'
 DEBUG = False
 EMAIL_HOST = 'localhost'
 
-AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = False
 AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
 
