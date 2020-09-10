@@ -15,7 +15,6 @@ DEBUG = True
 
 BASE_URL = 'http://localhost:8000'
 
-AWS_QUERYSTRING_AUTH = False
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
 
