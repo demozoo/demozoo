@@ -81,7 +81,7 @@ def get_thumbnail_sizing_params(original_size, target_size):
         return (crop_params, resize_params)
 
 
-def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
+def upload_to_s3(fp, key_name):
     """
         Upload the contents of file handle 'fp' to the S3 bucket specified by AWS_STORAGE_BUCKET_NAME,
         under the given filename. Return the public URL.
