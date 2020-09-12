@@ -30,7 +30,9 @@ def import_screenshot(production_id, janeway_id, url, suffix):
         production_id=production_id,
         data_source='janeway', janeway_id=janeway_id, janeway_suffix=suffix
     )
-    upload_original(img, screenshot, basename, reduced_redundancy=False)
     upload_standard(img, screenshot, basename)
     upload_thumb(img, screenshot, basename)
+    # leave upload_original until last to prevent things screwing up if the storage
+    # closes the original file handle
+    upload_original(img, screenshot, basename)
     screenshot.save()

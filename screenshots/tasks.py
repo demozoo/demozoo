@@ -48,9 +48,12 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
         img = PILConvertibleImage(f, name_hint=filename)
 
         basename = create_basename(screenshot_id)
-        upload_original(img, screenshot, basename)
         upload_standard(img, screenshot, basename)
         upload_thumb(img, screenshot, basename)
+        # leave original until last, because if it's already a websafe format it'll just return
+        # the original file handle, and the storage backend might close the file after uploading
+        # which screws with PIL's ability to create resized versions...
+        upload_original(img, screenshot, basename)
         screenshot.save()
 
         f.close()
@@ -74,9 +77,12 @@ def rebuild_screenshot(screenshot_id):
         img = PILConvertibleImage(buf, screenshot.original_url.split('/')[-1])
 
         basename = create_basename(screenshot_id)
-        upload_original(img, screenshot, basename)
         upload_standard(img, screenshot, basename)
         upload_thumb(img, screenshot, basename)
+        # leave original until last, because if it's already a websafe format it'll just return
+        # the original file handle, and the storage backend might close the file after uploading
+        # which screws with PIL's ability to create resized versions...
+        upload_original(img, screenshot, basename)
         screenshot.save()
 
         f.close()
@@ -158,9 +164,12 @@ def create_screenshot_from_production_link(production_link_id):
     screenshot = Screenshot(production_id=production_id)
     basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.'
     try:
-        upload_original(img, screenshot, basename, reduced_redundancy=True)
         upload_standard(img, screenshot, basename)
         upload_thumb(img, screenshot, basename)
+        # leave original until last, because if it's already a websafe format it'll just return
+        # the original file handle, and the storage backend might close the file after uploading
+        # which screws with PIL's ability to create resized versions...
+        upload_original(img, screenshot, basename)
     except IOError:
         prod_link.has_bad_image = True
         prod_link.save()

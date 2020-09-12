@@ -62,7 +62,7 @@ class ArchiveMember(models.Model):
             return extension.lower()
 
     def guess_mime_type(self):
-        from screenshots.processing import MIME_TYPE_BY_EXTENSION
+        MIME_TYPE_BY_EXTENSION = {'png': 'image/png', 'jpg': 'image/jpeg', 'gif': 'image/gif'}
         return MIME_TYPE_BY_EXTENSION.get(self.file_extension, 'application/octet-stream')
 
     class Meta:

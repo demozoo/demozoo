@@ -1,11 +1,6 @@
 import re
 
-from boto.s3.key import Key
-
-from s3boto import S3BotoStorage
-
-
-MIME_TYPE_BY_EXTENSION = {'png': 'image/png', 'jpg': 'image/jpeg', 'gif': 'image/gif'}
+from django.core.files.storage import DefaultStorage
 
 
 def get_thumbnail_sizing_params(original_size, target_size):
@@ -91,18 +86,9 @@ def upload_to_s3(fp, key_name, extension, reduced_redundancy=False):
         Upload the contents of file handle 'fp' to the S3 bucket specified by AWS_STORAGE_BUCKET_NAME,
         under the given filename. Return the public URL.
     """
-
-    # connect to S3 and send the file contents
-    storage = S3BotoStorage()
-    bucket = storage.upload_bucket
-    k = Key(bucket)
-    k.key = key_name
-    k.content_type = MIME_TYPE_BY_EXTENSION.get(extension, 'application/octet-stream')
-    # print "uploading: %s" % key_name
-    k.set_contents_from_file(fp, reduced_redundancy=reduced_redundancy, rewind=True)
-    k.set_acl('public-read')
-
-    return storage.url(key_name)
+    storage = DefaultStorage()
+    saved_name = storage.save(key_name, fp)
+    return storage.url(saved_name)
 
 
 # successively more aggressive rules for what files we should ignore in an archive
