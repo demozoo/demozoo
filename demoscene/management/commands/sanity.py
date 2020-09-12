@@ -178,16 +178,32 @@ class Command(BaseCommand):
             print "Deleting unused tags"
         Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 
-        # print "Setting has_screenshots flag on productions"
-        # cursor.execute('''
-        #     UPDATE productions_production SET has_screenshot = (
-        #         id IN (
-        #             SELECT DISTINCT production_id
-        #             FROM productions_screenshot
-        #             WHERE thumbnail_url <> ''
-        #         )
-        #     )
-        # ''')
+        print "Fixing has_screenshots flag on productions that claim not to have screenshots but do"
+        cursor.execute('''
+            UPDATE productions_production SET has_screenshot = 't'
+            WHERE productions_production.id IN (
+                SELECT productions_production.id
+                FROM productions_production
+                INNER JOIN productions_screenshot on (
+                    productions_production.id = productions_screenshot.production_id
+                    and thumbnail_url <> ''
+                )
+                WHERE has_screenshot = 'f'
+            )
+        ''')
+        print "Fixing has_screenshots flag on productions that claim to have screenshots but don't"
+        cursor.execute('''
+            UPDATE productions_production SET has_screenshot = 'f'
+            WHERE productions_production.id IN (
+                SELECT productions_production.id
+                FROM productions_production
+                LEFT JOIN productions_screenshot on (
+                    productions_production.id = productions_screenshot.production_id
+                    and thumbnail_url <> ''
+                )
+                WHERE productions_screenshot.production_id is null and has_screenshot = 't'
+            )
+        ''')
 
         if self.verbosity >= 1:
             print "Deleting duplicate soundtrack links"
