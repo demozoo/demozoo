@@ -1,6 +1,5 @@
 from celery.task import task
 from sceneorg.models import Directory, File
-from sceneorg.scraper import scrape_dir
 from sceneorg.dirparser import parse_all_dirs
 from demoscene.tasks import find_sceneorg_results_files
 import datetime
@@ -84,31 +83,6 @@ def fetch_new_sceneorg_files(days=1):
     if new_file_count > 0:
         find_sceneorg_results_files()
 
-
-# files.scene.org frontend scraper - no longer used
-@task(rate_limit='6/m', ignore_result=True)
-def fetch_sceneorg_dir(path, async=True):
-    try:
-        dir = Directory.objects.get(path=path)
-    except Directory.DoesNotExist:
-        dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now())
-
-    files = scrape_dir(dir.web_url)
-
-    # Mark previously-seen-but-now-absent files as deleted, unless we're viewing the 'new files' page
-    new_file_count = update_dir_records(dir, files, mark_deletions=True)
-
-    # recursively fetch subdirs
-    for (filename, is_dir, file_size) in files:
-        if is_dir:
-            subpath = path + filename + '/'
-            if async:
-                fetch_sceneorg_dir.delay(path=subpath)
-            else:
-                time.sleep(3)
-                new_file_count += fetch_sceneorg_dir(path=subpath, async=False)
-
-    return new_file_count
 
 @task(time_limit=7200, ignore_result=True)
 def scan_dir_listing():
