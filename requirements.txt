@@ -14,7 +14,7 @@ django-debug-toolbar==1.8
 django-storages>=1.9,<1.10
 django-taggit==0.22.0
 django-treebeard==4.1.0
-djangorestframework==3.9.4
+djangorestframework==3.11.1
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
 pyrecoil==0.3
