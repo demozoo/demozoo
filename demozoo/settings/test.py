@@ -19,6 +19,9 @@ MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
 
 REDIS_URL = 'redis://localhost:6379/2'
 
+AWS_ACCESS_KEY_ID = 'AWS_K3Y'
+AWS_SECRET_ACCESS_KEY = 'AWS_S3CR3T'
+
 
 # set up mock opener for urllib2
 
@@ -150,6 +153,12 @@ def mock_response(req):
         return resp
     elif url == 'http://example.com/real-big-file.txt':
         body = "I am a fish " * 1000000
+    elif url == 'http://example.com/pondlife2.txt':
+        body = "hello from pondlife2.txt"
+    elif url == 'http://example.com/rubber.zip':
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')
+        with open(path, 'rb') as f:
+            body = f.read()
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
