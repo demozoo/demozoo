@@ -184,50 +184,6 @@ class ProdsWithoutReleaseDate(StaffOnlyMixin, Report):
         return context
 
 
-class ProdsWithDeadAmigascneLinks(StaffOnlyMixin, Report):
-    title = "Productions with dead amigascne links"
-    template_name = 'maintenance/production_report.html'
-    name = 'prods_with_dead_amigascne_links'
-
-    def get_context_data(self, **kwargs):
-        context = super(ProdsWithDeadAmigascneLinks, self).get_context_data(**kwargs)
-
-        productions = (
-            Production.objects.filter(links__parameter__contains='amigascne.org/old/')
-            .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-                params=[self.exclusion_name]
-            ).order_by('title')
-        )
-        context.update({
-            'productions': productions,
-            'mark_excludable': True,
-        })
-        return context
-
-
-class ProdsWithDeadAmigaNvgOrgLinks(StaffOnlyMixin, Report):
-    title = "Productions with dead amiga.nvg.org links"
-    template_name = 'maintenance/production_report.html'
-    name = 'prods_with_dead_amiga_nvg_org_links'
-
-    def get_context_data(self, **kwargs):
-        context = super(ProdsWithDeadAmigaNvgOrgLinks, self).get_context_data(**kwargs)
-
-        productions = (
-            Production.objects.filter(links__parameter__contains='amiga.nvg.org')
-            .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
-                params=[self.exclusion_name]
-            ).order_by('title')
-        )
-        context.update({
-            'productions': productions,
-            'mark_excludable': True,
-        })
-        return context
-
-
 class SceneorgDownloadLinksWithUnicode(StaffOnlyMixin, Report):
     title = "scene.org download links with unicode characters"
     template_name = 'maintenance/production_report.html'
@@ -1363,6 +1319,7 @@ class TinyIntrosWithoutDownloadLinks(Report):
 
         productions = (
             intros.exclude(id__in=intros_with_download_links)
+            .exclude(tags__name__in=['lost', 'corrupted-file'])
             .extra(
                 where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
                 params=[self.exclusion_name]
@@ -1488,8 +1445,6 @@ reports = [
             ImpliedMemberships,
             EmptyReleasers,
             PublicRealNames,
-            ProdsWithDeadAmigascneLinks,
-            ProdsWithDeadAmigaNvgOrgLinks,
             CreditsToMoveToText,
             SceneorgDownloadLinksWithUnicode,
             EmptyCompetitions,

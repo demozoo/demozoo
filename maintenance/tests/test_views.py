@@ -73,14 +73,6 @@ class TestReports(TestCase):
         response = self.client.get('/maintenance/prods_without_release_date')
         self.assertEqual(response.status_code, 200)
 
-    def test_prods_with_dead_amigascne_links(self):
-        response = self.client.get('/maintenance/prods_with_dead_amigascne_links')
-        self.assertEqual(response.status_code, 200)
-
-    def test_prods_with_dead_amiga_nvg_org_links(self):
-        response = self.client.get('/maintenance/prods_with_dead_amiga_nvg_org_links')
-        self.assertEqual(response.status_code, 200)
-
     def test_sceneorg_download_links_with_unicode(self):
         response = self.client.get('/maintenance/sceneorg_download_links_with_unicode')
         self.assertEqual(response.status_code, 200)
