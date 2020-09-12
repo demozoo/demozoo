@@ -92,12 +92,16 @@ class Command(BaseCommand):
         cursor.execute('''
             UPDATE productions_production
             SET release_date_date = date_trunc('month', release_date_date)
-            WHERE release_date_precision = 'm'
+            WHERE
+                release_date_precision = 'm'
+                AND date_part('day', release_date_date) <> 1
         ''')
         cursor.execute('''
             UPDATE productions_production
             SET release_date_date = date_trunc('year', release_date_date)
-            WHERE release_date_precision = 'y'
+            WHERE
+                release_date_precision = 'y'
+                AND (date_part('day', release_date_date) <> 1 or date_part('month', release_date_date) <> 1)
         ''')
 
         if self.verbosity >= 1:
