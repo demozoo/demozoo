@@ -90,6 +90,44 @@ def mock_response(req):
             "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
             "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
         }"""
+    elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=1':
+        body = r"""{
+            "success": true,
+            "nextPage": 100,
+            "nextPageURL": "https:\/\/files.scene.org\/api\/adhoc\/latest-files\/?days=1&page=100",
+            "files": [
+                {
+                    "filename": "zz-t_01.diz",
+                    "fullPath": "\/demos\/zz-t_01.diz",
+                    "viewURL": "https:\/\/files.scene.org\/view\/demos\/zz-t_01.diz",
+                    "size": 281,
+                    "mirrors": {
+                        "nl-ftp": "ftp:\/\/ftp.scene.org\/pub\/demos\/zz-t_01.diz",
+                        "nl-http": "http:\/\/archive.scene.org\/pub\/demos\/zz-t_01.diz"
+                    }
+                }
+            ]
+        }"""
+    elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=1&page=100':
+        body = r"""{
+            "success": true,
+            "files": [
+                {
+                    "filename": "lazarus-taxi-247-compo-version.diz",
+                    "fullPath": "\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
+                    "viewURL": "https:\/\/files.scene.org\/view\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
+                    "size": 296,
+                    "mirrors": {
+                        "nl-ftp": "ftp:\/\/ftp.scene.org\/pub\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
+                        "nl-http": "http:\/\/archive.scene.org\/pub\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz"
+                    }
+                }
+            ]
+        }"""
+    elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=999':
+        body = r"""{
+            "success": false
+        }"""
     elif url == 'ftp://ftp.scene.org/pub/parties/2000/forever00/results.txt':
         body = r"""here are the results of Forever 2000"""
     elif url == 'http://kestra.exotica.org.uk/files/screenies/28000/154a.png':

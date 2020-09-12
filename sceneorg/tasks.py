@@ -44,7 +44,7 @@ def fetch_new_sceneorg_files(days=1):
             dirs = path_components[:-1]
 
             path = '/'
-            current_dir = Directory.objects.get_or_create(
+            current_dir, created = Directory.objects.get_or_create(
                 path='/', defaults={'last_seen_at': datetime.datetime.now()})
 
             for d in dirs:
