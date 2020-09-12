@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 (basename, file_ext) = splitext(download.filename)
 
                 filename = 'music/' + sha1[0:2] + '/' + sha1[2:4] + '/' + slugify(basename) + file_ext
-                new_url = upload_to_s3(download.as_io_buffer(), filename, file_ext, reduced_redundancy=True)
+                new_url = upload_to_s3(download.as_io_buffer(), filename)
                 ProductionLink.objects.create(
                     production=prod_link.production,
                     link_class='BaseUrl', parameter=new_url,
