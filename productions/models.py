@@ -487,7 +487,7 @@ class Screenshot(models.Model):
         super(Screenshot, self).save(*args, **kwargs)
 
         # Mark the corresponding production as having a screenshot
-        if self.thumbnail_url and not self.production.has_screenshot:
+        if self.thumbnail_url:
             self.production.has_screenshot = True
             self.production.save(update_fields=['has_screenshot'])
 
