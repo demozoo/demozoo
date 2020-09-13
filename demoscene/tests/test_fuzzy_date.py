@@ -75,6 +75,12 @@ class TestFuzzyDateField(TestCase):
         form = FuzzyDateForm({'date': '15 smarch 2000'})
         self.assertFalse(form.is_valid())
 
+    def test_fail_parsing_2(self):
+        # regression in python-dateutil 2.8.1:
+        # https://github.com/dateutil/dateutil/issues/1071
+        form = FuzzyDateForm({'date': '1991-93'})
+        self.assertFalse(form.is_valid())
+
     def test_out_of_range(self):
         form = FuzzyDateForm({'date': '15 march 1850'})
         self.assertFalse(form.is_valid())
