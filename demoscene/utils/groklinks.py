@@ -683,7 +683,7 @@ class ModlandFile(BaseUrl):
             '<li><a class="country country_uk" href="%s">uk</a></li>' % escape(self.uk_url),
             '<li><a href="%s" class="country country_se">se</a></li>' % escape(self.se_url),
             '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_url),
-            '<li><a href="%s" class="country country_ca">ca</a></li>' % escape(self.ca_url),
+            #'<li><a href="%s" class="country country_ca">ca</a></li>' % escape(self.ca_url),
             '<li><a href="%s" class="country country_no">no</a></li>' % escape(self.no_url),
         ]
 
@@ -701,9 +701,9 @@ class ModlandFile(BaseUrl):
     def us_url(self):
         return "ftp://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
 
-    @property
-    def ca_url(self):
-        return "ftp://ftp.rave.ca%s" % self.param
+    #@property
+    #def ca_url(self):
+    #    return "ftp://ftp.rave.ca%s" % self.param
     
     @property
     def no_url(self):
