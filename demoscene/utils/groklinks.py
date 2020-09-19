@@ -1532,13 +1532,26 @@ class BandcampTrack(BandcampEntry):
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
+class TwitchChannel(BaseUrl):
+    canonical_format = "https://twitch.tv/%s"  # Channel name
+    tests = [
+        # Use (\w+) as Twitch does not accept `-` during registration
+        regex_match(r'https?://m\.twitch\.tv/(\w+)', re.I),  # Mobile version
+        regex_match(r'https?://(?:www\.)?twitch\.tv/(\w+)', re.I),
+    ]
+
+    html_link_class = "twitch"
+    html_link_text = "Twitch"
+    html_title_format = "%s on Twitch"
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
     MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
     ScenesatAct, ZxdemoAuthor, FacebookPage,
     PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
-    GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel,
+    GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel, TwitchChannel,
     DeviantartUser, ModarchiveMember, WikipediaPage,
     SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
     HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
@@ -1580,7 +1593,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 PARTY_LINK_TYPES = [
     DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
-    PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel,
+    PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
 ]
