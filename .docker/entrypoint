@@ -1,0 +1,2 @@
+#!/bin/bash
+"$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
