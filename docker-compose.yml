@@ -6,7 +6,7 @@ services:
     container_name: demozoo-web
     build:
       context: .
-      dockerfile: .docker/Dockerfile
+      dockerfile: .docker/web/Dockerfile
     ports:
       - "8000:8000"
     volumes:
