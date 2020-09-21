@@ -1,11 +1,9 @@
 #!/bin/bash
+set -e
 
-# Create vagrant pgsql superuser
-createuser -s vagrant
+psql -v ON_ERROR_STOP=1 --username demozoo --dbname demozoo <<-EOSQL
+    GRANT ALL PRIVILEGES ON DATABASE demozoo TO demozoo;
+EOSQL
 
-# create database
-createdb demozoo
-
-# fetch database export
-wget http://data.demozoo.org/demozoo-export.sql.gz -O /home/vagrant/demozoo-export.sql.gz
-gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo
+echo "Importing Demozoo database export" && \
+cat /tmp/demozoo-export.sql | psql --username demozoo demozoo
