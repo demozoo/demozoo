@@ -9,6 +9,11 @@ services:
       dockerfile: .docker/web/Dockerfile
     ports:
       - "8000:8000"
+    env_file:
+      - .docker/.env
+    environment: 
+      - POSTGRES_HOST=demozoo-db
+      - DJANGO_SETTINGS_MODULE=demozoo.settings.dev
     volumes:
       - type: bind
         source: $PWD
@@ -18,12 +23,14 @@ services:
 
   demozoo-db:
     container_name: demozoo-db
-    image: postgres:10.10
+    build:
+      context: .
+      dockerfile: .docker/db/Dockerfile
     restart: always
     expose:
       - 5432
     env_file:
-      - db.env
+      - .docker/.env
     volumes:
       - ./.docker/db/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
-      - ./pgdata:/var/lib/postgresql/data
+      - ./.docker/db/pgdata:/var/lib/postgresql/data

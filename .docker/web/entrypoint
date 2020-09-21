@@ -1,2 +1,20 @@
 #!/bin/bash
-"$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
+SECRET_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
+
+until ping -c 1 $POSTGRES_HOST
+do
+  >&2 echo "Database not available."
+  >&2 echo "Sleeping 1 seconds before retrying."
+  sleep 1
+done
+
+until /home/demozoo/manage.py migrate
+do
+  >&2 echo "Database migration and/or connection unsuccessful."
+  >&2 echo "Sleeping 5 seconds before retrying."
+  sleep 5
+done
+
+echo "Running the server"
+
+/home/demozoo/manage.py runserver 0.0.0.0:8000
