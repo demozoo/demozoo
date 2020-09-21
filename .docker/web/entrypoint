@@ -15,6 +15,6 @@ do
   sleep 5
 done
 
-echo "Running the server"
+echo "Running the server on http://localhost:8000"
 
 /home/demozoo/manage.py runserver 0.0.0.0:8000
