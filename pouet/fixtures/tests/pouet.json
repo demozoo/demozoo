@@ -1,0 +1,22 @@
+[
+    {
+        "pk": 1,
+        "model": "pouet.group",
+        "fields": {
+            "pouet_id": 1218,
+            "name": "HOOY-PROGRAM",
+            "demozoo_id": 4,
+            "last_seen_at": "2020-01-01"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "pouet.production",
+        "fields": {
+            "pouet_id": 2611,
+            "name": "Pondlife",
+            "groups": [1],
+            "last_seen_at": "2020-01-01"
+        }
+    }
+]

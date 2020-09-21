@@ -159,6 +159,43 @@ def mock_response(req):
         path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')
         with open(path, 'rb') as f:
             body = f.read()
+    elif url == 'https://api.pouet.net/v1/group/?id=767':
+        body = r"""
+            {
+                "success": true,
+                "group": {
+                    "id": "767",
+                    "name": "Raww Arse",
+                    "demozoo": "8881",
+                    "prods": [
+                        {
+                            "groups": [
+                                {"id": "767", "name": "Raww Arse"},
+                                {"id": "325", "name": "Jumalauta"}
+                            ],
+                            "id": "2124",
+                            "name": "Bunch Of Arse",
+                            "releaseDate": "1999-09-15",
+                            "download": "http:\/\/www.zxdemo.org\/files\/Boa.zip",
+                            "screenshot": "https:\/\/content.pouet.net\/files\/screenshots\/00002\/00002124.gif"
+                        }
+                    ]
+                }
+            }
+        """
+    elif url == 'https://api.pouet.net/v1/group/?id=768':
+        body = r"""
+            {
+                "success": true,
+                "group": {
+                    "id": "767",
+                    "name": "Raww Arse",
+                    "demozoo": "8881"
+                }
+            }
+        """
+    elif url == 'https://api.pouet.net/v1/group/?id=99999':
+        body = r"""{"error": true}"""
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
