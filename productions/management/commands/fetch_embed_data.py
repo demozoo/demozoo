@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 import datetime
 
@@ -8,8 +8,8 @@ from productions.models import ProductionLink
 from productions.tasks import fetch_production_link_embed_data
 
 
-class Command(NoArgsCommand):
-    def handle_noargs(self, **options):
+class Command(BaseCommand):
+    def handle(self, *args, **kwargs):
         link_types = [cls.__name__ for cls in EMBEDDABLE_PRODUCTION_LINK_TYPES]
         last_month = datetime.date.today() - datetime.timedelta(days=30)
 
