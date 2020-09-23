@@ -142,7 +142,7 @@ def mock_response(req):
         resp.code = 200
         resp.msg = "OK"
         return resp
-    elif url == 'http://example.com/pretend-big-file.txt':
+    elif url == 'http://example.com/pretend-big-file.txt' or url == 'http://example.com/pretend-big-file.mod':
         resp = urllib2.addinfourl(
             StringIO("this file claims to be big but isn't really"),
             {'Content-Length': 100000000},
@@ -155,6 +155,8 @@ def mock_response(req):
         body = "I am a fish " * 1000000
     elif url == 'http://example.com/pondlife2.txt':
         body = "hello from pondlife2.txt"
+    elif url == 'http://example.com/cybrev.mod':
+        body = "hello from cybrev.mod"
     elif url == 'http://example.com/rubber.zip':
         path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')
         with open(path, 'rb') as f:
