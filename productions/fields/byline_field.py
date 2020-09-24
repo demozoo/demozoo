@@ -86,7 +86,7 @@ class BylineLookup():
                 author_nick_selections=byline_search.author_nick_selections,
                 affiliation_nick_selections=byline_search.affiliation_nick_selections)
         else:
-            raise Exception("Don't know how to handle %s as a byline lookup" % repr(value))
+            raise ValidationError("Don't know how to handle %s as a byline lookup" % repr(value))
 
     def __repr__(self):
         return "<BylineLookup: %s, %s>" % (repr(self.author_nick_selections), repr(self.affiliation_nick_selections))
@@ -214,7 +214,7 @@ class BylineField(forms.Field):
             for i, field in enumerate(byline_lookup.affiliation_matched_nick_fields):
                 try:
                     value = byline_lookup.affiliation_nick_selections[i]
-                except IndexError:
+                except IndexError:  # pragma: no cover
                     raise ValidationError(validation_message)
                 clean_value = field.clean(value)
                 if not clean_value:

@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from demoscene.utils.nick_search import BylineSearch
+from ..fields.byline_field import BylineLookup
 from ..forms import ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet
 from ..models import ProductionType, Production, ProductionLink
 
@@ -30,3 +33,18 @@ class ProductionsFormsTests(TestCase):
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(production.links.filter(is_download_link=False).count(), 1)
+
+
+class TestBylineLookup(TestCase):
+    fixtures = ['tests/gasman.json']
+    def test_repr(self):
+        bl = BylineLookup.from_value(BylineSearch('Gasman/Hooy-Program'))
+        self.assertEqual(repr(bl), '<BylineLookup: [NickSelection: 1, Gasman], [NickSelection: 5, Hooy-Program]>')
+
+    def test_eq(self):
+        bl = BylineLookup.from_value(BylineSearch('Gasman/Hooy-Program'))
+        self.assertFalse(bl == 'fish')
+
+    def test_from_value(self):
+        with self.assertRaises(ValidationError):
+            BylineLookup.from_value('fish')

@@ -264,6 +264,60 @@ class TestCreateProduction(TestCase):
         self.assertIn(Nick.objects.get(name='Yerzmyey'), ultraviolet.author_nicks.all())
         self.assertIn(Nick.objects.get(name='Hooy-Program'), ultraviolet.author_affiliation_nicks.all())
 
+    def test_post_byline_explicit_lookup(self):
+        response = self.client.post('/productions/new/', {
+            'title': 'Ultraviolet',
+            'byline_search': 'Gasman+Yerzmyey / Hooy-Program+Raww Arse',
+            'byline_author_match_0_id': Nick.objects.get(name='Gasman').id,
+            'byline_author_match_0_name': 'Gasman',
+            'byline_author_match_1_id': Nick.objects.get(name='Yerzmyey').id,
+            'byline_author_match_1_name': 'Yerzmyey',
+            'byline_author_affiliation_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_affiliation_match_0_name': 'Hooy-Program',
+            'byline_author_affiliation_match_1_id': Nick.objects.get(name='Raww Arse').id,
+            'byline_author_affiliation_match_1_name': 'Raww Arse',
+            'byline_lookup': 'Find names',
+            'release_date': 'march 2017',
+            'type': ProductionType.objects.get(name='Demo').id,
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'links-TOTAL_FORMS': 0,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please select the appropriate sceners / groups from the lists.")
+
+    def test_post_unmatched_author_nick(self):
+        response = self.client.post('/productions/new/', {
+            'title': 'Ultraviolet',
+            'byline_search': 'Gosman+Yorzmyey / Hooy-Program+Raww Arse',
+            'release_date': 'march 2017',
+            'type': ProductionType.objects.get(name='Demo').id,
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'links-TOTAL_FORMS': 0,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.")
+
+    def test_post_unmatched_author_affiliation_nick(self):
+        response = self.client.post('/productions/new/', {
+            'title': 'Ultraviolet',
+            'byline_search': 'Gasman+Yerzmyey / Hooy-Progrom+Raww Orse',
+            'release_date': 'march 2017',
+            'type': ProductionType.objects.get(name='Demo').id,
+            'platform': Platform.objects.get(name='ZX Spectrum').id,
+            'links-TOTAL_FORMS': 0,
+            'links-INITIAL_FORMS': 0,
+            'links-MIN_NUM_FORMS': 0,
+            'links-MAX_NUM_FORMS': 1000,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.")
+
 
 class TestEditCoreDetails(TestCase):
     fixtures = ['tests/gasman.json']
