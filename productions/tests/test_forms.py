@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
 
+from django import forms
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from demoscene.utils.nick_search import BylineSearch
 from ..fields.byline_field import BylineLookup
+from ..fields.production_field import ProductionField, ProductionSelection
 from ..forms import ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet
 from ..models import ProductionType, Production, ProductionLink
 
@@ -48,3 +50,64 @@ class TestBylineLookup(TestCase):
     def test_from_value(self):
         with self.assertRaises(ValidationError):
             BylineLookup.from_value('fish')
+
+
+class TestProductionSelection(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        ps = ProductionSelection(id=4, title="Pondlife")
+        self.assertEqual(str(ps), 'ProductionSelection: 4 - Pondlife')
+
+    def test_from_value(self):
+        with self.assertRaises(ValidationError):
+            ProductionSelection.from_value('fish')
+
+
+class TestProductionField(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_render_without_byline(self):
+
+        class ProdForm(forms.Form):
+            production = ProductionField()
+
+        production = Production.objects.create(title='State of the Art')
+        form = ProdForm(initial={'production': production})
+        form_html = form.as_p()
+
+        self.assertIn('<b>State of the Art</b>', form_html)
+
+    def test_render_with_production_type_field(self):
+
+        class ProdForm(forms.Form):
+            production = ProductionField(show_production_type_field=True)
+
+        form = ProdForm(initial={'production': Production.objects.get(title='Pondlife')})
+        form_html = form.as_p()
+        self.assertIn('<label for="id_production_type">Type:</label>', form_html)
+
+    def test_submit_with_production_type(self):
+
+        class ProdForm(forms.Form):
+            production = ProductionField(show_production_type_field=True)
+
+        intro = ProductionType.objects.get(name='1K Intro')
+
+        form = ProdForm({
+            'production_id': '', 'production_title': 'Froob',
+            'production_byline_search': '',
+            'production_type': intro.id
+        })
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['production'].types_to_set, [intro])
+
+        form = ProdForm({
+            'production_id': '', 'production_title': 'Froob',
+            'production_byline_search': '',
+            'production_type': ''
+        })
+
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['production'].types_to_set, [])

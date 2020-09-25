@@ -1,6 +1,7 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
-# from django.utils.encoding import StrAndUnicode
+from django.utils.encoding import python_2_unicode_compatible
 from productions.models import Production, ProductionType
 import datetime
 from productions.fields.byline_field import BylineField, BylineWidget
@@ -10,6 +11,7 @@ from productions.fields.production_type_field import ProductionTypeChoiceField
 # A value encapsulating the state of the ProductionWidget.
 # Used as the cleaned value of a ProductionField
 # and the value ProductionWidget returns from value_from_datadict.
+@python_2_unicode_compatible
 class ProductionSelection(object):
     def __init__(self, id=None, title=None, byline_lookup=None, types_to_set=[]):
         self.id = id
@@ -40,7 +42,7 @@ class ProductionSelection(object):
                 self.byline.commit(self.production)
         return self.production
 
-    def __unicode__(self):
+    def __str__(self):
         return u"ProductionSelection: %s - %s" % (self.id, self.title)
 
     def __eq__(self, other):
@@ -67,7 +69,7 @@ class ProductionSelection(object):
         elif isinstance(value, Production):
             return ProductionSelection(id=value.id)
         else:
-            raise Exception("Don't know how to convert %s to a ProductionSelection!" % repr(value))
+            raise ValidationError("Don't know how to convert %s to a ProductionSelection!" % repr(value))
 
 
 class ProductionWidget(forms.Widget):

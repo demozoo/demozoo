@@ -4,7 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-# from django.utils.encoding import StrAndUnicode
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from collections import defaultdict
@@ -357,12 +357,13 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
 
 
 # encapsulates list of authors and affiliations
+@python_2_unicode_compatible
 class Byline(object):
     def __init__(self, authors=[], affiliations=[]):
         self.author_nicks = authors
         self.affiliation_nicks = affiliations
 
-    def __unicode__(self):
+    def __str__(self):
         authors_string = ' + '.join([nick.name for nick in self.author_nicks])
         if self.affiliation_nicks:
             affiliations_string = ' ^ '.join([nick.name for nick in self.affiliation_nicks])
