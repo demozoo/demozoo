@@ -1,4 +1,5 @@
 from .base import *
+import os
 
 # DATABASES = {
 #     'default': {
@@ -15,19 +16,11 @@ DEBUG = True
 
 BASE_URL = 'http://localhost:8000'
 
-AWS_BOTO_FORCE_HTTP = True
-AWS_BOTO_CALLING_FORMAT = 'SubdomainCallingFormat'
-
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 INSTALLED_APPS = list(INSTALLED_APPS) + ['django_extensions']
 
-DEBUG_TOOLBAR_ENABLED = True  # set to False in local.py to disable
-
-try:
-    from .local import *
-except ImportError:
-    pass
+DEBUG_TOOLBAR_ENABLED = os.getenv('DEBUG_TOOLBAR_ENABLED', '1') != '0'
 
 if DEBUG_TOOLBAR_ENABLED:
     INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']

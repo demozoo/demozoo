@@ -36,23 +36,26 @@ su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR"
 su - vagrant -c "echo $PROJECT_DIR > $VIRTUALENV_DIR/.project"
 su - vagrant -c "$PIP install -r $PROJECT_DIR/requirements.txt"
 
-if [ ! -f $PROJECT_DIR/demozoo/settings/local.py ]; then
+if [ ! -f $PROJECT_DIR/demozoo/.env ]; then
     SECRET_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
-    cat > $PROJECT_DIR/demozoo/settings/local.py <<-EOM
-SECRET_KEY = '$SECRET_KEY'
+    cat > $PROJECT_DIR/demozoo/.env <<-EOM
+SECRET_KEY="$SECRET_KEY"
 
-from .dev import DATABASES
-DATABASES['default']['USER'] = 'vagrant'
+AWS_STORAGE_BUCKET_NAME="my-demozoo-media"
 
-AWS_STORAGE_BUCKET_NAME = 'media.demozoo.org'
-AWS_S3_CUSTOM_DOMAIN = 'media.demozoo.org'
-# AWS_S3_SECURE_URLS = False  # if the above domain is http: only
+AWS_ACCESS_KEY_ID="get one from http://aws.amazon.com/s3/"
+AWS_SECRET_ACCESS_KEY="get one from http://aws.amazon.com/s3/"
 
-AWS_ACCESS_KEY_ID = 'get one from http://aws.amazon.com/s3/'
-AWS_SECRET_ACCESS_KEY = 'get one from http://aws.amazon.com/s3/'
+SCENEID_KEY="please read https://id.scene.org/docs/"
+SCENEID_SECRET="please read https://id.scene.org/docs/"
+
+POSTGRES_USER=vagrant
 
 # Read-only mode:
-# SITE_IS_WRITEABLE = False
+# SITE_IS_WRITEABLE=0
+
+# Disable debug toolbar in development:
+# DEBUG_TOOLBAR_ENABLED=0
 EOM
 fi
 
