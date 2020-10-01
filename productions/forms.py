@@ -70,7 +70,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
                 descriptions.append(u"types to %s" % readable_list(self.cleaned_data['types']))
             else:
                 descriptions.append(u"type to %s" % readable_list(self.cleaned_data['types']))
-        if 'platform' in changed_fields:
+        if 'platform' in changed_fields:  # pragma: no cover
             descriptions.append(u"platform to %s" % self.cleaned_data['platform'])
         if 'platforms' in changed_fields:
             if len(self.cleaned_data['platforms']) > 1:
@@ -162,7 +162,7 @@ class CreateProductionForm(forms.Form):
             queryset=Platform.objects.all())
 
     def save(self, commit=True):
-        if not commit:
+        if not commit:  # pragma: no cover
             raise Exception("we don't support saving CreateProductionForm with commit = False. Sorry!")
 
         if not self.instance.supertype:
@@ -356,7 +356,7 @@ class SoundtrackLinkForm(forms.Form):
         self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
 
     def save(self, commit=True):
-        if not commit:
+        if not commit:  # pragma: no cover
             raise Exception("we don't support saving SoundtrackLinkForm with commit = False. Sorry!")
 
         self.instance.soundtrack = self.cleaned_data['soundtrack'].commit()
@@ -408,7 +408,7 @@ class PackMemberForm(forms.Form):
         self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
 
     def save(self, commit=True):
-        if not commit:
+        if not commit:  # pragma: no cover
             raise Exception("we don't support saving PackMemberForm with commit = False. Sorry!")
 
         self.instance.member = self.cleaned_data['member'].commit()

@@ -13,7 +13,7 @@ from django.test import TestCase
 from mock import patch
 import PIL.Image
 
-from demoscene.models import BlacklistedTag, Edit, Nick
+from demoscene.models import BlacklistedTag, Edit, Nick, Releaser
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
 from platforms.models import Platform
@@ -391,6 +391,30 @@ class TestEditCoreDetails(TestCase):
         self.assertRedirects(response, '/productions/%d/' % pondlife.id)
         edit = Edit.for_model(pondlife, True).first()
         self.assertEqual(edit_count, Edit.for_model(pondlife, True).count())
+
+    def test_post_multiple_platforms(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/productions/%d/edit_core_details/' % pondlife.id, {
+            'title': 'Pondlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': ProductionType.objects.get(name='Demo').id,
+            'platforms': [
+                Platform.objects.get(name='ZX Spectrum').id,
+                Platform.objects.get(name='Commodore 64').id,
+            ],
+            'form-TOTAL_FORMS': 0,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+        })
+        self.assertRedirects(response, '/productions/%d/' % pondlife.id)
+        self.assertEqual(Production.objects.get(id=pondlife.id).platforms.count(), 2)
+
+        edit = Edit.for_model(pondlife, True).first()
+        self.assertIn(" platforms to ", edit.description)
 
     def test_post_unset_invitation(self):
         pondlife = Production.objects.get(title='Pondlife')
@@ -1159,6 +1183,47 @@ class TestAddCredit(TestCase):
             'credit-0-category': 'Music',
             'credit-0-role': 'Part 2',
         })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
+        self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
+
+    def test_ambiguous_nick(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.author_nicks.clear()
+        yerz = Nick.objects.get(name='Yerzmyey')
+        # create fake Yerzmyey who isn't a member of Hooy-Program
+        Releaser.objects.create(name='Yerzmyey', is_group=False)
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': 'yerzmyey',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 2',
+        })
+        # cannot match, as both Yerzmyeys are ranked equally
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please select the appropriate nick from the list.")
+
+    def test_prefer_group_member_when_matching(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        yerz = Nick.objects.get(name='Yerzmyey')
+        # create fake Yerzmyey who isn't a member of Hooy-Program
+        Releaser.objects.create(name='Yerzmyey', is_group=False)
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': 'yerzmyey',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 2',
+        })
+        # real Yerzmyey is matched based on the production being authored by Hooy-Program
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
 
