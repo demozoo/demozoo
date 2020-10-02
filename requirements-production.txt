@@ -32,3 +32,6 @@ six==1.9.0
 freezegun>=0.3,<0.4
 mock>=3.0,<4.0
 requests>=2.22,<3.0
+
+# django-compressor dependency, broke py2 compatibility in 1.0.3
+django-appconf==1.0.2
