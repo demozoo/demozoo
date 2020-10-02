@@ -224,10 +224,7 @@ class MockFTPHandler(urllib2.FTPHandler):
 
 urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler, MockFTPHandler))
 
-
-COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'coverage')
-COVERAGE_MODULE_EXCLUDES = [
-    'tests$', 'settings$', 'urls$', '^django',
-    '^compressor', '^debug_toolbar', 'migrations', '^djcelery',
-    '^rest_framework', '^south', '^taggit', '^treebeard'
-]
+try:
+    from .test_local import *
+except ImportError:  # pragma: no cover
+    pass

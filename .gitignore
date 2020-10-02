@@ -15,4 +15,3 @@
 /node_modules
 /npm-debug.log
 *.sw[op]
-.env

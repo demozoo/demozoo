@@ -20,17 +20,15 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DB_NAME', 'demozoo'),
-        'USER': os.getenv('POSTGRES_USER', 'demozoo'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('POSTGRES_HOST', ''),  # Set to empty string for localhost.
-        'PORT': os.getenv('POSTGRES_PORT', ''),  # Set to empty string for default.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'demozoo',                      # Or path to database file if using sqlite3.
+        'USER': 'postgres',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
         'CONN_MAX_AGE': 600,  # number of seconds database connections should persist for
     }
 }
-
-SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -171,14 +169,6 @@ AWS_S3_FILE_OVERWRITE = False  # yes, I like my Django storage backends to follo
 AWS_QUERYSTRING_AUTH = False
 AWS_DEFAULT_ACL = 'public-read'
 
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
-AWS_S3_SECURE_URLS = os.getenv('AWS_S3_SECURE_URLS', '1') != '0'
-
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-
-
 AUTH_PROFILE_MODULE = 'demoscene.AccountProfile'
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -263,12 +253,9 @@ HTTP_USER_AGENT = 'Demozoo/2.0 (gasman@raww.org; http://demozoo.org/)'
 GEOCODER_URL = 'http://geocoder.demozoo.org/'
 SCENEID_HOST = 'https://id.scene.org/'
 
-SCENEID_KEY = os.getenv('SCENEID_KEY')
-SCENEID_SECRET = os.getenv('SCENEID_SECRET')
-
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/v1/.*$'
 CORS_ALLOW_METHODS = ['GET']
 
 # Read-only mode
-SITE_IS_WRITEABLE = os.getenv('SITE_IS_WRITEABLE', '1') != '0'
+SITE_IS_WRITEABLE = True

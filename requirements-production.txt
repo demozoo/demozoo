@@ -20,7 +20,6 @@ redis==2.10.5
 scrubber==1.6.1
 unidecode==0.04.14
 bcrypt==1.0.2
-django-dotenv>=1.4.2,<2.0
 
 # pinned because newer versions keep breaking shit
 # https://github.com/dateutil/dateutil/issues/1071
