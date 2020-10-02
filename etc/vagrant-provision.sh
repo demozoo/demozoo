@@ -36,9 +36,9 @@ su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR"
 su - vagrant -c "echo $PROJECT_DIR > $VIRTUALENV_DIR/.project"
 su - vagrant -c "$PIP install -r $PROJECT_DIR/requirements.txt"
 
-if [ ! -f $PROJECT_DIR/demozoo/.env ]; then
+if [ ! -f $PROJECT_DIR/.env ]; then
     SECRET_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 64 | head -n 1)
-    cat > $PROJECT_DIR/demozoo/.env <<-EOM
+    cat > $PROJECT_DIR/.env <<-EOM
 SECRET_KEY="$SECRET_KEY"
 
 AWS_STORAGE_BUCKET_NAME="my-demozoo-media"
