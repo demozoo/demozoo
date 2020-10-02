@@ -1,16 +1,11 @@
 from .base import *
 
-DATABASES['default']['USER'] = 'demozoo'
-
 DEBUG = False
 EMAIL_HOST = 'localhost'
 
-AWS_BOTO_FORCE_HTTP = False
-AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
-
 BROKER_URL = 'redis://localhost:6379/0'
 
-ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'matilda.demozoo.org', '46.4.213.51']
+ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'www1.demozoo.org']
 
 # django-compressor offline compression
 COMPRESS_OFFLINE = True
@@ -53,8 +48,3 @@ LOGGING = {
         }
     }
 }
-
-try:
-    from .local import *
-except ImportError:
-    pass
