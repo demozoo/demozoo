@@ -4,6 +4,7 @@ import datetime
 
 from django import forms
 from django.test import TestCase
+from freezegun import freeze_time
 
 from fuzzy_date import FuzzyDate
 from fuzzy_date_field import FuzzyDateField
@@ -54,6 +55,12 @@ class TestFuzzyDate(TestCase):
         self.assertFalse(d1 == m1)
         self.assertTrue(m1 == m2)
         self.assertTrue(y1 == y2)
+
+    @freeze_time('2020-08-31')
+    def test_parse(self):
+        self.assertEqual(str(FuzzyDate.parse('1993-02-07')).strip(), "7 February 1993")
+        self.assertEqual(str(FuzzyDate.parse('7 Feb')).strip(), "7 February 2020")
+        self.assertEqual(str(FuzzyDate.parse('02/07/1993')).strip(), "2 July 1993")
 
 
 class FuzzyDateForm(forms.Form):

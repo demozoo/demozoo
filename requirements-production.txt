@@ -21,8 +21,10 @@ scrubber==1.6.1
 unidecode==0.04.14
 bcrypt==1.0.2
 
-# pinned awaiting fix for https://github.com/dateutil/dateutil/issues/1071
-python-dateutil==2.8.0
+# pinned because newer versions keep breaking shit
+# https://github.com/dateutil/dateutil/issues/1071
+# https://github.com/dateutil/dateutil/issues/402
+python-dateutil==2.5.1
 
 uWSGI==2.0.15
 six==1.9.0
