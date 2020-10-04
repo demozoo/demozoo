@@ -206,6 +206,17 @@ class TestCreateProduction(TestCase):
         response = self.client.get('/productions/new/')
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_releaser_id(self):
+        gasman = Releaser.objects.get(name='Gasman')
+        response = self.client.get('/productions/new/?releaser_id=%d' % gasman.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Gasman')
+
+    def test_get_with_nonexistent_releaser_id(self):
+        gasman = Releaser.objects.get(name='Gasman')
+        response = self.client.get('/productions/new/?releaser_id=9999')
+        self.assertEqual(response.status_code, 200)
+
     def test_post(self):
         response = self.client.post('/productions/new/', {
             'title': 'Ultraviolet',

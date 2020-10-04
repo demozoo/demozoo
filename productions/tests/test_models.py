@@ -6,9 +6,10 @@ import datetime
 from django.test import TestCase
 from freezegun import freeze_time
 
+from demoscene.models import Nick
 from mirror.models import Download
 from platforms.models import Platform
-from productions.models import Production, ProductionType
+from productions.models import Byline, Credit, PackMember, Production, ProductionType, Screenshot
 
 
 class TestProductionType(TestCase):
@@ -54,6 +55,23 @@ class TestProductionLink(TestCase):
             is_download_link=True
         )
 
+    def test_no_extension(self):
+        extensionless_link = self.skyrider.links.create(
+            link_class='BaseUrl', parameter='http://example.com/skyrider',
+            is_download_link=True
+        )
+        self.assertEqual(extensionless_link.download_file_extension(), None)
+        self.assertFalse(extensionless_link.is_zip_file())
+
+    def test_is_streaming_video(self):
+        self.assertFalse(self.link.is_streaming_video)
+
+        video_link = self.skyrider.links.create(
+            link_class='YoutubeVideo', parameter='ldoVS0idTBw',
+            is_download_link=False
+        )
+        self.assertTrue(video_link.is_streaming_video)
+
     def test_mirrored_file_believed_downloadable(self):
         Download.objects.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
@@ -84,3 +102,54 @@ class TestProductionLink(TestCase):
             downloaded_at=datetime.date(2020, 6, 1), error_type='HTTPError'
         )
         self.assertTrue(self.link.is_believed_downloadable())
+
+
+class TestByline(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_commit(self):
+        prod = Production.objects.create(title="Tim Will Rock You", supertype="music")
+        byline = Byline([Nick.objects.get(name='Gasman')], [Nick.objects.get(name='Hooy-Program')])
+        byline.commit(prod)
+        self.assertTrue(prod.author_nicks.filter(name='Gasman').exists())
+        self.assertTrue(prod.author_affiliation_nicks.filter(name='Hooy-Program').exists())
+
+
+class TestCredit(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        credit = pondlife.credits.get(nick__name='Gasman')
+        self.assertEqual(str(credit), "Pondlife: Gasman - Code")
+        credit.role='Part 1'
+        self.assertEqual(str(credit), "Pondlife: Gasman - Code (Part 1)")
+
+
+class TestScreenshot(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        screenshot = Screenshot(production=pondlife, original_url='http://example.com/pondlife.png')
+        self.assertEqual(str(screenshot), "Pondlife - http://example.com/pondlife.png")
+
+
+class TestSoundtrackLink(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        soundtrack = pondlife.soundtrack_links.get(soundtrack__title__startswith="Cyber")
+        self.assertEqual(str(soundtrack), "Cybernoid's Revenge on Pondlife")
+
+
+class TestPackMember(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.types.add(ProductionType.objects.get(name='Pack'))
+        madrielle = Production.objects.get(title='Madrielle')
+        pack_member = PackMember(pack=pondlife, member=madrielle, position=1)
+        self.assertEqual(str(pack_member), "Madrielle packed in Pondlife")
