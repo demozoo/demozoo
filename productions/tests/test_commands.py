@@ -100,3 +100,21 @@ class TestMirrorMusicFiles(TestCase):
                 is_download_link=True
             ).exists()
         )
+
+
+class TestPurgeDeadYoutubeLinks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    @patch('productions.tasks.clean_dead_youtube_link')
+    def test_run(self, clean_dead_youtube_link):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = pondlife.links.create(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            is_download_link=False
+        )
+        ProductionLink.objects.filter(id=link.id).update(link_class='YoutubeVideo')
+
+        with captured_stdout():
+            call_command('purge_dead_youtube_links')
+
+        clean_dead_youtube_link.delay.assert_called_once_with(link.id)

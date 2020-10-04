@@ -55,6 +55,15 @@ def mock_response(req):
             "thumbnail_url":"https:\/\/i.ytimg.com\/vi\/ldoVS0idTBw\/hqdefault.jpg",
             "provider_url":"https:\/\/www.youtube.com\/"
         }"""
+    elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D404&maxheight=300&maxwidth=400&format=json':
+        resp = urllib2.addinfourl(
+            StringIO("not found"),
+            {},
+            req.get_full_url()
+        )
+        resp.code = 404
+        resp.msg = "Not found"
+        return resp
     elif url == 'https://www.youtube.com/watch?v=ldoVS0idTBw':
         body = r"""<!DOCTYPE html>
         <html>
@@ -69,6 +78,15 @@ def mock_response(req):
             <body></body>
         </html>
         """
+    elif url == 'https://www.youtube.com/watch?v=404':
+        resp = urllib2.addinfourl(
+            StringIO("not found"),
+            {},
+            req.get_full_url()
+        )
+        resp.code = 404
+        resp.msg = "Not found"
+        return resp
     elif url == 'https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F3156959&maxheight=300&maxwidth=400':
         body = r"""{
             "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
