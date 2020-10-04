@@ -1,13 +1,20 @@
 from __future__ import unicode_literals
 
 from django import forms
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from demoscene.models import Edit, Nick
 from demoscene.utils.nick_search import BylineSearch
+from platforms.models import Platform
 from ..fields.byline_field import BylineLookup
 from ..fields.production_field import ProductionField, ProductionSelection
-from ..forms import ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet
+from ..forms import (
+    ProductionCreditedNickForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, 
+    ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet,
+    PackMemberFormset, ProductionSoundtrackLinkFormset
+)
 from ..models import ProductionType, Production, ProductionLink
 
 
@@ -35,6 +42,26 @@ class ProductionsFormsTests(TestCase):
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(production.links.filter(is_download_link=False).count(), 1)
+
+    def test_save_download_link_form_with_commit(self):
+        production = Production.objects.create(title='State of the Art')
+        external_link = ProductionLink(production=production, is_download_link=True)
+        form = ProductionDownloadLinkForm({'url': 'https://demozoo.org'}, instance=external_link)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(production.links.filter(is_download_link=True).count(), 1)
+
+    def test_credited_nick_form(self):
+        form = ProductionCreditedNickForm()
+        self.assertTrue(form)
+
+    def test_soundtrack_link_formset(self):
+        formset = ProductionSoundtrackLinkFormset()
+        self.assertTrue(formset)
+
+    def test_pack_member_formset(self):
+        formset = PackMemberFormset()
+        self.assertTrue(formset)
 
 
 class TestBylineLookup(TestCase):
@@ -111,3 +138,25 @@ class TestProductionField(TestCase):
 
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['production'].types_to_set, [])
+
+
+class TestProductionCoreDetailsForm(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_log_edit(self):
+        user = User.objects.create_user(username='testuser', password='12345')
+
+        form = ProductionEditCoreDetailsForm({
+            'title': 'P0ndlife',
+            'byline_search': 'Hooy-Program',
+            'byline_author_match_0_id': Nick.objects.get(name='Hooy-Program').id,
+            'byline_author_match_0_name': 'Hooy-Program',
+            'release_date': '18 March 2001',
+            'types': [ProductionType.objects.get(name='Demo').id],
+            'platforms': [Platform.objects.get(name='ZX Spectrum').id],
+        }, instance=Production.objects.get(title='Pondlife'))
+        self.assertTrue(form.is_valid())
+        form.log_edit(user)
+
+        edit = Edit.objects.get(user=user)
+        self.assertIn("Set title to 'P0ndlife'", edit.description)
