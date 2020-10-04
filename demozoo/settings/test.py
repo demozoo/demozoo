@@ -22,6 +22,9 @@ REDIS_URL = 'redis://localhost:6379/2'
 AWS_ACCESS_KEY_ID = 'AWS_K3Y'
 AWS_SECRET_ACCESS_KEY = 'AWS_S3CR3T'
 
+SCENEID_KEY = 'SCENEID_K3Y'
+SCENEID_SECRET = 'SCENEID_S3CR3T'
+
 
 # set up mock opener for urllib2
 
@@ -216,6 +219,29 @@ def mock_response(req):
         """
     elif url == 'https://api.pouet.net/v1/group/?id=99999':
         body = r"""{"error": true}"""
+    elif url == 'https://id.scene.org/oauth/token/':
+        if req.get_method() == 'POST':
+            if req.get_header('Authorization') != 'Basic U0NFTkVJRF9LM1k6U0NFTkVJRF9TM0NSM1Q=':
+                raise Exception("Bad authorization header for https://id.scene.org/oauth/token/")
+            if req.get_data() != 'code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F':
+                raise Exception("Bad POST data")
+
+            body = r"""
+                {
+                    "access_token":"aaaaaaaaaaaaaaaa",
+                    "expires_in":3600,"token_type":"Bearer","scope":"basic",
+                    "refresh_token":"bbbbbbbbbbbbbbbb"
+                }
+            """
+        else:
+            raise Exception("GET request not supported for id.scene.org")
+    elif url == 'https://id.scene.org/api/3.0/me/?':
+        if req.get_header('Authorization') != 'Bearer aaaaaaaaaaaaaaaa':
+            raise Exception("Bad authorization header for https://id.scene.org/api/3.0/me/")
+        body = r"""
+            {"success":true,"user":{"id":2260,"first_name":"Matt","last_name":"Westcott","display_name":"gasman"}}
+        """
+
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
