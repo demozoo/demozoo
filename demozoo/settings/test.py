@@ -221,9 +221,9 @@ def mock_response(req):
         body = r"""{"error": true}"""
     elif url == 'https://id.scene.org/oauth/token/':
         if req.get_method() == 'POST':
-            if req.get_header('Authorization') != 'Basic U0NFTkVJRF9LM1k6U0NFTkVJRF9TM0NSM1Q=':
+            if req.get_header('Authorization') != 'Basic U0NFTkVJRF9LM1k6U0NFTkVJRF9TM0NSM1Q=':  # pragma: no cover
                 raise Exception("Bad authorization header for https://id.scene.org/oauth/token/")
-            if req.get_data() != 'code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F':
+            if req.get_data() != 'code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F':  # pragma: no cover
                 raise Exception("Bad POST data")
 
             body = r"""
@@ -233,10 +233,10 @@ def mock_response(req):
                     "refresh_token":"bbbbbbbbbbbbbbbb"
                 }
             """
-        else:
+        else:  # pragma: no cover
             raise Exception("GET request not supported for id.scene.org")
     elif url == 'https://id.scene.org/api/3.0/me/?':
-        if req.get_header('Authorization') != 'Bearer aaaaaaaaaaaaaaaa':
+        if req.get_header('Authorization') != 'Bearer aaaaaaaaaaaaaaaa':  # pragma: no cover
             raise Exception("Bad authorization header for https://id.scene.org/api/3.0/me/")
         body = r"""
             {"success":true,"user":{"id":2260,"first_name":"Matt","last_name":"Westcott","display_name":"gasman"}}
