@@ -184,6 +184,14 @@ def mock_response(req):
         path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')
         with open(path, 'rb') as f:
             body = f.read()
+    elif url == 'http://example.com/rubberbadimage.zip':
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubberbadimage.zip')
+        with open(path, 'rb') as f:
+            body = f.read()
+    elif url == 'http://example.com/badzipfile.zip':
+        body = "the grim reaper in a dress"
+    elif url == 'http://example.com/badimage.png':
+        body = "the grim reaper's back again, but this time she's got a hat"
     elif url == 'https://api.pouet.net/v1/group/?id=767':
         body = r"""
             {

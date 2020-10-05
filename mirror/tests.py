@@ -119,7 +119,7 @@ class TestActions(TestCase):
         S3Connection.assert_called_once()
         download = Download.objects.get(link_class='BaseUrl', parameter='http://example.com/rubber.zip')
         archive_members = download.get_archive_members()
-        self.assertEqual(archive_members.count(), 1)
+        self.assertEqual(archive_members.count(), 2)
         self.assertEqual(archive_members.first().filename, '16Kb-RUBBER.txt')
 
 

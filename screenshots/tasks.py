@@ -130,18 +130,20 @@ def create_screenshot_from_production_link(production_link_id):
 
         image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
         if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
-            z = blob.as_zipfile()
-            # we encode the filename as iso-8859-1 before retrieving it, because we
-            # decoded it that way on insertion into the database to ensure that it had
-            # a valid unicode string representation - see mirror/models.py
+            z = None
             try:
+                z = blob.as_zipfile()
+                # we encode the filename as iso-8859-1 before retrieving it, because we
+                # decoded it that way on insertion into the database to ensure that it had
+                # a valid unicode string representation - see mirror/models.py
                 member_buf = cStringIO.StringIO(
                     z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
                 )
             except zipfile.BadZipfile:
                 prod_link.has_bad_image = True
                 prod_link.save()
-                z.close()
+                if z:  # pragma: no cover
+                    z.close()
                 return
 
             z.close()
@@ -170,7 +172,7 @@ def create_screenshot_from_production_link(production_link_id):
         # the original file handle, and the storage backend might close the file after uploading
         # which screws with PIL's ability to create resized versions...
         upload_original(img, screenshot, basename)
-    except IOError:
+    except IOError:  # pragma: no cover
         prod_link.has_bad_image = True
         prod_link.save()
         return
