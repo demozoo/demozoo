@@ -6,6 +6,7 @@ import shutil
 from django.conf import settings
 from django.test import TestCase
 from mock import patch
+from PIL import Image
 
 from mirror.actions import upload_dir
 from mirror.models import ArchiveMember
@@ -22,11 +23,12 @@ TEST_IMAGES_DIR = os.path.join(os.path.join(settings.FILEROOT, 'screenshots', 't
 class TestCreateFromLocal(TestCase):
     fixtures = ['tests/gasman.json']
 
-    @patch('screenshots.tasks.upload_to_s3')
-    def test_run(self, upload_to_s3):
+    @patch('screenshots.processing.DefaultStorage')
+    def test_run(self, DefaultStorage):
         skyrider = Production.objects.get(title="Skyrider")
         screenshot = Screenshot.objects.create(production=skyrider)
-        upload_to_s3.return_value = 'http://example.com/screens/skyrider.png'
+        storage = DefaultStorage.return_value
+        storage.url.return_value = 'http://example.com/screens/skyrider.png'
 
         dest_path = os.path.join(upload_dir, 'mr-scene.scr')
         shutil.copy(os.path.join(TEST_IMAGES_DIR, 'mr-scene.scr'), dest_path)
@@ -35,9 +37,93 @@ class TestCreateFromLocal(TestCase):
             screenshot.id, dest_path
         )
         screenshot.refresh_from_db()
-        self.assertEqual(len(upload_to_s3.call_args_list), 3)
+        self.assertEqual(len(storage.save.call_args_list), 3)
         self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
         self.assertEqual(screenshot.original_width, 256)
+        self.assertFalse(os.path.isfile(dest_path))
+
+    @patch('screenshots.processing.DefaultStorage')
+    def test_extra_wide(self, DefaultStorage):
+        skyrider = Production.objects.get(title="Skyrider")
+        screenshot = Screenshot.objects.create(production=skyrider)
+        storage = DefaultStorage.return_value
+        storage.url.return_value = 'http://example.com/screens/skyrider.png'
+
+        dest_path = os.path.join(upload_dir, 'extrawide.png')
+        Image.new('P', (1000, 30)).save(dest_path, 'png')
+
+        create_screenshot_versions_from_local_file(
+            screenshot.id, dest_path
+        )
+        screenshot.refresh_from_db()
+        self.assertEqual(len(storage.save.call_args_list), 3)
+        self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
+        self.assertEqual(screenshot.original_width, 1000)
+        self.assertEqual(screenshot.standard_width, 400)
+        self.assertEqual(screenshot.standard_height, 30)
+        self.assertFalse(os.path.isfile(dest_path))
+
+    @patch('screenshots.processing.DefaultStorage')
+    def test_extra_wide_and_chonky(self, DefaultStorage):
+        skyrider = Production.objects.get(title="Skyrider")
+        screenshot = Screenshot.objects.create(production=skyrider)
+        storage = DefaultStorage.return_value
+        storage.url.return_value = 'http://example.com/screens/skyrider.png'
+
+        dest_path = os.path.join(upload_dir, 'extrawide.png')
+        Image.new('P', (2000, 600)).save(dest_path, 'png')
+
+        create_screenshot_versions_from_local_file(
+            screenshot.id, dest_path
+        )
+        screenshot.refresh_from_db()
+        self.assertEqual(len(storage.save.call_args_list), 3)
+        self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
+        self.assertEqual(screenshot.original_width, 2000)
+        self.assertEqual(screenshot.standard_width, 400)
+        self.assertEqual(screenshot.standard_height, 150)
+        self.assertFalse(os.path.isfile(dest_path))
+
+    @patch('screenshots.processing.DefaultStorage')
+    def test_extra_tall(self, DefaultStorage):
+        skyrider = Production.objects.get(title="Skyrider")
+        screenshot = Screenshot.objects.create(production=skyrider)
+        storage = DefaultStorage.return_value
+        storage.url.return_value = 'http://example.com/screens/skyrider.png'
+
+        dest_path = os.path.join(upload_dir, 'extrawide.png')
+        Image.new('P', (30, 1000)).save(dest_path, 'png')
+
+        create_screenshot_versions_from_local_file(
+            screenshot.id, dest_path
+        )
+        screenshot.refresh_from_db()
+        self.assertEqual(len(storage.save.call_args_list), 3)
+        self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
+        self.assertEqual(screenshot.original_width, 30)
+        self.assertEqual(screenshot.standard_width, 30)
+        self.assertEqual(screenshot.standard_height, 300)
+        self.assertFalse(os.path.isfile(dest_path))
+
+    @patch('screenshots.processing.DefaultStorage')
+    def test_extra_tall_and_chonky(self, DefaultStorage):
+        skyrider = Production.objects.get(title="Skyrider")
+        screenshot = Screenshot.objects.create(production=skyrider)
+        storage = DefaultStorage.return_value
+        storage.url.return_value = 'http://example.com/screens/skyrider.png'
+
+        dest_path = os.path.join(upload_dir, 'extrawide.png')
+        Image.new('P', (800, 2000)).save(dest_path, 'png')
+
+        create_screenshot_versions_from_local_file(
+            screenshot.id, dest_path
+        )
+        screenshot.refresh_from_db()
+        self.assertEqual(len(storage.save.call_args_list), 3)
+        self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
+        self.assertEqual(screenshot.original_width, 800)
+        self.assertEqual(screenshot.standard_width, 133)
+        self.assertEqual(screenshot.standard_height, 300)
         self.assertFalse(os.path.isfile(dest_path))
 
     def test_missing_screenshot(self):
