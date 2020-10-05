@@ -174,6 +174,8 @@ def mock_response(req):
         return resp
     elif url == 'http://example.com/real-big-file.txt':
         body = "I am a fish " * 1000000
+    elif url == 'ftp://ftp.scene.org/pub/bigfile.txt':
+        body = "I am a fish " * 1000000
     elif url == 'http://example.com/pondlife2.txt':
         body = "hello from pondlife2.txt"
     elif url == 'http://example.com/cybrev.mod':
