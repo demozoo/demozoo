@@ -25,6 +25,12 @@ class TestConversion(TestCase):
 
         self.assertTrue(result < 1, "Images are too different")
 
+    def test_wmf(self):
+        # WMF is not in our PIL_READABLE_FORMATS list
+        with open(os.path.join(TEST_IMAGES_DIR, 'clock.wmf'), mode='rb') as f:
+            with self.assertRaises(IOError):
+                img = PILConvertibleImage(f, name_hint='clock.wmf')
+
     def test_gif_palette(self):
         # https://github.com/python-pillow/Pillow/issues/513
         with open(os.path.join(TEST_IMAGES_DIR, 'atari-metal-knight.gif'), mode='rb') as f:
