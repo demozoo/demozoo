@@ -3,7 +3,6 @@ Django>=1.11.27,<=1.11.99
 Fabric>=1.14,<1.15
 Markdown==2.4
 Pillow==6.2.1
-boto==2.8.0
 boto3>=1.14,<1.15
 celery==3.1.23
 django-celery>=3.2,<3.3

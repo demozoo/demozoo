@@ -161,10 +161,9 @@ class TestRebuildScreenshot(TestCase):
 class TestCreateFromProdLink(TestCase):
     fixtures = ['tests/gasman.json']
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_run(self, upload_to_s3, S3Connection, Key):
+    def test_run(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',
@@ -217,10 +216,9 @@ class TestCreateFromProdLink(TestCase):
         create_screenshot_from_production_link(link.id)
         self.assertEqual(skyrider.screenshots.count(), 0)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_new_bad_image(self, upload_to_s3, S3Connection, Key):
+    def test_new_bad_image(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',
@@ -236,10 +234,9 @@ class TestCreateFromProdLink(TestCase):
         self.assertEqual(skyrider.screenshots.count(), 0)
         self.assertEqual(len(upload_to_s3.call_args_list), 0)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_create_from_zipfile(self, upload_to_s3, S3Connection, Key):
+    def test_create_from_zipfile(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',
@@ -255,10 +252,9 @@ class TestCreateFromProdLink(TestCase):
         self.assertEqual(screenshot.original_url, 'http://example.com/screens/skyrider.png')
         self.assertEqual(screenshot.original_width, 320)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_create_from_bad_zipfile(self, upload_to_s3, S3Connection, Key):
+    def test_create_from_bad_zipfile(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',
@@ -281,10 +277,9 @@ class TestCreateFromProdLink(TestCase):
         self.assertEqual(skyrider.screenshots.count(), 0)
         self.assertEqual(len(upload_to_s3.call_args_list), 0)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_create_from_zipfile_with_bad_image(self, upload_to_s3, S3Connection, Key):
+    def test_create_from_zipfile_with_bad_image(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',
@@ -300,10 +295,9 @@ class TestCreateFromProdLink(TestCase):
         self.assertEqual(skyrider.screenshots.count(), 0)
         self.assertEqual(len(upload_to_s3.call_args_list), 0)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
+    @patch('boto3.Session')
     @patch('screenshots.tasks.upload_to_s3')
-    def test_create_from_zipfile_with_multiple_images(self, upload_to_s3, S3Connection, Key):
+    def test_create_from_zipfile_with_multiple_images(self, upload_to_s3, Session):
         skyrider = Production.objects.get(title="Skyrider")
         link = skyrider.links.create(
             link_class='BaseUrl',

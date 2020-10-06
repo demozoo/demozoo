@@ -1,6 +1,6 @@
 import hashlib
 import zipfile
-import cStringIO
+from io import BytesIO
 
 from django.db import models
 from django.utils.functional import cached_property
@@ -25,14 +25,12 @@ class Download(ExternalLink):
 
     def fetch_from_s3(self):
         from mirror.actions import open_bucket
-        from boto.s3.key import Key
 
         bucket = open_bucket()
-        k = Key(bucket)
-        k.key = self.mirror_s3_key
-        file_content = buffer(k.get_contents_as_string())
+        f = BytesIO()
+        bucket.download_fileobj(self.mirror_s3_key, f)
         filename = self.mirror_s3_key.split('/')[-1]
-        return DownloadBlob(filename, file_content)
+        return DownloadBlob(filename, f.getvalue())
 
 
 class ArchiveMember(models.Model):
@@ -47,7 +45,7 @@ class ArchiveMember(models.Model):
         download = Download.objects.filter(sha1=self.archive_sha1).first()
         blob = download.fetch_from_s3()
         z = blob.as_zipfile()
-        member_buf = cStringIO.StringIO(
+        member_buf = BytesIO(
             z.read(self.filename.encode('iso-8859-1'))
         )
         z.close()
@@ -90,7 +88,7 @@ class DownloadBlob(object):
         return len(self.file_content)
 
     def as_io_buffer(self):
-        return cStringIO.StringIO(self.file_content)
+        return BytesIO(self.file_content)
 
     def as_zipfile(self):
         return zipfile.ZipFile(self.as_io_buffer(), 'r')
