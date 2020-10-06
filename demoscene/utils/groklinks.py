@@ -5,9 +5,11 @@ import json
 from six.moves import urllib
 
 from bs4 import BeautifulSoup
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.html import escape, format_html
 
 
+@python_2_unicode_compatible
 class BaseUrl():
     def __init__(self, param):
         self.param = param
@@ -39,11 +41,8 @@ class BaseUrl():
         if param is not None:
             return cls(param)
 
-    def __unicode__(self):
-        return self.canonical_format % self.param
-
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return self.canonical_format % self.param
 
     html_link_class = "website"
     html_link_text = "WWW"
