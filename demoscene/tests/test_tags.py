@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from fuzzy_date import FuzzyDate
 from demoscene.templatetags.demoscene_tags import date_range
 

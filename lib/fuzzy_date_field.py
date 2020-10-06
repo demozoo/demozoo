@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django import forms
 from fuzzy_date import FuzzyDate
 from django.core import validators

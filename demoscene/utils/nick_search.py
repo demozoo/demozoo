@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from demoscene.models import NickVariant, Releaser, Nick
 import datetime
 import re

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from celery.task import task
 from sceneorg.models import Directory, File
 from sceneorg.dirparser import parse_all_dirs

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 # list from https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=<demozoo server IP>&port=443
 TOR_ENDPOINT_IPS = set([
     '103.10.197.50',

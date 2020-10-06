@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.db import transaction
 from django.db.models import Value
 from django.db.models.signals import post_save, m2m_changed

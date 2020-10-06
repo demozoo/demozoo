@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 # Re-parse all external links of type 'BaseUrl' or 'SceneOrgFile', in case
 # they're now recognised as a more specific type
 from django.core.management.base import BaseCommand

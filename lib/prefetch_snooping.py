@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 class ModelWithPrefetchSnooping(object):
     """
         Adds a has_prefetched method to a model, which indicates whether the specified

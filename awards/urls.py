@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.conf.urls import url
 
 from awards.views import recommend, user_recommendations, remove_recommendation, report

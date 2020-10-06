@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.conf import settings

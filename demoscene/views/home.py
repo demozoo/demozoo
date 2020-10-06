@@ -1,4 +1,5 @@
-from __future__ import absolute_import  # ensure that 'from productions.* import...' works relative to the productions app, not views.productions
+from __future__ import absolute_import, unicode_literals
+
 from django.shortcuts import redirect, render
 
 from demoscene.shortcuts import get_page

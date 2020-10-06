@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from .dev import *
 
 TEMPLATES[0]['OPTIONS']['context_processors'] = [
