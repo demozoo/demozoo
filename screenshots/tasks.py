@@ -1,8 +1,8 @@
 from celery.task import task
+import io
 import os
 import re
 import uuid
-import cStringIO
 import zipfile
 
 from six.moves import urllib
@@ -72,9 +72,9 @@ def rebuild_screenshot(screenshot_id):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
         f = urllib.request.urlopen(screenshot.original_url, None, 10)
-        # read into a cStringIO buffer so that PIL can seek on it (which isn't possible for urllib responses) -
+        # read into a BytesIO buffer so that PIL can seek on it (which isn't possible for urllib responses) -
         # see http://mail.python.org/pipermail/image-sig/2004-April/002729.html
-        buf = cStringIO.StringIO(f.read())
+        buf = io.BytesIO(f.read())
         img = PILConvertibleImage(buf, screenshot.original_url.split('/')[-1])
 
         basename = create_basename(screenshot_id)
@@ -137,7 +137,7 @@ def create_screenshot_from_production_link(production_link_id):
                 # we encode the filename as iso-8859-1 before retrieving it, because we
                 # decoded it that way on insertion into the database to ensure that it had
                 # a valid unicode string representation - see mirror/models.py
-                member_buf = cStringIO.StringIO(
+                member_buf = io.BytesIO(
                     z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
                 )
             except zipfile.BadZipfile:

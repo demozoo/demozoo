@@ -1,7 +1,7 @@
 from PIL import Image
-from StringIO import StringIO
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import models
+import io
 import os
 
 class ModelWithThumbnails(models.Model):
@@ -19,7 +19,7 @@ class ModelWithThumbnails(models.Model):
         # create in-memory file object because Image.open will
         # merrily do a read() once for every format handler it has,
         # which definitely isn't what we want if the underlying file is on S3...
-        original_file = StringIO(original_field.read())
+        original_file = io.BytesIO(original_field.read())
         image = Image.open(original_file)
         
         original_format = image.format
@@ -50,7 +50,7 @@ class ModelWithThumbnails(models.Model):
         image.thumbnail(size, Image.ANTIALIAS)
         
         # save the thumbnail to memory
-        temp_handle = StringIO()
+        temp_handle = io.BytesIO()
         if original_format == 'JPEG':
             image.save(temp_handle, 'jpeg')
             new_filename = original_filename_root + '.jpg'

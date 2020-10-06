@@ -1,10 +1,10 @@
+from __future__ import unicode_literals
+
 from .base import *
 
+import io
 from six.moves import urllib
-
-from io import BytesIO
-from StringIO import StringIO
-
+from six import ensure_binary
 from PIL import Image
 
 
@@ -61,7 +61,7 @@ def mock_response(req):
         }"""
     elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D404&maxheight=300&maxwidth=400&format=json':
         resp = urllib.response.addinfourl(
-            StringIO("not found"),
+            io.StringIO("not found"),
             {},
             req.get_full_url()
         )
@@ -84,7 +84,7 @@ def mock_response(req):
         """
     elif url == 'https://www.youtube.com/watch?v=404':
         resp = urllib.response.addinfourl(
-            StringIO("not found"),
+            io.StringIO("not found"),
             {},
             req.get_full_url()
         )
@@ -156,17 +156,17 @@ def mock_response(req):
     elif url == 'ftp://ftp.scene.org/pub/parties/2000/forever00/results.txt':
         body = r"""here are the results of Forever 2000"""
     elif url == 'http://kestra.exotica.org.uk/files/screenies/28000/154a.png':
-        io = BytesIO()
-        Image.new('P', (640, 480)).save(io, 'png')
-        io.seek(0)
-        resp = urllib.response.addinfourl(io, {'Content-Length': len(io.getvalue())}, req.get_full_url())
-        io.seek(0)
+        f = io.BytesIO()
+        Image.new('P', (640, 480)).save(f, 'png')
+        f.seek(0)
+        resp = urllib.response.addinfourl(f, {'Content-Length': len(f.getvalue())}, req.get_full_url())
+        f.seek(0)
         resp.code = 200
         resp.msg = "OK"
         return resp
     elif url == 'http://example.com/pretend-big-file.txt' or url == 'http://example.com/pretend-big-file.mod':
         resp = urllib.response.addinfourl(
-            StringIO("this file claims to be big but isn't really"),
+            io.StringIO("this file claims to be big but isn't really"),
             {'Content-Length': 100000000},
             req.get_full_url()
         )
@@ -256,7 +256,9 @@ def mock_response(req):
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
-    resp = urllib.response.addinfourl(StringIO(body), {}, req.get_full_url())
+    resp = urllib.response.addinfourl(
+        io.BytesIO(ensure_binary(body)), {}, req.get_full_url()
+    )
     resp.code = 200
     resp.msg = "OK"
     return resp

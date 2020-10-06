@@ -1,12 +1,12 @@
 import gzip
+import io
 import re
 from ftplib import FTP
-import StringIO
 
 def parse_all_dirs():
     ftp = FTP('ftp.scene.org')
     ftp.login('anonymous', 'gasman@raww.org')
-    gzipped_file = StringIO.StringIO()
+    gzipped_file = io.BytesIO()
     ftp.retrbinary('RETR ls-lR.gz', gzipped_file.write)
     ftp.quit()
 
