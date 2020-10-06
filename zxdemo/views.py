@@ -7,7 +7,8 @@ from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import math
-import urllib
+
+from six.moves import urllib
 
 from demoscene.models import Releaser, ReleaserExternalLink, Membership
 from productions.models import Production, Screenshot, ProductionLink, Credit
@@ -434,7 +435,7 @@ def search(request):
         url_params.update({
             'feature': 'demos', 'demoskip': demoskip + 10
         })
-        demos_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        demos_next_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         demos_next_link = None
 
@@ -443,7 +444,7 @@ def search(request):
         url_params.update({
             'feature': 'demos', 'demoskip': max(0, demoskip - 10)
         })
-        demos_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        demos_prev_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         demos_prev_link = None
 
@@ -460,7 +461,7 @@ def search(request):
         url_params.update({
             'feature': 'music', 'musicskip': musicskip + 10
         })
-        musics_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        musics_next_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         musics_next_link = None
 
@@ -469,7 +470,7 @@ def search(request):
         url_params.update({
             'feature': 'music', 'musicskip': max(0, musicskip - 10)
         })
-        musics_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        musics_prev_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         musics_prev_link = None
 
@@ -486,7 +487,7 @@ def search(request):
         url_params.update({
             'feature': 'graphics', 'gfxskip': gfxskip + 10
         })
-        graphics_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        graphics_next_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         graphics_next_link = None
 
@@ -495,7 +496,7 @@ def search(request):
         url_params.update({
             'feature': 'graphics', 'gfxskip': max(0, gfxskip - 10)
         })
-        graphics_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        graphics_prev_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         graphics_prev_link = None
 
@@ -511,7 +512,7 @@ def search(request):
         url_params.update({
             'feature': 'sceners', 'scenerskip': scenerskip + 10
         })
-        sceners_next_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        sceners_next_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         sceners_next_link = None
 
@@ -520,7 +521,7 @@ def search(request):
         url_params.update({
             'feature': 'sceners', 'scenerskip': max(0, scenerskip - 10)
         })
-        sceners_prev_link = reverse('zxdemo_search') + '?' + urllib.urlencode(url_params)
+        sceners_prev_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         sceners_prev_link = None
 

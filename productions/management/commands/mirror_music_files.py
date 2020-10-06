@@ -1,7 +1,8 @@
 import time
-import urllib2
 from os.path import splitext
 from socket import timeout
+
+from six.moves import urllib
 
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -47,7 +48,7 @@ class Command(BaseCommand):
                     link_class='BaseUrl', parameter=new_url,
                     is_download_link=True
                 )
-            except (urllib2.URLError, FileTooBig, timeout) as ex:
+            except (urllib.error.URLError, FileTooBig, timeout) as ex:
                 pass
 
             time.sleep(5)

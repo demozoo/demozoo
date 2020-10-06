@@ -1,6 +1,7 @@
 from celery.task import task
 import datetime
-import urllib2
+
+from six.moves import urllib
 
 from productions.models import ProductionLink
 
@@ -37,7 +38,7 @@ def clean_dead_youtube_link(productionlink_id):
 
     try:
         production_link.link.get_embed_data(oembed_only=True)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         if e.code == 404:
             print("404 on %s - deleting" % production_link.link)
             production_link.delete()
