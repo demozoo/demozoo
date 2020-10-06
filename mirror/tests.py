@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import datetime
+from io import BytesIO
 from mock import patch
 
 from django.test import TestCase
@@ -43,9 +44,8 @@ class TestActions(TestCase):
             ).exists()
         )
 
-    @patch('boto.s3.key.Key')
-    @patch('mirror.actions.S3Connection')
-    def test_fetch_from_mirror(self, S3Connection, Key):
+    @patch('boto3.Session')
+    def test_fetch_from_mirror(self, Session):
         link = self.pondlife.links.create(
             link_class='BaseUrl', parameter='http://example.com/pondlife.txt',
             is_download_link=True
@@ -55,11 +55,15 @@ class TestActions(TestCase):
             downloaded_at=datetime.datetime(2020, 1, 1, 12, 0, 0),
             mirror_s3_key='1/2/pondlife.123.txt'
         )
-        mock_key_instance = Key.return_value
-        mock_key_instance.get_contents_as_string.return_value = b'hello from pondlife.txt'
+        session = Session.return_value
+        s3 = session.resource.return_value
+        bucket = s3.Bucket.return_value
+        def download_fileobj(filename, f):
+            f.write(b'hello from pondlife.txt')
+        bucket.download_fileobj = download_fileobj
 
         download_blob = fetch_link(link)
-        S3Connection.assert_called_once_with('AWS_K3Y', 'AWS_S3CR3T')
+        Session.assert_called_once_with(aws_access_key_id='AWS_K3Y', aws_secret_access_key='AWS_S3CR3T')
         self.assertEqual(download_blob.filename, 'pondlife.123.txt')
         self.assertEqual(download_blob.md5, 'ebceeba7ff0d18701e1952cd3865ef22')
         self.assertEqual(download_blob.sha1, '31a1dd3aa79730732bf32f4c8f1e3e4f9ca1aa50')
@@ -86,37 +90,42 @@ class TestActions(TestCase):
         self.assertEqual(pondlife2_download.mirror_s3_key, '1/2/pondlife.123.txt')
         self.assertNotEqual(pondlife2_download.pk, pondlife3_download.pk)
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
-    def test_upload_to_mirror(self, S3Connection, Key):
+    @patch('boto3.Session')
+    def test_upload_to_mirror(self, Session):
         link = self.pondlife.links.create(
             link_class='BaseUrl', parameter='http://example.com/pondlife2.txt',
             is_download_link=True
         )
-        mock_key_instance = Key.return_value
+
+        session = Session.return_value
+        s3 = session.resource.return_value
+        bucket = s3.Bucket.return_value
 
         download_blob = fetch_link(link)
-        mock_key_instance.set_contents_from_string.assert_called_once_with(
-            buffer(b"hello from pondlife2.txt")
+        bucket.put_object.assert_called_once_with(
+            Key='8d/f5/211e169bdda5/pondlife2.txt', Body=b"hello from pondlife2.txt"
         )
-        S3Connection.assert_called_once()
+
+        Session.assert_called_once()
         self.assertEqual(download_blob.filename, 'pondlife2.txt')
         self.assertEqual(download_blob.file_size, 24)
         download = Download.objects.get(link_class='BaseUrl', parameter='http://example.com/pondlife2.txt')
         self.assertEqual(download.mirror_s3_key, '8d/f5/211e169bdda5/pondlife2.txt')
 
-    @patch('mirror.actions.Key')
-    @patch('mirror.actions.S3Connection')
-    def test_upload_zipfile(self, S3Connection, Key):
+    @patch('boto3.Session')
+    def test_upload_zipfile(self, Session):
         link = self.pondlife.links.create(
             link_class='BaseUrl', parameter='http://example.com/rubber.zip',
             is_download_link=True
         )
-        mock_key_instance = Key.return_value
+        session = Session.return_value
+        s3 = session.resource.return_value
+        bucket = s3.Bucket.return_value
 
         download_blob = fetch_link(link)
-        mock_key_instance.set_contents_from_string.assert_called_once()
-        S3Connection.assert_called_once()
+        bucket.put_object.assert_called_once()
+        Session.assert_called_once()
+
         download = Download.objects.get(link_class='BaseUrl', parameter='http://example.com/rubber.zip')
         archive_members = download.get_archive_members()
         self.assertEqual(archive_members.count(), 2)

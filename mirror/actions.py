@@ -5,8 +5,7 @@ import urlparse
 import re
 import datetime
 
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
+import boto3
 
 from django.conf import settings
 from django.db.models import Count
@@ -52,7 +51,7 @@ def fetch_origin_url(url):
 
     remote_filename = urlparse.urlparse(resolved_url).path.split('/')[-1]
 
-    return DownloadBlob(remote_filename, buffer(file_content))
+    return DownloadBlob(remote_filename, file_content)
 
 
 def clean_filename(filename):
@@ -60,8 +59,12 @@ def clean_filename(filename):
 
 
 def open_bucket():
-    conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-    return conn.get_bucket(mirror_bucket_name)
+    session = boto3.Session(
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+    s3 = session.resource('s3')
+    return s3.Bucket(mirror_bucket_name)
 
 
 def fetch_link(link):
@@ -107,9 +110,7 @@ def fetch_link(link):
         else:
             key_name = blob.sha1[0:2] + '/' + blob.sha1[2:4] + '/' + blob.sha1[4:16] + '/' + clean_filename(blob.filename)
             bucket = open_bucket()
-            k = Key(bucket)
-            k.key = key_name
-            k.set_contents_from_string(blob.file_content)
+            obj = bucket.put_object(Key=key_name, Body=blob.file_content)
             download.mirror_s3_key = key_name
 
         download.save()
