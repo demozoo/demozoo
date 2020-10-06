@@ -17,7 +17,7 @@ def spawningformset(parser, token):
     args = token.split_contents()
     tag_name = args.pop(0)
     if not args:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % tag_name
+        raise template.TemplateSyntaxError("%r tag requires arguments" % tag_name)
 
     sortable = False
     add_button_text = None
@@ -85,10 +85,10 @@ def spawningform(parser, token):
         # Splitting by None == splitting by spaces.
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError("%r tag requires arguments" % token.contents.split()[0])
     m = re.search(r'as (\w+)', arg)
     if not m:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
     form_var_name, = m.groups()
 
     nodelist = parser.parse(('endspawningform',))
