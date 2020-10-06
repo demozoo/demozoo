@@ -1,4 +1,4 @@
-import StringIO
+import io
 
 from PIL import Image
 from recoil import RecoilImage
@@ -68,7 +68,7 @@ class PILConvertibleImage(object):
             # convert to PNG (a sensible choice for all non-web-native images, as it's reasonable
             # to assume that those formats are lossless - and even if they weren't, converting to
             # JPG and potentially losing more fidelity may not me ideal.)
-            output = StringIO.StringIO()
+            output = io.BytesIO()
             self.image.save(output, format='PNG', optimize=True)
             return output, self.image.size, 'png'
 
@@ -89,7 +89,7 @@ class PILConvertibleImage(object):
                 img = img.convert('RGB')
             img = img.resize(resize_params, Image.ANTIALIAS)
 
-        output = StringIO.StringIO()
+        output = io.BytesIO()
         if has_limited_palette:
             if img.mode not in ['1', 'P']:
                 # img.convert with palette=Image.ADAPTIVE will apparently only work on

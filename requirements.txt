@@ -30,7 +30,7 @@ django-dotenv>=1.4.2,<2.0
 # https://github.com/dateutil/dateutil/issues/402
 python-dateutil==2.5.1
 
-six==1.9.0
+six>=1.15,<2
 freezegun>=0.3,<0.4
 mock>=3.0,<4.0
 requests>=2.22,<3.0
