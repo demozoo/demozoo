@@ -1,12 +1,10 @@
 # coding=utf-8
 import re
-import urlparse
-import urllib
-import urllib2
 import json
 
-from bs4 import BeautifulSoup
+from six.moves import urllib
 
+from bs4 import BeautifulSoup
 from django.utils.html import escape, format_html
 
 
@@ -60,7 +58,7 @@ class BaseUrl():
 
     @property
     def download_link_label(self):
-        return urlparse.urlparse(str(self)).hostname
+        return urllib.parse.urlparse(str(self)).hostname
 
     def as_download_link(self):
         return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
@@ -82,7 +80,7 @@ class BaseUrl():
                 params['maxwidth'] = max_width
             if max_height:
                 params['maxheight'] = max_height
-            return "%s?%s" % (self.oembed_base_url, urllib.urlencode(params))
+            return "%s?%s" % (self.oembed_base_url, urllib.parse.urlencode(params))
 
     supports_embed_data = False
 
@@ -129,7 +127,7 @@ def urldecoded_regex_match(pattern, flags=None, add_slash=False):
 
         m = regex.match(url_bytestring)
         if m:
-            unquoted_path = urllib.unquote(m.group(1))
+            unquoted_path = urllib.parse.unquote(m.group(1))
             # unquoted_path is now a bytestring (type 'str') consisting of codepoints 0..255 in no
             # particular encoding. Decode this as iso-8859-1 to get a unicode string to go in the
             # database's 'param' field, which preserves those bytes in a way that can be restored
@@ -152,7 +150,7 @@ def querystring_match(pattern, varname, flags=None, othervars={}, numeric=False)
 
     def match_fn(urlstring, url):
         if regex.match(urlstring):
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             try:
                 for (key, val) in othervars.items():
                     if querystring[key][0] != val:
@@ -485,10 +483,10 @@ class SceneOrgFile(BaseUrl):
     def file_dl_match(urlstring, url):
         if SceneOrgFile.file_dl_regex.match(urlstring):
             # link is a file_dl.php link; extract the inner url, then recursively match on that
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             try:
                 inner_url_string = querystring['url'][0]
-                inner_url = urlparse.urlparse(inner_url_string)
+                inner_url = urllib.parse.urlparse(inner_url_string)
                 return SceneOrgFile.extract_param(inner_url_string, inner_url)
             except KeyError:
                 return None
@@ -522,11 +520,11 @@ class SceneOrgFile(BaseUrl):
 
     @property
     def info_url(self):
-        return u"https://files.scene.org/view%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"https://files.scene.org/view%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
     @property
     def auto_mirror_url(self):
-        return u"https://files.scene.org/get%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"https://files.scene.org/get%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
     def __unicode__(self):
         return self.info_url
@@ -537,15 +535,15 @@ class SceneOrgFile(BaseUrl):
 
     @property
     def nl_url(self):
-        return u"ftp://ftp.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"ftp://ftp.scene.org/pub%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
     @property
     def nl_http_url(self):
-        return u"http://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"http://archive.scene.org/pub%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
     @property
     def nl_https_url(self):
-        return u"https://archive.scene.org/pub%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"https://archive.scene.org/pub%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
     @property
     def download_url(self):
@@ -785,7 +783,7 @@ class PouetParty(BaseUrl):
     def match_pouet_party(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
         if regex.match(urlstring):
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             try:
                 return "%s/%s" % (querystring['which'][0], querystring['when'][0])
             except KeyError:
@@ -842,7 +840,7 @@ class SceneOrgFolder(BaseUrl):
     ]
 
     def __unicode__(self):
-        return u"https://files.scene.org/browse%s" % urllib.quote(self.param.encode('iso-8859-1'))
+        return u"https://files.scene.org/browse%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
     html_link_class = "sceneorg"
     html_link_text = "scene.org"
     html_title_format = "%s on scene.org"
@@ -862,7 +860,7 @@ class YoutubeVideo(BaseUrl):
     def match_long_url(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?youtube\.com/watch\?', re.I)
         if regex.match(urlstring):
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             try:
                 if 't' in querystring:
                     return "%s/%s" % (querystring['v'][0], querystring['t'][0])
@@ -876,7 +874,7 @@ class YoutubeVideo(BaseUrl):
         m = regex.match(urlstring)
         if m:
             v = m.group(1)
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             if 'start' in querystring:
                 return "%s/%s" % (v, querystring['start'][0])
             else:
@@ -887,7 +885,7 @@ class YoutubeVideo(BaseUrl):
         m = regex.match(urlstring)
         if m:
             v = m.group(1)
-            querystring = urlparse.parse_qs(url.query)
+            querystring = urllib.parse.parse_qs(url.query)
             if 't' in querystring:
                 return "%s/%s" % (v, querystring['t'][0])
             else:
@@ -920,7 +918,7 @@ class YoutubeVideo(BaseUrl):
 
         if not oembed_only:
             url = str(self)
-            response = urllib2.urlopen(url)
+            response = urllib.request.urlopen(url)
             response_data = response.read()
             response.close()
             soup = BeautifulSoup(response_data, features="html.parser")
@@ -928,7 +926,7 @@ class YoutubeVideo(BaseUrl):
             embed_data['video_height'] = int(soup.find('meta', {'property': 'og:video:height'})['content'])
 
         oembed_thumbnail_url = self.get_oembed_url(max_width=400, max_height=300)
-        response = urllib2.urlopen(oembed_thumbnail_url)
+        response = urllib.request.urlopen(oembed_thumbnail_url)
         response_data = response.read()
         response.close()
         oembed_data = json.loads(response_data)
@@ -1001,7 +999,7 @@ class VimeoVideo(BaseUrl):
         embed_data = {}
 
         oembed_thumbnail_url = self.get_oembed_url(max_width=400, max_height=300)
-        response = urllib2.urlopen(oembed_thumbnail_url)
+        response = urllib.request.urlopen(oembed_thumbnail_url)
         response_data = response.read()
         response.close()
         oembed_data = json.loads(response_data)
@@ -1010,7 +1008,7 @@ class VimeoVideo(BaseUrl):
         embed_data['thumbnail_height'] = oembed_data['thumbnail_height']
 
         oembed_url = self.get_oembed_url()
-        response = urllib2.urlopen(oembed_url)
+        response = urllib.request.urlopen(oembed_url)
         response_data = response.read()
         response.close()
         oembed_data = json.loads(response_data)
@@ -1615,7 +1613,7 @@ def grok_link_by_types(urlstring, link_types):
     Try to turn urlstring into a link object by matching it against each of the link types in
     the link_type list. If none of them match, return None.
     """
-    url = urlparse.urlparse(urlstring)
+    url = urllib.parse.urlparse(urlstring)
     for link_type in link_types:
         link = link_type.match(urlstring, url)
         if link:

@@ -1,7 +1,8 @@
 import datetime
 import json
 import logging
-import urllib2
+
+from six.moves import urllib
 
 from celery.task import task
 from django.conf import settings
@@ -41,8 +42,8 @@ def fetch_group(group_data, groups_by_id):
 @task(rate_limit='12/m', ignore_result=True)
 def pull_group(pouet_id, releaser_id):
     url = 'https://api.pouet.net/v1/group/?id=%d' % int(pouet_id)
-    req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
-    page = urllib2.urlopen(req)
+    req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+    page = urllib.request.urlopen(req)
     response = json.loads(page.read())
     page.close()
 

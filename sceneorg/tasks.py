@@ -5,8 +5,9 @@ from demoscene.tasks import find_sceneorg_results_files
 import datetime
 import logging
 import time
-import urllib2
 import json
+
+from six.moves import urllib
 
 from django.conf import settings
 
@@ -22,8 +23,8 @@ def fetch_new_sceneorg_files(days=1):
     new_file_count = 0
 
     while True:
-        req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
-        page = urllib2.urlopen(req)
+        req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+        page = urllib.request.urlopen(req)
         response = json.loads(page.read())
         page.close()
 

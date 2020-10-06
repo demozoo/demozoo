@@ -2,9 +2,10 @@ from celery.task import task
 import os
 import re
 import uuid
-import urllib2
 import cStringIO
 import zipfile
+
+from six.moves import urllib
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
@@ -70,8 +71,8 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
 def rebuild_screenshot(screenshot_id):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
-        f = urllib2.urlopen(screenshot.original_url, None, 10)
-        # read into a cStringIO buffer so that PIL can seek on it (which isn't possible for urllib2 responses) -
+        f = urllib.request.urlopen(screenshot.original_url, None, 10)
+        # read into a cStringIO buffer so that PIL can seek on it (which isn't possible for urllib responses) -
         # see http://mail.python.org/pipermail/image-sig/2004-April/002729.html
         buf = cStringIO.StringIO(f.read())
         img = PILConvertibleImage(buf, screenshot.original_url.split('/')[-1])

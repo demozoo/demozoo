@@ -1,6 +1,5 @@
 from django.db import models
-import urllib
-import urllib2
+from six.moves import urllib
 
 
 class Directory(models.Model):
@@ -24,10 +23,10 @@ class Directory(models.Model):
 
     @property
     def web_url(self):
-        return "https://files.scene.org/browse%s" % urllib.quote(self.path.encode("utf-8"))
+        return "https://files.scene.org/browse%s" % urllib.parse.quote(self.path.encode("utf-8"))
 
     def new_files_url(self, days):
-        return "https://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.quote(self.path.encode("utf-8")))
+        return "https://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (days, urllib.parse.quote(self.path.encode("utf-8")))
 
     @staticmethod
     def parties_root():
@@ -61,8 +60,8 @@ class File(models.Model):
         return self.path.split('/')[-1]
 
     def fetched_data(self):
-        # f = urllib2.urlopen('http://http.de.scene.org/pub' + self.path)
-        f = urllib2.urlopen('ftp://ftp.scene.org/pub' + self.path)
+        # f = urllib.request.urlopen('http://http.de.scene.org/pub' + self.path)
+        f = urllib.request.urlopen('ftp://ftp.scene.org/pub' + self.path)
         file_content = f.read(65537)
         f.close()
         if len(file_content) > 65536:
@@ -71,4 +70,4 @@ class File(models.Model):
 
     @property
     def web_url(self):
-        return "https://files.scene.org/browse%s" % urllib.quote(self.path.encode("utf-8"))
+        return "https://files.scene.org/browse%s" % urllib.parse.quote(self.path.encode("utf-8"))

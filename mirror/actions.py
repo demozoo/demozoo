@@ -1,9 +1,9 @@
-import urllib2
 import os
 import errno
-import urlparse
 import re
 import datetime
+
+from six.moves import urllib
 
 import boto3
 
@@ -32,10 +32,10 @@ class FileTooBig(Exception):
 
 
 def fetch_origin_url(url):
-    # fetch file from the given URL (any protocol supported by urllib2),
+    # fetch file from the given URL (any protocol supported by urllib),
     # throwing FileTooBig if it exceeds max_size
-    req = urllib2.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
-    f = urllib2.urlopen(req, None, 10)
+    req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+    f = urllib.request.urlopen(req, None, 10)
 
     content_length = f.info().get('Content-Length')
     if content_length and int(content_length) > max_size:
@@ -49,7 +49,7 @@ def fetch_origin_url(url):
     if len(file_content) > max_size:
         raise FileTooBig("File exceeded the size limit of %d bytes" % max_size)
 
-    remote_filename = urlparse.urlparse(resolved_url).path.split('/')[-1]
+    remote_filename = urllib.parse.urlparse(resolved_url).path.split('/')[-1]
 
     return DownloadBlob(remote_filename, file_content)
 
@@ -85,7 +85,7 @@ def fetch_link(link):
         # no mirrored copy exists - fetch and mirror the origin file
         try:
             blob = fetch_origin_url(url)
-        except (urllib2.URLError, FileTooBig) as ex:
+        except (urllib.error.URLError, FileTooBig) as ex:
             Download.objects.create(
                 downloaded_at=datetime.datetime.now(),
                 link_class=link.link_class,

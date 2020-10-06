@@ -1,6 +1,7 @@
 from .base import *
 
-import urllib2
+from six.moves import urllib
+
 from io import BytesIO
 from StringIO import StringIO
 
@@ -26,7 +27,7 @@ SCENEID_KEY = 'SCENEID_K3Y'
 SCENEID_SECRET = 'SCENEID_S3CR3T'
 
 
-# set up mock opener for urllib2
+# set up mock opener for urllib
 
 def mock_response(req):
     url = req.get_full_url()
@@ -59,7 +60,7 @@ def mock_response(req):
             "provider_url":"https:\/\/www.youtube.com\/"
         }"""
     elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D404&maxheight=300&maxwidth=400&format=json':
-        resp = urllib2.addinfourl(
+        resp = urllib.response.addinfourl(
             StringIO("not found"),
             {},
             req.get_full_url()
@@ -82,7 +83,7 @@ def mock_response(req):
         </html>
         """
     elif url == 'https://www.youtube.com/watch?v=404':
-        resp = urllib2.addinfourl(
+        resp = urllib.response.addinfourl(
             StringIO("not found"),
             {},
             req.get_full_url()
@@ -158,13 +159,13 @@ def mock_response(req):
         io = BytesIO()
         Image.new('P', (640, 480)).save(io, 'png')
         io.seek(0)
-        resp = urllib2.addinfourl(io, {'Content-Length': len(io.getvalue())}, req.get_full_url())
+        resp = urllib.response.addinfourl(io, {'Content-Length': len(io.getvalue())}, req.get_full_url())
         io.seek(0)
         resp.code = 200
         resp.msg = "OK"
         return resp
     elif url == 'http://example.com/pretend-big-file.txt' or url == 'http://example.com/pretend-big-file.mod':
-        resp = urllib2.addinfourl(
+        resp = urllib.response.addinfourl(
             StringIO("this file claims to be big but isn't really"),
             {'Content-Length': 100000000},
             req.get_full_url()
@@ -255,28 +256,28 @@ def mock_response(req):
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
-    resp = urllib2.addinfourl(StringIO(body), {}, req.get_full_url())
+    resp = urllib.response.addinfourl(StringIO(body), {}, req.get_full_url())
     resp.code = 200
     resp.msg = "OK"
     return resp
 
 
-class MockHTTPHandler(urllib2.HTTPHandler):
+class MockHTTPHandler(urllib.request.HTTPHandler):
     def http_open(self, req):
         return mock_response(req)
 
 
-class MockHTTPSHandler(urllib2.HTTPSHandler):
+class MockHTTPSHandler(urllib.request.HTTPSHandler):
     def https_open(self, req):
         return mock_response(req)
 
 
-class MockFTPHandler(urllib2.FTPHandler):
+class MockFTPHandler(urllib.request.FTPHandler):
     def ftp_open(self, req):
         return mock_response(req)
 
 
-urllib2.install_opener(urllib2.build_opener(MockHTTPHandler, MockHTTPSHandler, MockFTPHandler))
+urllib.request.install_opener(urllib.request.build_opener(MockHTTPHandler, MockHTTPSHandler, MockFTPHandler))
 
 
 COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'coverage')

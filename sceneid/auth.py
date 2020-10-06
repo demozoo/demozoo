@@ -12,10 +12,10 @@ from demoscene.models import SceneID
 from read_only_mode import writeable_site_required
 
 import base64
-import urllib
-import urllib2
 import json
 import re
+
+from six.moves import urllib
 
 
 class SceneIDUserSignupForm(forms.ModelForm):
@@ -34,13 +34,13 @@ class SceneIDUserSignupForm(forms.ModelForm):
 
 
 def do_sceneid_request(url, params, headers, method="GET"):
-    data = urllib.urlencode(params)
+    data = urllib.parse.urlencode(params)
     if (method == "GET"):
-        request = urllib2.Request(settings.SCENEID_HOST + url + "?" + data, None, headers)
+        request = urllib.request.Request(settings.SCENEID_HOST + url + "?" + data, None, headers)
     else:
-        request = urllib2.Request(settings.SCENEID_HOST + url, data, headers)
+        request = urllib.request.Request(settings.SCENEID_HOST + url, data, headers)
 
-    response = urllib2.urlopen(request)
+    response = urllib.request.urlopen(request)
     response_json = response.read()
 
     response_data = json.loads(response_json)
@@ -65,7 +65,7 @@ def do_auth_redirect(request):
         'state': request.session['sceneid_state']
     }
 
-    response['Location'] += '?' + urllib.urlencode(params)
+    response['Location'] += '?' + urllib.parse.urlencode(params)
 
     return response
 

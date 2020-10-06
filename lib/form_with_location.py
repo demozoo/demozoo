@@ -1,6 +1,6 @@
 import json
-import urllib
-import urllib2
+
+from six.moves import urllib
 
 from django import forms
 from django.conf import settings
@@ -8,23 +8,23 @@ from django.core.exceptions import ValidationError
 
 
 def find_locality(query):
-    req = urllib2.Request(
-        "%s?%s" % (settings.GEOCODER_URL, urllib.urlencode({'q': query.encode('utf-8')})),
+    req = urllib.request.Request(
+        "%s?%s" % (settings.GEOCODER_URL, urllib.parse.urlencode({'q': query.encode('utf-8')})),
         None,
         {'User-Agent': settings.HTTP_USER_AGENT}
     )
-    page = urllib2.urlopen(req)
+    page = urllib.request.urlopen(req)
     results = json.loads(page.read())
     page.close()
 
     result_id = results[0]['id']  # throws IndexError if no results
 
-    req = urllib2.Request(
+    req = urllib.request.Request(
         "%s%d/" % (settings.GEOCODER_URL, result_id),
         None,
         {'User-Agent': settings.HTTP_USER_AGENT}
     )
-    page = urllib2.urlopen(req)
+    page = urllib.request.urlopen(req)
     result = json.loads(page.read())
     page.close()
 
