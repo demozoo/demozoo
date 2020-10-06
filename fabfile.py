@@ -1,8 +1,13 @@
 from __future__ import with_statement
+
+import os
+import dotenv
+
 from fabric.api import hosts, cd, run, get, local, with_settings
 
-from demozoo.settings.dev import DATABASES
-db_username = DATABASES['default']['USER']
+dotenv.read_dotenv()
+
+db_username = os.getenv('POSTGRES_USER', 'demozoo')
 
 PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
 STAGING_HOSTS = ['demozoo@www2.demozoo.org']
