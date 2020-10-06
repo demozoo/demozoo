@@ -1,10 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from demoscene.utils.files import random_path
 
 
+@python_2_unicode_compatible
 class Banner(models.Model):
     banner_image = models.ForeignKey(
         'BannerImage', null=True, blank=True, related_name='+',
@@ -23,7 +25,7 @@ class Banner(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -31,6 +33,7 @@ def banner_image_upload_to(i, f):
     return random_path('homepage_banners', f)
 
 
+@python_2_unicode_compatible
 class BannerImage(models.Model):
     image = models.ImageField(
         upload_to=banner_image_upload_to,
@@ -54,10 +57,11 @@ class BannerImage(models.Model):
         return '<img src="%s" width="400" alt="" />' % self.image_url
     image_tag.allow_tags = True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.image.name
 
 
+@python_2_unicode_compatible
 class NewsStory(models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
@@ -69,7 +73,7 @@ class NewsStory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -80,6 +84,7 @@ def news_image_upload_to(i, f):
     return random_path('news_images', f)
 
 
+@python_2_unicode_compatible
 class NewsImage(models.Model):
     image = models.ImageField(
         upload_to=news_image_upload_to,
@@ -103,5 +108,5 @@ class NewsImage(models.Model):
         return '<img src="%s" width="100" alt="" />' % self.image_url
     image_tag.allow_tags = True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.image.name

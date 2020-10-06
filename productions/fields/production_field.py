@@ -4,6 +4,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils.encoding import python_2_unicode_compatible
+from six import text_type
+
 from productions.models import Production, ProductionType
 import datetime
 from productions.fields.byline_field import BylineField, BylineWidget
@@ -113,7 +115,7 @@ class ProductionWidget(forms.Widget):
         production_id = production_selection.id
 
         if production_id:
-            byline_text = production_selection.production.byline().__unicode__()
+            byline_text = text_type(production_selection.production.byline())
             if byline_text:
                 static_view = [
                     # FIXME: HTMLencode
