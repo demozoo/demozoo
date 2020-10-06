@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 def zxdemo_context(request):
     return {
         'corner_images': [

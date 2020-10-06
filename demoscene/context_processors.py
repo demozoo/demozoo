@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from search.forms import SearchForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings

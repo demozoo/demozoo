@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from demoscene.tasks import find_sceneorg_results_files
 
 from django.core.management.base import BaseCommand

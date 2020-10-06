@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response

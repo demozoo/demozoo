@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 import operator
 from django.contrib.postgres.search import SearchVector
 from django.db.models import Value

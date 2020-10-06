@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 # a form field for selecting a party, e.g. in the 'invitation for...' field on a production form
 
 from django import forms
