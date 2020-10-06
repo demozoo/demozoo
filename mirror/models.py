@@ -5,6 +5,7 @@ import zipfile
 from io import BytesIO
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 
 from demoscene.models import ExternalLink
@@ -35,12 +36,13 @@ class Download(ExternalLink):
         return DownloadBlob(filename, f.getvalue())
 
 
+@python_2_unicode_compatible
 class ArchiveMember(models.Model):
     archive_sha1 = models.CharField(max_length=40, blank=True, db_index=True)
     filename = models.CharField(max_length=255)
     file_size = models.IntegerField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.filename
 
     def fetch_from_zip(self):

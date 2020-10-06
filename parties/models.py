@@ -8,6 +8,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
@@ -21,6 +22,7 @@ from comments.models import Commentable
 from productions.models import Production, Screenshot
 
 
+@python_2_unicode_compatible
 class PartySeries(models.Model):
     name = models.CharField(max_length=255, unique=True)
     notes = models.TextField(blank=True)
@@ -28,7 +30,7 @@ class PartySeries(models.Model):
     twitter_username = models.CharField(max_length=30, blank=True)
     pouet_party_id = models.IntegerField(null=True, blank=True, verbose_name='Pouet party ID')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @models.permalink
@@ -72,6 +74,7 @@ def party_share_image_upload_to(i, f):
     return random_path('party_share_images', f)
 
 
+@python_2_unicode_compatible
 class Party(Commentable):
     party_series = models.ForeignKey(PartySeries, related_name='parties', on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
@@ -112,7 +115,7 @@ class Party(Commentable):
 
     search_result_template = 'search/results/party.html'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -287,6 +290,7 @@ class PartyExternalLink(ExternalLink):
         ordering = ['link_class']
 
 
+@python_2_unicode_compatible
 class Competition(models.Model):
     party = models.ForeignKey(Party, related_name='competitions', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -298,7 +302,7 @@ class Competition(models.Model):
     def results(self):
         return self.placings.order_by('position')
 
-    def __unicode__(self):
+    def __str__(self):
         try:
             return "%s %s" % (self.party.name, self.name)
         except Party.DoesNotExist:  # pragma: no cover
@@ -331,6 +335,7 @@ class Competition(models.Model):
         ordering = ("party__name", "name")
 
 
+@python_2_unicode_compatible
 class CompetitionPlacing(models.Model):
     competition = models.ForeignKey(Competition, related_name='placings', on_delete=models.CASCADE)
     production = models.ForeignKey('productions.Production', related_name='competition_placings', on_delete=models.CASCADE)
@@ -377,9 +382,9 @@ class CompetitionPlacing(models.Model):
                 }
             }
 
-    def __unicode__(self):
+    def __str__(self):
         try:
-            return self.production.__unicode__()
+            return str(self.production)
         except Production.DoesNotExist:  # pragma: no cover
             return "(CompetitionPlacing)"
 

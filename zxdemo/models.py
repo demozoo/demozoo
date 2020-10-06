@@ -3,18 +3,21 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.encoding import python_2_unicode_compatible
 
 from demoscene.models import Releaser
 
+@python_2_unicode_compatible
 class NewsItem(models.Model):
     title = models.CharField(max_length=255, blank=True)
     body = models.TextField()
     created_at = models.DateTimeField()
     author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
+@python_2_unicode_compatible
 class Article(models.Model):
     zxdemo_id = models.IntegerField()
     created_at = models.DateTimeField()
@@ -22,7 +25,7 @@ class Article(models.Model):
     summary = models.TextField()
     content = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 

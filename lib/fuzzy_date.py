@@ -4,11 +4,14 @@ import dateutil.parser
 import datetime
 import re
 
+from django.utils.encoding import python_2_unicode_compatible
+
 MONTHS = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)"
 YEAR_REGEX = re.compile(r"^\s*\d{4}\s*$")
 MONTH_REGEX = re.compile(r"^\s*(%s|%s\W+\d{4}|\d{4}\W+%s|\d{1,2}\W+\d{4}|\d{4}\W+\d{1,2})\s*$" % (MONTHS, MONTHS, MONTHS), re.I)
 
 
+@python_2_unicode_compatible
 class FuzzyDate(object):
     def __init__(self, date, precision):
         self.date = date
@@ -28,9 +31,6 @@ class FuzzyDate(object):
             return self.date.strftime("%B %Y")
         else:
             return self.date.strftime("%e %B %Y")
-
-    def __unicode__(self):
-        return self.__str__()
 
     def short_format(self):
         if self.precision == 'y':

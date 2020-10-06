@@ -13,6 +13,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.encoding import python_2_unicode_compatible
 
 from unidecode import unidecode
 
@@ -29,6 +30,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
+@python_2_unicode_compatible
 class Releaser(ModelWithPrefetchSnooping, Lockable):
     name = models.CharField(max_length=255)
     is_group = models.BooleanField(db_index=True)
@@ -66,7 +68,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
             # ensure that a Nick with matching name exists for this releaser
             nick, created = Nick.objects.get_or_create(releaser=self, name=self.name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def search_result_template(self):
@@ -241,6 +243,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         )
 
 
+@python_2_unicode_compatible
 class Nick(models.Model):
     releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -252,7 +255,7 @@ class Nick(models.Model):
         self._has_written_nick_variant_list = False
         self._nick_variant_list = None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -363,6 +366,7 @@ class Nick(models.Model):
         ordering = ['name']
 
 
+@python_2_unicode_compatible
 class NickVariant(models.Model):
     nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -375,7 +379,7 @@ class NickVariant(models.Model):
 
         return super(NickVariant, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -509,23 +513,25 @@ class NickVariant(models.Model):
         ordering = ['name']
 
 
+@python_2_unicode_compatible
 class Membership(models.Model):
     member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
     group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE)
     is_current = models.BooleanField(default=True)
     data_source = models.CharField(max_length=32, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s / %s" % (self.member.name, self.group.name)
 
 
+@python_2_unicode_compatible
 class AccountProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
 
-    def __unicode__(self):
+    def __str__(self):
         try:
-            return self.user.__unicode__()
+            return str(self.user)
         except User.DoesNotExist:
             return "(AccountProfile)"
 
@@ -624,28 +630,31 @@ class Edit(models.Model):
         ]
 
 
+@python_2_unicode_compatible
 class CaptchaQuestion(models.Model):
     question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
     answer = models.CharField(max_length=255, help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.question
 
 
+@python_2_unicode_compatible
 class TagDescription(models.Model):
     tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description')
     description = models.TextField(help_text="HTML is allowed. Keep this to a couple of sentences at most - it's used in tooltips as well as the tag listing page")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag.name
 
 
+@python_2_unicode_compatible
 class BlacklistedTag(models.Model):
     tag = models.CharField(max_length=255, help_text="The tag to be blacklisted")
     replacement = models.CharField(max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)")
     message = models.TextField(blank=True, help_text="Message to show to the user when they try to use the tag (optional)")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag
 
 

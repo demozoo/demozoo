@@ -475,6 +475,7 @@ class KestraBitworldParty(BaseUrl):
     html_title_format = "%s on Kestra BitWorld"
 
 
+@python_2_unicode_compatible
 class SceneOrgFile(BaseUrl):
 
     # custom test for file_dl.php URLs, of the format:
@@ -527,7 +528,7 @@ class SceneOrgFile(BaseUrl):
     def auto_mirror_url(self):
         return u"https://files.scene.org/get%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.info_url
 
     html_link_class = "sceneorg"
@@ -780,6 +781,7 @@ class SlengpungParty(BaseUrl):
     html_title_format = "%s on Slengpung"
 
 
+@python_2_unicode_compatible
 class PouetParty(BaseUrl):
     def match_pouet_party(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
@@ -792,7 +794,7 @@ class PouetParty(BaseUrl):
 
     tests = [match_pouet_party]
 
-    def __unicode__(self):
+    def __str__(self):
         (id, year) = self.param.split('/')
         return u"http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
     html_link_class = "pouet"
@@ -821,6 +823,7 @@ class BreaksAmigaParty(BaseUrl):
     html_title_format = "%s on Break's Amiga Collection"
 
 
+@python_2_unicode_compatible
 class SceneOrgFolder(BaseUrl):
     tests = [
         urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*)', re.I, add_slash=True),
@@ -840,7 +843,7 @@ class SceneOrgFolder(BaseUrl):
         urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
     ]
 
-    def __unicode__(self):
+    def __str__(self):
         return u"https://files.scene.org/browse%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
     html_link_class = "sceneorg"
     html_link_text = "scene.org"
@@ -857,6 +860,7 @@ class ZxdemoParty(BaseUrl):
     html_title_format = "%s on zxdemo.org"
 
 
+@python_2_unicode_compatible
 class YoutubeVideo(BaseUrl):
     def match_long_url(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?youtube\.com/watch\?', re.I)
@@ -907,7 +911,7 @@ class YoutubeVideo(BaseUrl):
 
     supports_embed_data = True
 
-    def __unicode__(self):
+    def __str__(self):
         if '/' in self.param:
             (id, timestamp) = self.param.split('/')
             return u"https://www.youtube.com/watch?v=%s&t=%s" % (id, timestamp)
@@ -1162,6 +1166,7 @@ class DiscogsLabel(DiscogsEntry):
     ]
 
 
+@python_2_unicode_compatible
 class DiscogsRelease(DiscogsEntry):
     def match_discogs_release(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?discogs\.com/([^\/]+)/release/(\d+)', re.I)
@@ -1172,7 +1177,7 @@ class DiscogsRelease(DiscogsEntry):
 
     tests = [match_discogs_release]
 
-    def __unicode__(self):
+    def __str__(self):
         (id, slug) = self.param.split('/')
         return u"http://www.discogs.com/%s/release/%s" % (slug, id)
 
@@ -1371,8 +1376,9 @@ class GithubRepo(BaseUrl):
     html_title_format = "%s on GitHub"
 
 
+@python_2_unicode_compatible
 class GithubDirectory(BaseUrl):
-    def __unicode__(self):
+    def __str__(self):
         params = self.param.split('/')
         user, repo = params[0:2]
         dirs = '/'.join(params[2:])
@@ -1516,6 +1522,7 @@ class BandcampArtist(BandcampEntry):
     ]
 
 
+@python_2_unicode_compatible
 class BandcampTrack(BandcampEntry):
     def match_bandcamp_release(urlstring, url):
         regex = re.compile(r'https?://([\w-]+)\.bandcamp\.com/track/([\w-]+)', re.I)
@@ -1526,7 +1533,7 @@ class BandcampTrack(BandcampEntry):
 
     tests = [match_bandcamp_release]
 
-    def __unicode__(self):
+    def __str__(self):
         (domain, name) = self.param.split('/')
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 

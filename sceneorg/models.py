@@ -1,9 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from six.moves import urllib
 
 
+@python_2_unicode_compatible
 class Directory(models.Model):
     path = models.CharField(max_length=255, db_index=True)
     is_deleted = models.BooleanField(default=False)
@@ -20,7 +22,7 @@ class Directory(models.Model):
         self.is_deleted = True
         self.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.path
 
     @property
@@ -47,6 +49,7 @@ class FileTooBig(Exception):
     pass
 
 
+@python_2_unicode_compatible
 class File(models.Model):
     path = models.CharField(max_length=255, db_index=True)
     is_deleted = models.BooleanField(default=False)
@@ -55,7 +58,7 @@ class File(models.Model):
     directory = models.ForeignKey(Directory, related_name='files', on_delete=models.CASCADE)
     size = models.BigIntegerField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.path
 
     def filename(self):

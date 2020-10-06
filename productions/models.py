@@ -37,6 +37,7 @@ SUPERTYPE_CHOICES = (
 )
 
 
+@python_2_unicode_compatible
 class ProductionType(MP_Node):
     name = models.CharField(max_length=255)
     position = models.IntegerField(default=0, help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)")
@@ -44,7 +45,7 @@ class ProductionType(MP_Node):
 
     node_order_by = ['position', 'name']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @staticmethod
@@ -86,6 +87,7 @@ class ProductionType(MP_Node):
             return 'production'
 
 
+@python_2_unicode_compatible
 class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
     title = models.CharField(max_length=255)
     platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
@@ -150,7 +152,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
 
         return super(Production, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def byline(self):
@@ -415,6 +417,7 @@ class ProductionBlurb(models.Model):
     body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
+@python_2_unicode_compatible
 class Credit(models.Model):
     CATEGORIES = [
         ('Code', 'Code'),
@@ -437,7 +440,7 @@ class Credit(models.Model):
         else:
             return self.category
 
-    def __unicode__(self):
+    def __str__(self):
         if self.role:
             return "%s: %s - %s (%s)" % (
                 self.production_id and self.production.title,
@@ -454,6 +457,7 @@ class Credit(models.Model):
         ordering = ['production__title']
 
 
+@python_2_unicode_compatible
 class Screenshot(models.Model):
     production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
     original_url = models.CharField(max_length=255, blank=True)
@@ -500,7 +504,7 @@ class Screenshot(models.Model):
         # reset that flag since we no longer need a screenshot
         self.production.links.filter(is_unresolved_for_screenshotting=True).update(is_unresolved_for_screenshotting=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s - %s" % (self.production.title, self.original_url)
 
     @staticmethod
@@ -540,26 +544,28 @@ def update_prod_screenshot_data_on_delete(sender, **kwargs):
     production.save(update_fields=['has_screenshot'])
 
 
+@python_2_unicode_compatible
 class SoundtrackLink(models.Model):
     production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
     soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
     position = models.IntegerField()
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s on %s" % (self.soundtrack, self.production)
 
     class Meta:
         ordering = ['position']
 
 
+@python_2_unicode_compatible
 class PackMember(models.Model):
     pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
     member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)
     position = models.IntegerField()
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s packed in %s" % (self.member, self.pack)
 
     class Meta:
