@@ -28,7 +28,7 @@ class SimpleTest(TestCase):
         )
         NewsStory.objects.create(
             title='First news item',
-            text='with a <a href="http://example.com/">link</a> in it\nand a line break',
+            text='''with a <a href="http://example.com/">link</a> in it\nand a <a href="javascript:alert('hacked by limp ninja')">line</a> break ftp://ftp.scene.org/pub/''',
             is_public=True,
         )
         NewsStory.objects.create(
@@ -51,7 +51,7 @@ class SimpleTest(TestCase):
         self.assertNotContains(response, 'Hello logged in people')
 
         self.assertContains(response, 'First news item')
-        self.assertContains(response, 'with a <a href="http://example.com/" class="external">link</a> in it<br />\nand a line break')
+        self.assertContains(response, 'with a <a href="http://example.com/">link</a> in it<br> and a <a href="#">line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>')
 
         self.assertNotContains(response, 'Secret news item')
 
@@ -65,9 +65,9 @@ class SimpleTest(TestCase):
         self.assertNotContains(response, 'Hello anonymous people')
         self.assertContains(response, 'Hello logged in people')
         self.assertContains(response, 'First news item')
-        self.assertContains(response, 'with a <a href="http://example.com/" class="external">link</a> in it')
+        self.assertContains(response, 'with a <a href="http://example.com/">link</a> in it')
         self.assertContains(response, 'Secret news item')
-        self.assertContains(response, 'wooo <a href="http://gasman.zxdemo.org/" class="external">fancy link</a>')
+        self.assertContains(response, 'wooo <a href="http://gasman.zxdemo.org/">fancy link</a>')
 
     @freeze_time('2018-12-30')
     def test_date_rollover(self):
