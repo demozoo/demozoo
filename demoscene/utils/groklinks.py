@@ -5,7 +5,7 @@ import urllib
 import urllib2
 import json
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 from django.utils.html import escape, format_html
 
@@ -923,7 +923,7 @@ class YoutubeVideo(BaseUrl):
             response = urllib2.urlopen(url)
             response_data = response.read()
             response.close()
-            soup = BeautifulSoup(response_data)
+            soup = BeautifulSoup(response_data, features="html.parser")
             embed_data['video_width'] = int(soup.find('meta', {'property': 'og:video:width'})['content'])
             embed_data['video_height'] = int(soup.find('meta', {'property': 'og:video:height'})['content'])
 

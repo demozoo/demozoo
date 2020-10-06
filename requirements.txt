@@ -1,4 +1,4 @@
-BeautifulSoup==3.2.0
+beautifulsoup4>=4.9.3,<5
 Django>=1.11.27,<=1.11.99
 Fabric>=1.14,<1.15
 Markdown==2.4
