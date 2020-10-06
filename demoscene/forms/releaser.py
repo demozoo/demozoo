@@ -143,7 +143,7 @@ class NickForm(forms.ModelForm):
         exclude.remove('releaser')  # allow checking against the missing attribute
         try:
             self.instance.validate_unique(exclude=exclude)
-        except ValidationError, e:
+        except ValidationError as e:
             # replace the standard model validation error message
             # ("Nick with this Releaser and Name already exists.")
             # with one more meaningful for this form
