@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='party',
-            index=django.contrib.postgres.indexes.GinIndex(fields=[b'search_document'], name='parties_par_search__4220e5_gin'),
+            index=django.contrib.postgres.indexes.GinIndex(fields=['search_document'], name='parties_par_search__4220e5_gin'),
         ),
     ]

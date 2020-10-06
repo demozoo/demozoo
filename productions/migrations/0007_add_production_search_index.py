@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='production',
-            index=django.contrib.postgres.indexes.GinIndex(fields=[b'search_document'], name='productions_search__8683f0_gin'),
+            index=django.contrib.postgres.indexes.GinIndex(fields=['search_document'], name='productions_search__8683f0_gin'),
         ),
     ]
