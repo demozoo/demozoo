@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name='releaser',
-            index=django.contrib.postgres.indexes.GinIndex(fields=[b'search_document'], name='demoscene_r_search__ff7f7c_gin'),
+            index=django.contrib.postgres.indexes.GinIndex(fields=['search_document'], name='demoscene_r_search__ff7f7c_gin'),
         ),
     ]

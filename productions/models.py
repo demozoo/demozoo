@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.files.storage import FileSystemStorage
