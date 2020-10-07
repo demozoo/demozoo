@@ -7,12 +7,15 @@ import re
 import uuid
 import zipfile
 
+from six import PY2
 from six.moves import urllib
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import upload_to_s3, select_screenshot_file
-from mirror.actions import fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics
+from mirror.actions import (
+    fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics, unpack_db_zip_filename
+)
 from mirror.models import ArchiveMember
 from django.conf import settings
 
@@ -136,11 +139,11 @@ def create_screenshot_from_production_link(production_link_id):
             z = None
             try:
                 z = blob.as_zipfile()
-                # we encode the filename as iso-8859-1 before retrieving it, because we
-                # decoded it that way on insertion into the database to ensure that it had
-                # a valid unicode string representation - see mirror/models.py
+                # decode the filename as stored in the db
+                filename = unpack_db_zip_filename(prod_link.file_for_screenshot)
+
                 member_buf = io.BytesIO(
-                    z.read(prod_link.file_for_screenshot.encode('iso-8859-1'))
+                    z.read(filename)
                 )
             except zipfile.BadZipfile:
                 prod_link.has_bad_image = True

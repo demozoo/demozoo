@@ -5,6 +5,7 @@ import errno
 import re
 import datetime
 
+from six import PY2, text_type
 from six.moves import urllib
 
 import boto3
@@ -122,17 +123,70 @@ def fetch_link(link):
             if not ArchiveMember.objects.filter(archive_sha1=blob.sha1).exists():
                 z = blob.as_zipfile()
                 for info in z.infolist():
-                    # zip files do not contain information about the character encoding of filenames.
-                    # We therefore decode the filename as iso-8859-1 (an encoding which defines a character
-                    # for every byte value) to ensure that it is *some* valid sequence of unicode characters
-                    # that can be inserted into the database. When we need to access this zipfile entry
-                    # again, we will re-encode it as iso-8859-1 to get back the original byte sequence.
+                    # The Incredible Disaster of Platform Specific Implementations of Zip:
+                    # https://gist.github.com/jnalley/cec21bca2d865758bc5e23654df28bd5
+                    #
+                    # Historically, zip files did not specify what character encoding the filename is using;
+                    # there is supposedly a flag to indicate 'yo this is utf-8' but it's unclear how widely
+                    # used/recognised it is, and you can bet that scene.org has some weird shit on it.
+                    # So, we consider the filename to be an arbitrary byte string.
+                    #
+                    # Since the database wants to store unicode strings, we decode the byte string as
+                    # iso-8859-1 to obtain one, and encode it as iso-8859-1 again on the way out of the
+                    # database. iso-8859-1 is chosen because it gives a well-defined result for any
+                    # arbitrary byte string, and doesn't unnecessarily mangle pure ASCII filenames.
+                    #
+                    # So, how do we get a byte string from the result of ZipFile.infolist?
+                    # Python 2 gives us a unicode string if the mythical utf-8 flag is set,
+                    # and a byte string otherwise. Our old python-2-only code called
+                    # filename.decode('iso-8859-1'), which would have failed on a unicode string containing
+                    # non-ascii characters, so we can assume that anything that made it as far as the
+                    # database originated either as pure ascii or a bytestring. Either way, calling
+                    # database_value.encode('iso-8859-1') would give a bytestring that python 2's zipfile
+                    # library can accept (i.e. it compares equal to the filename it originally gave us).
+                    #
+                    # Python 3 ALWAYS gives us a unicode string: decoded as utf-8 if the mythical flag is
+                    # set, or decoded as cp437 if not. We don't need to know which of these outcomes
+                    # happened; we just need to ensure that
+                    # 1) the transformation from unicode string to byte string is reversible, and
+                    # 2) the byte string representation matches the one that python 2 would have given us
+                    # for the same filename.
+                    #
+                    # The latter condition is satisfied by filename.encode('cp437'), which makes the
+                    # reverse tranformation bytestring.decode('cp437'). Therefore our final algorithm is:
+                    #
+                    # zipfile to database:
+                    # if filename is a unicode string (i.e. we are on py3 or the mythical flag is set):
+                    #     filename = filename.encode('cp437')  # filename is now a bytestring
+                    # return filename.decode('iso-8859-1')
+                    #
+                    # database to zipfile:
+                    # bytestring = database_value.encode('iso-8859-1')
+                    # if we are on py2:
+                    #     return bytestring
+                    # else:
+                    #     return bytestring.decode('cp437')
+                    #
+
+                    filename = info.filename
+                    if isinstance(filename, text_type):  # pragma: no cover
+                        filename = filename.encode('cp437')
+                    filename = filename.decode('iso-8859-1')
+
                     ArchiveMember.objects.get_or_create(
-                        filename=info.filename.decode('iso-8859-1'),
+                        filename=filename,
                         file_size=info.file_size,
                         archive_sha1=blob.sha1)
 
         return blob
+
+
+def unpack_db_zip_filename(filename):
+    bytestring = filename.encode('iso-8859-1')
+    if PY2:  # pragma: no cover
+        return bytestring
+    else:  # pragma: no cover
+        return bytestring.decode('cp437')
 
 
 def find_screenshottable_graphics():

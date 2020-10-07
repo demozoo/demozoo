@@ -46,11 +46,13 @@ class ArchiveMember(models.Model):
         return self.filename
 
     def fetch_from_zip(self):
+        from mirror.actions import unpack_db_zip_filename
+
         download = Download.objects.filter(sha1=self.archive_sha1).first()
         blob = download.fetch_from_s3()
         z = blob.as_zipfile()
         member_buf = BytesIO(
-            z.read(self.filename.encode('iso-8859-1'))
+            z.read(unpack_db_zip_filename(self.filename))
         )
         z.close()
         return member_buf
