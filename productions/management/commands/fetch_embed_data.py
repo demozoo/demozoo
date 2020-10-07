@@ -25,5 +25,5 @@ class Command(BaseCommand):
         ).order_by('-embed_data_last_fetch_time')
 
         for prod_link in prod_links:
-            print "fetching embed data for %s" % prod_link.link
+            print("fetching embed data for %s" % prod_link.link)
             fetch_production_link_embed_data.delay(prod_link.id)

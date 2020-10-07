@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 else:
                     link.url = link.url
                 if link.link_class != original_link_class:
-                    print "%s ID %s bumped to %s" % (model.__name__, link.id, link.link_class)
+                    print("%s ID %s bumped to %s" % (model.__name__, link.id, link.link_class))
                     try:
                         sid = transaction.savepoint()
                         link.save()
@@ -31,5 +31,5 @@ class Command(BaseCommand):
                         # this link duplicates an existing one - we just didn't recognise it
                         # until now due to different link formats. Fair game to delete it
                         transaction.savepoint_rollback(sid)
-                        print "%s ID %s (%s) deleted as dupe" % (model.__name__, link.id, link.url)
+                        print("%s ID %s (%s) deleted as dupe" % (model.__name__, link.id, link.url))
                         link.delete()
