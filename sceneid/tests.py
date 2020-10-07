@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from six.moves import urllib
+
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation 
@@ -11,14 +13,35 @@ from demoscene.models import SceneID
 
 
 class TestLogin(TestCase):
+    def assertURLEqual(self, url1, url2, msg_prefix=''):
+        # borrowed from django.test.testcases - can remove when we're on
+        # django 2.2
+        """
+        Assert that two URLs are the same, ignoring the order of query string
+        parameters except for parameters with the same name.
+        For example, /path/?x=1&y=2 is equal to /path/?y=2&x=1, but
+        /path/?a=1&a=2 isn't equal to /path/?a=2&a=1.
+        """
+        def normalize(url):
+            """Sort the URL's query string parameters."""
+            url = str(url)  # Coerce reverse_lazy() URLs.
+            scheme, netloc, path, params, query, fragment = urllib.parse.urlparse(url)
+            query_parts = sorted(urllib.parse.parse_qsl(query))
+            return urllib.parse.urlunparse((scheme, netloc, path, params, urllib.parse.urlencode(query_parts), fragment))
+
+        self.assertEqual(
+            normalize(url1), normalize(url2),
+            msg_prefix + "Expected '%s' to equal '%s'." % (url1, url2)
+        )
+
     @patch('sceneid.auth.get_random_string')
     def test_login_new_user(self, get_random_string):
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -53,10 +76,10 @@ class TestLogin(TestCase):
 
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -88,10 +111,10 @@ class TestLogin(TestCase):
 
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -121,10 +144,10 @@ class TestLogin(TestCase):
 
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -155,10 +178,10 @@ class TestLogin(TestCase):
 
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -179,10 +202,10 @@ class TestLogin(TestCase):
 
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
-        self.assertRedirects(
-            response,
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y',
-            fetch_redirect_response=False
+        self.assertEqual(response.status_code, 302)
+        self.assertURLEqual(
+            response['Location'],
+            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
