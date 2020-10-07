@@ -19,7 +19,7 @@ class Command(BaseCommand):
         self.verbosity = kwargs['verbosity']
 
         if self.verbosity >= 1:
-            print "Looking for releasers without their name as a Nick"
+            print("Looking for releasers without their name as a Nick")
 
         releasers = Releaser.objects.raw('''
             SELECT demoscene_releaser.*
@@ -34,12 +34,12 @@ class Command(BaseCommand):
         ''')
         for releaser in releasers:
             if self.verbosity >= 1:
-                print "creating nick for %s" % releaser
+                print("creating nick for %s" % releaser)
             nick = Nick(releaser=releaser, name=releaser.name)
             nick.save()
 
         if self.verbosity >= 1:
-            print "Looking for Nicks without their name as a NickVariant"
+            print("Looking for Nicks without their name as a NickVariant")
 
         nicks = Nick.objects.raw('''
             SELECT demoscene_nick.*
@@ -54,12 +54,12 @@ class Command(BaseCommand):
         ''')
         for nick in nicks:
             if self.verbosity >= 1:
-                print "creating nick_variant for %s" % nick
+                print("creating nick_variant for %s" % nick)
             nick_variant = NickVariant(nick=nick, name=nick.name)
             nick_variant.save()
 
         if self.verbosity >= 1:
-            print "Removing releaser abbreviations that are the same as the actual name"
+            print("Removing releaser abbreviations that are the same as the actual name")
         cursor = connection.cursor()
         cursor.execute('''
             UPDATE demoscene_nick
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         ''')
 
         if self.verbosity >= 1:
-            print "Looking for Nicks without their abbreviation as a NickVariant"
+            print("Looking for Nicks without their abbreviation as a NickVariant")
 
         nicks = Nick.objects.raw('''
             SELECT demoscene_nick.*
@@ -84,12 +84,12 @@ class Command(BaseCommand):
         ''')
         for nick in nicks:
             if self.verbosity >= 1:
-                print "creating nick_variant for %s" % nick.abbreviation
+                print("creating nick_variant for %s" % nick.abbreviation)
             nick_variant = NickVariant(nick=nick, name=nick.abbreviation)
             nick_variant.save()
 
         if self.verbosity >= 1:
-            print "Truncating fuzzy dates to first of the month / first of January"
+            print("Truncating fuzzy dates to first of the month / first of January")
         cursor = connection.cursor()
         cursor.execute('''
             UPDATE productions_production
@@ -107,16 +107,16 @@ class Command(BaseCommand):
         ''')
 
         if self.verbosity >= 1:
-            print "Removing abbreviations on scener nicks"
+            print("Removing abbreviations on scener nicks")
         nicks = Nick.objects.exclude(abbreviation='').filter(releaser__is_group=False)
         for nick in nicks:
             if self.verbosity >= 1:
-                print "Removing abbreviation %s of %s" % (nick.abbreviation, nick.name)
+                print("Removing abbreviation %s of %s" % (nick.abbreviation, nick.name))
             nick.abbreviation = ''
             nick.save()
 
         if self.verbosity >= 1:
-            print "Stripping leading / trailing spaces from names and titles"
+            print("Stripping leading / trailing spaces from names and titles")
         cursor.execute('''
             UPDATE productions_production
             SET title = REGEXP_REPLACE(title, E'^\\\\s*(.*?)\\\\s*$', E'\\\\1', 'g')
@@ -149,12 +149,12 @@ class Command(BaseCommand):
         ''')
 
         # skip this. it takes ages.
-        # print "Recursively marking children of deleted scene.org dirs as deleted"
+        # print("Recursively marking children of deleted scene.org dirs as deleted")
         # for dir in Directory.objects.filter(is_deleted=True):
         #    dir.mark_deleted()
 
         if self.verbosity >= 1:
-            print "Converting invitation competitions to party invitation relations"
+            print("Converting invitation competitions to party invitation relations")
         invitation_compos = Competition.objects.filter(name__istartswith='invitation').select_related('party')
         for compo in invitation_compos:
             placings = compo.placings.select_related('production')
@@ -169,22 +169,22 @@ class Command(BaseCommand):
                 compo.delete()
 
         if self.verbosity >= 1:
-            print "Checking encodings on results files"
+            print("Checking encodings on results files")
         results_files = ResultsFile.objects.all()
         for results_file in results_files:
             try:
                 results_file.text
             except UnicodeDecodeError:
                 if self.verbosity >= 1:
-                    print "Error on /parties/%d/results_file/%d/ - cannot decode as %r" % (results_file.party_id, results_file.id, results_file.encoding)
+                    print("Error on /parties/%d/results_file/%d/ - cannot decode as %r" % (results_file.party_id, results_file.id, results_file.encoding))
             except IOError:
                 pass  # ignore files that aren't on disk (which probably means this is a local dev instance with a live db)
 
         if self.verbosity >= 1:
-            print "Deleting unused tags"
+            print("Deleting unused tags")
         Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
 
-        print "Fixing has_screenshots flag on productions that claim not to have screenshots but do"
+        print("Fixing has_screenshots flag on productions that claim not to have screenshots but do")
         cursor.execute('''
             UPDATE productions_production SET has_screenshot = 't'
             WHERE productions_production.id IN (
@@ -197,7 +197,7 @@ class Command(BaseCommand):
                 WHERE has_screenshot = 'f'
             )
         ''')
-        print "Fixing has_screenshots flag on productions that claim to have screenshots but don't"
+        print("Fixing has_screenshots flag on productions that claim to have screenshots but don't")
         cursor.execute('''
             UPDATE productions_production SET has_screenshot = 'f'
             WHERE productions_production.id IN (
@@ -212,7 +212,7 @@ class Command(BaseCommand):
         ''')
 
         if self.verbosity >= 1:
-            print "Deleting duplicate soundtrack links"
+            print("Deleting duplicate soundtrack links")
         cursor.execute('''
             select p1.production_id, p1.soundtrack_id, min(p1.position) AS position
             from productions_soundtracklink as p1
@@ -226,7 +226,7 @@ class Command(BaseCommand):
             SoundtrackLink.objects.filter(production_id=prod_id, soundtrack_id=soundtrack_id, position__gt=position).delete()
 
         if self.verbosity >= 1:
-            print "Deleting duplicate pack members"
+            print("Deleting duplicate pack members")
         cursor.execute('''
             select p1.pack_id, p1.member_id, min(p1.position) AS position
             from productions_packmember as p1
@@ -240,7 +240,7 @@ class Command(BaseCommand):
             PackMember.objects.filter(pack_id=pack_id, member_id=member_id, position__gt=position).delete()
 
         if self.verbosity >= 1:
-            print "Closing gaps in pack member sequences"
+            print("Closing gaps in pack member sequences")
         for k, pms in groupby(PackMember.objects.order_by('pack_id', 'position'), lambda pm: pm.pack_id):
             for i, pm in enumerate(pms):
                 if i + 1 != pm.position:
@@ -248,7 +248,7 @@ class Command(BaseCommand):
                     pm.save()
 
         if self.verbosity >= 1:
-            print "Closing gaps in soundtrack sequences"
+            print("Closing gaps in soundtrack sequences")
         for k, stls in groupby(SoundtrackLink.objects.order_by('production_id', 'position'), lambda stl: stl.production_id):
             for i, stl in enumerate(stls):
                 if i + 1 != stl.position:
@@ -256,7 +256,7 @@ class Command(BaseCommand):
                     stl.save()
 
         if self.verbosity >= 1:
-            print "Marking diskmags with pack contents as packs"
+            print("Marking diskmags with pack contents as packs")
         diskmag_id = ProductionType.objects.get(name='Diskmag').id
         artpack_id = ProductionType.objects.get(internal_name='artpack').id
         pack = ProductionType.objects.get(internal_name='pack')
@@ -272,7 +272,7 @@ class Command(BaseCommand):
             prod.types.add(pack)
 
         if self.verbosity >= 1:
-            print "Reassigning music in pack contents that looks like it should be soundtrack links"
+            print("Reassigning music in pack contents that looks like it should be soundtrack links")
         # get the most common prodtypes that have soundtracks mis-categorised as pack contents
         non_pack_type_ids = ProductionType.objects.filter(
             name__in=['Musicdisk', 'Chip Music Pack', 'Demo', 'Diskmag']
@@ -299,4 +299,4 @@ class Command(BaseCommand):
                 pack_member.delete()
 
         if self.verbosity >= 1:
-            print "done."
+            print("done.")

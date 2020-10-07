@@ -11,5 +11,5 @@ class Command(BaseCommand):
         prod_links = ProductionLink.objects.filter(link_class='YoutubeVideo')
 
         for prod_link in prod_links:
-            print "scheduling fetch for %s" % prod_link.link
+            print("scheduling fetch for %s" % prod_link.link)
             clean_dead_youtube_link.delay(prod_link.id)
