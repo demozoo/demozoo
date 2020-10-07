@@ -233,9 +233,12 @@ def mock_response(req):
     elif url == 'https://id.scene.org/oauth/token/':
         if req.get_method() == 'POST':
             if req.get_header('Authorization') != 'Basic U0NFTkVJRF9LM1k6U0NFTkVJRF9TM0NSM1Q=':  # pragma: no cover
-                raise Exception("Bad authorization header for https://id.scene.org/oauth/token/")
-            if req.get_data() != 'code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F':  # pragma: no cover
-                raise Exception("Bad POST data")
+                raise Exception("Bad authorization header for https://id.scene.org/oauth/token/ : %r" % req.get_header('Authorization'))
+
+            expected_postdata = urllib.parse.parse_qs('code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F')
+            actual_postdata = urllib.parse.parse_qs(req.data.decode('ascii'))
+            if actual_postdata != expected_postdata:  # pragma: no cover
+                raise Exception("Bad POST data: expected %r, got %r" % (expected_postdata, actual_postdata))
 
             body = r"""
                 {

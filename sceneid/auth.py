@@ -40,7 +40,7 @@ def do_sceneid_request(url, params, headers, method="GET"):
     if (method == "GET"):
         request = urllib.request.Request(settings.SCENEID_HOST + url + "?" + data, None, headers)
     else:
-        request = urllib.request.Request(settings.SCENEID_HOST + url, data, headers)
+        request = urllib.request.Request(settings.SCENEID_HOST + url, data.encode('ascii'), headers)
 
     response = urllib.request.urlopen(request)
     response_json = response.read()
@@ -85,7 +85,9 @@ def process_response(request):
 
     # request 1: turn response code into access token via endpoint
 
-    auth_string = "Basic " + base64.b64encode(settings.SCENEID_KEY + ":" + settings.SCENEID_SECRET)
+    auth_string = "Basic " + base64.b64encode(
+        settings.SCENEID_KEY.encode('ascii') + b':' + settings.SCENEID_SECRET.encode('ascii')
+    ).decode('ascii')
 
     params = {
         'grant_type': 'authorization_code',
