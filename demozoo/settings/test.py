@@ -48,26 +48,30 @@ def mock_response(req):
         raise Exception("Looking up Adlington is not allowed! :-)")
     elif url == 'http://geocoder.demozoo.org/?q=Royston+Vasey':
         body = "[]"
-    elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DldoVS0idTBw&maxheight=300&maxwidth=400&format=json':
-        body = r"""{
-            "provider_name":"YouTube",
-            "author_url":"https:\/\/www.youtube.com\/user\/sirhadley",
-            "thumbnail_height":360,"thumbnail_width":480,"width":400,"height":225,
-            "title":"Deliberate Ramming by Canal Boat - Henley July 2019","version":"1.0",
-            "html":"\u003ciframe width=\"400\" height=\"225\" src=\"https:\/\/www.youtube.com\/embed\/ldoVS0idTBw?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen\u003e\u003c\/iframe\u003e",
-            "type":"video","author_name":"sirhadley",
-            "thumbnail_url":"https:\/\/i.ytimg.com\/vi\/ldoVS0idTBw\/hqdefault.jpg",
-            "provider_url":"https:\/\/www.youtube.com\/"
-        }"""
-    elif url == 'https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D404&maxheight=300&maxwidth=400&format=json':
-        resp = urllib.response.addinfourl(
-            io.StringIO("not found"),
-            {},
-            req.get_full_url()
-        )
-        resp.code = 404
-        resp.msg = "Not found"
-        return resp
+    elif url.startswith('https://www.youtube.com/oembed'):
+        qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if qs == {'url': ['https://www.youtube.com/watch?v=ldoVS0idTBw'], 'maxheight': ['300'], 'maxwidth': ['400'], 'format': ['json']}:
+            body = r"""{
+                "provider_name":"YouTube",
+                "author_url":"https:\/\/www.youtube.com\/user\/sirhadley",
+                "thumbnail_height":360,"thumbnail_width":480,"width":400,"height":225,
+                "title":"Deliberate Ramming by Canal Boat - Henley July 2019","version":"1.0",
+                "html":"\u003ciframe width=\"400\" height=\"225\" src=\"https:\/\/www.youtube.com\/embed\/ldoVS0idTBw?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen\u003e\u003c\/iframe\u003e",
+                "type":"video","author_name":"sirhadley",
+                "thumbnail_url":"https:\/\/i.ytimg.com\/vi\/ldoVS0idTBw\/hqdefault.jpg",
+                "provider_url":"https:\/\/www.youtube.com\/"
+            }"""
+        elif qs == {'url': ['https://www.youtube.com/watch?v=404'], 'maxheight': ['300'], 'maxwidth': ['400'], 'format': ['json']}:
+            resp = urllib.response.addinfourl(
+                io.StringIO("not found"),
+                {},
+                req.get_full_url()
+            )
+            resp.code = 404
+            resp.msg = "Not found"
+            return resp
+        else:  # pragma: no cover
+            raise Exception("No response defined for %s" % req.get_full_url())
     elif url == 'https://www.youtube.com/watch?v=ldoVS0idTBw':
         body = r"""<!DOCTYPE html>
         <html>
