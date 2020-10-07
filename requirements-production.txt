@@ -26,9 +26,12 @@ django-dotenv>=1.4.2,<2.0
 # https://github.com/dateutil/dateutil/issues/402
 python-dateutil==2.5.1
 
+# freezegun >= 0.3.15 depends on python-dateutil having a property dateutil.tz.UTC,
+# which only exists on shitty broken versions (>=2.7) of python-dateutil
+freezegun==0.3.14
+
 uWSGI==2.0.15
 six>=1.15,<2
-freezegun>=0.3,<0.4
 mock>=3.0,<4.0
 requests>=2.22,<3.0
 
