@@ -3,7 +3,9 @@ from __future__ import absolute_import, unicode_literals
 import os
 import dotenv
 
-from fabric.api import hosts, cd, run, get, local, with_settings
+# from fabric.api import hosts, cd, run, get, local, with_settings
+from fabric import Connection, task
+from invoke import run as local
 
 dotenv.read_dotenv()
 
@@ -11,76 +13,76 @@ db_username = os.getenv('POSTGRES_USER', 'demozoo')
 
 PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
 STAGING_HOSTS = ['demozoo@www2.demozoo.org']
-DB_HOSTS = ['demozoo@db1']
-DB_GATEWAY = 'demozoo@www1.demozoo.org'
+DB_HOSTS = [{
+    'host': 'demozoo@db1',
+    'forward_agent': True,
+    'gateway': Connection('demozoo@www1.demozoo.org'),
+}]
 
 
-@hosts(PRODUCTION_HOSTS)
-def deploy():
+@task(hosts=PRODUCTION_HOSTS)
+def deploy(c):
     """Deploy the current git master to the live site"""
-    with cd('/home/demozoo/demozoo'):
-        run('git pull')
-        run('/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
-        run('npm i --no-save')
-        run('npm run build')
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
-        run('sudo supervisorctl restart demozoo')
-        run('sudo supervisorctl restart zxdemo')
-        run('sudo supervisorctl restart demozoo-celery')
-        run('sudo supervisorctl restart demozoo-celerybeat')
+    c.run('cd /home/demozoo/demozoo && git pull')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
+    c.run('cd /home/demozoo/demozoo && npm i --no-save')
+    c.run('cd /home/demozoo/demozoo && npm run build')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
+    c.run('sudo supervisorctl restart demozoo')
+    c.run('sudo supervisorctl restart zxdemo')
+    c.run('sudo supervisorctl restart demozoo-celery')
+    c.run('sudo supervisorctl restart demozoo-celerybeat')
 
 
-@hosts(STAGING_HOSTS)
-def deploy_staging():
+@task(hosts=STAGING_HOSTS)
+def deploy_staging(c):
     """Deploy the current git 'staging' branch to the staging site"""
-    with cd('/home/demozoo/demozoo-staging'):
-        run('git pull')
-        run('/home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
-        run('npm i --no-save')
-        run('npm run build')
-        run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
-        run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
-        run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
-        run('sudo supervisorctl restart demozoo-staging')
+    c.run('cd /home/demozoo/demozoo-staging && git pull')
+    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
+    c.run('cd /home/demozoo/demozoo-staging && npm i --no-save')
+    c.run('cd /home/demozoo/demozoo-staging && npm run build')
+    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
+    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
+    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
+    c.run('sudo supervisorctl restart demozoo-staging')
 
 
-@hosts(PRODUCTION_HOSTS)
-def sanity():
+@task(hosts=PRODUCTION_HOSTS)
+def sanity(c):
     """Fix up data integrity errors"""
-    with cd('/home/demozoo/demozoo'):
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=demozoo.settings.productionvm')
+    # pty=True stops Python from buffering output until the end of the run
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=demozoo.settings.productionvm', pty=True)
 
 
-@hosts(PRODUCTION_HOSTS)
-def reindex():
+@task(hosts=PRODUCTION_HOSTS)
+def reindex(c):
     """Rebuild the search index from scratch. WARNING:SLOW"""
-    with cd('/home/demozoo/demozoo'):
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.productionvm')
+    # pty=True stops Python from buffering output until the end of the run
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.productionvm', pty=True)
 
 
-@hosts(STAGING_HOSTS)
-def reindex_staging():
+@task(hosts=STAGING_HOSTS)
+def reindex_staging(c):
     """Rebuild the search index on staging from scratch. WARNING:SLOW"""
-    with cd('/home/demozoo/demozoo-staging'):
-        run('/home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py reindex --settings=demozoo.settings.staging')
+    # pty=True stops Python from buffering output until the end of the run
+    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py reindex --settings=demozoo.settings.staging', pty=True)
 
 
-@hosts(PRODUCTION_HOSTS)
-def bump_external_links():
+@task(hosts=PRODUCTION_HOSTS)
+def bump_external_links(c):
     """Rescan external links for new 'recognised' sites"""
-    with cd('/home/demozoo/demozoo'):
-        run('/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm')
+    # pty=True stops Python from buffering output until the end of the run
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm', pty=True)
 
 
-@with_settings(forward_agent=True, gateway=DB_GATEWAY)
-@hosts(DB_HOSTS)
-def fetchdb():
+@task(hosts=DB_HOSTS)
+def fetchdb(c):
     """Pull the live database to the local copy"""
-    run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
-    get('/tmp/demozoo-fetchdb.sql.gz', '/tmp/demozoo-fetchdb.sql.gz')
-    run('rm /tmp/demozoo-fetchdb.sql.gz')
+    c.run('pg_dump -Z1 -cf /tmp/demozoo-fetchdb.sql.gz demozoo')
+    c.get('/tmp/demozoo-fetchdb.sql.gz', '/tmp/demozoo-fetchdb.sql.gz')
+    c.run('rm /tmp/demozoo-fetchdb.sql.gz')
     local('dropdb -U%s demozoo' % db_username)
     local('createdb -U%s demozoo' % db_username)
     local('gzcat /tmp/demozoo-fetchdb.sql.gz | psql -U%s demozoo' % db_username)
