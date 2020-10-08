@@ -31,7 +31,7 @@ def parse_all_dirs():
         else:
             raise Exception("Expected dir name line, got %r" % line)
 
-        line = f.readline()
+        line = f.readline().decode('iso-8859-1')
         if not re.match(r'total \d+$', line):
             raise Exception("Expected 'total' line, got %r" % line)
 
