@@ -137,7 +137,7 @@ class TestEq(TestCase):
     def test_eq_prods(self):
         response = self.client.get('/api/adhoc/eq/demos/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Madrielle", response.content)
+        self.assertIn("Madrielle", response.content.decode('utf-8'))
 
 
 class TestKlubi(TestCase):
@@ -159,16 +159,16 @@ class TestKlubi(TestCase):
     def test_klubi_demoshow(self):
         response = self.client.get('/api/adhoc/klubi/demoshow-prods/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Demozoo URL,Title,By,Release date,Party", response.content)
+        self.assertIn("Demozoo URL,Title,By,Release date,Party", response.content.decode('utf-8'))
 
     def test_klubi_demoshow_for_specific_month(self):
         response = self.client.get('/api/adhoc/klubi/demoshow-prods/?month=2000-03')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Madrielle", response.content)
+        self.assertIn("Madrielle", response.content.decode('utf-8'))
         # don't include games
-        self.assertNotIn("Stevie Dotman", response.content)
+        self.assertNotIn("Stevie Dotman", response.content.decode('utf-8'))
         # do include prods with no type listed
-        self.assertIn("Mystery Prod", response.content)
+        self.assertIn("Mystery Prod", response.content.decode('utf-8'))
 
 
 class TestScenesat(TestCase):
@@ -183,12 +183,12 @@ class TestScenesat(TestCase):
     def test_scenesat_releases(self):
         response = self.client.get('/api/adhoc/scenesat/monthly-releases/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Demozoo URL,Title,By,Release date", response.content)
+        self.assertIn("Demozoo URL,Title,By,Release date", response.content.decode('utf-8'))
 
     def test_scenesat_releases_for_specific_month(self):
         response = self.client.get('/api/adhoc/scenesat/monthly-releases/?month=2001-03')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Cybernoid's Revenge", response.content)
+        self.assertIn("Cybernoid's Revenge", response.content.decode('utf-8'))
 
 
 class TestGroupAbbreviations(TestCase):
