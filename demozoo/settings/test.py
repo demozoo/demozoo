@@ -95,30 +95,34 @@ def mock_response(req):
         resp.code = 404
         resp.msg = "Not found"
         return resp
-    elif url == 'https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F3156959&maxheight=300&maxwidth=400':
-        body = r"""{
-            "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
-            "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
-            "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"400\" height=\"225\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
-            "width":400,"height":225,"duration":213,
-            "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
-            "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
-            "thumbnail_width":295,"thumbnail_height":166,
-            "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
-            "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
-        }"""
-    elif url == 'https://vimeo.com/api/oembed.json?url=https%3A%2F%2Fvimeo.com%2F3156959':
-        body = r"""{
-            "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
-            "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
-            "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"480\" height=\"270\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
-            "width":480,"height":270,"duration":213,
-            "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
-            "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
-            "thumbnail_width":295,"thumbnail_height":166,
-            "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
-            "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
-        }"""
+    elif url.startswith('https://vimeo.com/api/oembed.json'):
+        qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if qs == {'url': ['https://vimeo.com/3156959'], 'maxheight': ['300'], 'maxwidth': ['400']}:
+            body = r"""{
+                "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
+                "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
+                "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"400\" height=\"225\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
+                "width":400,"height":225,"duration":213,
+                "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
+                "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
+                "thumbnail_width":295,"thumbnail_height":166,
+                "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
+                "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
+            }"""
+        elif qs == {'url': ['https://vimeo.com/3156959']}:
+            body = r"""{
+                "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
+                "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
+                "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"480\" height=\"270\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
+                "width":480,"height":270,"duration":213,
+                "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
+                "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
+                "thumbnail_width":295,"thumbnail_height":166,
+                "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
+                "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
+            }"""
+        else:  # pragma: no cover
+            raise Exception("No response defined for %s" % req.get_full_url())
     elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=1':
         body = r"""{
             "success": true,
