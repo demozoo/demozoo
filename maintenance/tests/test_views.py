@@ -356,7 +356,7 @@ class TestReports(TestCase):
             archive_sha1='1234123412341234', filename='happycat.jpg', file_size=6617
         )
 
-        with open(os.path.join(settings.FILEROOT, 'maintenance', 'fixtures', 'test.zip')) as f:
+        with open(os.path.join(settings.FILEROOT, 'maintenance', 'fixtures', 'test.zip'), 'rb') as f:
             fetch_from_s3.return_value = DownloadBlob('test.zip', f.read())
 
         User.objects.create_user(username='testuser', password='12345')
