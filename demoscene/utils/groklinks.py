@@ -125,12 +125,12 @@ def urldecoded_regex_match(pattern, flags=None, add_slash=False):
         # them fail and decide how to deal with them on a case-by-case basis.
         if not isinstance(urlstring, text_type):
             raise TypeError("Non-unicode string passed to urldecoded_regex_match: %r" % urlstring)
-        url_bytestring = urlstring.encode('ascii')  # will fail with UnicodeEncodeError if urlstring contains non-ASCII
+        urlstring.encode('ascii')  # will fail with UnicodeEncodeError if urlstring contains non-ASCII
 
-        m = regex.match(url_bytestring)
+        m = regex.match(urlstring)
         if m:
-            unquoted_path = urllib.parse.unquote(m.group(1))
-            # unquoted_path is now a bytestring (type 'str') consisting of codepoints 0..255 in no
+            unquoted_path = urllib.parse.unquote_to_bytes(m.group(1))
+            # unquoted_path is now a bytestring consisting of codepoints 0..255 in no
             # particular encoding. Decode this as iso-8859-1 to get a unicode string to go in the
             # database's 'param' field, which preserves those bytes in a way that can be restored
             # later with .encode('iso-8859-1'). (We don't care whether the bytestring is _actually_
