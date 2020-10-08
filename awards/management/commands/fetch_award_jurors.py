@@ -24,6 +24,10 @@ class Command(BaseCommand):
                 continue
 
             for line in r.iter_lines():
+                # it's probably utf-8, but we only care about the number at the start
+                # so decode as iso-8859-1 for extra fault-tolerance
+                line = line.decode('iso-8859-1')
+
                 match = re.match(r'^(\d+)\s*(?:\#.*)?$', line)
                 if match:
                     sceneids.append(int(match.group(1)))
