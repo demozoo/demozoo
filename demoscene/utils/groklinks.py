@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import re
 import json
 
+from six import text_type
 from six.moves import urllib
 
 from bs4 import BeautifulSoup
@@ -122,9 +123,9 @@ def urldecoded_regex_match(pattern, flags=None, add_slash=False):
         # unicode, and any non-shitty source of URLs (e.g. copy-and-paste from a browser location bar)
         # _should_ take care of URL-encoding non-ASCII characters. If that's not the case, we'll see
         # them fail and decide how to deal with them on a case-by-case basis.
-        if not isinstance(urlstring, unicode):
+        if not isinstance(urlstring, text_type):
             raise TypeError("Non-unicode string passed to urldecoded_regex_match: %r" % urlstring)
-        url_bytestring = str(urlstring)  # will fail with UnicodeEncodeError if urlstring contains non-ASCII
+        url_bytestring = urlstring.encode('ascii')  # will fail with UnicodeEncodeError if urlstring contains non-ASCII
 
         m = regex.match(url_bytestring)
         if m:

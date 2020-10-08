@@ -17,7 +17,7 @@ class ExternalLinkForm(forms.ModelForm):
     def clean_url(self):
         data = self.cleaned_data['url']
         try:
-            str(data)
+            data.encode('ascii')
         except UnicodeEncodeError:
             raise ValidationError("URL must be pure ASCII - try copying it from your browser location bar")
 
