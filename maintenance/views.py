@@ -1268,7 +1268,7 @@ def fix_results_file_encoding(request, results_file_id):
 
     # check that the encoding is one that we recognise
     try:
-        ''.decode(encoding)
+        b'x'.decode(encoding)
     except LookupError:
         encoding = 'iso-8859-1'
 
