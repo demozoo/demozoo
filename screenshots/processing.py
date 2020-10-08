@@ -40,7 +40,7 @@ def get_thumbnail_sizing_params(original_size, target_size):
     if orig_aspect_ratio > 2 * target_aspect_ratio:
         # image with an aspect ratio more than twice as wide as target_size
         final_width = target_width
-        final_height = min(orig_height, target_height / 2)
+        final_height = min(orig_height, int(target_height / 2))
         scale_factor = float(final_height) / orig_height
 
         # scale up final_width to find out what we should crop to
@@ -70,7 +70,7 @@ def get_thumbnail_sizing_params(original_size, target_size):
     else:
         # image with an aspect ratio more than 3 times taller than target_size
         final_height = target_height
-        final_width = min(orig_width, target_width / 3)
+        final_width = min(orig_width, int(target_width / 3))
         scale_factor = float(final_width) / orig_width
 
         # scale up final_height to find out what we should crop to:
