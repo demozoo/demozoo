@@ -71,7 +71,7 @@ class File(models.Model):
         f.close()
         if len(file_content) > 65536:
             raise FileTooBig("Cannot fetch files larger than 64Kb")
-        return buffer(file_content)
+        return file_content
 
     @property
     def web_url(self):
