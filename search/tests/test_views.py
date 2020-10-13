@@ -37,6 +37,14 @@ class TestSearch(TestCase):
         self.assertContains(response, "Pondlife")
         self.assertNotContains(response, "demo called <b>Pondlife</b>")
 
+    def test_get_empty(self):
+        response = self.client.get('/search/?q=')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_empty_with_category(self):
+        response = self.client.get('/search/?q=&category=party')
+        self.assertEqual(response.status_code, 200)
+
     def test_get_with_tag(self):
         response = self.client.get('/search/?q=pondlife+[fish]')
         self.assertEqual(response.status_code, 200)

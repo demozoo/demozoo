@@ -46,7 +46,7 @@ class SearchForm(forms.Form):
 
     def clean(self):
         category = self.cleaned_data.get('category')
-        if category:
+        if category and 'q' in self.cleaned_data:
             self.cleaned_data['q'] += (' type:%s' % category)
 
     def search(self, page_number=1, count=50):
