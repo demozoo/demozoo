@@ -80,7 +80,6 @@ class SearchForm(forms.Form):
         if has_search_term:
             psql_query = SearchQuery(unidecode(query))
             clean_query = generate_search_title(query)
-            rank_annotation = SearchRank(F('search_document'), psql_query)
             production_filter_q = Q(search_document=psql_query)
             releaser_filter_q = Q(search_document=psql_query)
             party_filter_q = Q(search_document=psql_query)
@@ -88,7 +87,6 @@ class SearchForm(forms.Form):
             production_filter_q = Q()
             releaser_filter_q = Q()
             party_filter_q = Q()
-            rank_annotation = models.Value(0, output_field=models.IntegerField())
 
         subqueries_to_perform = set(['production', 'releaser', 'party'])
 
@@ -211,6 +209,11 @@ class SearchForm(forms.Form):
         # 'rank': search ranking as calculated by postgres search
 
         # start with an empty queryset
+        if has_search_term:
+            rank_annotation = SearchRank(F('search_document'), psql_query)
+        else:
+            rank_annotation = models.Value('', output_field=models.CharField())
+
         qs = Production.objects.annotate(
             type=models.Value('empty', output_field=models.CharField()),
             exactness=models.Value(0, output_field=models.IntegerField()),
@@ -221,6 +224,7 @@ class SearchForm(forms.Form):
             # Search for productions
 
             if has_search_term:
+                rank_annotation = SearchRank(F('search_document'), psql_query)
                 exactness_annotation = models.Case(
                     models.When(search_title=clean_query, then=models.Value(2)),
                     models.When(search_title__startswith=clean_query, then=models.Value(1)),
@@ -228,6 +232,7 @@ class SearchForm(forms.Form):
                     output_field=models.IntegerField()
                 )
             else:
+                rank_annotation = F('sortable_title')
                 exactness_annotation = models.Value(0, output_field=models.IntegerField())
 
             qs = qs.union(
@@ -246,6 +251,7 @@ class SearchForm(forms.Form):
             # Search for releasers
 
             if has_search_term:
+                rank_annotation = SearchRank(F('search_document'), psql_query)
                 # Exactness test will be applied to each of the releaser's nick variants;
                 # take the highest result
                 exactness_annotation = models.Max(models.Case(
@@ -255,6 +261,7 @@ class SearchForm(forms.Form):
                     output_field=models.IntegerField()
                 ))
             else:
+                rank_annotation = F('name')
                 exactness_annotation = models.Value(0, output_field=models.IntegerField())
 
             qs = qs.union(
@@ -273,6 +280,7 @@ class SearchForm(forms.Form):
             # Search for parties
 
             if has_search_term:
+                rank_annotation = SearchRank(F('search_document'), psql_query)
                 exactness_annotation = models.Case(
                     models.When(search_title=clean_query, then=models.Value(2)),
                     models.When(search_title__startswith=clean_query, then=models.Value(1)),
@@ -280,6 +288,7 @@ class SearchForm(forms.Form):
                     output_field=models.IntegerField()
                 )
             else:
+                rank_annotation = F('name')
                 exactness_annotation = models.Value(0, output_field=models.IntegerField())
 
             qs = qs.union(
@@ -294,7 +303,10 @@ class SearchForm(forms.Form):
                 ).values('pk', 'type', 'exactness', 'rank'),
             )
 
-        qs = qs.order_by('-exactness', '-rank', 'pk')
+        if has_search_term:
+            qs = qs.order_by('-exactness', '-rank', 'pk')
+        else:
+            qs = qs.order_by('-exactness', 'rank', 'pk')
 
         # Apply pagination to the query before performing the (expensive) real data fetches.
 
