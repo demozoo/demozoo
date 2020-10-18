@@ -43,7 +43,7 @@ def mock_response(req):
             "latitude": 51.75222, "longitude": -1.25596,
             "country_name": "United Kingdom", "name": "Oxford", "id": 2640729, "country_code": "GB"
         }"""
-    elif url == 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom':  # pragma: nocover
+    elif url == 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom':  # pragma: no cover
         # this is used to verify that we don't look up locations that are unchanged
         raise Exception("Looking up Adlington is not allowed! :-)")
     elif url == 'http://geocoder.demozoo.org/?q=Royston+Vasey':
