@@ -168,9 +168,14 @@ class TestSearch(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_with_filter_only(self):
-        response = self.client.get('/search/?q=platform:"ZX+Spectrum"')
+        response = self.client.get('/search/?q=year:2001')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Pondlife")
+
+    def test_get_releaser_with_filter_only(self):
+        response = self.client.get('/search/?q=of:"hooy-program"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Gasman")
 
     def test_invalid_search(self):
         response = self.client.get('/search/?q=')

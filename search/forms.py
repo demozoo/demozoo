@@ -271,7 +271,7 @@ class SearchForm(forms.Form):
                     exactness=exactness_annotation
                 ).filter(
                     releaser_filter_q
-                ).order_by(
+                ).distinct().order_by(
                     # empty order_by to cancel the Releaser model's native ordering
                 ).values('pk', 'type', 'exactness', 'rank')
             )

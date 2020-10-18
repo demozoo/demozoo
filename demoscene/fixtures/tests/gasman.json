@@ -100,7 +100,7 @@
     {
         "pk": 5,
         "model": "demoscene.nickvariant",
-        "fields": {"nick": 5, "name": "Hooy-Program", "search_title": "hooy-program"}
+        "fields": {"nick": 5, "name": "Hooy-Program", "search_title": "hooy program"}
     },
 
     {
