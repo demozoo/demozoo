@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import calendar
 import dateutil.parser
 import datetime
 import re
@@ -53,6 +54,23 @@ class FuzzyDate(object):
             return self.date.strftime("%Y-%m")
         else:
             return self.date.strftime("%Y-%m-%d")
+
+    def date_range_start(self):
+        if self.precision == 'y':
+            return self.date.replace(month=1, day=1)
+        elif self.precision == 'm':
+            return self.date.replace(day=1)
+        else:
+            return self.date
+
+    def date_range_end(self):
+        if self.precision == 'y':
+            return self.date.replace(month=12, day=31)
+        elif self.precision == 'm':
+            weekday, last_day = calendar.monthrange(self.date.year, self.date.month)
+            return self.date.replace(day=last_day)
+        else:
+            return self.date
 
     # Returns true if the 'other' date matches this one
     # as far as the precision of the two dates go. Always

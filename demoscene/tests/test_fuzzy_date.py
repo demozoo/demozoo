@@ -29,6 +29,16 @@ class TestFuzzyDate(TestCase):
         self.assertEqual(FuzzyDate(datetime.date(2020, 8, 1), 'm').numeric_format(), "2020-08")
         self.assertEqual(FuzzyDate(datetime.date(2020, 8, 1), 'y').numeric_format(), "2020")
 
+    def test_date_range_start(self):
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'd').date_range_start(), datetime.date(2020, 8, 15))
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'm').date_range_start(), datetime.date(2020, 8, 1))
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'y').date_range_start(), datetime.date(2020, 1, 1))
+
+    def test_date_range_end(self):
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'd').date_range_end(), datetime.date(2020, 8, 15))
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'm').date_range_end(), datetime.date(2020, 8, 31))
+        self.assertEqual(FuzzyDate(datetime.date(2020, 8, 15), 'y').date_range_end(), datetime.date(2020, 12, 31))
+
     def test_agrees_with(self):
         d1 = FuzzyDate(datetime.date(2020, 8, 1), 'd')
         d2 = FuzzyDate(datetime.date(2020, 8, 1), 'd')
