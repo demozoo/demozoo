@@ -22,6 +22,8 @@ class TestSearch(TestCase):
 
         pondlife = Production.objects.get(title='Pondlife')
         pondlife.tags.add('fish')
+        pondlife.has_screenshot = True
+        pondlife.save()
 
         madrielle = Production.objects.get(title='Madrielle')
         TaggedItem.objects.create(content_object=madrielle, tag=Tag.objects.get(name='fish'))
@@ -208,6 +210,23 @@ class TestSearch(TestCase):
         self.assertContains(response, "Madrielle")
 
         response = self.client.get('/search/?q=pondlife+type:"4K Intro"')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Pondlife")
+
+    def test_get_with_screenshot_flag(self):
+        response = self.client.get('/search/?q=madrielle+screenshot:yes')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=pondlife+screenshot:yes')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pondlife")
+
+        response = self.client.get('/search/?q=madrielle+screenshots:no')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=pondlife+screenshots:no')
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Pondlife")
 

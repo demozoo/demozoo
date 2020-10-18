@@ -30,7 +30,7 @@ FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
 TAG_RE = re.compile(r'\[([\w-]+)\]')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'date', 'before', 'until', 'after', 'since')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'date', 'before', 'until', 'after', 'since', 'screenshot', 'screenshots')
 
 
 class SearchForm(forms.Form):
@@ -101,6 +101,15 @@ class SearchForm(forms.Form):
                 platform_ids |= Platform.objects.filter(Q(name__iexact=platform_name) | Q(aliases__name__iexact=platform_name)).values_list('id', flat=True)
 
             production_filter_q &= Q(platforms__id__in=list(platform_ids))
+
+        if 'screenshot' in filter_expressions or 'screenshots' in filter_expressions:
+            subqueries_to_perform &= set(['production'])
+
+            for flag in filter_expressions['screenshot'] | filter_expressions['screenshots']:
+                if flag in ('yes', 'true'):
+                    production_filter_q &= Q(has_screenshot=True)
+                elif flag in ('no', 'false'):
+                    production_filter_q &= Q(has_screenshot=False)
 
         if 'by' in filter_expressions or 'author' in filter_expressions:
             subqueries_to_perform &= set(['production'])
