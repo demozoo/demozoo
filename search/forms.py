@@ -75,18 +75,23 @@ class SearchForm(forms.Form):
 
         query = TAG_RE.sub(apply_tag, query)
 
-        psql_query = SearchQuery(unidecode(query))
-        clean_query = generate_search_title(query)
-        rank_annotation = SearchRank(F('search_document'), psql_query)
+        asciified_query = unidecode(query).strip()
+        has_search_term = bool(asciified_query)
+        if has_search_term:
+            psql_query = SearchQuery(unidecode(query))
+            clean_query = generate_search_title(query)
+            rank_annotation = SearchRank(F('search_document'), psql_query)
+            production_filter_q = Q(search_document=psql_query)
+            releaser_filter_q = Q(search_document=psql_query)
+            party_filter_q = Q(search_document=psql_query)
+        else:
+            production_filter_q = Q()
+            releaser_filter_q = Q()
+            party_filter_q = Q()
+            rank_annotation = models.Value(0, output_field=models.IntegerField())
 
         subqueries_to_perform = set(['production', 'releaser', 'party'])
 
-        production_filter_q = Q(search_document=psql_query)
-
-        releaser_filter_q = Q(search_document=psql_query)
-        releaser_rank_annotation = rank_annotation
-
-        party_filter_q = Q(search_document=psql_query)
 
         if 'platform' in filter_expressions or 'on' in filter_expressions:
             subqueries_to_perform &= set(['production'])
@@ -214,16 +219,22 @@ class SearchForm(forms.Form):
 
         if 'production' in subqueries_to_perform:
             # Search for productions
+
+            if has_search_term:
+                exactness_annotation = models.Case(
+                    models.When(search_title=clean_query, then=models.Value(2)),
+                    models.When(search_title__startswith=clean_query, then=models.Value(1)),
+                    default=models.Value(0, output_field=models.IntegerField()),
+                    output_field=models.IntegerField()
+                )
+            else:
+                exactness_annotation = models.Value(0, output_field=models.IntegerField())
+
             qs = qs.union(
                 Production.objects.annotate(
                     rank=rank_annotation,
                     type=models.Value('production', output_field=models.CharField()),
-                    exactness=models.Case(
-                        models.When(search_title=clean_query, then=models.Value(2)),
-                        models.When(search_title__startswith=clean_query, then=models.Value(1)),
-                        default=models.Value(0, output_field=models.IntegerField()),
-                        output_field=models.IntegerField()
-                    )
+                    exactness=exactness_annotation
                 ).filter(
                     production_filter_q
                 ).order_by(
@@ -233,18 +244,24 @@ class SearchForm(forms.Form):
 
         if 'releaser' in subqueries_to_perform:
             # Search for releasers
+
+            if has_search_term:
+                # Exactness test will be applied to each of the releaser's nick variants;
+                # take the highest result
+                exactness_annotation = models.Max(models.Case(
+                    models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
+                    models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
+                    default=models.Value(0, output_field=models.IntegerField()),
+                    output_field=models.IntegerField()
+                ))
+            else:
+                exactness_annotation = models.Value(0, output_field=models.IntegerField())
+
             qs = qs.union(
                 Releaser.objects.annotate(
-                    rank=releaser_rank_annotation,
+                    rank=rank_annotation,
                     type=models.Value('releaser', output_field=models.CharField()),
-                    # Exactness test will be applied to each of the releaser's nick variants;
-                    # take the highest result
-                    exactness=models.Max(models.Case(
-                        models.When(nicks__variants__search_title=clean_query, then=models.Value(2)),
-                        models.When(nicks__variants__search_title__startswith=clean_query, then=models.Value(1)),
-                        default=models.Value(0, output_field=models.IntegerField()),
-                        output_field=models.IntegerField()
-                    ))
+                    exactness=exactness_annotation
                 ).filter(
                     releaser_filter_q
                 ).order_by(
@@ -254,16 +271,22 @@ class SearchForm(forms.Form):
 
         if 'party' in subqueries_to_perform:
             # Search for parties
+
+            if has_search_term:
+                exactness_annotation = models.Case(
+                    models.When(search_title=clean_query, then=models.Value(2)),
+                    models.When(search_title__startswith=clean_query, then=models.Value(1)),
+                    default=models.Value(0, output_field=models.IntegerField()),
+                    output_field=models.IntegerField()
+                )
+            else:
+                exactness_annotation = models.Value(0, output_field=models.IntegerField())
+
             qs = qs.union(
                 Party.objects.annotate(
                     rank=rank_annotation,
                     type=models.Value('party', output_field=models.CharField()),
-                    exactness=models.Case(
-                        models.When(search_title=clean_query, then=models.Value(2)),
-                        models.When(search_title__startswith=clean_query, then=models.Value(1)),
-                        default=models.Value(0, output_field=models.IntegerField()),
-                        output_field=models.IntegerField()
-                    )
+                    exactness=exactness_annotation,
                 ).filter(
                     party_filter_q
                 ).order_by(
@@ -295,33 +318,39 @@ class SearchForm(forms.Form):
             production_ids = to_fetch['production']
             productions = Production.objects.filter(pk__in=production_ids).prefetch_related(
                 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
-            ).annotate(
-                search_snippet=TSHeadline('notes', psql_query)
             )
+            if has_search_term:
+                productions = productions.annotate(
+                    search_snippet=TSHeadline('notes', psql_query)
+                )
             screenshots = Screenshot.select_for_production_ids(production_ids)
 
             for prod in productions:
                 prod.selected_screenshot = screenshots.get(prod.pk)
                 # Ignore any search snippets that don't actually contain a highlighted term
-                prod.has_search_snippet = '<b>' in prod.search_snippet
+                prod.has_search_snippet = has_search_term and '<b>' in prod.search_snippet
                 fetched[('production', prod.pk)] = prod
 
         if 'releaser' in to_fetch:
             releasers = Releaser.objects.filter(pk__in=to_fetch['releaser']).prefetch_related(
                 'group_memberships__group__nicks', 'nicks'
-            ).annotate(
-                search_snippet=TSHeadline('notes', psql_query)
             )
+            if has_search_term:
+                releasers = releasers.annotate(
+                    search_snippet=TSHeadline('notes', psql_query)
+                )
             for releaser in releasers:
-                releaser.has_search_snippet = '<b>' in releaser.search_snippet
+                releaser.has_search_snippet = has_search_term and '<b>' in releaser.search_snippet
                 fetched[('releaser', releaser.pk)] = releaser
 
         if 'party' in to_fetch:
-            parties = Party.objects.filter(pk__in=to_fetch['party']).annotate(
-                search_snippet=TSHeadline('notes', psql_query)
-            )
+            parties = Party.objects.filter(pk__in=to_fetch['party'])
+            if has_search_term:
+                parties = parties.annotate(
+                    search_snippet=TSHeadline('notes', psql_query)
+                )
             for party in parties:
-                party.has_search_snippet = '<b>' in party.search_snippet
+                party.has_search_snippet = has_search_term and '<b>' in party.search_snippet
                 fetched[('party', party.pk)] = party
 
         # Build final list in same order as returned by the original results query

@@ -167,6 +167,11 @@ class TestSearch(TestCase):
         response = self.client.get('/search/?q=pondlife&page=9999')
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_filter_only(self):
+        response = self.client.get('/search/?q=platform:"ZX+Spectrum"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pondlife")
+
     def test_invalid_search(self):
         response = self.client.get('/search/?q=')
         self.assertEqual(response.status_code, 200)
