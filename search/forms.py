@@ -30,7 +30,7 @@ FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
 TAG_RE = re.compile(r'\[([\w-]+)\]')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'before', 'until', 'after', 'since')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'date', 'before', 'until', 'after', 'since')
 
 
 class SearchForm(forms.Form):
@@ -144,16 +144,16 @@ class SearchForm(forms.Form):
             for tag_name in filter_expressions['tagged'] | tag_names:
                 production_filter_q &= Q(tags__name=tag_name)
 
-        if 'year' in filter_expressions:
+        if 'year' in filter_expressions or 'date' in filter_expressions:
             subqueries_to_perform &= set(['production', 'party'])
-            for year_str in filter_expressions['year']:
+            for date_str in filter_expressions['year'] | filter_expressions['date']:
                 try:
-                    year = int(year_str)
+                    date_expr = FuzzyDate.parse(date_str)
                 except ValueError:
                     continue
 
-                production_filter_q &= Q(release_date_date__year=year)
-                party_filter_q &= (Q(start_date_date__year=year) | Q(end_date_date__year=year))
+                production_filter_q &= Q(release_date_date__gte=date_expr.date_range_start(), release_date_date__lte=date_expr.date_range_end())
+                party_filter_q &= Q(end_date_date__gte=date_expr.date_range_start(), start_date_date__lte=date_expr.date_range_end())
 
         if 'before' in filter_expressions:
             subqueries_to_perform &= set(['production', 'party'])
