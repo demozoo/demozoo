@@ -13,6 +13,7 @@ from unidecode import unidecode
 
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
+from fuzzy_date import FuzzyDate
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionType, Screenshot
@@ -29,7 +30,7 @@ FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
 TAG_RE = re.compile(r'\[([\w-]+)\]')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year')
+RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'before', 'until', 'after', 'since')
 
 
 class SearchForm(forms.Form):
@@ -153,6 +154,50 @@ class SearchForm(forms.Form):
 
                 production_filter_q &= Q(release_date_date__year=year)
                 party_filter_q &= (Q(start_date_date__year=year) | Q(end_date_date__year=year))
+
+        if 'before' in filter_expressions:
+            subqueries_to_perform &= set(['production', 'party'])
+            for date_str in filter_expressions['before']:
+                try:
+                    date_expr = FuzzyDate.parse(date_str)
+                except ValueError:
+                    continue
+
+                production_filter_q &= Q(release_date_date__lt=date_expr.date_range_start())
+                party_filter_q &= Q(start_date_date__lt=date_expr.date_range_start())
+
+        if 'until' in filter_expressions:
+            subqueries_to_perform &= set(['production', 'party'])
+            for date_str in filter_expressions['until']:
+                try:
+                    date_expr = FuzzyDate.parse(date_str)
+                except ValueError:
+                    continue
+
+                production_filter_q &= Q(release_date_date__lte=date_expr.date_range_end())
+                party_filter_q &= Q(start_date_date__lte=date_expr.date_range_end())
+
+        if 'after' in filter_expressions:
+            subqueries_to_perform &= set(['production', 'party'])
+            for date_str in filter_expressions['after']:
+                try:
+                    date_expr = FuzzyDate.parse(date_str)
+                except ValueError:
+                    continue
+
+                production_filter_q &= Q(release_date_date__gt=date_expr.date_range_end())
+                party_filter_q &= Q(end_date_date__gt=date_expr.date_range_end())
+
+        if 'since' in filter_expressions:
+            subqueries_to_perform &= set(['production', 'party'])
+            for date_str in filter_expressions['since']:
+                try:
+                    date_expr = FuzzyDate.parse(date_str)
+                except ValueError:
+                    continue
+
+                production_filter_q &= Q(release_date_date__gte=date_expr.date_range_start())
+                party_filter_q &= Q(end_date_date__gte=date_expr.date_range_start())
 
         if 'type' in filter_expressions:
             requested_types = filter_expressions['type']

@@ -114,6 +114,58 @@ class TestSearch(TestCase):
         response = self.client.get('/search/?q=pondlife+xyz:xyz')
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_before_filter(self):
+        response = self.client.get('/search/?q=madrielle+before:"march 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+before:"apr 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+before:"smarch 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+    def test_get_with_until_filter(self):
+        response = self.client.get('/search/?q=madrielle+until:"feb 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+until:"mar 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+until:"smarch 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+    def test_get_with_after_filter(self):
+        response = self.client.get('/search/?q=madrielle+after:"mar 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+after:"feb 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+after:"smarch 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+    def test_get_with_since_filter(self):
+        response = self.client.get('/search/?q=madrielle+since:"apr 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+since:"mar 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
+        response = self.client.get('/search/?q=madrielle+since:"smarch 2000"')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Madrielle")
+
     def test_get_with_releaser_type(self):
         response = self.client.get('/search/?q=gasman+type:releaser')
         self.assertEqual(response.status_code, 200)
