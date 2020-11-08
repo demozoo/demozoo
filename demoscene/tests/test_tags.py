@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from fuzzy_date import FuzzyDate
 from demoscene.templatetags.demoscene_tags import date_range
+from demoscene.templatetags.safe_markdown import safe_markdown
 
 from django import forms, template
 from django.test import TestCase
@@ -115,3 +116,10 @@ class TestSpawningFormsetTag(TestCase):
 
         self.assertIn('<div class="formset_item">', result)
         self.assertNotIn('<span class="delete">', result)
+
+
+class TestSafeMarkdown(TestCase):
+    def test_allow_images(self):
+        markdown = """Here is an image: <img src="http://example.com/">"""
+        result = safe_markdown(markdown)
+        self.assertEqual(result, """<p>Here is an image: <img src="http://example.com/"></p>""")

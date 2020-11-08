@@ -29,6 +29,7 @@ sanitizer = Sanitizer({
         "a": ("href", "name", "title", "id", "rel"),
         "img": ("src", "width", "height", "alt"),
     },
+    'empty': set(['img']),
     'element_preprocessors': [],
     'sanitize_href': sanitize_href,
 })
