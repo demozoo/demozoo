@@ -51,7 +51,7 @@ class SimpleTest(TestCase):
         self.assertNotContains(response, 'Hello logged in people')
 
         self.assertContains(response, 'First news item')
-        self.assertContains(response, 'with a <a href="http://example.com/">link</a> in it<br> and a <a href="#">line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>')
+        self.assertContains(response, 'with a <a href="http://example.com/">link</a> in it<br>\nand a <a>line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>')
 
         self.assertNotContains(response, 'Secret news item')
 

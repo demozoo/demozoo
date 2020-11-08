@@ -123,3 +123,31 @@ class TestSafeMarkdown(TestCase):
         markdown = """Here is an image: <img src="http://example.com/">"""
         result = safe_markdown(markdown)
         self.assertEqual(result, """<p>Here is an image: <img src="http://example.com/"></p>""")
+
+    def test_pre(self):
+        markdown = """<pre>   if we   don't
+           preserve whitespace
+                    in pre tags
+then it's
+    all a bit pointless
+        </pre>"""
+        result = safe_markdown(markdown)
+        self.assertEqual(result, markdown)
+
+    def test_link_types(self):
+        self.assertEqual(
+            safe_markdown('Here is a <a href="ftp://ftp.scene.org">link</a>'),
+            '<p>Here is a <a href="ftp://ftp.scene.org">link</a></p>'
+        )
+        self.assertEqual(
+            safe_markdown('Here is a <a href="/local/">link</a>'),
+            '<p>Here is a <a href="/local/">link</a></p>'
+        )
+        self.assertEqual(
+            safe_markdown('Here is a <a href="#anchor">link</a>'),
+            '<p>Here is a <a href="#anchor">link</a></p>'
+        )
+        self.assertEqual(
+            safe_markdown('Here is a <a href="smb://example.com/warez">link</a>'),
+            '<p>Here is a <a>link</a></p>'
+        )

@@ -1,4 +1,5 @@
 beautifulsoup4>=4.9.3,<5
+bleach>=3.2,<3.3
 Django>=1.11.27,<=1.11.99
 Fabric>=2.5,<2.6
 Markdown==2.4
@@ -15,7 +16,6 @@ django-taggit==0.22.0
 django-treebeard==4.1.0
 djangorestframework==3.9.4
 djangorestframework-jsonp==1.0.2
-html-sanitizer>=1.9.1,<2
 psycopg2>=2.5.4,<3.0
 pyrecoil>=0.3.1,<0.4
 redis==2.10.5
