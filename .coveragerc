@@ -6,9 +6,7 @@ omit =
     demozoo/settings/dev.py
     demozoo/settings/productionvm.py
     demozoo/settings/staging.py
-    demozoo/settings/zxdemo_dev.py
     demozoo/settings/zxdemo_productionvm.py
-    demozoo/settings/zxdemo_staging.py
     fabfile.py
 [html]
 directory = coverage_html_report

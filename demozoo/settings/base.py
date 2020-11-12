@@ -11,6 +11,9 @@ FILEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 sys.path.append(FILEROOT)
 sys.path.append(os.path.join(FILEROOT, "lib"))
 
+# subsite: 'demozoo' or 'zxdemo'. Varies root_urlconf and context processors
+SUBSITE = os.getenv('DEMOZOO_SUBSITE', 'demozoo')
+
 ADMINS = (
     ('Matt Westcott', 'matt@west.co.tt'),
 )
@@ -66,6 +69,30 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
+CONTEXT_PROCESSORS = [
+    # defaults
+    'django.contrib.auth.context_processors.auth',
+    'django.template.context_processors.debug',
+    'django.template.context_processors.i18n',
+    'django.template.context_processors.media',
+    'django.template.context_processors.static',
+    'django.template.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    # added by us
+    'django.template.context_processors.request',
+]
+
+if SUBSITE == 'zxdemo':
+    CONTEXT_PROCESSORS += [
+        'zxdemo.context_processors.zxdemo_context',
+    ]
+else:
+    CONTEXT_PROCESSORS += [
+        'demoscene.context_processors.global_nav_forms',
+        'demoscene.context_processors.ajax_base_template',
+        'demoscene.context_processors.read_only_mode',
+    ]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -74,21 +101,7 @@ TEMPLATES = [
         ],
         'APP_DIRS': True,
         'OPTIONS': {
-            'context_processors': [
-                # defaults
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
-                # added by us
-                'django.template.context_processors.request',
-                'demoscene.context_processors.global_nav_forms',
-                'demoscene.context_processors.ajax_base_template',
-                'demoscene.context_processors.read_only_mode',
-            ],
+            'context_processors': CONTEXT_PROCESSORS,
         },
     },
 ]
@@ -103,7 +116,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'demozoo.urls'
+if SUBSITE == 'zxdemo':
+    ROOT_URLCONF = 'zxdemo.urls'
+else:
+    ROOT_URLCONF = 'demozoo.urls'
 
 INSTALLED_APPS = (
     'django.contrib.contenttypes',

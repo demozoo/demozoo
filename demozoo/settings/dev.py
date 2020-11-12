@@ -27,3 +27,5 @@ DEBUG_TOOLBAR_ENABLED = os.getenv('DEBUG_TOOLBAR_ENABLED', '1') != '0'
 if DEBUG_TOOLBAR_ENABLED:
     INSTALLED_APPS = list(INSTALLED_APPS) + ['debug_toolbar']
     MIDDLEWARE_CLASSES = list(MIDDLEWARE_CLASSES) + ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
+ZXDEMO_PLATFORM_IDS = [2]

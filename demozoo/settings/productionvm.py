@@ -7,7 +7,7 @@ EMAIL_HOST = 'localhost'
 
 BROKER_URL = 'redis://localhost:6379/0'
 
-ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'www1.demozoo.org']
+ALLOWED_HOSTS = ['localhost', 'demozoo.org', 'www1.demozoo.org', 'zxdemo.org', 'www2.zxdemo.org']
 
 # django-compressor offline compression
 COMPRESS_OFFLINE = True
@@ -50,3 +50,5 @@ LOGGING = {
         }
     }
 }
+
+ZXDEMO_PLATFORM_IDS = [2]

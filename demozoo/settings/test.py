@@ -299,3 +299,5 @@ COVERAGE_MODULE_EXCLUDES = [
     '^compressor', '^debug_toolbar', 'migrations', '^djcelery',
     '^rest_framework', '^south', '^taggit', '^treebeard'
 ]
+
+ZXDEMO_PLATFORM_IDS = [1]

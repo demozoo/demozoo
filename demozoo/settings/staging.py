@@ -13,7 +13,7 @@ AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
 
 BROKER_URL = 'redis://localhost:6379/1'
 
-ALLOWED_HOSTS = ['localhost', 'staging.demozoo.org']
+ALLOWED_HOSTS = ['localhost', 'staging.demozoo.org', 'staging.zxdemo.org']
 
 BASE_URL = 'https://staging.demozoo.org'
 
@@ -58,3 +58,5 @@ LOGGING = {
         }
     }
 }
+
+ZXDEMO_PLATFORM_IDS = [2]
