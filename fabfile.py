@@ -39,13 +39,13 @@ def deploy(c):
 @task(hosts=STAGING_HOSTS)
 def deploy_staging(c):
     """Deploy the current git 'staging' branch to the staging site"""
-    c.run('cd /home/demozoo/demozoo-staging && git pull')
-    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/pip install -r requirements-production.txt')
-    c.run('cd /home/demozoo/demozoo-staging && npm i --no-save')
-    c.run('cd /home/demozoo/demozoo-staging && npm run build')
-    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
-    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
-    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py compress --settings=demozoo.settings.staging')
+    c.run('cd /home/demozoo/demozoo && git pull')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
+    c.run('cd /home/demozoo/demozoo && npm i --no-save')
+    c.run('cd /home/demozoo/demozoo && npm run build')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.staging')
     c.run('sudo supervisorctl restart demozoo-staging')
 
 
@@ -67,7 +67,7 @@ def reindex(c):
 def reindex_staging(c):
     """Rebuild the search index on staging from scratch. WARNING:SLOW"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo-staging && /home/demozoo/.virtualenvs/demozoo-staging/bin/python ./manage.py reindex --settings=demozoo.settings.staging', pty=True)
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.staging', pty=True)
 
 
 @task(hosts=PRODUCTION_HOSTS)
