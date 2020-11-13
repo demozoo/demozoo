@@ -27,9 +27,9 @@ def deploy(c):
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
     c.run('cd /home/demozoo/demozoo && npm i --no-save')
     c.run('cd /home/demozoo/demozoo && npm run build')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.productionvm')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.productionvm')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.productionvm')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress')
     c.run('sudo supervisorctl restart demozoo')
     c.run('sudo supervisorctl restart zxdemo')
     c.run('sudo supervisorctl restart demozoo-celery')
@@ -43,38 +43,41 @@ def deploy_staging(c):
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
     c.run('cd /home/demozoo/demozoo && npm i --no-save')
     c.run('cd /home/demozoo/demozoo && npm run build')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate --settings=demozoo.settings.staging')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput --settings=demozoo.settings.staging')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress --settings=demozoo.settings.staging')
-    c.run('sudo supervisorctl restart demozoo-staging')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput')
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress')
+    c.run('sudo supervisorctl restart demozoo')
+    c.run('sudo supervisorctl restart zxdemo')
+    c.run('sudo supervisorctl restart demozoo-celery')
+    c.run('sudo supervisorctl restart demozoo-celerybeat')
 
 
 @task(hosts=PRODUCTION_HOSTS)
 def sanity(c):
     """Fix up data integrity errors"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity --settings=demozoo.settings.productionvm', pty=True)
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py sanity', pty=True)
 
 
 @task(hosts=PRODUCTION_HOSTS)
 def reindex(c):
     """Rebuild the search index from scratch. WARNING:SLOW"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.productionvm', pty=True)
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex', pty=True)
 
 
 @task(hosts=STAGING_HOSTS)
 def reindex_staging(c):
     """Rebuild the search index on staging from scratch. WARNING:SLOW"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex --settings=demozoo.settings.staging', pty=True)
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py reindex', pty=True)
 
 
 @task(hosts=PRODUCTION_HOSTS)
 def bump_external_links(c):
     """Rescan external links for new 'recognised' sites"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links --settings=demozoo.settings.productionvm', pty=True)
+    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links', pty=True)
 
 
 @task(hosts=DB_HOSTS)
