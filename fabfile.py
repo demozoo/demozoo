@@ -12,7 +12,7 @@ dotenv.read_dotenv()
 db_username = os.getenv('POSTGRES_USER', 'demozoo')
 
 PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
-STAGING_HOSTS = ['demozoo@www2.demozoo.org']
+STAGING_HOSTS = ['demozoo@www3.demozoo.org']
 DB_HOSTS = [{
     'host': 'demozoo@db1',
     'forward_agent': True,
