@@ -8,3 +8,4 @@ s3cmd --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY put /h
 if [ $(date +%H) -eq 2 ] ; then
     s3cmd --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY put /home/demozoo/demozoo/data/demozoo.sql.gz s3://demozoo-backups/daily/demozoo-daily-`date +%Y-%m-%d`.sql.gz
 fi
+sudo ln -f /home/demozoo/demozoo/data/demozoo.sql.gz /demozoo-backups/
