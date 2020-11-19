@@ -641,7 +641,7 @@ class CaptchaQuestion(models.Model):
 
 @python_2_unicode_compatible
 class TagDescription(models.Model):
-    tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description')
+    tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description', on_delete=models.CASCADE)
     description = models.TextField(help_text="HTML is allowed. Keep this to a couple of sentences at most - it's used in tooltips as well as the tag listing page")
 
     def __str__(self):
@@ -659,7 +659,7 @@ class BlacklistedTag(models.Model):
 
 
 class SceneID(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     sceneid = models.IntegerField()
 
 
