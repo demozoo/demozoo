@@ -106,7 +106,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -114,14 +114,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
 
 if SUBSITE == 'zxdemo':
     ROOT_URLCONF = 'zxdemo.urls'
 else:
     ROOT_URLCONF = 'demozoo.urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -155,7 +155,7 @@ INSTALLED_APPS = (
     'users',
     'janeway',
     'awards',
-)
+]
 
 LOGGING = {
     'version': 1,
