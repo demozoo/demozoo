@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic.base import TemplateView
 

@@ -5,7 +5,7 @@ import datetime
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import login as base_login
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import render, redirect
 

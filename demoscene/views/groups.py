@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from demoscene.shortcuts import get_page, simple_ajax_confirmation
 from demoscene.models import Releaser, Nick, Membership, Edit
