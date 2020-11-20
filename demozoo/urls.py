@@ -12,7 +12,7 @@ from demoscene import views as demoscene_views
 from sceneid import auth as sceneid_views
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 
     url(r'^account/$', demoscene_views.accounts.index, {}, 'account_index'),
     url(r'^account/login/$', demoscene_views.accounts.custom_login, {}, 'log_in'),
