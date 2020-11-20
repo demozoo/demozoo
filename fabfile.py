@@ -11,12 +11,12 @@ dotenv.read_dotenv()
 
 db_username = os.getenv('POSTGRES_USER', 'demozoo')
 
-PRODUCTION_HOSTS = ['demozoo@www1.demozoo.org']
+PRODUCTION_HOSTS = ['demozoo@www4.demozoo.org']
 STAGING_HOSTS = ['demozoo@www3.demozoo.org']
 DB_HOSTS = [{
     'host': 'demozoo@db1',
     'forward_agent': True,
-    'gateway': Connection('demozoo@www1.demozoo.org'),
+    'gateway': Connection('demozoo@www4.demozoo.org'),
 }]
 
 
