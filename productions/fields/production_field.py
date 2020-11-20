@@ -110,7 +110,7 @@ class ProductionWidget(forms.Widget):
         else:
             return None
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         production_selection = ProductionSelection.from_value(value, types_to_set=self.types_to_set)
         production_id = production_selection.id
 
@@ -139,15 +139,15 @@ class ProductionWidget(forms.Widget):
         prodtype_attrs['id'] += '_type'
 
         form_view = [
-            self.id_widget.render(name + '_id', production_id),
-            self.title_widget.render(name + '_title', '', attrs=title_attrs),
+            self.id_widget.render(name + '_id', production_id, renderer=renderer),
+            self.title_widget.render(name + '_title', '', attrs=title_attrs, renderer=renderer),
             ' <label for="%s">by</label> ' % self.byline_widget.id_for_label('id_' + name + '_byline'),
-            self.byline_widget.render(name + '_byline', '', attrs=byline_attrs),
+            self.byline_widget.render(name + '_byline', '', attrs=byline_attrs, renderer=renderer),
         ]
         if self.show_production_type_field:
             form_view += [
                 '<label for="%s">Type:</label> ' % self.production_type_widget.id_for_label('id_' + name + '_type'),
-                self.production_type_widget.render(name + '_type', '', attrs=prodtype_attrs)
+                self.production_type_widget.render(name + '_type', '', attrs=prodtype_attrs, renderer=renderer)
             ]
 
         output = [

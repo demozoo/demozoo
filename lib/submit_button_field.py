@@ -10,7 +10,7 @@ class SubmitButtonInput(forms.Widget):
         super(SubmitButtonInput, self).__init__(attrs)
         self.button_text = button_text
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if attrs is None:
             attrs = {}
 

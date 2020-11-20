@@ -90,14 +90,19 @@ class MatchedNickWidget(forms.Widget):
         return id_
     id_for_label = classmethod(id_for_label)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         selected_id = (value and value.id) or (self.selection and self.selection.id)
         output = [
             self.select_widget.render(
                 name + '_id',
                 selected_id,
-                attrs=attrs),
-            self.name_widget.render(name + '_name', self.nick_search.search_term, attrs=attrs)
+                attrs=attrs, renderer=renderer
+            ),
+            self.name_widget.render(
+                name + '_name',
+                self.nick_search.search_term,
+                attrs=attrs, renderer=renderer
+            ),
         ]
         return mark_safe(u'<div class="nick_match">' + u''.join(output) + u'</div>')
 

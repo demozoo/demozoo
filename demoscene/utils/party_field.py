@@ -92,13 +92,17 @@ class PartyWidget(forms.Widget):
         self.party_id_widget = forms.HiddenInput(attrs={'class': 'party_field_party_id'})
         super(PartyWidget, self).__init__(attrs=attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         party_lookup = PartyLookup.from_value(value)
 
         output = [
-            self.search_widget.render(name + '_search', party_lookup.search_term, attrs=attrs),
-            self.lookup_widget.render(name + '_lookup', None, attrs=attrs),
-            self.party_id_widget.render(name + '_party_id', party_lookup.party_id, attrs=attrs),
+            self.search_widget.render(
+                name + '_search', party_lookup.search_term, attrs=attrs, renderer=None
+            ),
+            self.lookup_widget.render(name + '_lookup', None, attrs=attrs, renderer=None),
+            self.party_id_widget.render(
+                name + '_party_id', party_lookup.party_id, attrs=attrs, renderer=None
+            ),
             '<div class="help_text">(if the party doesn\'t exist yet, <a href="/parties/new/" target="_blank">create it first</a>!)</div>'
         ]
 

@@ -44,23 +44,27 @@ class BylineLookup():
     def search_term(self):
         return self.byline_search.search_term
 
-    def render_match_fields(self, name, attrs={}):
+    def render_match_fields(self, name, attrs={}, renderer=None):
         match_html_output = []
 
         for i, field in enumerate(self.author_matched_nick_fields):
             field_name = name + ('_author_match_%s' % i)
             try:
-                html = field.widget.render(field_name, self.author_nick_selections[i], attrs=attrs)
+                html = field.widget.render(
+                    field_name, self.author_nick_selections[i], attrs=attrs, renderer=renderer
+                )
             except IndexError:
-                html = field.widget.render(field_name, None, attrs=attrs)
+                html = field.widget.render(field_name, None, attrs=attrs, renderer=renderer)
             match_html_output.append(html)
 
         for i, field in enumerate(self.affiliation_matched_nick_fields):
             field_name = name + ('_affiliation_match_%s' % i)
             try:
-                html = field.widget.render(field_name, self.affiliation_nick_selections[i], attrs=attrs)
+                html = field.widget.render(
+                    field_name, self.affiliation_nick_selections[i], attrs=attrs, renderer=renderer
+                )
             except IndexError:
-                html = field.widget.render(field_name, None, attrs=attrs)
+                html = field.widget.render(field_name, None, attrs=attrs, renderer=renderer)
             match_html_output.append(html)
 
         return u''.join(match_html_output)
@@ -157,7 +161,7 @@ class BylineWidget(forms.Widget):
         return id_
     id_for_label = classmethod(id_for_label)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         byline_lookup = BylineLookup.from_value(value)
 
         search_attrs = self.build_attrs(attrs)
@@ -166,12 +170,16 @@ class BylineWidget(forms.Widget):
         lookup_attrs['id'] += '_lookup'
 
         search_html_output = [
-            self.search_widget.render(name + '_search', byline_lookup.search_term, attrs=search_attrs),
-            self.lookup_widget.render(name + '_lookup', None, attrs=lookup_attrs)
+            self.search_widget.render(
+                name + '_search', byline_lookup.search_term, attrs=search_attrs, renderer=renderer
+            ),
+            self.lookup_widget.render(
+                name + '_lookup', None, attrs=lookup_attrs, renderer=renderer
+            ),
         ]
 
         if byline_lookup.search_term:
-            matched_nick_html = byline_lookup.render_match_fields(name)
+            matched_nick_html = byline_lookup.render_match_fields(name, renderer=renderer)
         else:
             matched_nick_html = ''
 

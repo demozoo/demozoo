@@ -101,19 +101,25 @@ class NickWidget(forms.Widget):
         return id_
     id_for_label = classmethod(id_for_label)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         nick_lookup = NickLookup.from_value(value,
             sceners_only=self.sceners_only, groups_only=self.groups_only,
             prefer_members_of=self.prefer_members_of)
 
         search_html_output = [
-            self.search_widget.render(name + '_search', nick_lookup.search_term, attrs=attrs),
+            self.search_widget.render(
+                name + '_search', nick_lookup.search_term, attrs=attrs, renderer=renderer
+            ),
             '<input type="submit" style="display: none;">', # extra submit button so that whenever browsers insist on pretending a button was pressed when actually the user submitted the form with the enter key, they'll choose this button rather than the 'lookup' one
-            self.lookup_widget.render(name + '_lookup', None, attrs=attrs)
+            self.lookup_widget.render(
+                name + '_lookup', None, attrs=attrs, renderer=renderer
+            ),
         ]
 
         if nick_lookup.search_term:
-            matched_nick_html = nick_lookup.matched_nick_field.widget.render(name + '_match', nick_lookup.nick_selection, attrs=attrs)
+            matched_nick_html = nick_lookup.matched_nick_field.widget.render(
+                name + '_match', nick_lookup.nick_selection, attrs=attrs, renderer=renderer
+            )
         else:
             matched_nick_html = ''
 
