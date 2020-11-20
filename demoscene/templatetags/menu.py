@@ -1,9 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from django import template
-from django.core import urlresolvers
 from django.db.models import Q
-from django.urls import reverse
+from django.urls import resolve, reverse, Resolver404
 
 from awards.models import Event
 
@@ -26,9 +25,9 @@ class NavActiveNode(template.Node):
         except template.VariableDoesNotExist:
             try:
                 request = self.request_var.resolve(context)
-                func, args, kwargs = urlresolvers.resolve(request.path)
+                func, args, kwargs = resolve(request.path)
                 current_section_name = func.__module__.split('.')[-1]
-            except (template.VariableDoesNotExist, urlresolvers.Resolver404):
+            except (template.VariableDoesNotExist, Resolver404):
                 return ""
         
         if current_section_name in self.section_names:
