@@ -62,12 +62,12 @@ class TestLogin(TestCase):
         })
         self.assertRedirects(response, '/')
         logged_in_user = auth.get_user(self.client)
-        self.assertTrue(logged_in_user.is_authenticated())
+        self.assertTrue(logged_in_user.is_authenticated)
         self.assertEqual(logged_in_user.username, 'newuser')
         self.assertEqual(SceneID.objects.get(user=logged_in_user).sceneid, 2260)
 
         logged_in_user.delete()
-        self.assertFalse(auth.get_user(self.client).is_authenticated())
+        self.assertFalse(auth.get_user(self.client).is_authenticated)
 
     @patch('sceneid.auth.get_random_string')
     def test_login_new_user_with_previous_session(self, get_random_string):
@@ -100,7 +100,7 @@ class TestLogin(TestCase):
         })
         self.assertRedirects(response, '/')
         logged_in_user = auth.get_user(self.client)
-        self.assertTrue(logged_in_user.is_authenticated())
+        self.assertTrue(logged_in_user.is_authenticated)
         self.assertEqual(logged_in_user.username, 'newuser')
         self.assertNotEqual(logged_in_user, testuser)
         self.assertEqual(SceneID.objects.get(user=logged_in_user).sceneid, 2260)
@@ -168,7 +168,7 @@ class TestLogin(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         logged_in_user = auth.get_user(self.client)
-        self.assertFalse(logged_in_user.is_authenticated())
+        self.assertFalse(logged_in_user.is_authenticated)
         self.assertFalse(SceneID.objects.filter(user=testuser).exists())
 
     @patch('sceneid.auth.get_random_string')
@@ -215,7 +215,7 @@ class TestLogin(TestCase):
         response = self.client.get('/account/sceneid/login/?state=66666666&code=123')
         self.assertRedirects(response, '/music/')
         logged_in_user = auth.get_user(self.client)
-        self.assertFalse(logged_in_user.is_authenticated())
+        self.assertFalse(logged_in_user.is_authenticated)
 
     def test_connect_without_login(self):
         response = self.client.get('/account/sceneid/connect/')

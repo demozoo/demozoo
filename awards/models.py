@@ -46,7 +46,7 @@ class Event(models.Model):
         Return a queryset of award events that are either open for recommendations or have
         reports open for the given user
         """
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return cls.objects.filter(recommendations_enabled=True)
         elif user.is_staff:
             return cls.objects.filter(
@@ -76,7 +76,7 @@ class Event(models.Model):
         ]
 
     def user_can_view_reports(self, user):
-        return user.is_authenticated() and (user.is_staff or self.jurors.filter(user=user).exists())
+        return user.is_authenticated and (user.is_staff or self.jurors.filter(user=user).exists())
 
 
 @python_2_unicode_compatible

@@ -55,7 +55,7 @@ def user_recommendations(request, event_slug):
         Event.active_for_user(request.user), slug=event_slug
     )
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         recommendations = Recommendation.objects.filter(
             user=request.user, category__event=event
         ).select_related('category', 'production').prefetch_related(
