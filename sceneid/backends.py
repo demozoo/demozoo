@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class SceneIDBackend(object):
     # expect in a sceneID, either return a corresponding user or None
-    def authenticate(self, sceneid=None):
+    def authenticate(self, request=None, sceneid=None):
         if sceneid is None:
             return None
 
