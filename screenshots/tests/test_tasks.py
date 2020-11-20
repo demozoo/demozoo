@@ -341,7 +341,7 @@ class TestFetchRemoteScreenshots(TestCase):
     @patch('screenshots.tasks.create_screenshot_from_production_link')
     def test_fetch_from_zip(self, create_screenshot_from_production_link):
         skyrider = Production.objects.get(title="Skyrider")
-        skyrider.types = [ProductionType.objects.get(name='Graphics')]
+        skyrider.types.set([ProductionType.objects.get(name='Graphics')])
         link = skyrider.links.create(
             link_class='BaseUrl',
             parameter='http://example.com/skyrider.zip',

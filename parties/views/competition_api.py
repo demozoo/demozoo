@@ -34,24 +34,24 @@ def handle_production(prod_data, competition):
             production.title = prod_data['title']
         if 'platform_id' in prod_data:
             if prod_data['platform_id']:
-                production.platforms = [Platform.objects.get(id=prod_data['platform_id'])]
+                production.platforms.set([Platform.objects.get(id=prod_data['platform_id'])])
             else:
-                production.platforms = []
+                production.platforms.clear()
         if 'production_type_id' in prod_data:
             if prod_data['production_type_id']:
-                production.types = [ProductionType.objects.get(id=prod_data['production_type_id'])]
+                production.types.set([ProductionType.objects.get(id=prod_data['production_type_id'])])
             else:
-                production.types = []
+                production.types.clear()
         if 'byline' in prod_data:
             try:
-                production.author_nicks = [
+                production.author_nicks.set([
                     NickSelection(author['id'], author['name']).commit()
                     for author in prod_data['byline']['authors']
-                ]
-                production.author_affiliation_nicks = [
+                ])
+                production.author_affiliation_nicks.set([
                     NickSelection(affillation['id'], affillation['name']).commit()
                     for affillation in prod_data['byline']['affiliations']
-                ]
+                ])
                 production.unparsed_byline = None
             except NickSelection.FailedToResolve:
                 # failed to match up the passed nick IDs to valid nick records.
@@ -62,8 +62,8 @@ def handle_production(prod_data, competition):
                 if affiliation_names:
                     byline_string += ' / ' + ' ^ '.join(affiliation_names)
                 production.unparsed_byline = byline_string
-                production.author_nicks = []
-                production.author_affiliation_nicks = []
+                production.author_nicks.clear()
+                production.author_affiliation_nicks.clear()
 
         production.updated_at = datetime.datetime.now()
         production.supertype = production.inferred_supertype

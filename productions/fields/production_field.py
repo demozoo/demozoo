@@ -40,7 +40,7 @@ class ProductionSelection(object):
             # in advance of setting types, rather than having to save a second time
             # once the types are in place...
             self.production.save()
-            self.production.types = self.types_to_set
+            self.production.types.set(self.types_to_set)
             self.production.save()
             if self.byline:
                 self.byline.commit(self.production)

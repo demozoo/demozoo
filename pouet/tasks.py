@@ -72,7 +72,7 @@ def pull_group(pouet_id, releaser_id):
             'name': prod_data['name'],
             'last_seen_at': datetime.datetime.now(),
         })
-        prod.groups = [fetch_group(g, groups_by_id) for g in prod_data['groups']]
+        prod.groups.set([fetch_group(g, groups_by_id) for g in prod_data['groups']])
 
     automatch_productions(Releaser.objects.get(id=releaser_id))
 

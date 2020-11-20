@@ -128,10 +128,10 @@ def import_text(request, competition_id):
             production.save()  # assign an ID so that associations work
 
             if competition.platform:
-                production.platforms = [competition.platform]
+                production.platforms.set([competition.platform])
 
             if competition.production_type:
-                production.types = [competition.production_type]
+                production.types.set([competition.production_type])
 
             if byline:
                 production.byline_string = byline

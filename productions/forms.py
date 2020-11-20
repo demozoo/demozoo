@@ -47,11 +47,11 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
         if self.cleaned_data['byline']:
             self.cleaned_data['byline'].commit(self.instance)
         else:
-            self.instance.author_nicks = []
-            self.instance.author_affiliation_nicks = []
+            self.instance.author_nicks.clear()
+            self.instance.author_affiliation_nicks.clear()
         self.instance.unparsed_byline = None
 
-        self.instance.platforms = self.cleaned_data['platforms']
+        self.instance.platforms.set(self.cleaned_data['platforms'])
         self.instance.release_date = self.cleaned_data['release_date']
         if commit:
             self.instance.save()
@@ -103,7 +103,7 @@ class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 
     def save(self, *args, **kwargs):
         super(ProductionEditCoreDetailsForm, self).save(*args, **kwargs)
-        self.instance.types = self.cleaned_data['types']
+        self.instance.types.set(self.cleaned_data['types'])
 
 
 class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
@@ -125,7 +125,7 @@ class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     def save(self, *args, **kwargs):
         super(MusicEditCoreDetailsForm, self).save(*args, **kwargs)
         if self.cleaned_data['type']:
-            self.instance.types = [self.cleaned_data['type']]
+            self.instance.types.set([self.cleaned_data['type']])
         return self.instance
 
 
@@ -148,7 +148,7 @@ class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     def save(self, *args, **kwargs):
         super(GraphicsEditCoreDetailsForm, self).save(*args, **kwargs)
         if self.cleaned_data['type']:
-            self.instance.types = [self.cleaned_data['type']]
+            self.instance.types.set([self.cleaned_data['type']])
         return self.instance
 
 
@@ -176,8 +176,8 @@ class CreateProductionForm(forms.Form):
         self.instance.save()
         if self.cleaned_data['byline']:
             self.cleaned_data['byline'].commit(self.instance)
-        self.instance.types = self.cleaned_data['types']
-        self.instance.platforms = self.cleaned_data['platforms']
+        self.instance.types.set(self.cleaned_data['types'])
+        self.instance.platforms.set(self.cleaned_data['platforms'])
         return self.instance
 
     def log_creation(self, user):
@@ -199,9 +199,9 @@ class CreateMusicForm(CreateProductionForm):
         super(CreateMusicForm, self).save(*args, **kwargs)
 
         if self.cleaned_data['type']:
-            self.instance.types = [self.cleaned_data['type']]
+            self.instance.types.set([self.cleaned_data['type']])
         if self.cleaned_data['platform']:
-            self.instance.platforms = [self.cleaned_data['platform']]
+            self.instance.platforms.set([self.cleaned_data['platform']])
         return self.instance
 
 
@@ -219,9 +219,9 @@ class CreateGraphicsForm(CreateProductionForm):
         super(CreateGraphicsForm, self).save(*args, **kwargs)
 
         if self.cleaned_data['type']:
-            self.instance.types = [self.cleaned_data['type']]
+            self.instance.types.set([self.cleaned_data['type']])
         if self.cleaned_data['platform']:
-            self.instance.platforms = [self.cleaned_data['platform']]
+            self.instance.platforms.set([self.cleaned_data['platform']])
         return self.instance
 
 

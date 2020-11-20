@@ -40,7 +40,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_run_new(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True
@@ -55,7 +55,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_ignore_non_zip(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.rar',
             is_download_link=True
@@ -68,7 +68,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_ignore_ascii(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="ASCII")]
+        self.skyrider.types.set([ProductionType.objects.get(name="ASCII")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True
@@ -81,7 +81,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_ignore_known_too_big(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True
@@ -98,7 +98,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_good_file_for_screenshot(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True, file_for_screenshot='skyrider.scr'
@@ -113,7 +113,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_bad_file_for_screenshot(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True, file_for_screenshot='skyrider.tap'
@@ -126,7 +126,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_select_archive_member(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True
@@ -154,7 +154,7 @@ class TestFetchRemoteZippedScreenshots(TestCase):
 
     @patch('screenshots.management.commands.fetch_remote_zipped_screenshots.create_screenshot_from_production_link')
     def test_unresolved_archive_member(self, create_screenshot_from_production_link):
-        self.skyrider.types = [ProductionType.objects.get(name="Graphics")]
+        self.skyrider.types.set([ProductionType.objects.get(name="Graphics")])
         link = self.skyrider.links.create(
             link_class='BaseUrl', parameter='http://example.com/skyrider.zip',
             is_download_link=True

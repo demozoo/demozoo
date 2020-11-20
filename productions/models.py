@@ -173,14 +173,14 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         byline_search = BylineSearch(byline_string)
 
         if all(byline_search.author_nick_selections) and all(byline_search.affiliation_nick_selections):
-            self.author_nicks = [selection.id for selection in byline_search.author_nick_selections]
-            self.author_affiliation_nicks = [selection.id for selection in byline_search.affiliation_nick_selections]
+            self.author_nicks.set([selection.id for selection in byline_search.author_nick_selections])
+            self.author_affiliation_nicks.set([selection.id for selection in byline_search.affiliation_nick_selections])
             self.unparsed_byline = None
             self.save()
         else:
             self.unparsed_byline = byline_string
-            self.author_nicks = []
-            self.author_affiliation_nicks = []
+            self.author_nicks.clear()
+            self.author_affiliation_nicks.clear()
             self.save()
     byline_string = property(_get_byline_string, _set_byline_string)
 
@@ -394,8 +394,8 @@ class Byline(object):
             else:
                 affiliation_nicks.append(nick)
 
-        production.author_nicks = author_nicks
-        production.author_affiliation_nicks = affiliation_nicks
+        production.author_nicks.set(author_nicks)
+        production.author_affiliation_nicks.set(affiliation_nicks)
 
     @staticmethod
     def from_releaser_id(releaser_id):
