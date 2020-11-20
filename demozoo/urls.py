@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r'^account/$', demoscene_views.accounts.index, {}, 'account_index'),
-    url(r'^account/login/$', demoscene_views.accounts.custom_login, {}, 'log_in'),
+    url(r'^account/login/$', demoscene_views.accounts.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
     url(r'^account/logout/$', auth_views.logout, {'next_page': '/'}, 'log_out'),
     url(r'^account/signup/$', demoscene_views.accounts.signup, {}, 'user_signup'),
     url(r'^account/change_password/$', demoscene_views.accounts.change_password, {}, 'account_change_password'),
