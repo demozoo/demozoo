@@ -124,7 +124,7 @@ def megathumb(screenshot):
     }
 
 
-@register.assignment_tag
+@register.simple_tag
 def site_stats():
     return {
         'production_count': Production.objects.filter(supertype='production').count(),
