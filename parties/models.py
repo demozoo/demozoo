@@ -8,6 +8,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 
 from fuzzy_date import FuzzyDate
@@ -33,17 +34,14 @@ class PartySeries(models.Model):
     def __str__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('party_series', [str(self.id)])
+        return reverse('party_series', args=[str(self.id)])
 
-    @models.permalink
     def get_absolute_edit_url(self):
-        return ('party_series', [str(self.id)])
+        return reverse('party_series', args=[str(self.id)])
 
-    @models.permalink
     def get_history_url(self):
-        return ('party_series_history', [str(self.id)])
+        return reverse('party_series_history', args=[str(self.id)])
 
     def has_any_external_links(self):
         return self.website or self.twitter_url or self.pouet_url
@@ -141,17 +139,14 @@ class Party(Commentable):
         # 'commentable' is a party or a production
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('party', [str(self.id)])
+        return reverse('party', args=[str(self.id)])
 
-    @models.permalink
     def get_absolute_edit_url(self):
-        return ('party', [str(self.id)])
+        return reverse('party', args=[str(self.id)])
 
-    @models.permalink
     def get_history_url(self):
-        return ('party_history', [str(self.id)])
+        return reverse('party_history', args=[str(self.id)])
 
     @property
     def suffix(self):
@@ -323,13 +318,11 @@ class Competition(models.Model):
             self.shown_date_precision = ''
     shown_date = property(_get_shown_date, _set_shown_date)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('competition', [str(self.id)])
+        return reverse('competition', args=[str(self.id)])
 
-    @models.permalink
     def get_history_url(self):
-        return ('competition_history', [str(self.id)])
+        return reverse('competition_history', args=[str(self.id)])
 
     class Meta:
         ordering = ("party__name", "name")

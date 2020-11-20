@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
@@ -223,47 +224,50 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
     def asciified_title(self):
         return unidecode(self.title)
 
-    @models.permalink
     def get_absolute_url(self):
         if self.supertype == 'music':
-            return ('music', [str(self.id)])
+            return reverse('music', args=[str(self.id)])
         elif self.supertype == 'graphics':
-            return ('graphic', [str(self.id)])
+            return reverse('graphic', args=[str(self.id)])
         else:
-            return ('production', [str(self.id)])
+            return reverse('production', args=[str(self.id)])
 
     def get_absolute_edit_url(self):
         return self.get_absolute_url()
 
-    @models.permalink
     def get_edit_core_details_url(self):
         if self.supertype == 'music':
-            return ('music_edit_core_details', [str(self.id)])
+            return reverse('music_edit_core_details', args=[str(self.id)])
         elif self.supertype == 'graphics':
-            return ('graphics_edit_core_details', [str(self.id)])
+            return reverse('graphics_edit_core_details', args=[str(self.id)])
         else:
-            return ('production_edit_core_details', [str(self.id)])
+            return reverse('production_edit_core_details', args=[str(self.id)])
 
-    @models.permalink
     def get_history_url(self):
         if self.supertype == 'music':
-            return ('music_history', [str(self.id)])
+            return reverse('music_history', args=[str(self.id)])
         elif self.supertype == 'graphics':
-            return ('graphics_history', [str(self.id)])
+            return reverse('graphics_history', args=[str(self.id)])
         else:
-            return ('production_history', [str(self.id)])
+            return reverse('production_history', args=[str(self.id)])
 
-    @models.permalink
     def get_all_screenshots_url(self):
-        return ('production_artwork' if self.supertype == 'music' else 'production_screenshots', [str(self.id)])
+        return reverse(
+            'production_artwork' if self.supertype == 'music' else 'production_screenshots',
+            args=[str(self.id)]
+        )
 
-    @models.permalink
     def get_add_screenshot_url(self):
-        return ('production_add_artwork' if self.supertype == 'music' else 'production_add_screenshot', [str(self.id)])
+        return reverse(
+            'production_add_artwork' if self.supertype == 'music' else 'production_add_screenshot',
+            args=[str(self.id)]
+        )
 
-    @models.permalink
     def get_edit_screenshots_url(self):
-        return ('production_edit_artwork' if self.supertype == 'music' else 'production_edit_screenshots', [str(self.id)])
+        return reverse(
+            'production_edit_artwork' if self.supertype == 'music' else 'production_edit_screenshots',
+            args=[str(self.id)]
+        )
 
     def can_have_soundtracks(self):
         return (self.supertype == 'production')

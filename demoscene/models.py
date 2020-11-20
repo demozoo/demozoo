@@ -13,6 +13,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models, transaction
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 
 from unidecode import unidecode
@@ -74,22 +75,20 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     def search_result_template(self):
         return 'search/results/group.html' if self.is_group else 'search/results/scener.html'
 
-    @models.permalink
     def get_absolute_url(self):
         if self.is_group:
-            return ('group', [str(self.id)])
+            return reverse('group', args=[str(self.id)])
         else:
-            return ('scener', [str(self.id)])
+            return reverse('scener', args=[str(self.id)])
 
     def get_absolute_edit_url(self):
         return self.get_absolute_url()
 
-    @models.permalink
     def get_history_url(self):
         if self.is_group:
-            return ('group_history', [str(self.id)])
+            return reverse('group_history', args=[str(self.id)])
         else:
-            return ('scener_history', [str(self.id)])
+            return reverse('scener_history', args=[str(self.id)])
 
     def productions(self):
         from productions.models import Production

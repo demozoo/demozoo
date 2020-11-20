@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 
 
@@ -20,9 +21,8 @@ class Topic(models.Model):
     def __str__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('forums_topic', [str(self.id)])
+        return reverse('forums_topic', args=[str(self.id)])
 
 
 class Post(models.Model):
@@ -33,6 +33,5 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('forums_post', [str(self.id)])
+        return reverse('forums_post', args=[str(self.id)])
