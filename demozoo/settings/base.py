@@ -217,6 +217,8 @@ CELERY_ROUTES = {
     'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
 }
 CELERYD_CONCURRENCY = 2
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
