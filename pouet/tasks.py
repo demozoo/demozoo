@@ -6,7 +6,7 @@ import logging
 
 from six.moves import urllib
 
-from celery.task import task
+from celery import shared_task
 from django.conf import settings
 
 from demoscene.models import Releaser, ReleaserExternalLink
@@ -18,7 +18,7 @@ from pouet.models import Group, Production
 logger = logging.getLogger(__name__)
 
 
-@task(ignore_result=True)
+@shared_task(ignore_result=True)
 def pull_groups():
     for link in ReleaserExternalLink.objects.filter(link_class='PouetGroup'):
         pull_group.delay(link.parameter, link.releaser_id)
@@ -41,7 +41,7 @@ def fetch_group(group_data, groups_by_id):
         return group
 
 
-@task(rate_limit='12/m', ignore_result=True)
+@shared_task(rate_limit='12/m', ignore_result=True)
 def pull_group(pouet_id, releaser_id):
     url = 'https://api.pouet.net/v1/group/?id=%d' % int(pouet_id)
     req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
@@ -77,7 +77,7 @@ def pull_group(pouet_id, releaser_id):
     automatch_productions(Releaser.objects.get(id=releaser_id))
 
 
-@task(ignore_result=True)
+@shared_task(ignore_result=True)
 def automatch_all_groups():
     # garbage-collect productions / groups that haven't been seen for 30 days (i.e. have been deleted from Pouet)
     last_month = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -88,6 +88,6 @@ def automatch_all_groups():
         automatch_group.delay(releaser_id)
 
 
-@task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit='6/m', ignore_result=True)
 def automatch_group(releaser_id):
     automatch_productions(Releaser.objects.get(id=releaser_id))

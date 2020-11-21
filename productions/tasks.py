@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.task import task
+from celery import shared_task
 import datetime
 
 from six.moves import urllib
@@ -8,7 +8,7 @@ from six.moves import urllib
 from productions.models import ProductionLink
 
 
-@task(rate_limit='12/m', ignore_result=True)
+@shared_task(rate_limit='12/m', ignore_result=True)
 def fetch_production_link_embed_data(productionlink_id):
     try:
         production_link = ProductionLink.objects.get(id=productionlink_id)
@@ -29,7 +29,7 @@ def fetch_production_link_embed_data(productionlink_id):
         production_link.save()
 
 
-@task(rate_limit='30/m', ignore_result=True)
+@shared_task(rate_limit='30/m', ignore_result=True)
 def clean_dead_youtube_link(productionlink_id):
     """Poll oembed endpoint for the given youtube link, and delete if it's a 404"""
     try:

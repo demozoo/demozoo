@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.task import task
+from celery import shared_task
 
 from demoscene.models import Releaser, ReleaserExternalLink
 from janeway.matching import automatch_productions
@@ -10,18 +10,18 @@ from screenshots.models import PILConvertibleImage
 from screenshots.tasks import upload_original, upload_standard, upload_thumb
 
 
-@task(ignore_result=True)
+@shared_task(ignore_result=True)
 def automatch_all_authors():
     for releaser_id in ReleaserExternalLink.objects.filter(link_class='KestraBitworldAuthor').distinct().values_list('releaser_id', flat=True):
         automatch_author.delay(releaser_id)
 
 
-@task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit='6/m', ignore_result=True)
 def automatch_author(releaser_id):
     automatch_productions(Releaser.objects.get(id=releaser_id))
 
 
-@task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit='6/m', ignore_result=True)
 def import_screenshot(production_id, janeway_id, url, suffix):
     blob = fetch_origin_url(url)
     sha1 = blob.sha1

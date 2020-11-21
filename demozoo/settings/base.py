@@ -133,7 +133,6 @@ INSTALLED_APPS = [
     'treebeard',
     'taggit',
     'compressor',
-    'djcelery',
     'rest_framework',
     'corsheaders',
 
@@ -213,8 +212,6 @@ COMPRESS_PRECOMPILERS = (
 REDIS_URL = 'redis://localhost:6379/0'
 
 # Celery settings
-import djcelery
-djcelery.setup_loader()
 BROKER_URL = REDIS_URL
 CELERY_ROUTES = {
     'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},

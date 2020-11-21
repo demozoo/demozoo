@@ -296,7 +296,7 @@ urllib.request.install_opener(urllib.request.build_opener(MockHTTPHandler, MockH
 COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'coverage')
 COVERAGE_MODULE_EXCLUDES = [
     'tests$', 'settings$', 'urls$', '^django',
-    '^compressor', '^debug_toolbar', 'migrations', '^djcelery',
+    '^compressor', '^debug_toolbar', 'migrations',
     '^rest_framework', '^south', '^taggit', '^treebeard'
 ]
 

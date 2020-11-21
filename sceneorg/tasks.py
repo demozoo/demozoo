@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.task import task
+from celery import shared_task
 from sceneorg.models import Directory, File
 from sceneorg.dirparser import parse_all_dirs
 from demoscene.tasks import find_sceneorg_results_files
@@ -18,7 +18,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-@task(time_limit=3600, ignore_result=True)
+@shared_task(time_limit=3600, ignore_result=True)
 def fetch_new_sceneorg_files(days=1):
     url = "https://files.scene.org/api/adhoc/latest-files/?days=%d" % days
 
@@ -87,7 +87,7 @@ def fetch_new_sceneorg_files(days=1):
         find_sceneorg_results_files()
 
 
-@task(time_limit=7200, ignore_result=True)
+@shared_task(time_limit=7200, ignore_result=True)
 def scan_dir_listing():
     new_file_count = 0
     for path, entries in parse_all_dirs():

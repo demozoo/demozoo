@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery.task import task
+from celery import shared_task
 import io
 import os
 import re
@@ -46,7 +46,7 @@ def upload_thumb(img, screenshot, basename):
     screenshot.thumbnail_width, screenshot.thumbnail_height = thumb_size
 
 
-@task(ignore_result=True)
+@shared_task(ignore_result=True)
 def create_screenshot_versions_from_local_file(screenshot_id, filename):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
@@ -72,7 +72,7 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
 
 
 # token rate limit so that new uploads from local files get priority
-@task(rate_limit='1/s', ignore_result=True)
+@shared_task(rate_limit='1/s', ignore_result=True)
 def rebuild_screenshot(screenshot_id):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
@@ -98,7 +98,7 @@ def rebuild_screenshot(screenshot_id):
         pass
 
 
-@task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit='6/m', ignore_result=True)
 def create_screenshot_from_production_link(production_link_id):
     try:
         prod_link = ProductionLink.objects.get(id=production_link_id)
@@ -200,7 +200,7 @@ def capture_upload_for_processing(uploaded_file, screenshot_id):
     create_screenshot_versions_from_local_file.delay(screenshot_id, path)
 
 
-@task(ignore_result=True)
+@shared_task(ignore_result=True)
 def fetch_remote_screenshots():
     for prod_link in find_screenshottable_graphics():
         create_screenshot_from_production_link.delay(prod_link.id)
