@@ -18,6 +18,10 @@ class TestApiRoot(TestCase):
         self.assertIn('releasers', response_data)
         self.assertIn('production_types', response_data)
 
+    def test_get_browsable_api(self):
+        response = self.client.get('/api/v1/?format=api')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestPlatforms(TestCase):
     fixtures = ['tests/gasman.json']
