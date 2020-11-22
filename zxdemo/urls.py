@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^article/(\d+)/$', zxdemo_views.article, {}, 'zxdemo_article'),
     url(r'^article.php$', zxdemo_views.article_redirect, {}),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 ]
 
 handler404 = 'zxdemo.views.page_not_found'

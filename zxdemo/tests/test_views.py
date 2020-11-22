@@ -80,7 +80,7 @@ class TestReleasesRedirect(TestCase):
 
     def test_invalid(self):
         response = self.client.get('/releases.php?filter=potato')
-        self.assertRedirects(response, '/productions/?', status_code=301)
+        self.assertRedirects(response, '/productions/', status_code=301)
 
 
 @unittest.skipIf(settings.ROOT_URLCONF != 'zxdemo.urls', "not running zxdemo environment")

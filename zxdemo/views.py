@@ -577,5 +577,5 @@ def article_redirect(request):
         raise Http404
 
 
-def page_not_found(request):
+def page_not_found(request, exception):
     return render(request, 'zxdemo/404.html', status=404)
