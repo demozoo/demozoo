@@ -15,6 +15,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 
 from unidecode import unidecode
 
@@ -669,7 +670,11 @@ class TextFile(models.Model):
     encoding = models.CharField(blank=True, null=True, max_length=32)
 
     def save(self, *args, **kwargs):
-        data = self.data
+        self.file.open()
+        self.file.seek(0)
+        data = self.file.read()
+        self.file.seek(0)
+
         self.filesize = len(data)
         self.sha1 = hashlib.sha1(data).hexdigest()
 
@@ -681,6 +686,7 @@ class TextFile(models.Model):
             if decode:
                 self.encoding = decode[0]
         super(TextFile, self).save(*args, **kwargs)
+        self.file.close()
 
     @staticmethod
     def guess_encoding(data, fuzzy=False):
@@ -703,13 +709,12 @@ class TextFile(models.Model):
             except UnicodeDecodeError:
                 pass
 
-    @property
+    @cached_property
     def data(self):
-        # self.file.open()
+        self.file.open()
         self.file.seek(0)
         data = self.file.read()
-        self.file.seek(0)
-        # self.file.close()
+        self.file.close()
         return data
 
     @property

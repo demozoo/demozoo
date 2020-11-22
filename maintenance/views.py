@@ -1289,6 +1289,8 @@ def fix_results_file_encoding(request, results_file_id):
             encoding_is_valid = False
             file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
 
+    results_file.file.close()
+
     if request.POST:
         if encoding_is_valid:
             results_file.encoding = encoding
