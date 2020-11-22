@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from demoscene.models import Releaser
@@ -44,7 +44,7 @@ class ReleaserViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.ReleaserListingSerializer
     serializer_class = serializers.ReleaserSerializer
 
-    @detail_route()
+    @action(detail=True)
     def productions(self, request, pk):
         releaser = Releaser.objects.get(pk=pk)
         queryset = releaser.productions().order_by('-release_date_date').prefetch_related(
@@ -55,7 +55,7 @@ class ReleaserViewSet(ListDetailModelViewSet):
         )
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def member_productions(self, request, pk):
         releaser = Releaser.objects.get(pk=pk)
         queryset = releaser.member_productions().order_by('-release_date_date').prefetch_related(
