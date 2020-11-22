@@ -1,7 +1,7 @@
 beautifulsoup4>=4.9.3,<5
 bleach>=3.2,<3.3
 Django>=1.11.27,<=1.11.99
-Markdown==2.4
+Markdown>=3.0,<4
 Pillow==6.2.1
 boto3>=1.14,<1.15
 celery>=4.3,<4.4

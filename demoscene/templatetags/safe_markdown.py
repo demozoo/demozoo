@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 
 from bleach.sanitizer import Cleaner
 import markdown
+from mdx_autolink import AutoLinkExtension
 
 register = template.Library()
 
@@ -22,7 +23,8 @@ cleaner = Cleaner(
     strip=True,
     protocols=['http', 'https', 'mailto', 'ftp', 'tel'],
 )
-md = markdown.Markdown(extensions=['nl2br', 'autolink'])
+autolink = AutoLinkExtension()
+md = markdown.Markdown(extensions=['nl2br', autolink])
 
 @register.filter(is_safe=True)
 def safe_markdown(value, arg=''):

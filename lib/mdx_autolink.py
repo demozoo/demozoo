@@ -60,5 +60,5 @@ class AutoLinkExtension(markdown.Extension):
     def extendMarkdown(self, md, md_globals):
         md.preprocessors.add('autolink', AutoLinkPreprocessor(md), "_begin")
 
-def makeExtension(configs=None):
+def makeExtension(configs=None):  # pragma: no cover
     return AutoLinkExtension(configs=configs)
