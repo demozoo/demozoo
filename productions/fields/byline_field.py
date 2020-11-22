@@ -22,13 +22,13 @@ class BylineLookup():
 
         if author_matched_nick_fields == None:
             author_matched_nick_fields = [
-                MatchedNickField(nick_search, None)
+                MatchedNickField(nick_search, required=False)
                 for nick_search in byline_search.author_nick_searches
             ]
 
         if affiliation_matched_nick_fields == None:
             affiliation_matched_nick_fields = [
-                MatchedNickField(nick_search, None)
+                MatchedNickField(nick_search, required=False)
                 for nick_search in byline_search.affiliation_nick_searches
             ]
 
@@ -124,11 +124,11 @@ class BylineWidget(forms.Widget):
         # for the passed search term; we can use that to construct the right number of MatchedNickFields
 
         author_matched_nick_fields = [
-            MatchedNickField(nick_search, None)
+            MatchedNickField(nick_search, required=False)
             for nick_search in byline_search.author_nick_searches
         ]
         affiliation_matched_nick_fields = [
-            MatchedNickField(nick_search, None)
+            MatchedNickField(nick_search, required=False)
             for nick_search in byline_search.affiliation_nick_searches
         ]
 

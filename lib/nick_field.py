@@ -31,7 +31,7 @@ class NickLookup():
             sceners_only=sceners_only,
             groups_only=groups_only,
             group_ids=group_ids)
-        self.matched_nick_field = MatchedNickField(nick_search, None)
+        self.matched_nick_field = MatchedNickField(nick_search, required=False)
 
     @staticmethod
     def from_value(value, sceners_only=False, groups_only=False, prefer_members_of=None):

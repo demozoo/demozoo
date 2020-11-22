@@ -1,6 +1,6 @@
 beautifulsoup4>=4.9.3,<5
 bleach>=3.2,<3.3
-Django>=1.11.27,<=1.11.99
+Django>=2.0,<2.1
 Fabric>=2.5,<2.6
 Markdown>=3.0,<4
 Pillow==6.2.1
@@ -11,7 +11,7 @@ django-cors-headers>=1.3.0,<2
 django-debug-toolbar>=1.11,<2
 django-storages>=1.9,<1.10
 django-taggit>=0.24.0,<1
-django-treebeard==4.1.0
+django-treebeard>=4.3,<4.4
 djangorestframework>=3.10,<3.11
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
@@ -19,7 +19,7 @@ pyrecoil>=0.3.1,<0.4
 redis>=3.4,<3.5
 unidecode==0.04.14
 bcrypt>=3.1,<3.2  # 3.2 drops py2.7
-django-extensions>=1.6,<1.7
+django-extensions>=2.0,<2.1
 coverage>=4.0,<5.0
 django-dotenv>=1.4.2,<2.0
 
