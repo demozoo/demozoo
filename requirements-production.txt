@@ -2,7 +2,7 @@ beautifulsoup4>=4.9.3,<5
 bleach>=3.2,<3.3
 Django>=2.2,<2.3
 Markdown>=3.0,<4
-Pillow==6.2.1
+Pillow>=8.0,<9
 boto3>=1.14,<1.15
 celery>=4.3,<4.4
 django-compressor>=2.1,<2.2
