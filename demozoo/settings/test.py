@@ -18,7 +18,7 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
 
-REDIS_URL = 'redis://localhost:6379/2'
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/2')
 
 AWS_ACCESS_KEY_ID = 'AWS_K3Y'
 AWS_SECRET_ACCESS_KEY = 'AWS_S3CR3T'

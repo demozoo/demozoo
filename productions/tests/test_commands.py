@@ -108,8 +108,10 @@ class TestPurgeDeadYoutubeLinks(TestCase):
     @patch('productions.tasks.clean_dead_youtube_link')
     def test_run(self, clean_dead_youtube_link):
         pondlife = Production.objects.get(title='Pondlife')
+        # create with a bogus link_class to prevent fetch_production_link_embed_data
+        # from being called on save()
         link = pondlife.links.create(
-            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            link_class='SpeccyWikiPage', parameter='1lFBXWxSrKE',
             is_download_link=False
         )
         ProductionLink.objects.filter(id=link.id).update(link_class='YoutubeVideo')
