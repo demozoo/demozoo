@@ -5,7 +5,9 @@ name: Python application
 
 on:
   push:
+    branches: [ master ]
   pull_request:
+    branches: [ master ]
 
 jobs:
   test:
@@ -28,9 +30,9 @@ jobs:
         pip install -r requirements.txt
     - name: Test
       run: |
-        ./manage.py test --settings=demozoo.settings.test
-        DEMOZOO_SUBSITE=zxdemo ./manage.py test zxdemo --settings=demozoo.settings.test
-        ./manage.py test productions.tests.test_readonly --settings=demozoo.settings.test_readonly
+        ./manage.py test -v2 --settings=demozoo.settings.test
+        DEMOZOO_SUBSITE=zxdemo ./manage.py test -v2 zxdemo --settings=demozoo.settings.test
+        ./manage.py test -v2 productions.tests.test_readonly --settings=demozoo.settings.test_readonly
       env:
         POSTGRES_HOST: localhost
         POSTGRES_USER: postgres
