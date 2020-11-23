@@ -74,7 +74,7 @@ def post(request, post_id):
     post_offset = topic.posts.filter(created_at__lt=post.created_at).count()
     paginator = Paginator(posts, POSTS_PER_PAGE)
 
-    page = (post_offset / POSTS_PER_PAGE) + 1
+    page = int(post_offset / POSTS_PER_PAGE) + 1
     posts_page = paginator.page(page)
 
     return render(request, 'forums/topic.html', {
