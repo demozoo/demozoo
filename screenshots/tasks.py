@@ -20,7 +20,7 @@ from mirror.models import ArchiveMember
 from django.conf import settings
 
 
-upload_dir = os.path.join(settings.FILEROOT, 'media', 'screenshot_uploads')
+upload_dir = os.path.join(settings.MEDIA_ROOT, 'screenshot_uploads')
 
 
 def create_basename(screenshot_id):
