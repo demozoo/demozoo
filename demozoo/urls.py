@@ -16,15 +16,15 @@ urlpatterns = [
 
     url(r'^account/$', demoscene_views.accounts.index, {}, 'account_index'),
     url(r'^account/login/$', demoscene_views.accounts.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
-    url(r'^account/logout/$', auth_views.logout, {'next_page': '/'}, 'log_out'),
+    url(r'^account/logout/$', auth_views.LogoutView.as_view(), {'next_page': '/'}, 'log_out'),
     url(r'^account/signup/$', demoscene_views.accounts.signup, {}, 'user_signup'),
     url(r'^account/change_password/$', demoscene_views.accounts.change_password, {}, 'account_change_password'),
     # forgotten password
-    url(r'^account/forgotten_password/$', auth_views.password_reset, {}, 'password_reset'),
-    url(r'^account/forgotten_password/success/$', auth_views.password_reset_done, {}, 'password_reset_done'),
-    url(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', auth_views.password_reset_confirm, {}, 'password_reset_confirm'),
+    url(r'^account/forgotten_password/$', auth_views.PasswordResetView.as_view(), {}, 'password_reset'),
+    url(r'^account/forgotten_password/success/$', auth_views.PasswordResetDoneView.as_view(), {}, 'password_reset_done'),
+    url(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', auth_views.PasswordResetConfirmView.as_view(), {}, 'password_reset_confirm'),
 
-    url(r'^account/forgotten_password/done/$', auth_views.password_reset_complete, {}, 'password_reset_complete'),
+    url(r'^account/forgotten_password/done/$', auth_views.PasswordResetCompleteView.as_view(), {}, 'password_reset_complete'),
 
     url(r'^account/sceneid/auth/$', sceneid_views.do_auth_redirect, {}, 'sceneid_auth'),
     url(r'^account/sceneid/login/$', sceneid_views.process_response, {}, 'sceneid_return'),

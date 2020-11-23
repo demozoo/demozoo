@@ -1,7 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
+import re
+
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.core import mail
 from django.test import TestCase
 
 from demoscene.models import CaptchaQuestion
@@ -105,3 +108,49 @@ class TestChangePassword(TestCase):
         self.assertEqual(str(messages[0]), "Password updated")
 
         self.assertTrue(self.client.login(username='testuser', password='67890'))
+
+
+class TestResetPassword(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', email='testuser@example.com', password='12345')
+
+    def test_reset_password(self):
+        response = self.client.get('/account/forgotten_password/')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post('/account/forgotten_password/', {
+            'email': 'testuser@example.com',
+        })
+        self.assertRedirects(response, '/account/forgotten_password/success/')
+
+        response = self.client.get('/account/forgotten_password/success/')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['testuser@example.com'])
+        reset_url = re.search(r'/account/forgotten_password/\S+', mail.outbox[0].body).group(0)
+        uid = re.match(r'^/account/forgotten_password/check/([^\/]+)/', reset_url).group(1)
+
+        response = self.client.get('/account/forgotten_password/check/AAAA/AAAA-AAAAAAAA/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This password reset link is not valid")
+
+        response = self.client.get(reset_url)
+        check_ok_url = '/account/forgotten_password/check/%s/set-password/' % uid
+        self.assertRedirects(response, check_ok_url)
+
+        response = self.client.get(check_ok_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reset password")
+
+        response = self.client.post(check_ok_url, {
+            'new_password1': 'b3tt3rpassw0rd!!!',
+            'new_password2': 'b3tt3rpassw0rd!!!',
+        })
+        self.assertRedirects(response, '/account/forgotten_password/done/')
+
+        response = self.client.get('/account/forgotten_password/done/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Password change successful")
+
+        self.assertTrue(self.client.login(username='testuser', password='b3tt3rpassw0rd!!!'))
