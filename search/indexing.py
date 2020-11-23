@@ -4,7 +4,7 @@ from six.moves import reduce
 
 import operator
 from django.contrib.postgres.search import SearchVector
-from django.db.models import Value
+from django.db.models import TextField, Value
 
 
 def index(instance):
@@ -14,7 +14,7 @@ def index(instance):
     search_vectors = []
     for weight, text in components.items():
         search_vectors.append(
-            SearchVector(Value(text), weight=weight)
+            SearchVector(Value(text, output_field=TextField()), weight=weight)
         )
     instance.__class__.objects.filter(pk=pk).update(
         search_document=reduce(operator.add, search_vectors)
