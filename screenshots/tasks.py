@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 import io
 import os
+import pathlib
 import re
 import uuid
 import zipfile
@@ -192,7 +193,9 @@ def capture_upload_for_processing(uploaded_file, screenshot_id):
     """
     clean_filename = re.sub(r'[^A-Za-z0-9\_\.\-]', '_', uploaded_file.name)
     local_filename = uuid.uuid4().hex[0:16] + clean_filename
+    pathlib.Path(upload_dir).mkdir(parents=True, exist_ok=True)
     path = os.path.join(upload_dir, local_filename)
+
     destination = open(path, 'wb')
     for chunk in uploaded_file.chunks():
         destination.write(chunk)

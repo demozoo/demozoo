@@ -35,7 +35,6 @@ jobs:
         pip install -r requirements.txt
     - name: Test
       run: |
-        mkdir -p test_media/screenshot_uploads
         ./manage.py test -v2 --settings=demozoo.settings.test
         DEMOZOO_SUBSITE=zxdemo ./manage.py test -v2 zxdemo --settings=demozoo.settings.test
         ./manage.py test -v2 productions.tests.test_readonly --settings=demozoo.settings.test_readonly
