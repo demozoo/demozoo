@@ -9,7 +9,9 @@ from freezegun import freeze_time
 from demoscene.models import Nick
 from mirror.models import Download
 from platforms.models import Platform
-from productions.models import Byline, Credit, PackMember, Production, ProductionType, Screenshot
+from productions.models import (
+    Byline, Credit, PackMember, Production, ProductionLink, ProductionType, Screenshot
+)
 
 
 class TestProductionType(TestCase):
@@ -66,10 +68,14 @@ class TestProductionLink(TestCase):
     def test_is_streaming_video(self):
         self.assertFalse(self.link.is_streaming_video)
 
+        # create with a bogus link_class to prevent fetch_production_link_embed_data
+        # from being called on save()
         video_link = self.skyrider.links.create(
-            link_class='YoutubeVideo', parameter='ldoVS0idTBw',
+            link_class='SpeccyWikiPage', parameter='ldoVS0idTBw',
             is_download_link=False
         )
+        ProductionLink.objects.filter(id=video_link.id).update(link_class='YoutubeVideo')
+        video_link = ProductionLink.objects.get(id=video_link.id)
         self.assertTrue(video_link.is_streaming_video)
 
     def test_mirrored_file_believed_downloadable(self):
