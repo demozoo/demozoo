@@ -1,4 +1,4 @@
-FROM python:2.7.17
+FROM python:3.8.6
 
 VOLUME ["/home/demozoo"]
 
