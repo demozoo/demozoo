@@ -10,7 +10,7 @@ The recommended way to set up a developer instance is through [Vagrant](https://
     cd demozoo
     vagrant up
 
-This will download an Ubuntu Trusty64 image, install dependencies, and fetch the latest public export of the Demozoo database. To start up the site:
+This will download an Ubuntu Focal64 image, install dependencies, and fetch the latest public export of the Demozoo database. To start up the site:
 
     vagrant ssh
     # then within the Vagrant VM:
