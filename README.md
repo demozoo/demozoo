@@ -43,7 +43,7 @@ After installing [Docker Desktop](https://www.docker.com/products/docker-desktop
 docker-compose up
 ```
 
-This will download the [`postgres:10.10`](https://hub.docker.com/layers/postgres/library/postgres/10.10/images/sha256-0ff915bda4ce326a2c55470ad0ff1a3dae5ca04b890180b008d1638e8b12de78?context=explore) and [`python:2.7.17`](https://hub.docker.com/layers/python/library/python/2.7.17/images/sha256-018736b34226abaf7d83baa5dcfedfc5ce1484acf839fe3b7302b53c313cd2ff?context=explore) images and bootstrap the database with data from the latest Demozoo export.
+This will download the [`postgres:10.10`](https://hub.docker.com/layers/postgres/library/postgres/10.10/images/sha256-0ff915bda4ce326a2c55470ad0ff1a3dae5ca04b890180b008d1638e8b12de78?context=explore) and [`python:3.8.6`](https://hub.docker.com/layers/python/library/python/3.8.6/images/sha256-306cf6c0e15294fafb690b15fc5f5616d27c4bdf8a1adb8f473d6034aa4d266e?context=explore) images and bootstrap the database with data from the latest Demozoo export.
 
 Booting up the first time will take quite a while, as the database import is large, so be patient. The error messages logged from `demozoo-web` during the import can be ignored. When the import is done, `Running the server on http://localhost:8000` should be printed to the console. You should then be able to visit `http://localhost:8000` in a web browser of your choice.
 
