@@ -9,8 +9,8 @@ PYTHON=$VIRTUALENV_DIR/bin/python
 # Update APT database
 apt-get update -y
 
-# Python 2.7
-apt-get install -y python python-dev python-pip
+# Python 3.8
+apt-get install -y python3.8 python3.8-dev python3-pip
 
 # PostgreSQL
 apt-get install -y postgresql libpq-dev
@@ -24,15 +24,16 @@ curl -sL https://deb.nodesource.com/setup_12.x | bash -
 apt-get install -y nodejs
 
 # virtualenvwrapper
-pip install virtualenvwrapper
+pip3 install virtualenvwrapper
 cat > /home/vagrant/.bashrc <<- EOM
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.8
 export WORKON_HOME=\$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 workon demozoo
 EOM
 
 # Create virtualenv
-su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR"
+su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR --python=/usr/bin/python3.8"
 su - vagrant -c "echo $PROJECT_DIR > $VIRTUALENV_DIR/.project"
 su - vagrant -c "$PIP install -r $PROJECT_DIR/requirements.txt"
 
