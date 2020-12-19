@@ -20,6 +20,8 @@ def home(request):
 
     latest_releases = Production.objects.filter(
         has_screenshot=True, release_date_date__isnull=False
+    ).exclude(
+        tags__slug__in=['xxx', 'nsfw']
     ).only(
         'id', 'title', 'release_date_date', 'release_date_precision', 'supertype',
     ).prefetch_related(

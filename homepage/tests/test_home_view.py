@@ -74,3 +74,35 @@ class SimpleTest(TestCase):
         # test separate code path for when 'three months time' rolls over into next year
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
+
+    def test_latest_release_screenshots_exclude_nsfw(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.screenshots.create(
+            thumbnail_url='http://example.com/pondlife.thumb.png', thumbnail_width=130, thumbnail_height=100
+        )
+        pondlife.tags.add('megademo', 'duck')
+
+        madrielle = Production.objects.get(title='Madrielle')
+        madrielle.screenshots.create(
+            thumbnail_url='http://example.com/madrielle.thumb.png', thumbnail_width=130, thumbnail_height=100
+        )
+        madrielle.tags.add('nsfw', 'twister')
+
+        skyrider = Production.objects.get(title='Skyrider')
+        skyrider.screenshots.create(
+            thumbnail_url='http://example.com/skyrider.thumb.png', thumbnail_width=130, thumbnail_height=100
+        )
+        skyrider.tags.add('xxx')
+
+        brexecutable = Production.objects.get(title='The Brexecutable Music Compo Is Over')
+        brexecutable.screenshots.create(
+            thumbnail_url='http://example.com/brexecutable.thumb.png', thumbnail_width=130, thumbnail_height=100
+        )
+
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, 'http://example.com/pondlife.thumb.png', count=1)
+        self.assertNotContains(response, 'http://example.com/madrielle.thumb.png')
+        self.assertNotContains(response, 'http://example.com/skyrider.thumb.png')
+        self.assertContains(response, 'http://example.com/brexecutable.thumb.png', count=1)
