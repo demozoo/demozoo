@@ -328,7 +328,9 @@ def edit_invitations(request, party_id):
         if formset.is_valid():
             invitations = [prod_form.cleaned_data['production'].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms]
+                if prod_form not in formset.deleted_forms
+                    and 'production' in prod_form.cleaned_data
+            ]
             party.invitations.set(invitations)
 
             if formset.has_changed():
@@ -360,7 +362,9 @@ def edit_releases(request, party_id):
         if formset.is_valid():
             releases = [prod_form.cleaned_data['production'].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms]
+                if prod_form not in formset.deleted_forms
+                    and 'production' in prod_form.cleaned_data
+            ]
             party.releases.set(releases)
 
             if formset.has_changed():

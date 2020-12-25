@@ -420,7 +420,7 @@ class TestEditInvitations(TestCase):
             'form-MAX_NUM_FORMS': 1000,
             'form-0-production_id': pondlife.id,
             'form-0-production_title': 'Pondlife',
-            'form-0-production_byline_search': ''
+            'form-0-production_byline_search': '',
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(self.party.invitations.count(), 1)
@@ -437,10 +437,27 @@ class TestEditInvitations(TestCase):
             'form-MAX_NUM_FORMS': 1000,
             'form-0-production_id': pondlife.id,
             'form-0-production_title': 'Pondlife',
-            'form-0-production_byline_search': ''
+            'form-0-production_byline_search': '',
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(edit_count, Edit.for_model(self.party, True).count())
+
+    def test_post_with_empty(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/parties/%d/edit_invitations/' % self.party.id, {
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-production_id': pondlife.id,
+            'form-0-production_title': 'Pondlife',
+            'form-0-production_byline_search': '',
+            'form-1-production_id': '',
+            'form-1-production_title': '',
+            'form-1-production_byline_search': '',
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(self.party.invitations.count(), 1)
 
 
 class TestEditReleases(TestCase):
@@ -464,7 +481,24 @@ class TestEditReleases(TestCase):
             'form-MAX_NUM_FORMS': 1000,
             'form-0-production_id': pondlife.id,
             'form-0-production_title': 'Pondlife',
-            'form-0-production_byline_search': ''
+            'form-0-production_byline_search': '',
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(self.party.releases.count(), 1)
+
+    def test_post_with_empty(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.post('/parties/%d/edit_releases/' % self.party.id, {
+            'form-TOTAL_FORMS': 2,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-production_id': pondlife.id,
+            'form-0-production_title': 'Pondlife',
+            'form-0-production_byline_search': '',
+            'form-1-production_id': '',
+            'form-1-production_title': '',
+            'form-1-production_byline_search': '',
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertEqual(self.party.releases.count(), 1)

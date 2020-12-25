@@ -1454,6 +1454,39 @@ class TestEditSoundtracks(TestCase):
         edit = Edit.for_model(self.pondlife, True).first()
         self.assertIn("Edited soundtrack details for Pondlife", edit.description)
 
+    def test_post_with_empty(self):
+        soundtrack_link = self.pondlife.soundtrack_links.get()
+        response = self.client.post('/productions/%d/edit_soundtracks/' % self.pondlife.id, {
+            'form-TOTAL_FORMS': 4,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-ORDER': 1,
+            'form-0-id': soundtrack_link.id,
+            'form-0-soundtrack_id': soundtrack_link.soundtrack_id,
+            'form-0-DELETE': 'form-0-DELETE',
+            'form-1-ORDER': 2,
+            'form-1-id': '',
+            'form-1-soundtrack_id': '',
+            'form-1-soundtrack_title': 'Fantasia',
+            'form-1-soundtrack_byline_search': '',
+            'form-2-ORDER': 3,
+            'form-2-id': '',
+            'form-2-soundtrack_id': '',
+            'form-2-soundtrack_title': '',
+            'form-2-soundtrack_byline_search': '',
+            'form-2-DELETE': 'form-2-DELETE',
+            'form-3-id': '',
+            'form-3-soundtrack_id': '',
+            'form-3-soundtrack_title': '',
+            'form-3-soundtrack_byline_search': '',
+            'form-3-ORDER': 4,
+        })
+        # form is re-shown
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pondlife.soundtrack_links.count(), 1)
+        self.assertEqual(self.pondlife.soundtrack_links.first().soundtrack.title, "Cybernoid's Revenge")
+
 
 class TestEditPackContents(TestCase):
     fixtures = ['tests/gasman.json']
@@ -1502,6 +1535,38 @@ class TestEditPackContents(TestCase):
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
         self.assertEqual(self.pondlife.pack_members.count(), 1)
         self.assertEqual(self.pondlife.pack_members.first().member.title, 'Froob')
+
+    def test_post_with_empty(self):
+        response = self.client.post('/productions/%d/edit_pack_contents/' % self.pondlife.id, {
+            'form-TOTAL_FORMS': 4,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-ORDER': 1,
+            'form-0-id': self.madrielle.id,
+            'form-0-member_id': self.madrielle.member_id,
+            'form-0-DELETE': 'form-0-DELETE',
+            'form-1-ORDER': 2,
+            'form-1-id': '',
+            'form-1-member_id': '',
+            'form-1-member_title': 'Froob',
+            'form-1-member_byline_search': '',
+            'form-2-ORDER': 3,
+            'form-2-id': '',
+            'form-2-member_id': '',
+            'form-2-member_title': '',
+            'form-2-member_byline_search': '',
+            'form-2-DELETE': 'form-2-DELETE',
+            'form-3-ORDER': 4,
+            'form-3-id': '',
+            'form-3-member_id': '',
+            'form-3-member_title': '',
+            'form-3-member_byline_search': '',
+        })
+        # form is re-shown
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pondlife.pack_members.count(), 1)
+        self.assertEqual(self.pondlife.pack_members.first().member.title, 'Madrielle')
 
     def test_post_and_create_with_byline(self):
         response = self.client.post('/productions/%d/edit_pack_contents/' % self.pondlife.id, {
