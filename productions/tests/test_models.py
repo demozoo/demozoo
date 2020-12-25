@@ -5,6 +5,7 @@ import datetime
 
 from django.test import TestCase
 from freezegun import freeze_time
+from mock import patch
 
 from demoscene.models import Nick
 from mirror.models import Download
@@ -65,18 +66,17 @@ class TestProductionLink(TestCase):
         self.assertEqual(extensionless_link.download_file_extension(), None)
         self.assertFalse(extensionless_link.is_zip_file())
 
-    def test_is_streaming_video(self):
+    @patch('productions.tasks.fetch_production_link_embed_data')
+    def test_is_streaming_video(self, fetch_production_link_embed_data):
         self.assertFalse(self.link.is_streaming_video)
 
-        # create with a bogus link_class to prevent fetch_production_link_embed_data
-        # from being called on save()
         video_link = self.skyrider.links.create(
-            link_class='SpeccyWikiPage', parameter='ldoVS0idTBw',
+            link_class='YoutubeVideo', parameter='ldoVS0idTBw',
             is_download_link=False
         )
-        ProductionLink.objects.filter(id=video_link.id).update(link_class='YoutubeVideo')
         video_link = ProductionLink.objects.get(id=video_link.id)
         self.assertTrue(video_link.is_streaming_video)
+        fetch_production_link_embed_data.delay.assert_called_once_with(video_link.id)
 
     def test_mirrored_file_believed_downloadable(self):
         Download.objects.create(
