@@ -32,6 +32,6 @@
     </form>
 
     <p>
-        <a href="{# url 'party_remove_organiser' party.id organiser.id #}" class="open_in_lightbox">Remove organiser</a>
+        <a href="{% url 'party_remove_organiser' party.id organiser.id %}" class="open_in_lightbox">Remove organiser</a>
     </p>
 {% endblock %}
