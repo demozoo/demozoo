@@ -157,6 +157,9 @@
                 </li>
             {% endfor %}
         </ul>
+        {% if site_is_writeable and user.is_authenticated %}
+            <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon add open_in_lightbox add_organiser">Add organiser</a>
+        {% endif %}
     </div>
 
     {% if results_files %}
