@@ -86,6 +86,7 @@ def show(request, party_id):
         'invitations': invitations,
         'releases': releases,
         'organisers': organisers,
+        'editing_organisers': (request.GET.get('editing') == 'organisers'),
         'parties_in_series': party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series'),
         'external_links': external_links,
         'comment_form': comment_form,
