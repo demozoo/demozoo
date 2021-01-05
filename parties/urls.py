@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^parties/(\d+)/edit_invitations/$', party_views.edit_invitations, {}, 'party_edit_invitations'),
     url(r'^parties/(\d+)/edit_releases/$', party_views.edit_releases, {}, 'party_edit_releases'),
     url(r'^parties/(\d+)/edit_share_image/$', party_views.edit_share_image, {}, 'party_edit_share_image'),
+    url(r'^parties/(\d+)/edit_organiser/(\d+)/$', party_views.edit_organiser, {}, 'party_edit_organiser'),
 
     url(r'^competitions/(\d+)/$', competition_views.show, {}, 'competition'),
     url(r'^competitions/(\d+)/history/$', competition_views.history, {}, 'competition_history'),
