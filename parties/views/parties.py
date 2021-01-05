@@ -68,6 +68,8 @@ def show(request, party_id):
 
     releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
+    organisers = party.organisers.select_related('releaser')
+
     external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
     if request.user.is_authenticated:
@@ -82,6 +84,7 @@ def show(request, party_id):
         'results_files': party.results_files.all(),
         'invitations': invitations,
         'releases': releases,
+        'organisers': organisers,
         'parties_in_series': party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series'),
         'external_links': external_links,
         'comment_form': comment_form,

@@ -32,6 +32,21 @@
         }
     }
 
+    .organisers_panel {
+        .organisers {
+            clear: both;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        li.scener {
+            padding-left: 24px;
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-image: url(/static/images/icons/scener.png);
+        }
+    }
+
     .results_file_panel {
 
         .results_files {
