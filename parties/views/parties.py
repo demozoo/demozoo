@@ -7,8 +7,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
-from demoscene.shortcuts import simple_ajax_form
+from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
 from demoscene.models import Edit
 from productions.models import Screenshot
 from parties.models import Organiser, Party, PartySeries, Competition, PartyExternalLink, ResultsFile
@@ -68,7 +69,7 @@ def show(request, party_id):
 
     releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-    organisers = party.organisers.select_related('releaser')
+    organisers = party.organisers.select_related('releaser').order_by('releaser__name')
 
     external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
@@ -469,3 +470,23 @@ def edit_organiser(request, party_id, organiser_id):
         'organiser': organiser,
         'form': form,
     })
+
+
+@writeable_site_required
+@login_required
+def remove_organiser(request, party_id, organiser_id):
+    party = get_object_or_404(Party, id=party_id)
+    organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
+
+    if request.method == 'POST':
+        if request.POST.get('yes'):
+            organiser.delete()
+            description = u"Removed %s as organiser of %s" % (organiser.releaser.name, party.name)
+            Edit.objects.create(action_type='remove_party_organiser', focus=organiser.releaser, focus2=party,
+                description=description, user=request.user)
+        return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
+    else:
+        return simple_ajax_confirmation(request,
+            reverse('party_remove_organiser', args=[party_id, organiser_id]),
+            "Are you sure you want to remove %s as organiser of %s?" % (organiser.releaser.name, party.name),
+            html_title="Removing %s as organiser of %s" % (organiser.releaser.name, party.name))
