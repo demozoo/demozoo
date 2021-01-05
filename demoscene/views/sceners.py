@@ -42,11 +42,14 @@ def show(request, scener_id, edit_mode=False):
 
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
+    parties_organised = scener.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+
     return render(request, 'sceners/show.html', {
         'scener': scener,
         'external_links': external_links,
         'editing_groups': (request.GET.get('editing') == 'groups'),
         'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
+        'parties_organised': parties_organised,
         'can_edit_real_names': can_edit_real_names,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked),
         'show_locked_button': request.user.is_authenticated and scener.locked,
