@@ -132,7 +132,7 @@
         </ul>
     </div>
 
-    <div class="editable_chunk panel organisers_panel">
+    <div class="editable_chunk panel organisers_panel {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
         <h3 class="panel__title">Organisers</h3>
         {% if site_is_writeable and not user.is_authenticated %}
             {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
@@ -150,7 +150,7 @@
                     {% releaser_flag organiser.releaser %}
                     {% if organiser.role %}({{ organiser.role}}){% endif %}
                     {% if site_is_writeable and user.is_authenticated %}
-                        <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox">
+                        <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
                             <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
                         </a>
                     {% endif %}
@@ -158,7 +158,9 @@
             {% endfor %}
         </ul>
         {% if site_is_writeable and user.is_authenticated %}
-            <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon add open_in_lightbox add_organiser">Add organiser</a>
+            <div class="add_organiser">
+                <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon add open_in_lightbox">Add organiser</a>
+            </div>
         {% endif %}
     </div>
 
