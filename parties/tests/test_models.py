@@ -7,7 +7,7 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from fuzzy_date import FuzzyDate
-from parties.models import Party, PartySeries
+from parties.models import Organiser, Party, PartySeries
 from productions.models import Production
 from sceneorg.models import Directory, File
 
@@ -120,3 +120,11 @@ class TestCompetitionPlacing(TestCase):
     def test_string(self):
         placing = Production.objects.get(title="Madrielle").competition_placings.first()
         self.assertEqual(str(placing), "Madrielle")
+
+
+class TestOrganiser(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_string(self):
+        orga = Party.objects.get(name="Revision 2011").organisers.get(releaser__name="Gasman")
+        self.assertEqual(str(orga), "Gasman - Compo team at Revision 2011")

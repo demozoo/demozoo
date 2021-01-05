@@ -12,9 +12,9 @@ from django.test import TestCase
 
 import PIL.Image
 
-from demoscene.models import Edit
+from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
-from parties.models import Competition, Party, PartyExternalLink, PartySeries, ResultsFile
+from parties.models import Competition, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
 from productions.models import Production
 
 
@@ -41,6 +41,13 @@ class TestShowParty(TestCase):
         party = Party.objects.get(name='Forever 2e3')
         response = self.client.get('/parties/%d/' % party.id)
         self.assertEqual(response.status_code, 200)
+
+    def test_organisers_panel(self):
+        party = Party.objects.get(name='Revision 2011')
+        response = self.client.get('/parties/%d/' % party.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Gasman')
+        self.assertContains(response, '(Compo team)')
 
 
 class TestShowPartyHistory(TestCase):
@@ -90,12 +97,12 @@ class TestCreateParty(TestCase):
 
     def test_post(self):
         response = self.client.post('/parties/new/', {
-            'name': 'Revision 2011',
-            'start_date': '22 april 2011',
-            'end_date': '25 april 2011',
-            'party_series_name': 'Revision'
+            'name': 'Evoke 2012',
+            'start_date': '10 aug 2012',
+            'end_date': '12 aug 2012',
+            'party_series_name': 'Evoke'
         })
-        self.assertRedirects(response, '/parties/%d/' % Party.objects.get(name='Revision 2011').id)
+        self.assertRedirects(response, '/parties/%d/' % Party.objects.get(name='Evoke 2012').id)
 
     def test_inherit_party_series_data(self):
         ps = PartySeries.objects.get(name='Forever')
@@ -135,13 +142,13 @@ class TestCreateParty(TestCase):
 
     def test_post_ajax(self):
         response = self.client.post('/parties/new/', {
-            'name': 'Revision 2011',
-            'start_date': '22 april 2011',
-            'end_date': '25 april 2011',
+            'name': 'Revision 2012',
+            'start_date': '6 april 2012',
+            'end_date': '9 april 2012',
             'party_series_name': 'Revision'
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(Party.objects.filter(name='Revision 2011').exists())
+        self.assertTrue(Party.objects.filter(name='Revision 2012').exists())
 
 
 class TestEditParty(TestCase):
@@ -548,3 +555,78 @@ class TestEditShareImage(MediaTestMixin, TestCase):
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
         self.assertTrue(Party.objects.get(id=self.party.id).share_image_file.name)
         Party.objects.get(id=self.party.id).share_image_file.delete()
+
+
+class TestAddOrganiser(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.party = Party.objects.get(name='Forever 2e3')
+        self.gasman = Releaser.objects.get(name='Gasman')
+
+    def test_get(self):
+        response = self.client.get('/parties/%d/add_organiser/' % self.party.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/parties/%d/add_organiser/' % self.party.id, {
+            'releaser_nick_search': 'gasman',
+            'releaser_nick_match_id': self.gasman.primary_nick.id,
+            'releaser_nick_match_name': 'gasman',
+            'role': 'Beamteam'
+        })
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.assertEqual(1, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
+
+
+class TestEditOrganiser(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.party = Party.objects.get(name='Revision 2011')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
+        self.orga = Organiser.objects.get(party=self.party, releaser=self.gasman)
+
+    def test_get(self):
+        response = self.client.get('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Beamteam'
+        })
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.orga.refresh_from_db()
+        self.assertEqual(self.orga.role, "Beamteam")
+        self.assertEqual(self.orga.releaser, self.yerzmyey)
+
+
+class TestRemoveOrganiser(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.party = Party.objects.get(name='Revision 2011')
+        self.gasman = Releaser.objects.get(name='Gasman')
+        self.orga = Organiser.objects.get(party=self.party, releaser=self.gasman)
+
+    def test_get(self):
+        response = self.client.get('/parties/%d/remove_organiser/%d/' % (self.party.id, self.orga.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/parties/%d/remove_organiser/%d/' % (self.party.id, self.orga.id), {
+            'yes': 'yes',
+        })
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.assertEqual(0, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
+
