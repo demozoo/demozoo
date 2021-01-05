@@ -10,6 +10,7 @@ from parties.models import Party, PartySeries, Competition, PartyExternalLink
 from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
 from fuzzy_date_field import FuzzyDateField
 from form_with_location import ModelFormWithLocation
+from nick_field import NickField
 from productions.fields.production_type_field import ProductionTypeChoiceField
 from productions.fields.production_field import ProductionField
 
@@ -240,3 +241,22 @@ class PartyShareImageForm(forms.ModelForm):
     class Meta:
         model = Party
         fields = ['share_image_file', 'share_screenshot']
+
+
+class PartyOrganiserForm(forms.Form):
+    releaser_nick = NickField(sceners_only=True, label='Organiser')
+    role = forms.CharField(required=False, label='Role')
+
+    def log_edit(self, user, releaser, party):
+        # build up log description
+        descriptions = []
+        changed_fields = self.changed_data
+        if 'releaser_nick' in changed_fields:
+            descriptions.append(u"changed organiser to %s" % releaser)
+        if 'role' in changed_fields:
+            descriptions.append("changed role to %s" % (self.cleaned_data['role'] or 'none'))
+        if descriptions:
+            description_list = u", ".join(descriptions)
+            Edit.objects.create(action_type='edit_party_organiser', focus=releaser, focus2=party,
+                description=u"Updated %s as organiser of %s: %s" % (releaser, party, description_list),
+                user=user)
