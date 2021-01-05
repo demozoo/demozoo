@@ -15,7 +15,7 @@ from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
 from unidecode import unidecode
 
-from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, TextFile
+from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, TextFile
 from demoscene.utils import groklinks
 from demoscene.utils.files import random_path
 from demoscene.utils.text import generate_search_title
@@ -269,6 +269,15 @@ class Party(Commentable):
         indexes = [
             GinIndex(fields=['search_document']),
         ]
+
+
+class Organiser(models.Model):
+    party = models.ForeignKey(Party, related_name='organisers', on_delete=models.CASCADE)
+    releaser = models.ForeignKey(Releaser, related_name='parties_organised', on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return "%s - %s at %s" % (self.releaser.name, self.role, self.party.name)
 
 
 class PartyExternalLink(ExternalLink):
