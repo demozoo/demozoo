@@ -416,6 +416,32 @@ def edit_share_image(request, party_id):
 
 @writeable_site_required
 @login_required
+def add_organiser(request, party_id):
+    party = get_object_or_404(Party, id=party_id)
+
+    if request.method == 'POST':
+        form = PartyOrganiserForm(request.POST)
+        if form.is_valid():
+            releaser = form.cleaned_data['releaser_nick'].commit().releaser
+            organiser = Organiser(
+                releaser=releaser,
+                party=party,
+                role=form.cleaned_data['role'])
+            organiser.save()
+            description = u"Added %s as organiser of %s" % (releaser.name, party.name)
+            Edit.objects.create(action_type='add_party_organiser', focus=releaser, focus2=party,
+                description=description, user=request.user)
+            return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
+    else:
+        form = PartyOrganiserForm()
+    return render(request, 'parties/add_organiser.html', {
+        'party': party,
+        'form': form,
+    })
+
+
+@writeable_site_required
+@login_required
 def edit_organiser(request, party_id, organiser_id):
     party = get_object_or_404(Party, id=party_id)
     organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
