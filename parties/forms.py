@@ -75,7 +75,7 @@ class PartyForm(ModelFormWithLocation):
 
     class Meta:
         model = Party
-        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'website', 'party_series_name')
+        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled', 'website', 'party_series_name')
 
 
 class EditPartyForm(ModelFormWithLocation):
@@ -96,6 +96,10 @@ class EditPartyForm(ModelFormWithLocation):
             descriptions.append(u"tagline to '%s'" % self.cleaned_data['tagline'])
         if 'location' in changed_fields:
             descriptions.append(u"location to %s" % self.cleaned_data['location'])
+        if 'is_online' in changed_fields:
+            descriptions.append(u"online to %s" % self.cleaned_data['is_online'])
+        if 'is_cancelled' in changed_fields:
+            descriptions.append(u"cancelled to %s" % self.cleaned_data['is_cancelled'])
         if 'website' in changed_fields:
             descriptions.append(u"website to %s" % self.cleaned_data['website'])
         if descriptions:
@@ -109,7 +113,7 @@ class EditPartyForm(ModelFormWithLocation):
 
     class Meta:
         model = Party
-        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'website')
+        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled', 'website')
 
 
 class PartyEditNotesForm(forms.ModelForm):

@@ -184,7 +184,8 @@
                     {% for organiser in parties_organised %}
                         {% with party=organiser.party %}
                             <li>
-                                <a href="{% url 'party' party.id %}" title="{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
+                                {% if party.is_cancelled %}<del>{% endif %}
+                                <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
                                     {% if party.is_online %}
                                         <img src="/static/images/icons/computer.png" alt="[Online]" />
                                     {% elif party.country_code %}
@@ -195,6 +196,7 @@
                                 {% if party.start_date %}
                                     - {% date_range party.start_date party.end_date %}
                                 {% endif %}
+                                {% if party.is_cancelled %}</del>{% endif %}
                                 {% if organiser.role %}({{ organiser.role }}){% endif %}
                             </li>
                         {% endwith %}

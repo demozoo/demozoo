@@ -27,7 +27,13 @@
                 <td>
                     <ul class="parties">
                         {% for party in item.list %}
-                            <li><a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a></li>
+                            <li>
+                                {% if party.is_cancelled %}
+                                    <del><a href="{{ party.get_absolute_url }}" title="Cancelled">{{ party.suffix }}</a></del>
+                                {% else %}
+                                    <a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a>
+                                {% endif %}
+                            </li>
                         {% endfor %}
                     </ul>
                 </td>
