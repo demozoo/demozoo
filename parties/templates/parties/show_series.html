@@ -88,7 +88,13 @@
                                     {% icon 'event' %}
                                 {% endif %}
                             </div>
-                            <h3 class="party-edition__name">{{ party.name }}</h3>
+                            <h3 class="party-edition__name">
+                                {% if party.is_cancelled %}
+                                    <del>{{ party.name }}</del> - cancelled
+                                {% else %}
+                                    {{ party.name }}
+                                {% endif %}
+                            </h3>
                             <div class="meta">
                                 <span class="meta__item">{% date_range party.start_date party.end_date %}</span>
                                 &bull;

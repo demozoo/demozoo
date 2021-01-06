@@ -210,6 +210,23 @@ class TestEditParty(TestCase):
         self.assertIn("tagline to 'doo doo doo do do doo'", edit.description)
         self.assertIn("location to Oxford", edit.description)
 
+    def test_edit_online_and_cancelled_flags(self):
+        response = self.client.post('/parties/%d/edit/' % self.party.id, {
+            'name': 'Forever 2000',
+            'start_date': '17 march 2000',
+            'end_date': '19 march 2000',
+            'party_series_name': 'Forever',
+            'website': 'http://forever.zeroteam.sk/',
+            'is_online': 'is_online',
+            'is_cancelled': 'is_cancelled',
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        self.assertEqual(Party.objects.get(id=self.party.id).name, "Forever 2000")
+
+        edit = Edit.for_model(self.party, True).first()
+        self.assertIn("online to True", edit.description)
+        self.assertIn("cancelled to True", edit.description)
+
 
 class TestEditNotes(TestCase):
     fixtures = ['tests/gasman.json']

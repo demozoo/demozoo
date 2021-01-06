@@ -83,6 +83,7 @@ class Party(Commentable):
     end_date_precision = models.CharField(max_length=1, choices=DATE_PRECISION_CHOICES)
 
     is_online = models.BooleanField(default=False)
+    is_cancelled = models.BooleanField(default=False)
     location = models.CharField(max_length=255, blank=True)
     country_code = models.CharField(max_length=5, blank=True)
     latitude = models.FloatField(null=True, blank=True)

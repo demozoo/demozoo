@@ -108,6 +108,9 @@
         <div class="focus_title party_name">
             <h2>{{ party.name }}{% if party.tagline %}:{% endif %}</h2>
             {% if party.tagline %}<h3>"{{ party.tagline }}"</h3>{% endif %}
+            {% if party.is_cancelled %}
+                <h3>- cancelled</h3>
+            {% endif %}
         </div>
 
         <ul class="attributes">

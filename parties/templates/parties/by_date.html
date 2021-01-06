@@ -23,6 +23,7 @@
         <ul>
             {% for party in year.list %}
                 <li>
+                    {% if party.is_cancelled %}<del>{% endif %}
                     <a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
                     - {% date_range party.start_date party.end_date %}
                     {% if party.is_online %}
@@ -35,6 +36,7 @@
                             <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="" />
                         {% endif %}
                     {% endif %}
+                    {% if party.is_cancelled %}</del> <em>Cancelled</em>{% endif %}
                 </li>
             {% endfor %}
         </ul>
