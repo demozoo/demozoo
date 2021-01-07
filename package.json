@@ -7,12 +7,12 @@
     "last 3 versions"
   ],
   "scripts": {
-    "autoprefixer": "postcss -u autoprefixer --no-map -r ./static/css/dz.css",
+    "autoprefixer": "postcss -u autoprefixer --no-map -r ./static_built/css/dz.css",
     "build": "run-p build:*",
     "build:css": "npm run sass && npm run autoprefixer && npm run cssnano",
     "build:icons": "npm run svgstore:icons && npm run svgo:icons",
-    "cssnano": "postcss ./static/css/dz.css --no-map --use cssnano -o ./static/css/dz.css",
-    "sass": "node-sass --importer node_modules/node-sass-glob-importer/dist/cli.js ./src/style/layout.scss ./static/css/dz.css",
+    "cssnano": "postcss ./static_built/css/dz.css --no-map --use cssnano -o ./static_built/css/dz.css",
+    "sass": "node-sass --importer node_modules/node-sass-glob-importer/dist/cli.js ./src/style/layout.scss ./static_built/css/dz.css",
     "svgo:icons": "svgo --disable=removeUselessDefs --disable=cleanupIDs ./static/svg/icons.svg",
     "svgstore:icons": "svgstore -p icon-- -o ./static/svg/icons.svg ./src/svg/icons/*.svg",
     "watch:css": "onchange \"src/style\" -- run-s sass autoprefixer",

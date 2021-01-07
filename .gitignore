@@ -5,6 +5,7 @@
 /apache/demozoo2.htpasswd
 /data
 /static
+/static_built/css/dz.css
 /media
 /.vagrant
 /.coverage

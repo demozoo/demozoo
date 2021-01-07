@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-{% load compress %}
-{% load menu %}
+{% load compress menu static %}
 <head>
     <meta charset="utf-8" />
     <meta name="format-detection" content="telephone=no" />
@@ -13,7 +12,7 @@
     {% compress css %}
         <link rel="stylesheet" href="/static/css/jquery_ui/overcast/theme.css" type="text/css" />{# TODO: decide which theme we actually want #}
     {% endcompress %}
-    <link rel="stylesheet" href="/static/css/dz.css" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/dz.css' %}" type="text/css" />
 
     {% block extra_css %}{% endblock %}
 

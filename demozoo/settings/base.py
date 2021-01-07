@@ -68,6 +68,11 @@ STATICFILES_FINDERS = (
     # other finders..
     'compressor.finders.CompressorFinder',
 )
+STATICFILES_DIRS = [
+    os.path.join(FILEROOT, 'static_built'),
+]
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 CONTEXT_PROCESSORS = [
     # defaults
