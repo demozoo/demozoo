@@ -202,6 +202,8 @@
                     <li>
                         {% if party_in_series == party %}
                             <strong>{{ party_in_series.suffix }}</strong>
+                        {% elif party_in_series.is_cancelled %}
+                            <del><a href="{{ party_in_series.get_absolute_url }}" title="Cancelled">{{ party_in_series.suffix }}</a></del>
                         {% else %}
                             <a href="{{ party_in_series.get_absolute_url }}">{{ party_in_series.suffix }}</a>
                         {% endif %}
