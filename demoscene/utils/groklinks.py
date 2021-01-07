@@ -219,7 +219,7 @@ class PouetProduction(BaseUrl):
 class SlengpungUser(BaseUrl):
     canonical_format = "http://www.slengpung.com/?userid=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?slengpung\.com/v3/show_user\.php', 'id', re.I),
+        querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/show_user\.php', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'userid', re.I),
     ]
     html_link_class = "slengpung"
@@ -775,7 +775,7 @@ class LanyrdEvent(BaseUrl):
 class SlengpungParty(BaseUrl):
     canonical_format = "http://www.slengpung.com/?eventid=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?slengpung\.com/v3/parties\.php', 'id', re.I),
+        querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/parties\.php', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'eventid', re.I),
     ]
     html_link_class = "slengpung"
