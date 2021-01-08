@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 
-from django.contrib.staticfiles.storage import staticfiles_storage
+from django.templatetags.static import static
 from django.forms import Media
 
 
@@ -56,7 +56,7 @@ PLAYERS_BY_FILETYPE = {
     'opus': ('Cowbell.Player.Audio', {}, Media(js=['productions/js/cowbell/cowbell.min.js'])),
     'flac': ('Cowbell.Player.Audio', {}, Media(js=['productions/js/cowbell/cowbell.min.js'])),
     'openmpt': ('Cowbell.Player.OpenMPT', {
-        'pathToLibOpenMPT': staticfiles_storage.url('productions/js/cowbell/libopenmpt.js'),
+        'pathToLibOpenMPT': static('productions/js/cowbell/libopenmpt.js'),
     }, Media(js=[
         'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/openmpt.min.js'
     ])),
