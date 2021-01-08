@@ -248,7 +248,7 @@ class PartyShareImageForm(forms.ModelForm):
 
 
 class PartyOrganiserForm(forms.Form):
-    releaser_nick = NickField(sceners_only=True, label='Organiser')
+    releaser_nick = NickField(label='Organiser')
     role = forms.CharField(required=False, label='Role')
 
     def log_edit(self, user, releaser, party):

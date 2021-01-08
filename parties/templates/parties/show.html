@@ -146,20 +146,41 @@
             </ul>
         {% endif %}
 
-        <ul class="organisers">
-            {% for organiser in organisers %}
-                <li class="scener">
-                    <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                    {% releaser_flag organiser.releaser %}
-                    {% if organiser.role %}({{ organiser.role}}){% endif %}
-                    {% if site_is_writeable and user.is_authenticated %}
-                        <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
-                            <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
-                        </a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+        {% regroup organisers by releaser.is_group as orga_type_list %}
+        {% for is_group, orga_list in orga_type_list %}
+            {% if is_group %}
+                <ul class="organisers">
+                    <li>Presented by:</li>
+
+                    {% for organiser in orga_list %}
+                        <li class="group">
+                            <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
+                            {% if organiser.role %}({{ organiser.role}}){% endif %}
+                            {% if site_is_writeable and user.is_authenticated %}
+                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
+                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="organisers">
+                    {% for organiser in orga_list %}
+                        <li class="scener">
+                            <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
+                            {% releaser_flag organiser.releaser %}
+                            {% if organiser.role %}({{ organiser.role}}){% endif %}
+                            {% if site_is_writeable and user.is_authenticated %}
+                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
+                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
         {% if site_is_writeable and user.is_authenticated %}
             <div class="add_organiser">
                 <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon add open_in_lightbox">Add organiser</a>

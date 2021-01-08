@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import json
 import re
 
+from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -69,7 +70,7 @@ def show(request, party_id):
 
     releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
-    organisers = party.organisers.select_related('releaser').order_by('releaser__name')
+    organisers = party.organisers.select_related('releaser').order_by('-releaser__is_group', Lower('releaser__name'))
 
     external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
 

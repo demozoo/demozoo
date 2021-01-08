@@ -37,16 +37,29 @@
         margin-bottom: 8px;
 
         .organisers {
+            overflow: hidden; /* self-clear */
             clear: both;
+            padding-bottom: 8px;
+        }
+
+        li {
+            float: left;
+            padding-right: 8px;
         }
 
         li.scener {
-            float: left;
             padding-left: 24px;
-            padding-right: 8px;
             background-position: left center;
             background-repeat: no-repeat;
             background-image: url(/static/images/icons/scener.png);
+        }
+
+        li.group {
+            float: left;
+            padding-left: 24px;
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-image: url(/static/images/icons/group.png);
         }
 
         .add_organiser {
