@@ -17,6 +17,7 @@ PASSWORD_HASHERS = (
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/2')
 
