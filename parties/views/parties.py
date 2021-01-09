@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
 import json
 import re
 
@@ -31,9 +32,21 @@ def by_name(request):
     })
 
 
-def by_date(request):
-    parties = Party.objects.order_by('start_date_date', 'end_date_date', 'name')
+def by_date(request, year=None):
+    try:
+        year = int(year)
+    except TypeError:
+        year = datetime.date.today().year
+
+    years = Party.objects.dates('start_date_date', 'year') | Party.objects.dates('end_date_date', 'year')
+
+    parties = Party.objects.filter(
+        start_date_date__year__lte=year, end_date_date__year__gte=year
+    ).order_by('start_date_date', 'end_date_date', 'name')
+
     return render(request, 'parties/by_date.html', {
+        'selected_year': year,
+        'years': years,
         'parties': parties,
     })
 

@@ -10,6 +10,7 @@ from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
+from freezegun import freeze_time
 import PIL.Image
 
 from demoscene.models import Edit, Releaser
@@ -21,9 +22,21 @@ from productions.models import Production
 class TestShowIndex(TestCase):
     fixtures = ['tests/gasman.json']
 
-    def test_get(self):
+    @freeze_time('2000-05-05')
+    def test_get_current_year_2000(self):
         response = self.client.get('/parties/')
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Forever 2e3")
+
+    def test_get_current_year(self):
+        response = self.client.get('/parties/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Forever 2e3")
+
+    def test_get_year(self):
+        response = self.client.get('/parties/year/2000/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Forever 2e3")
 
 
 class TestShowPartiesByName(TestCase):
@@ -39,6 +52,9 @@ class TestPartiesByDateRedirect(TestCase):
 
     def test_get(self):
         response = self.client.get('/parties/by_date/')
+        self.assertRedirects(response, '/parties/')
+
+        response = self.client.get('/parties/year/')
         self.assertRedirects(response, '/parties/')
 
 
