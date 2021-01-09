@@ -26,12 +26,20 @@ class TestShowIndex(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestShowPartiesByDate(TestCase):
+class TestShowPartiesByName(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/parties/by_name/')
+        self.assertEqual(response.status_code, 200)
+
+
+class TestPartiesByDateRedirect(TestCase):
     fixtures = ['tests/gasman.json']
 
     def test_get(self):
         response = self.client.get('/parties/by_date/')
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, '/parties/')
 
 
 class TestShowParty(TestCase):
