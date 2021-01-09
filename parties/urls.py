@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import url
+from django.views.generic.base import RedirectView
 
 from parties.views import competition_api as competition_api_views
 from parties.views import competitions as competition_views
@@ -8,8 +9,9 @@ from parties.views import parties as party_views
 
 
 urlpatterns = [
-    url(r'^parties/$', party_views.index, {}, 'parties'),
-    url(r'^parties/by_date/$', party_views.by_date, {}, 'parties_by_date'),
+    url(r'^parties/$', party_views.by_date, {}, 'parties'),
+    url(r'^parties/by_name/$', party_views.by_name, {}, 'parties_by_name'),
+    url(r'^parties/by_date/$', RedirectView.as_view(url='/parties/'), name='parties_by_date'),
     url(r'^parties/(\d+)/$', party_views.show, {}, 'party'),
     url(r'^parties/(\d+)/history/$', party_views.history, {}, 'party_history'),
     url(r'^parties/series/(\d+)/$', party_views.show_series, {}, 'party_series'),

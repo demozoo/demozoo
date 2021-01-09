@@ -24,9 +24,9 @@ from comments.models import Comment
 from comments.forms import CommentForm
 
 
-def index(request):
+def by_name(request):
     parties = Party.objects.order_by('party_series__name', 'start_date_date', 'name').select_related('party_series')
-    return render(request, 'parties/index.html', {
+    return render(request, 'parties/by_name.html', {
         'parties': parties,
     })
 

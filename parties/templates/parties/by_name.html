@@ -14,7 +14,7 @@
     <h2>Parties</h2>
     
     <p>
-        <strong>By name</strong> | <a href="{% url 'parties_by_date' %}">By date</a>
+        <a href="{% url 'parties' %}">By date</a> | <strong>By name</strong>
     </p>
     
     {% regroup parties by party_series as party_series_list %}
