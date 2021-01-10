@@ -1,0 +1,29 @@
+ul.submenu {
+    margin-bottom: 16px;
+
+    li {
+        display: inline;
+
+        a {
+            color: #5e5f5f;
+            line-height: 25px;
+            padding: 0 10px;
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            text-decoration: none;
+            text-transform: uppercase;
+
+            &:hover {
+                border-top: 4px solid #ec5a64;
+                margin-top: -4px;
+            }
+        }
+
+        strong {
+            line-height: 25px;
+            padding: 0 10px;
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            background-color: #ec5a64;
+            color: white;
+        }
+    }
+}

@@ -18,7 +18,7 @@
         <strong>By date</strong> | <a href="{% url 'parties_by_name' %}">By name</a>
     </p>
 
-    <ul class="years">
+    <ul class="submenu years">
         {% for year in years %}
             {% if year.year == selected_year %}
                 <li><strong>{{ year.year }}</strong></li>
