@@ -44,7 +44,6 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     country_code = models.CharField(max_length=5, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    woe_id = models.BigIntegerField(null=True, blank=True)
     geonames_id = models.BigIntegerField(null=True, blank=True)
 
     first_name = models.CharField(max_length=255, blank=True)

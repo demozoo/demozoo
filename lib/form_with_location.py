@@ -58,14 +58,12 @@ class ModelFormWithLocation(forms.ModelForm):
                 model.latitude = self.geocoded_location['latitude']
                 model.longitude = self.geocoded_location['longitude']
                 model.geonames_id = self.geocoded_location['id']
-                model.woe_id = None
         else:
             # clear location data
             model.country_code = ''
             model.latitude = None
             model.longitude = None
             model.geonames_id = None
-            model.woe_id = None
 
         if commit:
             model.save()

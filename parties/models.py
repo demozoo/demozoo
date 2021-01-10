@@ -88,7 +88,6 @@ class Party(Commentable):
     country_code = models.CharField(max_length=5, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    woe_id = models.BigIntegerField(null=True, blank=True)
     geonames_id = models.BigIntegerField(null=True, blank=True)
 
     notes = models.TextField(blank=True)
