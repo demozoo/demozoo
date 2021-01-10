@@ -11,7 +11,13 @@
         </ul>
     {% endif %}
 
-    <h2>Music</h2>
+    <h2>Releases</h2>
+
+    <ul class="submenu">
+        <li><a href="{% url 'productions' %}">Productions</a></li>
+        <li><strong>Music</strong></li>
+        <li><a href="{% url 'graphics' %}">Graphics</a></li>
+    </ul>
 
     <form action="{% url 'musics' %}" method="GET" class="production_listing_filters">
         <ul class="fields">

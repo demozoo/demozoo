@@ -1,4 +1,6 @@
 ul.submenu {
+    clear: both;
+    margin-top: 8px;
     margin-bottom: 16px;
 
     li {
@@ -22,6 +24,7 @@ ul.submenu {
             line-height: 25px;
             padding: 0 10px;
             font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            text-transform: uppercase;
             background-color: #ec5a64;
             color: white;
         }

@@ -48,7 +48,7 @@ def index(request):
     return render(request, 'graphics/index.html', {
         'order': order,
         'production_page': production_page,
-        'menu_section': "graphics",
+        'menu_section': "productions",
         'asc': asc,
         'form': form,
     })
