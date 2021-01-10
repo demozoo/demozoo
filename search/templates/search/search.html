@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load compress %}
+{% load compress static %}
 
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
 
@@ -33,7 +33,7 @@
                        type="search"
                        value="{{ query }}" />
                 <svg class="icon">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--search"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--search"></use>
                 </svg>
                 <button type="submit" class="button button--search">
                     <span class="button__text">Search</span>

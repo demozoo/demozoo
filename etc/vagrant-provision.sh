@@ -74,6 +74,5 @@ su - vagrant -c "gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo"
 su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
 
 # Install project dependencies for node and run a first time
-su - vagrant -c "mkdir ~/demozoo/static/svg && touch ~/demozoo/static/icons.svg"
 su - vagrant -c "cd ~/demozoo/ && npm i --no-save && npm run build"
 
