@@ -1,5 +1,6 @@
+{% load static %}
 {% if icon %}
 <svg class="icon">
-    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--{{icon}}"></use>
+    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--{{icon}}"></use>
 </svg>
 {% endif %}

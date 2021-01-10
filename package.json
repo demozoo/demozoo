@@ -13,8 +13,8 @@
     "build:icons": "npm run svgstore:icons && npm run svgo:icons",
     "cssnano": "postcss ./static_built/css/dz.css --no-map --use cssnano -o ./static_built/css/dz.css",
     "sass": "node-sass --importer node_modules/node-sass-glob-importer/dist/cli.js ./src/style/layout.scss ./static_built/css/dz.css",
-    "svgo:icons": "svgo --disable=removeUselessDefs --disable=cleanupIDs ./static/svg/icons.svg",
-    "svgstore:icons": "svgstore -p icon-- -o ./static/svg/icons.svg ./src/svg/icons/*.svg",
+    "svgo:icons": "svgo --disable=removeUselessDefs --disable=cleanupIDs ./static_built/images/icons.svg",
+    "svgstore:icons": "svgstore -p icon-- -o ./static_built/images/icons.svg ./src/svg/icons/*.svg",
     "watch:css": "onchange \"src/style\" -- run-s sass autoprefixer",
     "watch:icons": "onchange \"src/svg\" -- run-s build:icons",
     "watch": "run-p watch:*"
