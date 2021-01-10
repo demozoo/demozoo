@@ -159,6 +159,7 @@ INSTALLED_APPS = [
     'users',
     'janeway',
     'awards',
+    'bbs',
 ]
 
 LOGGING = {

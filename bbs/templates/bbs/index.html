@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load demoscene_tags compress %}
+
+{% block html_title %}BBSes - Demozoo{% endblock %}
+
+{% block base_main %}
+<div>
+    <header class="page__header">
+        <h1 class="page__title">BBSes</h1>
+
+        {% if site_is_writeable %}
+            <ul class="actions">
+                <li><a href="{# url 'new_group' #}" class="action_button icon add open_in_lightbox">New BBS</a></li>
+            </ul>
+        {% endif %}
+    </header>
+
+    <ul class="list list--results">
+        {% for bbs in page.object_list %}
+            <li class="list__item">
+                <div class="result">
+                    <div class="media media--thumbnail">
+                        <svg class="icon">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
+                        </svg>
+                    </div>
+                    <div>
+                        <a href="{# url 'bbs' bbs.id #}">
+                            {{ bbs.name }}
+                        </a>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <br />
+
+    {% include "shared/pagination_links.html" %}
+
+</div>
+
+{% endblock %}

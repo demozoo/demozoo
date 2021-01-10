@@ -97,6 +97,7 @@ urlpatterns += [
     url(r'^api/', include('api.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^awards/', include('awards.urls')),
+    url(r'^bbs/', include('bbs.urls')),
 ]
 
 if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:  # pragma: no cover
