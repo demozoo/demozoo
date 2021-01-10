@@ -50,7 +50,7 @@ def index(request):
     return render(request, 'music/index.html', {
         'order': order,
         'production_page': production_page,
-        'menu_section': "music",
+        'menu_section': "productions",
         'asc': asc,
         'form': form,
     })
