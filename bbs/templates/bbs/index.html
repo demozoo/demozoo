@@ -6,13 +6,12 @@
 {% block base_main %}
 <div>
     <header class="page__header">
-        <h1 class="page__title">BBSes</h1>
-
         {% if site_is_writeable %}
             <ul class="actions">
-                <li><a href="{# url 'new_group' #}" class="action_button icon add open_in_lightbox">New BBS</a></li>
+                <li><a href="{# url 'new_bbs' #}" class="action_button icon add open_in_lightbox">New BBS</a></li>
             </ul>
         {% endif %}
+        <h1 class="page__title">BBSes</h1>
     </header>
 
     <ul class="list list--results">
@@ -21,7 +20,7 @@
                 <div class="result">
                     <div class="media media--thumbnail">
                         <svg class="icon">
-                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--group"></use>
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--bbs"></use>
                         </svg>
                     </div>
                     <div>
