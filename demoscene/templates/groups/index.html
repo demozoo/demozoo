@@ -7,14 +7,13 @@
 {% block base_main %}
 <div class="releasers releasers--groups">
     <header class="page__header">
-        <h1 class="page__title">Groups</h1>
-
         {% if site_is_writeable %}
             <ul class="actions">
                 <li><a href="{% url 'new_group' %}" class="action_button icon add open_in_lightbox">New group</a></li>
             </ul>
         {% endif %}
 
+        <h1 class="page__title">Groups</h1>
     </header>
 
 
