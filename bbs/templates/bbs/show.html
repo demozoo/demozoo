@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load demoscene_tags releaser_tags compress %}
+{% load safe_markdown %}
+
+
+{% block html_title %}{{ bbs.name }} - Demozoo{% endblock %}
+
+{% block extra_js %}
+    {% compress js %}
+        <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/editable_chunk.js"></script>
+    {% endcompress %}
+{% endblock %}
+
+{% block body_class %}show_bbs{% endblock %}
+
+{% block base_main %}
+    <div class="editable_chunk">
+        <div class="signpost">BBS</div>
+
+        {% if site_is_writeable %}
+            <ul class="actions">
+                <li>
+                    <a href="{# url 'edit_bbs' bbs.id #}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" rel="nofollow">Edit</a>
+                </li>
+            </ul>
+        {% endif %}
+
+        <div class="focus_title bbs_name">
+            <h2>{{ bbs.name }}</h2>
+        </div>
+
+        {% if bbs.location %}
+            <p>
+                Location:
+                {{ bbs.location }}
+                {% if bbs.country_code %}
+                    <img src="/static/images/icons/flags/{{ bbs.country_code|lower }}.png" alt="" />
+                {% endif %}
+            </p>
+        {% endif %}
+
+    </div>
+
+    {% if bbs.notes or request.user.is_staff %}
+        <div class="editable_chunk panel notes_panel">
+            {% if request.user.is_staff and site_is_writeable %}
+                <ul class="actions">
+                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{# url 'bbs_edit_notes' bbs.id #}">Edit notes</a></li>
+                </ul>
+            {% endif %}
+            <div class="notes">
+                {{ bbs.notes|safe_markdown }}
+            </div>
+        </div>
+    {% endif %}
+
+    <div id="side_column">
+
+    </div>
+    
+    <div id="main_column">
+
+    </div>
+
+    {% last_edited_by bbs %}
+
+{% endblock %}
