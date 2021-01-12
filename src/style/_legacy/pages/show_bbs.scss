@@ -1,0 +1,29 @@
+.show_bbs {
+
+    @media screen and (min-width: 800px) {
+        #side_column {
+            float: left;
+            width: 30%;
+        }
+
+        #main_column {
+            float: left;
+            width: 70%;
+        }
+    }
+
+    .last_edited_by {
+        clear: both;
+        padding-top: 16px;
+        border-top: 1px dotted #ddd;
+        a.user {
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+}
