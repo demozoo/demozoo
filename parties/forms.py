@@ -249,7 +249,7 @@ class PartyShareImageForm(forms.ModelForm):
 
 class PartyOrganiserForm(forms.Form):
     releaser_nick = NickField(label='Organiser')
-    role = forms.CharField(required=False, label='Role')
+    role = forms.CharField(required=False, label='Role', max_length=50)
 
     def log_edit(self, user, releaser, party):
         # build up log description
