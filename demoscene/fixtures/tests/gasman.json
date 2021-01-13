@@ -441,5 +441,14 @@
             "name": "Outstanding Concept",
             "event": 1
         }
+    },
+    {
+        "pk": 1,
+        "model": "bbs.BBS",
+        "fields": {
+            "name": "StarPort",
+            "location": "Helsinki, Finland",
+            "country_code": "FI"
+        }
     }
 ]

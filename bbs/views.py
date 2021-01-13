@@ -39,11 +39,8 @@ def create(request):
             form.save()
             form.log_creation(request.user)
 
-            if request.is_ajax():
-                return HttpResponse('OK: %s' % bbs.get_absolute_url(), content_type='text/plain')
-            else:
-                messages.success(request, 'BBS added')
-                return redirect('bbs', bbs.id)
+            messages.success(request, 'BBS added')
+            return redirect('bbs', bbs.id)
     else:
         form = BBSForm()
     return render(request, 'shared/simple_form.html', {
