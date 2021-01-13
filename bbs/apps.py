@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class BbsConfig(AppConfig):
+class BBSConfig(AppConfig):
     name = 'bbs'
