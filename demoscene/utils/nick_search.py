@@ -186,14 +186,12 @@ class BylineSearch():
             if affiliation_names:
                 autocompletion = NickVariant.autocomplete(
                     affiliation_names[-1],
-                    significant_whitespace=False,
                     groups_only=True, member_names=[name.strip() for name in author_names])
                 affiliation_names[-1] += autocompletion
                 self.search_term += autocompletion
             elif author_names:
                 autocompletion = NickVariant.autocomplete(
-                    author_names[-1],
-                    significant_whitespace=False)
+                    author_names[-1])
                 author_names[-1] += autocompletion
                 self.search_term += autocompletion
 
