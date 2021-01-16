@@ -8,7 +8,7 @@ from django.http import HttpResponse
 
 
 def match(request):
-    initial_query = request.GET.get('q').lstrip()  # only lstrip, because whitespace on right may be significant for autocompletion
+    initial_query = request.GET.get('q')
     autocomplete = request.GET.get('autocomplete', False)
     sceners_only = request.GET.get('sceners_only', False)
     groups_only = request.GET.get('groups_only', False)
@@ -32,7 +32,7 @@ def match(request):
     else:
         query = initial_query
 
-    nick_search = NickSearch(query.rstrip(), **filters)
+    nick_search = NickSearch(query.strip(), **filters)
 
     data = {
         'query': query,

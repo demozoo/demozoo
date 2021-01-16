@@ -1197,6 +1197,25 @@ class TestAddCredit(TestCase):
         self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
 
+    def test_post_with_whitespace(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        yerz = Nick.objects.get(name='Yerzmyey')
+
+        response = self.client.post('/productions/%d/add_credit/' % pondlife.id, {
+            'nick_search': '  yerzmyey  ',
+            'nick_match_id': yerz.id,
+            'nick_match_name': 'yerzmyey',
+            'credit-TOTAL_FORMS': 1,
+            'credit-INITIAL_FORMS': 0,
+            'credit-MIN_NUM_FORMS': 0,
+            'credit-MAX_NUM_FORMS': 1000,
+            'credit-0-id': '',
+            'credit-0-category': 'Music',
+            'credit-0-role': 'Part 2',
+        })
+        self.assertRedirects(response, '/productions/%d/?editing=credits#credits_panel' % pondlife.id)
+        self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
+
     def test_ambiguous_nick(self):
         pondlife = Production.objects.get(title='Pondlife')
         pondlife.author_nicks.clear()

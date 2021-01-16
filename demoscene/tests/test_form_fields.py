@@ -98,6 +98,25 @@ class TestNickField(TestCase):
         form = NickForm({'nick_search': ''})
         self.assertTrue(form.is_valid())
 
+        class RequiredNickForm(forms.Form):
+            nick = NickField()
+
+        form = RequiredNickForm({'nick_search': ''})
+        self.assertFalse(form.is_valid())
+
+    def test_clean_whitespace(self):
+        class NickForm(forms.Form):
+            nick = NickField(required=False)
+
+        form = NickForm({'nick_search': '   '})
+        self.assertTrue(form.is_valid())
+
+        class RequiredNickForm(forms.Form):
+            nick = NickField()
+
+        form = RequiredNickForm({'nick_search': '   '})
+        self.assertFalse(form.is_valid())
+
     def test_clean_autoaccept(self):
         class NickForm(forms.Form):
             nick = NickField(required=False)

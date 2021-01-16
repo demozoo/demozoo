@@ -81,6 +81,9 @@ class NickWidget(forms.Widget):
         search_term = self.search_widget.value_from_datadict(data, files, name + '_search')
         if not search_term:
             return None
+        search_term = search_term.strip()
+        if not search_term:
+            return None
 
         explicit_lookup_requested = self.lookup_widget.value_from_datadict(data, files, name + '_lookup')
 
