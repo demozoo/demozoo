@@ -13,6 +13,8 @@ class BBS(models.Model):
 
     notes = models.TextField(blank=True)
 
+    bbstros = models.ManyToManyField('productions.Production', related_name='bbses', blank=True)
+
     def __str__(self):
         return self.name
 
@@ -27,7 +29,7 @@ class BBS(models.Model):
         Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
         that should prevent its deletion
         """
-        return False
+        return self.bbstros.exists()
 
     class Meta:
         verbose_name_plural = 'BBSes'
