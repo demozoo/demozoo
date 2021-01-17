@@ -49,3 +49,28 @@ def create(request):
         'html_title': "New bbs",
         'action_url': reverse('new_bbs'),
     })
+
+
+@writeable_site_required
+@login_required
+def edit(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+
+    if request.method == 'POST':
+        form = BBSForm(request.POST, instance=bbs)
+        if form.is_valid():
+            form.save()
+            form.log_edit(request.user)
+
+            messages.success(request, 'BBS updated')
+            return redirect('bbs', bbs.id)
+    else:
+        form = BBSForm(instance=bbs)
+
+    title = "Editing BBS: %s" % bbs.name
+    return render(request, 'shared/simple_form.html', {
+        'html_title': title,
+        'title': title,
+        'form': form,
+        'action_url': reverse('edit_bbs', args=[bbs.id])
+    })
