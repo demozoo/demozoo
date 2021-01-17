@@ -224,3 +224,23 @@ def edit_operator(request, bbs_id, operator_id):
         'operator': operator,
         'form': form,
     })
+
+
+@writeable_site_required
+@login_required
+def remove_operator(request, bbs_id, operator_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    operator = get_object_or_404(Operator, bbs=bbs, id=operator_id)
+
+    if request.method == 'POST':
+        if request.POST.get('yes'):
+            operator.delete()
+            description = u"Removed %s as staff member of %s" % (operator.releaser.name, bbs.name)
+            Edit.objects.create(action_type='remove_bbs_operator', focus=operator.releaser, focus2=bbs,
+                description=description, user=request.user)
+        return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+    else:
+        return simple_ajax_confirmation(request,
+            reverse('bbs_remove_operator', args=[bbs_id, operator_id]),
+            "Are you sure you want to remove %s as staff member of %s?" % (operator.releaser.name, bbs.name),
+            html_title="Removing %s as staff member of %s" % (operator.releaser.name, bbs.name))
