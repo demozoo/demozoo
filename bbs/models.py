@@ -19,5 +19,8 @@ class BBS(models.Model):
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])
 
+    def get_absolute_edit_url(self):
+        return reverse('bbs', args=[self.id])
+
     class Meta:
         verbose_name_plural = 'BBSes'

@@ -4,9 +4,9 @@ from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from bbs.forms import BBSForm
+from bbs.forms import BBSEditNotesForm, BBSForm
 from bbs.models import BBS
-from demoscene.shortcuts import get_page
+from demoscene.shortcuts import get_page, simple_ajax_form
 from read_only_mode import writeable_site_required
 
 
@@ -74,3 +74,18 @@ def edit(request, bbs_id):
         'form': form,
         'action_url': reverse('edit_bbs', args=[bbs.id])
     })
+
+
+@writeable_site_required
+@login_required
+def edit_notes(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    if not request.user.is_staff:
+        return redirect('bbs', bbs.id)
+
+    def success(form):
+        form.log_edit(request.user)
+
+    return simple_ajax_form(request, 'bbs_edit_notes', bbs, BBSEditNotesForm,
+        title='Editing notes for %s' % bbs.name, on_success=success
+    )

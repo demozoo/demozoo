@@ -1,3 +1,5 @@
+from django import forms
+
 from form_with_location import ModelFormWithLocation
 
 from bbs.models import BBS
@@ -29,3 +31,13 @@ class BBSForm(ModelFormWithLocation):
     class Meta:
         model = BBS
         fields = ('name', 'location')
+
+
+class BBSEditNotesForm(forms.ModelForm):
+    def log_edit(self, user):
+        Edit.objects.create(action_type='edit_bbs_notes', focus=self.instance,
+            description="Edited notes", user=user)
+
+    class Meta:
+        model = BBS
+        fields = ['notes']

@@ -46,7 +46,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{# url 'bbs_edit_notes' bbs.id #}">Edit notes</a></li>
+                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'bbs_edit_notes' bbs.id %}">Edit notes</a></li>
                 </ul>
             {% endif %}
             <div class="notes">
