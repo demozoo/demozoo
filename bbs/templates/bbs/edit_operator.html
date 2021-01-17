@@ -1,0 +1,37 @@
+{% extends base_template_with_ajax_option %}
+
+
+{% block html_title %}Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }} - Demozoo{% endblock %}
+
+{% block extra_head %}
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.edit_operator_form'));
+        })
+    </script>
+{% endblock %}
+
+{% block base_main %}
+    <h2>Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }}</h2>
+
+    <form action="{% url 'bbs_edit_operator' bbs.id operator.id %}" method="post" class="entry_form edit_operator_form">
+        {% csrf_token %}
+
+        {% for field in form.visible_fields %}
+            {% include "shared/form_field.html" %}
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+
+        <div class="field">
+            <input type="submit" value="Submit edit"/>
+        </div>
+    </form>
+
+    <p>
+        <a href="{# url 'bbs_remove_operator' bbs.id operator.id #}" class="open_in_lightbox">Remove staff member</a>
+    </p>
+{% endblock %}

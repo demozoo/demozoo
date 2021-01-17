@@ -53,7 +53,7 @@ BBStroFormset = formset_factory(BBStroForm, can_delete=True, extra=1)
 
 
 class OperatorForm(forms.Form):
-    releaser_nick = NickField(label='Staff member')
+    releaser_nick = NickField(label='Staff member', sceners_only=True)
     role = forms.ChoiceField(label='Role', choices=OPERATOR_TYPES)
 
     def log_edit(self, user, releaser, bbs):
