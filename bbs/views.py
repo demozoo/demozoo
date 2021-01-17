@@ -6,7 +6,8 @@ from django.urls import reverse
 
 from bbs.forms import BBSEditNotesForm, BBSForm
 from bbs.models import BBS
-from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.models import Edit
+from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
 from read_only_mode import writeable_site_required
 
 
@@ -89,3 +90,30 @@ def edit_notes(request, bbs_id):
     return simple_ajax_form(request, 'bbs_edit_notes', bbs, BBSEditNotesForm,
         title='Editing notes for %s' % bbs.name, on_success=success
     )
+
+
+@writeable_site_required
+@login_required
+def delete(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    if not request.user.is_staff:
+        return redirect('bbs', bbs.id)
+    if request.method == 'POST':
+        if request.POST.get('yes'):
+
+            # insert log entry before actually deleting, so that it doesn't try to
+            # insert a null ID for the focus field
+            Edit.objects.create(action_type='delete_bbs', focus=bbs,
+                description=(u"Deleted BBS '%s'" % bbs.name), user=request.user)
+
+            bbs.delete()
+
+            messages.success(request, "BBS '%s' deleted" % bbs.name)
+            return redirect('bbses')
+        else:
+            return redirect('bbs', bbs.id)
+    else:
+        return simple_ajax_confirmation(request,
+            reverse('delete_bbs', args=[bbs.id]),
+            "Are you sure you want to delete %s?" % bbs.name,
+            html_title="Deleting %s" % bbs.name)
