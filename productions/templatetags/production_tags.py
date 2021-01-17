@@ -11,6 +11,7 @@ def production_core_details(context, production, subpage=False):
     ctx = {
         'production': production,
         'invitation_parties': production.invitation_parties.order_by('start_date_date'),
+        'bbses_advertised': production.bbses.order_by('name'),
         'release_parties': production.release_parties.order_by('start_date_date'),
         'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
     }
