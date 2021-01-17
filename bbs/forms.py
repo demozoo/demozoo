@@ -1,9 +1,11 @@
 from django import forms
+from django.forms.formsets import formset_factory
 
 from form_with_location import ModelFormWithLocation
 
 from bbs.models import BBS
 from demoscene.models import Edit
+from productions.fields.production_field import ProductionField
 
 
 class BBSForm(ModelFormWithLocation):
@@ -41,3 +43,9 @@ class BBSEditNotesForm(forms.ModelForm):
     class Meta:
         model = BBS
         fields = ['notes']
+
+
+class BBStroForm(forms.Form):
+    production = ProductionField()
+
+BBStroFormset = formset_factory(BBStroForm, can_delete=True, extra=1)
