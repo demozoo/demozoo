@@ -65,4 +65,12 @@
 
     {% last_edited_by bbs %}
 
+    {% if request.user.is_staff and site_is_writeable %}
+    <ul class="maintenance_actions">
+        {% if not bbs.is_referenced %}
+            <li><a href="{% url 'delete_bbs' bbs.id %}" class="action_button icon delete open_in_lightbox">Delete BBS</a></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+
 {% endblock %}
