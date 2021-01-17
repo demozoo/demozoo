@@ -24,6 +24,12 @@
             <input type="submit" />
         </div>
     </form>
+    {% if delete_url and delete_link_text %}
+        <p>
+            <a href="{{ delete_url }}" class="open_in_lightbox">{{ delete_link_text }}</a>
+        </p>
+    {% endif %}
+
     {% if ajax_submit %}
     <script>
         $('.entry_form').submit(function() {
