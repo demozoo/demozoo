@@ -153,3 +153,11 @@ def edit_bbstros(request, bbs_id):
         'bbs': bbs,
         'formset': formset,
     })
+
+
+def history(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    return render(request, 'bbs/history.html', {
+        'bbs': bbs,
+        'edits': Edit.for_model(bbs, request.user.is_staff),
+    })

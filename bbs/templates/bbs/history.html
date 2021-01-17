@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load demoscene_tags compress %}
+
+
+{% block html_title %}{{ bbs.name }} edit history - Demozoo{% endblock %}
+
+{% block base_main %}
+    <h1>Edit history for {{ bbs.name }}</h1>
+    {% include "shared/history_table.html" %}
+{% endblock %}
