@@ -197,3 +197,31 @@ class TestAddOperator(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/?editing=staff' % self.bbs.id)
         self.assertEqual(1, Operator.objects.filter(releaser=self.gasman, bbs=self.bbs).count())
+
+
+class TestEditOperator(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+        self.abyss = Releaser.objects.get(name='Abyss')
+        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
+        self.operator = Operator.objects.get(bbs=self.bbs, releaser=self.abyss)
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/edit_operator/%d/' % (self.bbs.id, self.operator.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/edit_operator/%d/' % (self.bbs.id, self.operator.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'co-sysop'
+        })
+        self.assertRedirects(response, '/bbs/%d/?editing=staff' % self.bbs.id)
+        self.operator.refresh_from_db()
+        self.assertEqual(self.operator.role, "co-sysop")
+        self.assertEqual(self.operator.releaser, self.yerzmyey)

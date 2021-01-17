@@ -193,3 +193,34 @@ def add_operator(request, bbs_id):
         'bbs': bbs,
         'form': form,
     })
+
+
+@writeable_site_required
+@login_required
+def edit_operator(request, bbs_id, operator_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    operator = get_object_or_404(Operator, bbs=bbs, id=operator_id)
+
+    if request.method == 'POST':
+        form = OperatorForm(request.POST, initial={
+            'releaser_nick': operator.releaser.primary_nick,
+            'role': operator.role,
+        })
+        if form.is_valid():
+            releaser = form.cleaned_data['releaser_nick'].commit().releaser
+            operator.releaser = releaser
+            operator.role = form.cleaned_data['role']
+            operator.save()
+            form.log_edit(request.user, releaser, bbs)
+
+            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+    else:
+        form = OperatorForm(initial={
+            'releaser_nick': operator.releaser.primary_nick,
+            'role': operator.role,
+        })
+    return render(request, 'bbs/edit_operator.html', {
+        'bbs': bbs,
+        'operator': operator,
+        'form': form,
+    })

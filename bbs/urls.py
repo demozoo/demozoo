@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^(\d+)/edit_bbstros/$', views.edit_bbstros, {}, 'bbs_edit_bbstros'),
     url(r'^(\d+)/history/$', views.history, {}, 'bbs_history'),
     url(r'^(\d+)/add_operator/$', views.add_operator, {}, 'bbs_add_operator'),
+    url(r'^(\d+)/edit_operator/(\d+)/$', views.edit_operator, {}, 'bbs_edit_operator'),
 ]
