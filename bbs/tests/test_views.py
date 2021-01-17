@@ -164,3 +164,12 @@ class TestEditBBStros(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
         self.assertEqual(edit_count, Edit.for_model(self.bbs, True).count())
+
+
+class TestShowHistory(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        bbs = BBS.objects.get(name='StarPort')
+        response = self.client.get('/bbs/%d/history/' % bbs.id)
+        self.assertEqual(response.status_code, 200)

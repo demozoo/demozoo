@@ -24,6 +24,9 @@ class BBS(models.Model):
     def get_absolute_edit_url(self):
         return reverse('bbs', args=[self.id])
 
+    def get_history_url(self):
+        return reverse('bbs_history', args=[self.id])
+
     def is_referenced(self):
         """
         Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
