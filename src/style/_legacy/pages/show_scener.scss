@@ -136,6 +136,22 @@
         }
     }
 
+    .bbses_operated_panel {
+        .bbses {
+            clear: both;
+            padding-bottom: 16px;
+
+            a {
+                text-decoration: none;
+                color: #444;
+                font-weight: bold;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
     .last_edited_by {
         clear: both;
         padding-top: 16px;
