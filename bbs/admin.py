@@ -1,5 +1,11 @@
 from django.contrib import admin
 
-from bbs.models import BBS
+from bbs.models import BBS, Operator
 
-admin.site.register(BBS, raw_id_fields=['bbstros'])
+
+class StaffInline(admin.TabularInline):
+    model = Operator
+    raw_id_fields = ['releaser']
+
+
+admin.site.register(BBS, raw_id_fields=['bbstros'], inlines=[StaffInline])
