@@ -43,6 +43,8 @@ def show(request, scener_id, edit_mode=False):
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
     parties_organised = scener.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+    # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
+    bbses_operated = scener.bbses_operated.select_related('bbs').defer('bbs__notes').order_by('-role', 'bbs__name')
 
     return render(request, 'sceners/show.html', {
         'scener': scener,
@@ -50,6 +52,7 @@ def show(request, scener_id, edit_mode=False):
         'editing_groups': (request.GET.get('editing') == 'groups'),
         'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
         'parties_organised': parties_organised,
+        'bbses_operated': bbses_operated,
         'can_edit_real_names': can_edit_real_names,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked),
         'show_locked_button': request.user.is_authenticated and scener.locked,
