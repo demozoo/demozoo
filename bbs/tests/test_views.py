@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from bbs.models import BBS
-from demoscene.models import Edit
+from bbs.models import BBS, Operator
+from demoscene.models import Edit, Releaser
 from productions.models import Production
 
 
@@ -173,3 +173,27 @@ class TestShowHistory(TestCase):
         bbs = BBS.objects.get(name='StarPort')
         response = self.client.get('/bbs/%d/history/' % bbs.id)
         self.assertEqual(response.status_code, 200)
+
+
+class TestAddOperator(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+        self.gasman = Releaser.objects.get(name='Gasman')
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/add_operator/' % self.bbs.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/add_operator/' % self.bbs.id, {
+            'releaser_nick_search': 'gasman',
+            'releaser_nick_match_id': self.gasman.primary_nick.id,
+            'releaser_nick_match_name': 'gasman',
+            'role': 'co-sysop'
+        })
+        self.assertRedirects(response, '/bbs/%d/?editing=staff' % self.bbs.id)
+        self.assertEqual(1, Operator.objects.filter(releaser=self.gasman, bbs=self.bbs).count())

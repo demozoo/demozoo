@@ -2,8 +2,9 @@ from django import forms
 from django.forms.formsets import formset_factory
 
 from form_with_location import ModelFormWithLocation
+from nick_field import NickField
 
-from bbs.models import BBS
+from bbs.models import BBS, OPERATOR_TYPES
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField
 
@@ -49,3 +50,22 @@ class BBStroForm(forms.Form):
     production = ProductionField()
 
 BBStroFormset = formset_factory(BBStroForm, can_delete=True, extra=1)
+
+
+class OperatorForm(forms.Form):
+    releaser_nick = NickField(label='Staff member')
+    role = forms.ChoiceField(label='Role', choices=OPERATOR_TYPES)
+
+    def log_edit(self, user, releaser, bbs):
+        # build up log description
+        descriptions = []
+        changed_fields = self.changed_data
+        if 'releaser_nick' in changed_fields:
+            descriptions.append(u"changed staff member to %s" % releaser)
+        if 'role' in changed_fields:
+            descriptions.append("changed role to %s" % self.cleaned_data['role'])
+        if descriptions:
+            description_list = u", ".join(descriptions)
+            Edit.objects.create(action_type='edit_bbs_operator', focus=releaser, focus2=bbs,
+                description=u"Updated %s as staff member of %s: %s" % (releaser, bbs, description_list),
+                user=user)

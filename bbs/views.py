@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models.functions import Lower
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from bbs.forms import BBSEditNotesForm, BBSForm, BBStroFormset
-from bbs.models import BBS
+from bbs.forms import BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
+from bbs.models import BBS, Operator
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
 from read_only_mode import writeable_site_required
@@ -33,6 +34,7 @@ def show(request, bbs_id):
         'bbs': bbs,
         'bbstros': bbstros,
         'staff': staff,
+        'editing_staff': (request.GET.get('editing') == 'staff'),
     })
 
 
@@ -164,4 +166,30 @@ def history(request, bbs_id):
     return render(request, 'bbs/history.html', {
         'bbs': bbs,
         'edits': Edit.for_model(bbs, request.user.is_staff),
+    })
+
+
+@writeable_site_required
+@login_required
+def add_operator(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+
+    if request.method == 'POST':
+        form = OperatorForm(request.POST)
+        if form.is_valid():
+            releaser = form.cleaned_data['releaser_nick'].commit().releaser
+            operator = Operator(
+                releaser=releaser,
+                bbs=bbs,
+                role=form.cleaned_data['role'])
+            operator.save()
+            description = u"Added %s as staff member of %s" % (releaser.name, bbs.name)
+            Edit.objects.create(action_type='add_bbs_operator', focus=releaser, focus2=bbs,
+                description=description, user=request.user)
+            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+    else:
+        form = OperatorForm()
+    return render(request, 'bbs/add_operator.html', {
+        'bbs': bbs,
+        'form': form,
     })
