@@ -4,7 +4,7 @@ from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from bbs.forms import BBSEditNotesForm, BBSForm
+from bbs.forms import BBSEditNotesForm, BBSForm, BBStroFormset
 from bbs.models import BBS
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
@@ -119,3 +119,37 @@ def delete(request, bbs_id):
             reverse('delete_bbs', args=[bbs.id]),
             "Are you sure you want to delete %s?" % bbs.name,
             html_title="Deleting %s" % bbs.name)
+
+
+@writeable_site_required
+@login_required
+def edit_bbstros(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    initial_forms = [
+        {'production': production}
+        for production in bbs.bbstros.all()
+    ]
+
+    if request.method == 'POST':
+        formset = BBStroFormset(request.POST, initial=initial_forms)
+        if formset.is_valid():
+            bbstros = [prod_form.cleaned_data['production'].commit()
+                for prod_form in formset.forms
+                if prod_form not in formset.deleted_forms
+                    and 'production' in prod_form.cleaned_data
+            ]
+            bbs.bbstros.set(bbstros)
+
+            if formset.has_changed():
+                bbstro_titles = [prod.title for prod in bbstros] or ['none']
+                bbstro_titles = ", ".join(bbstro_titles)
+                Edit.objects.create(action_type='edit_bbs_bbstros', focus=bbs,
+                    description=u"Set BBStros to %s" % bbstro_titles, user=request.user)
+
+            return redirect('bbs', bbs.id)
+    else:
+        formset = BBStroFormset(initial=initial_forms)
+    return render(request, 'bbs/edit_bbstros.html', {
+        'bbs': bbs,
+        'formset': formset,
+    })

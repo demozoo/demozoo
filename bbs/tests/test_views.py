@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from bbs.models import BBS
+from demoscene.models import Edit
+from productions.models import Production
 
 
 class TestIndex(TestCase):
@@ -118,3 +120,47 @@ class TestDelete(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
         self.assertTrue(BBS.objects.filter(name='StarPort').exists())
+
+
+class TestEditBBStros(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+        self.pondlife = Production.objects.get(title='Pondlife')
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/edit_bbstros/' % self.bbs.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/edit_bbstros/' % self.bbs.id, {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 0,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-production_id': self.pondlife.id,
+            'form-0-production_title': 'Pondlife',
+            'form-0-production_byline_search': '',
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
+        self.assertEqual(self.bbs.bbstros.count(), 1)
+
+        edit = Edit.for_model(self.bbs, True).first()
+        self.assertEqual("Set BBStros to Pondlife", edit.description)
+
+        # no change => no edit log entry added
+        edit_count = Edit.for_model(self.bbs, True).count()
+        response = self.client.post('/bbs/%d/edit_bbstros/' % self.bbs.id, {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 1,
+            'form-MIN_NUM_FORMS': 0,
+            'form-MAX_NUM_FORMS': 1000,
+            'form-0-production_id': self.pondlife.id,
+            'form-0-production_title': 'Pondlife',
+            'form-0-production_byline_search': '',
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
+        self.assertEqual(edit_count, Edit.for_model(self.bbs, True).count())
