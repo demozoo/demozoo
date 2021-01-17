@@ -168,6 +168,27 @@
     },
 
     {
+        "pk": 8,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Abyss",
+            "is_group": false,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 8, "name": "Abyss"}
+    },
+    {
+        "pk": 10,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 9, "name": "Abyss", "search_title": "abyss"}
+    },
+
+    {
         "pk": 1,
         "model": "demoscene.membership",
         "fields": {"member": 1, "group": 2}
@@ -444,11 +465,20 @@
     },
     {
         "pk": 1,
-        "model": "bbs.BBS",
+        "model": "bbs.bbs",
         "fields": {
             "name": "StarPort",
             "location": "Helsinki, Finland",
             "country_code": "FI"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "bbs.operator",
+        "fields": {
+            "bbs": 1,
+            "releaser": 8,
+            "role": "sysop"
         }
     }
 ]

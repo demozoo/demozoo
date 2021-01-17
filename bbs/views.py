@@ -26,9 +26,13 @@ def show(request, bbs_id):
     bbs = get_object_or_404(BBS, id=bbs_id)
     bbstros = bbs.bbstros.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
 
+    # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
+    staff = bbs.staff.select_related('releaser').defer('releaser__notes').order_by('-role', 'releaser__name')
+
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
-        'bbstros': bbstros
+        'bbstros': bbstros,
+        'staff': staff,
     })
 
 
