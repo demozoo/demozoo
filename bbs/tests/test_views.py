@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from bbs.models import BBS, Operator
+from bbs.models import Affiliation, BBS, Operator
 from demoscene.models import Edit, Releaser
 from productions.models import Production
 
@@ -247,3 +247,27 @@ class TestRemoveOperator(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/?editing=staff' % self.bbs.id)
         self.assertEqual(0, Operator.objects.filter(releaser=self.abyss, bbs=self.bbs).count())
+
+
+class TestAddAffiliation(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+        self.hprg = Releaser.objects.get(name='Hooy-Program')
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/add_affiliation/' % self.bbs.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/add_affiliation/' % self.bbs.id, {
+            'group_nick_search': 'hooy-program',
+            'group_nick_match_id': self.hprg.primary_nick.id,
+            'group_nick_match_name': 'hooy-program',
+            'role': '020-hq'
+        })
+        self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
+        self.assertEqual(1, Affiliation.objects.filter(group=self.hprg, bbs=self.bbs).count())

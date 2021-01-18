@@ -67,4 +67,4 @@ class Affiliation(models.Model):
     role = models.CharField(max_length=50, choices=AFFILIATION_TYPES)
 
     def __str__(self):
-        return "%s - %s for %s" % (self.bbs.name, self.role, self.group.name)
+        return "%s - %s for %s" % (self.bbs.name, self.get_role_display(), self.group.name)

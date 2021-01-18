@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from bbs.models import BBS, Operator
+from bbs.models import Affiliation, BBS, Operator
 
 
 class TestBBS(TestCase):
@@ -21,3 +21,11 @@ class TestOperator(TestCase):
     def test_str(self):
         operator = Operator.objects.get(bbs__name='StarPort', releaser__name='Abyss')
         self.assertEqual(str(operator), 'Abyss - sysop of StarPort')
+
+
+class TestAffiliation(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        affiliation = Affiliation.objects.get(bbs__name='StarPort', group__name='Future Crew')
+        self.assertEqual(str(affiliation), 'StarPort - WHQ for Future Crew')

@@ -5,8 +5,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from bbs.forms import BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
-from bbs.models import BBS, Operator
+from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
+from bbs.models import Affiliation, BBS, Operator
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
 from read_only_mode import writeable_site_required
@@ -248,3 +248,29 @@ def remove_operator(request, bbs_id, operator_id):
             reverse('bbs_remove_operator', args=[bbs_id, operator_id]),
             "Are you sure you want to remove %s as staff member of %s?" % (operator.releaser.name, bbs.name),
             html_title="Removing %s as staff member of %s" % (operator.releaser.name, bbs.name))
+
+
+@writeable_site_required
+@login_required
+def add_affiliation(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+
+    if request.method == 'POST':
+        form = AffiliationForm(request.POST)
+        if form.is_valid():
+            group = form.cleaned_data['group_nick'].commit().releaser
+            affiliation = Affiliation(
+                group=group,
+                bbs=bbs,
+                role=form.cleaned_data['role'])
+            affiliation.save()
+            description = u"Added BBS %s as %s for %s" % (bbs.name, affiliation.get_role_display(), group.name)
+            Edit.objects.create(action_type='add_bbs_affiliation', focus=group, focus2=bbs,
+                description=description, user=request.user)
+            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+    else:
+        form = AffiliationForm()
+    return render(request, 'bbs/add_affiliation.html', {
+        'bbs': bbs,
+        'form': form,
+    })

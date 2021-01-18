@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^(\d+)/add_operator/$', views.add_operator, {}, 'bbs_add_operator'),
     url(r'^(\d+)/edit_operator/(\d+)/$', views.edit_operator, {}, 'bbs_edit_operator'),
     url(r'^(\d+)/remove_operator/(\d+)/$', views.remove_operator, {}, 'bbs_remove_operator'),
+    url(r'^(\d+)/add_affiliation/$', views.add_affiliation, {}, 'bbs_add_affiliation'),
 ]

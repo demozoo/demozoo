@@ -4,7 +4,7 @@ from django.forms.formsets import formset_factory
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 
-from bbs.models import BBS, OPERATOR_TYPES
+from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField
 
@@ -68,4 +68,23 @@ class OperatorForm(forms.Form):
             description_list = u", ".join(descriptions)
             Edit.objects.create(action_type='edit_bbs_operator', focus=releaser, focus2=bbs,
                 description=u"Updated %s as staff member of %s: %s" % (releaser, bbs, description_list),
+                user=user)
+
+
+class AffiliationForm(forms.Form):
+    group_nick = NickField(label='Group', groups_only=True)
+    role = forms.ChoiceField(label='Role', choices=AFFILIATION_TYPES)
+
+    def log_edit(self, user, group, bbs):
+        # build up log description
+        descriptions = []
+        changed_fields = self.changed_data
+        if 'group_nick' in changed_fields:
+            descriptions.append(u"changed group to %s" % group)
+        if 'role' in changed_fields:
+            descriptions.append("changed role to %s" % self.cleaned_data['role'])
+        if descriptions:
+            description_list = u", ".join(descriptions)
+            Edit.objects.create(action_type='edit_bbs_affiliation', focus=group, focus2=bbs,
+                description=u"Updated %s's affiliation with %s: %s" % (bbs, group, description_list),
                 user=user)
