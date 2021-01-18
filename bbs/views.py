@@ -292,7 +292,7 @@ def edit_affiliation(request, bbs_id, affiliation_id):
             affiliation.group = group
             affiliation.role = form.cleaned_data['role']
             affiliation.save()
-            form.log_edit(request.user, group, bbs)
+            form.log_edit(request.user, affiliation)
 
             return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
     else:
@@ -305,3 +305,23 @@ def edit_affiliation(request, bbs_id, affiliation_id):
         'affiliation': affiliation,
         'form': form,
     })
+
+
+@writeable_site_required
+@login_required
+def remove_affiliation(request, bbs_id, affiliation_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    affiliation = get_object_or_404(Affiliation, bbs=bbs, id=affiliation_id)
+
+    if request.method == 'POST':
+        if request.POST.get('yes'):
+            affiliation.delete()
+            description = u"Removed %s's affiliation with %s" % (affiliation.group.name, bbs.name)
+            Edit.objects.create(action_type='remove_bbs_affiliation', focus=affiliation.group, focus2=bbs,
+                description=description, user=request.user)
+        return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+    else:
+        return simple_ajax_confirmation(request,
+            reverse('bbs_remove_affiliation', args=[bbs_id, affiliation_id]),
+            "Are you sure you want to remove %s's affiliation with %s?" % (affiliation.group.name, bbs.name),
+            html_title="Removing %s's affiliation with %s" % (affiliation.group.name, bbs.name))
