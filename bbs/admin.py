@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bbs.models import BBS, Operator
+from bbs.models import Affiliation, BBS, Operator
 
 
 class StaffInline(admin.TabularInline):
@@ -8,4 +8,9 @@ class StaffInline(admin.TabularInline):
     raw_id_fields = ['releaser']
 
 
-admin.site.register(BBS, raw_id_fields=['bbstros'], inlines=[StaffInline])
+class AffiliationInline(admin.TabularInline):
+    model = Affiliation
+    raw_id_fields = ['group']
+
+
+admin.site.register(BBS, raw_id_fields=['bbstros'], inlines=[StaffInline, AffiliationInline])

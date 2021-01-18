@@ -32,7 +32,7 @@ class BBS(models.Model):
         Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
         that should prevent its deletion
         """
-        return self.bbstros.exists() or self.staff.exists()
+        return self.bbstros.exists() or self.staff.exists() or self.affiliations.exists()
 
     class Meta:
         verbose_name_plural = 'BBSes'
@@ -51,3 +51,20 @@ class Operator(models.Model):
 
     def __str__(self):
         return "%s - %s of %s" % (self.releaser.name, self.role, self.bbs.name)
+
+
+AFFILIATION_TYPES= [
+    ('010-whq', 'WHQ'),
+    ('020-hq', 'HQ'),
+    ('030-memberboard', 'Memberboard'),
+    ('040-distsite', 'Distsite'),
+]
+
+
+class Affiliation(models.Model):
+    bbs = models.ForeignKey(BBS, related_name='affiliations', on_delete=models.CASCADE)
+    group = models.ForeignKey('demoscene.Releaser', related_name='bbs_affiliations', on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, choices=AFFILIATION_TYPES)
+
+    def __str__(self):
+        return "%s - %s for %s" % (self.bbs.name, self.role, self.group.name)

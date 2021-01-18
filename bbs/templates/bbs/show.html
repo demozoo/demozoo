@@ -85,6 +85,36 @@
                 <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon add open_in_lightbox add_operator">Add staff member</a>
             {% endif %}
         </div>
+
+        <div class="panel affiliations_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
+            <h3 class="panel__title">Affiliated with</h3>
+
+            {% if site_is_writeable and not user.is_authenticated %}
+                {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'log_in' %}?next={{ bbs.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
+                    </li>
+                </ul>
+            {% endif %}
+
+            <ul class="affiliations">
+                {% for affiliation in affiliations %}
+                    <li class="group">
+                        <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
+                        - {{ affiliation.get_role_display }}
+                        {% if site_is_writeable and user.is_authenticated %}
+                            <a href="{# url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox edit_affiliation">
+                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if site_is_writeable and user.is_authenticated %}
+                <a href="{# url 'bbs_add_affiliation' bbs.id #}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
+            {% endif %}
+        </div>
     </div>
     
     <div id="main_column">
