@@ -109,6 +109,24 @@
         }
     }
 
+    ul.bbses {
+        margin-bottom: 8px;
+        clear: both;
+
+        li {
+            padding-left: 24px;
+            padding-top: 2px;
+            padding-bottom: 3px;
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-image: url(/static/images/icons/telephone.png);
+
+            a {
+                color: #008;
+            }
+        }
+    }
+
     .parties_organised_panel {
         .parties {
             clear: both;

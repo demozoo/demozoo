@@ -35,6 +35,7 @@ def show(request, group_id):
     external_links = group.active_external_links.select_related('releaser').defer('releaser__notes')
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
     parties_organised = group.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+    bbs_affiliations = group.bbs_affiliations.select_related('bbs').defer('bbs__notes').order_by('role', 'bbs__name')
 
     return render(request, 'groups/show.html', {
         'group': group,
@@ -45,6 +46,7 @@ def show(request, group_id):
         'editing_subgroups': (request.GET.get('editing') == 'subgroups'),
         'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
         'parties_organised': parties_organised,
+        'bbs_affiliations': bbs_affiliations,
         'member_productions': group.member_productions().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', 'release_date_precision', '-sortable_title'),
         'external_links': external_links,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not group.locked),
