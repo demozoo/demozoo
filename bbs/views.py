@@ -274,3 +274,34 @@ def add_affiliation(request, bbs_id):
         'bbs': bbs,
         'form': form,
     })
+
+
+@writeable_site_required
+@login_required
+def edit_affiliation(request, bbs_id, affiliation_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    affiliation = get_object_or_404(Affiliation, bbs=bbs, id=affiliation_id)
+
+    if request.method == 'POST':
+        form = AffiliationForm(request.POST, initial={
+            'group_nick': affiliation.group.primary_nick,
+            'role': affiliation.role,
+        })
+        if form.is_valid():
+            group = form.cleaned_data['group_nick'].commit().releaser
+            affiliation.group = group
+            affiliation.role = form.cleaned_data['role']
+            affiliation.save()
+            form.log_edit(request.user, group, bbs)
+
+            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+    else:
+        form = AffiliationForm(initial={
+            'group_nick': affiliation.group.primary_nick,
+            'role': affiliation.role,
+        })
+    return render(request, 'bbs/edit_affiliation.html', {
+        'bbs': bbs,
+        'affiliation': affiliation,
+        'form': form,
+    })

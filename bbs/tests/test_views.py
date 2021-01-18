@@ -271,3 +271,31 @@ class TestAddAffiliation(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
         self.assertEqual(1, Affiliation.objects.filter(group=self.hprg, bbs=self.bbs).count())
+
+
+class TestEditAffiliation(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+        self.fc = Releaser.objects.get(name='Future Crew')
+        self.hprg = Releaser.objects.get(name='Hooy-Program')
+        self.affiliation = Affiliation.objects.get(bbs=self.bbs, group=self.fc)
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/edit_affiliation/%d/' % (self.bbs.id, self.affiliation.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/edit_affiliation/%d/' % (self.bbs.id, self.affiliation.id), {
+            'group_nick_search': 'hooy-program',
+            'group_nick_match_id': self.hprg.primary_nick.id,
+            'group_nick_match_name': 'hooy-program',
+            'role': '020-hq'
+        })
+        self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
+        self.affiliation.refresh_from_db()
+        self.assertEqual(self.affiliation.role, "020-hq")
+        self.assertEqual(self.affiliation.group, self.hprg)
