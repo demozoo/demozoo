@@ -32,6 +32,6 @@
     </form>
 
     <p>
-        <a href="{# url 'bbs_remove_affiliation' bbs.id affiliation.id #}" class="open_in_lightbox">Remove affiliation</a>
+        <a href="{% url 'bbs_remove_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox">Remove affiliation</a>
     </p>
 {% endblock %}
