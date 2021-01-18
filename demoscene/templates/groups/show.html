@@ -185,6 +185,21 @@
                 <a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
             {% endif %}
         </div>
+
+        {% if bbs_affiliations %}
+            <div class="panel bbs_panel">
+                <h3 class="panel__title">BBS affiliations</h3>
+
+                <ul class="bbses">
+                    {% for affiliation in bbs_affiliations %}
+                        <li class="bbs">
+                            <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
+                            {% releaser_flag affiliation.bbs %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </div>
 
     <div id="main_column">
