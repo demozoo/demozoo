@@ -26,7 +26,6 @@
         }
     }
 
-
     .staff_panel {
         &.hide_edit_controls {
             .edit_operator, .add_operator {
@@ -72,4 +71,48 @@
         }
     }
 
+    .affiliations_panel {
+        &.hide_edit_controls {
+            .edit_affiliation, .add_affiliation {
+                display: none;
+            }
+        }
+        &.editing {
+            ul.affiliations li:hover {
+                background-color: #ddd;
+            }
+        }
+        ul.actions {
+            padding-right: 8px;
+        }
+    }
+
+    ul.affiliations {
+        margin-bottom: 8px;
+        clear: both;
+
+        li {
+            padding-left: 24px;
+            padding-top: 2px;
+            padding-bottom: 3px;
+            background-position: left center;
+            background-repeat: no-repeat;
+
+            a {
+                color: #008;
+            }
+
+            &.previous_membership a {
+                color: #bbe;
+            }
+
+            &.group {
+                background-image: url(/static/images/icons/group.png);
+            }
+
+            a.edit_affiliation {
+                float: right;
+            }
+        }
+    }
 }

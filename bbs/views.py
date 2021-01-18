@@ -30,11 +30,15 @@ def show(request, bbs_id):
     # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
     staff = bbs.staff.select_related('releaser').defer('releaser__notes').order_by('-role', 'releaser__name')
 
+    affiliations = bbs.affiliations.select_related('group').defer('group__notes').order_by('role', 'group__name')
+
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
         'bbstros': bbstros,
         'staff': staff,
         'editing_staff': (request.GET.get('editing') == 'staff'),
+        'affiliations': affiliations,
+        'editing_affiliations': (request.GET.get('editing') == 'affiliations'),
     })
 
 
