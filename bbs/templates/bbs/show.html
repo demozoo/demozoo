@@ -104,7 +104,7 @@
                         <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
                         - {{ affiliation.get_role_display }}
                         {% if site_is_writeable and user.is_authenticated %}
-                            <a href="{# url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox edit_affiliation">
+                            <a href="{# url 'bbs_edit_affiliation' bbs.id affiliation.id #}" class="open_in_lightbox edit_affiliation">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
                             </a>
                         {% endif %}
@@ -112,7 +112,7 @@
                 {% endfor %}
             </ul>
             {% if site_is_writeable and user.is_authenticated %}
-                <a href="{# url 'bbs_add_affiliation' bbs.id #}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
+                <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
             {% endif %}
         </div>
     </div>

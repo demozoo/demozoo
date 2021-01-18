@@ -1,0 +1,33 @@
+{% extends base_template_with_ajax_option %}
+
+
+{% block html_title %}Add group affiliation for {{ bbs.name }} - Demozoo{% endblock %}
+
+{% block extra_head %}
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.add_affiliation_form'));
+        })
+    </script>
+{% endblock %}
+
+{% block base_main %}
+    <h2>Add group affiliation for {{ bbs.name }}:</h2>
+
+    <form action="{% url 'bbs_add_affiliation' bbs.id %}" method="post" class="entry_form add_affiliation_form">
+        {% csrf_token %}
+
+        {% for field in form.visible_fields %}
+            {% include "shared/form_field.html" %}
+        {% endfor %}
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+
+        <div class="field">
+            <input type="submit" value="Add group"/>
+        </div>
+    </form>
+{% endblock %}
