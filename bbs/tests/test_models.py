@@ -29,3 +29,5 @@ class TestAffiliation(TestCase):
     def test_str(self):
         affiliation = Affiliation.objects.get(bbs__name='StarPort', group__name='Future Crew')
         self.assertEqual(str(affiliation), 'StarPort - WHQ for Future Crew')
+        affiliation.role = None
+        self.assertEqual(str(affiliation), 'Future Crew affiliated with StarPort')

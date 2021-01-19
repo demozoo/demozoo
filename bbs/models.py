@@ -64,7 +64,10 @@ AFFILIATION_TYPES= [
 class Affiliation(models.Model):
     bbs = models.ForeignKey(BBS, related_name='affiliations', on_delete=models.CASCADE)
     group = models.ForeignKey('demoscene.Releaser', related_name='bbs_affiliations', on_delete=models.CASCADE)
-    role = models.CharField(max_length=50, choices=AFFILIATION_TYPES)
+    role = models.CharField(max_length=50, choices=AFFILIATION_TYPES, blank=True)
 
     def __str__(self):
-        return "%s - %s for %s" % (self.bbs.name, self.get_role_display(), self.group.name)
+        if self.role:
+            return "%s - %s for %s" % (self.bbs.name, self.get_role_display(), self.group.name)
+        else:
+            return "%s affiliated with %s" % (self.group.name, self.bbs.name)

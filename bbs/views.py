@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models.functions import Lower
+from django.db.models import Value
+from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -30,7 +31,10 @@ def show(request, bbs_id):
     # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
     staff = bbs.staff.select_related('releaser').defer('releaser__notes').order_by('-role', 'releaser__name')
 
-    affiliations = bbs.affiliations.select_related('group').defer('group__notes').order_by('role', 'group__name')
+    affiliations = bbs.affiliations.select_related('group').defer('group__notes').order_by(
+        Concat('role', Value('999')),  # sort role='' after the numbered ones. Ewww.
+        'group__name'
+    )
 
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
@@ -264,7 +268,10 @@ def add_affiliation(request, bbs_id):
                 bbs=bbs,
                 role=form.cleaned_data['role'])
             affiliation.save()
-            description = u"Added BBS %s as %s for %s" % (bbs.name, affiliation.get_role_display(), group.name)
+            if affiliation.role:
+                description = u"Added BBS %s as %s for %s" % (bbs.name, affiliation.get_role_display(), group.name)
+            else:
+                description = u"Added affiliation with BBS %s for %s" % (bbs.name, group.name)
             Edit.objects.create(action_type='add_bbs_affiliation', focus=group, focus2=bbs,
                 description=description, user=request.user)
             return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")

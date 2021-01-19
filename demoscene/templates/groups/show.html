@@ -195,6 +195,7 @@
                         <li class="bbs">
                             <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
                             {% releaser_flag affiliation.bbs %}
+                            {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
                         </li>
                     {% endfor %}
                 </ul>
