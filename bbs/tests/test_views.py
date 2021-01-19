@@ -272,6 +272,16 @@ class TestAddAffiliation(TestCase):
         self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
         self.assertEqual(1, Affiliation.objects.filter(group=self.hprg, bbs=self.bbs).count())
 
+    def test_post_blank_role(self):
+        response = self.client.post('/bbs/%d/add_affiliation/' % self.bbs.id, {
+            'group_nick_search': 'hooy-program',
+            'group_nick_match_id': self.hprg.primary_nick.id,
+            'group_nick_match_name': 'hooy-program',
+            'role': ''
+        })
+        self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
+        self.assertEqual(1, Affiliation.objects.filter(group=self.hprg, bbs=self.bbs).count())
+
 
 class TestEditAffiliation(TestCase):
     fixtures = ['tests/gasman.json']

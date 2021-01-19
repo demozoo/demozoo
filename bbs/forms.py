@@ -73,7 +73,7 @@ class OperatorForm(forms.Form):
 
 class AffiliationForm(forms.Form):
     group_nick = NickField(label='Group', groups_only=True)
-    role = forms.ChoiceField(label='Role', choices=AFFILIATION_TYPES)
+    role = forms.ChoiceField(label='Role', choices=[('', '')] + AFFILIATION_TYPES, required=False)
 
     def log_edit(self, user, affiliation):
         # build up log description
@@ -82,7 +82,7 @@ class AffiliationForm(forms.Form):
         if 'group_nick' in changed_fields:
             descriptions.append(u"changed group to %s" % affiliation.group)
         if 'role' in changed_fields:
-            descriptions.append("changed role to %s" % affiliation.get_role_display())
+            descriptions.append("changed role to %s" % (affiliation.get_role_display() or 'None'))
         if descriptions:
             description_list = u", ".join(descriptions)
             Edit.objects.create(action_type='edit_bbs_affiliation',

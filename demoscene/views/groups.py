@@ -1,6 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
+from django.db.models import Value
+from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
@@ -35,7 +37,10 @@ def show(request, group_id):
     external_links = group.active_external_links.select_related('releaser').defer('releaser__notes')
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
     parties_organised = group.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
-    bbs_affiliations = group.bbs_affiliations.select_related('bbs').defer('bbs__notes').order_by('role', 'bbs__name')
+    bbs_affiliations = group.bbs_affiliations.select_related('bbs').defer('bbs__notes').order_by(
+        Concat('role', Value('999')),  # sort role='' after the numbered ones. Ewww.
+        'bbs__name'
+    )
 
     return render(request, 'groups/show.html', {
         'group': group,
