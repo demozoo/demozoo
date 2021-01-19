@@ -387,6 +387,28 @@ class TestEditExternalLinks(TestCase):
             1
         )
 
+    def test_post_overlong(self):
+        sceneid_link = self.gasman.external_links.create(link_class='SceneidAccount', parameter='2260')
+        pouet_link = self.gasman.external_links.create(link_class='PouetGroup', parameter='720')
+        response = self.client.post('/releasers/%d/edit_external_links/' % self.gasman.id, {
+            'external_links-TOTAL_FORMS': 3,
+            'external_links-INITIAL_FORMS': 2,
+            'external_links-MIN_NUM_FORMS': 0,
+            'external_links-MAX_NUM_FORMS': 1000,
+            'external_links-0-id': sceneid_link.id,
+            'external_links-0-url': 'https://www.pouet.net/user.php?who=2260',
+            'external_links-0-releaser': self.gasman.id,
+            'external_links-0-DELETE': 'external_links-0-DELETE',
+            'external_links-1-id': pouet_link.id,
+            'external_links-1-url': 'https://www.pouet.net/groups.php?which=721',
+            'external_links-1-releaser': self.gasman.id,
+            'external_links-2-id': '',
+            'external_links-2-url': 'https://twitter.com/gasm' + ('a' * 10000) + 'nic',
+            'external_links-2-releaser': self.gasman.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ensure this value has at most 4096 characters")
+
     def test_post_delete_multiple(self):
         sceneid_link = self.gasman.external_links.create(link_class='SceneidAccount', parameter='2260')
         pouet_link = self.gasman.external_links.create(link_class='PouetGroup', parameter='720')

@@ -54,6 +54,15 @@ class TestCreateGroup(TestCase):
         limp_ninja = Releaser.objects.get(name='Limp Ninja')
         self.assertRedirects(response, '/groups/%d/' % limp_ninja.id)
 
+    def test_post_overlong(self):
+        response = self.client.post('/groups/new/', {
+            'name': 'Limp Ninja',
+            'abbreviation': 'limp ninj' + ('a' * 1000),
+            'nick_variant_list': '',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Ensure this value has at most 255 characters')
+
 
 class TestAddMember(TestCase):
     fixtures = ['tests/gasman.json']

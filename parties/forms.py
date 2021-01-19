@@ -16,11 +16,11 @@ from productions.fields.production_field import ProductionField
 
 
 class PartyForm(ModelFormWithLocation):
-    name = forms.CharField(label='Party name', help_text="e.g. Revision 2011")
-    party_series_name = forms.CharField(label='Party series', help_text="e.g. Revision")
+    name = forms.CharField(label='Party name', help_text="e.g. Revision 2011", max_length=255)
+    party_series_name = forms.CharField(label='Party series', help_text="e.g. Revision", max_length=255)
     start_date = FuzzyDateField(help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
     end_date = FuzzyDateField(help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
-    scene_org_folder = forms.CharField(required=False, widget=forms.HiddenInput)
+    scene_org_folder = forms.CharField(required=False, widget=forms.HiddenInput, max_length=4096)
 
     def save(self, commit=True):
         try:

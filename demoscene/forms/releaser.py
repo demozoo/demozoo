@@ -14,9 +14,14 @@ from django.forms.models import inlineformset_factory
 
 
 class CreateGroupForm(forms.ModelForm):
-    abbreviation = forms.CharField(required=False, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
-    nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
-        help_text="(as a comma-separated list)")
+    abbreviation = forms.CharField(required=False, max_length=255,
+        help_text="(optional - only if there's one that's actively being used. Don't just make one up!)"
+    )
+    nick_variant_list = forms.CharField(
+        label="Other spellings / abbreviations of this name",
+        required=False, max_length=255,
+        help_text="(as a comma-separated list)"
+    )
 
     def __init__(self, *args, **kwargs):
         super(CreateGroupForm, self).__init__(*args, **kwargs)
@@ -46,8 +51,11 @@ class CreateGroupForm(forms.ModelForm):
 
 
 class CreateScenerForm(forms.ModelForm):
-    nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
-        help_text="(as a comma-separated list)")
+    nick_variant_list = forms.CharField(
+        label="Other spellings / abbreviations of this name",
+        required=False, max_length=255,
+        help_text="(as a comma-separated list)"
+    )
 
     def __init__(self, *args, **kwargs):
         super(CreateScenerForm, self).__init__(*args, **kwargs)
@@ -112,8 +120,11 @@ class ReleaserEditNotesForm(forms.ModelForm):
 
 
 class NickForm(forms.ModelForm):
-    nick_variant_list = forms.CharField(label="Other spellings / abbreviations of this name", required=False,
-        help_text="(as a comma-separated list)")
+    nick_variant_list = forms.CharField(
+        label="Other spellings / abbreviations of this name",
+        required=False, max_length=255,
+        help_text="(as a comma-separated list)"
+    )
 
     def __init__(self, releaser, *args, **kwargs):
         for_admin = kwargs.pop('for_admin', False)

@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 class ExternalLinkForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExternalLinkForm, self).__init__(*args, **kwargs)
-        self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url)
+        self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url, max_length=4096)
 
     def clean_url(self):
         data = self.cleaned_data['url']

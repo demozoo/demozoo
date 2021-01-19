@@ -33,6 +33,14 @@ class TestNewTopic(TestCase):
         topic = Topic.objects.get(title="I'm off to the shops")
         self.assertRedirects(response, '/forums/%d/' % topic.id)
 
+    def test_post_overlong(self):
+        response = self.client.post('/forums/new/', {
+            'title': "Amig" + ('a' * 1000),
+            'body': "I am very original."
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ensure this value has at most 255 characters")
+
 
 class TestShowTopic(TestCase):
     fixtures = ['tests/forum.json']

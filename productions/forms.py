@@ -32,7 +32,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', Production())
         super(BaseProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
-        self.fields['title'] = forms.CharField(initial=self.instance.title)
+        self.fields['title'] = forms.CharField(initial=self.instance.title, max_length=255)
         self.fields['byline'] = BylineField(required=False, initial=self.instance.byline_search(), label='By')
         self.fields['release_date'] = FuzzyDateField(required=False, initial=self.instance.release_date,
             help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
@@ -156,7 +156,7 @@ class CreateProductionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', Production())
         super(CreateProductionForm, self).__init__(*args, **kwargs)
-        self.fields['title'] = forms.CharField()
+        self.fields['title'] = forms.CharField(max_length=255)
         self.fields['byline'] = BylineField(required=False, label='By')
         self.fields['release_date'] = FuzzyDateField(required=False,
             help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')

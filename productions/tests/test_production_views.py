@@ -480,7 +480,7 @@ class TestEditCoreDetails(TestCase):
         )
         self.assertContains(
             response,
-            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
             html=True
         )
 
@@ -512,7 +512,7 @@ class TestEditCoreDetails(TestCase):
         self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
         self.assertContains(
             response,
-            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
             html=True
         )
 
@@ -544,7 +544,7 @@ class TestEditCoreDetails(TestCase):
         self.assertContains(response, "No party selected")
         self.assertContains(
             response,
-            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
             html=True
         )
 
@@ -573,7 +573,7 @@ class TestEditCoreDetails(TestCase):
         self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
         self.assertContains(
             response,
-            '<input type="text" name="title" required id="id_title" value="P0ndlife">',
+            '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
             html=True
         )
 
