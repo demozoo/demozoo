@@ -38,9 +38,9 @@
         <h4>Invitation for <a href="{{ party.get_absolute_url }}">{{ party.name }}</a></h4>
     {% endfor %}
 
-    {% for bbs in bbses_advertised %}
-        <h4>Advert for <a href="{{ bbs.get_absolute_url }}">{{ bbs.name }}</a></h4>
-    {% endfor %}
+    {% if bbses_advertised %}
+        <h4>Advert for {% for bbs in bbses_advertised %}<a href="{{ bbs.get_absolute_url }}">{{ bbs.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</h4>
+    {% endif %}
 
     <ul class="attributes">
         {% if production.release_date and release_parties|length == 1 %}
