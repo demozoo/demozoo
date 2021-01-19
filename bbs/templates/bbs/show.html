@@ -72,6 +72,7 @@
                 {% for operator in staff %}
                     <li class="scener">
                         <a href="{% url 'scener' operator.releaser.id %}">{{ operator.releaser.name }}</a>
+                        {% releaser_flag operator.releaser %}
                         - {{ operator.get_role_display }}
                         {% if site_is_writeable and user.is_authenticated %}
                             <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="open_in_lightbox edit_operator">
