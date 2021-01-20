@@ -113,7 +113,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     def groups(self):
         return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
 
-    def current_groups(self):
+    def current_groups(self, prefetch_nicks=False):
         if self.has_prefetched('group_memberships'):
             # do the is_current filter in Python to avoid another SQL query
             return [
@@ -122,7 +122,10 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
                 if membership.is_current
             ]
         else:
-            return [membership.group for membership in self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')]
+            current_memberships = self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')
+            if prefetch_nicks:
+                current_memberships = current_memberships.prefetch_related('group__nicks')
+            return [membership.group for membership in current_memberships]
 
     def members(self):
         return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
@@ -132,7 +135,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
     def name_with_affiliations(self):
-        groups = self.current_groups()
+        groups = self.current_groups(prefetch_nicks=True)
 
         if groups:
             if sum([len(group.name) for group in groups]) >= 20:
@@ -243,7 +246,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
 
 
 @python_2_unicode_compatible
-class Nick(models.Model):
+class Nick(ModelWithPrefetchSnooping, models.Model):
     releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=255, blank=True, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
@@ -284,7 +287,10 @@ class Nick(models.Model):
 
     @property
     def nick_variant_and_abbreviation_list(self):
-        variant_names = [variant.name for variant in self.variants.exclude(name=self.name)]
+        if self.has_prefetched('variants'):
+            variant_names = [variant.name for variant in self.variants.all() if variant.name != self.name]
+        else:
+            variant_names = [variant.name for variant in self.variants.exclude(name=self.name)]
         return ", ".join(variant_names)
 
     def save(self, *args, **kwargs):
