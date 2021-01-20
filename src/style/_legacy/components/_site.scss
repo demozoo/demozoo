@@ -37,6 +37,11 @@
                 text-decoration: none;
                 text-transform: uppercase;
 
+                &.smallcaps {
+                    font-variant: small-caps;
+                    text-transform: none;
+                }
+
                 &:hover {
                     border-top: 4px solid #ec5a64;
                     margin-top: -4px;
