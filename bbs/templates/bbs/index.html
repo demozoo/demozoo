@@ -24,9 +24,8 @@
                         </svg>
                     </div>
                     <div>
-                        <a href="{% url 'bbs' bbs.id %}">
-                            {{ bbs.name }}
-                        </a>
+                        <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
+                        {% releaser_flag bbs %}
                     </div>
                 </div>
             </li>
