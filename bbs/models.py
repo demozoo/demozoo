@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from demoscene.utils.text import generate_search_title
+
 
 class BBS(models.Model):
     name = models.CharField(max_length=255)
@@ -15,8 +17,15 @@ class BBS(models.Model):
 
     bbstros = models.ManyToManyField('productions.Production', related_name='bbses', blank=True)
 
+    search_title = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.search_title = generate_search_title(self.name)
+
+        return super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])

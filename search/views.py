@@ -6,6 +6,7 @@ from django.shortcuts import render
 
 
 from search.forms import SearchForm
+from bbs.models import BBS
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
@@ -72,6 +73,13 @@ def live_search(request):
                 ).order_by().filter(search_title__startswith=clean_query).values('pk', 'type')
             )
 
+        if (not category) or category == 'bbs':
+            qs = qs.union(
+                BBS.objects.annotate(
+                    type=models.Value('bbs', output_field=models.CharField()),
+                ).order_by().filter(search_title__startswith=clean_query).values('pk', 'type')
+            )
+
         search_result_data = list(qs[:10])
 
         # Assemble the results into a plan for fetching the actual models -
@@ -105,6 +113,11 @@ def live_search(request):
             parties = Party.objects.filter(pk__in=to_fetch['party'])
             for party in parties:
                 fetched[('party', party.pk)] = party
+
+        if 'bbs' in to_fetch:
+            bbses = BBS.objects.filter(pk__in=to_fetch['bbs'])
+            for bbs in bbses:
+                fetched[('bbs', bbs.pk)] = bbs
 
         # Build final list in same order as returned by the original results query
         results = []
@@ -145,6 +158,12 @@ def live_search(request):
                 elif d['type'] == 'party':
                     results.append({
                         'type': 'party',
+                        'url': item.get_absolute_url(),
+                        'value': item.name,
+                    })
+                elif d['type'] == 'bbs':
+                    results.append({
+                        'type': 'bbs',
                         'url': item.get_absolute_url(),
                         'value': item.name,
                     })
