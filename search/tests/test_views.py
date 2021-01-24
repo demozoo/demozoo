@@ -204,6 +204,15 @@ class TestSearch(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Forever 2e3")
 
+    def test_get_with_bbs_type(self):
+        response = self.client.get('/search/?q=gasman+type:bbs')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Gasman")
+
+        response = self.client.get('/search/?q=starport+type:bbs')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "StarPort")
+
     def test_get_with_prod_type(self):
         response = self.client.get('/search/?q=madrielle+type:"4K Intro"')
         self.assertEqual(response.status_code, 200)
@@ -247,6 +256,11 @@ class TestSearch(TestCase):
         response = self.client.get('/search/?q=of:"hooy-program"')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Gasman")
+
+    def test_get_bbs_with_filter_only(self):
+        response = self.client.get('/search/?q=type:bbs')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "StarPort")
 
     def test_invalid_search(self):
         response = self.client.get('/search/?q=')

@@ -14,6 +14,7 @@ from unidecode import unidecode
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from fuzzy_date import FuzzyDate
+from bbs.models import BBS
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionType, Screenshot
@@ -85,12 +86,14 @@ class SearchForm(forms.Form):
             production_filter_q = Q(search_document=psql_query)
             releaser_filter_q = Q(search_document=psql_query)
             party_filter_q = Q(search_document=psql_query)
+            bbs_filter_q = Q(search_document=psql_query)
         else:
             production_filter_q = Q()
             releaser_filter_q = Q()
             party_filter_q = Q()
+            bbs_filter_q = Q()
 
-        subqueries_to_perform = set(['production', 'releaser', 'party'])
+        subqueries_to_perform = set(['production', 'releaser', 'party', 'bbs'])
 
 
         if 'platform' in filter_expressions or 'on' in filter_expressions:
@@ -236,10 +239,13 @@ class SearchForm(forms.Form):
             if 'party' in requested_types:
                 subqueries_from_type.add('party')
 
+            if 'bbs' in requested_types:
+                subqueries_from_type.add('bbs')
+
             # assume that any otherwise-unrecognised 'type' values indicate a production type
             production_types = set()
             for val in requested_types:
-                if val not in ('production', 'graphics', 'music', 'scener', 'group', 'releaser', 'party'):
+                if val not in ('production', 'graphics', 'music', 'scener', 'group', 'releaser', 'party', 'bbs'):
                     production_types.add(val)
 
             if production_types:
@@ -358,6 +364,33 @@ class SearchForm(forms.Form):
                 ).values('pk', 'type', 'exactness', 'rank'),
             )
 
+        if 'bbs' in subqueries_to_perform:
+            # Search for BBSes
+
+            if has_search_term:
+                rank_annotation = SearchRank(F('search_document'), psql_query)
+                exactness_annotation = models.Case(
+                    models.When(search_title=clean_query, then=models.Value(2)),
+                    models.When(search_title__startswith=clean_query, then=models.Value(1)),
+                    default=models.Value(0, output_field=models.IntegerField()),
+                    output_field=models.IntegerField()
+                )
+            else:
+                rank_annotation = F('name')
+                exactness_annotation = models.Value(0, output_field=models.IntegerField())
+
+            qs = qs.union(
+                BBS.objects.annotate(
+                    rank=rank_annotation,
+                    type=models.Value('bbs', output_field=models.CharField()),
+                    exactness=exactness_annotation,
+                ).filter(
+                    bbs_filter_q
+                ).order_by(
+                    # empty order_by to cancel any model-level native ordering
+                ).values('pk', 'type', 'exactness', 'rank'),
+            )
+
         if has_search_term:
             qs = qs.order_by('-exactness', '-rank', 'pk')
         else:
@@ -419,6 +452,16 @@ class SearchForm(forms.Form):
             for party in parties:
                 party.has_search_snippet = has_search_term and '<b>' in party.search_snippet
                 fetched[('party', party.pk)] = party
+
+        if 'bbs' in to_fetch:
+            bbses = BBS.objects.filter(pk__in=to_fetch['bbs'])
+            if has_search_term:
+                bbses = bbses.annotate(
+                    search_snippet=TSHeadline('notes', psql_query)
+                )
+            for bbs in bbses:
+                bbs.has_search_snippet = has_search_term and '<b>' in bbs.search_snippet
+                fetched[('bbs', bbs.pk)] = bbs
 
         # Build final list in same order as returned by the original results query
         results = []

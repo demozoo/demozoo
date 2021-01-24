@@ -1,0 +1,16 @@
+{% load demoscene_tags %}
+<div class="result">
+    <div class="media media--thumbnail">
+        {% icon 'bbs' %}
+    </div>
+    <div class="result__content">
+        <a href="{{ result.get_absolute_url }}">
+            <span>{{ result }}</span>
+        </a>
+        {% if result.has_search_snippet %}
+            <div class="result__snippet">
+                <p class="snippet">{{ result.search_snippet|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
