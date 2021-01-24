@@ -494,6 +494,7 @@
         "model": "bbs.bbs",
         "fields": {
             "name": "StarPort",
+            "search_title": "starport",
             "location": "Helsinki, Finland",
             "country_code": "FI"
         }

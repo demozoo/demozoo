@@ -287,6 +287,11 @@ class TestLiveSearch(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Forever 2e3")
 
+    def test_get_bbs(self):
+        response = self.client.get('/search/live/?q=starpo&category=bbs')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "StarPort")
+
     def test_no_query(self):
         response = self.client.get('/search/live/')
         self.assertEqual(response.status_code, 200)

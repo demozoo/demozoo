@@ -43,6 +43,7 @@ class SearchForm(forms.Form):
         ('scener', "Sceners"),
         ('group', "Groups"),
         ('party', "Parties"),
+        ('bbs', "BBSes"),
     ])
 
     def clean(self):
