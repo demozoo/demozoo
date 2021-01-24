@@ -4,9 +4,8 @@
         {% icon 'bbs' %}
     </div>
     <div class="result__content">
-        <a href="{{ result.get_absolute_url }}">
-            <span>{{ result }}</span>
-        </a>
+        <a href="{{ result.get_absolute_url }}"><span>{{ result }}</span></a>
+        {% releaser_flag result %}
         {% if result.has_search_snippet %}
             <div class="result__snippet">
                 <p class="snippet">{{ result.search_snippet|safe }}</p>
