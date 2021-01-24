@@ -1,5 +1,10 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.urls import reverse
+
+from strip_markup import strip_markup
+from unidecode import unidecode
 
 from demoscene.utils.text import generate_search_title
 
@@ -18,6 +23,9 @@ class BBS(models.Model):
     bbstros = models.ManyToManyField('productions.Production', related_name='bbses', blank=True)
 
     search_title = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
+    search_document = SearchVectorField(null=True, editable=False)
+
+    search_result_template = 'search/results/bbs.html'
 
     def __str__(self):
         return self.name
@@ -43,8 +51,29 @@ class BBS(models.Model):
         """
         return self.bbstros.exists() or self.staff.exists() or self.affiliations.exists()
 
+    @property
+    def asciified_name(self):
+        return unidecode(self.name)
+
+    @property
+    def asciified_location(self):
+        return self.location and unidecode(self.location)
+
+    @property
+    def plaintext_notes(self):
+        return strip_markup(self.notes)
+
+    def index_components(self):
+        return {
+            'A': self.asciified_name,
+            'C': self.asciified_location + ' ' + self.plaintext_notes,
+        }
+
     class Meta:
         verbose_name_plural = 'BBSes'
+        indexes = [
+            GinIndex(fields=['search_document']),
+        ]
 
 
 OPERATOR_TYPES = [
