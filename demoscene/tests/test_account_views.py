@@ -154,3 +154,16 @@ class TestResetPassword(TestCase):
         self.assertContains(response, "Password change successful")
 
         self.assertTrue(self.client.login(username='testuser', password='b3tt3rpassw0rd!!!'))
+
+
+class TestLogout(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+
+    def test_logout(self):
+        response = self.client.get('/account/logout/')
+        self.assertRedirects(response, '/')
+
+        response = self.client.get('/account/')
+        self.assertRedirects(response, '/account/login/?next=/account/')
