@@ -228,7 +228,7 @@ class SlengpungUser(BaseUrl):
 
 
 class AmpAuthor(BaseUrl):
-    canonical_format = "http://amp.dascene.net/detail.php?view=%s"
+    canonical_format = "https://amp.dascene.net/detail.php?view=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?amp\.dascene\.net/detail\.php', 'view', re.I),
     ]
@@ -238,7 +238,7 @@ class AmpAuthor(BaseUrl):
 
 
 class CsdbScener(BaseUrl):
-    canonical_format = "http://csdb.dk/scener/?id=%s"
+    canonical_format = "https://csdb.dk/scener/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/scener/(?:index\.php)?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/scener/(?:index\.php)?', 'id', re.I),
@@ -249,7 +249,7 @@ class CsdbScener(BaseUrl):
 
 
 class CsdbGroup(BaseUrl):
-    canonical_format = "http://csdb.dk/group/?id=%s"
+    canonical_format = "https://csdb.dk/group/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/group/(?:index\.php)?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/group/(?:index\.php)?', 'id', re.I),
@@ -260,7 +260,7 @@ class CsdbGroup(BaseUrl):
 
 
 class CsdbRelease(BaseUrl):
-    canonical_format = "http://csdb.dk/release/?id=%s"
+    canonical_format = "https://csdb.dk/release/?id=%s"
     tests = [
         # need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
         querystring_match(r'https?://noname\.c64\.org/csdb/release/(?:index\.php)?\?', 'id', re.I),
@@ -273,7 +273,7 @@ class CsdbRelease(BaseUrl):
 
 
 class CsdbMusic(BaseUrl):
-    canonical_format = "http://csdb.dk/sid/?id=%s"
+    canonical_format = "https://csdb.dk/sid/?id=%s"
     tests = [
         # need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
         querystring_match(r'https?://noname\.c64\.org/csdb/sid/(?:index\.php)?\?', 'id', re.I),
@@ -368,7 +368,7 @@ class DeviantartUser(BaseUrl):
 
 
 class MobygamesDeveloper(BaseUrl):
-    canonical_format = "http://www.mobygames.com/developer/sheet/view/developerId,%s/"
+    canonical_format = "https://www.mobygames.com/developer/sheet/view/developerId,%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?mobygames\.com/developer/sheet/view/developerId\,(\d+)', re.I),
     ]
@@ -408,7 +408,7 @@ class AsciiarenaRelease(BaseUrl):
 
 
 class ScenesatAct(BaseUrl):
-    canonical_format = "http://scenesat.com/act/%s"
+    canonical_format = "https://scenesat.com/act/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?scenesat\.com/act/(\d+)', re.I),
     ]
@@ -418,7 +418,7 @@ class ScenesatAct(BaseUrl):
 
 
 class ScenesatTrack(BaseUrl):
-    canonical_format = "http://scenesat.com/track/%s"
+    canonical_format = "https://scenesat.com/track/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?scenesat\.com/track/(\d+)', re.I),
     ]
@@ -805,7 +805,7 @@ class PouetParty(BaseUrl):
 
 
 class CsdbEvent(BaseUrl):
-    canonical_format = "http://csdb.dk/event/?id=%s"
+    canonical_format = "https://csdb.dk/event/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/event/', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/event/', 'id', re.I),
