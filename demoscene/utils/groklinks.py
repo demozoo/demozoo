@@ -753,9 +753,9 @@ class UntergrundFile(BaseUrl):
 
 
 class DemopartyNetParty(BaseUrl):
-    canonical_format = "http://www.demoparty.net/%s/"
+    canonical_format = "http://www.demoparty.net/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?demoparty\.net/([^/]+)', re.I),
+        regex_match(r'https?://(?:www\.)?demoparty\.net/(.+)', re.I),
     ]
     html_link_class = "demoparty_net"
     html_link_text = "demoparty.net"
