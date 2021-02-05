@@ -31,7 +31,7 @@ class Event(models.Model):
         Return a queryset of award events that it is currently possible
         to recommend this prod for
         """
-        if production.supertype != 'production' or production.release_date_date is None:
+        if production.release_date_date is None:
             return cls.objects.none()
 
         return cls.objects.filter(
