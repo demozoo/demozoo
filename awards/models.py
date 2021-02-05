@@ -76,7 +76,7 @@ class Event(models.Model):
         ]
 
     def user_can_view_reports(self, user):
-        return user.is_authenticated and (user.is_staff or self.jurors.filter(user=user).exists())
+        return self.reporting_enabled and user.is_authenticated and (user.is_staff or self.jurors.filter(user=user).exists())
 
 
 @python_2_unicode_compatible
