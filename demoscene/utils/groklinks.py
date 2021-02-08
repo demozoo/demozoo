@@ -1552,6 +1552,23 @@ class TwitchChannel(BaseUrl):
     html_link_text = "Twitch"
     html_title_format = "%s on Twitch"
 
+class SpeccyPlEntry(BaseUrl): # speccy.pl abstract superclass
+    html_link_class = "speccypl"
+    html_link_text = "speccy.pl"
+    html_title_format = "%s on speccy.pl"
+
+class SpeccyPlProduction(SpeccyPlEntry):
+    canonical_format = "http://speccy.pl/archive/prod.php?id=%s"
+    tests = [
+        querystring_match(r'http://(?:www\.)?speccy\.pl/archive/prod\.php', 'id', re.I),
+    ]
+
+class SpeccyPlAuthor(SpeccyPlEntry):
+    canonical_format = "http://speccy.pl/archive/author.php?id=%s"
+    tests = [
+        querystring_match(r'http://(?:www\.)?speccy\.pl/archive/author\.php', 'id', re.I),
+    ]
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1565,7 +1582,7 @@ RELEASER_LINK_TYPES = [
     HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
-    Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser,
+    Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1575,6 +1592,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
+    SpeccyPlProduction,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
@@ -1595,7 +1613,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
-    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction',
+    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction'
 ]
 
 PARTY_LINK_TYPES = [
