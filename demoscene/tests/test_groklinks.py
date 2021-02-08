@@ -147,7 +147,23 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BandcampTrack')
         self.assertEqual(link.parameter, 'gasman/cybernoids-revenge')
         self.assertEqual(str(link.link), 'https://gasman.bandcamp.com/track/cybernoids-revenge')
+    
+    def test_speccypl_production(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
 
+        link.url = 'http://speccy.pl/archive/prod.php?id=14'
+        self.assertEqual(link.link_class, 'SpeccyPlProduction')
+        self.assertEqual(link.parameter, '14')
+        self.assertEqual(str(link.link), 'http://speccy.pl/archive/prod.php?id=14')
+
+    def test_speccypl_author(self):
+        gasman = Releaser.objects.get(name='Gasman')
+        
+        link = ReleaserExternalLink(releaser=gasman)
+        link.url = 'http://speccy.pl/archive/author.php?id=24'
+        self.assertEqual(link.link_class, 'SpeccyPlAuthor')
+        self.assertEqual(link.parameter, '24')
 
 class TestEmbeds(TestCase):
     fixtures = ['tests/gasman.json']
