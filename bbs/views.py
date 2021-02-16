@@ -26,7 +26,7 @@ def index(request):
 
 def show(request, bbs_id):
     bbs = get_object_or_404(BBS, id=bbs_id)
-    bbstros = bbs.bbstros.order_by('release_date_date', 'title').prefetch_related(
+    bbstros = bbs.bbstros.order_by('-release_date_date', 'title').prefetch_related(
         'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
     )
 
