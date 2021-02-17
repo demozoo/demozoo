@@ -1569,6 +1569,14 @@ class SpeccyPlAuthor(SpeccyPlEntry):
         querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/author\.php', 'id', re.I),
     ]
 
+class AtarikiEntry(BaseUrl):
+    html_link_class = "atariki"
+    html_link_text = "Atariki"
+    html_title_format = "%s on Atariki"
+    canonical_format = "http://atariki.krap.pl/index.php/%s"
+    tests = [
+        regex_match(r'https?://(?:www\.)?atariki\.krap\.pl/index\.php/(.*)', re.I),
+    ]
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1582,7 +1590,7 @@ RELEASER_LINK_TYPES = [
     HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
-    Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor,
+    Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1592,7 +1600,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
-    SpeccyPlProduction,
+    SpeccyPlProduction, AtarikiEntry,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
@@ -1613,15 +1621,15 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
-    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction'
+    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry'
 ]
 
 PARTY_LINK_TYPES = [
     DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
-    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, WaybackMachinePage, BaseUrl,
+    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, 
+    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing

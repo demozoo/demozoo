@@ -165,6 +165,26 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'SpeccyPlAuthor')
         self.assertEqual(link.parameter, '24')
 
+    def test_atariki_entry(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+
+        link.url = 'http://atariki.krap.pl/index.php/Cool_Emotion'
+        self.assertEqual(link.link_class, 'AtarikiEntry')
+        self.assertEqual(str(link.link), 'http://atariki.krap.pl/index.php/Cool_Emotion')
+
+        gasman = Releaser.objects.get(name='Gasman')
+        link = ReleaserExternalLink(releaser=gasman)
+
+        link.url = 'http://atariki.krap.pl/index.php/Ars'
+        self.assertEqual(link.link_class, 'AtarikiEntry')
+
+        forever2e3 = Party.objects.get(name='Forever 2e3')
+        link = PartyExternalLink(party=forever2e3)
+        link.url = 'http://atariki.krap.pl/index.php/Lato_Ludzik%C3%B3w_1999'
+        self.assertEqual(link.link_class, 'AtarikiEntry')
+
+
 class TestEmbeds(TestCase):
     fixtures = ['tests/gasman.json']
 
