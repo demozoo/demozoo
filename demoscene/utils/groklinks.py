@@ -510,11 +510,11 @@ class SceneOrgFile(BaseUrl):
         urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I),
-        urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
+        urldecoded_regex_match(r'https?://(?:http\.)?de\.scene\.org/pub(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I),
         urldecoded_regex_match(r'https?://http\.us\.scene\.org/pub/scene.org(/.*)', re.I),
-        urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I),
+        urldecoded_regex_match(r'https?://http\.fr\.scene\.org(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.hu\.scene\.org/mirrors/scene.org(/.*)', re.I),
         urldecoded_regex_match(r'https?://http\.hu\.scene\.org(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I),
@@ -564,14 +564,14 @@ class SceneOrgFile(BaseUrl):
 class AmigascneFile(BaseUrl):
     canonical_format = "ftp://ftp.amigascne.org/pub/amiga%s"
     tests = [
-        regex_match(r'(?:http|ftp)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)', re.I),
+        regex_match(r'(?:http|ftp|https)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)', re.I),
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/amigascne(/.*)', re.I),
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub/mirrors/amigascne(/.*)', re.I),
         regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
-        regex_match(r'http://(?:http\.)?de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
+        regex_match(r'https?://(?:http\.)?de\.scene\.org/pub/mirrors/amigascne(/.*)', re.I),
         regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
         regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/amigascne(/.*)', re.I),
-        regex_match(r'http://http\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
+        regex_match(r'https?://http\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
     ]
     html_link_class = "amigascne"
     html_link_text = "amigascne.org"
@@ -611,10 +611,10 @@ class PaduaOrgFile(BaseUrl):
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/padua(/.*)', re.I),
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/pub/mirrors/padua(/.*)', re.I),
         regex_match(r'ftp://ftp\.de\.scene\.org/pub/mirrors/padua(/.*)', re.I),
-        regex_match(r'http://(?:http\.)?de\.scene\.org/pub/mirrors/padua(/.*)', re.I),
+        regex_match(r'https?://(?:http\.)?de\.scene\.org/pub/mirrors/padua(/.*)', re.I),
         regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
         regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/padua(/.*)', re.I),
-        regex_match(r'http://http\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
+        regex_match(r'https?://http\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
     ]
     html_link_class = "padua"
     html_link_text = "padua.org"
@@ -664,15 +664,14 @@ class ModlandFile(BaseUrl):
         return wrapped_fn
 
     tests = [
-        regex_match(r'(?:ftp|http)://(?:ftp\.)?modland\.com(/.*)', re.I),
-        regex_match(r'ftp://modland\.ziphoid\.com(/.*)', re.I),
+        regex_match(r'(?:ftp|http|https)://(?:ftp\.)?modland\.com(/.*)', re.I),
+        regex_match(r'(?:ftp|http|https)://modland\.ziphoid\.com(/.*)', re.I),
         regex_match(r'ftp://hangar18\.exotica\.org\.uk/modland(/.*)', re.I),
         regex_match(r'ftp://aero.exotica.org.uk/pub/mirrors/modland(/.*)', re.I),
-        regex_match(r'(?:ftp|http)://modland\.ziphoid\.com(/.*)', re.I),
         regex_match(r'ftp://ftp\.amigascne\.org/mirrors/ftp\.modland\.com(/.*)', re.I),
         regex_match(r'ftp://ftp\.rave\.ca(/.*)', re.I),
         regex_match(r'ftp://modland\.mindkiller\.com/modland(/.*)', re.I),
-        regex_match(r'http://modland\.antarctica\.no(/.*)', re.I),
+        regex_match(r'https?://modland\.antarctica\.no(/.*)', re.I),
         exotica_querystring_match(),
     ]
     html_link_class = "modland"
@@ -836,13 +835,13 @@ class SceneOrgFolder(BaseUrl):
         urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/demos/scene(/.*)', re.I, add_slash=True),
         urldecoded_regex_match(r'ftp://ftp\.jp\.scene\.org/pub/scene(/.*)', re.I, add_slash=True),
         urldecoded_regex_match(r'ftp://ftp\.de\.scene\.org/pub(/.*)', re.I, add_slash=True),
-        urldecoded_regex_match(r'http://(?:http\.)?de\.scene\.org/pub(/.*)', re.I, add_slash=True),
+        urldecoded_regex_match(r'https?://(?:http\.)?de\.scene\.org/pub(/.*)', re.I, add_slash=True),
         urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
         urldecoded_regex_match(r'ftp://ftp\.us\.scene\.org/scene.org(/.*)', re.I, add_slash=True),
-        urldecoded_regex_match(r'http://http\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
-        urldecoded_regex_match(r'http://http\.fr\.scene\.org(/.*)', re.I, add_slash=True),
+        urldecoded_regex_match(r'https?://http\.us\.scene\.org/pub/scene.org(/.*)', re.I, add_slash=True),
+        urldecoded_regex_match(r'https?://http\.fr\.scene\.org(/.*)', re.I, add_slash=True),
         urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
-        urldecoded_regex_match(r'http://http\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
+        urldecoded_regex_match(r'https?://http\.pl\.scene\.org/pub/demos(/.*)', re.I, add_slash=True),
     ]
 
     def __str__(self):
@@ -1434,7 +1433,7 @@ class StonishDisk(BaseUrl):
 class ZxTunesArtist(BaseUrl):
     canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
     tests = [
-        querystring_match(r'http://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
+        querystring_match(r'https?://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
     ]
     html_link_class = "zxtunes"
     html_link_text = "ZXTunes"
