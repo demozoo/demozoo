@@ -8,7 +8,7 @@ from six.moves import urllib
 from productions.models import ProductionLink
 
 
-@shared_task(rate_limit='12/m', ignore_result=True)
+@shared_task(rate_limit='1/s', ignore_result=True)
 def fetch_production_link_embed_data(productionlink_id):
     try:
         production_link = ProductionLink.objects.get(id=productionlink_id)
