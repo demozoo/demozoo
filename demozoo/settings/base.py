@@ -221,6 +221,7 @@ REDIS_URL = 'redis://localhost:6379/0'
 BROKER_URL = REDIS_URL
 CELERY_ROUTES = {
     'screenshots.tasks.create_screenshot_versions_from_local_file': {'queue': 'fasttrack'},
+    'productions.tasks.fetch_production_link_embed_data': {'queue': 'fasttrack'},
 }
 CELERYD_CONCURRENCY = 2
 CELERY_TASK_SERIALIZER = 'json'
