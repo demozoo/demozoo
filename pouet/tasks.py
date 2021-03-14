@@ -41,7 +41,7 @@ def fetch_group(group_data, groups_by_id):
         return group
 
 
-@shared_task(rate_limit='12/m', ignore_result=True)
+@shared_task(rate_limit='1/s', ignore_result=True)
 def pull_group(pouet_id, releaser_id):
     url = 'https://api.pouet.net/v1/group/?id=%d' % int(pouet_id)
     req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
