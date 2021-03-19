@@ -6,11 +6,9 @@ import json
 import urllib
 
 from bs4 import BeautifulSoup
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.html import escape, format_html
 
 
-@python_2_unicode_compatible
 class BaseUrl():
     def __init__(self, param):
         self.param = param
@@ -475,7 +473,6 @@ class KestraBitworldParty(BaseUrl):
     html_title_format = "%s on Kestra BitWorld"
 
 
-@python_2_unicode_compatible
 class SceneOrgFile(BaseUrl):
 
     # custom test for file_dl.php URLs, of the format:
@@ -780,7 +777,6 @@ class SlengpungParty(BaseUrl):
     html_title_format = "%s on Slengpung"
 
 
-@python_2_unicode_compatible
 class PouetParty(BaseUrl):
     def match_pouet_party(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
@@ -822,7 +818,6 @@ class BreaksAmigaParty(BaseUrl):
     html_title_format = "%s on Break's Amiga Collection"
 
 
-@python_2_unicode_compatible
 class SceneOrgFolder(BaseUrl):
     tests = [
         urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*)', re.I, add_slash=True),
@@ -859,7 +854,6 @@ class ZxdemoParty(BaseUrl):
     html_title_format = "%s on zxdemo.org"
 
 
-@python_2_unicode_compatible
 class YoutubeVideo(BaseUrl):
     def match_long_url(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?youtube\.com/watch\?', re.I)
@@ -1165,7 +1159,6 @@ class DiscogsLabel(DiscogsEntry):
     ]
 
 
-@python_2_unicode_compatible
 class DiscogsRelease(DiscogsEntry):
     def match_discogs_release(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?discogs\.com/([^\/]+)/release/(\d+)', re.I)
@@ -1375,7 +1368,6 @@ class GithubRepo(BaseUrl):
     html_title_format = "%s on GitHub"
 
 
-@python_2_unicode_compatible
 class GithubDirectory(BaseUrl):
     def __str__(self):
         params = self.param.split('/')
@@ -1521,7 +1513,6 @@ class BandcampArtist(BandcampEntry):
     ]
 
 
-@python_2_unicode_compatible
 class BandcampTrack(BandcampEntry):
     def match_bandcamp_release(urlstring, url):
         regex = re.compile(r'https?://([\w-]+)\.bandcamp\.com/track/([\w-]+)', re.I)

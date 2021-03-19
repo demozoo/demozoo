@@ -9,7 +9,6 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 
 from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
@@ -23,7 +22,6 @@ from comments.models import Commentable
 from productions.models import Production, Screenshot
 
 
-@python_2_unicode_compatible
 class PartySeries(models.Model):
     name = models.CharField(max_length=255, unique=True)
     notes = models.TextField(blank=True)
@@ -72,7 +70,6 @@ def party_share_image_upload_to(i, f):
     return random_path('party_share_images', f)
 
 
-@python_2_unicode_compatible
 class Party(Commentable):
     party_series = models.ForeignKey(PartySeries, related_name='parties', on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
@@ -294,7 +291,6 @@ class PartyExternalLink(ExternalLink):
         ordering = ['link_class']
 
 
-@python_2_unicode_compatible
 class Competition(models.Model):
     party = models.ForeignKey(Party, related_name='competitions', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -337,7 +333,6 @@ class Competition(models.Model):
         ordering = ("party__name", "name")
 
 
-@python_2_unicode_compatible
 class CompetitionPlacing(models.Model):
     competition = models.ForeignKey(Competition, related_name='placings', on_delete=models.CASCADE)
     production = models.ForeignKey('productions.Production', related_name='competition_placings', on_delete=models.CASCADE)

@@ -13,7 +13,6 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models, transaction
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 
 from unidecode import unidecode
@@ -31,7 +30,6 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-@python_2_unicode_compatible
 class Releaser(ModelWithPrefetchSnooping, Lockable):
     name = models.CharField(max_length=255)
     is_group = models.BooleanField(db_index=True)
@@ -244,7 +242,6 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         )
 
 
-@python_2_unicode_compatible
 class Nick(ModelWithPrefetchSnooping, models.Model):
     releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -370,7 +367,6 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
         ordering = ['name']
 
 
-@python_2_unicode_compatible
 class NickVariant(models.Model):
     nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -507,7 +503,6 @@ class NickVariant(models.Model):
         ordering = ['name']
 
 
-@python_2_unicode_compatible
 class Membership(models.Model):
     member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
     group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE)
@@ -518,7 +513,6 @@ class Membership(models.Model):
         return "%s / %s" % (self.member.name, self.group.name)
 
 
-@python_2_unicode_compatible
 class AccountProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
@@ -624,7 +618,6 @@ class Edit(models.Model):
         ]
 
 
-@python_2_unicode_compatible
 class CaptchaQuestion(models.Model):
     question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
     answer = models.CharField(max_length=255, help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)")
@@ -633,7 +626,6 @@ class CaptchaQuestion(models.Model):
         return self.question
 
 
-@python_2_unicode_compatible
 class TagDescription(models.Model):
     tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description', on_delete=models.CASCADE)
     description = models.TextField(help_text="HTML is allowed. Keep this to a couple of sentences at most - it's used in tooltips as well as the tag listing page")
@@ -642,7 +634,6 @@ class TagDescription(models.Model):
         return self.tag.name
 
 
-@python_2_unicode_compatible
 class BlacklistedTag(models.Model):
     tag = models.CharField(max_length=255, help_text="The tag to be blacklisted")
     replacement = models.CharField(max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)")

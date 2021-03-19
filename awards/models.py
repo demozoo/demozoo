@@ -3,12 +3,10 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from productions.models import Production
 
 
-@python_2_unicode_compatible
 class Event(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, help_text="Used in URLs - /awards/[slug]/")
@@ -79,7 +77,6 @@ class Event(models.Model):
         return self.reporting_enabled and user.is_authenticated and (user.is_staff or self.jurors.filter(user=user).exists())
 
 
-@python_2_unicode_compatible
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
