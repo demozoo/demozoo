@@ -7,13 +7,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from read_only_mode import writeable_site_required
 
 from awards.models import Event, Recommendation
 from productions.models import Production
-from read_only_mode import writeable_site_required
 
 
 @require_POST

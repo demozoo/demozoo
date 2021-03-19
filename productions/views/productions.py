@@ -7,31 +7,34 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.db.models import Count
-from django.template.loader import render_to_string
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-
-from taggit.models import Tag
-from read_only_mode import writeable_site_required
 from modal_workflow import render_modal_workflow
+from read_only_mode import writeable_site_required
+from taggit.models import Tag
 
 from awards.models import Event
-from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation, modal_workflow_confirmation
-from demoscene.models import Nick, Edit, BlacklistedTag
-from productions.forms import ProductionIndexFilterForm, ProductionTagsForm, ProductionEditCoreDetailsForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, ProductionInvitationPartyFormset, ProductionEditNotesForm, ProductionBlurbForm, ProductionExternalLinkFormSet, ProductionDownloadLinkFormSet, CreateProductionForm, ProductionCreditedNickForm, ProductionSoundtrackLinkFormset, PackMemberFormset, ProductionInfoFileFormset
-from demoscene.forms.common import CreditFormSet
-from demoscene.utils.text import slugify_tag
-from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb, InfoFile
-from productions.carousel import Carousel
-from productions.views.generic import apply_order, IndexView
-
-from screenshots.tasks import capture_upload_for_processing
-from comments.models import Comment
 from comments.forms import CommentForm
+from comments.models import Comment
+from demoscene.forms.common import CreditFormSet
+from demoscene.models import BlacklistedTag, Edit, Nick
+from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_confirmation, simple_ajax_form
+from demoscene.utils.text import slugify_tag
+from productions.carousel import Carousel
+from productions.forms import (
+    CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
+    ProductionCreditedNickForm, ProductionDownloadLinkFormSet, ProductionEditCoreDetailsForm, ProductionEditNotesForm,
+    ProductionExternalLinkFormSet, ProductionIndexFilterForm, ProductionInfoFileFormset,
+    ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
+)
+from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, ProductionType, Screenshot
+from productions.views.generic import IndexView, apply_order
+from screenshots.tasks import capture_upload_for_processing
 
 
 class ProductionIndexView(IndexView):

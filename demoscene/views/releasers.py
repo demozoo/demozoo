@@ -1,19 +1,22 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-
-from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
-from demoscene.models import Releaser, Nick, Edit
-from productions.models import Production, Credit
-from demoscene.forms.releaser import ReleaserCreditForm, ReleaserEditNotesForm, GroupNickForm, ScenerNickForm, ReleaserExternalLinkFormSet
-from demoscene.forms.common import CreditFormSet
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-import datetime
 from read_only_mode import writeable_site_required
+
+from demoscene.forms.common import CreditFormSet
+from demoscene.forms.releaser import (
+    GroupNickForm, ReleaserCreditForm, ReleaserEditNotesForm, ReleaserExternalLinkFormSet, ScenerNickForm
+)
+from demoscene.models import Edit, Nick, Releaser
+from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
+from productions.models import Credit, Production
 
 
 @writeable_site_required

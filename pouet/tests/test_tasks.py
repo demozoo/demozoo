@@ -5,7 +5,8 @@ from freezegun import freeze_time
 from mock import patch
 
 from demoscene.models import Releaser
-from pouet.models import Group as PouetGroup, Production as PouetProduction
+from pouet.models import Group as PouetGroup
+from pouet.models import Production as PouetProduction
 from pouet.tasks import automatch_all_groups, automatch_group, pull_group, pull_groups
 from productions.models import Production
 

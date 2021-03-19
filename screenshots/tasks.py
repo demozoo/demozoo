@@ -1,6 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery import shared_task
 import io
 import os
 import pathlib
@@ -9,15 +8,16 @@ import urllib
 import uuid
 import zipfile
 
-from productions.models import Screenshot, ProductionLink
-from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS
-from screenshots.processing import upload_to_s3, select_screenshot_file
+from celery import shared_task
+from django.conf import settings
+
 from mirror.actions import (
     fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics, unpack_db_zip_filename
 )
 from mirror.models import ArchiveMember
-from django.conf import settings
-
+from productions.models import ProductionLink, Screenshot
+from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS, PILConvertibleImage
+from screenshots.processing import select_screenshot_file, upload_to_s3
 
 upload_dir = os.path.join(settings.MEDIA_ROOT, 'screenshot_uploads')
 

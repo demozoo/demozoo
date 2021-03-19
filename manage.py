@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, unicode_literals
 
-import os, sys
+import os
+import sys
 
 import dotenv
-
 
 if __name__ == "__main__":
     dotenv.read_dotenv()

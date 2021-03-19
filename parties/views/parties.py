@@ -4,25 +4,24 @@ import datetime
 import json
 import re
 
-from django.db.models.functions import Lower
-from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-
-from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
-from demoscene.models import Edit
-from productions.models import Screenshot
-from parties.models import Organiser, Party, PartySeries, Competition, PartyExternalLink, ResultsFile
-from parties.forms import (
-    PartyForm, EditPartyForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyOrganiserForm,
-    PartySeriesEditNotesForm, EditPartySeriesForm, CompetitionForm, PartyInvitationFormset, PartyReleaseFormset,
-    PartyShareImageForm
-)
 from read_only_mode import writeable_site_required
-from comments.models import Comment
+
 from comments.forms import CommentForm
+from comments.models import Comment
+from demoscene.models import Edit
+from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
+from parties.forms import (
+    CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
+    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm, PartyShareImageForm
+)
+from parties.models import Competition, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
+from productions.models import Screenshot
 
 
 def by_name(request):

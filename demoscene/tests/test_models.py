@@ -6,8 +6,7 @@ from django.test import TestCase
 from taggit.models import Tag
 
 from demoscene.models import (
-    AccountProfile, BlacklistedTag, CaptchaQuestion, Membership, Nick, Releaser,
-    ReleaserExternalLink, TagDescription
+    AccountProfile, BlacklistedTag, CaptchaQuestion, Membership, Nick, Releaser, ReleaserExternalLink, TagDescription
 )
 from productions.models import Production
 

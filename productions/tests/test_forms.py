@@ -8,14 +8,15 @@ from django.test import TestCase
 from demoscene.models import Edit, Nick
 from demoscene.utils.nick_search import BylineSearch
 from platforms.models import Platform
+
 from ..fields.byline_field import BylineLookup
 from ..fields.production_field import ProductionField, ProductionSelection
 from ..forms import (
-    ProductionCreditedNickForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm, 
-    ProductionIndexFilterForm, ProductionExternalLinkForm, ProductionExternalLinkFormSet,
-    PackMemberFormset, ProductionSoundtrackLinkFormset
+    PackMemberFormset, ProductionCreditedNickForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm,
+    ProductionExternalLinkForm, ProductionExternalLinkFormSet, ProductionIndexFilterForm,
+    ProductionSoundtrackLinkFormset
 )
-from ..models import ProductionType, Production, ProductionLink
+from ..models import Production, ProductionLink, ProductionType
 
 
 class ProductionsFormsTests(TestCase):

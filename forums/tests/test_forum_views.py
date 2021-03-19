@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from forums.models import Topic, Post
+from forums.models import Post, Topic
 
 
 class TestIndex(TestCase):

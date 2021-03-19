@@ -1,11 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
+import csv
+
 from django.http import HttpResponse
-from productions.models import Production
 
 from api.utils import get_month_parameter
-
-import csv
+from productions.models import Production
 
 
 def monthly(request):

@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, redirect, render
 
 from demoscene.shortcuts import get_page
 

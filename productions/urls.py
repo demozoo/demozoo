@@ -2,9 +2,9 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import url
 
-from productions.views import productions as production_views
-from productions.views import music as music_views
 from productions.views import graphics as graphic_views
+from productions.views import music as music_views
+from productions.views import productions as production_views
 
 urlpatterns = [
     url(r'^productions/$', production_views.ProductionIndexView.as_view(), {}, 'productions'),

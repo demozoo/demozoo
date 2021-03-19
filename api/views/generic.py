@@ -4,11 +4,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api import serializers
 from demoscene.models import Releaser
 from parties.models import Party, PartySeries
 from platforms.models import Platform
 from productions.models import Production, ProductionType
-from api import serializers
 
 
 class ListDetailModelViewSet(viewsets.ReadOnlyModelViewSet):

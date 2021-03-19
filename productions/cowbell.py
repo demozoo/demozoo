@@ -1,11 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
-# Cowbell <https://demozoo.github.io/cowbell/> integration
-
 import re
 
-from django.templatetags.static import static
 from django.forms import Media
+from django.templatetags.static import static
+
+# Cowbell <https://demozoo.github.io/cowbell/> integration
+
+
 
 
 PLAYERS_BY_FILETYPE = {

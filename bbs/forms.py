@@ -1,6 +1,5 @@
 from django import forms
 from django.forms.formsets import formset_factory
-
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 

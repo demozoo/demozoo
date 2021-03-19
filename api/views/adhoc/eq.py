@@ -5,8 +5,8 @@ import csv
 from django.http import HttpResponse
 
 from demoscene.models import Releaser
-from productions.models import Production
 from platforms.models import Platform
+from productions.models import Production
 
 
 def demos(request):

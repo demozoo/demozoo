@@ -4,7 +4,8 @@ from collections import defaultdict
 
 from django.db.models import Q
 
-from pouet.models import GroupMatchInfo, Production as PouetProduction
+from pouet.models import GroupMatchInfo
+from pouet.models import Production as PouetProduction
 from productions.models import Production, ProductionLink, ProductionType
 
 

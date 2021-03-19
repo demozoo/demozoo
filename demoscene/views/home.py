@@ -2,8 +2,8 @@ from __future__ import absolute_import, unicode_literals
 
 from django.shortcuts import redirect, render
 
+from demoscene.models import Edit, Releaser
 from demoscene.shortcuts import get_page
-from demoscene.models import Releaser, Edit
 from productions.models import Production
 
 

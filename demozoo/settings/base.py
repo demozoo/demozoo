@@ -1,10 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
-# Django settings for demozoo2 project.
-
 # Determine paths
 import os
 import sys
+
+# Django settings for demozoo2 project.
+
 FILEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 
 # Modify sys.path so it contains the right things
@@ -228,6 +229,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
 from datetime import timedelta
+
 CELERYBEAT_SCHEDULE = {
     "fetch-new-sceneorg-files": {
         "task": "sceneorg.tasks.fetch_new_sceneorg_files",

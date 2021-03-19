@@ -1,14 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
 from django import template
 from django.conf import settings
 from django.db.models import Q
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from zxdemo.models import spectrum_releasers
 from parties.models import Party
-import datetime
+from zxdemo.models import spectrum_releasers
 
 register = template.Library()
 

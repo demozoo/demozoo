@@ -6,7 +6,6 @@ from django import template
 
 from productions.models import Screenshot
 
-
 register = template.Library()
 
 

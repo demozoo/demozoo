@@ -2,9 +2,10 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 
-from demoscene.utils.nick_search import NickSearch, BylineSearch
-from demoscene.models import NickVariant
 from django.http import HttpResponse
+
+from demoscene.models import NickVariant
+from demoscene.utils.nick_search import BylineSearch, NickSearch
 
 
 def match(request):

@@ -5,8 +5,8 @@ import json
 from django.http import HttpResponse
 
 from demoscene.models import ReleaserExternalLink
-from productions.models import ProductionLink
 from parties.models import PartyExternalLink
+from productions.models import ProductionLink
 
 
 def prod_demozoo_ids_by_zxdemo_id(request):

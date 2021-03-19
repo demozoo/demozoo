@@ -1,19 +1,18 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, View
-
 from read_only_mode import writeable_site_required
 
-from comments.models import Comment
 from comments.forms import CommentForm
-from productions.models import Production
+from comments.models import Comment
 from demoscene.shortcuts import simple_ajax_confirmation
 from parties.models import Party
+from productions.models import Production
 
 
 class AddCommentView(TemplateView):

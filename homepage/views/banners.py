@@ -1,14 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.urls import reverse
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-
-from read_only_mode import writeable_site_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from modal_workflow import render_modal_workflow
+from read_only_mode import writeable_site_required
 
 from demoscene.shortcuts import simple_ajax_confirmation
-
 from homepage.forms import BannerForm, BannerImageForm
 from homepage.models import Banner, BannerImage
 

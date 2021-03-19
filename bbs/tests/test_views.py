@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from bbs.models import Affiliation, BBS, Operator
+from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit, Releaser
 from productions.models import Production
 

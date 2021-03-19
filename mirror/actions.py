@@ -1,19 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 
-import os
-import errno
-import re
 import datetime
+import errno
+import os
+import re
 import urllib
 
 import boto3
-
 from django.conf import settings
 from django.db.models import Count
+
 from mirror.models import ArchiveMember, Download, DownloadBlob
+from productions.models import Production
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import select_screenshot_file
-from productions.models import Production
 
 max_size = 10485760
 mirror_bucket_name = 'mirror.demozoo.org'

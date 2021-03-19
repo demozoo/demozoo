@@ -2,13 +2,14 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 from io import BytesIO
-from mock import patch
 
 from django.test import TestCase
+from mock import patch
 
 from mirror.actions import FileTooBig, fetch_link
 from mirror.models import ArchiveMember, Download
 from productions.models import Production
+
 
 class TestActions(TestCase):
     fixtures = ['tests/gasman.json']

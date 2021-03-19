@@ -1,9 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
-from collections import OrderedDict as SortedDict
 import datetime
 import hashlib
 import re
+from collections import OrderedDict as SortedDict
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -14,14 +14,13 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
-
 from unidecode import unidecode
 
-from lib.lockable import Lockable
-from lib.strip_markup import strip_markup
-from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from demoscene.utils import groklinks
 from demoscene.utils.text import generate_search_title
+from lib.lockable import Lockable
+from lib.prefetch_snooping import ModelWithPrefetchSnooping
+from lib.strip_markup import strip_markup
 
 DATE_PRECISION_CHOICES = [
     ('d', 'Day'),

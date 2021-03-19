@@ -4,13 +4,12 @@ from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import render
 
-
-from search.forms import SearchForm
 from bbs.models import BBS
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
 from parties.models import Party
 from productions.models import Production, Screenshot
+from search.forms import SearchForm
 
 
 def search(request):

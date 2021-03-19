@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from bbs.models import Affiliation, BBS, Operator
+from bbs.models import BBS, Affiliation, Operator
 
 
 class TestBBS(TestCase):

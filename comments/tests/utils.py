@@ -4,10 +4,10 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from fuzzy_date import FuzzyDate
 
 from comments.models import Comment
-from fuzzy_date import FuzzyDate
-from parties.models import PartySeries, Party
+from parties.models import Party, PartySeries
 from productions.models import Production
 
 

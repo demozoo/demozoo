@@ -3,11 +3,12 @@ from __future__ import absolute_import, unicode_literals
 # Re-parse all external links of type 'BaseUrl' or 'SceneOrgFile', in case
 # they're now recognised as a more specific type
 from django.core.management.base import BaseCommand
-from django.db.utils import IntegrityError
 from django.db import transaction
+from django.db.utils import IntegrityError
+
 from demoscene.models import ReleaserExternalLink
-from productions.models import ProductionLink
 from parties.models import PartyExternalLink
+from productions.models import ProductionLink
 
 external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 

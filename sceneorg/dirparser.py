@@ -5,6 +5,7 @@ import io
 import re
 from ftplib import FTP
 
+
 def parse_all_dirs():
     ftp = FTP('ftp.scene.org')
     ftp.login('anonymous', 'gasman@raww.org')

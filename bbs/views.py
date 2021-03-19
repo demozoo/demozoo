@@ -5,12 +5,12 @@ from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from read_only_mode import writeable_site_required
 
 from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
-from bbs.models import Affiliation, BBS, Operator
+from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
-from read_only_mode import writeable_site_required
 
 
 def index(request):

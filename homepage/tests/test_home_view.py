@@ -1,9 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
-from django.urls import reverse
 from django.test import TestCase
-
+from django.urls import reverse
 from freezegun import freeze_time
 
 from homepage.models import Banner, NewsStory

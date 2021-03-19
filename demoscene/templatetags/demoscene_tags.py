@@ -5,7 +5,7 @@ from django.conf import settings
 from django.template.defaultfilters import date as date_format
 from django.utils.html import format_html
 
-from demoscene.models import Releaser, Nick, Edit
+from demoscene.models import Edit, Nick, Releaser
 from productions.models import Production, Screenshot
 
 register = template.Library()

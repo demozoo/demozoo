@@ -1,8 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.conf.urls import url, include
-
+from django.conf.urls import include, url
 from rest_framework import routers
+
 from api.views import adhoc, generic
 
 router = routers.DefaultRouter()

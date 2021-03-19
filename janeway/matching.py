@@ -7,7 +7,8 @@ from django.db.models import Q
 from demoscene.models import Releaser, ReleaserExternalLink
 from demoscene.utils.text import generate_search_title, strip_music_extensions
 from janeway.importing import import_release
-from janeway.models import AuthorMatchInfo, Release as JanewayRelease
+from janeway.models import AuthorMatchInfo
+from janeway.models import Release as JanewayRelease
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
 

@@ -1,16 +1,16 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
-
-import datetime
-
-from demoscene.models import Releaser, Nick, ReleaserExternalLink, Edit
+from django.forms.models import inlineformset_factory
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
-from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
-from django.forms.models import inlineformset_factory
+
+from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
+from demoscene.models import Edit, Nick, Releaser, ReleaserExternalLink
 
 
 class CreateGroupForm(forms.ModelForm):

@@ -2,15 +2,14 @@ from __future__ import absolute_import, unicode_literals
 
 from io import BytesIO
 
+import PIL.Image
 from django.contrib.auth.models import User
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
-import PIL.Image
-
 from demoscene.tests.utils import MediaTestMixin
-from homepage.models import NewsStory, NewsImage
+from homepage.models import NewsImage, NewsStory
 
 
 def get_test_image():

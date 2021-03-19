@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
-
 from taggit.models import Tag, TaggedItem
 
 from demoscene.models import Nick, Releaser

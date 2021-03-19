@@ -12,10 +12,9 @@ from mirror.actions import upload_dir
 from mirror.models import ArchiveMember
 from productions.models import Production, ProductionType, Screenshot
 from screenshots.tasks import (
-    create_screenshot_from_production_link, create_screenshot_versions_from_local_file,
-    fetch_remote_screenshots, rebuild_screenshot
+    create_screenshot_from_production_link, create_screenshot_versions_from_local_file, fetch_remote_screenshots,
+    rebuild_screenshot
 )
-
 
 TEST_IMAGES_DIR = os.path.join(os.path.join(settings.FILEROOT, 'screenshots', 'tests', 'images'))
 

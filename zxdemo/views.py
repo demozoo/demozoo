@@ -3,18 +3,19 @@ from __future__ import absolute_import, unicode_literals
 import math
 import urllib
 
-from django.urls import reverse
-from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
 from django.db.models import Q
 from django.http import Http404
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
-from demoscene.models import Releaser, ReleaserExternalLink, Membership
-from productions.models import Production, Screenshot, ProductionLink, Credit
+from demoscene.models import Membership, Releaser, ReleaserExternalLink
 from parties.models import Party, PartyExternalLink
-from zxdemo.models import NewsItem, Article, spectrum_releasers, filter_releasers_queryset_to_spectrum
+from productions.models import Credit, Production, ProductionLink, Screenshot
+from zxdemo.models import Article, NewsItem, filter_releasers_queryset_to_spectrum, spectrum_releasers
+
 
 def home(request):
     ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS

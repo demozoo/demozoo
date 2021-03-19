@@ -1,12 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 
+from django import forms
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+from submit_button_field import SubmitButtonInput
+
+from parties.models import Party
+
 # a form field for selecting a party, e.g. in the 'invitation for...' field on a production form
 
-from django import forms
-from django.utils.safestring import mark_safe
-from django.core.exceptions import ValidationError
-from submit_button_field import SubmitButtonInput
-from parties.models import Party
 
 
 # An object which encapsulates the state of a PartyWidget as derived from its posted data;

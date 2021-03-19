@@ -1,13 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
-from productions.models import Production, ProductionType
-import datetime
 from productions.fields.byline_field import BylineField, BylineWidget
 from productions.fields.production_type_field import ProductionTypeChoiceField
+from productions.models import Production, ProductionType
 
 
 # A value encapsulating the state of the ProductionWidget.

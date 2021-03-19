@@ -1,8 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
+import operator
 from functools import reduce
 
-import operator
 from django.contrib.postgres.search import SearchVector
 from django.db.models import TextField, Value
 

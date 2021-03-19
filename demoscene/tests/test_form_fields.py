@@ -3,12 +3,12 @@ from __future__ import absolute_import, unicode_literals
 from django import forms
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-
-from demoscene.utils.nick_search import NickSearch, NickSelection
-from demoscene.utils.party_field import PartyField, PartyLookup
 from matched_nick_field import MatchedNickField
 from nick_field import NickField, NickLookup
 from submit_button_field import SubmitButtonField
+
+from demoscene.utils.nick_search import NickSearch, NickSelection
+from demoscene.utils.party_field import PartyField, PartyLookup
 
 
 class TestNickSelection(TestCase):
