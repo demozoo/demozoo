@@ -8,8 +8,7 @@ import datetime
 import logging
 import time
 import json
-
-from six.moves import urllib
+import urllib
 
 from django.conf import settings
 

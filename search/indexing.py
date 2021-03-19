@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from six.moves import reduce
+from functools import reduce
 
 import operator
 from django.contrib.postgres.search import SearchVector

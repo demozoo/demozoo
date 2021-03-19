@@ -5,11 +5,9 @@ import io
 import os
 import pathlib
 import re
+import urllib
 import uuid
 import zipfile
-
-from six import PY2
-from six.moves import urllib
 
 from productions.models import Screenshot, ProductionLink
 from screenshots.models import PILConvertibleImage, USABLE_IMAGE_FILE_EXTENSIONS

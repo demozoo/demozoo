@@ -16,8 +16,7 @@ from read_only_mode import writeable_site_required
 import base64
 import json
 import re
-
-from six.moves import urllib
+import urllib
 
 
 class SceneIDUserSignupForm(forms.ModelForm):

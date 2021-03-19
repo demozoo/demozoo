@@ -1,8 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import json
-
-from six.moves import urllib
+import urllib
 
 from django import forms
 from django.conf import settings

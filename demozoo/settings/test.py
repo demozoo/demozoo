@@ -3,8 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from .base import *
 
 import io
-from six.moves import urllib
-from six import ensure_binary
+import urllib
+import urllib.request
 from PIL import Image
 
 
@@ -268,8 +268,10 @@ def mock_response(req):
     else:  # pragma: no cover
         raise Exception("No response defined for %s" % req.get_full_url())
 
+    if isinstance(body, str):
+        body = body.encode('utf-8')
     resp = urllib.response.addinfourl(
-        io.BytesIO(ensure_binary(body)), {}, req.get_full_url()
+        io.BytesIO(body), {}, req.get_full_url()
     )
     resp.code = 200
     resp.msg = "OK"

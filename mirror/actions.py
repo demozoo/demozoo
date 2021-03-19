@@ -4,9 +4,7 @@ import os
 import errno
 import re
 import datetime
-
-from six import PY2, text_type
-from six.moves import urllib
+import urllib
 
 import boto3
 
@@ -169,7 +167,7 @@ def fetch_link(link):
                     #
 
                     filename = info.filename
-                    if isinstance(filename, text_type):  # pragma: no cover
+                    if isinstance(filename, str):  # pragma: no cover
                         filename = filename.encode('cp437')
                     filename = filename.decode('iso-8859-1')
 
@@ -183,10 +181,7 @@ def fetch_link(link):
 
 def unpack_db_zip_filename(filename):
     bytestring = filename.encode('iso-8859-1')
-    if PY2:  # pragma: no cover
-        return bytestring
-    else:  # pragma: no cover
-        return bytestring.decode('cp437')
+    return bytestring.decode('cp437')
 
 
 def find_screenshottable_graphics():

@@ -1,9 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery import shared_task
 import datetime
+import urllib
 
-from six.moves import urllib
+from celery import shared_task
 
 from productions.models import ProductionLink
 
