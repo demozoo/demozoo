@@ -4,7 +4,6 @@ from collections import OrderedDict as SortedDict
 import datetime
 import hashlib
 import re
-from six import text_type
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -540,7 +539,7 @@ class ExternalLink(models.Model):
 
     def _get_url(self):
         if self.link:
-            return text_type(self.link)
+            return str(self.link)
         else:
             return None
 

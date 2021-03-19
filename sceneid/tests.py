@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from six.moves import urllib
+import urllib
 
 from django.contrib import auth
 from django.contrib.auth.models import User

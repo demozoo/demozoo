@@ -1,7 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-from six import text_type
-
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
@@ -25,7 +23,7 @@ def readable_list(list):
     if len(list) == 0:
         return "none"
     else:
-        return u", ".join([text_type(item) for item in list])
+        return u", ".join([str(item) for item in list])
 
 
 class BaseProductionEditCoreDetailsForm(forms.Form):

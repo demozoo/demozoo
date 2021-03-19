@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 from demoscene.models import NickVariant, Releaser, Nick
 import datetime
 import re
-from six import text_type
 
 
 # A placeholder for a Nick object, used as the cleaned value of a MatchedNickField
@@ -233,6 +232,6 @@ class BylineSearch():
     @staticmethod
     def from_byline(byline):
         return BylineSearch(
-            search_term=text_type(byline),
+            search_term=str(byline),
             author_nick_selections=[NickSelection(nick.id, nick.name) for nick in byline.author_nicks],
             affiliation_nick_selections=[NickSelection(nick.id, nick.name) for nick in byline.affiliation_nicks])

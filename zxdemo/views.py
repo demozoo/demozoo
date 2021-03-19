@@ -1,5 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
+import math
+import urllib
+
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
@@ -7,10 +10,6 @@ from django.db import connection
 from django.db.models import Q
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-import math
-
-from six.moves import urllib
 
 from demoscene.models import Releaser, ReleaserExternalLink, Membership
 from productions.models import Production, Screenshot, ProductionLink, Credit

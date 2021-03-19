@@ -1,7 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-from six import text_type
-
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.files.storage import FileSystemStorage
@@ -167,7 +165,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
             return BylineSearch.from_byline(self.byline())
 
     def _get_byline_string(self):
-        return self.unparsed_byline or text_type(self.byline())
+        return self.unparsed_byline or str(self.byline())
 
     def _set_byline_string(self, byline_string):
         from demoscene.utils.nick_search import BylineSearch
