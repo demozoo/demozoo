@@ -35,3 +35,4 @@ freezegun==0.3.14
 mock>=3.0,<4.0
 requests>=2.22,<3.0
 responses>=0.10,<0.11
+isort==5.7.0
