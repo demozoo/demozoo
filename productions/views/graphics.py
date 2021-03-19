@@ -14,7 +14,7 @@ from demoscene.models import Edit
 from productions.carousel import Carousel
 from productions.models import ProductionType, Production, Byline
 from productions.forms import GraphicsIndexFilterForm, ProductionTagsForm, CreateGraphicsForm, ProductionDownloadLinkFormSet
-from productions.views.productions import apply_order
+from productions.views.generic import apply_order, IndexView
 
 from read_only_mode import writeable_site_required
 
@@ -22,36 +22,10 @@ from comments.models import Comment
 from comments.forms import CommentForm
 
 
-def index(request):
-    queryset = Production.objects.filter(supertype='graphics')
-
-    order = request.GET.get('order', 'date')
-    asc = request.GET.get('dir', 'desc') == 'asc'
-
-    queryset = apply_order(queryset, order, asc)
-
-    form = GraphicsIndexFilterForm(request.GET)
-
-    if form.is_valid():
-        if form.cleaned_data['platform']:
-            queryset = queryset.filter(platforms=form.cleaned_data['platform'])
-        if form.cleaned_data['production_type']:
-            prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
-            queryset = queryset.filter(types__in=prod_types)
-
-    queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
-
-    production_page = get_page(
-        queryset,
-        request.GET.get('page', '1'))
-
-    return render(request, 'graphics/index.html', {
-        'order': order,
-        'production_page': production_page,
-        'menu_section': "productions",
-        'asc': asc,
-        'form': form,
-    })
+class GraphicsIndexView(IndexView):
+    supertype = 'graphics'
+    template = 'graphics/index.html'
+    filter_form_class = GraphicsIndexFilterForm
 
 
 def show(request, production_id, edit_mode=False):
