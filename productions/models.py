@@ -7,7 +7,6 @@ from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from collections import defaultdict
@@ -36,7 +35,6 @@ SUPERTYPE_CHOICES = (
 )
 
 
-@python_2_unicode_compatible
 class ProductionType(MP_Node):
     name = models.CharField(max_length=255)
     position = models.IntegerField(default=0, help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)")
@@ -86,7 +84,6 @@ class ProductionType(MP_Node):
             return 'production'
 
 
-@python_2_unicode_compatible
 class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
     title = models.CharField(max_length=255)
     platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
@@ -365,7 +362,6 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
 
 
 # encapsulates list of authors and affiliations
-@python_2_unicode_compatible
 class Byline(object):
     def __init__(self, authors=[], affiliations=[]):
         self.author_nicks = authors
@@ -419,7 +415,6 @@ class ProductionBlurb(models.Model):
     body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
-@python_2_unicode_compatible
 class Credit(models.Model):
     CATEGORIES = [
         ('Code', 'Code'),
@@ -459,7 +454,6 @@ class Credit(models.Model):
         ordering = ['production__title']
 
 
-@python_2_unicode_compatible
 class Screenshot(models.Model):
     production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
     original_url = models.CharField(max_length=255, blank=True)
@@ -546,7 +540,6 @@ def update_prod_screenshot_data_on_delete(sender, **kwargs):
     production.save(update_fields=['has_screenshot'])
 
 
-@python_2_unicode_compatible
 class SoundtrackLink(models.Model):
     production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
     soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
@@ -560,7 +553,6 @@ class SoundtrackLink(models.Model):
         ordering = ['position']
 
 
-@python_2_unicode_compatible
 class PackMember(models.Model):
     pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
     member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)

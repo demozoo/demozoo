@@ -1,7 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from lib.model_thumbnail import ModelWithThumbnails
 from demoscene.models import Releaser
@@ -16,7 +15,6 @@ def thumbnail_upload_to(i, f):
     return random_path('platform_photos/thumb', f)
 
 
-@python_2_unicode_compatible
 class Platform(ModelWithThumbnails):
     name = models.CharField(max_length=255)
     intro_text = models.TextField(blank=True)

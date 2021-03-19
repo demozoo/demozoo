@@ -3,10 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import urllib
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Directory(models.Model):
     path = models.CharField(max_length=255, db_index=True)
     is_deleted = models.BooleanField(default=False)
@@ -50,7 +48,6 @@ class FileTooBig(Exception):
     pass
 
 
-@python_2_unicode_compatible
 class File(models.Model):
     path = models.CharField(max_length=255, db_index=True)
     is_deleted = models.BooleanField(default=False)

@@ -3,10 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Topic(models.Model):
     title = models.CharField(max_length=255)
 
