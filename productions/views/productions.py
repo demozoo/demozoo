@@ -27,42 +27,17 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.utils.text import slugify_tag
 from productions.models import Production, ProductionType, Byline, Credit, Screenshot, ProductionBlurb, InfoFile
 from productions.carousel import Carousel
+from productions.views.generic import apply_order, IndexView
 
 from screenshots.tasks import capture_upload_for_processing
 from comments.models import Comment
 from comments.forms import CommentForm
 
 
-def index(request):
-    queryset = Production.objects.filter(supertype='production')
-
-    order = request.GET.get('order', 'date')
-    asc = request.GET.get('dir', 'desc') == 'asc'
-
-    queryset = apply_order(queryset, order, asc)
-
-    form = ProductionIndexFilterForm(request.GET)
-
-    if form.is_valid():
-        if form.cleaned_data['platform']:
-            queryset = queryset.filter(platforms=form.cleaned_data['platform'])
-        if form.cleaned_data['production_type']:
-            prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
-            queryset = queryset.filter(types__in=prod_types)
-
-    queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
-
-    production_page = get_page(
-        queryset,
-        request.GET.get('page', '1'))
-
-    return render(request, 'productions/index.html', {
-        'order': order,
-        'production_page': production_page,
-        'menu_section': "productions",
-        'asc': asc,
-        'form': form,
-    })
+class ProductionIndexView(IndexView):
+    supertype = 'production'
+    template = 'productions/index.html'
+    filter_form_class = ProductionIndexFilterForm
 
 
 def tagged(request, tag_name):
@@ -87,19 +62,6 @@ def tagged(request, tag_name):
         'order': order,
         'asc': asc,
     })
-
-
-def apply_order(queryset, order, asc):
-    if order == 'title':
-        return queryset.order_by('%ssortable_title' % ('' if asc else '-'))
-    else:  # date
-        if asc:
-            return queryset.order_by('release_date_date', 'title')
-        else:
-            # fiddle order so that empty release dates end up at the end
-            return queryset.extra(
-                select={'order_date': "coalesce(productions_production.release_date_date, '1970-01-01')"}
-            ).order_by('-order_date', '-title')
 
 
 def show(request, production_id, edit_mode=False):
