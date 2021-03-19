@@ -2,9 +2,9 @@ from __future__ import absolute_import, unicode_literals
 
 from io import BytesIO
 
+import PIL.Image
 from django.core.files.images import ImageFile
 from django.test import TestCase
-import PIL.Image
 
 from platforms.models import Platform
 

@@ -1,12 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
 from django import forms
-from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from demoscene.models import Nick
-from submit_button_field import SubmitButtonInput
+from django.utils.safestring import mark_safe
 from matched_nick_field import MatchedNickField
-from demoscene.utils.nick_search import NickSelection, NickSearch
+from submit_button_field import SubmitButtonInput
+
+from demoscene.models import Nick
+from demoscene.utils.nick_search import NickSearch, NickSelection
 
 
 # An object which encapsulates the state of a NickWidget as derived from its posted data;

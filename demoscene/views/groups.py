@@ -1,20 +1,20 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-
-from demoscene.shortcuts import get_page, simple_ajax_confirmation
-from demoscene.models import Releaser, Nick, Membership, Edit
-from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
-
-from django.contrib.auth.decorators import login_required
-import datetime
 from read_only_mode import writeable_site_required
+
+from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
+from demoscene.models import Edit, Membership, Nick, Releaser
+from demoscene.shortcuts import get_page, simple_ajax_confirmation
 
 
 def index(request):

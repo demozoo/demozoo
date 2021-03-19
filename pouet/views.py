@@ -4,12 +4,12 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit, Releaser
 from pouet.matching import get_match_data
 from pouet.models import GroupMatchInfo
 from productions.models import Production, ProductionLink
-from read_only_mode import writeable_site_required
 
 
 @login_required

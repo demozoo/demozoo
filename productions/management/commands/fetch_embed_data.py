@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 from django.core.management.base import BaseCommand
 
 from demoscene.utils.groklinks import EMBEDDABLE_PRODUCTION_LINK_TYPES
-
 from productions.models import ProductionLink
 from productions.tasks import fetch_production_link_embed_data
 

@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
 import os
-import dotenv
 
+import dotenv
 from celery import Celery
 
 env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), '.env')

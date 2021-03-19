@@ -1,10 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
-from search.forms import SearchForm
-from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
+from django.contrib.auth.forms import AuthenticationForm
 
 from demoscene.utils.accounts import is_ip_banned
+from search.forms import SearchForm
 
 
 def global_nav_forms(request):

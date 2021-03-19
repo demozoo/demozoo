@@ -1,19 +1,19 @@
 from __future__ import absolute_import, unicode_literals
 
-import json
 import datetime
+import json
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit
-from productions.models import Production, ProductionType
+from demoscene.utils.nick_search import NickSelection
 from parties.models import Competition, CompetitionPlacing
 from platforms.models import Platform
-from demoscene.utils.nick_search import NickSelection
-from read_only_mode import writeable_site_required
+from productions.models import Production, ProductionType
 
 
 # helper function: create or update a production according to JSON data

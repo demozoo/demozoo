@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib import admin
 
-from awards.models import Event, Category, Juror
+from awards.models import Category, Event, Juror
 
 
 class CategoryInline(admin.TabularInline):

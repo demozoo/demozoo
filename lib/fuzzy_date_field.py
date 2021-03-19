@@ -1,10 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
 from django import forms
-from fuzzy_date import FuzzyDate
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from fuzzy_date import FuzzyDate
 
 
 class FuzzyDateField(forms.Field):

@@ -5,7 +5,7 @@ import urllib
 
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.core.exceptions import SuspiciousOperation 
+from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 from mock import patch
 

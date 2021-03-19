@@ -1,13 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
-from itertools import groupby
 import json
+from itertools import groupby
 
 from django.http import HttpResponse
 
 from demoscene.models import ReleaserExternalLink
-from productions.models import Credit, ProductionLink
 from parties.models import PartyExternalLink
+from productions.models import Credit, ProductionLink
 
 
 def credits(request):

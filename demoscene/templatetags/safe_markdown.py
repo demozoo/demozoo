@@ -1,10 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
+import markdown
+from bleach.sanitizer import Cleaner
 from django import template
 from django.utils.safestring import mark_safe
-
-from bleach.sanitizer import Cleaner
-import markdown
 from mdx_autolink import AutoLinkExtension
 
 register = template.Library()

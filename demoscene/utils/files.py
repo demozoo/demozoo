@@ -1,7 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
-import uuid
 import os
+import uuid
+
 
 def random_path(prefix, filepath):
     hex = uuid.uuid4().hex;

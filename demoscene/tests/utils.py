@@ -5,7 +5,6 @@ import shutil
 
 from django.conf import settings
 
-
 TEST_MEDIA_DIR = os.path.join(os.path.join(settings.FILEROOT, 'test_media'))
 
 

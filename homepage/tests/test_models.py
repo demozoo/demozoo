@@ -1,14 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
-from io import BytesIO
 import re
+from io import BytesIO
 
+import PIL.Image
 from django.core.files.images import ImageFile
 from django.test import TestCase
 
-import PIL.Image
-
-from homepage.models import Banner, BannerImage, NewsStory, NewsImage
+from homepage.models import Banner, BannerImage, NewsImage, NewsStory
 
 
 def get_test_image():

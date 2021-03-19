@@ -4,17 +4,16 @@ import collections
 import re
 
 from django import forms
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.db import models
 from django.db.models import F, Func, Q
-
+from fuzzy_date import FuzzyDate
 from unidecode import unidecode
 
+from bbs.models import BBS
 from demoscene.models import Releaser
 from demoscene.utils.text import generate_search_title
-from fuzzy_date import FuzzyDate
-from bbs.models import BBS
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionType, Screenshot

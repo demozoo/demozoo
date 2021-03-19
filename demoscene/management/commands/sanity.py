@@ -5,12 +5,12 @@ from itertools import groupby
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import Count
-
 from taggit.models import Tag
 
-from demoscene.models import Releaser, Nick, NickVariant
+from demoscene.models import Nick, NickVariant, Releaser
 from parties.models import Competition, ResultsFile
 from productions.models import PackMember, Production, ProductionType, SoundtrackLink
+
 # from sceneorg.models import Directory
 
 

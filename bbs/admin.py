@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from bbs.models import Affiliation, BBS, Operator
+from bbs.models import BBS, Affiliation, Operator
 
 
 class StaffInline(admin.TabularInline):

@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django import template
 from django.db.models import Q
-from django.urls import resolve, reverse, Resolver404
+from django.urls import Resolver404, resolve, reverse
 
 from awards.models import Event
 

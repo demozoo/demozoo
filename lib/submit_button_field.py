@@ -1,8 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from django import forms
-from django.utils.safestring import mark_safe
 from django.forms.utils import flatatt
+from django.utils.safestring import mark_safe
 
 
 class SubmitButtonInput(forms.Widget):

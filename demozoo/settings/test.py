@@ -1,12 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
-from .base import *
-
 import io
 import urllib
 import urllib.request
+
 from PIL import Image
 
+from .base import *
 
 SECRET_KEY = 'BOOOOM'
 

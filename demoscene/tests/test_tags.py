@@ -1,11 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
-from fuzzy_date import FuzzyDate
-from demoscene.templatetags.demoscene_tags import date_range
-from demoscene.templatetags.safe_markdown import safe_markdown
-
 from django import forms, template
 from django.test import TestCase
+from fuzzy_date import FuzzyDate
+
+from demoscene.templatetags.demoscene_tags import date_range
+from demoscene.templatetags.safe_markdown import safe_markdown
 
 
 class TestDateRangeTag(TestCase):

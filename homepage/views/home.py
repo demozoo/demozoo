@@ -6,10 +6,9 @@ from django.shortcuts import render
 
 from comments.models import Comment
 from forums.models import Topic
+from homepage.models import Banner, NewsStory
 from parties.models import Party
 from productions.models import Production, Screenshot
-
-from homepage.models import Banner, NewsStory
 
 
 def home(request):

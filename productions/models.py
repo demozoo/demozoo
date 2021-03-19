@@ -1,5 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+import random
+from collections import defaultdict
+
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.core.files.storage import FileSystemStorage
@@ -8,25 +12,19 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-
-from collections import defaultdict
-import datetime
-import random
-
+from fuzzy_date import FuzzyDate
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
-from fuzzy_date import FuzzyDate
+
+from comments.models import Commentable
+from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Nick, Releaser, ReleaserExternalLink, TextFile
+from demoscene.utils import groklinks
+from demoscene.utils.text import generate_search_title, generate_sort_key
 from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
-
-from comments.models import Commentable
-from demoscene.models import DATE_PRECISION_CHOICES, Releaser, Nick, ReleaserExternalLink, ExternalLink, TextFile
-from demoscene.utils import groklinks
-from demoscene.utils.text import generate_search_title, generate_sort_key
-from mirror.models import Download, ArchiveMember
-
+from mirror.models import ArchiveMember, Download
 
 SUPERTYPE_CHOICES = (
     ('production', _('Production')),

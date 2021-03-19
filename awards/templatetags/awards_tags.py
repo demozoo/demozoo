@@ -6,7 +6,6 @@ from django.conf import settings
 from demoscene.templatetags.demoscene_tags import production_listing
 from productions.models import Production, Screenshot
 
-
 register = template.Library()
 
 @register.inclusion_tag('awards/_recommended_production_listing.html')

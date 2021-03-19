@@ -9,16 +9,15 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.urls import reverse
-
 from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
 from unidecode import unidecode
 
+from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, TextFile
 from demoscene.utils import groklinks
 from demoscene.utils.files import random_path
 from demoscene.utils.text import generate_search_title
-from comments.models import Commentable
 from productions.models import Production, Screenshot
 
 

@@ -1,24 +1,23 @@
 from __future__ import absolute_import, unicode_literals
 
-import json
 import datetime
+import json
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.urls import reverse
-from django.db.models import Max
+from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_confirmation
-from productions.models import ProductionType, Production, Screenshot
-from parties.models import Competition, CompetitionPlacing
-from parties.forms import CompetitionForm
-from platforms.models import Platform
 from demoscene.utils import result_parser
-
-from read_only_mode import writeable_site_required
+from parties.forms import CompetitionForm
+from parties.models import Competition, CompetitionPlacing
+from platforms.models import Platform
+from productions.models import Production, ProductionType, Screenshot
 
 
 def show(request, competition_id):

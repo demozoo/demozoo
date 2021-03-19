@@ -1,8 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
-from demoscene.models import NickVariant, Releaser, Nick
 import datetime
 import re
+
+from demoscene.models import Nick, NickVariant, Releaser
 
 
 # A placeholder for a Nick object, used as the cleaned value of a MatchedNickField

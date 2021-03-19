@@ -2,7 +2,8 @@ from __future__ import absolute_import, unicode_literals
 
 from django.core.management.base import BaseCommand
 
-from demoscene.models import ReleaserExternalLink, Membership as DZMembership
+from demoscene.models import Membership as DZMembership
+from demoscene.models import ReleaserExternalLink
 from janeway import matching
 from janeway.models import Author
 

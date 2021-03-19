@@ -1,15 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 
 import time
+import urllib
 from os.path import splitext
 from socket import timeout
-import urllib
 
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils.text import slugify
 
-from mirror.actions import fetch_origin_url, FileTooBig
+from mirror.actions import FileTooBig, fetch_origin_url
 from productions.cowbell import get_playable_track_data
 from productions.models import ProductionLink
 from screenshots.processing import upload_to_s3

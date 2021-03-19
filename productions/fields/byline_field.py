@@ -1,12 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
 from django import forms
-from productions.models import Byline
-from submit_button_field import SubmitButtonInput
-from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 from matched_nick_field import MatchedNickField
+from submit_button_field import SubmitButtonInput
+
 from demoscene.utils.nick_search import BylineSearch
+from productions.models import Byline
 
 
 # An object which encapsulates the state of a BylineWidget as derived from its posted data;

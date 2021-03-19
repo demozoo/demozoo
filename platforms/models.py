@@ -2,9 +2,9 @@ from __future__ import absolute_import, unicode_literals
 
 from django.db import models
 
-from lib.model_thumbnail import ModelWithThumbnails
 from demoscene.models import Releaser
 from demoscene.utils.files import random_path
+from lib.model_thumbnail import ModelWithThumbnails
 
 
 def photo_original_upload_to(i, f):

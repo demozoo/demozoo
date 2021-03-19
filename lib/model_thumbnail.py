@@ -1,10 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
-from PIL import Image
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db import models
 import io
 import os
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import models
+from PIL import Image
+
 
 class ModelWithThumbnails(models.Model):
     class Meta:

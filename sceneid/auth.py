@@ -1,22 +1,23 @@
 from __future__ import absolute_import, unicode_literals
 
+import base64
+import json
+import re
+import urllib
+
 from django import forms
-from django.shortcuts import redirect, render
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
-from demoscene.models import SceneID
 from read_only_mode import writeable_site_required
 
-import base64
-import json
-import re
-import urllib
+from demoscene.models import SceneID
 
 
 class SceneIDUserSignupForm(forms.ModelForm):

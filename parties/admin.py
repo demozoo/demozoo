@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib import admin
 
-from parties.models import PartySeries, Party, Competition, CompetitionPlacing
+from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 
 
 class CompetitionPlacingInline(admin.TabularInline):

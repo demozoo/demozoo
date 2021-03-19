@@ -41,6 +41,7 @@ or implied, of Alexey Kinyov.
 """
 
 import re
+
 import markdown
 
 reflink_re = re.compile(r'^\s*\[[^\[\]]+\]:.+$')

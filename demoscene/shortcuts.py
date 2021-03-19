@@ -1,11 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from modal_workflow import render_modal_workflow
 import datetime
+
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from modal_workflow import render_modal_workflow
 
 
 def get_page(queryset, page_number, **kwargs):

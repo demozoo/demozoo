@@ -6,8 +6,8 @@ from django.test import TestCase
 from django.test.utils import captured_stdout
 from freezegun import freeze_time
 
-from productions.tasks import clean_dead_youtube_link, fetch_production_link_embed_data
 from productions.models import Production, ProductionLink
+from productions.tasks import clean_dead_youtube_link, fetch_production_link_embed_data
 
 
 class TestTasks(TestCase):

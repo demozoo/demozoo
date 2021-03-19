@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from io import BytesIO
 import json
 import os
+from io import BytesIO
 
+import PIL.Image
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import patch
-import PIL.Image
 
 from demoscene.models import BlacklistedTag, Edit, Nick, Releaser
 from demoscene.tests.utils import MediaTestMixin

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import responses
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
-
-import responses
 from requests.exceptions import HTTPError
 
 from awards.models import Category, Event, Juror, Recommendation
 from demoscene.models import SceneID
 from productions.models import Production
+
 
 class TestModels(TestCase):
     fixtures = ['tests/gasman.json']

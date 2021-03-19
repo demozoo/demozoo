@@ -2,10 +2,10 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 
+import requests
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
-import requests
 
 from awards.models import Event, Juror
 from demoscene.models import SceneID

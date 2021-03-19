@@ -1,10 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
-
 
 if settings.SITE_IS_WRITEABLE:
     # don't do any decorating, just return the view function unchanged

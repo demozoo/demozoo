@@ -14,7 +14,8 @@ from demoscene.tasks import add_sceneorg_results_file_to_party
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party, ResultsFile
 from productions.models import Production, ProductionType
-from sceneorg.models import Directory, File as SceneOrgFile
+from sceneorg.models import Directory
+from sceneorg.models import File as SceneOrgFile
 
 
 class TestBumpExternalLinks(TransactionTestCase):

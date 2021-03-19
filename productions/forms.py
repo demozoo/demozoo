@@ -2,21 +2,22 @@ from __future__ import absolute_import, unicode_literals
 
 from django import forms
 from django.forms.formsets import formset_factory
-from django.forms.models import inlineformset_factory, BaseModelFormSet, ModelFormOptions
-
-from productions.models import Production, ProductionType, ProductionBlurb, SoundtrackLink, ProductionLink, PackMember, InfoFile
-from demoscene.models import BlacklistedTag, Edit
-from platforms.models import Platform
-from demoscene.utils import groklinks
-from demoscene.utils.party_field import PartyField
-from demoscene.forms.common import ExternalLinkForm, BaseExternalLinkFormSet
-from demoscene.utils.text import slugify_tag
-
+from django.forms.models import BaseModelFormSet, ModelFormOptions, inlineformset_factory
 from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
+
+from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
+from demoscene.models import BlacklistedTag, Edit
+from demoscene.utils import groklinks
+from demoscene.utils.party_field import PartyField
+from demoscene.utils.text import slugify_tag
+from platforms.models import Platform
 from productions.fields.byline_field import BylineField
 from productions.fields.production_field import ProductionField
 from productions.fields.production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
+from productions.models import (
+    InfoFile, PackMember, Production, ProductionBlurb, ProductionLink, ProductionType, SoundtrackLink
+)
 
 
 def readable_list(list):

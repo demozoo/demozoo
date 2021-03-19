@@ -3,14 +3,15 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit, Releaser
 from janeway.importing import import_release
 from janeway.matching import get_production_match_data
-from janeway.models import AuthorMatchInfo, Release as JanewayRelease
+from janeway.models import AuthorMatchInfo
+from janeway.models import Release as JanewayRelease
 from productions.models import Production, ProductionLink
-from read_only_mode import writeable_site_required
 
 
 @login_required

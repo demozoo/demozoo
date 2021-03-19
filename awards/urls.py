@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf.urls import url
 
-from awards.views import recommend, user_recommendations, remove_recommendation, report
+from awards.views import recommend, remove_recommendation, report, user_recommendations
 
 urlpatterns = [
     url(r'^([\w\-]+)/recommend/(\d+)/$', recommend, {}, 'awards_recommend'),

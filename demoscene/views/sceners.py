@@ -3,17 +3,18 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 
 from django.conf import settings
-from django.shortcuts import get_object_or_404, render
-from django.core.exceptions import PermissionDenied
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-
-from demoscene.shortcuts import get_page, simple_ajax_form, simple_ajax_confirmation
-from demoscene.models import Releaser, Nick, Membership, Edit
-from demoscene.forms.releaser import ScenerEditLocationForm, ScenerEditRealNameForm, CreateScenerForm, ScenerMembershipForm
-
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from read_only_mode import writeable_site_required
+
+from demoscene.forms.releaser import (
+    CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm, ScenerMembershipForm
+)
+from demoscene.models import Edit, Membership, Nick, Releaser
+from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
 
 
 def index(request):

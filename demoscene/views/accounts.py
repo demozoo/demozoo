@@ -1,17 +1,17 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from read_only_mode import writeable_site_required
 
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
 from demoscene.utils.accounts import is_ip_banned
-from read_only_mode import writeable_site_required
 
 
 class LoginViewWithIPCheck(LoginView):

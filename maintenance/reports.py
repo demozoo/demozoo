@@ -1,12 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
 import redis
-
 from django.conf import settings
 from django.db.models import Q
 
-from productions.models import Production, ProductionLink
 from maintenance.models import Exclusion
+from productions.models import Production, ProductionLink
 
 
 def write_set(pipe, key, values):

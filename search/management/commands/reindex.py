@@ -4,10 +4,9 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from bbs.models import BBS
-from parties.models import Party
 from demoscene.models import Releaser
+from parties.models import Party
 from productions.models import Production
-
 from search.indexing import index
 
 

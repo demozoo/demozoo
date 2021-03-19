@@ -1,9 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import calendar
-import dateutil.parser
 import datetime
 import re
+
+import dateutil.parser
 
 MONTHS = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)"
 YEAR_REGEX = re.compile(r"^\s*\d{4}\s*$")

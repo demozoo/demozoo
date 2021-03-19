@@ -1,17 +1,17 @@
 from __future__ import absolute_import, unicode_literals
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Count
-from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.db.models import Count, Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit
-from parties.models import Party, Competition
+from parties.models import Competition, Party
 from productions.models import Production, ProductionLink
 from sceneorg.models import Directory, File
-from django.contrib.auth.models import User
-from read_only_mode import writeable_site_required
 
 
 @login_required

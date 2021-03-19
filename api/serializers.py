@@ -1,14 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
-
 from rest_framework import serializers
 
-from demoscene.models import Releaser, Nick, Membership, ReleaserExternalLink
+from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 from platforms.models import Platform
-from productions.models import Production, ProductionLink, Credit, ProductionType, Screenshot
-
+from productions.models import Credit, Production, ProductionLink, ProductionType, Screenshot
 
 # Summary / listing serialisers
 

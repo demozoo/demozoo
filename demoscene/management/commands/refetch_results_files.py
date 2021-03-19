@@ -1,12 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 
+from django.core.files.base import ContentFile
+from django.core.management.base import BaseCommand
+
+from parties.models import ResultsFile
+
 # Fetch results files from scene.org that are in the db as ResultsFile records
 # but missing on the local filesystem
 
-from django.core.management.base import BaseCommand
-from django.core.files.base import ContentFile
 
-from parties.models import ResultsFile
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
