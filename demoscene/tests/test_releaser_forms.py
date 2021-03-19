@@ -244,7 +244,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # the 'add nick' form gives the option to set preferred name
-        self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -255,7 +255,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # the 'add nick' form gives the option to set preferred name
-        self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -266,7 +266,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # No 'preferred name' checkbox, as this is already the primary nick
-        self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertNotIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -277,7 +277,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # No 'preferred name' checkbox, as this is already the primary nick
-        self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertNotIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -288,7 +288,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # show 'preferred name' checkbox
-        self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -299,7 +299,7 @@ class TestScenerNickForm(TestCase):
         html = form.as_p()
 
         # show 'preferred name' checkbox
-        self.assertIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # scener nicks never get differentiators or abbreviations
         self.assertNotIn("Differentiator", html)
@@ -426,7 +426,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # the 'add nick' form gives the option to set preferred name
-        self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Placebo&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)
@@ -438,7 +438,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # the 'add nick' form gives the option to set preferred name
-        self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Placebo&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)
@@ -450,7 +450,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # No 'preferred name' checkbox, as this is already the primary nick
-        self.assertNotIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+        self.assertNotIn("Use this as their preferred name, instead of &#x27;Placebo&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)
@@ -462,7 +462,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # No 'preferred name' checkbox, as this is already the primary nick
-        self.assertNotIn("Use this as their preferred name, instead of &#39;Gasman&#39;", html)
+        self.assertNotIn("Use this as their preferred name, instead of &#x27;Gasman&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)
@@ -474,7 +474,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # show 'preferred name' checkbox
-        self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Placebo&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)
@@ -486,7 +486,7 @@ class TestGroupNickForm(TestCase):
         html = form.as_p()
 
         # show 'preferred name' checkbox
-        self.assertIn("Use this as their preferred name, instead of &#39;Placebo&#39;", html)
+        self.assertIn("Use this as their preferred name, instead of &#x27;Placebo&#x27;", html)
 
         # group nicks can have abbreviations
         self.assertIn("Abbreviation", html)

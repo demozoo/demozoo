@@ -472,7 +472,7 @@ class TestEditCoreDetails(TestCase):
             'form-0-party_lookup': "Find party",
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Party &#39;Forever 2e3&#39; found.")
+        self.assertContains(response, "Party &#x27;Forever 2e3&#x27; found.")
         self.assertContains(
             response,
             '<input type="hidden" name="form-0-party_party_id" class="party_field_party_id" id="id_form-0-party" value="%d">' % Party.objects.get(name='Forever 2e3').id,
@@ -509,7 +509,7 @@ class TestEditCoreDetails(TestCase):
             'form-0-party_lookup': "Find party",
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
+        self.assertContains(response, "No match found for &#x27;inerciademoparty 1963&#x27;")
         self.assertContains(
             response,
             '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
@@ -570,7 +570,7 @@ class TestEditCoreDetails(TestCase):
             'form-0-party_party_id': '9999',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No match found for &#39;inerciademoparty 1963&#39;")
+        self.assertContains(response, "No match found for &#x27;inerciademoparty 1963&#x27;")
         self.assertContains(
             response,
             '<input type="text" name="title" required id="id_title" value="P0ndlife" maxlength="255">',
