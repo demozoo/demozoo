@@ -1,7 +1,16 @@
-from django.shortcuts import render
+import random
+
+from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
 from django.views import View
 
+from awards.models import Event
+from comments.forms import CommentForm
+from comments.models import Comment
 from demoscene.shortcuts import get_page
+from productions.carousel import Carousel
+from productions.forms import ProductionTagsForm
 from productions.models import Production, ProductionType
 
 
@@ -51,3 +60,64 @@ def apply_order(queryset, order, asc):
             return queryset.extra(
                 select={'order_date': "coalesce(productions_production.release_date_date, '1970-01-01')"}
             ).order_by('-order_date', '-title')
+
+
+class ShowView(View):
+    supertype = 'production'
+
+    def get(self, request, production_id, edit_mode=False):
+        self.production = get_object_or_404(Production, id=production_id)
+        if self.production.supertype != self.supertype:
+            return HttpResponseRedirect(self.production.get_absolute_url())
+
+        return render(self.request, 'productions/show.html', self.get_context_data())
+
+    def get_context_data(self):
+        if self.request.user.is_authenticated:
+            comment = Comment(commentable=self.production, user=self.request.user)
+            comment_form = CommentForm(instance=comment, prefix="comment")
+            tags_form = ProductionTagsForm(instance=self.production)
+
+            awards_accepting_recommendations = [
+                (event, event.get_recommendation_options(self.request.user, self.production))
+                for event in Event.accepting_recommendations_for(self.production)
+            ]
+        else:
+            comment_form = None
+            tags_form = None
+
+            awards_accepting_recommendations = [
+                (event, None)
+                for event in Event.accepting_recommendations_for(self.production)
+            ]
+
+        if self.production.can_have_pack_members():
+            pack_members = [
+                link.member for link in
+                self.production.pack_members.select_related('member').prefetch_related('member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser')
+            ]
+        else:
+            pack_members = None
+
+        try:
+            meta_screenshot = random.choice(self.production.screenshots.exclude(standard_url=''))
+        except IndexError:
+            meta_screenshot = None
+
+        return {
+            'production': self.production,
+            'prompt_to_edit': settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked),
+            'download_links': self.production.download_links,
+            'external_links': self.production.external_links,
+            'info_files': self.production.info_files.all(),
+            'editing_credits': (self.request.GET.get('editing') == 'credits'),
+            'credits': self.production.credits_for_listing(),
+            'carousel': Carousel(self.production, self.request.user),
+
+            'tags': self.production.tags.order_by('name'),
+            'blurbs': self.production.blurbs.all() if self.request.user.is_staff else None,
+            'comment_form': comment_form,
+            'tags_form': tags_form,
+            'meta_screenshot': meta_screenshot,
+            'awards_accepting_recommendations': awards_accepting_recommendations,
+        }

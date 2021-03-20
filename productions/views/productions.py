@@ -33,7 +33,7 @@ from productions.forms import (
     ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
 )
 from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, ProductionType, Screenshot
-from productions.views.generic import IndexView, apply_order
+from productions.views.generic import IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
 
@@ -67,68 +67,36 @@ def tagged(request, tag_name):
     })
 
 
-def show(request, production_id, edit_mode=False):
-    production = get_object_or_404(Production, id=production_id)
-    if production.supertype != 'production':
-        return HttpResponseRedirect(production.get_absolute_url())
+class ProductionShowView(ShowView):
+    supertype = 'production'
 
-    if request.user.is_authenticated:
-        comment = Comment(commentable=production, user=request.user)
-        comment_form = CommentForm(instance=comment, prefix="comment")
-        tags_form = ProductionTagsForm(instance=production)
+    def get_context_data(self):
+        context = super().get_context_data()
 
-        awards_accepting_recommendations = [
-            (event, event.get_recommendation_options(request.user, production))
-            for event in Event.accepting_recommendations_for(production)
-        ]
-    else:
-        comment_form = None
-        tags_form = None
+        if self.production.can_have_pack_members():
+            context['pack_members'] = [
+                link.member for link in
+                self.production.pack_members.select_related('member').prefetch_related(
+                    'member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser'
+                )
+            ]
+        else:
+            context['pack_members'] = None
 
-        awards_accepting_recommendations = [
-            (event, None)
-            for event in Event.accepting_recommendations_for(production)
-        ]
-
-    if production.can_have_pack_members():
-        pack_members = [
-            link.member for link in
-            production.pack_members.select_related('member').prefetch_related('member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser')
-        ]
-    else:
-        pack_members = None
-
-    try:
-        meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
-    except IndexError:
-        meta_screenshot = None
-
-    return render(request, 'productions/show.html', {
-        'production': production,
-        'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
-        'editing_credits': (request.GET.get('editing') == 'credits'),
-        'credits': production.credits_for_listing(),
-        'carousel': Carousel(production, request.user),
-
-        'download_links': production.download_links,
-        'external_links': production.external_links,
-        'info_files': production.info_files.all(),
-        'soundtracks': [
+        context['soundtracks'] = [
             link.soundtrack for link in
-            production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related('soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser')
-        ],
-        'tags': production.tags.order_by('name'),
-        'blurbs': production.blurbs.all() if request.user.is_staff else None,
-        'pack_members': pack_members,
-        'packed_in_productions': [
+            self.production.soundtrack_links.order_by('position').select_related('soundtrack').prefetch_related(
+                'soundtrack__author_nicks__releaser', 'soundtrack__author_affiliation_nicks__releaser'
+            )
+        ]
+        context['packed_in_productions'] = [
             pack_member.pack for pack_member in
-            production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
-        ],
-        'comment_form': comment_form,
-        'tags_form': tags_form,
-        'meta_screenshot': meta_screenshot,
-        'awards_accepting_recommendations': awards_accepting_recommendations,
-    })
+            self.production.packed_in.prefetch_related(
+                'pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser'
+            ).order_by('pack__release_date_date')
+        ]
+
+        return context
 
 
 def history(request, production_id):

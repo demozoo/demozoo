@@ -17,13 +17,35 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import CreateMusicForm, MusicIndexFilterForm, ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
-from productions.views.generic import IndexView, apply_order
+from productions.views.generic import IndexView, ShowView, apply_order
 
 
 class MusicIndexView(IndexView):
     supertype = 'music'
     template = 'music/index.html'
     filter_form_class = MusicIndexFilterForm
+
+
+class MusicShowView(ShowView):
+    supertype = 'music'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+
+        context['featured_in_productions'] = [
+            appearance.production for appearance in
+            self.production.appearances_as_soundtrack.prefetch_related(
+                'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
+            ).order_by('production__release_date_date')
+        ]
+        context['packed_in_productions'] = [
+            pack_member.pack for pack_member in
+            self.production.packed_in.prefetch_related(
+                'pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser'
+            ).order_by('pack__release_date_date')
+        ]
+
+        return context
 
 
 def show(request, production_id, edit_mode=False):
@@ -60,8 +82,17 @@ def show(request, production_id, edit_mode=False):
         'download_links': production.download_links,
         'external_links': production.external_links,
         'info_files': production.info_files.all(),
+        'editing_credits': (request.GET.get('editing') == 'credits'),
         'credits': production.credits_for_listing(),
         'carousel': Carousel(production, request.user),
+
+        'tags': production.tags.order_by('name'),
+        'blurbs': production.blurbs.all() if request.user.is_staff else None,
+        'comment_form': comment_form,
+        'tags_form': tags_form,
+        'meta_screenshot': meta_screenshot,
+        'awards_accepting_recommendations': awards_accepting_recommendations,
+
         'featured_in_productions': [
             appearance.production for appearance in
             production.appearances_as_soundtrack.prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').order_by('production__release_date_date')
@@ -70,12 +101,6 @@ def show(request, production_id, edit_mode=False):
             pack_member.pack for pack_member in
             production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
         ],
-        'tags': production.tags.order_by('name'),
-        'blurbs': production.blurbs.all() if request.user.is_staff else None,
-        'comment_form': comment_form,
-        'tags_form': tags_form,
-        'meta_screenshot': meta_screenshot,
-        'awards_accepting_recommendations': awards_accepting_recommendations,
     })
 
 
