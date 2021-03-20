@@ -36,7 +36,9 @@ def show(request, group_id):
 
     external_links = group.active_external_links.select_related('releaser').defer('releaser__notes')
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
-    parties_organised = group.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+    parties_organised = (
+        group.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+    )
     bbs_affiliations = group.bbs_affiliations.select_related('bbs').defer('bbs__notes').order_by(
         Concat('role', Value('999')),  # sort role='' after the numbered ones. Ewww.
         'bbs__name'
@@ -45,14 +47,29 @@ def show(request, group_id):
     return render(request, 'groups/show.html', {
         'group': group,
         'editing_nicks': (request.GET.get('editing') == 'nicks'),
-        'supergroupships': group.group_memberships.all().select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
-        'memberships': group.member_memberships.filter(member__is_group=False).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
+        'supergroupships': (
+            group.group_memberships.all().select_related('group').defer('group__notes')
+            .order_by('-is_current', 'group__name')
+        ),
+        'memberships': (
+            group.member_memberships.filter(member__is_group=False).select_related('member')
+            .defer('member__notes').order_by('-is_current', 'member__name')
+        ),
         'editing_members': (request.GET.get('editing') == 'members'),
         'editing_subgroups': (request.GET.get('editing') == 'subgroups'),
-        'subgroupships': group.member_memberships.filter(member__is_group=True).select_related('member').defer('member__notes').order_by('-is_current', 'member__name'),
+        'subgroupships': (
+            group.member_memberships.filter(member__is_group=True).select_related('member')
+            .defer('member__notes').order_by('-is_current', 'member__name')
+        ),
         'parties_organised': parties_organised,
         'bbs_affiliations': bbs_affiliations,
-        'member_productions': group.member_productions().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types').defer('notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes').order_by('-release_date_date', 'release_date_precision', '-sortable_title'),
+        'member_productions': (
+            group.member_productions().prefetch_related(
+                'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+            ).defer(
+                'notes', 'author_nicks__releaser__notes', 'author_affiliation_nicks__releaser__notes'
+            ).order_by('-release_date_date', 'release_date_precision', '-sortable_title')
+        ),
         'external_links': external_links,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not group.locked),
         'show_locked_button': request.user.is_authenticated and group.locked,
@@ -109,8 +126,10 @@ def add_member(request, group_id):
                 group.updated_at = datetime.datetime.now()
                 group.save()
                 description = u"Added %s as a member of %s" % (member.name, group.name)
-                Edit.objects.create(action_type='add_membership', focus=member, focus2=group,
-                    description=description, user=request.user)
+                Edit.objects.create(
+                    action_type='add_membership', focus=member, focus2=group,
+                    description=description, user=request.user
+                )
             return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
     else:
         form = GroupMembershipForm()
@@ -136,17 +155,21 @@ def remove_member(request, group_id, scener_id):
             group.member_memberships.filter(member=scener).update(is_current=False)
             group.updated_at = datetime.datetime.now()
             group.save()
-            Edit.objects.create(action_type='edit_membership', focus=scener, focus2=group,
+            Edit.objects.create(
+                action_type='edit_membership', focus=scener, focus2=group,
                 description=u"Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
-                user=request.user)
+                user=request.user
+            )
             return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
         elif deletion_type == 'full':
             group.member_memberships.filter(member=scener).delete()
             group.updated_at = datetime.datetime.now()
             group.save()
             description = u"Removed %s as a member of %s" % (scener.name, group.name)
-            Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_membership', focus=scener, focus2=group,
+                description=description, user=request.user
+            )
             return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
         else:
             show_error_message = True
@@ -220,8 +243,10 @@ def add_subgroup(request, group_id):
                 group.updated_at = datetime.datetime.now()
                 group.save()
                 description = u"Added %s as a subgroup of %s" % (member.name, group.name)
-                Edit.objects.create(action_type='add_subgroup', focus=member, focus2=group,
-                    description=description, user=request.user)
+                Edit.objects.create(
+                    action_type='add_subgroup', focus=member, focus2=group,
+                    description=description, user=request.user
+                )
             return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
     else:
         form = GroupSubgroupForm()
@@ -246,14 +271,18 @@ def remove_subgroup(request, group_id, subgroup_id):
             group.updated_at = datetime.datetime.now()
             group.save()
             description = u"Removed %s as a subgroup of %s" % (subgroup.name, group.name)
-            Edit.objects.create(action_type='remove_membership', focus=subgroup, focus2=group,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_membership', focus=subgroup, focus2=group,
+                description=description, user=request.user
+            )
         return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('group_remove_subgroup', args=[group_id, subgroup_id]),
             "Are you sure you want to remove %s as a subgroup of %s?" % (subgroup.name, group.name),
-            html_title="Removing %s from %s" % (subgroup.name, group.name))
+            html_title="Removing %s from %s" % (subgroup.name, group.name)
+        )
 
 
 @writeable_site_required
@@ -309,11 +338,15 @@ def convert_to_scener(request, group_id):
                     nick.abbreviation = ''
                     nick.save()
 
-            Edit.objects.create(action_type='convert_to_scener', focus=group,
-                description=(u"Converted %s from a group to a scener" % group), user=request.user)
+            Edit.objects.create(
+                action_type='convert_to_scener', focus=group,
+                description=(u"Converted %s from a group to a scener" % group), user=request.user
+            )
         return HttpResponseRedirect(group.get_absolute_edit_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('group_convert_to_scener', args=[group_id]),
             "Are you sure you want to convert %s into a scener?" % (group.name),
-            html_title="Converting %s to a scener" % (group.name))
+            html_title="Converting %s to a scener" % (group.name)
+        )

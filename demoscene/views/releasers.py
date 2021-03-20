@@ -47,9 +47,11 @@ def add_credit(request, releaser_id):
                 releaser.save()
                 credits_description = ', '.join([credit.description for credit in credits])
                 description = (u"Added credit for %s on %s: %s" % (nick, production, credits_description))
-                Edit.objects.create(action_type='add_credit', focus=production,
+                Edit.objects.create(
+                    action_type='add_credit', focus=production,
                     focus2=nick.releaser,
-                    description=description, user=request.user)
+                    description=description, user=request.user
+                )
             return HttpResponseRedirect(releaser.get_absolute_edit_url())
     else:
         form = ReleaserCreditForm(releaser)
@@ -105,10 +107,12 @@ def edit_credit(request, releaser_id, nick_id, production_id):
 
             new_credits = Credit.objects.filter(nick=new_nick, production=production)
             credits_description = ', '.join([credit.description for credit in new_credits])
-            Edit.objects.create(action_type='edit_credit', focus=production,
+            Edit.objects.create(
+                action_type='edit_credit', focus=production,
                 focus2=releaser,
                 description=(u"Updated %s's credit on %s: %s" % (new_nick, production, credits_description)),
-                user=request.user)
+                user=request.user
+            )
 
             return HttpResponseRedirect(releaser.get_absolute_edit_url())
     else:
@@ -147,14 +151,18 @@ def delete_credit(request, releaser_id, nick_id, production_id):
                 production.updated_at = datetime.datetime.now()
                 production.has_bonafide_edits = True
                 production.save()
-                Edit.objects.create(action_type='delete_credit', focus=production, focus2=releaser,
-                    description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
+                Edit.objects.create(
+                    action_type='delete_credit', focus=production, focus2=releaser,
+                    description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user
+                )
         return HttpResponseRedirect(releaser.get_absolute_edit_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('releaser_delete_credit', args=[releaser_id, nick_id, production_id]),
             "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-            html_title="Deleting %s's credit from %s" % (nick.name, production.title))
+            html_title="Deleting %s's credit from %s" % (nick.name, production.title)
+        )
 
 
 @writeable_site_required
@@ -167,9 +175,11 @@ def edit_notes(request, releaser_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'releaser_edit_notes', releaser, ReleaserEditNotesForm,
+    return simple_ajax_form(
+        request, 'releaser_edit_notes', releaser, ReleaserEditNotesForm,
         title='Editing notes for %s' % releaser.name,
-        update_datestamp=True, on_success=success)
+        update_datestamp=True, on_success=success
+    )
 
 
 @writeable_site_required
@@ -268,8 +278,10 @@ def change_primary_nick(request, releaser_id):
         releaser.name = nick.name
         releaser.updated_at = datetime.datetime.now()
         releaser.save()
-        Edit.objects.create(action_type='change_primary_nick', focus=releaser,
-            description=(u"Set primary nick to '%s'" % nick.name), user=request.user)
+        Edit.objects.create(
+            action_type='change_primary_nick', focus=releaser,
+            description=(u"Set primary nick to '%s'" % nick.name), user=request.user
+        )
     return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
 
 
@@ -290,8 +302,10 @@ def delete_nick(request, releaser_id, nick_id):
             nick.reassign_references_and_delete()
             releaser.updated_at = datetime.datetime.now()
             releaser.save()
-            Edit.objects.create(action_type='delete_nick', focus=releaser,
-                description=(u"Deleted nick '%s'" % nick.name), user=request.user)
+            Edit.objects.create(
+                action_type='delete_nick', focus=releaser,
+                description=(u"Deleted nick '%s'" % nick.name), user=request.user
+            )
         return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
     else:
         if nick.is_referenced():
@@ -302,10 +316,12 @@ def delete_nick(request, releaser_id, nick_id):
         else:
             prompt = "Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name)
 
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('releaser_delete_nick', args=[releaser_id, nick_id]),
             prompt,
-            html_title="Deleting name: %s" % nick.name)
+            html_title="Deleting name: %s" % nick.name
+        )
 
 
 @writeable_site_required
@@ -320,11 +336,15 @@ def delete(request, releaser_id):
             # insert log entry before actually deleting, so that it doesn't try to
             # insert a null ID for the focus field
             if releaser.is_group:
-                Edit.objects.create(action_type='delete_group', focus=releaser,
-                    description=(u"Deleted group '%s'" % releaser.name), user=request.user)
+                Edit.objects.create(
+                    action_type='delete_group', focus=releaser,
+                    description=(u"Deleted group '%s'" % releaser.name), user=request.user
+                )
             else:
-                Edit.objects.create(action_type='delete_scener', focus=releaser,
-                    description=(u"Deleted scener '%s'" % releaser.name), user=request.user)
+                Edit.objects.create(
+                    action_type='delete_scener', focus=releaser,
+                    description=(u"Deleted scener '%s'" % releaser.name), user=request.user
+                )
 
             releaser.delete()
 
@@ -336,10 +356,12 @@ def delete(request, releaser_id):
         else:
             return HttpResponseRedirect(releaser.get_absolute_edit_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_releaser', args=[releaser_id]),
             "Are you sure you want to delete %s?" % releaser.name,
-            html_title="Deleting %s" % releaser.name)
+            html_title="Deleting %s" % releaser.name
+        )
 
 
 @writeable_site_required
@@ -374,8 +396,10 @@ def lock(request, releaser_id):
 
     if request.method == 'POST':
         if request.POST.get('yes'):
-            Edit.objects.create(action_type='lock_releaser', focus=releaser,
-                description=(u"Protected releaser '%s'" % releaser.name), user=request.user)
+            Edit.objects.create(
+                action_type='lock_releaser', focus=releaser,
+                description=(u"Protected releaser '%s'" % releaser.name), user=request.user
+            )
 
             releaser.locked = True
             releaser.updated_at = datetime.datetime.now()
@@ -386,12 +410,14 @@ def lock(request, releaser_id):
         return HttpResponseRedirect(releaser.get_absolute_url())
 
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('lock_releaser', args=[releaser_id]),
             "Locking down a page is a serious decision and shouldn't be done on a whim - "
             "remember that we want to keep Demozoo as open as possible. "
             "Are you absolutely sure you want to lock '%s'?" % releaser.name,
-            html_title="Locking %s" % releaser.name)
+            html_title="Locking %s" % releaser.name
+        )
 
 
 @login_required
@@ -400,8 +426,10 @@ def protected(request, releaser_id):
 
     if request.user.is_staff and request.method == 'POST':
         if request.POST.get('yes'):
-            Edit.objects.create(action_type='unlock_releaser', focus=releaser,
-                description=(u"Unprotected releaser '%s'" % releaser.name), user=request.user)
+            Edit.objects.create(
+                action_type='unlock_releaser', focus=releaser,
+                description=(u"Unprotected releaser '%s'" % releaser.name), user=request.user
+            )
 
             releaser.locked = False
             releaser.updated_at = datetime.datetime.now()

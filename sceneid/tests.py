@@ -5,7 +5,6 @@ import urllib
 
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase
 from mock import patch
 
@@ -27,7 +26,9 @@ class TestLogin(TestCase):
             url = str(url)  # Coerce reverse_lazy() URLs.
             scheme, netloc, path, params, query, fragment = urllib.parse.urlparse(url)
             query_parts = sorted(urllib.parse.parse_qsl(query))
-            return urllib.parse.urlunparse((scheme, netloc, path, params, urllib.parse.urlencode(query_parts), fragment))
+            return urllib.parse.urlunparse(
+                (scheme, netloc, path, params, urllib.parse.urlencode(query_parts), fragment)
+            )
 
         self.assertEqual(
             normalize(url1), normalize(url2),
@@ -41,7 +42,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -79,7 +82,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -114,7 +119,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -147,7 +154,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -181,7 +190,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')
@@ -205,7 +216,9 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertURLEqual(
             response['Location'],
-            'https://id.scene.org/oauth/authorize/?state=66666666&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&response_type=code&client_id=SCENEID_K3Y'
+            'https://id.scene.org/oauth/authorize/?state=66666666&'
+            'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F&'
+            'response_type=code&client_id=SCENEID_K3Y'
         )
 
         response = self.client.get('/account/sceneid/login/?state=55555555&code=123')

@@ -258,7 +258,8 @@ class CsdbGroup(BaseUrl):
 class CsdbRelease(BaseUrl):
     canonical_format = "https://csdb.dk/release/?id=%s"
     tests = [
-        # need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
+        # need to include the ? in the match so that we don't also match /release/download.php,
+        # which is totally different...
         querystring_match(r'https?://noname\.c64\.org/csdb/release/(?:index\.php)?\?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/release/(?:index\.php)?\?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/(?:index\.php)?\?', 'rid', re.I),
@@ -271,7 +272,8 @@ class CsdbRelease(BaseUrl):
 class CsdbMusic(BaseUrl):
     canonical_format = "https://csdb.dk/sid/?id=%s"
     tests = [
-        # need to include the ? in the match so that we don't also match /release/download.php, which is totally different...
+        # need to include the ? in the match so that we don't also match /release/download.php,
+        # which is totally different...
         querystring_match(r'https?://noname\.c64\.org/csdb/sid/(?:index\.php)?\?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/sid/(?:index\.php)?\?', 'id', re.I),
     ]
@@ -550,7 +552,8 @@ class SceneOrgFile(BaseUrl):
 
     def as_download_link(self):
         return '''
-            <div><a href="%s" class="primary">Download (scene.org)</a> - <a href="%s" class="secondary">file info</a></div>
+            <div><a href="%s" class="primary">Download (scene.org)</a> -
+            <a href="%s" class="secondary">file info</a></div>
         ''' % (
             escape(self.auto_mirror_url), escape(self.info_url)
         )
@@ -729,7 +732,10 @@ class FujiologyFile(BaseUrl):
 class FujiologyFolder(BaseUrl):
     canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
-        regex_match(r'(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I, add_slash=True),
+        regex_match(
+            r'(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)',
+            re.I, add_slash=True
+        ),
     ]
     html_link_class = "fujiology"
     html_link_text = "Fujiology"
@@ -811,7 +817,10 @@ class CsdbEvent(BaseUrl):
 class BreaksAmigaParty(BaseUrl):
     canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?arabuusimiehet\.com/break/amiga/index\.php', 'partyid', re.I, othervars={'mode': 'party'}),
+        querystring_match(
+            r'https?://(?:www\.)?arabuusimiehet\.com/break/amiga/index\.php',
+            'partyid', re.I, othervars={'mode': 'party'}
+        ),
     ]
     html_link_class = "breaks_amiga"
     html_link_text = "Break's Amiga Collection"
@@ -1020,7 +1029,8 @@ class VimeoVideo(BaseUrl):
         if autoplay:
             embed_url += "?autoplay=1"
         return format_html(
-            """<iframe width="{}" height="{}" src="{}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>""",
+            '<iframe width="{}" height="{}" src="{}" frameborder="0" webkitallowfullscreen '
+            'mozallowfullscreen allowfullscreen></iframe>',
             width, height, embed_url
         )
 
@@ -1039,7 +1049,10 @@ class DemosceneTvVideo(BaseUrl):
     canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod', re.I),
-        querystring_match(r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod', re.I, othervars={'id': '172', 'vsmaction': 'view_prod'}),
+        querystring_match(
+            r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod', re.I,
+            othervars={'id': '172', 'vsmaction': 'view_prod'}
+        ),
     ]
     html_link_class = "demoscene_tv"
     html_link_text = "Demoscene.tv"
@@ -1178,7 +1191,10 @@ class ModarchiveMember(BaseUrl):
     canonical_format = "https://modarchive.org/member.php?%s"
     tests = [
         regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php\?(\d+)', re.I),
-        querystring_match(r'https?://(?:www\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_profile'}),
+        querystring_match(
+            r'https?://(?:www\.)?modarchive\.org/index\.php',
+            'query', re.I, othervars={'request': 'view_profile'}
+        ),
     ]
     html_link_class = "modarchive"
     html_link_text = "ModArchive"
@@ -1189,7 +1205,10 @@ class ModarchiveModule(BaseUrl):
     canonical_format = "https://modarchive.org/module.php?%s"
     tests = [
         regex_match(r'https?://(?:www\.|lite\.)?modarchive\.org/module\.php\?(\d+)', re.I),
-        querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/index\.php', 'query', re.I, othervars={'request': 'view_by_moduleid'}),
+        querystring_match(
+            r'https?://(?:www\.|lite\.)?modarchive\.org/index\.php',
+            'query', re.I, othervars={'request': 'view_by_moduleid'}
+        ),
         querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
         querystring_match(r'https?://api.modarchive\.org/downloads\.php', 'moduleid', re.I),
     ]
@@ -1540,10 +1559,12 @@ class TwitchChannel(BaseUrl):
     html_link_text = "Twitch"
     html_title_format = "%s on Twitch"
 
-class SpeccyPlEntry(BaseUrl): # speccy.pl abstract superclass
+
+class SpeccyPlEntry(BaseUrl):  # speccy.pl abstract superclass
     html_link_class = "speccypl"
     html_link_text = "speccy.pl"
     html_title_format = "%s on speccy.pl"
+
 
 class SpeccyPlProduction(SpeccyPlEntry):
     canonical_format = "http://speccy.pl/archive/prod.php?id=%s"
@@ -1551,11 +1572,13 @@ class SpeccyPlProduction(SpeccyPlEntry):
         querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/prod\.php', 'id', re.I),
     ]
 
+
 class SpeccyPlAuthor(SpeccyPlEntry):
     canonical_format = "http://speccy.pl/archive/author.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/author\.php', 'id', re.I),
     ]
+
 
 class AtarikiEntry(BaseUrl):
     html_link_class = "atariki"
@@ -1565,6 +1588,7 @@ class AtarikiEntry(BaseUrl):
     tests = [
         regex_match(r'https?://(?:www\.)?atariki\.krap\.pl/index\.php/(.*)', re.I),
     ]
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1616,7 +1640,7 @@ PARTY_LINK_TYPES = [
     DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
-    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, 
+    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
 ]
 

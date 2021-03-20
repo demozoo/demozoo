@@ -10,4 +10,5 @@ register = Library()
 def jsonify(object):
     return json.dumps(object)
 
+
 register.filter('json', jsonify)

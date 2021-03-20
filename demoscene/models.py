@@ -44,7 +44,10 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
 
     first_name = models.CharField(max_length=255, blank=True)
     surname = models.CharField(max_length=255, blank=True)
-    real_name_note = models.TextField(default='', blank=True, verbose_name='Permission note', help_text="Details of any correspondence / decision about whether this name should be public")
+    real_name_note = models.TextField(
+        default='', blank=True, verbose_name='Permission note',
+        help_text="Details of any correspondence / decision about whether this name should be public"
+    )
 
     data_source = models.CharField(max_length=32, blank=True, null=True)
 
@@ -92,10 +95,15 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
 
     def member_productions(self):
         # Member productions are those which list this group in the 'affiliations' portion of the byline,
-        # OR the author is a SUBGROUP of this group (regardless of whether this parent group is named as an affiliation).
+        # OR the author is a SUBGROUP of this group (regardless of whether this parent group is named as an
+        # affiliation).
         from productions.models import Production
 
-        subgroup_nick_ids = list(Nick.objects.filter(releaser__is_group=True, releaser__group_memberships__group=self).values_list('id', flat=True))
+        subgroup_nick_ids = list(
+            Nick.objects.filter(
+                releaser__is_group=True, releaser__group_memberships__group=self
+            ).values_list('id', flat=True)
+        )
 
         return Production.objects.filter(
             Q(author_affiliation_nicks__in=list(self.nicks.all()))
@@ -107,7 +115,10 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         return Credit.objects.select_related('nick').filter(nick__releaser=self)
 
     def groups(self):
-        return [membership.group for membership in self.group_memberships.select_related('group').order_by('group__name')]
+        return [
+            membership.group
+            for membership in self.group_memberships.select_related('group').order_by('group__name')
+        ]
 
     def current_groups(self, prefetch_nicks=False):
         if self.has_prefetched('group_memberships'):
@@ -118,13 +129,18 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
                 if membership.is_current
             ]
         else:
-            current_memberships = self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')
+            current_memberships = (
+                self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')
+            )
             if prefetch_nicks:
                 current_memberships = current_memberships.prefetch_related('group__nicks')
             return [membership.group for membership in current_memberships]
 
     def members(self):
-        return [membership.member for membership in self.member_memberships.select_related('member').order_by('member__name')]
+        return [
+            membership.member
+            for membership in self.member_memberships.select_related('member').order_by('member__name')
+        ]
 
     @property
     def active_external_links(self):
@@ -209,9 +225,11 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
     def is_referenced(self):
         return (
             self.credits().count()
-            or self.member_memberships.count()  # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
+            # A group with members can't be deleted, although a scener with groups can. Seems to make sense...
+            or self.member_memberships.count()
             or self.productions().count()
-            or self.member_productions().count())
+            or self.member_productions().count()
+        )
 
     def can_be_converted_to_group(self):
         return (not self.first_name and not self.surname and not self.location)
@@ -244,8 +262,14 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
 class Nick(ModelWithPrefetchSnooping, models.Model):
     releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    abbreviation = models.CharField(max_length=255, blank=True, help_text="(optional - only if there's one that's actively being used. Don't just make one up!)")
-    differentiator = models.CharField(max_length=32, blank=True, help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country")
+    abbreviation = models.CharField(
+        max_length=255, blank=True,
+        help_text="(optional - only if there's one that's actively being used. Don't just make one up!)"
+    )
+    differentiator = models.CharField(
+        max_length=32, blank=True,
+        help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country"
+    )
 
     def __init__(self, *args, **kwargs):
         super(Nick, self).__init__(*args, **kwargs)
@@ -352,9 +376,18 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
         from django.db import connection
         with transaction.atomic():
             cursor = connection.cursor()
-            cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-            cursor.execute("UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
-            cursor.execute("UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
+            cursor.execute(
+                "UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s",
+                [primary_nick.id, self.id]
+            )
+            cursor.execute(
+                "UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s",
+                [primary_nick.id, self.id]
+            )
+            cursor.execute(
+                "UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s",
+                [primary_nick.id, self.id]
+            )
 
         self.delete()
 
@@ -447,7 +480,9 @@ class NickVariant(models.Model):
                         SELECT COUNT(*) FROM demoscene_membership
                         INNER JOIN demoscene_releaser AS demogroup ON (demoscene_membership.group_id = demogroup.id)
                         INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
-                        INNER JOIN demoscene_nickvariant AS group_nickvariant ON (group_nick.id = group_nickvariant.nick_id)
+                        INNER JOIN demoscene_nickvariant AS group_nickvariant ON (
+                            group_nick.id = group_nickvariant.nick_id
+                        )
                         WHERE demoscene_membership.member_id = demoscene_releaser.id
                         AND LOWER(group_nickvariant.name) IN %s
                     '''),
@@ -460,7 +495,9 @@ class NickVariant(models.Model):
                         SELECT COUNT(*) FROM demoscene_membership
                         INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
                         INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
-                        INNER JOIN demoscene_nickvariant AS member_nickvariant ON (member_nick.id = member_nickvariant.nick_id)
+                        INNER JOIN demoscene_nickvariant AS member_nickvariant ON (
+                            member_nick.id = member_nickvariant.nick_id
+                        )
                         WHERE demoscene_membership.group_id = demoscene_releaser.id
                         AND LOWER(member_nickvariant.name) IN %s
                     '''),
@@ -478,7 +515,8 @@ class NickVariant(models.Model):
             '''
             select_params.append(query)
 
-            # Add an 'is_primary_nickvariant' column to the results - true if the matched nick variant is the nick's primary one
+            # Add an 'is_primary_nickvariant' column to the results -
+            # true if the matched nick variant is the nick's primary one
             select['is_primary_nickvariant'] = '''
                 CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
             '''
@@ -504,7 +542,9 @@ class NickVariant(models.Model):
 
 class Membership(models.Model):
     member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
-    group = models.ForeignKey(Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE
+    )
     is_current = models.BooleanField(default=True)
     data_source = models.CharField(max_length=32, blank=True, null=True)
 
@@ -569,7 +609,10 @@ class ExternalLink(models.Model):
 class ReleaserExternalLink(ExternalLink):
     releaser = models.ForeignKey(Releaser, related_name='external_links', on_delete=models.CASCADE)
     link_types = groklinks.RELEASER_LINK_TYPES
-    source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
+    source = models.CharField(
+        max_length=32, blank=True, editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+    )
 
     def html_link(self):
         return self.link.as_html(self.releaser.name)
@@ -588,7 +631,9 @@ class Edit(models.Model):
     focus_object_id = models.PositiveIntegerField()
     focus = GenericForeignKey('focus_content_type', 'focus_object_id')
 
-    focus2_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='edits_as_focus2', on_delete=models.CASCADE)
+    focus2_content_type = models.ForeignKey(
+        ContentType, null=True, blank=True, related_name='edits_as_focus2', on_delete=models.CASCADE
+    )
     focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
     focus2 = GenericForeignKey('focus2_content_type', 'focus2_object_id')
 
@@ -618,8 +663,16 @@ class Edit(models.Model):
 
 
 class CaptchaQuestion(models.Model):
-    question = models.TextField(help_text="HTML is allowed. Keep questions factual and simple - remember that our potential users are not always followers of mainstream demoparty culture")
-    answer = models.CharField(max_length=255, help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)")
+    question = models.TextField(
+        help_text=(
+            "HTML is allowed. Keep questions factual and simple - "
+            "remember that our potential users are not always followers of mainstream demoparty culture"
+        )
+    )
+    answer = models.CharField(
+        max_length=255,
+        help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)"
+    )
 
     def __str__(self):
         return self.question
@@ -627,7 +680,12 @@ class CaptchaQuestion(models.Model):
 
 class TagDescription(models.Model):
     tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description', on_delete=models.CASCADE)
-    description = models.TextField(help_text="HTML is allowed. Keep this to a couple of sentences at most - it's used in tooltips as well as the tag listing page")
+    description = models.TextField(
+        help_text=(
+            "HTML is allowed. Keep this to a couple of sentences at most - "
+            "it's used in tooltips as well as the tag listing page"
+        )
+    )
 
     def __str__(self):
         return self.tag.name
@@ -635,8 +693,12 @@ class TagDescription(models.Model):
 
 class BlacklistedTag(models.Model):
     tag = models.CharField(max_length=255, help_text="The tag to be blacklisted")
-    replacement = models.CharField(max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)")
-    message = models.TextField(blank=True, help_text="Message to show to the user when they try to use the tag (optional)")
+    replacement = models.CharField(
+        max_length=255, blank=True, help_text="What to replace the tag with (leave blank to delete it completely)"
+    )
+    message = models.TextField(
+        blank=True, help_text="Message to show to the user when they try to use the tag (optional)"
+    )
 
     def __str__(self):
         return self.tag

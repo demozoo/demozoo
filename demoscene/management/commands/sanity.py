@@ -176,9 +176,13 @@ class Command(BaseCommand):
                 results_file.text
             except UnicodeDecodeError:
                 if self.verbosity >= 1:
-                    print("Error on /parties/%d/results_file/%d/ - cannot decode as %r" % (results_file.party_id, results_file.id, results_file.encoding))
+                    print(
+                        "Error on /parties/%d/results_file/%d/ - cannot decode as %r"
+                        % (results_file.party_id, results_file.id, results_file.encoding)
+                    )
             except IOError:
-                pass  # ignore files that aren't on disk (which probably means this is a local dev instance with a live db)
+                # ignore files that aren't on disk (which probably means this is a local dev instance with a live db)
+                pass
 
         if self.verbosity >= 1:
             print("Deleting unused tags")
@@ -223,7 +227,9 @@ class Command(BaseCommand):
             group by p1.production_id, p1.soundtrack_id
         ''')
         for (prod_id, soundtrack_id, position) in cursor.fetchall():
-            SoundtrackLink.objects.filter(production_id=prod_id, soundtrack_id=soundtrack_id, position__gt=position).delete()
+            SoundtrackLink.objects.filter(
+                production_id=prod_id, soundtrack_id=soundtrack_id, position__gt=position
+            ).delete()
 
         if self.verbosity >= 1:
             print("Deleting duplicate pack members")
@@ -249,7 +255,10 @@ class Command(BaseCommand):
 
         if self.verbosity >= 1:
             print("Closing gaps in soundtrack sequences")
-        for k, stls in groupby(SoundtrackLink.objects.order_by('production_id', 'position'), lambda stl: stl.production_id):
+        for k, stls in groupby(
+            SoundtrackLink.objects.order_by('production_id', 'position'),
+            lambda stl: stl.production_id
+        ):
             for i, stl in enumerate(stls):
                 if i + 1 != stl.position:
                     stl.position = i + 1
@@ -265,8 +274,13 @@ class Command(BaseCommand):
             FROM productions_packmember
             INNER JOIN productions_production AS packmember ON (member_id = packmember.id)
             WHERE
-            pack_id NOT IN (select production_id from productions_production_types where productiontype_id in (%(pack)s, %(artpack)s))
-            AND pack_id IN (select production_id from productions_production_types where productiontype_id = %(diskmag)s)
+            pack_id NOT IN (
+                select production_id from productions_production_types
+                where productiontype_id in (%(pack)s, %(artpack)s)
+            )
+            AND pack_id IN (
+                select production_id from productions_production_types where productiontype_id = %(diskmag)s
+            )
             AND packmember.supertype <> 'music'
         ''', {'pack': pack.id, 'artpack': artpack_id, 'diskmag': diskmag_id}):
             prod.types.add(pack)
@@ -287,7 +301,8 @@ class Command(BaseCommand):
         ).order_by('pack_id', 'position')
         for pack_id, pack_members in groupby(pack_contents, lambda pm: pm.pack_id):
             soundtrack_ids = list(
-                SoundtrackLink.objects.filter(production_id=pack_id).order_by('position').values_list('soundtrack_id', flat=True)
+                SoundtrackLink.objects.filter(production_id=pack_id).order_by('position')
+                .values_list('soundtrack_id', flat=True)
             )
             for pack_member in pack_members:
                 if pack_member.member_id not in soundtrack_ids:

@@ -5,8 +5,6 @@ import re
 # Parsers for results text files in various formats.
 # Each one returns a list of (ranking, title, author, score) tuples
 
-
-
 PM_RANKED_RESULT = re.compile(r'(\s*)(\S+)(\s+)(\S+)(\s+)(\S.*)')
 PM_UNRANKED_RESULT = re.compile(r'(\s*)(\S+)(\s+)(\S.*)')
 
@@ -53,7 +51,7 @@ def generic_results_txt(results_text, ranked_result_re, unranked_result_re, auth
         title_indent = score_indent + len(match.group(4)) + len(match.group(5))
         break
 
-    if ranking_indent == None:
+    if ranking_indent is None:
         # no usable result lines found at all
         return []
 
@@ -74,7 +72,7 @@ def generic_results_txt(results_text, ranked_result_re, unranked_result_re, auth
             rough_rows[-1][2] += ' ' + line.strip()
         elif indent > ranking_indent:
             # treat this as a new row with the same ranking as the previous entry
-            if last_ranking == None:
+            if last_ranking is None:
                 continue
             match = unranked_result_re.match(line)
             if not match:

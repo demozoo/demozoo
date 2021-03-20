@@ -23,9 +23,16 @@ class TestBumpExternalLinks(TransactionTestCase):
 
     def test_run(self):
         mooncheese = Production.objects.get(title='Mooncheese')
-        mooncheese.links.create(link_class='BaseUrl', parameter='https://www.pouet.net/prod.php?which=13121', is_download_link=False)
-        mooncheese.links.create(link_class='SceneOrgFile', parameter='/mirrors/amigascne/Groups/A/Abandon/Abandon-NewDemosIntro', is_download_link=True)
-        mooncheese.links.create(link_class='AmigascneFile', parameter='/Groups/A/Abandon/Abandon-NewDemosIntro', is_download_link=True)
+        mooncheese.links.create(
+            link_class='BaseUrl', parameter='https://www.pouet.net/prod.php?which=13121', is_download_link=False
+        )
+        mooncheese.links.create(
+            link_class='SceneOrgFile', parameter='/mirrors/amigascne/Groups/A/Abandon/Abandon-NewDemosIntro',
+            is_download_link=True
+        )
+        mooncheese.links.create(
+            link_class='AmigascneFile', parameter='/Groups/A/Abandon/Abandon-NewDemosIntro', is_download_link=True
+        )
 
         with captured_stdout():
             call_command('bump_external_links')

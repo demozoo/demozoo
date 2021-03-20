@@ -130,7 +130,7 @@ class TestNickField(TestCase):
 
 class TestSubmitButtonField(TestCase):
     def test_val(self):
-        class SubmittableForm(forms.Form): 
+        class SubmittableForm(forms.Form):
             lookup = SubmitButtonField(button_text='Look up name')
 
         form = SubmittableForm({})

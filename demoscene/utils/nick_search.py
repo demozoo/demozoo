@@ -35,7 +35,9 @@ class NickSelection():
             try:
                 return Nick.objects.get(id=self.id)
             except Nick.DoesNotExist:
-                raise NickSelection.FailedToResolve("Tried to match the name '#{self.name}' to nick ID #{self.id} which does not exist")
+                raise NickSelection.FailedToResolve(
+                    "Tried to match the name '#{self.name}' to nick ID #{self.id} which does not exist"
+                )
 
     def __str__(self):
         return self.name
@@ -61,10 +63,12 @@ class NickSelection():
 
 
 class NickSearch():
-    def __init__(self, search_term, selection=None,
+    def __init__(
+        self, search_term, selection=None,
         sceners_only=False, groups_only=False,
         group_ids=[],
-        group_names=[], member_names=[]):
+        group_names=[], member_names=[]
+    ):
 
         self.search_term = search_term
 
@@ -138,9 +142,11 @@ class NickSearch():
 
 
 class BylineSearch():
-    def __init__(self, search_term,
+    def __init__(
+        self, search_term,
         author_nick_selections=[], affiliation_nick_selections=[],
-        autocomplete=False):
+        autocomplete=False
+    ):
 
         self.search_term = search_term
 
@@ -169,7 +175,10 @@ class BylineSearch():
 
         vetted_affiliation_names = []
         for name in affiliation_names:
-            if re.search(r"[\,\+\^\&]", name) and not NickVariant.objects.filter(name__iexact=name.strip(), nick__releaser__is_group=True).exists():
+            if (
+                re.search(r"[\,\+\^\&]", name)
+                and not NickVariant.objects.filter(name__iexact=name.strip(), nick__releaser__is_group=True).exists()
+            ):
                 for subname in re.split(r"[\,\+\^\&]", name):
                     subname = subname.lstrip()
                     if subname:
