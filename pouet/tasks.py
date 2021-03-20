@@ -83,7 +83,9 @@ def automatch_all_groups():
     Production.objects.filter(last_seen_at__lt=last_month).delete()
     Group.objects.filter(last_seen_at__lt=last_month).delete()
 
-    for releaser_id in ReleaserExternalLink.objects.filter(link_class='PouetGroup').values_list('releaser_id', flat=True):
+    for releaser_id in (
+        ReleaserExternalLink.objects.filter(link_class='PouetGroup').values_list('releaser_id', flat=True)
+    ):
         automatch_group.delay(releaser_id)
 
 

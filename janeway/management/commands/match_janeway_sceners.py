@@ -53,7 +53,10 @@ class Command(BaseCommand):
                     group__nicks__variants__search_title__in=group_names
                 ).distinct().values_list('group_id', flat=True).count()
                 if name_match_count >= 2:
-                    print("scener match: %s (%d) matches %d on %d group names" % (author.name, author.janeway_id, candidate_releaser_id, name_match_count))
+                    print(
+                        "scener match: %s (%d) matches %d on %d group names"
+                        % (author.name, author.janeway_id, candidate_releaser_id, name_match_count)
+                    )
                     matching_releaser_ids.add(candidate_releaser_id)
 
             for releaser_id in matching_releaser_ids:

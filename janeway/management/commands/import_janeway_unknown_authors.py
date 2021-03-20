@@ -22,7 +22,11 @@ class Command(BaseCommand):
             ) AS unseen_names
             INNER JOIN janeway_author ON (unseen_names.author_id = janeway_author.id)
             WHERE is_company = 'f'
-            AND janeway_author.janeway_id NOT IN (select cast(parameter as int) from demoscene_releaserexternallink where link_class='KestraBitworldAuthor')
+            AND janeway_author.janeway_id NOT IN (
+                select cast(parameter as int)
+                from demoscene_releaserexternallink
+                where link_class='KestraBitworldAuthor'
+            )
         """)
 
         for (index, author) in enumerate(authors):

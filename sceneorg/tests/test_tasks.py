@@ -32,11 +32,19 @@ class TestTasks(TestCase):
     @patch('sceneorg.tasks.parse_all_dirs')
     def test_scan_dir_listing(self, parse_all_dirs):
         root_dir = Directory.objects.create(path='/', last_seen_at=datetime.datetime(2020, 1, 1))
-        demos_dir = Directory.objects.create(path='/demos/', parent=root_dir, last_seen_at=datetime.datetime(2020, 1, 1))
-        warez_dir = Directory.objects.create(path='/warez/', parent=root_dir, last_seen_at=datetime.datetime(2020, 1, 1))
-        games_dir = Directory.objects.create(path='/warez/games/', parent=warez_dir, last_seen_at=datetime.datetime(2020, 1, 1))
+        Directory.objects.create(
+            path='/demos/', parent=root_dir, last_seen_at=datetime.datetime(2020, 1, 1)
+        )
+        warez_dir = Directory.objects.create(
+            path='/warez/', parent=root_dir, last_seen_at=datetime.datetime(2020, 1, 1)
+        )
+        Directory.objects.create(
+            path='/warez/games/', parent=warez_dir, last_seen_at=datetime.datetime(2020, 1, 1)
+        )
         File.objects.create(path='/uploading.txt', directory=root_dir, last_seen_at=datetime.datetime(2020, 1, 1))
-        File.objects.create(path='/world-domination-plans.txt', directory=root_dir, last_seen_at=datetime.datetime(2020, 1, 1))
+        File.objects.create(
+            path='/world-domination-plans.txt', directory=root_dir, last_seen_at=datetime.datetime(2020, 1, 1)
+        )
 
         parse_all_dirs.return_value = [
             ('/', [

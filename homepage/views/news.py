@@ -91,10 +91,12 @@ def delete_news(request, news_story_id):
         else:
             return redirect('edit_news', news_story_id)
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_news', args=[news_story_id]),
             "Are you sure you want to delete this news story?",
-            html_title="Deleting news story: %s" % news_story.title)
+            html_title="Deleting news story: %s" % news_story.title
+        )
 
 
 def browse_images(request):

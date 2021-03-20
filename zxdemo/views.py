@@ -27,19 +27,26 @@ def home(request):
             WHERE demoscene_nick.id IN (
                 SELECT DISTINCT productions_production_author_nicks.nick_id
                 FROM productions_production_platforms
-                INNER JOIN productions_production_author_nicks ON (productions_production_platforms.production_id = productions_production_author_nicks.production_id)
+                INNER JOIN productions_production_author_nicks ON (
+                    productions_production_platforms.production_id = productions_production_author_nicks.production_id
+                )
                 WHERE productions_production_platforms.platform_id IN (%s)
             )
             OR demoscene_nick.id IN (
                 SELECT DISTINCT productions_production_author_affiliation_nicks.nick_id
                 FROM productions_production_platforms
-                INNER JOIN productions_production_author_affiliation_nicks ON (productions_production_platforms.production_id = productions_production_author_affiliation_nicks.production_id)
+                INNER JOIN productions_production_author_affiliation_nicks ON (
+                    productions_production_platforms.production_id
+                    = productions_production_author_affiliation_nicks.production_id
+                )
                 WHERE productions_production_platforms.platform_id IN (%s)
             )
             OR demoscene_nick.id IN (
                 SELECT DISTINCT productions_credit.nick_id
                 FROM productions_production_platforms
-                INNER JOIN productions_credit ON (productions_production_platforms.production_id = productions_credit.production_id)
+                INNER JOIN productions_credit ON (
+                    productions_production_platforms.production_id = productions_credit.production_id
+                )
                 WHERE productions_production_platforms.platform_id IN (%s)
             )
         """, [tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS)]
@@ -48,16 +55,29 @@ def home(request):
 
     random_screenshot = Screenshot.objects.filter(production__platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('?')[0]
 
-    latest_releases = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False).order_by('-release_date_date').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
-    latest_additions = Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at').prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
+    latest_releases = (
+        Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS, release_date_date__isnull=False)
+        .order_by('-release_date_date')
+        .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
+    )
+    latest_additions = (
+        Production.objects.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).order_by('-created_at')
+        .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')[:10]
+    )
 
     news_items = NewsItem.objects.order_by('-created_at').select_related('author')[:8]
 
     return render(request, 'zxdemo/home.html', {
         'stats': {
-            'demo_count': Production.objects.filter(supertype='production', platforms__id__in=ZXDEMO_PLATFORM_IDS).count(),
-            'music_count': Production.objects.filter(supertype='music', platforms__id__in=ZXDEMO_PLATFORM_IDS).count(),
-            'graphics_count': Production.objects.filter(supertype='graphics', platforms__id__in=ZXDEMO_PLATFORM_IDS).count(),
+            'demo_count': (
+                Production.objects.filter(supertype='production', platforms__id__in=ZXDEMO_PLATFORM_IDS).count()
+            ),
+            'music_count': (
+                Production.objects.filter(supertype='music', platforms__id__in=ZXDEMO_PLATFORM_IDS).count()
+            ),
+            'graphics_count': (
+                Production.objects.filter(supertype='graphics', platforms__id__in=ZXDEMO_PLATFORM_IDS).count()
+            ),
             'releaser_count': releaser_count,
         },
         'random_screenshot': random_screenshot,
@@ -91,7 +111,7 @@ def productions(request):
 
     productions = productions.filter(supertype__in=supertypes)
     if request.GET.get('noscreen'):
-        productions=productions.filter(screenshots__id__isnull=True)
+        productions = productions.filter(screenshots__id__isnull=True)
 
     count = request.GET.get('count', '50')
     letter = request.GET.get('letter', '')
@@ -127,6 +147,7 @@ def productions(request):
         },
     })
 
+
 def releases_redirect(request):
     try:
         type_filter = int(request.GET.get('filter') or 7)
@@ -150,6 +171,7 @@ def releases_redirect(request):
 
     return redirect(url, permanent=True)
 
+
 def production(request, production_id):
     ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
     production = get_object_or_404(Production, id=production_id, platforms__id__in=ZXDEMO_PLATFORM_IDS)
@@ -161,7 +183,10 @@ def production(request, production_id):
 
     return render(request, 'zxdemo/production.html', {
         'production': production,
-        'competition_placings': production.competition_placings.select_related('competition__party').order_by('competition__party__start_date_date'),
+        'competition_placings': (
+            production.competition_placings.select_related('competition__party')
+            .order_by('competition__party__start_date_date')
+        ),
         'credits': production.credits_for_listing(),
         'screenshot': random_screenshot,
         'download_links': production.links.filter(is_download_link=True),
@@ -179,7 +204,9 @@ def production_redirect(request):
 
 
 def authors(request):
-    releasers = spectrum_releasers().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
+    releasers = (
+        spectrum_releasers().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
+    )
     count = request.GET.get('count', '50')
     letter = request.GET.get('letter', '')
     if len(letter) == 1 and letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -232,19 +259,24 @@ def author(request, releaser_id):
     )
 
     release_author_filter = Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser)
-    releases = Production.objects.filter(
-        release_author_filter,
-        platforms__id__in=ZXDEMO_PLATFORM_IDS
-    ).order_by('release_date_date').distinct().prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+    releases = (
+        Production.objects.filter(release_author_filter, platforms__id__in=ZXDEMO_PLATFORM_IDS)
+        .order_by('release_date_date').distinct()
+        .prefetch_related('links', 'screenshots', 'author_nicks', 'author_affiliation_nicks')
+    )
 
-    credits = Credit.objects.filter(
-        nick__releaser=releaser,
-        production__platforms__id__in=ZXDEMO_PLATFORM_IDS
-    ).order_by('production__release_date_date', 'production__title', 'production__id').prefetch_related('production__links', 'production__screenshots', 'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser')
+    credits = (
+        Credit.objects.filter(nick__releaser=releaser, production__platforms__id__in=ZXDEMO_PLATFORM_IDS)
+        .order_by('production__release_date_date', 'production__title', 'production__id')
+        .prefetch_related(
+            'production__links', 'production__screenshots', 'production__author_nicks__releaser',
+            'production__author_affiliation_nicks__releaser'
+        )
+    )
 
     if request.GET.get('noscreen'):
-        releases=releases.exclude(supertype='music').filter(screenshots__id__isnull=True)
-        credits=credits.exclude(production__supertype='music').filter(production__screenshots__id__isnull=True)
+        releases = releases.exclude(supertype='music').filter(screenshots__id__isnull=True)
+        credits = credits.exclude(production__supertype='music').filter(production__screenshots__id__isnull=True)
 
     releases_by_id = {}
     releases_with_credits = []
@@ -267,6 +299,7 @@ def author(request, releaser_id):
         'releases_with_credits': releases_with_credits,
         'non_releaser_credits': non_releaser_credits,
     })
+
 
 def author_redirect(request):
     try:
@@ -345,9 +378,17 @@ def party(request, party_id):
     competitions_with_placings = []
 
     for competition in competitions:
-        placings = competition.placings.order_by('position', 'production__id').prefetch_related(
-            'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types'
-        ).defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+        placings = (
+            competition.placings.order_by('position', 'production__id')
+            .prefetch_related(
+                'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser',
+                'production__platforms', 'production__types'
+            )
+            .defer(
+                'production__notes', 'production__author_nicks__releaser__notes',
+                'production__author_affiliation_nicks__releaser__notes'
+            )
+        )
 
         screenshots = Screenshot.objects.filter(
             production__competition_placings__competition=competition,
@@ -361,7 +402,10 @@ def party(request, party_id):
 
     # Do not show an invitations section in the special case that all invitations are
     # entries in a competition at this party (which probably means that it was an invitation compo)
-    invitations = party.invitations.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    invitations = (
+        party.invitations.filter(platforms__id__in=ZXDEMO_PLATFORM_IDS)
+        .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    )
     non_competing_invitations = invitations.exclude(competition_placings__competition__party=party)
     if not non_competing_invitations:
         invitations = Production.objects.none
@@ -425,6 +469,7 @@ def search(request):
         'scenerskip': scenerskip,
     }
 
+    # Search demos
     demos = Production.objects.filter(
         platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='production',
         title__icontains=search_term
@@ -450,7 +495,7 @@ def search(request):
     else:
         demos_prev_link = None
 
-
+    # Search musics
     musics = Production.objects.filter(
         platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='music',
         title__icontains=search_term
@@ -476,7 +521,7 @@ def search(request):
     else:
         musics_prev_link = None
 
-
+    # Search graphics
     graphics = Production.objects.filter(
         platforms__id__in=ZXDEMO_PLATFORM_IDS, supertype='graphics',
         title__icontains=search_term
@@ -502,7 +547,7 @@ def search(request):
     else:
         graphics_prev_link = None
 
-
+    # Search sceners
     sceners = spectrum_releasers().filter(
         nicks__name__icontains=search_term
     ).distinct().extra(select={'lower_name': 'lower(demoscene_releaser.name)'}).order_by('lower_name')
@@ -526,7 +571,6 @@ def search(request):
         sceners_prev_link = reverse('zxdemo_search') + '?' + urllib.parse.urlencode(url_params)
     else:
         sceners_prev_link = None
-
 
     return render(request, 'zxdemo/search.html', {
         'search_term': search_term,
@@ -558,7 +602,7 @@ def articles(request):
 
 
 def article(request, zxdemo_id):
-    article = get_object_or_404(Article, zxdemo_id = zxdemo_id)
+    article = get_object_or_404(Article, zxdemo_id=zxdemo_id)
     articles = Article.objects.order_by('created_at')
     return render(request, 'zxdemo/article.html', {
         'article': article,

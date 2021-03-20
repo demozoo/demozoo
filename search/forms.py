@@ -30,7 +30,10 @@ FILTER_RE_ONEWORD = re.compile(r'\b(\w+)\:([\w-]+)\b')
 FILTER_RE_DOUBLEQUOTE = re.compile(r'\b(\w+)\:\"([^\"]*)\"')
 FILTER_RE_SINGLEQUOTE = re.compile(r'\b(\w+)\:\'([^\']*)\'')
 TAG_RE = re.compile(r'\[([\w-]+)\]')
-RECOGNISED_FILTER_KEYS = ('type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year', 'date', 'before', 'until', 'after', 'since', 'screenshot', 'screenshots')
+RECOGNISED_FILTER_KEYS = (
+    'type', 'platform', 'on', 'by', 'author', 'of', 'group', 'tagged', 'year',
+    'date', 'before', 'until', 'after', 'since', 'screenshot', 'screenshots',
+)
 
 
 class SearchForm(forms.Form):
@@ -94,14 +97,16 @@ class SearchForm(forms.Form):
 
         subqueries_to_perform = set(['production', 'releaser', 'party', 'bbs'])
 
-
         if 'platform' in filter_expressions or 'on' in filter_expressions:
             subqueries_to_perform &= set(['production'])
             platforms = filter_expressions['platform'] | filter_expressions['on']
 
             platform_ids = Platform.objects.none().values_list('id', flat=True)
             for platform_name in platforms:
-                platform_ids |= Platform.objects.filter(Q(name__iexact=platform_name) | Q(aliases__name__iexact=platform_name)).values_list('id', flat=True)
+                platform_ids |= (
+                    Platform.objects.filter(Q(name__iexact=platform_name) | Q(aliases__name__iexact=platform_name))
+                    .values_list('id', flat=True)
+                )
 
             production_filter_q &= Q(platforms__id__in=list(platform_ids))
 
@@ -164,8 +169,14 @@ class SearchForm(forms.Form):
                 except ValueError:
                     continue
 
-                production_filter_q &= Q(release_date_date__gte=date_expr.date_range_start(), release_date_date__lte=date_expr.date_range_end())
-                party_filter_q &= Q(end_date_date__gte=date_expr.date_range_start(), start_date_date__lte=date_expr.date_range_end())
+                production_filter_q &= Q(
+                    release_date_date__gte=date_expr.date_range_start(),
+                    release_date_date__lte=date_expr.date_range_end()
+                )
+                party_filter_q &= Q(
+                    end_date_date__gte=date_expr.date_range_start(),
+                    start_date_date__lte=date_expr.date_range_end()
+                )
 
         if 'before' in filter_expressions:
             subqueries_to_perform &= set(['production', 'party'])

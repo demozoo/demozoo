@@ -27,6 +27,8 @@ class Command(BaseCommand):
             if (index % 100 == 0):
                 print("added %d release dates" % index)
 
-            Production.objects.filter(id=prod.id).update(release_date_date=prod.release_date_date, release_date_precision=prod.release_date_precision)
+            Production.objects.filter(id=prod.id).update(
+                release_date_date=prod.release_date_date, release_date_precision=prod.release_date_precision
+            )
 
         print("%d release dates added." % (index + 1))

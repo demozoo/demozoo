@@ -27,7 +27,11 @@ class SimpleTest(TestCase):
         )
         NewsStory.objects.create(
             title='First news item',
-            text='''with a <a href="http://example.com/">link</a> in it\nand a <a href="javascript:alert('hacked by limp ninja')">line</a> break ftp://ftp.scene.org/pub/''',
+            text=(
+                '''with a <a href="http://example.com/">link</a> in it\n'''
+                '''and a <a href="javascript:alert('hacked by limp ninja')">line</a> break '''
+                '''ftp://ftp.scene.org/pub/'''
+            ),
             is_public=True,
         )
         NewsStory.objects.create(
@@ -50,7 +54,11 @@ class SimpleTest(TestCase):
         self.assertNotContains(response, 'Hello logged in people')
 
         self.assertContains(response, 'First news item')
-        self.assertContains(response, 'with a <a href="http://example.com/">link</a> in it<br>\nand a <a>line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>')
+        self.assertContains(
+            response,
+            'with a <a href="http://example.com/">link</a> in it<br>\n'
+            'and a <a>line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>'
+        )
 
         self.assertNotContains(response, 'Secret news item')
 

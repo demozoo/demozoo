@@ -13,9 +13,15 @@ from productions.models import Production, Screenshot
 
 def home(request):
     if request.user.is_authenticated:
-        banner = Banner.objects.filter(show_for_logged_in_users=True).order_by('-created_at').select_related('banner_image').first()
+        banner = (
+            Banner.objects.filter(show_for_logged_in_users=True)
+            .order_by('-created_at').select_related('banner_image').first()
+        )
     else:
-        banner = Banner.objects.filter(show_for_anonymous_users=True).order_by('-created_at').select_related('banner_image').first()
+        banner = (
+            Banner.objects.filter(show_for_anonymous_users=True)
+            .order_by('-created_at').select_related('banner_image').first()
+        )
 
     latest_releases = Production.objects.filter(
         has_screenshot=True, release_date_date__isnull=False
@@ -65,7 +71,9 @@ def home(request):
     return render(request, 'homepage/home.html', {
         'banner': banner,
         'news_stories': news_stories,
-        'forum_topics': Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5],
+        'forum_topics': (
+            Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5]
+        ),
         'latest_releases_and_screenshots': latest_releases_and_screenshots,
         'latest_additions': latest_additions,
         'comments': comments,

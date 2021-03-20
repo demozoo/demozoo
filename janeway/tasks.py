@@ -12,7 +12,10 @@ from screenshots.tasks import upload_original, upload_standard, upload_thumb
 
 @shared_task(ignore_result=True)
 def automatch_all_authors():
-    for releaser_id in ReleaserExternalLink.objects.filter(link_class='KestraBitworldAuthor').distinct().values_list('releaser_id', flat=True):
+    for releaser_id in (
+        ReleaserExternalLink.objects.filter(link_class='KestraBitworldAuthor').distinct()
+        .values_list('releaser_id', flat=True)
+    ):
         automatch_author.delay(releaser_id)
 
 

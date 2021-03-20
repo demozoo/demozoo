@@ -13,8 +13,14 @@ urlpatterns = [
     url(r'^compofolders/link/$', sceneorg_views.compofolder_link, {}, 'sceneorg_compofolder_link'),
     url(r'^compofolders/unlink/$', sceneorg_views.compofolder_unlink, {}, 'sceneorg_compofolder_unlink'),
     url(r'^compofolders/done/(\d+)/$', sceneorg_views.compofolders_done, {}, 'sceneorg_compofolders_done'),
-    url(r'^compofolders/directory/(\d+)/$', sceneorg_views.compofolders_show_directory, {}, 'sceneorg_compofolders_show_directory'),
-    url(r'^compofolders/competition/(\d+)/$', sceneorg_views.compofolders_show_competition, {}, 'sceneorg_compofolders_show_competition'),
+    url(
+        r'^compofolders/directory/(\d+)/$', sceneorg_views.compofolders_show_directory, {},
+        'sceneorg_compofolders_show_directory'
+    ),
+    url(
+        r'^compofolders/competition/(\d+)/$', sceneorg_views.compofolders_show_competition, {},
+        'sceneorg_compofolders_show_competition'
+    ),
 
     url(r'^compofiles/$', sceneorg_views.compofiles, {}, 'sceneorg_compofiles'),
     url(r'^compofiles/dir/(\d+)/$', sceneorg_views.compofile_directory, {}, 'sceneorg_compofile_directory'),

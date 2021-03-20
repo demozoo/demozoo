@@ -81,7 +81,7 @@ class TestImport(TestCase):
     def test_releaser_without_nick_match(self):
         tmb_janeway = Author.objects.get(name="TMB Designs")
         tmb_demozoo = Releaser.objects.create(name="TMB", is_group=False)
-        tmb_designs_nick = tmb_demozoo.nicks.create(name="not tmb designs")
+        tmb_demozoo.nicks.create(name="not tmb designs")
         tmb_demozoo.external_links.create(link_class='KestraBitworldAuthor', parameter=tmb_janeway.janeway_id)
 
         import_author(Author.objects.get(name="Spaceballs"))

@@ -60,7 +60,9 @@ def fetch_new_sceneorg_files(days=1):
                     current_dir.is_deleted = False
                     current_dir.save()
                 except Directory.DoesNotExist:
-                    current_dir = Directory.objects.create(path=path, last_seen_at=datetime.datetime.now(), parent=last_dir)
+                    current_dir = Directory.objects.create(
+                        path=path, last_seen_at=datetime.datetime.now(), parent=last_dir
+                    )
 
             path += path_components[-1]
 
