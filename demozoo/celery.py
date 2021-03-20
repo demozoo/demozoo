@@ -10,7 +10,7 @@ env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file_
 dotenv.read_dotenv(env_file)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demozoo.settings.dev')
 
-from django.conf import settings
+from django.conf import settings  # noqa
 
 
 app = Celery('demozoo')

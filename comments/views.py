@@ -50,12 +50,14 @@ class AddCommentView(TemplateView):
 
     template_name = 'comments/add_comment.html'
 
+
 class AddProductionCommentView(AddCommentView):
     commentable_model = Production
     submit_action = 'add_production_comment'
 
     def get_commentable_name(self, production):
         return production.title
+
 
 class AddPartyCommentView(AddCommentView):
     commentable_model = Party
@@ -74,8 +76,9 @@ class EditCommentView(TemplateView):
 
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
         self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
-        self.comment = get_object_or_404(Comment,
-            id=comment_id, content_type=commentable_type, object_id=commentable_id)
+        self.comment = get_object_or_404(
+            Comment, id=comment_id, content_type=commentable_type, object_id=commentable_id
+        )
 
         if not request.user.is_staff:
             return redirect(self.comment.get_absolute_url())
@@ -107,12 +110,14 @@ class EditCommentView(TemplateView):
 
     template_name = 'comments/edit_comment.html'
 
+
 class EditProductionCommentView(EditCommentView):
     commentable_model = Production
     submit_action = 'edit_production_comment'
 
     def get_commentable_name(self, production):
         return production.title
+
 
 class EditPartyCommentView(EditCommentView):
     commentable_model = Party
@@ -131,8 +136,9 @@ class DeleteCommentView(View):
 
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
         self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
-        self.comment = get_object_or_404(Comment,
-            id=comment_id, content_type=commentable_type, object_id=commentable_id)
+        self.comment = get_object_or_404(
+            Comment, id=comment_id, content_type=commentable_type, object_id=commentable_id
+        )
 
         if not request.user.is_staff:
             return redirect(self.comment.get_absolute_url())
@@ -141,10 +147,12 @@ class DeleteCommentView(View):
 
     def get(self, request, *args, **kwargs):
         commentable_name = self.get_commentable_name(self.commentable)
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse(self.url_name, args=[self.commentable.id, self.comment.id]),
             "Are you sure you want to delete this comment?",
-            html_title="Deleting comment on %s" % commentable_name)
+            html_title="Deleting comment on %s" % commentable_name
+        )
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('yes'):
@@ -153,6 +161,7 @@ class DeleteCommentView(View):
         else:
             return redirect(self.comment.get_absolute_url())
 
+
 class DeleteProductionCommentView(DeleteCommentView):
     commentable_model = Production
     commentable_context_name = 'production'
@@ -160,6 +169,7 @@ class DeleteProductionCommentView(DeleteCommentView):
 
     def get_commentable_name(self, production):
         return production.title
+
 
 class DeletePartyCommentView(DeleteCommentView):
     commentable_model = Party

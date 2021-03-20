@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 # Determine paths
 import os
 import sys
+from datetime import timedelta
 
 
 # Django settings for demozoo2 project.
@@ -192,7 +193,9 @@ LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_FILE_OVERWRITE = False  # yes, I like my Django storage backends to follow the motherfucking spec and not silently overwrite files, THANKS
+
+# yes, I like my Django storage backends to follow the motherfucking spec and not silently overwrite files, THANKS
+AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_AUTH = False
 AWS_DEFAULT_ACL = 'public-read'
 
@@ -229,8 +232,6 @@ CELERYD_CONCURRENCY = 2
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
-from datetime import timedelta
-
 
 CELERYBEAT_SCHEDULE = {
     "fetch-new-sceneorg-files": {
@@ -253,16 +254,16 @@ CELERYBEAT_SCHEDULE = {
         "schedule": timedelta(days=14),
         "args": ()
     },
-    #"automatch-pouet-groups": {
-    #    "task": "pouet.tasks.automatch_all_groups",
-    #    "schedule": timedelta(days=1),
-    #    "args": ()
-    #},
-    #"automatch-janeway-authors": {
-    #    "task": "janeway.tasks.automatch_all_authors",
-    #    "schedule": timedelta(days=1),
-    #    "args": ()
-    #}
+    # "automatch-pouet-groups": {
+    #     "task": "pouet.tasks.automatch_all_groups",
+    #     "schedule": timedelta(days=1),
+    #     "args": ()
+    # },
+    # "automatch-janeway-authors": {
+    #     "task": "janeway.tasks.automatch_all_authors",
+    #     "schedule": timedelta(days=1),
+    #     "args": ()
+    # }
 }
 
 MEDIA_ROOT = os.path.join(FILEROOT, 'media')

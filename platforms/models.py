@@ -122,4 +122,6 @@ class Platform(ModelWithThumbnails):
 
 class PlatformAlias(models.Model):
     platform = models.ForeignKey(Platform, related_name='aliases', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, help_text="Alternative name to be recognised in search filters such as platform:c64")
+    name = models.CharField(
+        max_length=255, help_text="Alternative name to be recognised in search filters such as platform:c64"
+    )
