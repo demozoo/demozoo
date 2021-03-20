@@ -10,18 +10,23 @@ admin.autodiscover()
 
 from django.contrib.auth import views as auth_views
 
-from demoscene import views as demoscene_views
+from demoscene.views import accounts as account_views
+from demoscene.views import groups as groups_views
+from demoscene.views import home as home_views
+from demoscene.views import nicks as nicks_views
+from demoscene.views import releasers as releasers_views
+from demoscene.views import sceners as sceners_views
 from sceneid import auth as sceneid_views
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    url(r'^account/$', demoscene_views.accounts.index, {}, 'account_index'),
-    url(r'^account/login/$', demoscene_views.accounts.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
+    url(r'^account/$', account_views.index, {}, 'account_index'),
+    url(r'^account/login/$', account_views.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
     url(r'^account/logout/$', auth_views.LogoutView.as_view(next_page='/'), {}, 'log_out'),
-    url(r'^account/signup/$', demoscene_views.accounts.signup, {}, 'user_signup'),
-    url(r'^account/change_password/$', demoscene_views.accounts.change_password, {}, 'account_change_password'),
+    url(r'^account/signup/$', account_views.signup, {}, 'user_signup'),
+    url(r'^account/change_password/$', account_views.change_password, {}, 'account_change_password'),
     # forgotten password
     url(r'^account/forgotten_password/$', auth_views.PasswordResetView.as_view(), {}, 'password_reset'),
     url(r'^account/forgotten_password/success/$', auth_views.PasswordResetDoneView.as_view(), {}, 'password_reset_done'),
@@ -35,53 +40,53 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    url(r'^latest_activity/$', demoscene_views.home.latest_activity, {}, 'latest_activity'),
+    url(r'^latest_activity/$', home_views.latest_activity, {}, 'latest_activity'),
 
-    url(r'^error/$', demoscene_views.home.error_test, {}, 'error_test'),
-    url(r'^404/$', demoscene_views.home.page_not_found_test, {}, 'page_not_found_test'),
-    url(r'^edits/$', demoscene_views.home.recent_edits, {}, 'recent_edits'),
+    url(r'^error/$', home_views.error_test, {}, 'error_test'),
+    url(r'^404/$', home_views.page_not_found_test, {}, 'page_not_found_test'),
+    url(r'^edits/$', home_views.recent_edits, {}, 'recent_edits'),
 
-    url(r'^groups/$', demoscene_views.groups.index, {}, 'groups'),
-    url(r'^groups/(\d+)/$', demoscene_views.groups.show, {}, 'group'),
-    url(r'^groups/(\d+)/history/$', demoscene_views.groups.history, {}, 'group_history'),
+    url(r'^groups/$', groups_views.index, {}, 'groups'),
+    url(r'^groups/(\d+)/$', groups_views.show, {}, 'group'),
+    url(r'^groups/(\d+)/history/$', groups_views.history, {}, 'group_history'),
 
-    url(r'^groups/new/$', demoscene_views.groups.create, {}, 'new_group'),
-    url(r'^groups/(\d+)/add_member/$', demoscene_views.groups.add_member, {}, 'group_add_member'),
-    url(r'^groups/(\d+)/remove_member/(\d+)/$', demoscene_views.groups.remove_member, {}, 'group_remove_member'),
-    url(r'^groups/(\d+)/edit_membership/(\d+)/$', demoscene_views.groups.edit_membership, {}, 'group_edit_membership'),
-    url(r'^groups/(\d+)/add_subgroup/$', demoscene_views.groups.add_subgroup, {}, 'group_add_subgroup'),
-    url(r'^groups/(\d+)/remove_subgroup/(\d+)/$', demoscene_views.groups.remove_subgroup, {}, 'group_remove_subgroup'),
-    url(r'^groups/(\d+)/edit_subgroup/(\d+)/$', demoscene_views.groups.edit_subgroup, {}, 'group_edit_subgroup'),
-    url(r'^groups/(\d+)/convert_to_scener/$', demoscene_views.groups.convert_to_scener, {}, 'group_convert_to_scener'),
+    url(r'^groups/new/$', groups_views.create, {}, 'new_group'),
+    url(r'^groups/(\d+)/add_member/$', groups_views.add_member, {}, 'group_add_member'),
+    url(r'^groups/(\d+)/remove_member/(\d+)/$', groups_views.remove_member, {}, 'group_remove_member'),
+    url(r'^groups/(\d+)/edit_membership/(\d+)/$', groups_views.edit_membership, {}, 'group_edit_membership'),
+    url(r'^groups/(\d+)/add_subgroup/$', groups_views.add_subgroup, {}, 'group_add_subgroup'),
+    url(r'^groups/(\d+)/remove_subgroup/(\d+)/$', groups_views.remove_subgroup, {}, 'group_remove_subgroup'),
+    url(r'^groups/(\d+)/edit_subgroup/(\d+)/$', groups_views.edit_subgroup, {}, 'group_edit_subgroup'),
+    url(r'^groups/(\d+)/convert_to_scener/$', groups_views.convert_to_scener, {}, 'group_convert_to_scener'),
 
-    url(r'^sceners/$', demoscene_views.sceners.index, {}, 'sceners'),
-    url(r'^sceners/(\d+)/$', demoscene_views.sceners.show, {}, 'scener'),
-    url(r'^sceners/(\d+)/history/$', demoscene_views.sceners.history, {}, 'scener_history'),
+    url(r'^sceners/$', sceners_views.index, {}, 'sceners'),
+    url(r'^sceners/(\d+)/$', sceners_views.show, {}, 'scener'),
+    url(r'^sceners/(\d+)/history/$', sceners_views.history, {}, 'scener_history'),
 
-    url(r'^sceners/new/$', demoscene_views.sceners.create, {}, 'new_scener'),
-    url(r'^sceners/(\d+)/add_group/$', demoscene_views.sceners.add_group, {}, 'scener_add_group'),
-    url(r'^sceners/(\d+)/remove_group/(\d+)/$', demoscene_views.sceners.remove_group, {}, 'scener_remove_group'),
-    url(r'^sceners/(\d+)/edit_membership/(\d+)/$', demoscene_views.sceners.edit_membership, {}, 'scener_edit_membership'),
-    url(r'^sceners/(\d+)/edit_location/$', demoscene_views.sceners.edit_location, {}, 'scener_edit_location'),
-    url(r'^sceners/(\d+)/edit_real_name/$', demoscene_views.sceners.edit_real_name, {}, 'scener_edit_real_name'),
-    url(r'^sceners/(\d+)/convert_to_group/$', demoscene_views.sceners.convert_to_group, {}, 'scener_convert_to_group'),
+    url(r'^sceners/new/$', sceners_views.create, {}, 'new_scener'),
+    url(r'^sceners/(\d+)/add_group/$', sceners_views.add_group, {}, 'scener_add_group'),
+    url(r'^sceners/(\d+)/remove_group/(\d+)/$', sceners_views.remove_group, {}, 'scener_remove_group'),
+    url(r'^sceners/(\d+)/edit_membership/(\d+)/$', sceners_views.edit_membership, {}, 'scener_edit_membership'),
+    url(r'^sceners/(\d+)/edit_location/$', sceners_views.edit_location, {}, 'scener_edit_location'),
+    url(r'^sceners/(\d+)/edit_real_name/$', sceners_views.edit_real_name, {}, 'scener_edit_real_name'),
+    url(r'^sceners/(\d+)/convert_to_group/$', sceners_views.convert_to_group, {}, 'scener_convert_to_group'),
 
-    url(r'^releasers/(\d+)/add_credit/$', demoscene_views.releasers.add_credit, {}, 'releaser_add_credit'),
-    url(r'^releasers/(\d+)/edit_credit/(\d+)/(\d+)/$', demoscene_views.releasers.edit_credit, {}, 'releaser_edit_credit'),
-    url(r'^releasers/(\d+)/delete_credit/(\d+)/(\d+)/$', demoscene_views.releasers.delete_credit, {}, 'releaser_delete_credit'),
-    url(r'^releasers/(\d+)/edit_notes/$', demoscene_views.releasers.edit_notes, {}, 'releaser_edit_notes'),
-    url(r'^releasers/(\d+)/edit_nick/(\d+)/$', demoscene_views.releasers.edit_nick, {}, 'releaser_edit_nick'),
-    url(r'^releasers/(\d+)/add_nick/$', demoscene_views.releasers.add_nick, {}, 'releaser_add_nick'),
-    url(r'^releasers/(\d+)/edit_primary_nick/$', demoscene_views.releasers.edit_primary_nick, {}, 'releaser_edit_primary_nick'),
-    url(r'^releasers/(\d+)/change_primary_nick/$', demoscene_views.releasers.change_primary_nick, {}, 'releaser_change_primary_nick'),
-    url(r'^releasers/(\d+)/delete_nick/(\d+)/$', demoscene_views.releasers.delete_nick, {}, 'releaser_delete_nick'),
-    url(r'^releasers/(\d+)/delete/$', demoscene_views.releasers.delete, {}, 'delete_releaser'),
-    url(r'^releasers/(\d+)/edit_external_links/$', demoscene_views.releasers.edit_external_links, {}, 'releaser_edit_external_links'),
-    url(r'^releasers/(\d+)/lock/$', demoscene_views.releasers.lock, {}, 'lock_releaser'),
-    url(r'^releasers/(\d+)/protected/$', demoscene_views.releasers.protected, {}, 'releaser_protected'),
+    url(r'^releasers/(\d+)/add_credit/$', releasers_views.add_credit, {}, 'releaser_add_credit'),
+    url(r'^releasers/(\d+)/edit_credit/(\d+)/(\d+)/$', releasers_views.edit_credit, {}, 'releaser_edit_credit'),
+    url(r'^releasers/(\d+)/delete_credit/(\d+)/(\d+)/$', releasers_views.delete_credit, {}, 'releaser_delete_credit'),
+    url(r'^releasers/(\d+)/edit_notes/$', releasers_views.edit_notes, {}, 'releaser_edit_notes'),
+    url(r'^releasers/(\d+)/edit_nick/(\d+)/$', releasers_views.edit_nick, {}, 'releaser_edit_nick'),
+    url(r'^releasers/(\d+)/add_nick/$', releasers_views.add_nick, {}, 'releaser_add_nick'),
+    url(r'^releasers/(\d+)/edit_primary_nick/$', releasers_views.edit_primary_nick, {}, 'releaser_edit_primary_nick'),
+    url(r'^releasers/(\d+)/change_primary_nick/$', releasers_views.change_primary_nick, {}, 'releaser_change_primary_nick'),
+    url(r'^releasers/(\d+)/delete_nick/(\d+)/$', releasers_views.delete_nick, {}, 'releaser_delete_nick'),
+    url(r'^releasers/(\d+)/delete/$', releasers_views.delete, {}, 'delete_releaser'),
+    url(r'^releasers/(\d+)/edit_external_links/$', releasers_views.edit_external_links, {}, 'releaser_edit_external_links'),
+    url(r'^releasers/(\d+)/lock/$', releasers_views.lock, {}, 'lock_releaser'),
+    url(r'^releasers/(\d+)/protected/$', releasers_views.protected, {}, 'releaser_protected'),
 
-    url(r'^nicks/match/$', demoscene_views.nicks.match, {}),
-    url(r'^nicks/byline_match/$', demoscene_views.nicks.byline_match, {}),
+    url(r'^nicks/match/$', nicks_views.match, {}),
+    url(r'^nicks/byline_match/$', nicks_views.byline_match, {}),
 ]
 
 urlpatterns += [
