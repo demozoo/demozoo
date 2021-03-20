@@ -6,6 +6,7 @@ from homepage.views import banners as banner_views
 from homepage.views import home as home_views
 from homepage.views import news as news_views
 
+
 urlpatterns = [
     url(r'^$', home_views.home, {}, 'home'),
 

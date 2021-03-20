@@ -6,6 +6,7 @@ from django import template
 from django.utils.safestring import mark_safe
 from mdx_autolink import AutoLinkExtension
 
+
 register = template.Library()
 
 

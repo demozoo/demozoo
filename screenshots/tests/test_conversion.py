@@ -9,6 +9,7 @@ from PIL import Image, ImageChops
 
 from screenshots.models import PILConvertibleImage
 
+
 TEST_IMAGES_DIR = os.path.join(os.path.join(settings.FILEROOT, 'screenshots', 'tests', 'images'))
 
 

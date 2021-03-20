@@ -26,6 +26,7 @@ from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 from mirror.models import ArchiveMember, Download
 
+
 SUPERTYPE_CHOICES = (
     ('production', _('Production')),
     ('graphics', _('Graphics')),

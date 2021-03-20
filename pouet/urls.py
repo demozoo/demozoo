@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 
 from pouet import views
 
+
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/pouet/groups/')),
     url(r'^groups/$', views.groups, {}, 'pouet_groups'),

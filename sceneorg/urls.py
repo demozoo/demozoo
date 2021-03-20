@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 
 from sceneorg import views as sceneorg_views
 
+
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/sceneorg/compofolders/')),
     url(r'^compofolders/$', sceneorg_views.compofolders, {}, 'sceneorg_compofolders'),

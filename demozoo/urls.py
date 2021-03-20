@@ -5,12 +5,14 @@ from django.conf.urls import include, url
 # Admin backend
 from django.contrib import admin
 
+
 admin.autodiscover()
 
 from django.contrib.auth import views as auth_views
 
 from demoscene import views as demoscene_views
 from sceneid import auth as sceneid_views
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

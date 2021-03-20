@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 
+
 # Parsers for results text files in various formats.
 # Each one returns a list of (ranking, title, author, score) tuples
 

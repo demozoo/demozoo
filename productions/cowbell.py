@@ -5,6 +5,7 @@ import re
 from django.forms import Media
 from django.templatetags.static import static
 
+
 # Cowbell <https://demozoo.github.io/cowbell/> integration
 
 

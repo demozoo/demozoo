@@ -7,6 +7,7 @@ from recoil import RecoilImage
 
 from screenshots.processing import get_thumbnail_sizing_params
 
+
 # file extensions that we are able to convert to web-usable images.
 # (RECOIL supports many more, but we won't list them all as some of them have quite
 # generic extensions, like .max, and that's likely to introduce false positives

@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 
 from janeway import views
 
+
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/janeway/authors/')),
     url(r'^authors/$', views.authors, {}, 'janeway_authors'),

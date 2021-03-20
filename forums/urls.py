@@ -4,6 +4,7 @@ from django.conf.urls import url
 
 from forums import views as forums_views
 
+
 urlpatterns = [
     url(r'^$', forums_views.index, {}, 'forums'),
     url(r'^new/$', forums_views.new_topic, {}, 'forums_new_topic'),

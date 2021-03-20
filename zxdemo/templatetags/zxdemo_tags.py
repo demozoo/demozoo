@@ -11,6 +11,7 @@ from django.utils.safestring import mark_safe
 from parties.models import Party
 from zxdemo.models import spectrum_releasers
 
+
 register = template.Library()
 
 @register.inclusion_tag('zxdemo/tags/byline.html', takes_context=True)

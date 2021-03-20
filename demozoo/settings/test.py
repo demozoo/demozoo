@@ -8,6 +8,7 @@ from PIL import Image
 
 from .base import *
 
+
 SECRET_KEY = 'BOOOOM'
 
 PASSWORD_HASHERS = (

@@ -8,6 +8,7 @@ from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 from platforms.models import Platform
 from productions.models import Credit, Production, ProductionLink, ProductionType, Screenshot
 
+
 # Summary / listing serialisers
 
 class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):

@@ -5,6 +5,7 @@ from django.urls import Resolver404, resolve, reverse
 
 from awards.models import Event
 
+
 register = template.Library()
 
 

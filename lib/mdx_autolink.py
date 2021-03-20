@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+
 """
 ABOUT
 
@@ -43,6 +44,7 @@ or implied, of Alexey Kinyov.
 import re
 
 import markdown
+
 
 reflink_re = re.compile(r'^\s*\[[^\[\]]+\]:.+$')
 link_re = re.compile(r'(\s+\(?|^)((http|ftp|https)://[-\w\#$%&~/.;:=,?@+]+)', re.IGNORECASE)

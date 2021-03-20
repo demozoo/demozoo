@@ -12,6 +12,7 @@ from demoscene.models import Releaser, ReleaserExternalLink
 from pouet.matching import automatch_productions
 from pouet.models import Group, Production
 
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 

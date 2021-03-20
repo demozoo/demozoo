@@ -4,6 +4,7 @@ from django.conf.urls import url
 
 from maintenance import views
 
+
 app_name = 'maintenance'
 
 urlpatterns = [

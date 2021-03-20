@@ -22,6 +22,7 @@ from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 
+
 DATE_PRECISION_CHOICES = [
     ('d', 'Day'),
     ('m', 'Month'),
