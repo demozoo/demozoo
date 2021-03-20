@@ -7,9 +7,8 @@ from submit_button_field import SubmitButtonInput
 
 from parties.models import Party
 
+
 # a form field for selecting a party, e.g. in the 'invitation for...' field on a production form
-
-
 
 # An object which encapsulates the state of a PartyWidget as derived from its posted data;
 # this is what PartyWidget returns from value_from_datadict
@@ -18,7 +17,9 @@ class PartyLookup():
 
         self.search_term = search_term  # the party name being looked up
         self.party_id = party_id  # the party ID previously chosen (cached in a hidden field)
-        self.redisplay = redisplay  # whether we should redisplay the form even if we've successfully resolved the input to a party
+
+        # whether we should redisplay the form even if we've successfully resolved the input to a party
+        self.redisplay = redisplay
 
         self.validation_error = None
         self.is_empty = False
@@ -105,7 +106,8 @@ class PartyWidget(forms.Widget):
             self.party_id_widget.render(
                 name + '_party_id', party_lookup.party_id, attrs=attrs, renderer=None
             ),
-            '<div class="help_text">(if the party doesn\'t exist yet, <a href="/parties/new/" target="_blank">create it first</a>!)</div>'
+            '<div class="help_text">(if the party doesn\'t exist yet, '
+            '<a href="/parties/new/" target="_blank">create it first</a>!)</div>'
         ]
 
         return mark_safe(u'<div class="party_field">' + u''.join(output) + u'</div>')

@@ -53,7 +53,9 @@ class TestEditCredit(TestCase):
 
     def test_locked(self):
         response = self.client.get(
-            '/releasers/%d/edit_credit/%d/%d/' % (self.papaya_dezign.id, self.papaya_dezign.primary_nick.id, self.pondlife.id)
+            '/releasers/%d/edit_credit/%d/%d/' % (
+                self.papaya_dezign.id, self.papaya_dezign.primary_nick.id, self.pondlife.id
+            )
         )
         self.assertEqual(response.status_code, 403)
 
@@ -96,7 +98,9 @@ class TestDeleteCredit(TestCase):
 
     def test_locked(self):
         response = self.client.get(
-            '/releasers/%d/delete_credit/%d/%d/' % (self.papaya_dezign.id, self.papaya_dezign.primary_nick.id, self.pondlife.id)
+            '/releasers/%d/delete_credit/%d/%d/' % (
+                self.papaya_dezign.id, self.papaya_dezign.primary_nick.id, self.pondlife.id
+            )
         )
         self.assertEqual(response.status_code, 403)
 

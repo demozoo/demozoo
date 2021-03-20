@@ -67,8 +67,10 @@ class BaseExternalLinkFormSet(BaseInlineFormSet):
                 descriptions.append(u"Deleted link %s" % ", ".join(deleted_urls))
 
         if descriptions:
-            Edit.objects.create(action_type=action_type, focus=self.instance,
-                description=(u"; ".join(descriptions)), user=user)
+            Edit.objects.create(
+                action_type=action_type, focus=self.instance,
+                description=(u"; ".join(descriptions)), user=user
+            )
 
     def save_ignoring_uniqueness(self):
         links = self.save(commit=False)
@@ -94,5 +96,6 @@ class CreditForm(forms.ModelForm):
         fields = ('category', 'role')
 
 
-CreditFormSet = modelformset_factory(Credit,
-    fields=('category', 'role'), can_delete=True, form=CreditForm)
+CreditFormSet = modelformset_factory(
+    Credit, fields=('category', 'role'), can_delete=True, form=CreditForm
+)

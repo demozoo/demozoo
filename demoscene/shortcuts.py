@@ -70,8 +70,10 @@ def simple_ajax_confirmation(request, action_url, message, html_title=None):
 
 
 def modal_workflow_confirmation(request, action_url, message, html_title=None):
-    return render_modal_workflow(request,
-        'shared/simple_confirmation.html', 'shared/simple_confirmation.js', {
+    return render_modal_workflow(
+        request,
+        'shared/simple_confirmation.html', 'shared/simple_confirmation.js',
+        {
             'html_title': html_title,
             'message': message,
             'action_url': action_url,

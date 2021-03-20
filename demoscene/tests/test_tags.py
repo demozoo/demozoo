@@ -97,11 +97,17 @@ class TestSpawningFormsetTag(TestCase):
 
     def test_spawningform_without_param(self):
         with self.assertRaises(template.TemplateSyntaxError):
-            template.Template('{% load spawning_formset %}{% spawningformset foo %}{% spawningform %}{% endspawningform %}{% endspawningformset %}')
+            template.Template(
+                '{% load spawning_formset %}'
+                '{% spawningformset foo %}{% spawningform %}{% endspawningform %}{% endspawningformset %}'
+            )
 
     def test_spawningform_with_malformed_param(self):
         with self.assertRaises(template.TemplateSyntaxError):
-            template.Template('{% load spawning_formset %}{% spawningformset foo %}{% spawningform bar %}{% endspawningform %}{% endspawningformset %}')
+            template.Template(
+                '{% load spawning_formset %}'
+                '{% spawningformset foo %}{% spawningform bar %}{% endspawningform %}{% endspawningformset %}'
+            )
 
     def test_spawningformset_without_delete(self):
         class NameForm(forms.Form):
@@ -110,7 +116,12 @@ class TestSpawningFormsetTag(TestCase):
         NameFormSet = forms.formset_factory(NameForm)
         formset = NameFormSet(initial=[{'name': "Raymond Luxury-Yacht"}])
 
-        tpl = template.Template('{% load spawning_formset %}{% spawningformset formset %}{% spawningform as form %}{{ form.name }}{% endspawningform %}{% endspawningformset %}')
+        tpl = template.Template(
+            '{% load spawning_formset %}'
+            '{% spawningformset formset %}'
+            '{% spawningform as form %}{{ form.name }}{% endspawningform %}'
+            '{% endspawningformset %}'
+        )
         context = template.Context({'formset': formset})
         result = tpl.render(context)
 

@@ -24,10 +24,16 @@ DB_HOSTS = [{
 def deploy(c):
     """Deploy the current git master to the live site"""
     c.run('cd /home/demozoo/demozoo && git pull')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
+    c.run(
+        'cd /home/demozoo/demozoo && '
+        '/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt'
+    )
     c.run('cd /home/demozoo/demozoo && npm i --no-save')
     c.run('cd /home/demozoo/demozoo && npm run build')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput')
+    c.run(
+        'cd /home/demozoo/demozoo && '
+        '/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput'
+    )
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate')
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress')
     c.run('sudo supervisorctl restart demozoo')
@@ -40,10 +46,16 @@ def deploy(c):
 def deploy_staging(c):
     """Deploy the current git 'staging' branch to the staging site"""
     c.run('cd /home/demozoo/demozoo && git pull')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt')
+    c.run(
+        'cd /home/demozoo/demozoo && '
+        '/home/demozoo/.virtualenvs/demozoo/bin/pip install -r requirements-production.txt'
+    )
     c.run('cd /home/demozoo/demozoo && npm i --no-save')
     c.run('cd /home/demozoo/demozoo && npm run build')
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput')
+    c.run(
+        'cd /home/demozoo/demozoo && '
+        '/home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py collectstatic --noinput'
+    )
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py migrate')
     c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py compress')
     c.run('sudo supervisorctl restart demozoo')
@@ -77,7 +89,10 @@ def reindex_staging(c):
 def bump_external_links(c):
     """Rescan external links for new 'recognised' sites"""
     # pty=True stops Python from buffering output until the end of the run
-    c.run('cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links', pty=True)
+    c.run(
+        'cd /home/demozoo/demozoo && /home/demozoo/.virtualenvs/demozoo/bin/python ./manage.py bump_external_links',
+        pty=True
+    )
 
 
 @task(hosts=DB_HOSTS)

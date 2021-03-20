@@ -25,6 +25,7 @@ cleaner = Cleaner(
 autolink = AutoLinkExtension()
 md = markdown.Markdown(extensions=['nl2br', autolink])
 
+
 @register.filter(is_safe=True)
 def safe_markdown(value, arg=''):
     return mark_safe(

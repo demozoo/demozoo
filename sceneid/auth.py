@@ -21,7 +21,9 @@ from demoscene.models import SceneID
 
 
 class SceneIDUserSignupForm(forms.ModelForm):
-    email = forms.EmailField(required=False, help_text=_('Needed if you want to be able to reset your password later on'))
+    email = forms.EmailField(
+        required=False, help_text=_('Needed if you want to be able to reset your password later on')
+    )
 
     def save(self, commit=True):
         user = super(SceneIDUserSignupForm, self).save(commit=False)
@@ -102,8 +104,8 @@ def process_response(request):
     response_data = do_sceneid_request('oauth/token/', params, headers, "POST")
 
     # -- we can save these for later if we want to
-    #request.session['sceneid_accesstoken'] = response_data["access_token"]
-    #request.session['sceneid_refreshtoken'] = response_data["refresh_token"]
+    # request.session['sceneid_accesstoken'] = response_data["access_token"]
+    # request.session['sceneid_refreshtoken'] = response_data["refresh_token"]
 
     # request 2: get current user
     headers = {

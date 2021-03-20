@@ -9,7 +9,9 @@ class Topic(models.Model):
     title = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by_user = models.ForeignKey(User, related_name='forum_topics', null=True, blank=True, on_delete=models.SET_NULL)
+    created_by_user = models.ForeignKey(
+        User, related_name='forum_topics', null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     last_post_at = models.DateTimeField()
     last_post_by_user = models.ForeignKey(User, related_name='+', null=True, blank=True, on_delete=models.SET_NULL)

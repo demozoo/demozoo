@@ -41,8 +41,8 @@ def match(request):
         'match': nick_search.match_data,
     }
     # to simulate network lag:
-    #import time
-    #time.sleep(2)
+    # import time
+    # time.sleep(2)
     return HttpResponse(json.dumps(data), content_type="text/javascript")
 
 
@@ -65,4 +65,4 @@ def byline_match(request):
     return HttpResponse(json.dumps(data), content_type="text/javascript")
 
     # alternative (non-functional) response to get django debug toolbar to show up
-    #return HttpResponse("<body>%s</body>" % json.dumps(data))
+    # return HttpResponse("<body>%s</body>" % json.dumps(data))

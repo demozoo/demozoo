@@ -369,7 +369,8 @@ class TestScenerNickForm(TestCase):
         self.assertEqual(log_entry.user, self.user)
         self.assertEqual(
             log_entry.description,
-            "Edited nick 'Shingebiscuit': changed name to 'Shingebiscuit'; changed aliases to 'Shingebourbon'; set as primary nick"
+            "Edited nick 'Shingebiscuit': changed name to 'Shingebiscuit'; "
+            "changed aliases to 'Shingebourbon'; set as primary nick"
         )
 
     def test_reject_edit_duplicate_nick(self):
@@ -518,7 +519,8 @@ class TestGroupNickForm(TestCase):
         self.assertEqual(log_entry.user, self.user)
         self.assertEqual(
             log_entry.description,
-            "Edited nick 'Obecalp': changed name to 'Obecalp'; changed abbreviation to 'BCP'; changed differentiator to 'ZX'; changed aliases to 'Ob3calp'; set as primary nick"
+            "Edited nick 'Obecalp': changed name to 'Obecalp'; changed abbreviation to 'BCP'; "
+            "changed differentiator to 'ZX'; changed aliases to 'Ob3calp'; set as primary nick"
         )
 
 

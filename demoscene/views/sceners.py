@@ -43,8 +43,11 @@ def show(request, scener_id, edit_mode=False):
 
     external_links = sorted(external_links, key=lambda obj: obj.sort_key)
 
-    parties_organised = scener.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
-    # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
+    parties_organised = (
+        scener.parties_organised.select_related('party').defer('party__notes').order_by('-party__start_date_date')
+    )
+    # order by -role to get Sysop before Co-sysop.
+    # Will need to come up with something less hacky if more roles are added :-)
     bbses_operated = scener.bbses_operated.select_related('bbs').defer('bbs__notes').order_by('-role', 'bbs__name')
 
     return render(request, 'sceners/show.html', {
@@ -52,7 +55,10 @@ def show(request, scener_id, edit_mode=False):
         'alternative_nicks': scener.alternative_nicks.prefetch_related('variants'),
         'external_links': external_links,
         'editing_groups': (request.GET.get('editing') == 'groups'),
-        'memberships': scener.group_memberships.select_related('group').defer('group__notes').order_by('-is_current', 'group__name'),
+        'memberships': (
+            scener.group_memberships.select_related('group').defer('group__notes')
+            .order_by('-is_current', 'group__name')
+        ),
         'parties_organised': parties_organised,
         'bbses_operated': bbses_operated,
         'can_edit_real_names': can_edit_real_names,
@@ -81,9 +87,11 @@ def edit_location(request, scener_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'scener_edit_location', scener, ScenerEditLocationForm,
+    return simple_ajax_form(
+        request, 'scener_edit_location', scener, ScenerEditLocationForm,
         title='Editing location for %s:' % scener.name,
-        update_datestamp=True, on_success=success)
+        update_datestamp=True, on_success=success
+    )
 
 
 @writeable_site_required
@@ -96,9 +104,11 @@ def edit_real_name(request, scener_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
+    return simple_ajax_form(
+        request, 'scener_edit_real_name', scener, ScenerEditRealNameForm,
         title="Editing %s's real name:" % scener.name,
-        update_datestamp=True, on_success=success, ajax_submit=request.GET.get('ajax_submit'))
+        update_datestamp=True, on_success=success, ajax_submit=request.GET.get('ajax_submit')
+    )
 
 
 @writeable_site_required
@@ -137,13 +147,16 @@ def add_group(request, scener_id):
                 membership = Membership(
                     member=scener,
                     group=form.cleaned_data['group_nick'].commit().releaser,
-                    is_current=form.cleaned_data['is_current'])
+                    is_current=form.cleaned_data['is_current']
+                )
                 membership.save()
                 scener.updated_at = datetime.datetime.now()
                 scener.save()
                 description = u"Added %s as a member of %s" % (scener.name, group.name)
-                Edit.objects.create(action_type='add_membership', focus=scener, focus2=group,
-                    description=description, user=request.user)
+                Edit.objects.create(
+                    action_type='add_membership', focus=scener, focus2=group,
+                    description=description, user=request.user
+                )
             return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
     else:
         form = ScenerMembershipForm()
@@ -170,17 +183,21 @@ def remove_group(request, scener_id, group_id):
             scener.group_memberships.filter(group=group).update(is_current=False)
             scener.updated_at = datetime.datetime.now()
             scener.save()
-            Edit.objects.create(action_type='edit_membership', focus=scener, focus2=group,
+            Edit.objects.create(
+                action_type='edit_membership', focus=scener, focus2=group,
                 description=u"Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
-                user=request.user)
+                user=request.user
+            )
             return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
         elif deletion_type == 'full':
             scener.group_memberships.filter(group=group).delete()
             scener.updated_at = datetime.datetime.now()
             scener.save()
             description = u"Removed %s as a member of %s" % (scener.name, group.name)
-            Edit.objects.create(action_type='remove_membership', focus=scener, focus2=group,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_membership', focus=scener, focus2=group,
+                description=description, user=request.user
+            )
             return HttpResponseRedirect(scener.get_absolute_edit_url() + "?editing=groups")
         else:
             show_error_message = True
@@ -224,11 +241,14 @@ def edit_membership(request, scener_id, membership_id):
             'group_nick': membership.group.primary_nick,
             'is_current': membership.is_current,
         })
-    return render(request, 'sceners/edit_membership.html', {
-        'scener': scener,
-        'membership': membership,
-        'form': form,
-    })
+    return render(
+        request, 'sceners/edit_membership.html',
+        {
+            'scener': scener,
+            'membership': membership,
+            'form': form,
+        }
+    )
 
 
 @writeable_site_required
@@ -242,11 +262,15 @@ def convert_to_group(request, scener_id):
             scener.is_group = True
             scener.updated_at = datetime.datetime.now()
             scener.save()
-            Edit.objects.create(action_type='convert_to_group', focus=scener,
-                description=(u"Converted %s from a scener to a group" % scener), user=request.user)
+            Edit.objects.create(
+                action_type='convert_to_group', focus=scener,
+                description=(u"Converted %s from a scener to a group" % scener), user=request.user
+            )
         return HttpResponseRedirect(scener.get_absolute_edit_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('scener_convert_to_group', args=[scener_id]),
             "Are you sure you want to convert %s into a group?" % (scener.name),
-            html_title="Converting %s to a group" % (scener.name))
+            html_title="Converting %s to a group" % (scener.name)
+        )

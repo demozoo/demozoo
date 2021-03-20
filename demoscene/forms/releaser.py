@@ -14,7 +14,8 @@ from demoscene.models import Edit, Nick, Releaser, ReleaserExternalLink
 
 
 class CreateGroupForm(forms.ModelForm):
-    abbreviation = forms.CharField(required=False, max_length=255,
+    abbreviation = forms.CharField(
+        required=False, max_length=255,
         help_text="(optional - only if there's one that's actively being used. Don't just make one up!)"
     )
     nick_variant_list = forms.CharField(
@@ -42,8 +43,10 @@ class CreateGroupForm(forms.ModelForm):
         return instance
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_group', focus=self.instance,
-            description=(u"Added group '%s'" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='create_group', focus=self.instance,
+            description=(u"Added group '%s'" % self.instance.name), user=user
+        )
 
     class Meta:
         model = Releaser
@@ -75,8 +78,10 @@ class CreateScenerForm(forms.ModelForm):
         return instance
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_scener', focus=self.instance,
-            description=(u"Added scener '%s'" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='create_scener', focus=self.instance,
+            description=(u"Added scener '%s'" % self.instance.name), user=user
+        )
 
     class Meta:
         model = Releaser
@@ -85,8 +90,10 @@ class CreateScenerForm(forms.ModelForm):
 
 class ScenerEditLocationForm(ModelFormWithLocation):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_scener_location', focus=self.instance,
-            description=(u"Set location to %s" % self.instance.location), user=user)
+        Edit.objects.create(
+            action_type='edit_scener_location', focus=self.instance,
+            description=(u"Set location to %s" % self.instance.location), user=user
+        )
 
     class Meta:
         model = Releaser
@@ -98,8 +105,10 @@ class ScenerEditRealNameForm(forms.ModelForm):
         changed_fields = self.changed_data
         if 'first_name' in changed_fields or 'surname' in changed_fields:
             # Don't give the real name in the log description, as we might redact it
-            Edit.objects.create(action_type='edit_scener_real_name', focus=self.instance,
-                description="Set real name", user=user)
+            Edit.objects.create(
+                action_type='edit_scener_real_name', focus=self.instance,
+                description="Set real name", user=user
+            )
 
     class Meta:
         model = Releaser
@@ -111,8 +120,10 @@ class ScenerEditRealNameForm(forms.ModelForm):
 
 class ReleaserEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_releaser_notes', focus=self.instance,
-            description="Edited notes", user=user)
+        Edit.objects.create(
+            action_type='edit_releaser_notes', focus=self.instance,
+            description="Edited notes", user=user
+        )
 
     class Meta:
         model = Releaser
@@ -171,8 +182,10 @@ class NickForm(forms.ModelForm):
         return instance
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='add_nick', focus=self.instance.releaser,
-            description=(u"Added nick '%s'" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='add_nick', focus=self.instance.releaser,
+            description=(u"Added nick '%s'" % self.instance.name), user=user
+        )
 
     class Meta:
         model = Nick
@@ -192,9 +205,11 @@ class ScenerNickForm(NickForm):
             descriptions.append("set as primary nick")
         if descriptions:
             description_list = u"; ".join(descriptions)
-            Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
+            Edit.objects.create(
+                action_type='edit_nick', focus=self.instance.releaser,
                 description=u"Edited nick '%s': %s" % (self.instance.name, description_list),
-                user=user)
+                user=user
+            )
 
     class Meta(NickForm.Meta):
         fields = ['name']
@@ -217,9 +232,11 @@ class GroupNickForm(NickForm):
             descriptions.append("set as primary nick")
         if descriptions:
             description_list = u"; ".join(descriptions)
-            Edit.objects.create(action_type='edit_nick', focus=self.instance.releaser,
+            Edit.objects.create(
+                action_type='edit_nick', focus=self.instance.releaser,
                 description=u"Edited nick '%s': %s" % (self.instance.name, description_list),
-                user=user)
+                user=user
+            )
 
     class Meta(NickForm.Meta):
         fields = ['name', 'abbreviation', 'differentiator']
@@ -242,9 +259,11 @@ class ScenerMembershipForm(forms.Form):
                 descriptions.append("set as ex-member")
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
+            Edit.objects.create(
+                action_type='edit_membership', focus=member, focus2=group,
                 description=u"Updated %s's membership of %s: %s" % (member, group, description_list),
-                user=user)
+                user=user
+            )
 
 
 class GroupMembershipForm(forms.Form):
@@ -264,9 +283,11 @@ class GroupMembershipForm(forms.Form):
                 descriptions.append("set as ex-member")
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_membership', focus=member, focus2=group,
+            Edit.objects.create(
+                action_type='edit_membership', focus=member, focus2=group,
                 description=u"Updated %s's membership of %s: %s" % (member, group, description_list),
-                user=user)
+                user=user
+            )
 
 
 class GroupSubgroupForm(forms.Form):
@@ -286,9 +307,11 @@ class GroupSubgroupForm(forms.Form):
                 descriptions.append("set as ex-subgroup")
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_subgroup', focus=member, focus2=group,
+            Edit.objects.create(
+                action_type='edit_subgroup', focus=member, focus2=group,
                 description=u"Updated %s's status as a subgroup of %s: %s" % (member, group, description_list),
-                user=user)
+                user=user
+            )
 
 
 class ReleaserCreditForm(forms.Form):
@@ -299,7 +322,9 @@ class ReleaserCreditForm(forms.Form):
             queryset=releaser.nicks.order_by('name'),
             initial=releaser.primary_nick.id
         )
-        self.fields['production_name'] = forms.CharField(label='On production', widget=forms.TextInput(attrs={'class': 'production_autocomplete'}))
+        self.fields['production_name'] = forms.CharField(
+            label='On production', widget=forms.TextInput(attrs={'class': 'production_autocomplete'})
+        )
         self.fields['production_id'] = forms.CharField(widget=forms.HiddenInput)
 
 
@@ -308,5 +333,8 @@ class ReleaserExternalLinkForm(ExternalLinkForm):
         model = ReleaserExternalLink
         exclude = ['parameter', 'link_class', 'releaser']
 
-ReleaserExternalLinkFormSet = inlineformset_factory(Releaser, ReleaserExternalLink,
-    form=ReleaserExternalLinkForm, formset=BaseExternalLinkFormSet)
+
+ReleaserExternalLinkFormSet = inlineformset_factory(
+    Releaser, ReleaserExternalLink,
+    form=ReleaserExternalLinkForm, formset=BaseExternalLinkFormSet
+)

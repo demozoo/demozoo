@@ -147,7 +147,7 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BandcampTrack')
         self.assertEqual(link.parameter, 'gasman/cybernoids-revenge')
         self.assertEqual(str(link.link), 'https://gasman.bandcamp.com/track/cybernoids-revenge')
-    
+
     def test_speccypl_production(self):
         pondlife = Production.objects.get(title='Pondlife')
         link = ProductionLink(production=pondlife, is_download_link=False)
@@ -159,7 +159,7 @@ class TestLinkRecognition(TestCase):
 
     def test_speccypl_author(self):
         gasman = Releaser.objects.get(name='Gasman')
-        
+
         link = ReleaserExternalLink(releaser=gasman)
         link.url = 'http://speccy.pl/archive/author.php?id=24'
         self.assertEqual(link.link_class, 'SpeccyPlAuthor')
@@ -216,7 +216,8 @@ class TestEmbeds(TestCase):
         embed_html = link.link.get_embed_html(640, 480)
         self.assertEqual(
             embed_html,
-            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+            '<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?autoplay=1" '
+            'frameborder="0" allowfullscreen></iframe>'
         )
 
         link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=60'
@@ -224,7 +225,8 @@ class TestEmbeds(TestCase):
         embed_html = link.link.get_embed_html(640, 480)
         self.assertEqual(
             embed_html,
-            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=60&amp;autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+            '<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=60&amp;autoplay=1" '
+            'frameborder="0" allowfullscreen></iframe>'
         )
 
         link.url = 'https://www.youtube.com/watch?v=ldoVS0idTBw&t=1m30'
@@ -232,7 +234,8 @@ class TestEmbeds(TestCase):
         embed_html = link.link.get_embed_html(640, 480)
         self.assertEqual(
             embed_html,
-            """<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=90&amp;autoplay=1" frameborder="0" allowfullscreen></iframe>"""
+            '<iframe width="640" height="480" src="https://www.youtube.com/embed/ldoVS0idTBw?start=90&amp;autoplay=1" '
+            'frameborder="0" allowfullscreen></iframe>'
         )
 
     def test_vimeo(self):
@@ -255,5 +258,6 @@ class TestEmbeds(TestCase):
         embed_html = link.link.get_embed_html(640, 480)
         self.assertEqual(
             embed_html,
-            """<iframe width="640" height="480" src="https://player.vimeo.com/video/3156959?autoplay=1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"""
+            '<iframe width="640" height="480" src="https://player.vimeo.com/video/3156959?autoplay=1" '
+            'frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
         )
