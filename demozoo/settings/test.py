@@ -1,12 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 
 import io
+import json
+import os
 import urllib
 import urllib.request
 
 from PIL import Image
 
-from .base import *
+from .base import *  # noqa
 
 
 SECRET_KEY = 'BOOOOM'
@@ -17,7 +19,7 @@ PASSWORD_HASHERS = (
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
-MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
+MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')  # noqa
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/2')
@@ -30,6 +32,9 @@ SCENEID_SECRET = 'SCENEID_S3CR3T'
 
 
 # set up mock opener for urllib
+
+adlington_geocoder_url = 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom'
+
 
 def mock_response(req):
     url = req.get_full_url()
@@ -45,25 +50,36 @@ def mock_response(req):
             "latitude": 51.75222, "longitude": -1.25596,
             "country_name": "United Kingdom", "name": "Oxford", "id": 2640729, "country_code": "GB"
         }"""
-    elif url == 'http://geocoder.demozoo.org/?q=Adlington%2C+Lancashire%2C+England%2C+United+Kingdom':  # pragma: no cover
+    elif url == adlington_geocoder_url:  # pragma: no cover
         # this is used to verify that we don't look up locations that are unchanged
         raise Exception("Looking up Adlington is not allowed! :-)")
     elif url == 'http://geocoder.demozoo.org/?q=Royston+Vasey':
         body = "[]"
     elif url.startswith('https://www.youtube.com/oembed'):
         qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
-        if qs == {'url': ['https://www.youtube.com/watch?v=ldoVS0idTBw'], 'maxheight': ['300'], 'maxwidth': ['400'], 'format': ['json']}:
-            body = r"""{
-                "provider_name":"YouTube",
-                "author_url":"https:\/\/www.youtube.com\/user\/sirhadley",
-                "thumbnail_height":360,"thumbnail_width":480,"width":400,"height":225,
-                "title":"Deliberate Ramming by Canal Boat - Henley July 2019","version":"1.0",
-                "html":"\u003ciframe width=\"400\" height=\"225\" src=\"https:\/\/www.youtube.com\/embed\/ldoVS0idTBw?feature=oembed\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen\u003e\u003c\/iframe\u003e",
-                "type":"video","author_name":"sirhadley",
-                "thumbnail_url":"https:\/\/i.ytimg.com\/vi\/ldoVS0idTBw\/hqdefault.jpg",
-                "provider_url":"https:\/\/www.youtube.com\/"
-            }"""
-        elif qs == {'url': ['https://www.youtube.com/watch?v=404'], 'maxheight': ['300'], 'maxwidth': ['400'], 'format': ['json']}:
+        if qs == {
+            'url': ['https://www.youtube.com/watch?v=ldoVS0idTBw'],
+            'maxheight': ['300'], 'maxwidth': ['400'], 'format': ['json']
+        }:
+            body = json.dumps({
+                "provider_name": "YouTube",
+                "author_url": "https://www.youtube.com/user/sirhadley",
+                "thumbnail_height": 360, "thumbnail_width": 480, "width": 400, "height": 225,
+                "title": "Deliberate Ramming by Canal Boat - Henley July 2019", "version": "1.0",
+                "html": (
+                    '<iframe width="400" height="225" '
+                    'src="https://www.youtube.com/embed/ldoVS0idTBw?feature=oembed" '
+                    'frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" '
+                    'allowfullscreen></iframe>'
+                ),
+                "type": "video", "author_name": "sirhadley",
+                "thumbnail_url": "https://i.ytimg.com/vi/ldoVS0idTBw/hqdefault.jpg",
+                "provider_url": "https://www.youtube.com/",
+            })
+        elif qs == {
+            'url': ['https://www.youtube.com/watch?v=404'], 'maxheight': ['300'], 'maxwidth': ['400'],
+            'format': ['json']
+        }:
             resp = urllib.response.addinfourl(
                 io.StringIO("not found"),
                 {},
@@ -100,29 +116,51 @@ def mock_response(req):
     elif url.startswith('https://vimeo.com/api/oembed.json'):
         qs = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
         if qs == {'url': ['https://vimeo.com/3156959'], 'maxheight': ['300'], 'maxwidth': ['400']}:
-            body = r"""{
-                "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
-                "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
-                "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"400\" height=\"225\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
-                "width":400,"height":225,"duration":213,
-                "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
-                "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
-                "thumbnail_width":295,"thumbnail_height":166,
-                "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
-                "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
-            }"""
+            body = json.dumps({
+                "type": "video", "version": "1.0", "provider_name": "Vimeo", "provider_url": "https://vimeo.com/",
+                "title": "Bathtub IV", "author_name": "Keith Loutit",
+                "author_url": "https://vimeo.com/keithloutit", "is_plus": "0", "account_type": "pro",
+                "html": (
+                    '<iframe src="https://player.vimeo.com/video/3156959?app_id=122963" width="400" height="225" '
+                    'frameborder="0" allow="autoplay; fullscreen" allowfullscreen title="Bathtub IV"></iframe>'
+                ),
+                "width": 400, "height": 225, "duration": 213,
+                "description": (
+                    "This is a personal project that would not have been possible without the support of "
+                    "the Westpac Rescue Helicopter Service."
+                ),
+                "thumbnail_url": "https://i.vimeocdn.com/video/453022_295x166.webp",
+                "thumbnail_width": 295, "thumbnail_height": 166,
+                "thumbnail_url_with_play_button": (
+                    "https://i.vimeocdn.com/filter/overlay"
+                    "?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp"
+                    "&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+                ),
+                "upload_date": "2009-02-10 02:29:39", "video_id": 3156959, "uri": "/videos/3156959"
+            })
         elif qs == {'url': ['https://vimeo.com/3156959']}:
-            body = r"""{
-                "type":"video","version":"1.0","provider_name":"Vimeo","provider_url":"https:\/\/vimeo.com\/","title":"Bathtub IV",
-                "author_name":"Keith Loutit","author_url":"https:\/\/vimeo.com\/keithloutit","is_plus":"0","account_type":"pro",
-                "html":"<iframe src=\"https:\/\/player.vimeo.com\/video\/3156959?app_id=122963\" width=\"480\" height=\"270\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen title=\"Bathtub IV\"><\/iframe>",
-                "width":480,"height":270,"duration":213,
-                "description":"This is a personal project that would not have been possible without the support of the Westpac Rescue Helicopter Service.",
-                "thumbnail_url":"https:\/\/i.vimeocdn.com\/video\/453022_295x166.webp",
-                "thumbnail_width":295,"thumbnail_height":166,
-                "thumbnail_url_with_play_button":"https:\/\/i.vimeocdn.com\/filter\/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png",
-                "upload_date":"2009-02-10 02:29:39","video_id":3156959,"uri":"\/videos\/3156959"
-            }"""
+            body = json.dumps({
+                "type": "video", "version": "1.0", "provider_name": "Vimeo", "provider_url": "https://vimeo.com/",
+                "title": "Bathtub IV", "author_name": "Keith Loutit",
+                "author_url": "https://vimeo.com/keithloutit", "is_plus": "0", "account_type": "pro",
+                "html": (
+                    '<iframe src="https://player.vimeo.com/video/3156959?app_id=122963" width="480" height="270" '
+                    'frameborder="0" allow="autoplay; fullscreen" allowfullscreen title="Bathtub IV"></iframe>'
+                ),
+                "width": 480, "height": 270, "duration": 213,
+                "description": (
+                    "This is a personal project that would not have been possible "
+                    "without the support of the Westpac Rescue Helicopter Service."
+                ),
+                "thumbnail_url": "https://i.vimeocdn.com/video/453022_295x166.webp",
+                "thumbnail_width": 295, "thumbnail_height": 166,
+                "thumbnail_url_with_play_button": (
+                    "https://i.vimeocdn.com/filter/overlay"
+                    "?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F453022_295x166.webp"
+                    "&src1=http%3A%2F%2Ff.vimeocdn.com%2Fp%2Fimages%2Fcrawler_play.png"
+                ),
+                "upload_date": "2009-02-10 02:29:39", "video_id": 3156959, "uri": "/videos/3156959"
+            })
         else:  # pragma: no cover
             raise Exception("No response defined for %s" % req.get_full_url())
     elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=1':
@@ -144,21 +182,24 @@ def mock_response(req):
             ]
         }"""
     elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=1&page=100':
-        body = r"""{
-            "success": true,
+        body = json.dumps({
+            "success": True,
             "files": [
                 {
                     "filename": "lazarus-taxi-247-compo-version.diz",
-                    "fullPath": "\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
-                    "viewURL": "https:\/\/files.scene.org\/view\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
+                    "fullPath": "/demos/artists/lazarus/lazarus-taxi-247-compo-version.diz",
+                    "viewURL": "https://files.scene.org/view/demos/artists/lazarus/lazarus-taxi-247-compo-version.diz",
                     "size": 296,
                     "mirrors": {
-                        "nl-ftp": "ftp:\/\/ftp.scene.org\/pub\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz",
-                        "nl-http": "http:\/\/archive.scene.org\/pub\/demos\/artists\/lazarus\/lazarus-taxi-247-compo-version.diz"
+                        "nl-ftp": "ftp://ftp.scene.org/pub/demos/artists/lazarus/lazarus-taxi-247-compo-version.diz",
+                        "nl-http": (
+                            "http://archive.scene.org/pub/demos/artists/lazarus/"
+                            "lazarus-taxi-247-compo-version.diz"
+                        )
                     }
                 }
             ]
-        }"""
+        })
     elif url == 'https://files.scene.org/api/adhoc/latest-files/?days=999':
         body = r"""{
             "success": false
@@ -192,11 +233,11 @@ def mock_response(req):
     elif url == 'http://example.com/cybrev.mod':
         body = "hello from cybrev.mod"
     elif url == 'http://example.com/rubber.zip':
-        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')  # noqa
         with open(path, 'rb') as f:
             body = f.read()
     elif url == 'http://example.com/rubberbadimage.zip':
-        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubberbadimage.zip')
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubberbadimage.zip')  # noqa
         with open(path, 'rb') as f:
             body = f.read()
     elif url == 'http://example.com/badzipfile.zip':
@@ -243,9 +284,15 @@ def mock_response(req):
     elif url == 'https://id.scene.org/oauth/token/':
         if req.get_method() == 'POST':
             if req.get_header('Authorization') != 'Basic U0NFTkVJRF9LM1k6U0NFTkVJRF9TM0NSM1Q=':  # pragma: no cover
-                raise Exception("Bad authorization header for https://id.scene.org/oauth/token/ : %r" % req.get_header('Authorization'))
+                raise Exception(
+                    "Bad authorization header for https://id.scene.org/oauth/token/ : %r"
+                    % req.get_header('Authorization')
+                )
 
-            expected_postdata = urllib.parse.parse_qs('code=123&grant_type=authorization_code&redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F')
+            expected_postdata = urllib.parse.parse_qs(
+                'code=123&grant_type=authorization_code&'
+                'redirect_uri=https%3A%2F%2Fdemozoo.org%2Faccount%2Fsceneid%2Flogin%2F'
+            )
             actual_postdata = urllib.parse.parse_qs(req.data.decode('ascii'))
             if actual_postdata != expected_postdata:  # pragma: no cover
                 raise Exception("Bad POST data: expected %r, got %r" % (expected_postdata, actual_postdata))

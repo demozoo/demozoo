@@ -29,7 +29,7 @@ class TestConversion(TestCase):
         # WMF is not in our PIL_READABLE_FORMATS list
         with open(os.path.join(TEST_IMAGES_DIR, 'clock.wmf'), mode='rb') as f:
             with self.assertRaises(IOError):
-                img = PILConvertibleImage(f, name_hint='clock.wmf')
+                PILConvertibleImage(f, name_hint='clock.wmf')
 
     def test_gif_palette(self):
         # https://github.com/python-pillow/Pillow/issues/513
@@ -37,7 +37,7 @@ class TestConversion(TestCase):
             img = PILConvertibleImage(f, name_hint='atari-metal-knight.gif')
             output, size, format = img.create_thumbnail((200, 150))
 
-        #with open(os.path.join(TEST_IMAGES_DIR, 'atari-metal-knight.out.%s' % format), mode='wb') as f:
+        # with open(os.path.join(TEST_IMAGES_DIR, 'atari-metal-knight.out.%s' % format), mode='wb') as f:
         #    f.write(output.getvalue())
 
         self.assertEqual(size, (200, 125))

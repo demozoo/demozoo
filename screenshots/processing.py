@@ -97,10 +97,10 @@ def upload_to_s3(fp, key_name):
 # when looking for screenshots - break out as soon as we have exactly one file remaining
 IGNORED_ARCHIVE_MEMBER_RULES = [
     re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$', re.I),
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$', re.I),
+    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),  # noqa
+    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),  # noqa
+    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),  # noqa
+    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$', re.I),  # noqa
 ]
 
 

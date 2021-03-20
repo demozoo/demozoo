@@ -2,12 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.conf import settings
 from django.conf.urls import include, url
-# Admin backend
 from django.contrib import admin
-
-
-admin.autodiscover()
-
 from django.contrib.auth import views as auth_views
 
 from demoscene.views import accounts as account_views
@@ -17,6 +12,9 @@ from demoscene.views import nicks as nicks_views
 from demoscene.views import releasers as releasers_views
 from demoscene.views import sceners as sceners_views
 from sceneid import auth as sceneid_views
+
+
+admin.autodiscover()
 
 
 urlpatterns = [
@@ -29,10 +27,19 @@ urlpatterns = [
     url(r'^account/change_password/$', account_views.change_password, {}, 'account_change_password'),
     # forgotten password
     url(r'^account/forgotten_password/$', auth_views.PasswordResetView.as_view(), {}, 'password_reset'),
-    url(r'^account/forgotten_password/success/$', auth_views.PasswordResetDoneView.as_view(), {}, 'password_reset_done'),
-    url(r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$', auth_views.PasswordResetConfirmView.as_view(), {}, 'password_reset_confirm'),
+    url(
+        r'^account/forgotten_password/success/$', auth_views.PasswordResetDoneView.as_view(), {},
+        'password_reset_done'
+    ),
+    url(
+        r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$',
+        auth_views.PasswordResetConfirmView.as_view(), {}, 'password_reset_confirm'
+    ),
 
-    url(r'^account/forgotten_password/done/$', auth_views.PasswordResetCompleteView.as_view(), {}, 'password_reset_complete'),
+    url(
+        r'^account/forgotten_password/done/$', auth_views.PasswordResetCompleteView.as_view(), {},
+        'password_reset_complete'
+    ),
 
     url(r'^account/sceneid/auth/$', sceneid_views.do_auth_redirect, {}, 'sceneid_auth'),
     url(r'^account/sceneid/login/$', sceneid_views.process_response, {}, 'sceneid_return'),
@@ -78,10 +85,16 @@ urlpatterns += [
     url(r'^releasers/(\d+)/edit_nick/(\d+)/$', releasers_views.edit_nick, {}, 'releaser_edit_nick'),
     url(r'^releasers/(\d+)/add_nick/$', releasers_views.add_nick, {}, 'releaser_add_nick'),
     url(r'^releasers/(\d+)/edit_primary_nick/$', releasers_views.edit_primary_nick, {}, 'releaser_edit_primary_nick'),
-    url(r'^releasers/(\d+)/change_primary_nick/$', releasers_views.change_primary_nick, {}, 'releaser_change_primary_nick'),
+    url(
+        r'^releasers/(\d+)/change_primary_nick/$', releasers_views.change_primary_nick, {},
+        'releaser_change_primary_nick'
+    ),
     url(r'^releasers/(\d+)/delete_nick/(\d+)/$', releasers_views.delete_nick, {}, 'releaser_delete_nick'),
     url(r'^releasers/(\d+)/delete/$', releasers_views.delete, {}, 'delete_releaser'),
-    url(r'^releasers/(\d+)/edit_external_links/$', releasers_views.edit_external_links, {}, 'releaser_edit_external_links'),
+    url(
+        r'^releasers/(\d+)/edit_external_links/$', releasers_views.edit_external_links, {},
+        'releaser_edit_external_links'
+    ),
     url(r'^releasers/(\d+)/lock/$', releasers_views.lock, {}, 'lock_releaser'),
     url(r'^releasers/(\d+)/protected/$', releasers_views.protected, {}, 'releaser_protected'),
 

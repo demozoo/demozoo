@@ -24,8 +24,8 @@ upload_dir = os.path.join(settings.MEDIA_ROOT, 'screenshot_uploads')
 
 
 def create_basename(screenshot_id):
-        u = uuid.uuid4().hex
-        return u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.' + str(screenshot_id) + '.'
+    u = uuid.uuid4().hex
+    return u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.' + str(screenshot_id) + '.'
 
 
 def upload_original(img, screenshot, basename):

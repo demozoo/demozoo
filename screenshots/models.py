@@ -109,7 +109,8 @@ class PILConvertibleImage(object):
             try:
                 img.save(output, format='JPEG', optimize=True, quality=90)
             except IOError:  # pragma: no cover
-                # optimize option can fail with quality > 85 - see http://mail.python.org/pipermail/image-sig/2006-April/003858.html
+                # optimize option can fail with quality > 85 -
+                # see http://mail.python.org/pipermail/image-sig/2006-April/003858.html
                 # ...so try without optimize
                 img.save(output, format='JPEG', quality=90)
             return output, img.size, 'jpg'

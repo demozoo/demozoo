@@ -1,10 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 
-from .base import *
+from .base import *  # noqa
 
 
-DATABASES['default']['USER'] = 'demozoo'
-DATABASES['default']['NAME'] = 'demozoo_staging'
+DATABASES['default']['USER'] = 'demozoo'  # noqa
+DATABASES['default']['NAME'] = 'demozoo_staging'  # noqa
 
 DEBUG = False
 EMAIL_HOST = 'localhost'
