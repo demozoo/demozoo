@@ -7,6 +7,7 @@ from django.views.generic.base import RedirectView
 
 from zxdemo import views as zxdemo_views
 
+
 admin.autodiscover()
 
 urlpatterns = [

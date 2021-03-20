@@ -6,6 +6,7 @@ from productions.views import graphics as graphic_views
 from productions.views import music as music_views
 from productions.views import productions as production_views
 
+
 urlpatterns = [
     url(r'^productions/$', production_views.ProductionIndexView.as_view(), {}, 'productions'),
     url(r'^productions/(\d+)/$', production_views.ProductionShowView.as_view(), {}, 'production'),

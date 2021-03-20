@@ -16,6 +16,7 @@ from screenshots.tasks import (
     rebuild_screenshot
 )
 
+
 TEST_IMAGES_DIR = os.path.join(os.path.join(settings.FILEROOT, 'screenshots', 'tests', 'images'))
 
 

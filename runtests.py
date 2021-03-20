@@ -7,6 +7,7 @@ import warnings
 
 from django.core.management import execute_from_command_line
 
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'demozoo.settings.test'
 
 

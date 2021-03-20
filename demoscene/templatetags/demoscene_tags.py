@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from demoscene.models import Edit, Nick, Releaser
 from productions.models import Production, Screenshot
 
+
 register = template.Library()
 
 

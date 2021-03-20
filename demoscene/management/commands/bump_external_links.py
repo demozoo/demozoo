@@ -10,6 +10,7 @@ from demoscene.models import ReleaserExternalLink
 from parties.models import PartyExternalLink
 from productions.models import ProductionLink
 
+
 external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
 
 

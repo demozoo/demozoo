@@ -19,6 +19,7 @@ from productions.models import ProductionLink, Screenshot
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS, PILConvertibleImage
 from screenshots.processing import select_screenshot_file, upload_to_s3
 
+
 upload_dir = os.path.join(settings.MEDIA_ROOT, 'screenshot_uploads')
 
 

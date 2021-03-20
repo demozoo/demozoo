@@ -5,6 +5,7 @@ from rest_framework import routers
 
 from api.views import adhoc, generic
 
+
 router = routers.DefaultRouter()
 router.register(r'productions', generic.ProductionViewSet)
 router.register(r'production_types', generic.ProductionTypeViewSet)

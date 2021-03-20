@@ -7,6 +7,7 @@ from parties.views import competition_api as competition_api_views
 from parties.views import competitions as competition_views
 from parties.views import parties as party_views
 
+
 urlpatterns = [
     url(r'^parties/$', party_views.by_date, {}, 'parties'),
     url(r'^parties/year/$', RedirectView.as_view(url='/parties/')),

@@ -10,6 +10,7 @@ from read_only_mode import writeable_site_required
 from forums.forms import NewTopicForm, ReplyForm
 from forums.models import Post, Topic
 
+
 POSTS_PER_PAGE = 50
 
 

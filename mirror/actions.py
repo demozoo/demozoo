@@ -15,6 +15,7 @@ from productions.models import Production
 from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS
 from screenshots.processing import select_screenshot_file
 
+
 max_size = 10485760
 mirror_bucket_name = 'mirror.demozoo.org'
 

@@ -13,6 +13,7 @@ from demoscene.tasks import find_sceneorg_results_files
 from sceneorg.dirparser import parse_all_dirs
 from sceneorg.models import Directory, File
 
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
