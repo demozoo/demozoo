@@ -40,7 +40,9 @@ class TestReports(TestCase):
 
         zx = Platform.objects.get(name='ZX Spectrum')
         demo = ProductionType.objects.get(name='Demo')
-        response = self.client.get('/maintenance/prods_without_screenshots?platform=%d&production_type=%d' % (zx.id, demo.id))
+        response = self.client.get(
+            '/maintenance/prods_without_screenshots?platform=%d&production_type=%d' % (zx.id, demo.id)
+        )
         self.assertEqual(response.status_code, 200)
 
         # test with invalid filter form
@@ -328,7 +330,10 @@ class TestReports(TestCase):
         archive_member = ArchiveMember.objects.create(
             archive_sha1='123123123', filename='screenshot.png', file_size=6912
         )
-        response = self.client.post('/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id), {'1': 1})
+        response = self.client.post(
+            '/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id),
+            {'1': 1}
+        )
         self.assertRedirects(response, '/')
         self.assertTrue(ProductionLink.objects.get(id=pondlife_link.id).is_unresolved_for_screenshotting)
         self.assertFalse(create_screenshot_from_production_link.delay.called)
@@ -342,7 +347,10 @@ class TestReports(TestCase):
         archive_member = ArchiveMember.objects.create(
             archive_sha1='123123123', filename='screenshot.png', file_size=6912
         )
-        response = self.client.post('/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id), {'1': 1})
+        response = self.client.post(
+            '/maintenance/resolve_screenshot/%d/%d/' % (pondlife_link.id, archive_member.id),
+            {'1': 1}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(ProductionLink.objects.get(id=pondlife_link.id).is_unresolved_for_screenshotting)
         self.assertTrue(create_screenshot_from_production_link.delay.called)
@@ -376,7 +384,10 @@ class TestReports(TestCase):
             party=party,
             file=File(
                 name="forever2e3.txt",
-                file=BytesIO(b"a m\xf6\xf6se bit me \xf6nce\nWe apologise for the fault in the results. Those responsible have been sacked.")
+                file=BytesIO(
+                    b"a m\xf6\xf6se bit me \xf6nce\nWe apologise for the fault in the results. "
+                    b"Those responsible have been sacked."
+                )
             ),
             filename="forever2e3.txt", filesize=100, sha1="1234123412341234"
         )
@@ -430,7 +441,8 @@ class TestReports(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
-            Releaser.objects.get(name="Raww Arse").external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+            Releaser.objects.get(name="Raww Arse").external_links
+            .filter(link_class='KestraBitworldAuthor', parameter='123').exists()
         )
 
     def test_janeway_authors_different(self):
@@ -454,7 +466,8 @@ class TestReports(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
-            Releaser.objects.get(name="Spaceballs").external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
+            Releaser.objects.get(name="Spaceballs").external_links
+            .filter(link_class='KestraBitworldAuthor', parameter='123').exists()
         )
 
     def test_janeway_authors_detail(self):

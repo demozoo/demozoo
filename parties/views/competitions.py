@@ -23,7 +23,14 @@ from productions.models import Production, ProductionType, Screenshot
 def show(request, competition_id):
     competition = get_object_or_404(Competition, id=competition_id)
 
-    placings = competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+    placings = (
+        competition.placings.order_by('position', 'production__id')
+        .prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser')
+        .defer(
+            'production__notes', 'production__author_nicks__releaser__notes',
+            'production__author_affiliation_nicks__releaser__notes'
+        )
+    )
     entry_production_ids = [placing.production_id for placing in placings]
     screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
     placings = [
@@ -100,7 +107,9 @@ def import_text(request, competition_id):
     competition = get_object_or_404(Competition, id=competition_id)
 
     if request.POST:
-        current_highest_position = CompetitionPlacing.objects.filter(competition=competition).aggregate(Max('position'))['position__max']
+        current_highest_position = (
+            CompetitionPlacing.objects.filter(competition=competition).aggregate(Max('position'))['position__max']
+        )
         next_position = (current_highest_position or 0) + 1
 
         format = request.POST['format']
@@ -148,8 +157,14 @@ def import_text(request, competition_id):
             next_position += 1
             placing.save()
 
-            Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
-                description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
+            Edit.objects.create(
+                action_type='add_competition_placing', focus=competition, focus2=production,
+                description=(
+                    u"Added competition placing for %s in %s competition"
+                    % (production.title, competition)
+                ),
+                user=request.user
+            )
 
         return redirect('competition_edit', competition_id)
     else:
@@ -168,8 +183,10 @@ def delete(request, competition_id):
     if request.method == 'POST':
         if request.POST.get('yes'):
 
-            Edit.objects.create(action_type='delete_competition', focus=competition.party,
-                description=(u"Deleted competition '%s'" % competition.name), user=request.user)
+            Edit.objects.create(
+                action_type='delete_competition', focus=competition.party,
+                description=(u"Deleted competition '%s'" % competition.name), user=request.user
+            )
 
             competition.delete()
 
@@ -178,7 +195,9 @@ def delete(request, competition_id):
         else:
             return HttpResponseRedirect(competition.party.get_absolute_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_competition', args=[competition_id]),
             "Are you sure you want to delete the %s competition?" % competition.name,
-            html_title="Deleting %s" % competition.name)
+            html_title="Deleting %s" % competition.name
+        )

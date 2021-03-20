@@ -72,7 +72,10 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Production
-        fields = ['url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types']
+        fields = [
+            'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
+            'release_date', 'supertype', 'platforms', 'types'
+        ]
 
 
 class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
@@ -108,7 +111,7 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
         model = Party
         fields = [
             'url', 'demozoo_url', 'id', 'name', 'tagline', 'start_date', 'end_date',
-            'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website'
+            'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website',
         ]
 
 
@@ -196,7 +199,10 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Releaser
-        fields = ['url', 'demozoo_url', 'id', 'name', 'is_group', 'nicks', 'member_of', 'members', 'subgroups', 'external_links']
+        fields = [
+            'url', 'demozoo_url', 'id', 'name', 'is_group', 'nicks', 'member_of', 'members',
+            'subgroups', 'external_links',
+        ]
 
 
 class ProductionExternalLinkSerializer(serializers.ModelSerializer):
@@ -258,8 +264,11 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Production
         fields = [
-            'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks', 'release_date', 'supertype', 'platforms', 'types',
-            'credits', 'download_links', 'external_links', 'release_parties', 'competition_placings', 'invitation_parties', 'screenshots']
+            'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
+            'release_date', 'supertype', 'platforms', 'types', 'credits', 'download_links',
+            'external_links', 'release_parties', 'competition_placings', 'invitation_parties',
+            'screenshots',
+        ]
 
 
 class CompetitionPlacingSerializer(serializers.ModelSerializer):

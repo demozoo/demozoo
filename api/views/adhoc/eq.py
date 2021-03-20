@@ -34,9 +34,13 @@ def demos(request):
         # try to assemble a list of nationalities based on the sceners listed under authors or credits
         authors = [nick.releaser for nick in prod.author_nicks.all()]
         credited_sceners = [credit.nick.releaser for credit in prod.credits.all()]
-        nationalities = set([author.country_code for author in authors]).union([scener.country_code for scener in credited_sceners])
+        nationalities = (
+            set([author.country_code for author in authors])
+            .union([scener.country_code for scener in credited_sceners])
+        )
         nationalities = list(n for n in nationalities if n)
-        # if this results in an empty list, see if it's entirely written by groups whose members all belong to one country
+        # if this results in an empty list, see if it's entirely written by groups
+        # whose members all belong to one country
         if (not nationalities) and all(author.is_group for author in authors):
             members = Releaser.objects.filter(group_memberships__group__in=authors)
             nationalities = list(set([member.country_code for member in members]))

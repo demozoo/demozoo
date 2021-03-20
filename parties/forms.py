@@ -71,12 +71,17 @@ class PartyForm(ModelFormWithLocation):
         return self.instance
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_party', focus=self.instance,
-            description=(u"Added party '%s'" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='create_party', focus=self.instance,
+            description=(u"Added party '%s'" % self.instance.name), user=user
+        )
 
     class Meta:
         model = Party
-        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled', 'website', 'party_series_name')
+        fields = (
+            'name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled',
+            'website', 'party_series_name',
+        )
 
 
 class EditPartyForm(ModelFormWithLocation):
@@ -109,8 +114,10 @@ class EditPartyForm(ModelFormWithLocation):
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(action_type='edit_party', focus=self.instance,
-                description=description, user=user)
+            Edit.objects.create(
+                action_type='edit_party', focus=self.instance,
+                description=description, user=user
+            )
 
     class Meta:
         model = Party
@@ -119,8 +126,10 @@ class EditPartyForm(ModelFormWithLocation):
 
 class PartyEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_party_notes', focus=self.instance,
-            description="Edited notes", user=user)
+        Edit.objects.create(
+            action_type='edit_party_notes', focus=self.instance,
+            description="Edited notes", user=user
+        )
 
     class Meta:
         model = Party
@@ -146,22 +155,27 @@ class EditPartySeriesForm(forms.ModelForm):
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(action_type='edit_party', focus=self.instance,
-                description=description, user=user)
+            Edit.objects.create(
+                action_type='edit_party', focus=self.instance,
+                description=description, user=user
+            )
 
     class Meta:
         model = PartySeries
         fields = ('name', 'website', 'twitter_username', 'pouet_party_id')
         widgets = {
-            'twitter_username': forms.TextInput(attrs={'class': 'numeric'}),  # not really numeric, but box is the same size
+            # not really numeric, but box is the same size
+            'twitter_username': forms.TextInput(attrs={'class': 'numeric'}),
             'pouet_party_id': forms.TextInput(attrs={'class': 'numeric'}),
         }
 
 
 class PartySeriesEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_party_series_notes', focus=self.instance,
-            description="Edited notes", user=user)
+        Edit.objects.create(
+            action_type='edit_party_series_notes', focus=self.instance,
+            description="Edited notes", user=user
+        )
 
     class Meta:
         model = PartySeries
@@ -174,8 +188,10 @@ class CompetitionForm(forms.ModelForm):
     platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all())
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_competiton', focus=self.instance, focus2=self.instance.party,
-            description=(u"Added competition %s" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='create_competiton', focus=self.instance, focus2=self.instance.party,
+            description=(u"Added competition %s" % self.instance.name), user=user
+        )
 
     @property
     def changed_data_description(self):
@@ -195,8 +211,10 @@ class CompetitionForm(forms.ModelForm):
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(action_type='edit_competition', focus=self.instance,
-                description=description, user=user)
+            Edit.objects.create(
+                action_type='edit_competition', focus=self.instance,
+                description=description, user=user
+            )
 
     class Meta:
         model = Competition
@@ -208,22 +226,25 @@ class PartyExternalLinkForm(ExternalLinkForm):
         model = PartyExternalLink
         exclude = ['parameter', 'link_class', 'party']
 
-PartyExternalLinkFormSet = inlineformset_factory(Party, PartyExternalLink,
-    form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet)
+
+PartyExternalLinkFormSet = inlineformset_factory(
+    Party, PartyExternalLink,
+    form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet
+)
 
 
 class PartyInvitationForm(forms.Form):
     production = ProductionField()
 
-PartyInvitationFormset = formset_factory(PartyInvitationForm,
-    can_delete=True, extra=1)
+
+PartyInvitationFormset = formset_factory(PartyInvitationForm, can_delete=True, extra=1)
 
 
 class PartyReleaseForm(forms.Form):
     production = ProductionField()
 
-PartyReleaseFormset = formset_factory(PartyReleaseForm,
-    can_delete=True, extra=1)
+
+PartyReleaseFormset = formset_factory(PartyReleaseForm, can_delete=True, extra=1)
 
 
 class PartyShareImageForm(forms.ModelForm):
@@ -262,6 +283,8 @@ class PartyOrganiserForm(forms.Form):
             descriptions.append("changed role to %s" % (self.cleaned_data['role'] or 'none'))
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_party_organiser', focus=releaser, focus2=party,
+            Edit.objects.create(
+                action_type='edit_party_organiser', focus=releaser, focus2=party,
                 description=u"Updated %s as organiser of %s: %s" % (releaser, party, description_list),
-                user=user)
+                user=user
+            )

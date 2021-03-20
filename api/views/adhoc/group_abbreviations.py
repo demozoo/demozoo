@@ -8,7 +8,10 @@ from demoscene.models import Nick
 
 
 def group_abbreviations(request):
-    nicks = Nick.objects.filter(releaser__is_group=True).select_related('releaser').prefetch_related('variants').order_by('name')
+    nicks = (
+        Nick.objects.filter(releaser__is_group=True).select_related('releaser')
+        .prefetch_related('variants').order_by('name')
+    )
 
     response = HttpResponse(content_type='text/plain;charset=utf-8')
     csvfile = csv.writer(response)

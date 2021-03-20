@@ -669,4 +669,3 @@ class TestRemoveOrganiser(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
         self.assertEqual(0, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
-

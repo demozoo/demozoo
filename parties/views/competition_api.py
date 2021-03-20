@@ -93,8 +93,14 @@ def add_placing(request, competition_id):
         )
         placing.save()
 
-        Edit.objects.create(action_type='add_competition_placing', focus=competition, focus2=production,
-            description=(u"Added competition placing for %s in %s competition" % (production.title, competition)), user=request.user)
+        Edit.objects.create(
+            action_type='add_competition_placing', focus=competition, focus2=production,
+            description=(
+                u"Added competition placing for %s in %s competition"
+                % (production.title, competition)
+            ),
+            user=request.user
+        )
 
         return HttpResponse(json.dumps(placing.json_data), content_type="text/javascript")
 
@@ -109,14 +115,24 @@ def update_placing(request, placing_id):
 
         # move existing placings to accommodate new entry at the stated position
         if int(data['position']) > placing.position:  # increasing position - move others down
-            competition.placings.filter(position__gt=placing.position, position__lte=data['position']).update(position=F('position') - 1)
+            competition.placings.filter(
+                position__gt=placing.position, position__lte=data['position']
+            ).update(position=F('position') - 1)
         elif int(data['position']) < placing.position:  # decreasing position - move others up
-            competition.placings.filter(position__gte=data['position'], position__lt=placing.position).update(position=F('position') + 1)
+            competition.placings.filter(
+                position__gte=data['position'], position__lt=placing.position
+            ).update(position=F('position') + 1)
 
         production = handle_production(data['production'], competition)
 
-        Edit.objects.create(action_type='update_competition_placing', focus=competition, focus2=production,
-            description=(u"Updated competition placing info for %s in %s competition" % (production.title, competition)), user=request.user)
+        Edit.objects.create(
+            action_type='update_competition_placing', focus=competition, focus2=production,
+            description=(
+                u"Updated competition placing info for %s in %s competition"
+                % (production.title, competition)
+            ),
+            user=request.user
+        )
 
         placing.production = production
         placing.ranking = data['ranking']
@@ -140,8 +156,14 @@ def delete_placing(request, placing_id):
         # move remaining placings to close the gap
         competition.placings.filter(position__gt=placing.position).update(position=F('position') - 1)
 
-        Edit.objects.create(action_type='remove_competition_placing', focus=competition, focus2=placing.production,
-            description=(u"Removed competition placing for %s in %s competition" % (placing.production.title, competition)), user=request.user)
+        Edit.objects.create(
+            action_type='remove_competition_placing', focus=competition, focus2=placing.production,
+            description=(
+                u"Removed competition placing for %s in %s competition"
+                % (placing.production.title, competition)
+            ),
+            user=request.user
+        )
 
         if delete_production_too:
             placing.production.delete()

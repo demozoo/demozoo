@@ -35,7 +35,10 @@ def demoshow(request):
             continue
 
         # strip out types that are not really suitable for a demo show
-        interesting_types = [typ for typ in prod.types.all() if typ.name not in ('Diskmagazine', 'Tool', 'Game', 'Video', 'Pack', 'Musicdisk', 'Chip Music Pack')]
+        interesting_types = [
+            typ for typ in prod.types.all()
+            if typ.name not in ('Diskmagazine', 'Tool', 'Game', 'Video', 'Pack', 'Musicdisk', 'Chip Music Pack')
+        ]
 
         if len(interesting_types) == 0:
             continue
@@ -45,7 +48,8 @@ def demoshow(request):
     response = HttpResponse(content_type='text/plain;charset=utf-8')
     csvfile = csv.writer(response)
     csvfile.writerow([
-        'Demozoo URL', 'Title', 'By', 'Release date', 'Party', 'Type', 'Platform', 'Download URL', 'Video URL', 'Pouet URL'
+        'Demozoo URL', 'Title', 'By', 'Release date', 'Party', 'Type', 'Platform',
+        'Download URL', 'Video URL', 'Pouet URL',
     ])
     for prod in exe_prods:
         platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
@@ -55,7 +59,10 @@ def demoshow(request):
             prod.title.encode('utf-8'),
             prod.byline_string.encode('utf-8'),
             prod.release_date,
-            ', '.join([placing.competition.party.name for placing in prod.competition_placings.all()] + [party.name for party in prod.release_parties.all()]).encode('utf-8'),
+            ', '.join(
+                [placing.competition.party.name for placing in prod.competition_placings.all()]
+                + [party.name for party in prod.release_parties.all()]
+            ).encode('utf-8'),
             ', '.join([typ.name for typ in prod_types]).encode('utf-8'),
             ', '.join([platform.name for platform in platforms]).encode('utf-8'),
             ' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]),

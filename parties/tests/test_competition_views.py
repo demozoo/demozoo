@@ -134,7 +134,10 @@ class TestImportResults(TestCase):
         })
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
-        self.assertTrue(Production.objects.filter(title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse").exists())
+        self.assertTrue(
+            Production.objects.filter(title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse")
+            .exists()
+        )
 
     def test_import_wuhu(self):
         response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
@@ -166,7 +169,9 @@ class TestImportResults(TestCase):
         self.assertRedirects(response, '/competitions/%d/edit' % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 4)
         self.assertEqual(self.competition.placings.get(production__title='Mathricks').ranking, '2')
-        self.assertTrue(Production.objects.filter(title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse").exists())
+        self.assertTrue(Production.objects.filter(
+            title="A horse, a horse, my kingdom for a horse or a Scotsman on a horse"
+        ).exists())
 
     def test_import_broken_wuhu(self):
         response = self.client.post('/competitions/%d/import_text' % self.competition.id, {
