@@ -89,7 +89,12 @@ class Party(Commentable):
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
 
-    sceneorg_compofolders_done = models.BooleanField(default=False, help_text="Indicates that all compos at this party have been matched up with the corresponding scene.org directory")
+    sceneorg_compofolders_done = models.BooleanField(
+        default=False,
+        help_text=(
+            "Indicates that all compos at this party have been matched up with the corresponding scene.org directory"
+        )
+    )
 
     invitations = models.ManyToManyField('productions.Production', related_name='invitation_parties', blank=True)
     releases = models.ManyToManyField('productions.Production', related_name='release_parties', blank=True)
@@ -102,7 +107,9 @@ class Party(Commentable):
     share_image_file_width = models.IntegerField(editable=False, null=True)
     share_image_file_height = models.IntegerField(editable=False, null=True)
     share_image_file_url = models.CharField(max_length=255, blank=True, editable=False)
-    share_screenshot = models.ForeignKey('productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL)
+    share_screenshot = models.ForeignKey(
+        'productions.Screenshot', related_name='+', blank=True, null=True, on_delete=models.SET_NULL
+    )
 
     search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     search_document = SearchVectorField(null=True, editable=False)
@@ -177,7 +184,9 @@ class Party(Commentable):
     end_date = property(_get_end_date, _set_end_date)
 
     def get_screenshots(self):
-        compo_entry_prod_ids = Production.objects.filter(competition_placings__competition__party=self).values_list('id', flat=True)
+        compo_entry_prod_ids = (
+            Production.objects.filter(competition_placings__competition__party=self).values_list('id', flat=True)
+        )
         invitation_prod_ids = self.invitations.values_list('id', flat=True)
         non_compo_release_prod_ids = self.releases.values_list('id', flat=True)
         prod_ids = list(compo_entry_prod_ids) + list(invitation_prod_ids) + list(non_compo_release_prod_ids)
@@ -334,7 +343,9 @@ class Competition(models.Model):
 
 class CompetitionPlacing(models.Model):
     competition = models.ForeignKey(Competition, related_name='placings', on_delete=models.CASCADE)
-    production = models.ForeignKey('productions.Production', related_name='competition_placings', on_delete=models.CASCADE)
+    production = models.ForeignKey(
+        'productions.Production', related_name='competition_placings', on_delete=models.CASCADE
+    )
     ranking = models.CharField(max_length=32, blank=True)
     position = models.IntegerField()
     score = models.CharField(max_length=32, blank=True)

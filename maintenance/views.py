@@ -176,7 +176,11 @@ class ProdsWithoutReleaseDate(StaffOnlyMixin, Report):
         productions = (
             Production.objects.filter(release_date_date__isnull=True)
             .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
                 params=[self.exclusion_name]
             ).order_by('title')
         )
@@ -197,9 +201,9 @@ class SceneorgDownloadLinksWithUnicode(StaffOnlyMixin, Report):
 
         productions = (
             Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile')
-            .extra(
-                where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"],
-            ).distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').defer('notes').order_by('title')
+            .extra(where=["not productions_productionlink.parameter ~ '^[\x20-\x7E]+$'"])
+            .distinct().prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+            .defer('notes').order_by('title')
         )
         context.update({
             'productions': productions,
@@ -223,7 +227,11 @@ class ProdsWithoutPlatforms(StaffOnlyMixin, Report):
             Production.objects.filter(platforms__isnull=True, supertype='production')
             .exclude(types__name__in=('Video', 'Performance', 'Textmag'))
             .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
                 params=[self.exclusion_name]
             ).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
         )
@@ -248,7 +256,11 @@ class ProdsWithoutPlatformsExcludingLost(StaffOnlyMixin, Report):
             .exclude(types__name__in=('Video', 'Performance', 'Textmag'))
             .exclude(tags__name=('lost'))
             .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
                 params=[self.exclusion_name]
             ).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
         )
@@ -273,7 +285,11 @@ class ProdsWithoutPlatformsWithDownloads(StaffOnlyMixin, Report):
             .filter(links__is_download_link=True)
             .exclude(types__name__in=('Video', 'Performance'))
             .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
                 params=[self.exclusion_name]
             ).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
         )
@@ -300,18 +316,27 @@ class ProdsWithoutReleaseDateWithPlacement(StaffOnlyMixin, Report):
                 parties_party.name AS release_detail
             FROM
                 productions_production
-                INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
-                INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
+                INNER JOIN parties_competitionplacing ON (
+                    productions_production.id = parties_competitionplacing.production_id
+                )
+                INNER JOIN parties_competition ON (
+                    parties_competitionplacing.competition_id = parties_competition.id
+                    AND parties_competition.name <> 'Invitation'
+                )
                 INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
             WHERE
                 productions_production.release_date_date IS NULL
-                AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
+                AND productions_production.id NOT IN (
+                    SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                )
             ORDER BY productions_production.id, parties_party.end_date_date
         ''', [self.exclusion_name])
 
         productions = list(productions)
         for production in productions:
-            production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+            production.suggested_release_date = (
+                FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+            )
         context.update({
             'productions': productions,
             'return_to': reverse('maintenance:prods_without_release_date_with_placement'),
@@ -336,7 +361,9 @@ class ProdSoundtracksWithoutReleaseDate(StaffOnlyMixin, Report):
             FROM
                 productions_production AS soundtrack
                 INNER JOIN productions_soundtracklink ON (soundtrack.id = productions_soundtracklink.soundtrack_id)
-                INNER JOIN productions_production AS production ON (productions_soundtracklink.production_id = production.id)
+                INNER JOIN productions_production AS production ON (
+                    productions_soundtracklink.production_id = production.id
+                )
             WHERE
                 soundtrack.release_date_date IS NULL
                 AND soundtrack.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
@@ -346,7 +373,9 @@ class ProdSoundtracksWithoutReleaseDate(StaffOnlyMixin, Report):
         productions = list(productions)
         for production in productions:
             if production.suggested_release_date_date is not None:
-                production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+                production.suggested_release_date = (
+                    FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+                )
         context.update({
             'productions': productions,
             'return_to': reverse('maintenance:prod_soundtracks_without_release_date'),
@@ -385,7 +414,8 @@ class AmbiguousGroupsWithNoDifferentiators(StaffOnlyMixin, Report):
 
         nicks = Nick.objects.raw('''
             SELECT demoscene_nick.*,
-                same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name, same_named_nick.differentiator AS clashing_differentiator
+                same_named_releaser.id AS clashing_id, same_named_nick.name AS clashing_name,
+                same_named_nick.differentiator AS clashing_differentiator
             FROM
                 demoscene_nick
                 INNER JOIN demoscene_releaser ON (demoscene_nick.releaser_id = demoscene_releaser.id)
@@ -428,8 +458,13 @@ class ProdsWithReleaseDateOutsideParty(StaffOnlyMixin, Report):
                     parties_party.end_date_precision AS party_end_date_precision
                 FROM
                     productions_production
-                    INNER JOIN parties_competitionplacing ON (productions_production.id = parties_competitionplacing.production_id)
-                    INNER JOIN parties_competition ON (parties_competitionplacing.competition_id = parties_competition.id  AND parties_competition.name <> 'Invitation')
+                    INNER JOIN parties_competitionplacing ON (
+                        productions_production.id = parties_competitionplacing.production_id
+                    )
+                    INNER JOIN parties_competition ON (
+                        parties_competitionplacing.competition_id = parties_competition.id
+                        AND parties_competition.name <> 'Invitation'
+                    )
                     INNER JOIN parties_party ON (parties_competition.party_id = parties_party.id)
                 WHERE
                     productions_production.release_date_date IS NOT NULL
@@ -446,7 +481,9 @@ class ProdsWithReleaseDateOutsideParty(StaffOnlyMixin, Report):
         ''', [self.exclusion_name])
         productions = list(productions)
         for production in productions:
-            production.suggested_release_date = FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+            production.suggested_release_date = (
+                FuzzyDate(production.suggested_release_date_date, production.suggested_release_date_precision)
+            )
 
         context.update({
             'productions': productions,
@@ -468,8 +505,12 @@ class ProdsWithSameNamedCredits(StaffOnlyMixin, Report):
             FROM productions_production
             INNER JOIN productions_credit ON (productions_production.id = productions_credit.production_id)
             INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
-            INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id)
-            INNER JOIN productions_credit AS other_credit ON (other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id)
+            INNER JOIN demoscene_nick AS other_nick ON (
+                demoscene_nick.name = other_nick.name AND demoscene_nick.id <> other_nick.id
+            )
+            INNER JOIN productions_credit AS other_credit ON (
+                other_nick.id = other_credit.nick_id AND other_credit.production_id = productions_production.id
+            )
             AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
         ''', [self.exclusion_name])
 
@@ -491,15 +532,27 @@ class SameNamedProdsBySameReleaser(StaffOnlyMixin, Report):
         productions = Production.objects.raw('''
             SELECT DISTINCT productions_production.*
             FROM productions_production
-            INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+            INNER JOIN productions_production_author_nicks ON (
+                productions_production.id = productions_production_author_nicks.production_id
+            )
             INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
             INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-            INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-            INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
+            INNER JOIN productions_production_author_nicks AS other_authorship ON (
+                other_nick.id = other_authorship.nick_id
+            )
+            INNER JOIN productions_production AS other_production ON (
+                other_authorship.production_id = other_production.id
+            )
             WHERE
                 productions_production.title <> '?'
-                AND productions_production.id <> other_production.id AND LOWER(productions_production.title) = LOWER(other_production.title)
-                AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+                AND productions_production.id <> other_production.id
+                AND LOWER(productions_production.title) = LOWER(other_production.title)
+                AND productions_production.id NOT IN (
+                    SELECT record_id FROM maintenance_exclusion
+                    WHERE report_name IN (
+                        'same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars'
+                    )
+                )
             ORDER BY productions_production.sortable_title
         ''', [self.exclusion_name])
 
@@ -521,16 +574,28 @@ class SameNamedProdsWithoutSpecialChars(StaffOnlyMixin, Report):
         productions = Production.objects.raw('''
             SELECT DISTINCT productions_production.*
             FROM productions_production
-            INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
+            INNER JOIN productions_production_author_nicks ON (
+                productions_production.id = productions_production_author_nicks.production_id
+            )
             INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
             INNER JOIN demoscene_nick AS other_nick ON (demoscene_nick.releaser_id = other_nick.releaser_id)
-            INNER JOIN productions_production_author_nicks AS other_authorship ON (other_nick.id = other_authorship.nick_id)
-            INNER JOIN productions_production AS other_production ON (other_authorship.production_id = other_production.id)
+            INNER JOIN productions_production_author_nicks AS other_authorship ON (
+                other_nick.id = other_authorship.nick_id
+            )
+            INNER JOIN productions_production AS other_production ON (
+                other_authorship.production_id = other_production.id
+            )
             WHERE
                 productions_production.title <> '?'
                 AND productions_production.id <> other_production.id
-                AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g')) = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
-                AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name IN ('same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars') )
+                AND LOWER(REGEXP_REPLACE(productions_production.title, E'\\\\W', '', 'g'))
+                    = LOWER(REGEXP_REPLACE(other_production.title, E'\\\\W', '', 'g'))
+                AND productions_production.id NOT IN (
+                    SELECT record_id FROM maintenance_exclusion
+                    WHERE report_name IN (
+                        'same_named_prods_by_same_releaser', 'same_named_prods_without_special_chars'
+                    )
+                )
             ORDER BY productions_production.sortable_title
         ''')
 
@@ -548,6 +613,7 @@ class DuplicateExternalLinks(StaffOnlyMixin, Report):
 
     def get_context_data(self, **kwargs):
         context = super(DuplicateExternalLinks, self).get_context_data(**kwargs)
+
         def prod_duplicates_by_link_class(link_class):
             return Production.objects.raw('''
                 SELECT DISTINCT productions_production.*, productions_productionlink.parameter
@@ -605,7 +671,9 @@ class DuplicateReleaserKestraLinks(StaffOnlyMixin, Report):
 
         context.update({
             'releasers': Releaser.objects.raw('''
-                SELECT DISTINCT demoscene_releaser.id, demoscene_releaser.name, demoscene_releaser.is_group, demoscene_releaserexternallink.parameter
+                SELECT DISTINCT
+                    demoscene_releaser.id, demoscene_releaser.name, demoscene_releaser.is_group,
+                    demoscene_releaserexternallink.parameter
                 FROM demoscene_releaser
                 INNER JOIN demoscene_releaserexternallink ON (
                     demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
@@ -686,11 +754,19 @@ class ImpliedMemberships(StaffOnlyMixin, Report):
                 productions_production.id, productions_production.supertype, productions_production.title
             FROM
                 productions_production
-                INNER JOIN productions_production_author_nicks ON (productions_production.id = productions_production_author_nicks.production_id)
-                INNER JOIN demoscene_nick AS author_nick ON (productions_production_author_nicks.nick_id = author_nick.id)
+                INNER JOIN productions_production_author_nicks ON (
+                    productions_production.id = productions_production_author_nicks.production_id
+                )
+                INNER JOIN demoscene_nick AS author_nick ON (
+                    productions_production_author_nicks.nick_id = author_nick.id
+                )
                 INNER JOIN demoscene_releaser AS member ON (author_nick.releaser_id = member.id)
-                INNER JOIN productions_production_author_affiliation_nicks ON (productions_production.id = productions_production_author_affiliation_nicks.production_id)
-                INNER JOIN demoscene_nick AS group_nick ON (productions_production_author_affiliation_nicks.nick_id = group_nick.id)
+                INNER JOIN productions_production_author_affiliation_nicks ON (
+                    productions_production.id = productions_production_author_affiliation_nicks.production_id
+                )
+                INNER JOIN demoscene_nick AS group_nick ON (
+                    productions_production_author_affiliation_nicks.nick_id = group_nick.id
+                )
                 INNER JOIN demoscene_releaser AS grp ON (group_nick.releaser_id = grp.id)
                 LEFT JOIN demoscene_membership ON (
                     member.id = demoscene_membership.member_id
@@ -705,9 +781,13 @@ class ImpliedMemberships(StaffOnlyMixin, Report):
                 'membership': (member_id, group_id),
                 'member_id': member_id, 'member_is_group': member_is_group, 'member_name': member_name,
                 'group_id': group_id, 'group_name': group_name,
-                'production_id': production_id, 'production_supertype': production_supertype, 'production_title': production_title
+                'production_id': production_id, 'production_supertype': production_supertype,
+                'production_title': production_title
             }
-            for (member_id, member_is_group, member_name, group_id, group_name, production_id, production_supertype, production_title) in cursor.fetchall()
+            for (
+                member_id, member_is_group, member_name, group_id, group_name, production_id,
+                production_supertype, production_title
+            ) in cursor.fetchall()
         ]
         context.update({
             'records': records,
@@ -724,8 +804,10 @@ class GroupsWithSameNamedMembers(StaffOnlyMixin, Report):
         context = super(GroupsWithSameNamedMembers, self).get_context_data(**kwargs)
         groups = Releaser.objects.raw('''
             SELECT grp.id, grp.name,
-                demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id, scener.is_group AS member_1_is_group,
-                other_nickvariant.name AS member_2_name, other_scener.id AS member_2_id, other_scener.is_group AS member_2_is_group
+                demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id,
+                scener.is_group AS member_1_is_group,
+                other_nickvariant.name AS member_2_name, other_scener.id AS member_2_id,
+                other_scener.is_group AS member_2_is_group
             FROM demoscene_nickvariant
             INNER JOIN demoscene_nick ON (demoscene_nickvariant.nick_id = demoscene_nick.id)
             INNER JOIN demoscene_releaser AS scener ON (demoscene_nick.releaser_id = scener.id)
@@ -738,7 +820,8 @@ class GroupsWithSameNamedMembers(StaffOnlyMixin, Report):
             INNER JOIN demoscene_releaser AS other_scener ON (other_membership.member_id = other_scener.id)
             INNER JOIN demoscene_nick AS other_nick ON (other_scener.id = other_nick.releaser_id)
             INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
-                other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+                other_nick.id = other_nickvariant.nick_id
+                AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
             )
         ''')
         context.update({
@@ -770,7 +853,8 @@ class ReleasersWithSameNamedGroups(StaffOnlyMixin, Report):
             INNER JOIN demoscene_releaser AS other_grp ON (other_membership.group_id = other_grp.id)
             INNER JOIN demoscene_nick AS other_nick ON (other_grp.id = other_nick.releaser_id)
             INNER JOIN demoscene_nickvariant AS other_nickvariant ON (
-                other_nick.id = other_nickvariant.nick_id AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
+                other_nick.id = other_nickvariant.nick_id
+                AND LOWER(demoscene_nickvariant.name) = LOWER (other_nickvariant.name)
             )
         ''')
         context.update({
@@ -909,7 +993,9 @@ class EmptyReleasers(StaffOnlyMixin, Report):
                 SELECT demoscene_releaser.id
                 FROM demoscene_releaser
                 LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-                LEFT JOIN productions_production_author_nicks ON (demoscene_nick.id = productions_production_author_nicks.nick_id)
+                LEFT JOIN productions_production_author_nicks ON (
+                    demoscene_nick.id = productions_production_author_nicks.nick_id
+                )
                 GROUP BY demoscene_releaser.id
                 HAVING COUNT(production_id) = 0
             )
@@ -917,7 +1003,9 @@ class EmptyReleasers(StaffOnlyMixin, Report):
                 SELECT demoscene_releaser.id
                 FROM demoscene_releaser
                 LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-                LEFT JOIN productions_production_author_affiliation_nicks ON (demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id)
+                LEFT JOIN productions_production_author_affiliation_nicks ON (
+                    demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id
+                )
                 GROUP BY demoscene_releaser.id
                 HAVING COUNT(production_id) = 0
             )
@@ -950,7 +1038,9 @@ class EmptyCompetitions(StaffOnlyMixin, Report):
         competitions = Competition.objects.filter(
             placings__isnull=True
         ).extra(
-            where=['parties_competition.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+            where=[
+                'parties_competition.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'
+            ],
             params=[self.exclusion_name]
         ).select_related('party').order_by('party__start_date_date')
 
@@ -967,7 +1057,11 @@ class UnresolvedScreenshots(StaffOnlyMixin, Report):
 
     def get_context_data(self, **kwargs):
         context = super(UnresolvedScreenshots, self).get_context_data(**kwargs)
-        links = ProductionLink.objects.filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True).select_related('production')
+        links = (
+            ProductionLink.objects
+            .filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True)
+            .select_related('production')
+        )
 
         entries = []
         for link in links[:100]:
@@ -1164,12 +1258,16 @@ class ResultsWithNoEncoding(StaffOnlyMixin, Report):
 
     def get_context_data(self, **kwargs):
         context = super(ResultsWithNoEncoding, self).get_context_data(**kwargs)
-        results_files = ResultsFile.objects.filter(encoding__isnull=True).select_related('party').order_by('party__start_date_date')
+        results_files = (
+            ResultsFile.objects.filter(encoding__isnull=True).select_related('party').
+            order_by('party__start_date_date')
+        )
 
         context.update({
             'results_files': results_files,
         })
         return context
+
 
 ENCODING_OPTIONS = [
     (
@@ -1326,7 +1424,11 @@ class TinyIntrosWithoutDownloadLinks(Report):
             intros.exclude(id__in=intros_with_download_links)
             .exclude(tags__name__in=['lost', 'corrupted-file'])
             .extra(
-                where=['productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)'],
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
                 params=[self.exclusion_name]
             ).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
         )
@@ -1356,7 +1458,11 @@ class UniqueAuthorNameMatchesOnJaneway(StaffOnlyMixin, Report):
             ) AS unique_janeway_names
             INNER JOIN demoscene_nickvariant on (lower(unique_janeway_names.name) = lower(demoscene_nickvariant.name))
             INNER JOIN demoscene_nick on (demoscene_nickvariant.nick_id = demoscene_nick.id)
-            WHERE janeway_id NOT IN (select cast(parameter as int) from demoscene_releaserexternallink where link_class='KestraBitworldAuthor')
+            WHERE janeway_id NOT IN (
+                select cast(parameter as int)
+                from demoscene_releaserexternallink
+                where link_class='KestraBitworldAuthor'
+            )
             GROUP BY unique_janeway_names.name, janeway_id
             HAVING count(distinct demoscene_nick.releaser_id) = 1
         ''')
@@ -1399,7 +1505,11 @@ def janeway_authors_detail(request, demozoo_id, janeway_id):
         'demozoo_credits': Credit.objects.filter(nick__releaser=demozoo_releaser).select_related('production')[:10],
         'janeway_author': janeway_author,
         'janeway_releases': JanewayRelease.objects.filter(author_names__author=janeway_author).order_by('title')[:10],
-        'janeway_credits': JanewayCredit.objects.filter(name__author=janeway_author).select_related('release').order_by('release__title', 'category').values_list('release__janeway_id', 'release__title', 'category').distinct()[:10],
+        'janeway_credits': (
+            JanewayCredit.objects.filter(name__author=janeway_author).select_related('release')
+            .order_by('release__title', 'category').values_list('release__janeway_id', 'release__title', 'category')
+            .distinct()[:10]
+        ),
     })
 
 

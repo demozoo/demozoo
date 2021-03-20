@@ -13,14 +13,17 @@ from demoscene.utils.nick_search import NickSearch, NickSelection
 # An object which encapsulates the state of a NickWidget as derived from its posted data;
 # this is what NickWidget returns from value_from_datadict
 class NickLookup():
-    def __init__(self,
-        search_term=None, autoaccept=False,
-        nick_selection=None,
-        sceners_only=False, groups_only=False, prefer_members_of=None):
+    def __init__(
+        self, search_term=None, autoaccept=False,
+        nick_selection=None, sceners_only=False, groups_only=False, prefer_members_of=None
+    ):
 
         self.search_term = search_term  # the search term being looked up
-        self.autoaccept = autoaccept  # whether we should continue upon successfully resolving a nick,
-            # as opposed to re-showing the form
+
+        # whether we should continue upon successfully resolving a nick,
+        # as opposed to re-showing the form
+        self.autoaccept = autoaccept
+
         self.nick_selection = nick_selection
 
         if prefer_members_of:
@@ -28,10 +31,12 @@ class NickLookup():
         else:
             group_ids = []
 
-        nick_search = NickSearch(search_term,
+        nick_search = NickSearch(
+            search_term,
             sceners_only=sceners_only,
             groups_only=groups_only,
-            group_ids=group_ids)
+            group_ids=group_ids
+        )
         self.matched_nick_field = MatchedNickField(nick_search, required=False)
 
     @staticmethod
@@ -95,7 +100,9 @@ class NickWidget(forms.Widget):
             prefer_members_of=self.prefer_members_of)
 
         if not explicit_lookup_requested:
-            nick_lookup.nick_selection = nick_lookup.matched_nick_field.widget.value_from_datadict(data, files, name + '_match')
+            nick_lookup.nick_selection = (
+                nick_lookup.matched_nick_field.widget.value_from_datadict(data, files, name + '_match')
+            )
 
         return nick_lookup
 
@@ -106,15 +113,20 @@ class NickWidget(forms.Widget):
     id_for_label = classmethod(id_for_label)
 
     def render(self, name, value, attrs=None, renderer=None):
-        nick_lookup = NickLookup.from_value(value,
+        nick_lookup = NickLookup.from_value(
+            value,
             sceners_only=self.sceners_only, groups_only=self.groups_only,
-            prefer_members_of=self.prefer_members_of)
+            prefer_members_of=self.prefer_members_of
+        )
 
         search_html_output = [
             self.search_widget.render(
                 name + '_search', nick_lookup.search_term, attrs=attrs, renderer=renderer
             ),
-            '<input type="submit" style="display: none;">', # extra submit button so that whenever browsers insist on pretending a button was pressed when actually the user submitted the form with the enter key, they'll choose this button rather than the 'lookup' one
+            # extra submit button so that whenever browsers insist on pretending a button was pressed
+            # when actually the user submitted the form with the enter key, they'll choose this button
+            # rather than the 'lookup' one
+            '<input type="submit" style="display: none;">',
             self.lookup_widget.render(
                 name + '_lookup', None, attrs=attrs, renderer=renderer
             ),
@@ -151,14 +163,19 @@ class NickField(forms.Field):
         self.sceners_only = sceners_only
         self.groups_only = groups_only
         self.prefer_members_of = prefer_members_of
-        self.widget = NickWidget(sceners_only=sceners_only, groups_only=groups_only, prefer_members_of=prefer_members_of)
+        self.widget = NickWidget(
+            sceners_only=sceners_only, groups_only=groups_only, prefer_members_of=prefer_members_of
+        )
         super(NickField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         if not value:
             return super(NickField, self).clean(value)
         else:
-            nick_lookup = NickLookup.from_value(value, sceners_only=self.sceners_only, groups_only=self.groups_only, prefer_members_of=self.prefer_members_of)
+            nick_lookup = NickLookup.from_value(
+                value, sceners_only=self.sceners_only, groups_only=self.groups_only,
+                prefer_members_of=self.prefer_members_of
+            )
 
             clean_nick_selection = nick_lookup.matched_nick_field.clean(nick_lookup.nick_selection)
             if clean_nick_selection and nick_lookup.autoaccept:
@@ -174,18 +191,18 @@ class NickField(forms.Field):
 
 # test stuff
 #
-#class RaForm(forms.Form):
-#    matched_nick = MatchedNickField('ra')
+# class RaForm(forms.Form):
+#     matched_nick = MatchedNickField('ra')
 #
-#raww_arse = Nick.objects.get(id = 7)
+# raww_arse = Nick.objects.get(id = 7)
 #
-#lookup_ra_form = RaForm()
-#edit_ra_form = RaForm(initial = {'matched_nick': raww_arse})
-#posted_ra_form = RaForm({'matched_nick_id': '7', 'matched_nick_name': 'ra'})
-#unresolved_ra_form = RaForm({'matched_nick_id': '', 'matched_nick_name': 'ra'})
-#mischosen_ra_form = RaForm({'matched_nick_id': '1', 'matched_nick_name': 'ra'})
+# lookup_ra_form = RaForm()
+# edit_ra_form = RaForm(initial = {'matched_nick': raww_arse})
+# posted_ra_form = RaForm({'matched_nick_id': '7', 'matched_nick_name': 'ra'})
+# unresolved_ra_form = RaForm({'matched_nick_id': '', 'matched_nick_name': 'ra'})
+# mischosen_ra_form = RaForm({'matched_nick_id': '1', 'matched_nick_name': 'ra'})
 #
-#class NewCreditForm(forms.Form):
-#    nick = NickField()
+# class NewCreditForm(forms.Form):
+#     nick = NickField()
 #
-#f = NewCreditForm(initial = {'nick': raww_arse})
+# f = NewCreditForm(initial = {'nick': raww_arse})

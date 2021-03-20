@@ -7,9 +7,14 @@ import re
 import dateutil.parser
 
 
-MONTHS = "(january|jan|february|feb|march|mar|april|apr|may|june|jun|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)"
+MONTHS = (
+    "(january|jan|february|feb|march|mar|april|apr|may|june|jun"
+    "|july|jul|august|aug|september|sept|sep|october|oct|november|nov|december|dec)"
+)
 YEAR_REGEX = re.compile(r"^\s*\d{4}\s*$")
-MONTH_REGEX = re.compile(r"^\s*(%s|%s\W+\d{4}|\d{4}\W+%s|\d{1,2}\W+\d{4}|\d{4}\W+\d{1,2})\s*$" % (MONTHS, MONTHS, MONTHS), re.I)
+MONTH_REGEX = re.compile(
+    r"^\s*(%s|%s\W+\d{4}|\d{4}\W+%s|\d{1,2}\W+\d{4}|\d{4}\W+\d{1,2})\s*$" % (MONTHS, MONTHS, MONTHS), re.I
+)
 
 
 class FuzzyDate(object):
@@ -76,7 +81,7 @@ class FuzzyDate(object):
     # returns true for None, because None denotes a date which
     # is not known to any precision whatsoever
     def agrees_with(self, other):
-        if other == None:
+        if other is None:
             return True
         elif self.precision == 'd' and other.precision == 'd':
             return (
@@ -96,7 +101,11 @@ class FuzzyDate(object):
         if self.precision != other.precision:
             return False
         if self.precision == 'd':
-            return (self.date.year == other.date.year and self.date.month == other.date.month and self.date.day == other.date.day)
+            return (
+                self.date.year == other.date.year
+                and self.date.month == other.date.month
+                and self.date.day == other.date.day
+            )
         elif self.precision == 'm':
             return (self.date.year == other.date.year and self.date.month == other.date.month)
         else:  # self.precision == 'y':

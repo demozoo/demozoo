@@ -49,6 +49,7 @@ import markdown
 reflink_re = re.compile(r'^\s*\[[^\[\]]+\]:.+$')
 link_re = re.compile(r'(\s+\(?|^)((http|ftp|https)://[-\w\#$%&~/.;:=,?@+]+)', re.IGNORECASE)
 
+
 class AutoLinkPreprocessor(markdown.preprocessors.Preprocessor):
     def run(self, lines):
         new_lines = []
@@ -59,9 +60,11 @@ class AutoLinkPreprocessor(markdown.preprocessors.Preprocessor):
                 new_lines.append(link_re.sub(r'\1<a href="\2" target="_blank">\2</a>', line))
         return new_lines
 
+
 class AutoLinkExtension(markdown.Extension):
     def extendMarkdown(self, md):
         md.preprocessors.register(AutoLinkPreprocessor(md), 'autolink', 40)
+
 
 def makeExtension(configs=None):  # pragma: no cover
     return AutoLinkExtension(configs=configs)

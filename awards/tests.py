@@ -53,12 +53,14 @@ class TestRecommendations(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            """<input class="award-recommendation__checkbox" id="award_recommendation_category_1" name="category_id" value="1" type="checkbox">""",
+            """<input class="award-recommendation__checkbox" id="award_recommendation_category_1" """
+            """name="category_id" value="1" type="checkbox">""",
             html=True
         )
         self.assertContains(
             response,
-            """<input class="award-recommendation__checkbox" id="award_recommendation_category_2" name="category_id" value="2" type="checkbox" checked="checked">""",
+            """<input class="award-recommendation__checkbox" id="award_recommendation_category_2" """
+            """name="category_id" value="2" type="checkbox" checked="checked">""",
             html=True
         )
 
@@ -76,7 +78,9 @@ class TestRecommendations(TestCase):
         self.assertRedirects(response, '/productions/%d/' % brexecutable.id)
 
         self.assertTrue(
-            Recommendation.objects.filter(user=self.testuser, production=brexecutable, category=outstanding_concept).exists()
+            Recommendation.objects.filter(
+                user=self.testuser, production=brexecutable, category=outstanding_concept
+            ).exists()
         )
         self.assertFalse(
             Recommendation.objects.filter(user=self.testuser, production=brexecutable, category=best_lowend).exists()

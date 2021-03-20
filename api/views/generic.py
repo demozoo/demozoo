@@ -34,7 +34,9 @@ class ProductionTypeViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductionViewSet(ListDetailModelViewSet):
-    queryset = Production.objects.prefetch_related('platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser')
+    queryset = Production.objects.prefetch_related(
+        'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+    )
     list_serializer_class = serializers.ProductionListingSerializer
     serializer_class = serializers.ProductionSerializer
 

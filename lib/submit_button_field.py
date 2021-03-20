@@ -24,15 +24,19 @@ class SubmitButtonInput(forms.Widget):
 class SubmitButtonField(forms.Field):
     widget = SubmitButtonInput
 
-    def __init__(self, button_text=None, required=True, widget=None, label=None,
-            initial=None, help_text=None, *args, **kwargs):
-        super(SubmitButtonField, self).__init__(required=required, widget=widget, label=label,
-            initial=initial, help_text=help_text, *args, **kwargs)
+    def __init__(
+        self, button_text=None, required=True, widget=None, label=None,
+        initial=None, help_text=None, *args, **kwargs
+    ):
+        super(SubmitButtonField, self).__init__(
+            required=required, widget=widget, label=label,
+            initial=initial, help_text=help_text, *args, **kwargs
+        )
         self.widget.button_text = button_text
 
     def clean(self, value):
         return bool(value)
 
 # example usage:
-#class SubmittableForm(forms.Form):
-#    lookup = SubmitButtonField(button_text = 'Look up name')
+# class SubmittableForm(forms.Form):
+#     lookup = SubmitButtonField(button_text = 'Look up name')

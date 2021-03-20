@@ -18,7 +18,11 @@ else:
                 # rather than doing a redirect (which screws with AJAX)
                 return render(request, 'read_only_mode.html')
             else:
-                messages.error(request, "Sorry, the website is in read-only mode at the moment. We'll get things back to normal as soon as possible.")
+                messages.error(
+                    request,
+                    "Sorry, the website is in read-only mode at the moment. "
+                    "We'll get things back to normal as soon as possible."
+                )
                 return HttpResponseRedirect('/')
 
         return replacement_view_func

@@ -10,13 +10,23 @@ from productions.models import Production
 class Event(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, help_text="Used in URLs - /awards/[slug]/")
-    intro = models.TextField(blank=True, help_text="Intro text to show on 'your recommendations' page - Markdown / HTML supported")
+    intro = models.TextField(
+        blank=True, help_text="Intro text to show on 'your recommendations' page - Markdown / HTML supported"
+    )
 
-    eligibility_start_date = models.DateField(help_text="Earliest release date a production can have to be considered for these awards")
-    eligibility_end_date = models.DateField(help_text="Latest release date a production can have to be considered for these awards")
+    eligibility_start_date = models.DateField(
+        help_text="Earliest release date a production can have to be considered for these awards"
+    )
+    eligibility_end_date = models.DateField(
+        help_text="Latest release date a production can have to be considered for these awards"
+    )
 
-    recommendations_enabled = models.BooleanField(default=False, help_text="Whether these awards are currently accepting recommendations")
-    reporting_enabled = models.BooleanField(default=False, help_text="Whether jurors can currently view reports for these awards")
+    recommendations_enabled = models.BooleanField(
+        default=False, help_text="Whether these awards are currently accepting recommendations"
+    )
+    reporting_enabled = models.BooleanField(
+        default=False, help_text="Whether jurors can currently view reports for these awards"
+    )
 
     juror_feed_url = models.URLField(blank=True, max_length=255, help_text="URL to a list of juror SceneIDs")
 
@@ -74,7 +84,11 @@ class Event(models.Model):
         ]
 
     def user_can_view_reports(self, user):
-        return self.reporting_enabled and user.is_authenticated and (user.is_staff or self.jurors.filter(user=user).exists())
+        return (
+            self.reporting_enabled
+            and user.is_authenticated
+            and (user.is_staff or self.jurors.filter(user=user).exists())
+        )
 
 
 class Category(models.Model):
@@ -110,7 +124,11 @@ class Recommendation(models.Model):
 class Juror(models.Model):
     user = models.ForeignKey(User, related_name='juror_appointments', on_delete=models.CASCADE)
     event = models.ForeignKey(Event, related_name='jurors', on_delete=models.CASCADE)
-    is_sticky = models.BooleanField(default=False, help_text="If set, this juror will not be removed in the event that they are absent from the feed of jury members")
+    is_sticky = models.BooleanField(
+        default=False, help_text=(
+            "If set, this juror will not be removed in the event that they are absent from the feed of jury members"
+        )
+    )
 
     class Meta:
         unique_together = [

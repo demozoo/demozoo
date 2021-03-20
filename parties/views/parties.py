@@ -54,13 +54,35 @@ def show(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
     # trying to retrieve all competition results in one massive prefetch_related clause:
-    #    competitions = party.competitions.prefetch_related('placings__production__author_nicks__releaser', 'placings__production__author_affiliation_nicks__releaser').defer('placings__production__notes', 'placings__production__author_nicks__releaser__notes', 'placings__production__author_affiliation_nicks__releaser__notes').order_by('name', 'id', 'placings__position', 'placings__production__id')
-    # - fails with 'RelatedObject' object has no attribute 'rel', where the RelatedObject is <RelatedObject: demoscene:competitionplacing related to competition>. Shame, that...
-    # for now, we'll do it one compo at a time (which allows us to use the slightly more sane select_related approach to pull in production records)
+    #    competitions = (
+    #       party.competitions.prefetch_related(
+    #           'placings__production__author_nicks__releaser',
+    #           'placings__production__author_affiliation_nicks__releaser'
+    #       )
+    #       .defer(
+    #           'placings__production__notes', 'placings__production__author_nicks__releaser__notes',
+    #           'placings__production__author_affiliation_nicks__releaser__notes'
+    #       )
+    #       .order_by('name', 'id', 'placings__position', 'placings__production__id')
+    #    )
+    # - fails with 'RelatedObject' object has no attribute 'rel', where the RelatedObject is
+    # <RelatedObject: demoscene:competitionplacing related to competition>. Shame, that...
+    # for now, we'll do it one compo at a time (which allows us to use the slightly more sane
+    # select_related approach to pull in production records)
     competitions_with_placings = [
         (
             competition,
-            competition.placings.order_by('position', 'production__id').prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser', 'production__platforms', 'production__types').defer('production__notes', 'production__author_nicks__releaser__notes', 'production__author_affiliation_nicks__releaser__notes')
+            (
+                competition.placings.order_by('position', 'production__id')
+                .prefetch_related(
+                    'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser',
+                    'production__platforms', 'production__types',
+                )
+                .defer(
+                    'production__notes', 'production__author_nicks__releaser__notes',
+                    'production__author_affiliation_nicks__releaser__notes'
+                )
+            )
         )
         for competition in party.competitions.order_by('name', 'id')
     ]
@@ -78,9 +100,13 @@ def show(request, party_id):
         for competition, placings in competitions_with_placings
     ]
 
-    invitations = party.invitations.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    invitations = party.invitations.prefetch_related(
+        'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+    )
 
-    releases = party.releases.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    releases = party.releases.prefetch_related(
+        'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+    )
 
     organisers = party.organisers.select_related('releaser').order_by('-releaser__is_group', Lower('releaser__name'))
 
@@ -100,7 +126,9 @@ def show(request, party_id):
         'releases': releases,
         'organisers': organisers,
         'editing_organisers': (request.GET.get('editing') == 'organisers'),
-        'parties_in_series': party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series'),
+        'parties_in_series': (
+            party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series')
+        ),
         'external_links': external_links,
         'comment_form': comment_form,
     })
@@ -201,10 +229,11 @@ def edit_notes(request, party_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'party_edit_notes', party, PartyEditNotesForm,
+    return simple_ajax_form(
+        request, 'party_edit_notes', party, PartyEditNotesForm,
         title='Editing notes for %s' % party.name, on_success=success,
-        #update_datestamp = True
-        )
+        # update_datestamp = True
+    )
 
 
 @writeable_site_required
@@ -262,10 +291,11 @@ def edit_series_notes(request, party_series_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'party_edit_series_notes', party_series, PartySeriesEditNotesForm,
+    return simple_ajax_form(
+        request, 'party_edit_series_notes', party_series, PartySeriesEditNotesForm,
         title='Editing notes for %s' % party_series.name, on_success=success
-        #update_datestamp = True
-        )
+        # update_datestamp = True
+    )
 
 
 @writeable_site_required
@@ -276,9 +306,10 @@ def edit_series(request, party_series_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'party_edit_series', party_series, EditPartySeriesForm,
+    return simple_ajax_form(
+        request, 'party_edit_series', party_series, EditPartySeriesForm,
         title='Editing party: %s' % party_series.name, on_success=success
-        #update_datestamp = True
+        # update_datestamp = True
     )
 
 
@@ -344,18 +375,20 @@ def edit_invitations(request, party_id):
     if request.method == 'POST':
         formset = PartyInvitationFormset(request.POST, initial=initial_forms)
         if formset.is_valid():
-            invitations = [prod_form.cleaned_data['production'].commit()
+            invitations = [
+                prod_form.cleaned_data['production'].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms
-                    and 'production' in prod_form.cleaned_data
+                if prod_form not in formset.deleted_forms and 'production' in prod_form.cleaned_data
             ]
             party.invitations.set(invitations)
 
             if formset.has_changed():
                 invitation_titles = [prod.title for prod in invitations] or ['none']
                 invitation_titles = ", ".join(invitation_titles)
-                Edit.objects.create(action_type='edit_party_invitations', focus=party,
-                    description=u"Set invitations to %s" % invitation_titles, user=request.user)
+                Edit.objects.create(
+                    action_type='edit_party_invitations', focus=party,
+                    description=u"Set invitations to %s" % invitation_titles, user=request.user
+                )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
@@ -378,18 +411,20 @@ def edit_releases(request, party_id):
     if request.method == 'POST':
         formset = PartyReleaseFormset(request.POST, initial=initial_forms)
         if formset.is_valid():
-            releases = [prod_form.cleaned_data['production'].commit()
+            releases = [
+                prod_form.cleaned_data['production'].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms
-                    and 'production' in prod_form.cleaned_data
+                if prod_form not in formset.deleted_forms and 'production' in prod_form.cleaned_data
             ]
             party.releases.set(releases)
 
             if formset.has_changed():
                 release_titles = [prod.title for prod in releases] or ['none']
                 release_titles = ", ".join(release_titles)
-                Edit.objects.create(action_type='edit_party_releases', focus=party,
-                    description=u"Set releases to %s" % release_titles, user=request.user)
+                Edit.objects.create(
+                    action_type='edit_party_releases', focus=party,
+                    description=u"Set releases to %s" % release_titles, user=request.user
+                )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
@@ -444,8 +479,10 @@ def add_organiser(request, party_id):
                 role=form.cleaned_data['role'])
             organiser.save()
             description = u"Added %s as organiser of %s" % (releaser.name, party.name)
-            Edit.objects.create(action_type='add_party_organiser', focus=releaser, focus2=party,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='add_party_organiser', focus=releaser, focus2=party,
+                description=description, user=request.user
+            )
             return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm()
@@ -496,11 +533,15 @@ def remove_organiser(request, party_id, organiser_id):
         if request.POST.get('yes'):
             organiser.delete()
             description = u"Removed %s as organiser of %s" % (organiser.releaser.name, party.name)
-            Edit.objects.create(action_type='remove_party_organiser', focus=organiser.releaser, focus2=party,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_party_organiser', focus=organiser.releaser, focus2=party,
+                description=description, user=request.user
+            )
         return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('party_remove_organiser', args=[party_id, organiser_id]),
             "Are you sure you want to remove %s as organiser of %s?" % (organiser.releaser.name, party.name),
-            html_title="Removing %s as organiser of %s" % (organiser.releaser.name, party.name))
+            html_title="Removing %s as organiser of %s" % (organiser.releaser.name, party.name)
+        )
