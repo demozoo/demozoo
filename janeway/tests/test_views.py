@@ -53,7 +53,9 @@ class TestProductionLink(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertTrue(
-            ProductionLink.objects.filter(link_class='KestraBitworldRelease', parameter='123', production=self.pondlife).exists()
+            ProductionLink.objects.filter(
+                link_class='KestraBitworldRelease', parameter='123', production=self.pondlife
+            ).exists()
         )
 
 
@@ -73,7 +75,9 @@ class TestProductionUnlink(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
-            ProductionLink.objects.filter(link_class='KestraBitworldRelease', parameter='123', production=self.pondlife).exists()
+            ProductionLink.objects.filter(
+                link_class='KestraBitworldRelease', parameter='123', production=self.pondlife
+            ).exists()
         )
 
 

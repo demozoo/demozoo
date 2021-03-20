@@ -102,10 +102,12 @@ def delete_banner(request, banner_id):
         else:
             return redirect('edit_banner', banner_id)
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_banner', args=[banner_id]),
             "Are you sure you want to delete this banner?",
-            html_title="Deleting banner: %s" % banner.title)
+            html_title="Deleting banner: %s" % banner.title
+        )
 
 
 def browse_images(request):

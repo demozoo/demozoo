@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand
 
 from janeway.models import Screenshot as JanewayScreenshot
 from janeway.tasks import import_screenshot
-from productions.models import Screenshot
 
 
 class Command(BaseCommand):

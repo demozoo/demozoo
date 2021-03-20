@@ -8,4 +8,4 @@ class SearchConfig(AppConfig):
 
     def ready(self):
         # import signal handlers
-        from search import signals
+        from search import signals  # noqa

@@ -38,7 +38,9 @@ class Command(BaseCommand):
                 continue
 
             # skip if this membership was previously deleted
-            if Edit.objects.filter(action_type='remove_membership', focus_object_id=member.id, focus2_object_id=group.id).exists():
+            if Edit.objects.filter(
+                action_type='remove_membership', focus_object_id=member.id, focus2_object_id=group.id
+            ).exists():
                 print("Skipping membership %s of %s, as it was previously deleted" % (member.name, group.name))
                 continue
 

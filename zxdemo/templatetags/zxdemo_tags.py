@@ -14,6 +14,7 @@ from zxdemo.models import spectrum_releasers
 
 register = template.Library()
 
+
 @register.inclusion_tag('zxdemo/tags/byline.html', takes_context=True)
 def byline(context, production, check_spectrum=False):
     if check_spectrum:
@@ -24,7 +25,10 @@ def byline(context, production, check_spectrum=False):
             context['spectrum_releaser_ids'] = spectrum_releaser_ids
 
         authors = [(nick, nick.releaser_id in spectrum_releaser_ids) for nick in production.author_nicks.all()]
-        affiliations = [(nick, nick.releaser_id in spectrum_releaser_ids) for nick in production.author_affiliation_nicks.all()]
+        affiliations = [
+            (nick, nick.releaser_id in spectrum_releaser_ids)
+            for nick in production.author_affiliation_nicks.all()
+        ]
     else:
         authors = [(author, True) for author in production.author_nicks.all()]
         affiliations = [(affiliation, True) for affiliation in production.author_affiliation_nicks.all()]
@@ -35,6 +39,7 @@ def byline(context, production, check_spectrum=False):
         'affiliations': affiliations,
     }
 
+
 @register.inclusion_tag('zxdemo/tags/forthcoming_parties.html')
 def forthcoming_parties():
     # TODO: only show ones that have been marked as having Spectrum relevance?
@@ -42,6 +47,7 @@ def forthcoming_parties():
     return {
         'parties': Party.objects.filter(date_filter).order_by('start_date_date', 'end_date_date')
     }
+
 
 @register.inclusion_tag('zxdemo/tags/date_range.html')
 def date_range(start_date, end_date):
@@ -62,6 +68,8 @@ DOWNLOAD_TYPE_ICONS = [
     ('Z80', 'z80.gif'),
     ('AY', 'ay.gif'),
 ]
+
+
 @register.simple_tag
 def download_icon(download):
     icon_filename = 'disc_new.gif'
@@ -80,11 +88,20 @@ def download_icon(download):
 @register.simple_tag
 def production_type_icon(production):
     if production.supertype == 'graphics':
-        return mark_safe('<img src="/static/zxdemo/images/icon/gfx_new.gif" align="absmiddle" alt="[Graphics]" width="24" height="24" border="0" />')
+        return mark_safe(
+            '<img src="/static/zxdemo/images/icon/gfx_new.gif" align="absmiddle" alt="[Graphics]" '
+            'width="24" height="24" border="0" />'
+        )
     elif production.supertype == 'music':
-        return mark_safe('<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" width="24" height="24" border="0" />')
+        return mark_safe(
+            '<img src="/static/zxdemo/images/icon/music_new.gif" align="absmiddle" alt="[Music]" '
+            'width="24" height="24" border="0" />'
+        )
     else:
-        return mark_safe('<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" width="24" height="24" border="0" />')
+        return mark_safe(
+            '<img src="/static/zxdemo/images/icon/demo_new.gif" align="absmiddle" alt="[Demo]" '
+            'width="24" height="24" border="0" />'
+        )
 
 
 @register.filter

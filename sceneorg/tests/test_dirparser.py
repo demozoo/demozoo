@@ -52,7 +52,7 @@ lrwxrwxrwx   1 jeffry ftpadm   10 Aug 19  2006 mirrors -> ../mirrors
         ftp.retrbinary = retrbinary
 
         with self.assertRaises(Exception):
-            dirs = list(parse_all_dirs())
+            list(parse_all_dirs())
 
     @patch('sceneorg.dirparser.FTP')
     def test_parse_all_dirs_missing_total_line(self, FTP):
@@ -70,7 +70,7 @@ a building with beer in, but that's not important right now
         ftp.retrbinary = retrbinary
 
         with self.assertRaises(Exception):
-            dirs = list(parse_all_dirs())
+            list(parse_all_dirs())
 
     @patch('sceneorg.dirparser.FTP')
     def test_parse_all_dirs_missing_dir_entry(self, FTP):
@@ -89,4 +89,4 @@ would you like some toast?
         ftp.retrbinary = retrbinary
 
         with self.assertRaises(Exception):
-            dirs = list(parse_all_dirs())
+            list(parse_all_dirs())

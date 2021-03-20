@@ -15,7 +15,10 @@ from productions.models import Production, ProductionLink
 @login_required
 def groups(request):
     # get list of releasers who have Pouet.GroupMatchInfo data
-    groups = GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name').prefetch_related('releaser__nicks')
+    groups = (
+        GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name')
+        .prefetch_related('releaser__nicks')
+    )
     show_full = request.GET.get('full')
 
     if not show_full:
@@ -56,8 +59,10 @@ def production_link(request):
         source='match',
     )
     if created:
-        Edit.objects.create(action_type='production_add_external_link', focus=production,
-            description=(u"Added Pouet link to ID %s" % pouet_id), user=request.user)
+        Edit.objects.create(
+            action_type='production_add_external_link', focus=production,
+            description=(u"Added Pouet link to ID %s" % pouet_id), user=request.user
+        )
 
     return HttpResponse("OK", content_type="text/plain")
 
@@ -73,8 +78,10 @@ def production_unlink(request):
         parameter=pouet_id,
         production=production)
     if links:
-        Edit.objects.create(action_type='production_delete_external_link', focus=production,
-            description=(u"Deleted Pouet link to ID %s" % pouet_id), user=request.user)
+        Edit.objects.create(
+            action_type='production_delete_external_link', focus=production,
+            description=(u"Deleted Pouet link to ID %s" % pouet_id), user=request.user
+        )
         links.delete()
 
     return HttpResponse("OK", content_type="text/plain")

@@ -54,7 +54,9 @@ def get_match_data(releaser):
             link.production.title,  # demozoo title
             link.production.get_absolute_url(),  # demozoo URL
             link.parameter,  # pouet ID
-            matched_pouet_prod_names_by_id.get(int(link.parameter), "(Pouet prod #%s)" % link.parameter),  # pouet title with fallback
+            matched_pouet_prod_names_by_id.get(
+                int(link.parameter), "(Pouet prod #%s)" % link.parameter
+            ),  # pouet title with fallback
             "https://www.pouet.net/prod.php?which=%s" % link.parameter,
         )
         for link in matched_links
@@ -66,7 +68,8 @@ def get_match_data(releaser):
     ]
 
     unmatched_pouet_prods = [
-        (prod.pouet_id, prod.name, "https://www.pouet.net/prod.php?which=%d" % prod.pouet_id) for prod in pouet_prod_candidates
+        (prod.pouet_id, prod.name, "https://www.pouet.net/prod.php?which=%d" % prod.pouet_id)
+        for prod in pouet_prod_candidates
         if prod.pouet_id not in matched_pouet_ids
     ]
 

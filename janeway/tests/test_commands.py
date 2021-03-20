@@ -90,6 +90,7 @@ class TestMatchJanewayGroups(TestCase):
             spb.external_links.filter(link_class='KestraBitworldAuthor', parameter='123').exists()
         )
 
+
 class TestMatchJanewayMemberships(TestCase):
     fixtures = ['tests/janeway.json']
 
@@ -199,7 +200,6 @@ class TestMatchJanewaySceners(TestCase):
         with captured_stdout():
             call_command('match_janeway_sceners')
 
-        link = slummy.external_links.first()
         self.assertTrue(
             slummy.external_links.filter(link_class='KestraBitworldAuthor', parameter='126').exists()
         )
@@ -215,7 +215,6 @@ class TestMatchJanewaySceners(TestCase):
         with captured_stdout():
             call_command('match_janeway_sceners')
 
-        link = slummy.external_links.first()
         self.assertTrue(
             slummy.external_links.filter(link_class='KestraBitworldAuthor', parameter='126').exists()
         )

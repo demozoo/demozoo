@@ -21,4 +21,3 @@ urlpatterns = [
     url(r'^banners/(\d+)/delete/$', banner_views.delete_banner, {}, 'delete_banner'),
     url(r'^banners/browse_images/$', banner_views.browse_images, {}, 'banner_images_browse'),
 ]
-

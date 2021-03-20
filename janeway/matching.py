@@ -44,7 +44,9 @@ def get_production_match_data(releaser):
 
     releaser_janeway_ids = [
         int(param)
-        for param in releaser.external_links.filter(link_class='KestraBitworldAuthor').values_list('parameter', flat=True)
+        for param in (
+            releaser.external_links.filter(link_class='KestraBitworldAuthor').values_list('parameter', flat=True)
+        )
     ]
 
     q_match_by_author = (Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser))
@@ -81,7 +83,9 @@ def get_production_match_data(releaser):
             link.production.title,  # demozoo title
             link.production.get_absolute_url(),  # demozoo URL
             link.parameter,  # janeway ID
-            matched_janeway_release_names_by_id.get(int(link.parameter), "(Janeway release #%s)" % link.parameter),  # Janeway title with fallback
+            matched_janeway_release_names_by_id.get(
+                int(link.parameter), "(Janeway release #%s)" % link.parameter
+            ),  # Janeway title with fallback
             "http://janeway.exotica.org.uk/release.php?id=%s" % link.parameter,
             link.production.supertype,
         )
@@ -94,7 +98,13 @@ def get_production_match_data(releaser):
     ]
 
     unmatched_janeway_releases = [
-        (prod.janeway_id, prod.title, "http://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id, prod.supertype) for prod in janeway_release_candidates
+        (
+            prod.janeway_id,
+            prod.title,
+            "http://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id,
+            prod.supertype
+        )
+        for prod in janeway_release_candidates
         if prod.janeway_id not in matched_janeway_ids
     ]
 

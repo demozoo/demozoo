@@ -58,9 +58,11 @@ def live_search(request):
             qs = qs.union(prod_qs)
 
         if (not category) or category in ('scener', 'group'):
-            releaser_qs = Releaser.objects.annotate(
-                type=models.Value('releaser', output_field=models.CharField()),
-            ).order_by('pk').filter(nicks__variants__search_title__startswith=clean_query).values('pk', 'type').distinct()
+            releaser_qs = (
+                Releaser.objects.annotate(type=models.Value('releaser', output_field=models.CharField()))
+                .order_by('pk').filter(nicks__variants__search_title__startswith=clean_query)
+                .values('pk', 'type').distinct()
+            )
             if category in ('scener', 'group'):
                 releaser_qs = releaser_qs.filter(is_group=(category == 'group'))
             qs = qs.union(releaser_qs)

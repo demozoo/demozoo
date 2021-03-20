@@ -109,7 +109,9 @@ def compofolders_show_directory(request, directory_id):
 def compofolders_show_competition(request, competition_id):
     competition = get_object_or_404(Competition, id=competition_id)
 
-    placings = competition.placings.prefetch_related('production', 'production__author_nicks', 'production__author_affiliation_nicks')
+    placings = competition.placings.prefetch_related(
+        'production', 'production__author_nicks', 'production__author_affiliation_nicks'
+    )
 
     return render(request, 'sceneorg/compofolders/show_competition.html', {
         'placings': placings,
@@ -139,7 +141,9 @@ def compofiles(request):
                 AND sceneorg_file.path NOT LIKE '%%.diz'
             )
             LEFT JOIN productions_productionlink ON (
-                sceneorg_file.path = productions_productionlink.parameter AND productions_productionlink.link_class = 'SceneOrgFile')
+                sceneorg_file.path = productions_productionlink.parameter
+                AND productions_productionlink.link_class = 'SceneOrgFile'
+            )
         WHERE
             sceneorg_directory.is_deleted = 'f'
         GROUP BY
@@ -199,13 +203,13 @@ def compofile_directory(request, directory_id):
         ORDER BY sceneorg_file.path
     ''', [directory.id])
 
-    unmatched_files = [f for f in files if f.production_id == None]
+    unmatched_files = [f for f in files if f.production_id is None]
     matches = [
         (f, Production.objects.get(id=f.production_id))
         for f in files
-        if f.production_id != None
+        if f.production_id is not None
     ]
-    matched_production_ids = [f.production_id for f in files if f.production_id != None]
+    matched_production_ids = [f.production_id for f in files if f.production_id is not None]
     unmatched_productions = compo_productions.exclude(id__in=matched_production_ids)
 
     return render(request, 'sceneorg/compofiles/directory.html', {
@@ -231,8 +235,10 @@ def compofile_link(request):
         source='match',
     )
     if created:
-        Edit.objects.create(action_type='add_download_link', focus=production,
-            description=(u"Added download link %s" % link.url), user=request.user)
+        Edit.objects.create(
+            action_type='add_download_link', focus=production,
+            description=(u"Added download link %s" % link.url), user=request.user
+        )
 
     return HttpResponse("OK", content_type="text/plain")
 
@@ -247,8 +253,10 @@ def compofile_unlink(request):
         parameter=sceneorg_file.path,
         production_id=production.id)
     if links:
-        Edit.objects.create(action_type='delete_download_link', focus=production,
-            description=(u"Deleted download link %s" % links[0].url), user=request.user)
+        Edit.objects.create(
+            action_type='delete_download_link', focus=production,
+            description=(u"Deleted download link %s" % links[0].url), user=request.user
+        )
         links.delete()
 
     return HttpResponse("OK", content_type="text/plain")
