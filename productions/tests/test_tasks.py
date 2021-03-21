@@ -14,8 +14,6 @@ class TestTasks(TestCase):
     fixtures = ['tests/gasman.json']
 
     def test_fetch_production_link_embed_data_non_existent(self):
-        pondlife = Production.objects.get(title='Pondlife')
-
         # non-existent link
         fetch_production_link_embed_data(9999)
 
@@ -74,8 +72,6 @@ class TestTasks(TestCase):
         self.assertTrue(link.embed_data_last_error_time)
 
     def test_clean_dead_youtube_link_non_existent(self):
-        pondlife = Production.objects.get(title='Pondlife')
-
         # non-existent link
         clean_dead_youtube_link(9999)
 

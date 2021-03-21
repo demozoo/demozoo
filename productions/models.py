@@ -6,7 +6,6 @@ from collections import defaultdict
 
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
-from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -36,8 +35,14 @@ SUPERTYPE_CHOICES = (
 
 class ProductionType(MP_Node):
     name = models.CharField(max_length=255)
-    position = models.IntegerField(default=0, help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)")
-    internal_name = models.CharField(blank=True, max_length=32, help_text="Used to identify this prod type for special treatment in code - leave this alone!")
+    position = models.IntegerField(
+        default=0,
+        help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)"
+    )
+    internal_name = models.CharField(
+        blank=True, max_length=32,
+        help_text="Used to identify this prod type for special treatment in code - leave this alone!"
+    )
 
     node_order_by = ['position', 'name']
 
@@ -99,10 +104,22 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
 
     data_source = models.CharField(max_length=32, blank=True, null=True)
     unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
-    has_bonafide_edits = models.BooleanField(default=True, help_text="True if this production has been updated through its own forms, as opposed to just compo results tables")
-    has_screenshot = models.BooleanField(default=False, editable=False, help_text="True if this prod has at least one (processed) screenshot")
-    include_notes_in_search = models.BooleanField(default=True,
-        help_text="Whether the notes field for this production will be indexed. (Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')")
+    has_bonafide_edits = models.BooleanField(
+        default=True,
+        help_text=(
+            "True if this production has been updated through its own forms, as opposed to just compo results tables"
+        )
+    )
+    has_screenshot = models.BooleanField(
+        default=False, editable=False, help_text="True if this prod has at least one (processed) screenshot"
+    )
+    include_notes_in_search = models.BooleanField(
+        default=True,
+        help_text=(
+            "Whether the notes field for this production will be indexed. "
+            "(Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')"
+        )
+    )
 
     sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
@@ -328,10 +345,14 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         production, or failing that, the Twitter account of the group. Return None
         if there are multiples."""
         try:
-            return ReleaserExternalLink.objects.get(releaser__nicks__productions=self, link_class='TwitterAccount').parameter
+            return ReleaserExternalLink.objects.get(
+                releaser__nicks__productions=self, link_class='TwitterAccount'
+            ).parameter
         except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
             try:
-                return ReleaserExternalLink.objects.get(releaser__nicks__member_productions=self, link_class='TwitterAccount').parameter
+                return ReleaserExternalLink.objects.get(
+                    releaser__nicks__member_productions=self, link_class='TwitterAccount'
+                ).parameter
             except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
                 return None
 
@@ -497,7 +518,9 @@ class Screenshot(models.Model):
 
         # if any production links for this production have is_unresolved_for_screenshotting=True,
         # reset that flag since we no longer need a screenshot
-        self.production.links.filter(is_unresolved_for_screenshotting=True).update(is_unresolved_for_screenshotting=False)
+        self.production.links.filter(
+            is_unresolved_for_screenshotting=True
+        ).update(is_unresolved_for_screenshotting=False)
 
     def __str__(self):
         return "%s - %s" % (self.production.title, self.original_url)
@@ -541,7 +564,10 @@ def update_prod_screenshot_data_on_delete(sender, **kwargs):
 
 class SoundtrackLink(models.Model):
     production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
-    soundtrack = models.ForeignKey(Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack', on_delete=models.CASCADE)
+    soundtrack = models.ForeignKey(
+        Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack',
+        on_delete=models.CASCADE
+    )
     position = models.IntegerField()
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
@@ -570,10 +596,29 @@ class ProductionLink(ExternalLink):
     is_download_link = models.BooleanField()
     description = models.CharField(max_length=255, blank=True)
     demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
-    file_for_screenshot = models.CharField(max_length=255, blank=True, help_text='The file within this archive which has been identified as most suitable for generating a screenshot from')
-    is_unresolved_for_screenshotting = models.BooleanField(default=False, help_text="Indicates that we've tried and failed to identify the most suitable file in this archive to generate a screenshot from")
-    has_bad_image = models.BooleanField(default=False, help_text="Indicates that an attempt to create a screenshot from this link has failed at the image processing stage")
-    source = models.CharField(max_length=32, blank=True, editable=False, help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto")
+    file_for_screenshot = models.CharField(
+        max_length=255, blank=True,
+        help_text=(
+            'The file within this archive which has been identified as most suitable for generating a screenshot from'
+        )
+    )
+    is_unresolved_for_screenshotting = models.BooleanField(
+        default=False,
+        help_text=(
+            "Indicates that we've tried and failed to identify the most suitable file in this archive "
+            "to generate a screenshot from"
+        )
+    )
+    has_bad_image = models.BooleanField(
+        default=False,
+        help_text=(
+            "Indicates that an attempt to create a screenshot from this link has failed at the image processing stage"
+        )
+    )
+    source = models.CharField(
+        max_length=32, blank=True, editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+    )
 
     thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
     thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)

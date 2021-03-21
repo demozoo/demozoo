@@ -27,9 +27,11 @@ class SoundtrackLinkInline(admin.TabularInline):
 
 
 admin.site.register(ProductionType, ProductionTypeAdmin)
-admin.site.register(Production,
+admin.site.register(
+    Production,
     inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
     raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
-    search_fields=['title'])
+    search_fields=['title']
+)
 
 TagAdmin.inlines = []

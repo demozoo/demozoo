@@ -1,7 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-import random
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,9 +17,6 @@ from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
-from awards.models import Event
-from comments.forms import CommentForm
-from comments.models import Comment
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import BlacklistedTag, Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_confirmation, simple_ajax_form
@@ -32,7 +28,7 @@ from productions.forms import (
     ProductionExternalLinkFormSet, ProductionIndexFilterForm, ProductionInfoFileFormset,
     ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
 )
-from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, ProductionType, Screenshot
+from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, Screenshot
 from productions.views.generic import IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
@@ -48,7 +44,10 @@ def tagged(request, tag_name):
         tag = Tag.objects.get(name=tag_name)
     except Tag.DoesNotExist:
         tag = Tag(name=tag_name)
-    queryset = Production.objects.filter(tags__name=tag_name).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    queryset = (
+        Production.objects.filter(tags__name=tag_name)
+        .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+    )
 
     order = request.GET.get('order', 'date')
     asc = request.GET.get('dir', 'desc') == 'asc'
@@ -149,9 +148,12 @@ def edit_core_details(request, production_id):
                 edit_descriptions.append(main_edit_description)
 
             if use_invitation_formset:
-                invitation_parties = [party_form.cleaned_data['party'].commit()
+                invitation_parties = [
+                    party_form.cleaned_data['party'].commit()
                     for party_form in invitation_formset.forms
-                    if party_form.cleaned_data.get('party') and party_form not in invitation_formset.deleted_forms]
+                    if party_form.cleaned_data.get('party')
+                    and party_form not in invitation_formset.deleted_forms
+                ]
                 production.invitation_parties.set(invitation_parties)
 
                 if invitation_formset.has_changed():
@@ -164,8 +166,10 @@ def edit_core_details(request, production_id):
                         edit_descriptions.append(u"Unset as invitation")
 
             if edit_descriptions:
-                Edit.objects.create(action_type='edit_production_core_details', focus=production,
-                    description=u"; ".join(edit_descriptions), user=request.user)
+                Edit.objects.create(
+                    action_type='edit_production_core_details', focus=production,
+                    description=u"; ".join(edit_descriptions), user=request.user
+                )
 
             return HttpResponseRedirect(production.get_absolute_url())
     else:
@@ -194,9 +198,11 @@ def edit_notes(request, production_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'production_edit_notes', production, ProductionEditNotesForm,
+    return simple_ajax_form(
+        request, 'production_edit_notes', production, ProductionEditNotesForm,
         title='Editing notes for %s:' % production.title,
-        update_datestamp=True, update_bonafide_flag=True, on_success=success)
+        update_datestamp=True, update_bonafide_flag=True, on_success=success
+    )
 
 
 @writeable_site_required
@@ -213,8 +219,10 @@ def add_blurb(request, production_id):
             form.save()
             production.has_bonafide_edits = True
             production.save()
-            Edit.objects.create(action_type='add_production_blurb', focus=production,
-                description="Added blurb", user=request.user, admin_only=True)
+            Edit.objects.create(
+                action_type='add_production_blurb', focus=production,
+                description="Added blurb", user=request.user, admin_only=True
+            )
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         form = ProductionBlurbForm(instance=blurb)
@@ -239,8 +247,10 @@ def edit_blurb(request, production_id, blurb_id):
         form = ProductionBlurbForm(request.POST, instance=blurb)
         if form.is_valid():
             form.save()
-            Edit.objects.create(action_type='edit_production_blurb', focus=production,
-                description="Edited blurb", user=request.user, admin_only=True)
+            Edit.objects.create(
+                action_type='edit_production_blurb', focus=production,
+                description="Edited blurb", user=request.user, admin_only=True
+            )
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         form = ProductionBlurbForm(instance=blurb)
@@ -264,14 +274,18 @@ def delete_blurb(request, production_id, blurb_id):
     if request.method == 'POST':
         if request.POST.get('yes'):
             blurb.delete()
-            Edit.objects.create(action_type='delete_production_blurb', focus=production,
-                description="Deleted blurb", user=request.user, admin_only=True)
+            Edit.objects.create(
+                action_type='delete_production_blurb', focus=production,
+                description="Deleted blurb", user=request.user, admin_only=True
+            )
         return HttpResponseRedirect(production.get_absolute_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('production_delete_blurb', args=[production_id, blurb_id]),
             "Are you sure you want to delete this blurb?",
-            html_title="Deleting blurb for %s" % production.title)
+            html_title="Deleting blurb for %s" % production.title
+        )
 
 
 @writeable_site_required
@@ -282,7 +296,9 @@ def edit_external_links(request, production_id):
         raise PermissionDenied
 
     if request.method == 'POST':
-        formset = ProductionExternalLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=False))
+        formset = ProductionExternalLinkFormSet(
+            request.POST, instance=production, queryset=production.links.filter(is_download_link=False)
+        )
         if formset.is_valid():
             formset.save_ignoring_uniqueness()
             formset.log_edit(request.user, 'production_edit_external_links')
@@ -292,7 +308,9 @@ def edit_external_links(request, production_id):
 
             return HttpResponseRedirect(production.get_absolute_url())
     else:
-        formset = ProductionExternalLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=False))
+        formset = ProductionExternalLinkFormSet(
+            instance=production, queryset=production.links.filter(is_download_link=False)
+        )
     return render(request, 'productions/edit_links.html', {
         'submit_url': reverse('production_edit_external_links', args=[production.id]),
         'external_or_download': 'external',
@@ -309,7 +327,9 @@ def edit_download_links(request, production_id):
         raise PermissionDenied
 
     if request.method == 'POST':
-        formset = ProductionDownloadLinkFormSet(request.POST, instance=production, queryset=production.links.filter(is_download_link=True))
+        formset = ProductionDownloadLinkFormSet(
+            request.POST, instance=production, queryset=production.links.filter(is_download_link=True)
+        )
         if formset.is_valid():
             formset.save_ignoring_uniqueness()
             formset.log_edit(request.user, 'production_edit_download_links')
@@ -319,7 +339,9 @@ def edit_download_links(request, production_id):
 
             return HttpResponseRedirect(production.get_absolute_url())
     else:
-        formset = ProductionDownloadLinkFormSet(instance=production, queryset=production.links.filter(is_download_link=True))
+        formset = ProductionDownloadLinkFormSet(
+            instance=production, queryset=production.links.filter(is_download_link=True)
+        )
     return render(request, 'productions/edit_links.html', {
         'submit_url': reverse('production_edit_download_links', args=[production.id]),
         'external_or_download': 'download',
@@ -411,18 +433,26 @@ def add_screenshot(request, production_id, is_artwork_view=False):
 
             if file_count == 1:
                 if is_artwork_view:
-                    Edit.objects.create(action_type='add_screenshot', focus=production,
-                        description=("Added artwork"), user=request.user)
+                    Edit.objects.create(
+                        action_type='add_screenshot', focus=production,
+                        description=("Added artwork"), user=request.user
+                    )
                 else:
-                    Edit.objects.create(action_type='add_screenshot', focus=production,
-                        description=("Added screenshot"), user=request.user)
+                    Edit.objects.create(
+                        action_type='add_screenshot', focus=production,
+                        description=("Added screenshot"), user=request.user
+                    )
             else:
                 if is_artwork_view:
-                    Edit.objects.create(action_type='add_screenshot', focus=production,
-                        description=("Added %s artworks" % file_count), user=request.user)
+                    Edit.objects.create(
+                        action_type='add_screenshot', focus=production,
+                        description=("Added %s artworks" % file_count), user=request.user
+                    )
                 else:
-                    Edit.objects.create(action_type='add_screenshot', focus=production,
-                        description=("Added %s screenshots" % file_count), user=request.user)
+                    Edit.objects.create(
+                        action_type='add_screenshot', focus=production,
+                        description=("Added %s screenshots" % file_count), user=request.user
+                    )
 
         return HttpResponseRedirect(production.get_absolute_url())
     else:
@@ -462,11 +492,15 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
             production.has_bonafide_edits = True
             production.save()
             if is_artwork_view:
-                Edit.objects.create(action_type='delete_screenshot', focus=production,
-                    description="Deleted artwork", user=request.user)
+                Edit.objects.create(
+                    action_type='delete_screenshot', focus=production,
+                    description="Deleted artwork", user=request.user
+                )
             else:
-                Edit.objects.create(action_type='delete_screenshot', focus=production,
-                    description="Deleted screenshot", user=request.user)
+                Edit.objects.create(
+                    action_type='delete_screenshot', focus=production,
+                    description="Deleted screenshot", user=request.user
+                )
 
         if is_artwork_view:
             return HttpResponseRedirect(reverse('production_edit_artwork', args=[production.id]))
@@ -477,18 +511,22 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
             if production.supertype != 'music':
                 return redirect('production_delete_screenshot', production_id, screenshot_id)
 
-            return simple_ajax_confirmation(request,
+            return simple_ajax_confirmation(
+                request,
                 reverse('production_delete_artwork', args=[production_id, screenshot_id]),
                 "Are you sure you want to delete this artwork for %s?" % production.title,
-                html_title="Deleting artwork for %s" % production.title)
+                html_title="Deleting artwork for %s" % production.title
+            )
         else:
             if production.supertype == 'music':
                 return redirect('production_delete_artwork', production_id, screenshot_id)
 
-            return simple_ajax_confirmation(request,
+            return simple_ajax_confirmation(
+                request,
                 reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
                 "Are you sure you want to delete this screenshot for %s?" % production.title,
-                html_title="Deleting screenshot for %s" % production.title)
+                html_title="Deleting screenshot for %s" % production.title
+            )
 
 
 @writeable_site_required
@@ -533,9 +571,11 @@ def add_credit(request, production_id):
                     credit.save()
                 credits_description = ', '.join([credit.description for credit in credits])
                 description = (u"Added credit for %s on %s: %s" % (nick, production, credits_description))
-                Edit.objects.create(action_type='add_credit', focus=production,
+                Edit.objects.create(
+                    action_type='add_credit', focus=production,
                     focus2=nick.releaser,
-                    description=description, user=request.user)
+                    description=description, user=request.user
+                )
 
             production.updated_at = datetime.datetime.now()
             production.has_bonafide_edits = True
@@ -601,10 +641,12 @@ def edit_credit(request, production_id, nick_id):
 
             new_credits = Credit.objects.filter(nick=nick, production=production)
             credits_description = ', '.join([credit.description for credit in new_credits])
-            Edit.objects.create(action_type='edit_credit', focus=production,
+            Edit.objects.create(
+                action_type='edit_credit', focus=production,
                 focus2=nick.releaser,
                 description=(u"Updated %s's credit on %s: %s" % (nick, production, credits_description)),
-                user=request.user)
+                user=request.user
+            )
 
             return render_credits_update(request, production)
     else:
@@ -612,7 +654,8 @@ def edit_credit(request, production_id, nick_id):
         credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 
     if request.is_ajax():
-        return render_modal_workflow(request,
+        return render_modal_workflow(
+            request,
             'productions/edit_credit.html', 'productions/edit_credit.js', {
                 'production': production,
                 'nick': nick,
@@ -644,14 +687,18 @@ def delete_credit(request, production_id, nick_id):
                 production.updated_at = datetime.datetime.now()
                 production.has_bonafide_edits = True
                 production.save()
-                Edit.objects.create(action_type='delete_credit', focus=production, focus2=nick.releaser,
-                    description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user)
+                Edit.objects.create(
+                    action_type='delete_credit', focus=production, focus2=nick.releaser,
+                    description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user
+                )
         return render_credits_update(request, production)
     else:
-        return modal_workflow_confirmation(request,
+        return modal_workflow_confirmation(
+            request,
             reverse('production_delete_credit', args=[production_id, nick_id]),
             "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-            html_title="Deleting %s's credit from %s" % (nick.name, production.title))
+            html_title="Deleting %s's credit from %s" % (nick.name, production.title)
+        )
 
 
 @writeable_site_required
@@ -679,8 +726,10 @@ def edit_soundtracks(request, production_id):
             for stl in production.soundtrack_links.all():
                 stl.soundtrack.has_bonafide_edits = True
                 stl.soundtrack.save()
-            Edit.objects.create(action_type='edit_soundtracks', focus=production,
-                description=(u"Edited soundtrack details for %s" % production.title), user=request.user)
+            Edit.objects.create(
+                action_type='edit_soundtracks', focus=production,
+                description=(u"Edited soundtrack details for %s" % production.title), user=request.user
+            )
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         formset = ProductionSoundtrackLinkFormset(instance=production)
@@ -715,8 +764,10 @@ def edit_pack_contents(request, production_id):
             for stl in production.pack_members.all():
                 stl.member.has_bonafide_edits = True
                 stl.member.save()
-            Edit.objects.create(action_type='edit_pack_contents', focus=production,
-                description=(u"Edited pack contents of %s" % production.title), user=request.user)
+            Edit.objects.create(
+                action_type='edit_pack_contents', focus=production,
+                description=(u"Edited pack contents of %s" % production.title), user=request.user
+            )
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         formset = PackMemberFormset(instance=production)
@@ -738,8 +789,10 @@ def edit_tags(request, production_id):
     new_tags = set(production.tags.names())
     if new_tags != old_tags:
         names_string = u', '.join(production.tags.names())
-        Edit.objects.create(action_type='production_edit_tags', focus=production,
-            description=u"Set tags to %s" % names_string, user=request.user)
+        Edit.objects.create(
+            action_type='production_edit_tags', focus=production,
+            description=u"Set tags to %s" % names_string, user=request.user
+        )
 
         # delete any tags that are now unused
         Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
@@ -770,8 +823,10 @@ def add_tag(request, production_id):
         existing_tag = production.tags.filter(name=tag_name)
         if not existing_tag:
             production.tags.add(tag_name)
-            Edit.objects.create(action_type='production_add_tag', focus=production,
-                description=u"Added tag '%s'" % tag_name, user=request.user)
+            Edit.objects.create(
+                action_type='production_add_tag', focus=production,
+                description=u"Added tag '%s'" % tag_name, user=request.user
+            )
 
     tags_list_html = render_to_string('productions/_tags_list.html', {
         'tags': production.tags.order_by('name')
@@ -798,8 +853,10 @@ def remove_tag(request, production_id):
         existing_tag = production.tags.filter(name=tag_name)
         if existing_tag:
             production.tags.remove(tag_name)
-            Edit.objects.create(action_type='production_remove_tag', focus=production,
-                description=u"Removed tag '%s'" % tag_name, user=request.user)
+            Edit.objects.create(
+                action_type='production_remove_tag', focus=production,
+                description=u"Removed tag '%s'" % tag_name, user=request.user
+            )
             if not existing_tag[0].taggit_taggeditem_items.count():
                 # no more items use this tag - delete it
                 existing_tag[0].delete()
@@ -816,7 +873,10 @@ def autocomplete_tags(request):
 
 def autocomplete(request):
     query = request.GET.get('term')
-    productions = Production.objects.filter(title__istartswith=query).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+    productions = (
+        Production.objects.filter(title__istartswith=query)
+        .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
+    )
     supertype = request.GET.get('supertype')
     if supertype:
         productions = productions.filter(supertype=supertype)
@@ -849,18 +909,22 @@ def delete(request, production_id):
         if request.POST.get('yes'):
             # insert log entry before actually deleting, so that it doesn't try to
             # insert a null ID for the focus field
-            Edit.objects.create(action_type='delete_production', focus=production,
-                description=(u"Deleted production '%s'" % production.title), user=request.user)
+            Edit.objects.create(
+                action_type='delete_production', focus=production,
+                description=(u"Deleted production '%s'" % production.title), user=request.user
+            )
             production.delete()
             messages.success(request, "'%s' deleted" % production.title)
             return HttpResponseRedirect(reverse('productions'))
         else:
             return HttpResponseRedirect(production.get_absolute_url())
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_production', args=[production_id]),
             "Are you sure you want to delete '%s'?" % production.title,
-            html_title="Deleting %s" % production.title)
+            html_title="Deleting %s" % production.title
+        )
 
 
 @writeable_site_required
@@ -872,8 +936,10 @@ def lock(request, production_id):
 
     if request.method == 'POST':
         if request.POST.get('yes'):
-            Edit.objects.create(action_type='lock_production', focus=production,
-                description=(u"Protected production '%s'" % production.title), user=request.user)
+            Edit.objects.create(
+                action_type='lock_production', focus=production,
+                description=(u"Protected production '%s'" % production.title), user=request.user
+            )
 
             production.locked = True
             production.updated_at = datetime.datetime.now()
@@ -885,12 +951,14 @@ def lock(request, production_id):
         return HttpResponseRedirect(production.get_absolute_url())
 
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('lock_production', args=[production_id]),
             "Locking down a page is a serious decision and shouldn't be done on a whim - "
             "remember that we want to keep Demozoo as open as possible. "
             "Are you absolutely sure you want to lock '%s'?" % production.title,
-            html_title="Locking %s" % production.title)
+            html_title="Locking %s" % production.title
+        )
 
 
 @login_required
@@ -899,8 +967,10 @@ def protected(request, production_id):
 
     if request.user.is_staff and request.method == 'POST':
         if request.POST.get('yes'):
-            Edit.objects.create(action_type='unlock_production', focus=production,
-                description=(u"Unprotected production '%s'" % production.title), user=request.user)
+            Edit.objects.create(
+                action_type='unlock_production', focus=production,
+                description=(u"Unprotected production '%s'" % production.title), user=request.user
+            )
 
             production.locked = False
             production.updated_at = datetime.datetime.now()
@@ -983,8 +1053,10 @@ def edit_info_files(request, production_id):
                 production.has_bonafide_edits = True
                 production.save()
 
-                Edit.objects.create(action_type='edit_info_files', focus=production,
-                    description=action_description, user=request.user)
+                Edit.objects.create(
+                    action_type='edit_info_files', focus=production,
+                    description=action_description, user=request.user
+                )
 
             return HttpResponseRedirect(production.get_absolute_url())
 

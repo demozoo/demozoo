@@ -29,23 +29,44 @@ urlpatterns = [
     url(r'^productions/autocomplete/$', production_views.autocomplete, {}),
     url(r'^productions/autocomplete_tags/$', production_views.autocomplete_tags, {}),
     url(r'^productions/tagged/(.+)/$', production_views.tagged, {}, 'productions_tagged'),
-    url(r'^productions/(\d+)/edit_core_details/$', production_views.edit_core_details, {}, 'production_edit_core_details'),
+    url(
+        r'^productions/(\d+)/edit_core_details/$', production_views.edit_core_details, {},
+        'production_edit_core_details'
+    ),
     url(r'^productions/(\d+)/add_credit/$', production_views.add_credit, {}, 'production_add_credit'),
     url(r'^productions/(\d+)/edit_credit/(\d+)/$', production_views.edit_credit, {}, 'production_edit_credit'),
     url(r'^productions/(\d+)/delete_credit/(\d+)/$', production_views.delete_credit, {}, 'production_delete_credit'),
     url(r'^productions/(\d+)/edit_notes/$', production_views.edit_notes, {}, 'production_edit_notes'),
-    url(r'^productions/(\d+)/edit_external_links/$', production_views.edit_external_links, {}, 'production_edit_external_links'),
-    url(r'^productions/(\d+)/edit_download_links/$', production_views.edit_download_links, {}, 'production_edit_download_links'),
+    url(
+        r'^productions/(\d+)/edit_external_links/$', production_views.edit_external_links, {},
+        'production_edit_external_links'
+    ),
+    url(
+        r'^productions/(\d+)/edit_download_links/$', production_views.edit_download_links, {},
+        'production_edit_download_links'
+    ),
     url(r'^productions/(\d+)/add_screenshot/$', production_views.add_screenshot, {}, 'production_add_screenshot'),
-    url(r'^productions/(\d+)/add_artwork/$', production_views.add_screenshot, {'is_artwork_view': True}, 'production_add_artwork'),
+    url(
+        r'^productions/(\d+)/add_artwork/$', production_views.add_screenshot,
+        {'is_artwork_view': True}, 'production_add_artwork'
+    ),
     url(r'^productions/(\d+)/screenshots/$', production_views.screenshots, {}, 'production_screenshots'),
     url(r'^productions/(\d+)/artwork/$', production_views.artwork, {}, 'production_artwork'),
     url(r'^productions/(\d+)/screenshots/edit/$', production_views.edit_screenshots, {}, 'production_edit_screenshots'),
     url(r'^productions/(\d+)/artwork/edit/$', production_views.edit_artwork, {}, 'production_edit_artwork'),
-    url(r'^productions/(\d+)/delete_screenshot/(\d+)/$', production_views.delete_screenshot, {}, 'production_delete_screenshot'),
-    url(r'^productions/(\d+)/delete_artwork/(\d+)/$', production_views.delete_screenshot, {'is_artwork_view': True}, 'production_delete_artwork'),
+    url(
+        r'^productions/(\d+)/delete_screenshot/(\d+)/$', production_views.delete_screenshot, {},
+        'production_delete_screenshot'
+    ),
+    url(
+        r'^productions/(\d+)/delete_artwork/(\d+)/$', production_views.delete_screenshot,
+        {'is_artwork_view': True}, 'production_delete_artwork'
+    ),
     url(r'^productions/(\d+)/edit_soundtracks/$', production_views.edit_soundtracks, {}, 'production_edit_soundtracks'),
-    url(r'^productions/(\d+)/edit_pack_contents/$', production_views.edit_pack_contents, {}, 'production_edit_pack_contents'),
+    url(
+        r'^productions/(\d+)/edit_pack_contents/$', production_views.edit_pack_contents, {},
+        'production_edit_pack_contents'
+    ),
     url(r'^productions/(\d+)/edit_tags/$', production_views.edit_tags, {}, 'production_edit_tags'),
     url(r'^productions/(\d+)/add_tag/$', production_views.add_tag, {}, 'production_add_tag'),
     url(r'^productions/(\d+)/remove_tag/$', production_views.remove_tag, {}, 'production_remove_tag'),

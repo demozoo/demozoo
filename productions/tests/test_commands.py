@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.core.management import call_command
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
 
@@ -55,7 +55,7 @@ class TestMirrorMusicFiles(TestCase):
     @patch('time.sleep')
     def test_run(self, sleep, upload_to_s3):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
-        link = cybrev.links.create(
+        cybrev.links.create(
             link_class='BaseUrl', parameter='http://example.com/cybrev.mod',
             is_download_link=True
         )
@@ -81,7 +81,7 @@ class TestMirrorMusicFiles(TestCase):
             link_class='BaseUrl', parameter='https://files.zxdemo.org/cybrev.stc',
             is_download_link=True
         )
-        link = cybrev.links.create(
+        cybrev.links.create(
             link_class='BaseUrl', parameter='http://example.com/cybrev.mod',
             is_download_link=True
         )
@@ -103,7 +103,7 @@ class TestMirrorMusicFiles(TestCase):
     @patch('time.sleep')
     def test_oversized(self, sleep, upload_to_s3):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
-        link = cybrev.links.create(
+        cybrev.links.create(
             link_class='BaseUrl', parameter='http://example.com/pretend-big-file.mod',
             is_download_link=True
         )

@@ -65,7 +65,9 @@ class ProductionSelection(object):
         if not value:
             return ProductionSelection()
         elif isinstance(value, ProductionSelection):
-            return ProductionSelection(id=value.id, title=value.title, byline_lookup=value.byline_lookup, types_to_set=value.types_to_set)
+            return ProductionSelection(
+                id=value.id, title=value.title, byline_lookup=value.byline_lookup, types_to_set=value.types_to_set
+            )
         elif isinstance(value, int):
             return ProductionSelection(id=value)
         elif isinstance(value, Production):

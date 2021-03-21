@@ -24,7 +24,7 @@ def fetch_production_link_embed_data(productionlink_id):
 
     try:
         production_link.fetch_embed_data()
-    except:
+    except (urllib.error.URLError, urllib.error.HTTPError):
         production_link.embed_data_last_error_time = datetime.datetime.now()
         production_link.save()
 
