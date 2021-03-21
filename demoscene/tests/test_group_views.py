@@ -33,6 +33,15 @@ class TestShowGroup(TestCase):
         response = self.client.get('/groups/%d/history/' % self.raww_arse.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_hide_from_search_results(self):
+        response = self.client.get('/groups/%d/' % self.raww_arse.id)
+        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+
+        self.raww_arse.hide_from_search_engines = True
+        self.raww_arse.save()
+        response = self.client.get('/groups/%d/' % self.raww_arse.id)
+        self.assertContains(response, '<meta name="robots" content="noindex">')
+
 
 class TestCreateGroup(TestCase):
     fixtures = ['tests/gasman.json']

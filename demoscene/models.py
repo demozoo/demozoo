@@ -50,6 +50,8 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         help_text="Details of any correspondence / decision about whether this name should be public"
     )
 
+    hide_from_search_engines = models.BooleanField(default=False)
+
     data_source = models.CharField(max_length=32, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
