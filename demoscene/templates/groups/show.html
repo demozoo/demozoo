@@ -12,6 +12,12 @@
     {% endcompress %}
 {% endblock %}
 
+{% block extra_head %}
+    {% if group.hide_from_search_engines %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+{% endblock %}
+
 {% block body_class %}show_group{% endblock %}
 
 {% block base_main %}
