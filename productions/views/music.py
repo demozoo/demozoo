@@ -48,62 +48,6 @@ class MusicShowView(ShowView):
         return context
 
 
-def show(request, production_id, edit_mode=False):
-    production = get_object_or_404(Production, id=production_id)
-    if production.supertype != 'music':
-        return HttpResponseRedirect(production.get_absolute_url())
-
-    if request.user.is_authenticated:
-        comment = Comment(commentable=production, user=request.user)
-        comment_form = CommentForm(instance=comment, prefix="comment")
-        tags_form = ProductionTagsForm(instance=production)
-
-        awards_accepting_recommendations = [
-            (event, event.get_recommendation_options(request.user, production))
-            for event in Event.accepting_recommendations_for(production)
-        ]
-    else:
-        comment_form = None
-        tags_form = None
-
-        awards_accepting_recommendations = [
-            (event, None)
-            for event in Event.accepting_recommendations_for(production)
-        ]
-
-    try:
-        meta_screenshot = random.choice(production.screenshots.exclude(standard_url=''))
-    except IndexError:
-        meta_screenshot = None
-
-    return render(request, 'productions/show.html', {
-        'production': production,
-        'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
-        'download_links': production.download_links,
-        'external_links': production.external_links,
-        'info_files': production.info_files.all(),
-        'editing_credits': (request.GET.get('editing') == 'credits'),
-        'credits': production.credits_for_listing(),
-        'carousel': Carousel(production, request.user),
-
-        'tags': production.tags.order_by('name'),
-        'blurbs': production.blurbs.all() if request.user.is_staff else None,
-        'comment_form': comment_form,
-        'tags_form': tags_form,
-        'meta_screenshot': meta_screenshot,
-        'awards_accepting_recommendations': awards_accepting_recommendations,
-
-        'featured_in_productions': [
-            appearance.production for appearance in
-            production.appearances_as_soundtrack.prefetch_related('production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser').order_by('production__release_date_date')
-        ],
-        'packed_in_productions': [
-            pack_member.pack for pack_member in
-            production.packed_in.prefetch_related('pack__author_nicks__releaser', 'pack__author_affiliation_nicks__releaser').order_by('pack__release_date_date')
-        ],
-    })
-
-
 def history(request, production_id):
     production = get_object_or_404(Production, id=production_id)
     if production.supertype != 'music':
