@@ -10,7 +10,7 @@ from mock import patch
 from demoscene.models import Nick
 from mirror.models import Download
 from platforms.models import Platform
-from productions.models import Byline, Credit, PackMember, Production, ProductionLink, ProductionType, Screenshot
+from productions.models import Byline, PackMember, Production, ProductionLink, ProductionType, Screenshot
 
 
 class TestProductionType(TestCase):
@@ -126,7 +126,7 @@ class TestCredit(TestCase):
         pondlife = Production.objects.get(title='Pondlife')
         credit = pondlife.credits.get(nick__name='Gasman')
         self.assertEqual(str(credit), "Pondlife: Gasman - Code")
-        credit.role='Part 1'
+        credit.role = 'Part 1'
         self.assertEqual(str(credit), "Pondlife: Gasman - Code (Part 1)")
 
 

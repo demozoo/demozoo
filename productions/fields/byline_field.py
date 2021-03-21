@@ -13,29 +13,34 @@ from productions.models import Byline
 # An object which encapsulates the state of a BylineWidget as derived from its posted data;
 # this is what BylineWidget returns from value_from_datadict
 class BylineLookup():
-    def __init__(self,
+    def __init__(
+        self,
         byline_search,
         author_nick_selections=[],
         affiliation_nick_selections=[],
         author_matched_nick_fields=None,
         affiliation_matched_nick_fields=None,
-        autoaccept=False):
+        autoaccept=False
+    ):
 
-        if author_matched_nick_fields == None:
+        if author_matched_nick_fields is None:
             author_matched_nick_fields = [
                 MatchedNickField(nick_search, required=False)
                 for nick_search in byline_search.author_nick_searches
             ]
 
-        if affiliation_matched_nick_fields == None:
+        if affiliation_matched_nick_fields is None:
             affiliation_matched_nick_fields = [
                 MatchedNickField(nick_search, required=False)
                 for nick_search in byline_search.affiliation_nick_searches
             ]
 
         self.byline_search = byline_search
-        self.autoaccept = autoaccept  # whether we should continue upon successfully resolving
-            # all byline components, as opposed to re-showing the form
+
+        # whether we should continue upon successfully resolving
+        # all byline components, as opposed to re-showing the form
+        self.autoaccept = autoaccept
+
         self.author_nick_selections = author_nick_selections
         self.affiliation_nick_selections = affiliation_nick_selections
         self.author_matched_nick_fields = author_matched_nick_fields
@@ -101,7 +106,10 @@ class BylineLookup():
     def __eq__(self, other):
         if not isinstance(other, BylineLookup):
             return False
-        return self.author_nick_selections == other.author_nick_selections and self.affiliation_nick_selections == other.affiliation_nick_selections
+        return (
+            self.author_nick_selections == other.author_nick_selections
+            and self.affiliation_nick_selections == other.affiliation_nick_selections
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -208,7 +216,10 @@ class BylineField(forms.Field):
             clean_author_nick_selections = []
             clean_affiliation_nick_selections = []
             if byline_lookup.autoaccept:
-                validation_message = "Not all names could be matched to a scener or group; please select the appropriate ones from the lists."
+                validation_message = (
+                    "Not all names could be matched to a scener or group; "
+                    "please select the appropriate ones from the lists."
+                )
             else:
                 validation_message = "Please select the appropriate sceners / groups from the lists."
 

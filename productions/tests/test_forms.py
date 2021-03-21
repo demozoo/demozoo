@@ -27,9 +27,11 @@ class ProductionsFormsTests(TestCase):
 
     def test_external_links_formset_delete(self):
         production = Production.objects.create(title='State of the Art')
-        l = production.links.create(is_download_link=False, link_class='BaseUrl', parameter='https://demozoo.org')
-        data = {'links-0-id': l.pk, 'links-0-url': 'https://demozoo.org', 'links-0-DELETE': 'on',
-                'links-TOTAL_FORMS': '3', 'links-INITIAL_FORMS': '1', 'links-MAX_NUM_FORMS': '1000'}
+        link = production.links.create(is_download_link=False, link_class='BaseUrl', parameter='https://demozoo.org')
+        data = {
+            'links-0-id': link.pk, 'links-0-url': 'https://demozoo.org', 'links-0-DELETE': 'on',
+            'links-TOTAL_FORMS': '3', 'links-INITIAL_FORMS': '1', 'links-MAX_NUM_FORMS': '1000',
+        }
         formset = ProductionExternalLinkFormSet(data, instance=production,
                                                 queryset=production.links.filter(is_download_link=False))
         self.assertTrue(formset.is_valid())
@@ -67,6 +69,7 @@ class ProductionsFormsTests(TestCase):
 
 class TestBylineLookup(TestCase):
     fixtures = ['tests/gasman.json']
+
     def test_repr(self):
         bl = BylineLookup.from_value(BylineSearch('Gasman/Hooy-Program'))
         self.assertEqual(repr(bl), '<BylineLookup: [NickSelection: 1, Gasman], [NickSelection: 5, Hooy-Program]>')

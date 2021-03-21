@@ -213,7 +213,6 @@ class TestCreateProduction(TestCase):
         self.assertContains(response, 'Gasman')
 
     def test_get_with_nonexistent_releaser_id(self):
-        gasman = Releaser.objects.get(name='Gasman')
         response = self.client.get('/productions/new/?releaser_id=9999')
         self.assertEqual(response.status_code, 200)
 
@@ -312,7 +311,10 @@ class TestCreateProduction(TestCase):
             'links-MAX_NUM_FORMS': 1000,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.")
+        self.assertContains(
+            response,
+            "Not all names could be matched to a scener or group; please select the appropriate ones from the lists."
+        )
 
     def test_post_unmatched_author_affiliation_nick(self):
         response = self.client.post('/productions/new/', {
@@ -327,7 +329,10 @@ class TestCreateProduction(TestCase):
             'links-MAX_NUM_FORMS': 1000,
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.")
+        self.assertContains(
+            response,
+            "Not all names could be matched to a scener or group; please select the appropriate ones from the lists."
+        )
 
 
 class TestEditCoreDetails(TestCase):
@@ -475,7 +480,10 @@ class TestEditCoreDetails(TestCase):
         self.assertContains(response, "Party &#x27;Forever 2e3&#x27; found.")
         self.assertContains(
             response,
-            '<input type="hidden" name="form-0-party_party_id" class="party_field_party_id" id="id_form-0-party" value="%d">' % Party.objects.get(name='Forever 2e3').id,
+            (
+                '<input type="hidden" name="form-0-party_party_id" class="party_field_party_id" '
+                'id="id_form-0-party" value="%d">'
+            ) % Party.objects.get(name='Forever 2e3').id,
             html=True
         )
         self.assertContains(
@@ -1120,16 +1128,24 @@ class TestDeleteScreenshot(TestCase):
     def test_non_superuser(self):
         User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
-        response = self.client.get('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        response = self.client.get(
+            '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id)
+        )
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
 
     def test_get_production(self):
-        response = self.client.get('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        response = self.client.get(
+            '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id)
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_redirect_production(self):
-        response = self.client.get('/productions/%d/delete_artwork/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
-        self.assertRedirects(response, '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id))
+        response = self.client.get(
+            '/productions/%d/delete_artwork/%d/' % (self.pondlife.id, self.pondlife_screenshot.id)
+        )
+        self.assertRedirects(
+            response, '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id)
+        )
 
     def test_get_music(self):
         response = self.client.get('/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id))
@@ -1140,9 +1156,10 @@ class TestDeleteScreenshot(TestCase):
         self.assertRedirects(response, '/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id))
 
     def test_post_production(self):
-        response = self.client.post('/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id), {
-            'yes': 'yes'
-        })
+        response = self.client.post(
+            '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id),
+            {'yes': 'yes'}
+        )
         self.assertRedirects(response, '/productions/%d/screenshots/edit/' % self.pondlife.id)
         self.assertEqual(self.pondlife.screenshots.count(), 0)
 
@@ -1219,7 +1236,6 @@ class TestAddCredit(TestCase):
     def test_ambiguous_nick(self):
         pondlife = Production.objects.get(title='Pondlife')
         pondlife.author_nicks.clear()
-        yerz = Nick.objects.get(name='Yerzmyey')
         # create fake Yerzmyey who isn't a member of Hooy-Program
         Releaser.objects.create(name='Yerzmyey', is_group=False)
 

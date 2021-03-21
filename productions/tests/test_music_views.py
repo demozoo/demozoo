@@ -23,13 +23,17 @@ class TestShowMusic(TestCase):
 
     def test_get(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
-        cybrev.links.create(link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True)
+        cybrev.links.create(
+            link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True
+        )
         response = self.client.get('/music/%d/' % cybrev.id)
         self.assertEqual(response.status_code, 200)
 
     def test_get_with_artwork(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
-        cybrev.links.create(link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True)
+        cybrev.links.create(
+            link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True
+        )
         cybrev.screenshots.create(
             original_url="http://example.com/orig.png",
             standard_url="http://example.com/standard.png",

@@ -20,7 +20,9 @@ class TestCowbell(TestCase):
         )
         filetype, url = identify_link_as_track(link)
         self.assertEqual(filetype, 'mp3')
-        self.assertEqual(url, 'https://archive.scene.org/pub/music/groups/8bitpeoples/8bp043-08-gasman-norwegian_blue.mp3')
+        self.assertEqual(
+            url, 'https://archive.scene.org/pub/music/groups/8bitpeoples/8bp043-08-gasman-norwegian_blue.mp3'
+        )
 
     def test_modland_mod(self):
         link = self.cybrev.links.create(

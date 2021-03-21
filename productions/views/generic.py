@@ -34,7 +34,9 @@ class IndexView(View):
                 prod_types = ProductionType.get_tree(form.cleaned_data['production_type'])
                 queryset = queryset.filter(types__in=prod_types)
 
-        queryset = queryset.prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
+        queryset = queryset.prefetch_related(
+            'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+        )
 
         production_page = get_page(
             queryset,
@@ -94,7 +96,10 @@ class ShowView(View):
         if self.production.can_have_pack_members():
             pack_members = [
                 link.member for link in
-                self.production.pack_members.select_related('member').prefetch_related('member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser')
+                (
+                    self.production.pack_members.select_related('member')
+                    .prefetch_related('member__author_nicks__releaser', 'member__author_affiliation_nicks__releaser')
+                )
             ]
         else:
             pack_members = None
@@ -120,4 +125,5 @@ class ShowView(View):
             'tags_form': tags_form,
             'meta_screenshot': meta_screenshot,
             'awards_accepting_recommendations': awards_accepting_recommendations,
+            'pack_members': pack_members,
         }

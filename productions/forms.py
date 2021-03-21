@@ -33,11 +33,15 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
         super(BaseProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
         self.fields['title'] = forms.CharField(initial=self.instance.title, max_length=255)
         self.fields['byline'] = BylineField(required=False, initial=self.instance.byline_search(), label='By')
-        self.fields['release_date'] = FuzzyDateField(required=False, initial=self.instance.release_date,
-            help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
-        self.fields['platforms'] = forms.ModelMultipleChoiceField(required=False, label='Platform',
+        self.fields['release_date'] = FuzzyDateField(
+            required=False, initial=self.instance.release_date,
+            help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")'
+        )
+        self.fields['platforms'] = forms.ModelMultipleChoiceField(
+            required=False, label='Platform',
             initial=[platform.id for platform in self.instance.platforms.all()],
-            queryset=Platform.objects.all())
+            queryset=Platform.objects.all()
+        )
 
     def save(self, commit=True):
         self.instance.title = self.cleaned_data['title']
@@ -86,17 +90,21 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(action_type='edit_production_core_details', focus=self.instance,
-                description=description, user=user)
+            Edit.objects.create(
+                action_type='edit_production_core_details', focus=self.instance,
+                description=description, user=user
+            )
 
 
 class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     # has multiple types
     def __init__(self, *args, **kwargs):
         super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
-        self.fields['types'] = ProductionTypeMultipleChoiceField(required=False, label='Type',
+        self.fields['types'] = ProductionTypeMultipleChoiceField(
+            required=False, label='Type',
             initial=[typ.id for typ in self.instance.types.all()],
-            queryset=ProductionType.featured_types())
+            queryset=ProductionType.featured_types()
+        )
 
         self.has_multiple_types = True
 
@@ -157,12 +165,15 @@ class CreateProductionForm(forms.Form):
         super(CreateProductionForm, self).__init__(*args, **kwargs)
         self.fields['title'] = forms.CharField(max_length=255)
         self.fields['byline'] = BylineField(required=False, label='By')
-        self.fields['release_date'] = FuzzyDateField(required=False,
-            help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
-        self.fields['types'] = ProductionTypeMultipleChoiceField(required=False, label='Type',
-            queryset=ProductionType.featured_types())
-        self.fields['platforms'] = forms.ModelMultipleChoiceField(required=False, label='Platform',
-            queryset=Platform.objects.all())
+        self.fields['release_date'] = FuzzyDateField(
+            required=False, help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")'
+        )
+        self.fields['types'] = ProductionTypeMultipleChoiceField(
+            required=False, label='Type', queryset=ProductionType.featured_types()
+        )
+        self.fields['platforms'] = forms.ModelMultipleChoiceField(
+            required=False, label='Platform', queryset=Platform.objects.all()
+        )
 
     def save(self, commit=True):
         if not commit:  # pragma: no cover
@@ -180,8 +191,10 @@ class CreateProductionForm(forms.Form):
         return self.instance
 
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_production', focus=self.instance,
-            description=(u"Added production '%s'" % self.instance.title), user=user)
+        Edit.objects.create(
+            action_type='create_production', focus=self.instance,
+            description=(u"Added production '%s'" % self.instance.title), user=user
+        )
 
 
 class CreateMusicForm(CreateProductionForm):
@@ -191,7 +204,9 @@ class CreateMusicForm(CreateProductionForm):
             queryset=ProductionType.music_types(),
             initial=ProductionType.objects.get(internal_name='music')
         )
-        self.fields['platform'] = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='Any')
+        self.fields['platform'] = forms.ModelChoiceField(
+            required=False, queryset=Platform.objects.all(), empty_label='Any'
+        )
 
     def save(self, *args, **kwargs):
         self.instance.supertype = 'music'
@@ -211,7 +226,9 @@ class CreateGraphicsForm(CreateProductionForm):
             queryset=ProductionType.graphic_types(),
             initial=ProductionType.objects.get(internal_name='graphics')
         )
-        self.fields['platform'] = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='Any')
+        self.fields['platform'] = forms.ModelChoiceField(
+            required=False, queryset=Platform.objects.all(), empty_label='Any'
+        )
 
     def save(self, *args, **kwargs):
         self.instance.supertype = 'graphics'
@@ -226,8 +243,10 @@ class CreateGraphicsForm(CreateProductionForm):
 
 class ProductionEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_production_notes', focus=self.instance,
-            description="Edited notes", user=user)
+        Edit.objects.create(
+            action_type='edit_production_notes', focus=self.instance,
+            description="Edited notes", user=user
+        )
 
     class Meta:
         model = Production
@@ -284,10 +303,16 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
 
     class Meta:
         model = ProductionLink
-        exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
+        exclude = [
+            'parameter', 'link_class', 'production', 'is_download_link', 'description',
+            'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting',
+        ]
 
-ProductionDownloadLinkFormSet = inlineformset_factory(Production, ProductionLink,
-    form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=2)
+
+ProductionDownloadLinkFormSet = inlineformset_factory(
+    Production, ProductionLink,
+    form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=2
+)
 
 
 class ProductionExternalLinkForm(ExternalLinkForm):
@@ -311,10 +336,15 @@ class ProductionExternalLinkForm(ExternalLinkForm):
 
     class Meta:
         model = ProductionLink
-        exclude = ['parameter', 'link_class', 'production', 'is_download_link', 'description', 'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting']
+        exclude = [
+            'parameter', 'link_class', 'production', 'is_download_link', 'description',
+            'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting',
+        ]
 
-ProductionExternalLinkFormSet = inlineformset_factory(Production, ProductionLink,
-    form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet)
+
+ProductionExternalLinkFormSet = inlineformset_factory(
+    Production, ProductionLink, form=ProductionExternalLinkForm, formset=BaseExternalLinkFormSet
+)
 
 
 class ProductionCreditedNickForm(forms.Form):
@@ -394,9 +424,12 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
         form.instance.production = self.instance
         return form
 
-ProductionSoundtrackLinkFormset = formset_factory(SoundtrackLinkForm,
+
+ProductionSoundtrackLinkFormset = formset_factory(
+    SoundtrackLinkForm,
     formset=BaseProductionSoundtrackLinkFormSet,
-    can_delete=True, can_order=True, extra=1)
+    can_delete=True, can_order=True, extra=1
+)
 ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == 'production'][0]
 
 
@@ -443,22 +476,27 @@ class BasePackMemberFormSet(BaseModelFormSet):
         form.instance.pack = self.instance
         return form
 
-PackMemberFormset = formset_factory(PackMemberForm,
+
+PackMemberFormset = formset_factory(
+    PackMemberForm,
     formset=BasePackMemberFormSet,
-    can_delete=True, can_order=True, extra=1)
+    can_delete=True, can_order=True, extra=1
+)
 PackMemberFormset.fk = [f for f in PackMember._meta.fields if f.name == 'pack'][0]
 
 
 class ProductionInvitationPartyForm(forms.Form):
     party = PartyField(required=False)
 
-ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm,
-    can_delete=True, extra=1)
+
+ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm, can_delete=True, extra=1)
 
 
 class ProductionIndexFilterForm(forms.Form):
     platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-    production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+    production_type = ProductionTypeChoiceField(
+        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+    )
 
     def __init__(self, *args, **kwargs):
         super(ProductionIndexFilterForm, self).__init__(*args, **kwargs)
@@ -467,7 +505,9 @@ class ProductionIndexFilterForm(forms.Form):
 
 class GraphicsIndexFilterForm(forms.Form):
     platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-    production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+    production_type = ProductionTypeChoiceField(
+        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+    )
 
     def __init__(self, *args, **kwargs):
         super(GraphicsIndexFilterForm, self).__init__(*args, **kwargs)
@@ -476,12 +516,13 @@ class GraphicsIndexFilterForm(forms.Form):
 
 class MusicIndexFilterForm(forms.Form):
     platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
-    production_type = ProductionTypeChoiceField(required=False, queryset=ProductionType.objects.none(), empty_label='All types')
+    production_type = ProductionTypeChoiceField(
+        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+    )
 
     def __init__(self, *args, **kwargs):
         super(MusicIndexFilterForm, self).__init__(*args, **kwargs)
         self.fields['production_type'].queryset = ProductionType.music_types()
 
 
-ProductionInfoFileFormset = inlineformset_factory(Production, InfoFile,
-    fields=[], extra=0)
+ProductionInfoFileFormset = inlineformset_factory(Production, InfoFile, fields=[], extra=0)

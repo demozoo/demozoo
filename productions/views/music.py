@@ -1,23 +1,16 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-import random
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from read_only_mode import writeable_site_required
 
-from awards.models import Event
-from comments.forms import CommentForm
-from comments.models import Comment
 from demoscene.models import Edit
-from demoscene.shortcuts import get_page
-from productions.carousel import Carousel
-from productions.forms import CreateMusicForm, MusicIndexFilterForm, ProductionDownloadLinkFormSet, ProductionTagsForm
-from productions.models import Byline, Production, ProductionType
-from productions.views.generic import IndexView, ShowView, apply_order
+from productions.forms import CreateMusicForm, MusicIndexFilterForm, ProductionDownloadLinkFormSet
+from productions.models import Byline, Production
+from productions.views.generic import IndexView, ShowView
 
 
 class MusicIndexView(IndexView):
