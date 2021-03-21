@@ -39,6 +39,9 @@
     {% else %}
         <meta property="og:image" content="{{ meta_screenshot.standard_url }}">
     {% endif %}
+    {% if production.hide_from_search_engines %}
+        <meta name="robots" content="noindex">
+    {% endif %}
 {% endblock %}
 
 {% block body_class %}show_production{% endblock %}
