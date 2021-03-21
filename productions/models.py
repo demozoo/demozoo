@@ -120,6 +120,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
             "(Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')"
         )
     )
+    hide_from_search_engines = models.BooleanField(default=False)
 
     sortable_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
     search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)

@@ -37,6 +37,16 @@ class TestShowGraphics(TestCase):
         response = self.client.get('/graphics/%d/' % pondlife.id)
         self.assertRedirects(response, '/productions/%d/' % pondlife.id)
 
+    def test_hide_from_search_engines(self):
+        skyrider = Production.objects.get(title="Skyrider")
+        response = self.client.get('/graphics/%d/' % skyrider.id)
+        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+
+        skyrider.hide_from_search_engines = True
+        skyrider.save()
+        response = self.client.get('/graphics/%d/' % skyrider.id)
+        self.assertContains(response, '<meta name="robots" content="noindex">')
+
 
 class TestShowHistory(TestCase):
     fixtures = ['tests/gasman.json']

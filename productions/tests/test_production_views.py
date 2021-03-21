@@ -180,6 +180,16 @@ class TestShowProduction(TestCase):
         response = self.client.get('/productions/%d/' % cybrev.id)
         self.assertRedirects(response, '/music/%d/' % cybrev.id)
 
+    def test_hide_from_search_engines(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+
+        pondlife.hide_from_search_engines = True
+        pondlife.save()
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertContains(response, '<meta name="robots" content="noindex">')
+
 
 class TestShowHistory(TestCase):
     fixtures = ['tests/gasman.json']
