@@ -1,7 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
-from io import BytesIO
 
 from django.test import TestCase
 from mock import patch
@@ -59,8 +58,10 @@ class TestActions(TestCase):
         session = Session.return_value
         s3 = session.resource.return_value
         bucket = s3.Bucket.return_value
+
         def download_fileobj(filename, f):
             f.write(b'hello from pondlife.txt')
+
         bucket.download_fileobj = download_fileobj
 
         download_blob = fetch_link(link)
@@ -123,7 +124,7 @@ class TestActions(TestCase):
         s3 = session.resource.return_value
         bucket = s3.Bucket.return_value
 
-        download_blob = fetch_link(link)
+        fetch_link(link)
         bucket.put_object.assert_called_once()
         Session.assert_called_once()
 

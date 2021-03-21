@@ -30,7 +30,8 @@ def show(request, bbs_id):
         'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
     )
 
-    # order by -role to get Sysop before Co-sysop. Will need to come up with something less hacky if more roles are added :-)
+    # order by -role to get Sysop before Co-sysop.
+    # Will need to come up with something less hacky if more roles are added :-)
     staff = bbs.staff.select_related('releaser').defer('releaser__notes').order_by('-role', 'releaser__name')
 
     affiliations = bbs.affiliations.select_related('group').defer('group__notes').order_by(
@@ -105,7 +106,8 @@ def edit_notes(request, bbs_id):
     def success(form):
         form.log_edit(request.user)
 
-    return simple_ajax_form(request, 'bbs_edit_notes', bbs, BBSEditNotesForm,
+    return simple_ajax_form(
+        request, 'bbs_edit_notes', bbs, BBSEditNotesForm,
         title='Editing notes for %s' % bbs.name, on_success=success
     )
 
@@ -121,8 +123,10 @@ def delete(request, bbs_id):
 
             # insert log entry before actually deleting, so that it doesn't try to
             # insert a null ID for the focus field
-            Edit.objects.create(action_type='delete_bbs', focus=bbs,
-                description=(u"Deleted BBS '%s'" % bbs.name), user=request.user)
+            Edit.objects.create(
+                action_type='delete_bbs', focus=bbs,
+                description=(u"Deleted BBS '%s'" % bbs.name), user=request.user
+            )
 
             bbs.delete()
 
@@ -131,10 +135,12 @@ def delete(request, bbs_id):
         else:
             return redirect('bbs', bbs.id)
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('delete_bbs', args=[bbs.id]),
             "Are you sure you want to delete %s?" % bbs.name,
-            html_title="Deleting %s" % bbs.name)
+            html_title="Deleting %s" % bbs.name
+        )
 
 
 @writeable_site_required
@@ -149,18 +155,20 @@ def edit_bbstros(request, bbs_id):
     if request.method == 'POST':
         formset = BBStroFormset(request.POST, initial=initial_forms)
         if formset.is_valid():
-            bbstros = [prod_form.cleaned_data['production'].commit()
+            bbstros = [
+                prod_form.cleaned_data['production'].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms
-                    and 'production' in prod_form.cleaned_data
+                if prod_form not in formset.deleted_forms and 'production' in prod_form.cleaned_data
             ]
             bbs.bbstros.set(bbstros)
 
             if formset.has_changed():
                 bbstro_titles = [prod.title for prod in bbstros] or ['none']
                 bbstro_titles = ", ".join(bbstro_titles)
-                Edit.objects.create(action_type='edit_bbs_bbstros', focus=bbs,
-                    description=u"Set BBStros to %s" % bbstro_titles, user=request.user)
+                Edit.objects.create(
+                    action_type='edit_bbs_bbstros', focus=bbs,
+                    description=u"Set BBStros to %s" % bbstro_titles, user=request.user
+                )
 
             return redirect('bbs', bbs.id)
     else:
@@ -194,8 +202,10 @@ def add_operator(request, bbs_id):
                 role=form.cleaned_data['role'])
             operator.save()
             description = u"Added %s as staff member of %s" % (releaser.name, bbs.name)
-            Edit.objects.create(action_type='add_bbs_operator', focus=releaser, focus2=bbs,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='add_bbs_operator', focus=releaser, focus2=bbs,
+                description=description, user=request.user
+            )
             return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
     else:
         form = OperatorForm()
@@ -246,14 +256,18 @@ def remove_operator(request, bbs_id, operator_id):
         if request.POST.get('yes'):
             operator.delete()
             description = u"Removed %s as staff member of %s" % (operator.releaser.name, bbs.name)
-            Edit.objects.create(action_type='remove_bbs_operator', focus=operator.releaser, focus2=bbs,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_bbs_operator', focus=operator.releaser, focus2=bbs,
+                description=description, user=request.user
+            )
         return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('bbs_remove_operator', args=[bbs_id, operator_id]),
             "Are you sure you want to remove %s as staff member of %s?" % (operator.releaser.name, bbs.name),
-            html_title="Removing %s as staff member of %s" % (operator.releaser.name, bbs.name))
+            html_title="Removing %s as staff member of %s" % (operator.releaser.name, bbs.name)
+        )
 
 
 @writeable_site_required
@@ -274,8 +288,10 @@ def add_affiliation(request, bbs_id):
                 description = u"Added BBS %s as %s for %s" % (bbs.name, affiliation.get_role_display(), group.name)
             else:
                 description = u"Added affiliation with BBS %s for %s" % (bbs.name, group.name)
-            Edit.objects.create(action_type='add_bbs_affiliation', focus=group, focus2=bbs,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='add_bbs_affiliation', focus=group, focus2=bbs,
+                description=description, user=request.user
+            )
             return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
     else:
         form = AffiliationForm()
@@ -326,11 +342,15 @@ def remove_affiliation(request, bbs_id, affiliation_id):
         if request.POST.get('yes'):
             affiliation.delete()
             description = u"Removed %s's affiliation with %s" % (affiliation.group.name, bbs.name)
-            Edit.objects.create(action_type='remove_bbs_affiliation', focus=affiliation.group, focus2=bbs,
-                description=description, user=request.user)
+            Edit.objects.create(
+                action_type='remove_bbs_affiliation', focus=affiliation.group, focus2=bbs,
+                description=description, user=request.user
+            )
         return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
     else:
-        return simple_ajax_confirmation(request,
+        return simple_ajax_confirmation(
+            request,
             reverse('bbs_remove_affiliation', args=[bbs_id, affiliation_id]),
             "Are you sure you want to remove %s's affiliation with %s?" % (affiliation.group.name, bbs.name),
-            html_title="Removing %s's affiliation with %s" % (affiliation.group.name, bbs.name))
+            html_title="Removing %s's affiliation with %s" % (affiliation.group.name, bbs.name)
+        )

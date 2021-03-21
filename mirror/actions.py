@@ -110,9 +110,11 @@ def fetch_link(link):
         if existing_download:
             download.mirror_s3_key = existing_download.mirror_s3_key
         else:
-            key_name = blob.sha1[0:2] + '/' + blob.sha1[2:4] + '/' + blob.sha1[4:16] + '/' + clean_filename(blob.filename)
+            key_name = (
+                blob.sha1[0:2] + '/' + blob.sha1[2:4] + '/' + blob.sha1[4:16] + '/' + clean_filename(blob.filename)
+            )
             bucket = open_bucket()
-            obj = bucket.put_object(Key=key_name, Body=blob.file_content)
+            bucket.put_object(Key=key_name, Body=blob.file_content)
             download.mirror_s3_key = key_name
 
         download.save()

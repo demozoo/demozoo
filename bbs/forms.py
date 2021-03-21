@@ -10,8 +10,10 @@ from productions.fields.production_field import ProductionField
 
 class BBSForm(ModelFormWithLocation):
     def log_creation(self, user):
-        Edit.objects.create(action_type='create_bbs', focus=self.instance,
-            description=(u"Added BBS '%s'" % self.instance.name), user=user)
+        Edit.objects.create(
+            action_type='create_bbs', focus=self.instance,
+            description=(u"Added BBS '%s'" % self.instance.name), user=user
+        )
 
     @property
     def changed_data_description(self):
@@ -27,8 +29,10 @@ class BBSForm(ModelFormWithLocation):
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(action_type='edit_bbs', focus=self.instance,
-                description=description, user=user)
+            Edit.objects.create(
+                action_type='edit_bbs', focus=self.instance,
+                description=description, user=user
+            )
 
     class Meta:
         model = BBS
@@ -37,8 +41,10 @@ class BBSForm(ModelFormWithLocation):
 
 class BBSEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(action_type='edit_bbs_notes', focus=self.instance,
-            description="Edited notes", user=user)
+        Edit.objects.create(
+            action_type='edit_bbs_notes', focus=self.instance,
+            description="Edited notes", user=user
+        )
 
     class Meta:
         model = BBS
@@ -47,6 +53,7 @@ class BBSEditNotesForm(forms.ModelForm):
 
 class BBStroForm(forms.Form):
     production = ProductionField()
+
 
 BBStroFormset = formset_factory(BBStroForm, can_delete=True, extra=1)
 
@@ -65,9 +72,11 @@ class OperatorForm(forms.Form):
             descriptions.append("changed role to %s" % self.cleaned_data['role'])
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_bbs_operator', focus=releaser, focus2=bbs,
+            Edit.objects.create(
+                action_type='edit_bbs_operator', focus=releaser, focus2=bbs,
                 description=u"Updated %s as staff member of %s: %s" % (releaser, bbs, description_list),
-                user=user)
+                user=user
+            )
 
 
 class AffiliationForm(forms.Form):
@@ -84,7 +93,12 @@ class AffiliationForm(forms.Form):
             descriptions.append("changed role to %s" % (affiliation.get_role_display() or 'None'))
         if descriptions:
             description_list = u", ".join(descriptions)
-            Edit.objects.create(action_type='edit_bbs_affiliation',
+            Edit.objects.create(
+                action_type='edit_bbs_affiliation',
                 focus=affiliation.group, focus2=affiliation.bbs,
-                description=u"Updated %s's affiliation with %s: %s" % (affiliation.group, affiliation.bbs, description_list),
-                user=user)
+                description=(
+                    u"Updated %s's affiliation with %s: %s"
+                    % (affiliation.group, affiliation.bbs, description_list)
+                ),
+                user=user
+            )

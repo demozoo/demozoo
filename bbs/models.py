@@ -90,7 +90,7 @@ class Operator(models.Model):
         return "%s - %s of %s" % (self.releaser.name, self.role, self.bbs.name)
 
 
-AFFILIATION_TYPES= [
+AFFILIATION_TYPES = [
     ('010-whq', 'WHQ'),
     ('020-hq', 'HQ'),
     ('030-memberboard', 'Memberboard'),
