@@ -28,7 +28,7 @@ from productions.forms import (
     ProductionExternalLinkFormSet, ProductionIndexFilterForm, ProductionInfoFileFormset,
     ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
 )
-from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, Screenshot
+from productions.models import Credit, InfoFile, Production, ProductionBlurb, Screenshot
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
@@ -526,29 +526,6 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
 class CreateProductionView(CreateView):
     form_class = CreateProductionForm
     template = 'productions/create.html'
-
-
-@writeable_site_required
-@login_required
-def create(request):
-    if request.method == 'POST':
-        production = Production(updated_at=datetime.datetime.now())
-        form = CreateProductionForm(request.POST, instance=production)
-        download_link_formset = ProductionDownloadLinkFormSet(request.POST, instance=production)
-        if form.is_valid() and download_link_formset.is_valid():
-            form.save()
-            download_link_formset.save_ignoring_uniqueness()
-            form.log_creation(request.user)
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        form = CreateProductionForm(initial={
-            'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
-        })
-        download_link_formset = ProductionDownloadLinkFormSet()
-    return render(request, 'productions/create.html', {
-        'form': form,
-        'download_link_formset': download_link_formset,
-    })
 
 
 @writeable_site_required
