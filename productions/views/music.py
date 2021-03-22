@@ -1,15 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
-import datetime
-
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
-from read_only_mode import writeable_site_required
-
-from productions.forms import CreateMusicForm, MusicIndexFilterForm, ProductionDownloadLinkFormSet
-from productions.models import Byline, Production
-from productions.views.generic import HistoryView, IndexView, ShowView
+from productions.forms import CreateMusicForm, MusicIndexFilterForm
+from productions.views.generic import CreateView, HistoryView, IndexView, ShowView
 
 
 class MusicIndexView(IndexView):
@@ -44,24 +36,6 @@ class MusicHistoryView(HistoryView):
     supertype = 'music'
 
 
-@writeable_site_required
-@login_required
-def create(request):
-    if request.method == 'POST':
-        production = Production(updated_at=datetime.datetime.now())
-        form = CreateMusicForm(request.POST, instance=production)
-        download_link_formset = ProductionDownloadLinkFormSet(request.POST, instance=production)
-        if form.is_valid() and download_link_formset.is_valid():
-            form.save()
-            download_link_formset.save_ignoring_uniqueness()
-            form.log_creation(request.user)
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        form = CreateMusicForm(initial={
-            'byline': Byline.from_releaser_id(request.GET.get('releaser_id'))
-        })
-        download_link_formset = ProductionDownloadLinkFormSet()
-    return render(request, 'music/create.html', {
-        'form': form,
-        'download_link_formset': download_link_formset,
-    })
+class CreateMusicView(CreateView):
+    form_class = CreateMusicForm
+    template = 'music/create.html'

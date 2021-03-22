@@ -29,7 +29,7 @@ from productions.forms import (
     ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
 )
 from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, Screenshot
-from productions.views.generic import HistoryView, IndexView, ShowView, apply_order
+from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
 
@@ -521,6 +521,11 @@ def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=Fal
                 "Are you sure you want to delete this screenshot for %s?" % production.title,
                 html_title="Deleting screenshot for %s" % production.title
             )
+
+
+class CreateProductionView(CreateView):
+    form_class = CreateProductionForm
+    template = 'productions/create.html'
 
 
 @writeable_site_required
