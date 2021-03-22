@@ -29,7 +29,7 @@ from productions.forms import (
     ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
 )
 from productions.models import Byline, Credit, InfoFile, Production, ProductionBlurb, Screenshot
-from productions.views.generic import IndexView, ShowView, apply_order
+from productions.views.generic import HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
 
@@ -98,14 +98,8 @@ class ProductionShowView(ShowView):
         return context
 
 
-def history(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if production.supertype != 'production':
-        return HttpResponseRedirect(production.get_history_url())
-    return render(request, 'productions/history.html', {
-        'production': production,
-        'edits': Edit.for_model(production, request.user.is_staff),
-    })
+class ProductionHistoryView(HistoryView):
+    supertype = 'production'
 
 
 @writeable_site_required

@@ -8,6 +8,7 @@ from django.views import View
 from awards.models import Event
 from comments.forms import CommentForm
 from comments.models import Comment
+from demoscene.models import Edit
 from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionTagsForm
@@ -65,7 +66,7 @@ def apply_order(queryset, order, asc):
 
 
 class ShowView(View):
-    supertype = 'production'
+    # subclasses provide supertype
 
     def get(self, request, production_id, edit_mode=False):
         self.production = get_object_or_404(Production, id=production_id)
@@ -127,3 +128,16 @@ class ShowView(View):
             'awards_accepting_recommendations': awards_accepting_recommendations,
             'pack_members': pack_members,
         }
+
+
+class HistoryView(View):
+    # subclasses provide supertype
+
+    def get(self, request, production_id):
+        production = get_object_or_404(Production, id=production_id)
+        if production.supertype != self.supertype:
+            return HttpResponseRedirect(production.get_history_url())
+        return render(request, 'productions/history.html', {
+            'production': production,
+            'edits': Edit.for_model(production, request.user.is_staff),
+        })

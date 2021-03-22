@@ -7,10 +7,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from read_only_mode import writeable_site_required
 
-from demoscene.models import Edit
 from productions.forms import CreateMusicForm, MusicIndexFilterForm, ProductionDownloadLinkFormSet
 from productions.models import Byline, Production
-from productions.views.generic import IndexView, ShowView
+from productions.views.generic import HistoryView, IndexView, ShowView
 
 
 class MusicIndexView(IndexView):
@@ -41,14 +40,8 @@ class MusicShowView(ShowView):
         return context
 
 
-def history(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if production.supertype != 'music':
-        return HttpResponseRedirect(production.get_history_url())
-    return render(request, 'productions/history.html', {
-        'production': production,
-        'edits': Edit.for_model(production, request.user.is_staff),
-    })
+class MusicHistoryView(HistoryView):
+    supertype = 'music'
 
 
 @writeable_site_required
