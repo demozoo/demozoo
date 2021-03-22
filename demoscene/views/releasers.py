@@ -52,7 +52,7 @@ def add_credit(request, releaser_id):
                     focus2=nick.releaser,
                     description=description, user=request.user
                 )
-            return HttpResponseRedirect(releaser.get_absolute_edit_url())
+            return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         form = ReleaserCreditForm(releaser)
         credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
@@ -114,7 +114,7 @@ def edit_credit(request, releaser_id, nick_id, production_id):
                 user=request.user
             )
 
-            return HttpResponseRedirect(releaser.get_absolute_edit_url())
+            return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         form = ReleaserCreditForm(releaser, {
             'nick': nick.id,
@@ -155,7 +155,7 @@ def delete_credit(request, releaser_id, nick_id, production_id):
                     action_type='delete_credit', focus=production, focus2=releaser,
                     description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user
                 )
-        return HttpResponseRedirect(releaser.get_absolute_edit_url())
+        return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         return simple_ajax_confirmation(
             request,
@@ -170,7 +170,7 @@ def delete_credit(request, releaser_id, nick_id, production_id):
 def edit_notes(request, releaser_id):
     releaser = get_object_or_404(Releaser, id=releaser_id)
     if not request.user.is_staff:
-        return HttpResponseRedirect(releaser.get_absolute_edit_url())
+        return HttpResponseRedirect(releaser.get_absolute_url())
 
     def success(form):
         form.log_edit(request.user)
@@ -205,7 +205,7 @@ def edit_nick(request, releaser_id, nick_id):
             releaser.updated_at = datetime.datetime.now()
             releaser.save()
             form.log_edit(request.user)
-            return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
+            return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
     else:
         form = nick_form_class(releaser, instance=nick, for_admin=request.user.is_staff)
 
@@ -241,7 +241,7 @@ def add_nick(request, releaser_id):
             releaser.updated_at = datetime.datetime.now()
             releaser.save()
             form.log_creation(request.user)
-            return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
+            return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
     else:
         form = nick_form_class(releaser, for_admin=request.user.is_staff)
 
@@ -282,7 +282,7 @@ def change_primary_nick(request, releaser_id):
             action_type='change_primary_nick', focus=releaser,
             description=(u"Set primary nick to '%s'" % nick.name), user=request.user
         )
-    return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
+    return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
 
 
 @writeable_site_required
@@ -295,7 +295,7 @@ def delete_nick(request, releaser_id, nick_id):
         raise PermissionDenied
 
     if nick.is_primary_nick():  # not allowed to delete primary nick
-        return HttpResponseRedirect(releaser.get_absolute_edit_url())
+        return HttpResponseRedirect(releaser.get_absolute_url())
 
     if request.method == 'POST':
         if request.POST.get('yes'):
@@ -306,7 +306,7 @@ def delete_nick(request, releaser_id, nick_id):
                 action_type='delete_nick', focus=releaser,
                 description=(u"Deleted nick '%s'" % nick.name), user=request.user
             )
-        return HttpResponseRedirect(releaser.get_absolute_edit_url() + "?editing=nicks")
+        return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
     else:
         if nick.is_referenced():
             prompt = """
@@ -329,7 +329,7 @@ def delete_nick(request, releaser_id, nick_id):
 def delete(request, releaser_id):
     releaser = get_object_or_404(Releaser, id=releaser_id)
     if not request.user.is_staff:
-        return HttpResponseRedirect(releaser.get_absolute_edit_url())
+        return HttpResponseRedirect(releaser.get_absolute_url())
     if request.method == 'POST':
         if request.POST.get('yes'):
 
@@ -354,7 +354,7 @@ def delete(request, releaser_id):
             else:
                 return HttpResponseRedirect(reverse('sceners'))
         else:
-            return HttpResponseRedirect(releaser.get_absolute_edit_url())
+            return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         return simple_ajax_confirmation(
             request,
@@ -378,7 +378,7 @@ def edit_external_links(request, releaser_id):
             formset.save_ignoring_uniqueness()
             formset.log_edit(request.user, 'releaser_edit_external_links')
 
-            return HttpResponseRedirect(releaser.get_absolute_edit_url())
+            return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         formset = ReleaserExternalLinkFormSet(instance=releaser)
     return render(request, 'releasers/edit_external_links.html', {

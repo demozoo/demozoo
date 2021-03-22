@@ -206,7 +206,7 @@ def add_operator(request, bbs_id):
                 action_type='add_bbs_operator', focus=releaser, focus2=bbs,
                 description=description, user=request.user
             )
-            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
         form = OperatorForm()
     return render(request, 'bbs/add_operator.html', {
@@ -233,7 +233,7 @@ def edit_operator(request, bbs_id, operator_id):
             operator.save()
             form.log_edit(request.user, releaser, bbs)
 
-            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
         form = OperatorForm(initial={
             'releaser_nick': operator.releaser.primary_nick,
@@ -260,7 +260,7 @@ def remove_operator(request, bbs_id, operator_id):
                 action_type='remove_bbs_operator', focus=operator.releaser, focus2=bbs,
                 description=description, user=request.user
             )
-        return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=staff")
+        return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
         return simple_ajax_confirmation(
             request,
@@ -292,7 +292,7 @@ def add_affiliation(request, bbs_id):
                 action_type='add_bbs_affiliation', focus=group, focus2=bbs,
                 description=description, user=request.user
             )
-            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
         form = AffiliationForm()
     return render(request, 'bbs/add_affiliation.html', {
@@ -319,7 +319,7 @@ def edit_affiliation(request, bbs_id, affiliation_id):
             affiliation.save()
             form.log_edit(request.user, affiliation)
 
-            return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
         form = AffiliationForm(initial={
             'group_nick': affiliation.group.primary_nick,
@@ -346,7 +346,7 @@ def remove_affiliation(request, bbs_id, affiliation_id):
                 action_type='remove_bbs_affiliation', focus=affiliation.group, focus2=bbs,
                 description=description, user=request.user
             )
-        return HttpResponseRedirect(bbs.get_absolute_edit_url() + "?editing=affiliations")
+        return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
         return simple_ajax_confirmation(
             request,

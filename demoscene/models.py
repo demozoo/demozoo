@@ -83,9 +83,6 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         else:
             return reverse('scener', args=[str(self.id)])
 
-    def get_absolute_edit_url(self):
-        return self.get_absolute_url()
-
     def get_history_url(self):
         if self.is_group:
             return reverse('group_history', args=[str(self.id)])

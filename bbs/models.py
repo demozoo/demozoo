@@ -37,9 +37,6 @@ class BBS(models.Model):
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])
 
-    def get_absolute_edit_url(self):
-        return reverse('bbs', args=[self.id])
-
     def get_history_url(self):
         return reverse('bbs_history', args=[self.id])
 

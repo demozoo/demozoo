@@ -93,7 +93,7 @@ def create(request):
         if form.is_valid():
             group = form.save()
             form.log_creation(request.user)
-            return HttpResponseRedirect(group.get_absolute_edit_url())
+            return HttpResponseRedirect(group.get_absolute_url())
     else:
         form = CreateGroupForm()
 
@@ -130,7 +130,7 @@ def add_member(request, group_id):
                     action_type='add_membership', focus=member, focus2=group,
                     description=description, user=request.user
                 )
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
     else:
         form = GroupMembershipForm()
     return render(request, 'groups/add_member.html', {
@@ -160,7 +160,7 @@ def remove_member(request, group_id, scener_id):
                 description=u"Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
                 user=request.user
             )
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
         elif deletion_type == 'full':
             group.member_memberships.filter(member=scener).delete()
             group.updated_at = datetime.datetime.now()
@@ -170,7 +170,7 @@ def remove_member(request, group_id, scener_id):
                 action_type='remove_membership', focus=scener, focus2=group,
                 description=description, user=request.user
             )
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
         else:
             show_error_message = True
 
@@ -209,7 +209,7 @@ def edit_membership(request, group_id, membership_id):
                 group.save()
                 form.log_edit(request.user, member, group)
 
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=members")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
     else:
         form = GroupMembershipForm(initial={
             'scener_nick': membership.member.primary_nick,
@@ -247,7 +247,7 @@ def add_subgroup(request, group_id):
                     action_type='add_subgroup', focus=member, focus2=group,
                     description=description, user=request.user
                 )
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
     else:
         form = GroupSubgroupForm()
     return render(request, 'groups/add_subgroup.html', {
@@ -275,7 +275,7 @@ def remove_subgroup(request, group_id, subgroup_id):
                 action_type='remove_membership', focus=subgroup, focus2=group,
                 description=description, user=request.user
             )
-        return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
+        return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
     else:
         return simple_ajax_confirmation(
             request,
@@ -308,7 +308,7 @@ def edit_subgroup(request, group_id, membership_id):
                 group.updated_at = datetime.datetime.now()
                 group.save()
                 form.log_edit(request.user, member, group)
-            return HttpResponseRedirect(group.get_absolute_edit_url() + "?editing=subgroups")
+            return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
     else:
         form = GroupSubgroupForm(initial={
             'subgroup_nick': membership.member.primary_nick,
@@ -326,7 +326,7 @@ def edit_subgroup(request, group_id, membership_id):
 def convert_to_scener(request, group_id):
     group = get_object_or_404(Releaser, is_group=True, id=group_id)
     if not request.user.is_staff or not group.can_be_converted_to_scener():
-        return HttpResponseRedirect(group.get_absolute_edit_url())
+        return HttpResponseRedirect(group.get_absolute_url())
     if request.method == 'POST':
         if request.POST.get('yes'):
             group.is_group = False
@@ -342,7 +342,7 @@ def convert_to_scener(request, group_id):
                 action_type='convert_to_scener', focus=group,
                 description=(u"Converted %s from a group to a scener" % group), user=request.user
             )
-        return HttpResponseRedirect(group.get_absolute_edit_url())
+        return HttpResponseRedirect(group.get_absolute_url())
     else:
         return simple_ajax_confirmation(
             request,

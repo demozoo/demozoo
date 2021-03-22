@@ -224,7 +224,7 @@ def edit(request, party_id):
 def edit_notes(request, party_id):
     party = get_object_or_404(Party, id=party_id)
     if not request.user.is_staff:
-        return HttpResponseRedirect(party.get_absolute_edit_url())
+        return HttpResponseRedirect(party.get_absolute_url())
 
     def success(form):
         form.log_edit(request.user)
@@ -272,7 +272,7 @@ def edit_external_links(request, party_id):
             if party_series_updated:
                 party.party_series.save()
 
-            return HttpResponseRedirect(party.get_absolute_edit_url())
+            return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyExternalLinkFormSet(instance=party)
     return render(request, 'parties/edit_external_links.html', {
@@ -286,7 +286,7 @@ def edit_external_links(request, party_id):
 def edit_series_notes(request, party_series_id):
     party_series = get_object_or_404(PartySeries, id=party_series_id)
     if not request.user.is_staff:
-        return HttpResponseRedirect(party_series.get_absolute_edit_url())
+        return HttpResponseRedirect(party_series.get_absolute_url())
 
     def success(form):
         form.log_edit(request.user)
@@ -483,7 +483,7 @@ def add_organiser(request, party_id):
                 action_type='add_party_organiser', focus=releaser, focus2=party,
                 description=description, user=request.user
             )
-            return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
+            return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm()
     return render(request, 'parties/add_organiser.html', {
@@ -510,7 +510,7 @@ def edit_organiser(request, party_id, organiser_id):
             organiser.save()
             form.log_edit(request.user, releaser, party)
 
-            return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
+            return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm(initial={
             'releaser_nick': organiser.releaser.primary_nick,
@@ -537,7 +537,7 @@ def remove_organiser(request, party_id, organiser_id):
                 action_type='remove_party_organiser', focus=organiser.releaser, focus2=party,
                 description=description, user=request.user
             )
-        return HttpResponseRedirect(party.get_absolute_edit_url() + "?editing=organisers")
+        return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         return simple_ajax_confirmation(
             request,

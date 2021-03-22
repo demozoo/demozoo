@@ -34,9 +34,6 @@ class PartySeries(models.Model):
     def get_absolute_url(self):
         return reverse('party_series', args=[str(self.id)])
 
-    def get_absolute_edit_url(self):
-        return reverse('party_series', args=[str(self.id)])
-
     def get_history_url(self):
         return reverse('party_series_history', args=[str(self.id)])
 
@@ -143,9 +140,6 @@ class Party(Commentable):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('party', args=[str(self.id)])
-
-    def get_absolute_edit_url(self):
         return reverse('party', args=[str(self.id)])
 
     def get_history_url(self):

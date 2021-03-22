@@ -244,9 +244,6 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         else:
             return reverse('production', args=[str(self.id)])
 
-    def get_absolute_edit_url(self):
-        return self.get_absolute_url()
-
     def get_edit_core_details_url(self):
         if self.supertype == 'music':
             return reverse('music_edit_core_details', args=[str(self.id)])

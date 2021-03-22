@@ -41,7 +41,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
             if kwargs.get('ajax_submit') and request.is_ajax():
                 return HttpResponse('OK', content_type='text/plain')
             else:
-                return HttpResponseRedirect(instance.get_absolute_edit_url())
+                return HttpResponseRedirect(instance.get_absolute_url())
     else:
         form = form_class(instance=instance)
 
