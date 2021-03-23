@@ -76,7 +76,10 @@ urlpatterns += [
     url(r'^sceners/(\d+)/edit_membership/(\d+)/$', sceners_views.edit_membership, {}, 'scener_edit_membership'),
     url(r'^sceners/(\d+)/edit_location/$', sceners_views.edit_location, {}, 'scener_edit_location'),
     url(r'^sceners/(\d+)/edit_real_name/$', sceners_views.edit_real_name, {}, 'scener_edit_real_name'),
-    url(r'^sceners/(\d+)/convert_to_group/$', sceners_views.convert_to_group, {}, 'scener_convert_to_group'),
+    url(
+        r'^sceners/(\d+)/convert_to_group/$', sceners_views.ConvertToGroupView.as_view(), {},
+        'scener_convert_to_group'
+    ),
 
     url(r'^releasers/(\d+)/add_credit/$', releasers_views.add_credit, {}, 'releaser_add_credit'),
     url(r'^releasers/(\d+)/edit_credit/(\d+)/(\d+)/$', releasers_views.edit_credit, {}, 'releaser_edit_credit'),

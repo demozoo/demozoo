@@ -301,6 +301,10 @@ class TestConvertToGroup(TestCase):
         response = self.client.get('/sceners/%d/convert_to_group/' % self.laesq.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_404(self):
+        response = self.client.get('/sceners/9999/convert_to_group/')
+        self.assertEqual(response.status_code, 404)
+
     def test_post(self):
         response = self.client.post('/sceners/%d/convert_to_group/' % self.laesq.id, {
             'yes': 'yes',
