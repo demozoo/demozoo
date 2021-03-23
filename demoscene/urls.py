@@ -62,7 +62,10 @@ urlpatterns = [
         r'^releasers/(\d+)/change_primary_nick/$', releasers_views.change_primary_nick, {},
         'releaser_change_primary_nick'
     ),
-    url(r'^releasers/(\d+)/delete_nick/(\d+)/$', releasers_views.delete_nick, {}, 'releaser_delete_nick'),
+    url(
+        r'^releasers/(\d+)/delete_nick/(\d+)/$', releasers_views.DeleteNickView.as_view(), {},
+        'releaser_delete_nick'
+    ),
     url(r'^releasers/(\d+)/delete/$', releasers_views.delete, {}, 'delete_releaser'),
     url(
         r'^releasers/(\d+)/edit_external_links/$', releasers_views.edit_external_links, {},

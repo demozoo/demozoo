@@ -289,42 +289,40 @@ def change_primary_nick(request, releaser_id):
     return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
 
 
-@writeable_site_required
-@login_required
-def delete_nick(request, releaser_id, nick_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-    nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
+class DeleteNickView(AjaxConfirmationView):
+    def get_object(self, request, releaser_id, nick_id):
+        self.releaser = Releaser.objects.get(id=releaser_id)
+        self.nick = Nick.objects.get(id=nick_id, releaser=self.releaser)
 
-    if not releaser.editable_by_user(request.user):
-        raise PermissionDenied
+    def is_permitted(self):
+        # not allowed to delete primary nick
+        return self.releaser.editable_by_user(self.request.user) and not self.nick.is_primary_nick()
 
-    if nick.is_primary_nick():  # not allowed to delete primary nick
-        return HttpResponseRedirect(releaser.get_absolute_url())
+    def get_redirect_url(self):
+        return self.releaser.get_absolute_url() + "?editing=nicks"
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            nick.reassign_references_and_delete()
-            releaser.updated_at = datetime.datetime.now()
-            releaser.save()
-            Edit.objects.create(
-                action_type='delete_nick', focus=releaser,
-                description=(u"Deleted nick '%s'" % nick.name), user=request.user
-            )
-        return HttpResponseRedirect(releaser.get_absolute_url() + "?editing=nicks")
-    else:
-        if nick.is_referenced():
-            prompt = """
+    def get_action_url(self):
+        return reverse('releaser_delete_nick', args=[self.releaser.id, self.nick.id])
+
+    def get_message(self):
+        if self.nick.is_referenced():
+            return """
                 Are you sure you want to delete %s's alternative name '%s'?
                 This will cause all releases under the name '%s' to be reassigned back to '%s'.
-            """ % (releaser.name, nick.name, nick.name, releaser.name)
+            """ % (self.releaser.name, self.nick.name, self.nick.name, self.releaser.name)
         else:
-            prompt = "Are you sure you want to delete %s's alternative name '%s'?" % (releaser.name, nick.name)
+            return "Are you sure you want to delete %s's alternative name '%s'?" % (self.releaser.name, self.nick.name)
 
-        return simple_ajax_confirmation(
-            request,
-            reverse('releaser_delete_nick', args=[releaser_id, nick_id]),
-            prompt,
-            html_title="Deleting name: %s" % nick.name
+    def get_html_title(self):
+        return "Deleting name: %s" % self.nick.name
+
+    def perform_action(self):
+        self.nick.reassign_references_and_delete()
+        self.releaser.updated_at = datetime.datetime.now()
+        self.releaser.save()
+        Edit.objects.create(
+            action_type='delete_nick', focus=self.releaser,
+            description=(u"Deleted nick '%s'" % self.nick.name), user=self.request.user
         )
 
 

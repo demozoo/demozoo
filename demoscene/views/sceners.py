@@ -56,6 +56,7 @@ def show(request, scener_id, edit_mode=False):
         'alternative_nicks': scener.alternative_nicks.prefetch_related('variants'),
         'external_links': external_links,
         'editing_groups': (request.GET.get('editing') == 'groups'),
+        'editing_nicks': (request.GET.get('editing') == 'nicks'),
         'memberships': (
             scener.group_memberships.select_related('group').defer('group__notes')
             .order_by('-is_current', 'group__name')

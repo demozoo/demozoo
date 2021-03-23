@@ -271,7 +271,7 @@ class TestDeleteNick(TestCase):
     def test_locked(self):
         npd = self.papaya_dezign.nicks.create(name='Not Papaya Design')
         response = self.client.get('/releasers/%d/delete_nick/%d/' % (self.papaya_dezign.id, npd.id))
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, '/groups/%d/?editing=nicks' % self.papaya_dezign.id)
 
     def test_get(self):
         response = self.client.get('/releasers/%d/delete_nick/%d/' % (self.gasman.id, self.shingebis.id))
@@ -293,7 +293,7 @@ class TestDeleteNick(TestCase):
         response = self.client.post('/releasers/%d/delete_nick/%d/' % (self.gasman.id, self.gasman.primary_nick.id), {
             'yes': 'yes',
         })
-        self.assertRedirects(response, '/sceners/%d/' % self.gasman.id)
+        self.assertRedirects(response, '/sceners/%d/?editing=nicks' % self.gasman.id)
         self.assertEqual(Nick.objects.filter(name='Gasman').count(), 1)
 
 
