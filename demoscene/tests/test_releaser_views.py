@@ -102,7 +102,7 @@ class TestDeleteCredit(TestCase):
                 self.papaya_dezign.id, self.papaya_dezign.primary_nick.id, self.pondlife.id
             )
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, '/groups/%d/' % self.papaya_dezign.id)
 
     def test_get(self):
         response = self.client.get(

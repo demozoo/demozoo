@@ -89,7 +89,10 @@ urlpatterns += [
 
     url(r'^releasers/(\d+)/add_credit/$', releasers_views.add_credit, {}, 'releaser_add_credit'),
     url(r'^releasers/(\d+)/edit_credit/(\d+)/(\d+)/$', releasers_views.edit_credit, {}, 'releaser_edit_credit'),
-    url(r'^releasers/(\d+)/delete_credit/(\d+)/(\d+)/$', releasers_views.delete_credit, {}, 'releaser_delete_credit'),
+    url(
+        r'^releasers/(\d+)/delete_credit/(\d+)/(\d+)/$', releasers_views.DeleteCreditView.as_view(), {},
+        'releaser_delete_credit'
+    ),
     url(r'^releasers/(\d+)/edit_notes/$', releasers_views.edit_notes, {}, 'releaser_edit_notes'),
     url(r'^releasers/(\d+)/edit_nick/(\d+)/$', releasers_views.edit_nick, {}, 'releaser_edit_nick'),
     url(r'^releasers/(\d+)/add_nick/$', releasers_views.add_nick, {}, 'releaser_add_nick'),

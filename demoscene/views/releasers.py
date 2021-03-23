@@ -16,6 +16,7 @@ from demoscene.forms.releaser import (
 )
 from demoscene.models import Edit, Nick, Releaser
 from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
+from demoscene.views.generic import AjaxConfirmationView
 from productions.models import Credit, Production
 
 
@@ -131,38 +132,41 @@ def edit_credit(request, releaser_id, nick_id, production_id):
     })
 
 
-@writeable_site_required
-@login_required
-def delete_credit(request, releaser_id, nick_id, production_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-    nick = get_object_or_404(Nick, releaser=releaser, id=nick_id)
-    production = get_object_or_404(Production, id=production_id)
+class DeleteCreditView(AjaxConfirmationView):
+    def get_object(self, request, releaser_id, nick_id, production_id):
+        self.releaser = Releaser.objects.get(id=releaser_id)
+        self.nick = Nick.objects.get(releaser=self.releaser, id=nick_id)
+        self.production = Production.objects.get(id=production_id)
 
-    if not releaser.editable_by_user(request.user):
-        raise PermissionDenied
+    def is_permitted(self):
+        return self.releaser.editable_by_user(self.request.user)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            credits = Credit.objects.filter(nick=nick, production=production)
-            if credits:
-                credits.delete()
-                releaser.updated_at = datetime.datetime.now()
-                releaser.save()
-                production.updated_at = datetime.datetime.now()
-                production.has_bonafide_edits = True
-                production.save()
-                Edit.objects.create(
-                    action_type='delete_credit', focus=production, focus2=releaser,
-                    description=(u"Deleted %s's credit on %s" % (nick, production)), user=request.user
-                )
-        return HttpResponseRedirect(releaser.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('releaser_delete_credit', args=[releaser_id, nick_id, production_id]),
-            "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-            html_title="Deleting %s's credit from %s" % (nick.name, production.title)
-        )
+    def get_redirect_url(self):
+        return self.releaser.get_absolute_url()
+
+    def get_action_url(self):
+        return reverse('releaser_delete_credit', args=[self.releaser.id, self.nick.id, self.production.id])
+
+    def get_message(self):
+        return "Are you sure you want to delete %s's credit from %s?" % (self.nick.name, self.production.title)
+
+    def get_html_title(self):
+        return "Deleting %s's credit from %s" % (self.nick.name, self.production.title)
+
+    def perform_action(self):
+        credits = Credit.objects.filter(nick=self.nick, production=self.production)
+        if credits:
+            credits.delete()
+            self.releaser.updated_at = datetime.datetime.now()
+            self.releaser.save()
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
+            Edit.objects.create(
+                action_type='delete_credit', focus=self.production, focus2=self.releaser,
+                description=(u"Deleted %s's credit on %s" % (self.nick, self.production)),
+                user=self.request.user
+            )
 
 
 @writeable_site_required
