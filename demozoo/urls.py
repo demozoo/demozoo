@@ -62,7 +62,10 @@ urlpatterns += [
     url(r'^groups/(\d+)/remove_member/(\d+)/$', groups_views.remove_member, {}, 'group_remove_member'),
     url(r'^groups/(\d+)/edit_membership/(\d+)/$', groups_views.edit_membership, {}, 'group_edit_membership'),
     url(r'^groups/(\d+)/add_subgroup/$', groups_views.add_subgroup, {}, 'group_add_subgroup'),
-    url(r'^groups/(\d+)/remove_subgroup/(\d+)/$', groups_views.remove_subgroup, {}, 'group_remove_subgroup'),
+    url(
+        r'^groups/(\d+)/remove_subgroup/(\d+)/$', groups_views.RemoveSubgroupView.as_view(), {},
+        'group_remove_subgroup'
+    ),
     url(r'^groups/(\d+)/edit_subgroup/(\d+)/$', groups_views.edit_subgroup, {}, 'group_edit_subgroup'),
     url(
         r'^groups/(\d+)/convert_to_scener/$', groups_views.ConvertToScenerView.as_view(), {},

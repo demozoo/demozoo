@@ -14,7 +14,7 @@ from read_only_mode import writeable_site_required
 
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
-from demoscene.shortcuts import get_page, simple_ajax_confirmation
+from demoscene.shortcuts import get_page
 from demoscene.views.generic import AjaxConfirmationView
 
 
@@ -257,32 +257,34 @@ def add_subgroup(request, group_id):
     })
 
 
-@writeable_site_required
-@login_required
-def remove_subgroup(request, group_id, subgroup_id):
-    group = get_object_or_404(Releaser, is_group=True, id=group_id)
-    subgroup = get_object_or_404(Releaser, is_group=True, id=subgroup_id)
+class RemoveSubgroupView(AjaxConfirmationView):
+    def get_object(self, request, group_id, subgroup_id):
+        self.group = Releaser.objects.get(id=group_id, is_group=True)
+        self.subgroup = Releaser.objects.get(id=subgroup_id, is_group=True)
 
-    if not group.editable_by_user(request.user):
-        raise PermissionDenied
+    def is_permitted(self):
+        return self.group.editable_by_user(self.request.user)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            group.member_memberships.filter(member=subgroup).delete()
-            group.updated_at = datetime.datetime.now()
-            group.save()
-            description = u"Removed %s as a subgroup of %s" % (subgroup.name, group.name)
-            Edit.objects.create(
-                action_type='remove_membership', focus=subgroup, focus2=group,
-                description=description, user=request.user
-            )
-        return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('group_remove_subgroup', args=[group_id, subgroup_id]),
-            "Are you sure you want to remove %s as a subgroup of %s?" % (subgroup.name, group.name),
-            html_title="Removing %s from %s" % (subgroup.name, group.name)
+    def get_redirect_url(self):
+        return self.group.get_absolute_url() + "?editing=subgroups"
+
+    def get_action_url(self):
+        return reverse('group_remove_subgroup', args=[self.group.id, self.subgroup.id])
+
+    def get_message(self):
+        return "Are you sure you want to remove %s as a subgroup of %s?" % (self.subgroup.name, self.group.name)
+
+    def get_html_title(self):
+        return "Removing %s from %s" % (self.subgroup.name, self.group.name)
+
+    def perform_action(self):
+        self.group.member_memberships.filter(member=self.subgroup).delete()
+        self.group.updated_at = datetime.datetime.now()
+        self.group.save()
+        description = u"Removed %s as a subgroup of %s" % (self.subgroup.name, self.group.name)
+        Edit.objects.create(
+            action_type='remove_membership', focus=self.subgroup, focus2=self.group,
+            description=description, user=self.request.user
         )
 
 

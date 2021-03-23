@@ -257,7 +257,7 @@ class TestRemoveSubgroup(TestCase):
     def test_locked(self):
         Membership.objects.create(member=self.hooy_program, group=self.papaya_dezign)
         response = self.client.get('/groups/%d/remove_subgroup/%d/' % (self.papaya_dezign.id, self.hooy_program.id))
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, '/groups/%d/?editing=subgroups' % self.papaya_dezign.id)
 
     def test_get(self):
         response = self.client.get('/groups/%d/remove_subgroup/%d/' % (self.raww_arse.id, self.papaya_dezign.id))

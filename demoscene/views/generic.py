@@ -12,8 +12,11 @@ class AjaxConfirmationView(View):
     html_title = "%s"
     message = "%s"
 
+    def get_redirect_url(self):
+        return self.object.get_absolute_url()
+
     def redirect(self):
-        return HttpResponseRedirect(self.object.get_absolute_url())
+        return HttpResponseRedirect(self.get_redirect_url())
 
     def is_permitted(self):  # pragma: no cover
         return True
