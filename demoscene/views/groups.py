@@ -15,6 +15,7 @@ from read_only_mode import writeable_site_required
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page, simple_ajax_confirmation
+from demoscene.views.generic import AjaxConfirmationView
 
 
 def index(request):
@@ -321,32 +322,30 @@ def edit_subgroup(request, group_id, membership_id):
     })
 
 
-@writeable_site_required
-@login_required
-def convert_to_scener(request, group_id):
-    group = get_object_or_404(Releaser, is_group=True, id=group_id)
-    if not request.user.is_staff or not group.can_be_converted_to_scener():
-        return HttpResponseRedirect(group.get_absolute_url())
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            group.is_group = False
-            group.updated_at = datetime.datetime.now()
-            group.save()
-            for nick in group.nicks.all():
-                # sceners do not have specific 'abbreviation' fields on their nicks
-                if nick.abbreviation:
-                    nick.abbreviation = ''
-                    nick.save()
+class ConvertToScenerView(AjaxConfirmationView):
+    action_url_path = 'group_convert_to_scener'
+    html_title = "Converting %s to a scener"
+    message = "Are you sure you want to convert %s into a scener?"
 
-            Edit.objects.create(
-                action_type='convert_to_scener', focus=group,
-                description=(u"Converted %s from a group to a scener" % group), user=request.user
-            )
-        return HttpResponseRedirect(group.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('group_convert_to_scener', args=[group_id]),
-            "Are you sure you want to convert %s into a scener?" % (group.name),
-            html_title="Converting %s to a scener" % (group.name)
+    def get_object(self, request, group_id):
+        return Releaser.objects.get(id=group_id, is_group=True)
+
+    def is_permitted(self):
+        return self.request.user.is_staff and self.object.can_be_converted_to_scener()
+
+    def perform_action(self):
+        group = self.object
+
+        group.is_group = False
+        group.updated_at = datetime.datetime.now()
+        group.save()
+        for nick in group.nicks.all():
+            # sceners do not have specific 'abbreviation' fields on their nicks
+            if nick.abbreviation:
+                nick.abbreviation = ''
+                nick.save()
+
+        Edit.objects.create(
+            action_type='convert_to_scener', focus=group,
+            description=(u"Converted %s from a group to a scener" % group), user=self.request.user
         )
