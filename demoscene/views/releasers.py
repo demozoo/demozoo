@@ -326,44 +326,43 @@ class DeleteNickView(AjaxConfirmationView):
         )
 
 
-@writeable_site_required
-@login_required
-def delete(request, releaser_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(releaser.get_absolute_url())
-    if request.method == 'POST':
-        if request.POST.get('yes'):
+class DeleteReleaserView(AjaxConfirmationView):
+    html_title = "Deleting %s"
+    message = "Are you sure you want to delete %s?"
+    action_url_path = 'delete_releaser'
 
-            # insert log entry before actually deleting, so that it doesn't try to
-            # insert a null ID for the focus field
-            if releaser.is_group:
-                Edit.objects.create(
-                    action_type='delete_group', focus=releaser,
-                    description=(u"Deleted group '%s'" % releaser.name), user=request.user
-                )
-            else:
-                Edit.objects.create(
-                    action_type='delete_scener', focus=releaser,
-                    description=(u"Deleted scener '%s'" % releaser.name), user=request.user
-                )
+    def get_object(self, request, releaser_id):
+        return Releaser.objects.get(id=releaser_id)
 
-            releaser.delete()
+    def is_permitted(self):
+        return self.request.user.is_staff
 
-            messages.success(request, "'%s' deleted" % releaser.name)
-            if releaser.is_group:
-                return HttpResponseRedirect(reverse('groups'))
-            else:
-                return HttpResponseRedirect(reverse('sceners'))
+    def get_redirect_url(self):
+        if self.object.is_group:
+            return reverse('groups')
         else:
-            return HttpResponseRedirect(releaser.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_releaser', args=[releaser_id]),
-            "Are you sure you want to delete %s?" % releaser.name,
-            html_title="Deleting %s" % releaser.name
-        )
+            return reverse('sceners')
+
+    def get_cancel_url(self):
+        return self.object.get_absolute_url()
+
+    def perform_action(self):
+        # insert log entry before actually deleting, so that it doesn't try to
+        # insert a null ID for the focus field
+        if self.object.is_group:
+            Edit.objects.create(
+                action_type='delete_group', focus=self.object,
+                description=(u"Deleted group '%s'" % self.object.name), user=self.request.user
+            )
+        else:
+            Edit.objects.create(
+                action_type='delete_scener', focus=self.object,
+                description=(u"Deleted scener '%s'" % self.object.name), user=self.request.user
+            )
+
+        self.object.delete()
+
+        messages.success(self.request, "'%s' deleted" % self.object.name)
 
 
 @writeable_site_required

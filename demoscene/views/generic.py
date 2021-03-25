@@ -18,6 +18,12 @@ class AjaxConfirmationView(View):
     def redirect(self):
         return HttpResponseRedirect(self.get_redirect_url())
 
+    def get_cancel_url(self):
+        return self.get_redirect_url()
+
+    def cancel(self):
+        return HttpResponseRedirect(self.get_cancel_url())
+
     def is_permitted(self):  # pragma: no cover
         return True
 
@@ -45,12 +51,14 @@ class AjaxConfirmationView(View):
             raise Http404("No object matches the given query.")
 
         if not self.is_permitted():
-            return self.redirect()
+            return self.cancel()
 
         if request.method == 'POST':
             if request.POST.get('yes'):
                 self.perform_action()
-            return self.redirect()
+                return self.redirect()
+            else:
+                return self.cancel()
         else:
             return render(request, 'shared/simple_confirmation.html', {
                 'html_title': self.get_html_title(),
