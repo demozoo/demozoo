@@ -15,7 +15,7 @@ from demoscene.forms.releaser import (
     GroupNickForm, ReleaserCreditForm, ReleaserEditNotesForm, ReleaserExternalLinkFormSet, ScenerNickForm
 )
 from demoscene.models import Edit, Nick, Releaser
-from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
+from demoscene.shortcuts import simple_ajax_form
 from demoscene.views.generic import AjaxConfirmationView
 from productions.models import Credit, Production
 
@@ -388,37 +388,32 @@ def edit_external_links(request, releaser_id):
     })
 
 
-@writeable_site_required
-@login_required
-def lock(request, releaser_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(releaser.get_absolute_url())
+class LockReleaserView(AjaxConfirmationView):
+    html_title = "Locking %s"
+    message = (
+        "Locking down a page is a serious decision and shouldn't be done on a whim - "
+        "remember that we want to keep Demozoo as open as possible. "
+        "Are you absolutely sure you want to lock '%s'?"
+    )
+    action_url_path = 'lock_releaser'
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            Edit.objects.create(
-                action_type='lock_releaser', focus=releaser,
-                description=(u"Protected releaser '%s'" % releaser.name), user=request.user
-            )
+    def is_permitted(self):  # pragma: no cover
+        return self.request.user.is_staff
 
-            releaser.locked = True
-            releaser.updated_at = datetime.datetime.now()
+    def get_object(self, request, releaser_id):
+        return Releaser.objects.get(id=releaser_id)
 
-            releaser.save()
-            messages.success(request, "'%s' locked" % releaser.name)
-
-        return HttpResponseRedirect(releaser.get_absolute_url())
-
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('lock_releaser', args=[releaser_id]),
-            "Locking down a page is a serious decision and shouldn't be done on a whim - "
-            "remember that we want to keep Demozoo as open as possible. "
-            "Are you absolutely sure you want to lock '%s'?" % releaser.name,
-            html_title="Locking %s" % releaser.name
+    def perform_action(self):  # pragma: no cover
+        Edit.objects.create(
+            action_type='lock_releaser', focus=self.object,
+            description=(u"Protected releaser '%s'" % self.object.name), user=self.request.user
         )
+
+        self.object.locked = True
+        self.object.updated_at = datetime.datetime.now()
+
+        self.object.save()
+        messages.success(self.request, "'%s' locked" % self.object.name)
 
 
 @login_required

@@ -71,7 +71,7 @@ urlpatterns = [
         r'^releasers/(\d+)/edit_external_links/$', releasers_views.edit_external_links, {},
         'releaser_edit_external_links'
     ),
-    url(r'^releasers/(\d+)/lock/$', releasers_views.lock, {}, 'lock_releaser'),
+    url(r'^releasers/(\d+)/lock/$', releasers_views.LockReleaserView.as_view(), {}, 'lock_releaser'),
     url(r'^releasers/(\d+)/protected/$', releasers_views.protected, {}, 'releaser_protected'),
 
     url(r'^nicks/match/$', nicks_views.match, {}),
