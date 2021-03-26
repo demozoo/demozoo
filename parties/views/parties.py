@@ -15,7 +15,8 @@ from read_only_mode import writeable_site_required
 from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
-from demoscene.shortcuts import simple_ajax_confirmation, simple_ajax_form
+from demoscene.shortcuts import simple_ajax_form
+from demoscene.views.generic import AjaxConfirmationView
 from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
     PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm, PartyShareImageForm
@@ -523,25 +524,29 @@ def edit_organiser(request, party_id, organiser_id):
     })
 
 
-@writeable_site_required
-@login_required
-def remove_organiser(request, party_id, organiser_id):
-    party = get_object_or_404(Party, id=party_id)
-    organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
+class RemoveOrganiserView(AjaxConfirmationView):
+    def get_object(self, request, party_id, organiser_id):
+        self.party = Party.objects.get(id=party_id)
+        self.organiser = Organiser.objects.get(party=self.party, id=organiser_id)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            organiser.delete()
-            description = u"Removed %s as organiser of %s" % (organiser.releaser.name, party.name)
-            Edit.objects.create(
-                action_type='remove_party_organiser', focus=organiser.releaser, focus2=party,
-                description=description, user=request.user
-            )
-        return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('party_remove_organiser', args=[party_id, organiser_id]),
-            "Are you sure you want to remove %s as organiser of %s?" % (organiser.releaser.name, party.name),
-            html_title="Removing %s as organiser of %s" % (organiser.releaser.name, party.name)
+    def get_redirect_url(self):
+        return self.party.get_absolute_url() + "?editing=organisers"
+
+    def get_action_url(self):
+        return reverse('party_remove_organiser', args=[self.party.id, self.organiser.id])
+
+    def get_message(self):
+        return "Are you sure you want to remove %s as an organiser of %s?" % (
+            self.organiser.releaser.name, self.party.name
+        )
+
+    def get_html_title(self):
+        return "Removing %s as organiser of %s" % (self.organiser.releaser.name, self.party.name)
+
+    def perform_action(self):
+        self.organiser.delete()
+        description = u"Removed %s as organiser of %s" % (self.organiser.releaser.name, self.party.name)
+        Edit.objects.create(
+            action_type='remove_party_organiser', focus=self.organiser.releaser, focus2=self.party,
+            description=description, user=self.request.user
         )
