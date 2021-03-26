@@ -5,12 +5,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from read_only_mode import writeable_site_required
 
 from comments.forms import CommentForm
 from comments.models import Comment
-from demoscene.shortcuts import simple_ajax_confirmation
+from demoscene.views.generic import AjaxConfirmationView
 from parties.models import Party
 from productions.models import Production
 
@@ -127,54 +127,39 @@ class EditPartyCommentView(EditCommentView):
         return party.name
 
 
-class DeleteCommentView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        commentable_id = self.args[0]
-        comment_id = self.args[1]
-
+class DeleteCommentView(AjaxConfirmationView):
+    def get_object(self, request, commentable_id, comment_id):
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
-        self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
-        self.comment = get_object_or_404(
-            Comment, id=comment_id, content_type=commentable_type, object_id=commentable_id
-        )
+        self.commentable = self.commentable_model.objects.get(id=commentable_id)
+        self.comment = Comment.objects.get(id=comment_id, content_type=commentable_type, object_id=commentable_id)
 
-        if not request.user.is_staff:
-            return redirect(self.comment.get_absolute_url())
+    def get_cancel_url(self):
+        return self.comment.get_absolute_url()
 
-        return super(DeleteCommentView, self).dispatch(request, *args, **kwargs)
+    def get_redirect_url(self):
+        return self.commentable.get_absolute_url()
 
-    def get(self, request, *args, **kwargs):
-        commentable_name = self.get_commentable_name(self.commentable)
-        return simple_ajax_confirmation(
-            request,
-            reverse(self.url_name, args=[self.commentable.id, self.comment.id]),
-            "Are you sure you want to delete this comment?",
-            html_title="Deleting comment on %s" % commentable_name
-        )
+    def get_action_url(self):
+        return reverse(self.action_url_path, args=[self.commentable.id, self.comment.id])
 
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('yes'):
-            self.comment.delete()
-            return redirect(self.commentable.get_absolute_url())
-        else:
-            return redirect(self.comment.get_absolute_url())
+    def is_permitted(self):
+        return self.request.user.is_staff
+
+    def get_message(self):
+        return "Are you sure you want to delete this comment?"
+
+    def get_html_title(self):
+        return "Deleting comment on %s" % str(self.commentable)
+
+    def perform_action(self):
+        self.comment.delete()
 
 
 class DeleteProductionCommentView(DeleteCommentView):
     commentable_model = Production
-    commentable_context_name = 'production'
-    url_name = 'delete_production_comment'
-
-    def get_commentable_name(self, production):
-        return production.title
+    action_url_path = 'delete_production_comment'
 
 
 class DeletePartyCommentView(DeleteCommentView):
     commentable_model = Party
-    commentable_context_name = 'party'
-    url_name = 'delete_party_comment'
-
-    def get_commentable_name(self, party):
-        return party.name
+    action_url_path = 'delete_party_comment'
