@@ -18,6 +18,6 @@ urlpatterns = [
     url(r'^banners/$', banner_views.index, {}, 'banners_index'),
     url(r'^banners/new/$', banner_views.add_banner, {}, 'add_banner'),
     url(r'^banners/(\d+)/edit/$', banner_views.edit_banner, {}, 'edit_banner'),
-    url(r'^banners/(\d+)/delete/$', banner_views.delete_banner, {}, 'delete_banner'),
+    url(r'^banners/(\d+)/delete/$', banner_views.DeleteBannerView.as_view(), {}, 'delete_banner'),
     url(r'^banners/browse_images/$', banner_views.browse_images, {}, 'banner_images_browse'),
 ]

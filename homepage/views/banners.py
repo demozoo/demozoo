@@ -6,7 +6,7 @@ from django.urls import reverse
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 
-from demoscene.shortcuts import simple_ajax_confirmation
+from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import BannerForm, BannerImageForm
 from homepage.models import Banner, BannerImage
 
@@ -87,27 +87,33 @@ def edit_banner(request, banner_id):
     })
 
 
-@writeable_site_required
-def delete_banner(request, banner_id):
-    if not request.user.has_perm('homepage.delete_banner'):
-        return redirect('home')
+class DeleteBannerView(AjaxConfirmationView):
+    action_url_path = 'delete_banner'
 
-    banner = get_object_or_404(Banner, id=banner_id)
+    def get_object(self, request, banner_id):
+        return Banner.objects.get(id=banner_id)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            banner.delete()
-            messages.success(request, "Banner deleted")
-            return redirect('home')
-        else:
-            return redirect('edit_banner', banner_id)
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_banner', args=[banner_id]),
-            "Are you sure you want to delete this banner?",
-            html_title="Deleting banner: %s" % banner.title
-        )
+    def is_permitted(self):
+        return self.request.user.has_perm('homepage.delete_banner')
+
+    def perform_action(self):
+        self.object.delete()
+        messages.success(self.request, "Banner deleted")
+
+    def get_cancel_url(self):
+        return reverse('edit_banner', args=[self.object.id])
+
+    def get_redirect_url(self):
+        return reverse('home')
+
+    def get_permission_denied_url(self):
+        return '/'
+
+    def get_message(self):
+        return "Are you sure you want to delete this banner?"
+
+    def get_html_title(self):
+        return "Deleting banner: %s" % str(self.object.title)
 
 
 def browse_images(request):
