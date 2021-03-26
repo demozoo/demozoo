@@ -42,7 +42,7 @@ urlpatterns = [
     url(r'^competitions/(\d+)/history/$', competition_views.history, {}, 'competition_history'),
     url(r'^competitions/(\d+)/edit$', competition_views.edit, {}, 'competition_edit'),
     url(r'^competitions/(\d+)/import_text$', competition_views.import_text, {}, 'competition_import_text'),
-    url(r'^competitions/(\d+)/delete/$', competition_views.delete, {}, 'delete_competition'),
+    url(r'^competitions/(\d+)/delete/$', competition_views.DeleteCompetitionView.as_view(), {}, 'delete_competition'),
 
     url(r'^competition_api/add_placing/(\d+)/$', competition_api_views.add_placing, {}),
     url(r'^competition_api/update_placing/(\d+)/$', competition_api_views.update_placing, {}),

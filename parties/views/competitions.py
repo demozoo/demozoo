@@ -6,14 +6,12 @@ import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from read_only_mode import writeable_site_required
 
 from demoscene.models import Edit
-from demoscene.shortcuts import simple_ajax_confirmation
 from demoscene.utils import result_parser
+from demoscene.views.generic import AjaxConfirmationView
 from parties.forms import CompetitionForm
 from parties.models import Competition, CompetitionPlacing
 from platforms.models import Platform
@@ -173,31 +171,26 @@ def import_text(request, competition_id):
         })
 
 
-@writeable_site_required
-@login_required
-def delete(request, competition_id):
-    competition = get_object_or_404(Competition, id=competition_id)
+class DeleteCompetitionView(AjaxConfirmationView):
+    html_title = "Deleting %s"
+    message = "Are you sure you want to delete the %s competition?"
+    action_url_path = 'delete_competition'
 
-    if (not request.user.is_staff) or competition.placings.exists():
-        return HttpResponseRedirect(competition.party.get_absolute_url())
-    if request.method == 'POST':
-        if request.POST.get('yes'):
+    def get_object(self, request, competition_id):
+        return Competition.objects.get(id=competition_id)
 
-            Edit.objects.create(
-                action_type='delete_competition', focus=competition.party,
-                description=(u"Deleted competition '%s'" % competition.name), user=request.user
-            )
+    def is_permitted(self):
+        return self.request.user.is_staff and not self.object.placings.exists()
 
-            competition.delete()
+    def get_redirect_url(self):
+        return self.object.party.get_absolute_url()
 
-            messages.success(request, "%s competition deleted" % competition.name)
-            return HttpResponseRedirect(competition.party.get_absolute_url())
-        else:
-            return HttpResponseRedirect(competition.party.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_competition', args=[competition_id]),
-            "Are you sure you want to delete the %s competition?" % competition.name,
-            html_title="Deleting %s" % competition.name
+    def perform_action(self):
+        Edit.objects.create(
+            action_type='delete_competition', focus=self.object.party,
+            description=(u"Deleted competition '%s'" % self.object.name), user=self.request.user
         )
+
+        self.object.delete()
+
+        messages.success(self.request, "%s competition deleted" % self.object.name)
