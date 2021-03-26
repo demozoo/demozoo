@@ -6,7 +6,7 @@ from django.urls import reverse
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 
-from demoscene.shortcuts import simple_ajax_confirmation
+from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory
 
@@ -76,27 +76,33 @@ def edit_news(request, news_story_id):
     })
 
 
-@writeable_site_required
-def delete_news(request, news_story_id):
-    if not request.user.has_perm('homepage.delete_newsstory'):
-        return redirect('home')
+class DeleteNewsStoryView(AjaxConfirmationView):
+    action_url_path = 'delete_news'
 
-    news_story = get_object_or_404(NewsStory, id=news_story_id)
+    def get_object(self, request, news_story_id):
+        return NewsStory.objects.get(id=news_story_id)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            news_story.delete()
-            messages.success(request, "News story deleted")
-            return redirect('home')
-        else:
-            return redirect('edit_news', news_story_id)
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_news', args=[news_story_id]),
-            "Are you sure you want to delete this news story?",
-            html_title="Deleting news story: %s" % news_story.title
-        )
+    def is_permitted(self):
+        return self.request.user.has_perm('homepage.delete_newsstory')
+
+    def perform_action(self):
+        self.object.delete()
+        messages.success(self.request, "News story deleted")
+
+    def get_cancel_url(self):
+        return reverse('edit_news', args=[self.object.id])
+
+    def get_redirect_url(self):
+        return reverse('home')
+
+    def get_permission_denied_url(self):
+        return reverse('home')
+
+    def get_message(self):
+        return "Are you sure you want to delete this news story?"
+
+    def get_html_title(self):
+        return "Deleting news story: %s" % str(self.object.title)
 
 
 def browse_images(request):

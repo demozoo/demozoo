@@ -12,7 +12,7 @@ urlpatterns = [
 
     url(r'^news/new/$', news_views.add_news, {}, 'add_news'),
     url(r'^news/(\d+)/edit/$', news_views.edit_news, {}, 'edit_news'),
-    url(r'^news/(\d+)/delete/$', news_views.delete_news, {}, 'delete_news'),
+    url(r'^news/(\d+)/delete/$', news_views.DeleteNewsStoryView.as_view(), {}, 'delete_news'),
     url(r'^news/browse_images/$', news_views.browse_images, {}, 'news_images_browse'),
 
     url(r'^banners/$', banner_views.index, {}, 'banners_index'),

@@ -107,7 +107,7 @@ class DeleteBannerView(AjaxConfirmationView):
         return reverse('home')
 
     def get_permission_denied_url(self):
-        return '/'
+        return reverse('home')
 
     def get_message(self):
         return "Are you sure you want to delete this banner?"
