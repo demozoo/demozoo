@@ -21,6 +21,7 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.models import BlacklistedTag, Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_confirmation, simple_ajax_form
 from demoscene.utils.text import slugify_tag
+from demoscene.views.generic import AjaxConfirmationView
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
@@ -257,28 +258,31 @@ def edit_blurb(request, production_id, blurb_id):
     })
 
 
-@writeable_site_required
-@login_required
-def delete_blurb(request, production_id, blurb_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
-    blurb = get_object_or_404(ProductionBlurb, production=production, id=blurb_id)
+class DeleteBlurbView(AjaxConfirmationView):
+    def get_object(self, request, production_id, blurb_id):
+        self.production = Production.objects.get(id=production_id)
+        self.blurb = ProductionBlurb.objects.get(id=blurb_id, production=self.production)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            blurb.delete()
-            Edit.objects.create(
-                action_type='delete_production_blurb', focus=production,
-                description="Deleted blurb", user=request.user, admin_only=True
-            )
-        return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('production_delete_blurb', args=[production_id, blurb_id]),
-            "Are you sure you want to delete this blurb?",
-            html_title="Deleting blurb for %s" % production.title
+    def is_permitted(self):
+        return self.request.user.is_staff
+
+    def get_redirect_url(self):
+        return self.production.get_absolute_url()
+
+    def get_action_url(self):
+        return reverse('production_delete_blurb', args=[self.production.id, self.blurb.id])
+
+    def get_message(self):
+        return "Are you sure you want to delete this blurb?"
+
+    def get_html_title(self):
+        return "Deleting blurb for %s" % self.production.title
+
+    def perform_action(self):
+        self.blurb.delete()
+        Edit.objects.create(
+            action_type='delete_production_blurb', focus=self.production,
+            description="Deleted blurb", user=self.request.user, admin_only=True
         )
 
 
