@@ -10,7 +10,7 @@ from read_only_mode import writeable_site_required
 from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
 from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit
-from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
+from demoscene.shortcuts import get_page, simple_ajax_form
 from demoscene.views.generic import AjaxConfirmationView
 
 
@@ -334,25 +334,29 @@ def edit_affiliation(request, bbs_id, affiliation_id):
     })
 
 
-@writeable_site_required
-@login_required
-def remove_affiliation(request, bbs_id, affiliation_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    affiliation = get_object_or_404(Affiliation, bbs=bbs, id=affiliation_id)
+class RemoveAffiliationView(AjaxConfirmationView):
+    def get_object(self, request, bbs_id, affiliation_id):
+        self.bbs = BBS.objects.get(id=bbs_id)
+        self.affiliation = Affiliation.objects.get(bbs=self.bbs, id=affiliation_id)
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            affiliation.delete()
-            description = u"Removed %s's affiliation with %s" % (affiliation.group.name, bbs.name)
-            Edit.objects.create(
-                action_type='remove_bbs_affiliation', focus=affiliation.group, focus2=bbs,
-                description=description, user=request.user
-            )
-        return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('bbs_remove_affiliation', args=[bbs_id, affiliation_id]),
-            "Are you sure you want to remove %s's affiliation with %s?" % (affiliation.group.name, bbs.name),
-            html_title="Removing %s's affiliation with %s" % (affiliation.group.name, bbs.name)
+    def get_redirect_url(self):
+        return self.bbs.get_absolute_url() + "?editing=affiliations"
+
+    def get_action_url(self):
+        return reverse('bbs_remove_affiliation', args=[self.bbs.id, self.affiliation.id])
+
+    def get_message(self):
+        return "Are you sure you want to remove %s's affiliation with %s?" % (
+            self.affiliation.group.name, self.bbs.name
+        )
+
+    def get_html_title(self):
+        return "Removing %s's affiliation with %s" % (self.affiliation.group.name, self.bbs.name)
+
+    def perform_action(self):
+        self.affiliation.delete()
+        description = u"Removed %s's affiliation with %s" % (self.affiliation.group.name, self.bbs.name)
+        Edit.objects.create(
+            action_type='remove_bbs_affiliation', focus=self.affiliation.group, focus2=self.bbs,
+            description=description, user=self.request.user
         )

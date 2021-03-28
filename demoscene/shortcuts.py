@@ -61,14 +61,6 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
     })
 
 
-def simple_ajax_confirmation(request, action_url, message, html_title=None):
-    return render(request, 'shared/simple_confirmation.html', {
-        'html_title': html_title,
-        'message': message,
-        'action_url': action_url,
-    })
-
-
 def modal_workflow_confirmation(request, action_url, message, html_title=None):
     return render_modal_workflow(
         request,
