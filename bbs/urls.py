@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^(\d+)/history/$', views.history, {}, 'bbs_history'),
     url(r'^(\d+)/add_operator/$', views.add_operator, {}, 'bbs_add_operator'),
     url(r'^(\d+)/edit_operator/(\d+)/$', views.edit_operator, {}, 'bbs_edit_operator'),
-    url(r'^(\d+)/remove_operator/(\d+)/$', views.remove_operator, {}, 'bbs_remove_operator'),
+    url(r'^(\d+)/remove_operator/(\d+)/$', views.RemoveOperatorView.as_view(), {}, 'bbs_remove_operator'),
     url(r'^(\d+)/add_affiliation/$', views.add_affiliation, {}, 'bbs_add_affiliation'),
     url(r'^(\d+)/edit_affiliation/(\d+)/$', views.edit_affiliation, {}, 'bbs_edit_affiliation'),
     url(r'^(\d+)/remove_affiliation/(\d+)/$', views.remove_affiliation, {}, 'bbs_remove_affiliation'),
