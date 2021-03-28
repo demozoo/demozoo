@@ -470,61 +470,70 @@ def add_screenshot(request, production_id, is_artwork_view=False):
         })
 
 
-@writeable_site_required
-@login_required
-def delete_screenshot(request, production_id, screenshot_id, is_artwork_view=False):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
+class DeleteScreenshotView(AjaxConfirmationView):
+    log_description = "Deleted screenshot"
 
-    screenshot = get_object_or_404(Screenshot, id=screenshot_id, production=production)
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            screenshot.delete()
+    def get_object(self, request, production_id, screenshot_id):
+        self.production = Production.objects.get(id=production_id)
+        self.screenshot = Screenshot.objects.get(id=screenshot_id, production=self.production)
 
-            # reload production model, as the deletion above may have nullified has_screenshot
-            # (which won't be reflected in the existing model instance)
-            production = Production.objects.get(pk=production.pk)
+    def validate(self):
+        if not self.request.user.is_staff:
+            return HttpResponseRedirect(self.production.get_absolute_url())
 
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
-            if is_artwork_view:
-                Edit.objects.create(
-                    action_type='delete_screenshot', focus=production,
-                    description="Deleted artwork", user=request.user
-                )
-            else:
-                Edit.objects.create(
-                    action_type='delete_screenshot', focus=production,
-                    description="Deleted screenshot", user=request.user
-                )
+        if self.production.supertype == 'music':
+            return redirect('production_delete_artwork', self.production.id, self.screenshot.id)
 
-        if is_artwork_view:
-            return HttpResponseRedirect(reverse('production_edit_artwork', args=[production.id]))
-        else:
-            return HttpResponseRedirect(reverse('production_edit_screenshots', args=[production.id]))
-    else:
-        if is_artwork_view:
-            if production.supertype != 'music':
-                return redirect('production_delete_screenshot', production_id, screenshot_id)
+    def perform_action(self):
+        self.screenshot.delete()
 
-            return simple_ajax_confirmation(
-                request,
-                reverse('production_delete_artwork', args=[production_id, screenshot_id]),
-                "Are you sure you want to delete this artwork for %s?" % production.title,
-                html_title="Deleting artwork for %s" % production.title
-            )
-        else:
-            if production.supertype == 'music':
-                return redirect('production_delete_artwork', production_id, screenshot_id)
+        # reload production model, as the deletion above may have nullified has_screenshot
+        # (which won't be reflected in the existing model instance)
+        self.production = Production.objects.get(pk=self.production.pk)
 
-            return simple_ajax_confirmation(
-                request,
-                reverse('production_delete_screenshot', args=[production_id, screenshot_id]),
-                "Are you sure you want to delete this screenshot for %s?" % production.title,
-                html_title="Deleting screenshot for %s" % production.title
-            )
+        self.production.updated_at = datetime.datetime.now()
+        self.production.has_bonafide_edits = True
+        self.production.save()
+
+        Edit.objects.create(
+            action_type='delete_screenshot', focus=self.production,
+            description=self.log_description, user=self.request.user
+        )
+
+    def get_redirect_url(self):
+        return reverse('production_edit_screenshots', args=[self.production.id])
+
+    def get_message(self):
+        return "Are you sure you want to delete this screenshot for %s?" % self.production.title
+
+    def get_html_title(self):
+        return "Deleting screenshot for %s" % self.production.title
+
+    def get_action_url(self):
+        return reverse('production_delete_screenshot', args=[self.production.id, self.screenshot.id])
+
+
+class DeleteArtworkView(DeleteScreenshotView):
+    log_description = "Deleted artwork"
+
+    def validate(self):
+        if not self.request.user.is_staff:
+            return HttpResponseRedirect(self.production.get_absolute_url())
+
+        if self.production.supertype != 'music':
+            return redirect('production_delete_screenshot', self.production.id, self.screenshot.id)
+
+    def get_redirect_url(self):
+        return reverse('production_edit_artwork', args=[self.production.id])
+
+    def get_message(self):
+        return "Are you sure you want to delete this artwork for %s?" % self.production.title
+
+    def get_html_title(self):
+        return "Deleting artwork for %s" % self.production.title
+
+    def get_action_url(self):
+        return reverse('production_delete_artwork', args=[self.production.id, self.screenshot.id])
 
 
 class CreateProductionView(CreateView):

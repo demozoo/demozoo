@@ -48,6 +48,10 @@ class AjaxConfirmationView(View):
     def get_html_title(self):
         return self.html_title % str(self.object)
 
+    def validate(self):
+        if not self.is_permitted():
+            return self.permission_denied()
+
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -56,8 +60,9 @@ class AjaxConfirmationView(View):
         except ObjectDoesNotExist:
             raise Http404("No object matches the given query.")
 
-        if not self.is_permitted():
-            return self.permission_denied()
+        response = self.validate()
+        if response:
+            return response
 
         if request.method == 'POST':
             if request.POST.get('yes'):

@@ -1143,6 +1143,14 @@ class TestDeleteScreenshot(TestCase):
         )
         self.assertRedirects(response, '/productions/%d/' % self.pondlife.id)
 
+    def test_non_superuser_artwork(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(
+            '/productions/%d/delete_artwork/%d/' % (self.cybrev.id, self.cybrev_artwork.id)
+        )
+        self.assertRedirects(response, '/music/%d/' % self.cybrev.id)
+
     def test_get_production(self):
         response = self.client.get(
             '/productions/%d/delete_screenshot/%d/' % (self.pondlife.id, self.pondlife_screenshot.id)

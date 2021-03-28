@@ -55,12 +55,12 @@ urlpatterns = [
     url(r'^productions/(\d+)/screenshots/edit/$', production_views.edit_screenshots, {}, 'production_edit_screenshots'),
     url(r'^productions/(\d+)/artwork/edit/$', production_views.edit_artwork, {}, 'production_edit_artwork'),
     url(
-        r'^productions/(\d+)/delete_screenshot/(\d+)/$', production_views.delete_screenshot, {},
+        r'^productions/(\d+)/delete_screenshot/(\d+)/$', production_views.DeleteScreenshotView.as_view(), {},
         'production_delete_screenshot'
     ),
     url(
-        r'^productions/(\d+)/delete_artwork/(\d+)/$', production_views.delete_screenshot,
-        {'is_artwork_view': True}, 'production_delete_artwork'
+        r'^productions/(\d+)/delete_artwork/(\d+)/$', production_views.DeleteArtworkView.as_view(), {},
+        'production_delete_artwork'
     ),
     url(r'^productions/(\d+)/edit_soundtracks/$', production_views.edit_soundtracks, {}, 'production_edit_soundtracks'),
     url(
