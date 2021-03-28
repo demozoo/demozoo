@@ -19,7 +19,7 @@ from taggit.models import Tag
 
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import BlacklistedTag, Edit, Nick
-from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_confirmation, simple_ajax_form
+from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.utils.text import slugify_tag
 from demoscene.views.generic import AjaxConfirmationView
 from productions.carousel import Carousel
@@ -916,38 +916,33 @@ class DeleteProductionView(AjaxConfirmationView):
         messages.success(self.request, "'%s' deleted" % self.object.title)
 
 
-@writeable_site_required
-@login_required
-def lock(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
+class LockProductionView(AjaxConfirmationView):
+    html_title = "Locking %s"
+    message = (
+        "Locking down a page is a serious decision and shouldn't be done on a whim - "
+        "remember that we want to keep Demozoo as open as possible. "
+        "Are you absolutely sure you want to lock '%s'?"
+    )
+    action_url_path = 'lock_production'
 
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            Edit.objects.create(
-                action_type='lock_production', focus=production,
-                description=(u"Protected production '%s'" % production.title), user=request.user
-            )
+    def is_permitted(self):  # pragma: no cover
+        return self.request.user.is_staff
 
-            production.locked = True
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
+    def get_object(self, request, production_id):
+        return Production.objects.get(id=production_id)
 
-            production.save()
-            messages.success(request, "'%s' locked" % production.title)
-
-        return HttpResponseRedirect(production.get_absolute_url())
-
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('lock_production', args=[production_id]),
-            "Locking down a page is a serious decision and shouldn't be done on a whim - "
-            "remember that we want to keep Demozoo as open as possible. "
-            "Are you absolutely sure you want to lock '%s'?" % production.title,
-            html_title="Locking %s" % production.title
+    def perform_action(self):  # pragma: no cover
+        Edit.objects.create(
+            action_type='lock_production', focus=self.object,
+            description=(u"Protected production '%s'" % self.object.title), user=self.request.user
         )
+
+        self.object.locked = True
+        self.object.updated_at = datetime.datetime.now()
+        self.object.has_bonafide_edits = True
+
+        self.object.save()
+        messages.success(self.request, "'%s' locked" % self.object.title)
 
 
 @login_required
