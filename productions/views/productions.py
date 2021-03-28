@@ -888,32 +888,32 @@ def autocomplete(request):
     return JsonResponse(production_data, safe=False)
 
 
-@writeable_site_required
-@login_required
-def delete(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
-    if request.method == 'POST':
-        if request.POST.get('yes'):
-            # insert log entry before actually deleting, so that it doesn't try to
-            # insert a null ID for the focus field
-            Edit.objects.create(
-                action_type='delete_production', focus=production,
-                description=(u"Deleted production '%s'" % production.title), user=request.user
-            )
-            production.delete()
-            messages.success(request, "'%s' deleted" % production.title)
-            return HttpResponseRedirect(reverse('productions'))
-        else:
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_production', args=[production_id]),
-            "Are you sure you want to delete '%s'?" % production.title,
-            html_title="Deleting %s" % production.title
+class DeleteProductionView(AjaxConfirmationView):
+    html_title = "Deleting %s"
+    message = "Are you sure you want to delete %s?"
+    action_url_path = 'delete_production'
+
+    def get_object(self, request, production_id):
+        return Production.objects.get(id=production_id)
+
+    def is_permitted(self):
+        return self.request.user.is_staff
+
+    def get_redirect_url(self):
+        return reverse('productions')
+
+    def get_cancel_url(self):
+        return self.object.get_absolute_url()
+
+    def perform_action(self):
+        # insert log entry before actually deleting, so that it doesn't try to
+        # insert a null ID for the focus field
+        Edit.objects.create(
+            action_type='delete_production', focus=self.object,
+            description=(u"Deleted production '%s'" % self.object.title), user=self.request.user
         )
+        self.object.delete()
+        messages.success(self.request, "'%s' deleted" % self.object.title)
 
 
 @writeable_site_required
