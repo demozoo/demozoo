@@ -11,6 +11,7 @@ from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBStroFormset,
 from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_confirmation, simple_ajax_form
+from demoscene.views.generic import AjaxConfirmationView
 
 
 def index(request):
@@ -112,35 +113,32 @@ def edit_notes(request, bbs_id):
     )
 
 
-@writeable_site_required
-@login_required
-def delete(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    if not request.user.is_staff:
-        return redirect('bbs', bbs.id)
-    if request.method == 'POST':
-        if request.POST.get('yes'):
+class DeleteBBSView(AjaxConfirmationView):
+    html_title = "Deleting %s"
+    message = "Are you sure you want to delete %s?"
+    action_url_path = 'delete_bbs'
 
-            # insert log entry before actually deleting, so that it doesn't try to
-            # insert a null ID for the focus field
-            Edit.objects.create(
-                action_type='delete_bbs', focus=bbs,
-                description=(u"Deleted BBS '%s'" % bbs.name), user=request.user
-            )
+    def get_object(self, request, bbs_id):
+        return BBS.objects.get(id=bbs_id)
 
-            bbs.delete()
+    def is_permitted(self):
+        return self.request.user.is_staff
 
-            messages.success(request, "BBS '%s' deleted" % bbs.name)
-            return redirect('bbses')
-        else:
-            return redirect('bbs', bbs.id)
-    else:
-        return simple_ajax_confirmation(
-            request,
-            reverse('delete_bbs', args=[bbs.id]),
-            "Are you sure you want to delete %s?" % bbs.name,
-            html_title="Deleting %s" % bbs.name
+    def get_redirect_url(self):
+        return reverse('bbses')
+
+    def get_cancel_url(self):
+        return self.object.get_absolute_url()
+
+    def perform_action(self):
+        # insert log entry before actually deleting, so that it doesn't try to
+        # insert a null ID for the focus field
+        Edit.objects.create(
+            action_type='delete_bbs', focus=self.object,
+            description=(u"Deleted BBS '%s'" % self.object.name), user=self.request.user
         )
+        self.object.delete()
+        messages.success(self.request, "'%s' deleted" % self.object.name)
 
 
 @writeable_site_required

@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^new/$', views.create, {}, 'new_bbs'),
     url(r'^(\d+)/edit/$', views.edit, {}, 'edit_bbs'),
     url(r'^(\d+)/edit_notes/$', views.edit_notes, {}, 'bbs_edit_notes'),
-    url(r'^(\d+)/delete/$', views.delete, {}, 'delete_bbs'),
+    url(r'^(\d+)/delete/$', views.DeleteBBSView.as_view(), {}, 'delete_bbs'),
     url(r'^(\d+)/edit_bbstros/$', views.edit_bbstros, {}, 'bbs_edit_bbstros'),
     url(r'^(\d+)/history/$', views.history, {}, 'bbs_history'),
     url(r'^(\d+)/add_operator/$', views.add_operator, {}, 'bbs_add_operator'),
