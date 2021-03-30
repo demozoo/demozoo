@@ -572,6 +572,11 @@ class TestEditShareImage(MediaTestMixin, TestCase):
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
         self.client.login(username='testsuperuser', password='12345')
         self.party = Party.objects.get(name='Forever 2e3')
+        madrielle = Production.objects.get(title='Madrielle')
+        self.madrielle_screenshot = madrielle.screenshots.create(
+            thumbnail_url='http://example.com/madrielle.thumb.png', thumbnail_width=130, thumbnail_height=100,
+            standard_url='http://example.com/madrielle.standard.png', standard_width=320, standard_height=240
+        )
 
     def test_non_superuser(self):
         User.objects.create_user(username='testuser', password='12345')
@@ -582,8 +587,17 @@ class TestEditShareImage(MediaTestMixin, TestCase):
     def test_get(self):
         response = self.client.get('/parties/%d/edit_share_image/' % self.party.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            (
+                '<input type="radio" name="share_screenshot" value="%d" id="id_share_screenshot_0">'
+                % self.madrielle_screenshot.id
+            ),
+            html=True
+        )
+        self.assertContains(response, 'http://example.com/madrielle.thumb.png')
 
-    def test_post(self):
+    def test_post_upload(self):
         f = BytesIO()
         image = PIL.Image.new('RGBA', (200, 200), 'white')
         image.save(f, 'PNG')
@@ -593,8 +607,20 @@ class TestEditShareImage(MediaTestMixin, TestCase):
             'share_image_file': SimpleUploadedFile('test.png', image_file.file.getvalue())
         })
         self.assertRedirects(response, '/parties/%d/' % self.party.id)
-        self.assertTrue(Party.objects.get(id=self.party.id).share_image_file.name)
+        party = Party.objects.get(id=self.party.id)
+        self.assertTrue(party.share_image_file.name)
+        self.assertTrue(party.share_image_file_url)
+        self.assertEqual(party.share_image_url, party.share_image_file_url)
         Party.objects.get(id=self.party.id).share_image_file.delete()
+
+    def test_post_select_screenshot(self):
+        response = self.client.post('/parties/%d/edit_share_image/' % self.party.id, {
+            'share_screenshot': self.madrielle_screenshot.id,
+        })
+        self.assertRedirects(response, '/parties/%d/' % self.party.id)
+        party = Party.objects.get(id=self.party.id)
+        self.assertEqual(party.share_screenshot, self.madrielle_screenshot)
+        self.assertEqual(party.share_image_url, 'http://example.com/madrielle.standard.png')
 
 
 class TestAddOrganiser(TestCase):

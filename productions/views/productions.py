@@ -12,6 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.http import require_POST
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
@@ -994,64 +996,65 @@ def carousel(request, production_id):
     return HttpResponse(carousel.get_slides_json(), content_type='text/javascript')
 
 
-@writeable_site_required
-@login_required
-def edit_info_files(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
+class EditInfoFilesView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        production = get_object_or_404(Production, id=production_id)
+        if not production.editable_by_user(request.user):
+            raise PermissionDenied
 
-    if request.method == 'POST':
-        action_descriptions = []
-        all_valid = True
+        if request.method == 'POST':
+            action_descriptions = []
+            all_valid = True
 
-        if request.user.is_staff:  # only staff members can edit/delete existing nfo files
-            formset = ProductionInfoFileFormset(request.POST, instance=production)
-            all_valid = formset.is_valid()
+            if request.user.is_staff:  # only staff members can edit/delete existing nfo files
+                formset = ProductionInfoFileFormset(request.POST, instance=production)
+                all_valid = formset.is_valid()
+                if all_valid:
+                    formset.save()
+                    if formset.deleted_objects:
+                        deleted_files = [info_file.filename for info_file in formset.deleted_objects]
+                        if len(deleted_files) > 1:
+                            action_descriptions.append(u"Deleted info files: %s" % ", ".join(deleted_files))
+                        else:
+                            action_descriptions.append(u"Deleted info file %s" % ", ".join(deleted_files))
+
             if all_valid:
-                formset.save()
-                if formset.deleted_objects:
-                    deleted_files = [info_file.filename for info_file in formset.deleted_objects]
-                    if len(deleted_files) > 1:
-                        action_descriptions.append(u"Deleted info files: %s" % ", ".join(deleted_files))
+                uploaded_files = request.FILES.getlist('info_file')
+                file_count = len(uploaded_files)
+                for f in uploaded_files:
+                    production.info_files.create(file=f)
+
+                if file_count:
+                    if file_count == 1:
+                        action_descriptions.append("Added info file")
                     else:
-                        action_descriptions.append(u"Deleted info file %s" % ", ".join(deleted_files))
+                        action_descriptions.append("Added %s info files" % file_count)
 
-        if all_valid:
-            uploaded_files = request.FILES.getlist('info_file')
-            file_count = len(uploaded_files)
-            for f in uploaded_files:
-                production.info_files.create(file=f)
+                if action_descriptions:
+                    # at least one change was made
+                    action_description = '; '.join(action_descriptions)
 
-            if file_count:
-                if file_count == 1:
-                    action_descriptions.append("Added info file")
-                else:
-                    action_descriptions.append("Added %s info files" % file_count)
+                    production.updated_at = datetime.datetime.now()
+                    production.has_bonafide_edits = True
+                    production.save()
 
-            if action_descriptions:
-                # at least one change was made
-                action_description = '; '.join(action_descriptions)
+                    Edit.objects.create(
+                        action_type='edit_info_files', focus=production,
+                        description=action_description, user=request.user
+                    )
 
-                production.updated_at = datetime.datetime.now()
-                production.has_bonafide_edits = True
-                production.save()
+                return HttpResponseRedirect(production.get_absolute_url())
 
-                Edit.objects.create(
-                    action_type='edit_info_files', focus=production,
-                    description=action_description, user=request.user
-                )
+        else:
+            formset = ProductionInfoFileFormset(instance=production)
 
-            return HttpResponseRedirect(production.get_absolute_url())
-
-    else:
-        formset = ProductionInfoFileFormset(instance=production)
-
-    return render(request, 'productions/edit_info_files.html', {
-        'production': production,
-        'formset': formset,
-        'add_only': (not request.user.is_staff) or (production.info_files.count() == 0),
-    })
+        return render(request, 'productions/edit_info_files.html', {
+            'production': production,
+            'formset': formset,
+            'add_only': (not request.user.is_staff) or (production.info_files.count() == 0),
+        })
 
 
 @login_required

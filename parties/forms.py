@@ -260,7 +260,7 @@ class PartyShareImageForm(forms.ModelForm):
             s.id: s for s in self['share_screenshot'].field.queryset
         }
         return [
-            (screenshots_by_id[option.data['value']], option)
+            (screenshots_by_id[option.data['value'].value], option)
             for option in list(self['share_screenshot'])
         ]
 

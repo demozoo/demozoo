@@ -77,7 +77,10 @@ urlpatterns = [
         r'^productions/(\d+)/delete_blurb/(\d+)/$', production_views.DeleteBlurbView.as_view(), {},
         'production_delete_blurb'
     ),
-    url(r'^productions/(\d+)/edit_info/$', production_views.edit_info_files, {}, 'production_edit_info_files'),
+    url(
+        r'^productions/(\d+)/edit_info/$', production_views.EditInfoFilesView.as_view(), {},
+        'production_edit_info_files'
+    ),
     url(r'^productions/(\d+)/info/(\d+)/$', production_views.info_file, {}, 'production_info_file'),
     url(r'^productions/(\d+)/lock/$', production_views.LockProductionView.as_view(), {}, 'lock_production'),
     url(r'^productions/(\d+)/protected/$', production_views.protected, {}, 'production_protected'),
