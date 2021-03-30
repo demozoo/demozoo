@@ -5,6 +5,7 @@ from django.urls import reverse
 from strip_markup import strip_markup
 from unidecode import unidecode
 
+from demoscene.models import TextFile
 from demoscene.utils.text import generate_search_title
 
 
@@ -105,3 +106,8 @@ class Affiliation(models.Model):
             return "%s - %s for %s" % (self.bbs.name, self.get_role_display(), self.group.name)
         else:
             return "%s affiliated with %s" % (self.group.name, self.bbs.name)
+
+
+class TextAd(TextFile):
+    bbs = models.ForeignKey(BBS, related_name='text_ads', on_delete=models.CASCADE)
+    file = models.FileField(upload_to='bbs_ads', blank=True)
