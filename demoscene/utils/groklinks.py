@@ -426,7 +426,7 @@ class ScenesatTrack(BaseUrl):
 
 
 class ZxdemoAuthor(BaseUrl):
-    canonical_format = "http://zxdemo.org/author.php?id=%s"
+    canonical_format = "https://zxdemo.org/author.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/author\.php', 'id', re.I),
     ]
@@ -436,7 +436,7 @@ class ZxdemoAuthor(BaseUrl):
 
 
 class ZxdemoItem(BaseUrl):
-    canonical_format = "http://zxdemo.org/item.php?id=%s"
+    canonical_format = "https://zxdemo.org/item.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/item\.php', 'id', re.I),
     ]
@@ -854,7 +854,7 @@ class SceneOrgFolder(BaseUrl):
 
 
 class ZxdemoParty(BaseUrl):
-    canonical_format = "http://zxdemo.org/party.php?id=%s"
+    canonical_format = "https://zxdemo.org/party.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/party\.php', 'id', re.I),
     ]
