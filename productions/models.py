@@ -761,3 +761,7 @@ class ProductionLink(ExternalLink):
 class InfoFile(TextFile):
     production = models.ForeignKey(Production, related_name='info_files', on_delete=models.CASCADE)
     file = models.FileField(upload_to='nfo', blank=True)
+
+    class Meta:
+        verbose_name = 'info file'
+        verbose_name_plural = 'info files'
