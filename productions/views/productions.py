@@ -12,8 +12,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.http import require_POST
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
@@ -23,7 +21,7 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.models import BlacklistedTag, Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.utils.text import slugify_tag
-from demoscene.views.generic import AjaxConfirmationView
+from demoscene.views.generic import AjaxConfirmationView, EditTextFilesView
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
@@ -996,7 +994,7 @@ def carousel(request, production_id):
     return HttpResponse(carousel.get_slides_json(), content_type='text/javascript')
 
 
-class EditInfoFilesView(View):
+class EditInfoFilesView(EditTextFilesView):
     subject_model = Production
     formset_class = ProductionInfoFileFormset
     relation_name = 'info_files'
@@ -1011,72 +1009,6 @@ class EditInfoFilesView(View):
         subject.updated_at = datetime.datetime.now()
         subject.has_bonafide_edits = True
         subject.save()
-
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, subject_id):
-        self.subject = get_object_or_404(self.subject_model, id=subject_id)
-        if not self.can_edit(self.subject):
-            raise PermissionDenied
-
-        self.relation = getattr(self.subject, self.relation_name)
-        text_file_model = self.subject_model._meta.get_field(self.relation_name).related_model
-
-        if request.method == 'POST':
-            action_descriptions = []
-            all_valid = True
-
-            if request.user.is_staff:  # only staff members can edit/delete existing text files
-                formset = self.formset_class(request.POST, instance=self.subject)
-                all_valid = formset.is_valid()
-                if all_valid:
-                    formset.save()
-                    if formset.deleted_objects:
-                        deleted_files = [text_file.filename for text_file in formset.deleted_objects]
-                        filename_list = ", ".join(deleted_files)
-                        if len(deleted_files) > 1:
-                            action_descriptions.append(
-                                u"Deleted %s: %s" % (text_file_model._meta.verbose_name_plural, filename_list)
-                            )
-                        else:
-                            action_descriptions.append(
-                                u"Deleted %s %s" % (text_file_model._meta.verbose_name, filename_list)
-                            )
-
-            if all_valid:
-                uploaded_files = request.FILES.getlist(self.upload_field_name)
-                file_count = len(uploaded_files)
-                for f in uploaded_files:
-                    self.relation.create(file=f)
-
-                if file_count:
-                    if file_count == 1:
-                        action_descriptions.append("Added %s" % text_file_model._meta.verbose_name)
-                    else:
-                        action_descriptions.append(
-                            "Added %s %s" % (file_count, text_file_model._meta.verbose_name_plural)
-                        )
-
-                if action_descriptions:
-                    # at least one change was made
-                    action_description = '; '.join(action_descriptions)
-                    self.mark_as_edited(self.subject)
-
-                    Edit.objects.create(
-                        action_type='edit_info_files', focus=self.subject,
-                        description=action_description, user=request.user
-                    )
-
-                return HttpResponseRedirect(self.subject.get_absolute_url())
-
-        else:
-            formset = self.formset_class(instance=self.subject)
-
-        return render(request, self.template_name, {
-            self.subject_context_name: self.subject,
-            'formset': formset,
-            'add_only': (not request.user.is_staff) or (self.relation.count() == 0),
-        })
 
 
 @login_required
