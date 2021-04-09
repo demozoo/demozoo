@@ -119,6 +119,10 @@
     </div>
     
     <div id="main_column">
+        {% if text_ads or user.is_authenticated %}
+            {% include "bbs/_text_ads.html" %}
+        {% endif %}
+
         {% if bbstros or user.is_authenticated %}
             <div class="panel bbstros_panel editable_chunk">
                 <h3 class="panel__title">

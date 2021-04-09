@@ -7,11 +7,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from read_only_mode import writeable_site_required
 
-from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBStroFormset, OperatorForm
+from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBSTextAdFormset, BBStroFormset, OperatorForm
 from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
-from demoscene.views.generic import AjaxConfirmationView
+from demoscene.views.generic import AjaxConfirmationView, EditTextFilesView
 
 
 def index(request):
@@ -47,6 +47,7 @@ def show(request, bbs_id):
         'editing_staff': (request.GET.get('editing') == 'staff'),
         'affiliations': affiliations,
         'editing_affiliations': (request.GET.get('editing') == 'affiliations'),
+        'text_ads': bbs.text_ads.all(),
     })
 
 
@@ -360,3 +361,12 @@ class RemoveAffiliationView(AjaxConfirmationView):
             action_type='remove_bbs_affiliation', focus=self.affiliation.group, focus2=self.bbs,
             description=description, user=self.request.user
         )
+
+
+class EditTextAdsView(EditTextFilesView):
+    subject_model = BBS
+    formset_class = BBSTextAdFormset
+    relation_name = 'text_ads'
+    upload_field_name = 'text_ad'
+    template_name = 'bbs/edit_text_ads.html'
+    subject_context_name = 'bbs'

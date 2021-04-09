@@ -1,9 +1,10 @@
 from django import forms
 from django.forms.formsets import formset_factory
+from django.forms.models import inlineformset_factory
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 
-from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES
+from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, TextAd
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField
 
@@ -102,3 +103,6 @@ class AffiliationForm(forms.Form):
                 ),
                 user=user
             )
+
+
+BBSTextAdFormset = inlineformset_factory(BBS, TextAd, fields=[], extra=0)
