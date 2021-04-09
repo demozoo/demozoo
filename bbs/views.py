@@ -8,7 +8,7 @@ from django.urls import reverse
 from read_only_mode import writeable_site_required
 
 from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBSTextAdFormset, BBStroFormset, OperatorForm
-from bbs.models import BBS, Affiliation, Operator
+from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
 from demoscene.views.generic import AjaxConfirmationView, EditTextFilesView
@@ -370,3 +370,13 @@ class EditTextAdsView(EditTextFilesView):
     upload_field_name = 'text_ad'
     template_name = 'bbs/edit_text_ads.html'
     subject_context_name = 'bbs'
+
+
+@login_required
+def text_ad(request, bbs_id, file_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+    text_ad = get_object_or_404(TextAd, bbs=bbs, id=file_id)
+    return render(request, 'bbs/show_text_ad.html', {
+        'bbs': bbs,
+        'text_ad': text_ad,
+    })

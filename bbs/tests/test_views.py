@@ -411,3 +411,26 @@ class TestEditTextAds(MediaTestMixin, TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/' % self.starport.id)
         self.assertEqual(0, self.starport.text_ads.count())
+
+
+class TestTextAd(MediaTestMixin, TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.starport = BBS.objects.get(name='StarPort')
+        self.info = self.starport.text_ads.create(
+            file=File(name="starport1.txt", file=BytesIO(b"First text ad for StarPort")),
+            filename="starport1.txt", filesize=100, sha1="1234123412341234"
+        )
+
+    def test_get_without_login(self):
+        url = '/bbs/%d/text_ad/%d/' % (self.starport.id, self.info.id)
+        response = self.client.get(url)
+        self.assertRedirects(response, '/account/login/?next=%s' % url)
+
+    def test_get_with_login(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/bbs/%d/text_ad/%d/' % (self.starport.id, self.info.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "First text ad for StarPort")

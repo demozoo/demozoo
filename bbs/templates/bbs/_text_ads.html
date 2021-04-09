@@ -9,7 +9,7 @@
     {% endif %}
     <ul class="text_ads">
         {% for file in text_ads %}
-            <li><a href="{# url 'bbs_text_ad' bbs.id file.id #}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
+            <li><a href="{% url 'bbs_text_ad' bbs.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
         {% endfor %}
     </ul>
 </div>
