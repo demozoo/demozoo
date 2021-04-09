@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^(\d+)/add_affiliation/$', views.add_affiliation, {}, 'bbs_add_affiliation'),
     url(r'^(\d+)/edit_affiliation/(\d+)/$', views.edit_affiliation, {}, 'bbs_edit_affiliation'),
     url(r'^(\d+)/remove_affiliation/(\d+)/$', views.RemoveAffiliationView.as_view(), {}, 'bbs_remove_affiliation'),
+    url(r'^(\d+)/edit_text_ads/$', views.EditTextAdsView.as_view(), {}, 'bbs_edit_text_ads'),
 ]

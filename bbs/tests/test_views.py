@@ -1,8 +1,13 @@
+from io import BytesIO
+
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Edit, Releaser
+from demoscene.tests.utils import MediaTestMixin
 from productions.models import Production
 
 
@@ -331,3 +336,78 @@ class TestRemoveAffiliation(TestCase):
         })
         self.assertRedirects(response, '/bbs/%d/?editing=affiliations' % self.bbs.id)
         self.assertEqual(0, Affiliation.objects.filter(group=self.fc, bbs=self.bbs).count())
+
+
+class TestEditTextAds(MediaTestMixin, TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.starport = BBS.objects.get(name='StarPort')
+
+        self.info1 = self.starport.text_ads.create(
+            file=File(name="starport1.txt", file=BytesIO(b"First text ad for StarPort")),
+            filename="starport1.txt", filesize=100, sha1="1234123412341234"
+        )
+        self.info2 = self.starport.text_ads.create(
+            file=File(name="starport2.txt", file=BytesIO(b"Second text ad for StarPort")),
+            filename="starport2.txt", filesize=100, sha1="1234123412341235"
+        )
+
+    def test_get(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/bbs/%d/edit_text_ads/' % self.starport.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_one(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/bbs/%d/edit_text_ads/' % self.starport.id, {
+            'text_ad': SimpleUploadedFile('starport3.txt', b"Third text ad", content_type="text/plain")
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.starport.id)
+        self.assertEqual(3, self.starport.text_ads.count())
+
+    def test_add_multiple(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post('/bbs/%d/edit_text_ads/' % self.starport.id, {
+            'text_ad': [
+                SimpleUploadedFile('starport3.txt', b"Third text ad", content_type="text/plain"),
+                SimpleUploadedFile('starport4.txt', b"Fourth text ad", content_type="text/plain"),
+            ]
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.starport.id)
+        self.assertEqual(4, self.starport.text_ads.count())
+
+    def test_delete_one(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/bbs/%d/edit_text_ads/' % self.starport.id, {
+            'text_ads-TOTAL_FORMS': 2,
+            'text_ads-INITIAL_FORMS': 2,
+            'text_ads-MIN_NUM_FORMS': 0,
+            'text_ads-MAX_NUM_FORMS': 1000,
+            'text_ads-0-DELETE': 'text_ads-0-DELETE',
+            'text_ads-0-id': self.info1.id,
+            'text_ads-0-bbs': self.starport.id,
+            'text_ads-1-id': self.info2.id,
+            'text_ads-1-bbs': self.starport.id,
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.starport.id)
+        self.assertEqual(1, self.starport.text_ads.count())
+
+    def test_delete_multiple(self):
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.post('/bbs/%d/edit_text_ads/' % self.starport.id, {
+            'text_ads-TOTAL_FORMS': 2,
+            'text_ads-INITIAL_FORMS': 2,
+            'text_ads-MIN_NUM_FORMS': 0,
+            'text_ads-MAX_NUM_FORMS': 1000,
+            'text_ads-0-DELETE': 'text_ads-0-DELETE',
+            'text_ads-0-id': self.info1.id,
+            'text_ads-0-bbs': self.starport.id,
+            'text_ads-1-DELETE': 'text_ads-1-DELETE',
+            'text_ads-1-id': self.info2.id,
+            'text_ads-1-bbs': self.starport.id,
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.starport.id)
+        self.assertEqual(0, self.starport.text_ads.count())
