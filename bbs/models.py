@@ -90,6 +90,7 @@ class Operator(models.Model):
 
 AFFILIATION_TYPES = [
     ('010-whq', 'WHQ'),
+    ('015-ehq', 'EHQ'),
     ('020-hq', 'HQ'),
     ('030-memberboard', 'Memberboard'),
     ('040-distsite', 'Distsite'),
