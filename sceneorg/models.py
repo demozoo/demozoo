@@ -6,7 +6,7 @@ from django.db import models
 
 
 class Directory(models.Model):
-    path = models.CharField(max_length=255, db_index=True)
+    path = models.CharField(max_length=255, unique=True, db_index=True)
     is_deleted = models.BooleanField(default=False)
     first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
     last_seen_at = models.DateTimeField()
@@ -54,7 +54,7 @@ class FileTooBig(Exception):
 
 
 class File(models.Model):
-    path = models.CharField(max_length=255, db_index=True)
+    path = models.CharField(max_length=255, unique=True, db_index=True)
     is_deleted = models.BooleanField(default=False)
     first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
     last_seen_at = models.DateTimeField()
