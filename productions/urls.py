@@ -67,9 +67,9 @@ urlpatterns = [
         r'^productions/(\d+)/edit_pack_contents/$', production_views.edit_pack_contents, {},
         'production_edit_pack_contents'
     ),
-    url(r'^productions/(\d+)/edit_tags/$', production_views.edit_tags, {}, 'production_edit_tags'),
-    url(r'^productions/(\d+)/add_tag/$', production_views.add_tag, {}, 'production_add_tag'),
-    url(r'^productions/(\d+)/remove_tag/$', production_views.remove_tag, {}, 'production_remove_tag'),
+    url(r'^productions/(\d+)/edit_tags/$', production_views.EditTagsView.as_view(), {}, 'production_edit_tags'),
+    url(r'^productions/(\d+)/add_tag/$', production_views.AddTagView.as_view(), {}, 'production_add_tag'),
+    url(r'^productions/(\d+)/remove_tag/$', production_views.RemoveTagView.as_view(), {}, 'production_remove_tag'),
     url(r'^productions/(\d+)/delete/$', production_views.DeleteProductionView.as_view(), {}, 'delete_production'),
     url(r'^productions/(\d+)/add_blurb/$', production_views.add_blurb, {}, 'production_add_blurb'),
     url(r'^productions/(\d+)/edit_blurb/(\d+)/$', production_views.edit_blurb, {}, 'production_edit_blurb'),

@@ -12,7 +12,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.views import View
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 from taggit.models import Tag
@@ -766,93 +767,95 @@ def edit_pack_contents(request, production_id):
     })
 
 
-@writeable_site_required
-@login_required
-def edit_tags(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    old_tags = set(production.tags.names())
-    form = ProductionTagsForm(request.POST, instance=production)
-    form.save()
-    new_tags = set(production.tags.names())
-    if new_tags != old_tags:
-        names_string = u', '.join(production.tags.names())
-        Edit.objects.create(
-            action_type='production_edit_tags', focus=production,
-            description=u"Set tags to %s" % names_string, user=request.user
-        )
-
-        # delete any tags that are now unused
-        Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
-    return HttpResponseRedirect(production.get_absolute_url())
-
-
-@writeable_site_required
-@login_required
-@require_POST
-def add_tag(request, production_id):
-
-    # Only used in AJAX calls.
-
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    tag_name = slugify_tag(request.POST.get('tag_name'))
-
-    try:
-        blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
-        tag_name = slugify_tag(blacklisted_tag.replacement)
-        message = blacklisted_tag.message
-    except BlacklistedTag.DoesNotExist:
-        message = None
-
-    if tag_name:
-        # check whether it's already present
-        existing_tag = production.tags.filter(name=tag_name)
-        if not existing_tag:
-            production.tags.add(tag_name)
+class EditTagsView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        production = get_object_or_404(Production, id=production_id)
+        if not production.editable_by_user(request.user):
+            raise PermissionDenied
+        old_tags = set(production.tags.names())
+        form = ProductionTagsForm(request.POST, instance=production)
+        form.save()
+        new_tags = set(production.tags.names())
+        if new_tags != old_tags:
+            names_string = u', '.join(production.tags.names())
             Edit.objects.create(
-                action_type='production_add_tag', focus=production,
-                description=u"Added tag '%s'" % tag_name, user=request.user
+                action_type='production_edit_tags', focus=production,
+                description=u"Set tags to %s" % names_string, user=request.user
             )
 
-    tags_list_html = render_to_string('productions/_tags_list.html', {
-        'tags': production.tags.order_by('name')
-    })
-
-    return JsonResponse({
-        'tags_list_html': tags_list_html,
-        'clean_tag_name': tag_name,
-        'message': message,
-    })
+            # delete any tags that are now unused
+            Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
+        return HttpResponseRedirect(production.get_absolute_url())
 
 
-@writeable_site_required
-@login_required
-def remove_tag(request, production_id):
+class AddTagView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def post(self, request, production_id):
 
-    # Only used in AJAX calls.
+        # Only used in AJAX calls.
 
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    if request.method == 'POST':
+        production = get_object_or_404(Production, id=production_id)
+        if not production.editable_by_user(request.user):
+            raise PermissionDenied
         tag_name = slugify_tag(request.POST.get('tag_name'))
-        existing_tag = production.tags.filter(name=tag_name)
-        if existing_tag:
-            production.tags.remove(tag_name)
-            Edit.objects.create(
-                action_type='production_remove_tag', focus=production,
-                description=u"Removed tag '%s'" % tag_name, user=request.user
-            )
-            if not existing_tag[0].taggit_taggeditem_items.count():
-                # no more items use this tag - delete it
-                existing_tag[0].delete()
 
-    return render(request, 'productions/_tags_list.html', {
-        'tags': production.tags.order_by('name'),
-    })
+        try:
+            blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
+            tag_name = slugify_tag(blacklisted_tag.replacement)
+            message = blacklisted_tag.message
+        except BlacklistedTag.DoesNotExist:
+            message = None
+
+        if tag_name:
+            # check whether it's already present
+            existing_tag = production.tags.filter(name=tag_name)
+            if not existing_tag:
+                production.tags.add(tag_name)
+                Edit.objects.create(
+                    action_type='production_add_tag', focus=production,
+                    description=u"Added tag '%s'" % tag_name, user=request.user
+                )
+
+        tags_list_html = render_to_string('productions/_tags_list.html', {
+            'tags': production.tags.order_by('name')
+        })
+
+        return JsonResponse({
+            'tags_list_html': tags_list_html,
+            'clean_tag_name': tag_name,
+            'message': message,
+        })
+
+
+class RemoveTagView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def post(self, request, production_id):
+
+        # Only used in AJAX calls.
+
+        production = get_object_or_404(Production, id=production_id)
+        if not production.editable_by_user(request.user):
+            raise PermissionDenied
+        if request.method == 'POST':
+            tag_name = slugify_tag(request.POST.get('tag_name'))
+            existing_tag = production.tags.filter(name=tag_name)
+            if existing_tag:
+                production.tags.remove(tag_name)
+                Edit.objects.create(
+                    action_type='production_remove_tag', focus=production,
+                    description=u"Removed tag '%s'" % tag_name, user=request.user
+                )
+                if not existing_tag[0].taggit_taggeditem_items.count():
+                    # no more items use this tag - delete it
+                    existing_tag[0].delete()
+
+        return render(request, 'productions/_tags_list.html', {
+            'tags': production.tags.order_by('name'),
+        })
 
 
 def autocomplete_tags(request):
