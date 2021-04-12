@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -22,7 +21,7 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.models import BlacklistedTag, Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.utils.text import slugify_tag
-from demoscene.views.generic import AjaxConfirmationView, EditTextFilesView
+from demoscene.views.generic import AjaxConfirmationView, EditTagsView, EditTextFilesView
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
@@ -767,27 +766,13 @@ def edit_pack_contents(request, production_id):
     })
 
 
-class EditTagsView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id):
-        production = get_object_or_404(Production, id=production_id)
-        if not production.editable_by_user(request.user):
-            raise PermissionDenied
-        old_tags = set(production.tags.names())
-        form = ProductionTagsForm(request.POST, instance=production)
-        form.save()
-        new_tags = set(production.tags.names())
-        if new_tags != old_tags:
-            names_string = u', '.join(production.tags.names())
-            Edit.objects.create(
-                action_type='production_edit_tags', focus=production,
-                description=u"Set tags to %s" % names_string, user=request.user
-            )
+class ProductionEditTagsView(EditTagsView):
+    subject_model = Production
+    form_class = ProductionTagsForm
+    action_type = 'production_edit_tags'
 
-            # delete any tags that are now unused
-            Tag.objects.annotate(num_prods=Count('taggit_taggeditem_items')).filter(num_prods=0).delete()
-        return HttpResponseRedirect(production.get_absolute_url())
+    def can_edit(self, subject):
+        return subject.editable_by_user(self.request.user)
 
 
 class AddTagView(View):
