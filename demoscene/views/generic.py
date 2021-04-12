@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from read_only_mode import writeable_site_required
+from taggit.models import Tag
 
 from demoscene.models import Edit
 
@@ -152,3 +154,29 @@ class EditTextFilesView(View):
             'formset': formset,
             'add_only': (not request.user.is_staff) or (self.relation.count() == 0),
         })
+
+
+class EditTagsView(View):
+    def can_edit(self, subject):  # pragma: no cover
+        return True
+
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, subject_id):
+        subject = get_object_or_404(self.subject_model, id=subject_id)
+        if not self.can_edit(subject):
+            raise PermissionDenied
+        old_tags = set(subject.tags.names())
+        form = self.form_class(request.POST, instance=subject)
+        form.save()
+        new_tags = set(subject.tags.names())
+        if new_tags != old_tags:
+            names_string = u', '.join(subject.tags.names())
+            Edit.objects.create(
+                action_type=self.action_type, focus=subject,
+                description=u"Set tags to %s" % names_string, user=request.user
+            )
+
+            # delete any tags that are now unused
+            Tag.objects.annotate(num_items=Count('taggit_taggeditem_items')).filter(num_items=0).delete()
+        return HttpResponseRedirect(subject.get_absolute_url())
