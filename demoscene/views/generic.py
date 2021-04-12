@@ -1,15 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Count
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
-from demoscene.models import Edit
+from demoscene.models import BlacklistedTag, Edit
+from demoscene.utils.text import slugify_tag
 
 
 class AjaxConfirmationView(View):
@@ -180,3 +182,46 @@ class EditTagsView(View):
             # delete any tags that are now unused
             Tag.objects.annotate(num_items=Count('taggit_taggeditem_items')).filter(num_items=0).delete()
         return HttpResponseRedirect(subject.get_absolute_url())
+
+
+class AddTagView(View):
+    def can_edit(self, subject):  # pragma: no cover
+        return True
+
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def post(self, request, subject_id):
+
+        # Only used in AJAX calls.
+
+        subject = get_object_or_404(self.subject_model, id=subject_id)
+        if not self.can_edit(subject):
+            raise PermissionDenied
+        tag_name = slugify_tag(request.POST.get('tag_name'))
+
+        try:
+            blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
+            tag_name = slugify_tag(blacklisted_tag.replacement)
+            message = blacklisted_tag.message
+        except BlacklistedTag.DoesNotExist:
+            message = None
+
+        if tag_name:
+            # check whether it's already present
+            existing_tag = subject.tags.filter(name=tag_name)
+            if not existing_tag:
+                subject.tags.add(tag_name)
+                Edit.objects.create(
+                    action_type=self.action_type, focus=subject,
+                    description=u"Added tag '%s'" % tag_name, user=request.user
+                )
+
+        tags_list_html = render_to_string(self.template_name, {
+            'tags': subject.tags.order_by('name')
+        })
+
+        return JsonResponse({
+            'tags_list_html': tags_list_html,
+            'clean_tag_name': tag_name,
+            'message': message,
+        })

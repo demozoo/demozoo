@@ -18,10 +18,10 @@ from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
 from demoscene.forms.common import CreditFormSet
-from demoscene.models import BlacklistedTag, Edit, Nick
+from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.utils.text import slugify_tag
-from demoscene.views.generic import AjaxConfirmationView, EditTagsView, EditTextFilesView
+from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
@@ -775,44 +775,13 @@ class ProductionEditTagsView(EditTagsView):
         return subject.editable_by_user(self.request.user)
 
 
-class AddTagView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def post(self, request, production_id):
+class ProductionAddTagView(AddTagView):
+    subject_model = Production
+    action_type = 'production_add_tag'
+    template_name = 'productions/_tags_list.html'
 
-        # Only used in AJAX calls.
-
-        production = get_object_or_404(Production, id=production_id)
-        if not production.editable_by_user(request.user):
-            raise PermissionDenied
-        tag_name = slugify_tag(request.POST.get('tag_name'))
-
-        try:
-            blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
-            tag_name = slugify_tag(blacklisted_tag.replacement)
-            message = blacklisted_tag.message
-        except BlacklistedTag.DoesNotExist:
-            message = None
-
-        if tag_name:
-            # check whether it's already present
-            existing_tag = production.tags.filter(name=tag_name)
-            if not existing_tag:
-                production.tags.add(tag_name)
-                Edit.objects.create(
-                    action_type='production_add_tag', focus=production,
-                    description=u"Added tag '%s'" % tag_name, user=request.user
-                )
-
-        tags_list_html = render_to_string('productions/_tags_list.html', {
-            'tags': production.tags.order_by('name')
-        })
-
-        return JsonResponse({
-            'tags_list_html': tags_list_html,
-            'clean_tag_name': tag_name,
-            'message': message,
-        })
+    def can_edit(self, subject):
+        return subject.editable_by_user(self.request.user)
 
 
 class RemoveTagView(View):
