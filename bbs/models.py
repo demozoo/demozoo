@@ -3,6 +3,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.urls import reverse
 from strip_markup import strip_markup
+from taggit.managers import TaggableManager
 from unidecode import unidecode
 
 from demoscene.models import TextFile
@@ -21,6 +22,8 @@ class BBS(models.Model):
     notes = models.TextField(blank=True)
 
     bbstros = models.ManyToManyField('productions.Production', related_name='bbses', blank=True)
+
+    tags = TaggableManager(blank=True)
 
     search_title = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
     search_document = SearchVectorField(null=True, editable=False)
@@ -60,10 +63,14 @@ class BBS(models.Model):
     def plaintext_notes(self):
         return strip_markup(self.notes)
 
+    @property
+    def tags_string(self):
+        return ', '.join([tag.name for tag in self.tags.all()])
+
     def index_components(self):
         return {
             'A': self.asciified_name,
-            'C': self.asciified_location + ' ' + self.plaintext_notes,
+            'C': self.asciified_location + ' ' + self.tags_string + ' ' + self.plaintext_notes,
         }
 
     class Meta:
