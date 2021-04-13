@@ -49,7 +49,10 @@ def show(request, scener_id, edit_mode=False):
     )
     # order by -role to get Sysop before Co-sysop.
     # Will need to come up with something less hacky if more roles are added :-)
-    bbses_operated = scener.bbses_operated.select_related('bbs').defer('bbs__notes').order_by('-role', 'bbs__name')
+    bbses_operated = (
+        scener.bbses_operated.select_related('bbs').defer('bbs__notes')
+        .order_by('-is_current', '-role', 'bbs__name')
+    )
 
     return render(request, 'sceners/show.html', {
         'scener': scener,

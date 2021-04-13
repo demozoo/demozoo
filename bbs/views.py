@@ -51,7 +51,10 @@ def show(request, bbs_id):
 
     # order by -role to get Sysop before Co-sysop.
     # Will need to come up with something less hacky if more roles are added :-)
-    staff = bbs.staff.select_related('releaser').defer('releaser__notes').order_by('-role', 'releaser__name')
+    staff = (
+        bbs.staff.select_related('releaser').defer('releaser__notes')
+        .order_by('-is_current', '-role', 'releaser__name')
+    )
 
     affiliations = bbs.affiliations.select_related('group').defer('group__notes').order_by(
         Concat('role', Value('999')),  # sort role='' after the numbered ones. Ewww.

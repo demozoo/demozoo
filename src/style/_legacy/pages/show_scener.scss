@@ -148,15 +148,24 @@
                 background-position: left center;
                 background-repeat: no-repeat;
                 background-image: url(/static/images/icons/telephone.png);
-            }
 
-            a {
-                text-decoration: none;
-                color: #444;
-                font-weight: bold;
-                &:hover {
-                    text-decoration: underline;
+                &.previous_membership {
+                    background-image: url(/static/images/icons/telephone_grey.png);
                 }
+
+                a {
+                    text-decoration: none;
+                    color: #444;
+                    font-weight: bold;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                &.previous_membership a {
+                    color: #bbe;
+                }
+
             }
         }
     }
