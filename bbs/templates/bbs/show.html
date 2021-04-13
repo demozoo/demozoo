@@ -9,6 +9,9 @@
     {% compress js %}
         <script src="/static/js/components/notes_panel.js"></script>
         <script src="/static/js/components/editable_chunk.js"></script>
+        <script src="/static/js/tag-it.js"></script>
+        <script src="/static/js/components/tagging.js"></script>
+        <script src="/static/bbs/js/pages/show_bbs.js"></script>
     {% endcompress %}
 {% endblock %}
 
@@ -122,6 +125,8 @@
         {% if text_ads or user.is_authenticated %}
             {% include "bbs/_text_ads.html" %}
         {% endif %}
+
+        {% include "bbs/_tags.html" %}
 
         {% if bbstros or user.is_authenticated %}
             <div class="panel bbstros_panel editable_chunk">
