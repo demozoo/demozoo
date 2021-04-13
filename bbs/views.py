@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from read_only_mode import writeable_site_required
+from taggit.models import Tag
 
 from bbs.forms import (
     AffiliationForm, BBSEditNotesForm, BBSForm, BBSTagsForm, BBSTextAdFormset, BBStroFormset, OperatorForm
@@ -23,6 +24,21 @@ def index(request):
     )
 
     return render(request, 'bbs/index.html', {
+        'page': page,
+    })
+
+
+def tagged(request, tag_name):
+    try:
+        tag = Tag.objects.get(name=tag_name)
+    except Tag.DoesNotExist:
+        tag = Tag(name=tag_name)
+    queryset = BBS.objects.filter(tags__name=tag_name).order_by('name')
+
+    page = get_page(queryset, request.GET.get('page', '1'))
+
+    return render(request, 'bbs/tagged.html', {
+        'tag': tag,
         'page': page,
     })
 

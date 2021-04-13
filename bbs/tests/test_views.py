@@ -20,6 +20,21 @@ class TestIndex(TestCase):
         self.assertContains(response, "StarPort")
 
 
+class TestTagIndex(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        bbs = BBS.objects.get(name='StarPort')
+        bbs.tags.add('future-crew')
+        response = self.client.get('/bbs/tagged/future-crew/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "StarPort")
+
+    def test_get_nonexistent(self):
+        response = self.client.get('/bbs/tagged/this-does-not-exist/')
+        self.assertEqual(response.status_code, 200)
+
+
 class TestShow(TestCase):
     fixtures = ['tests/gasman.json']
 
