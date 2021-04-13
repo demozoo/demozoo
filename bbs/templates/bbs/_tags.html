@@ -1,0 +1,25 @@
+<div class="editable_chunk panel tags_panel {% if site_is_writeable and user.is_authenticated %}edit_toggle{% endif %}">
+    <h3 class="panel__title">Tags</h3>
+
+    {% if site_is_writeable and not user.is_authenticated %}
+        {% comment %} Provide an 'edit' button that takes them to the login page.
+            For logged-in users, the 'edit' button will be added via JS
+            (because non-JS users will see the edit controls on the tags anyhow).
+        {% endcomment %}
+        <ul class="actions">
+            <li>
+                <a href="{% url 'log_in' %}?next={{ bbs.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit tags</a>
+            </li>
+        </ul>
+    {% endif %}
+
+    <div id="tags_message"></div>
+    {% include "bbs/_tags_list.html" with tags=tags only %}
+    {% if site_is_writeable and tags_form %}
+        <form class="tags_form" action="{% url 'bbs_edit_tags' bbs.id %}" method="post">
+            {% csrf_token %}
+            {{ tags_form.tags }}
+            <input type="submit" value="Update" />
+        </form>
+    {% endif %}
+</div>

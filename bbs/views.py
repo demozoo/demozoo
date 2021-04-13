@@ -42,6 +42,11 @@ def show(request, bbs_id):
         'group__name'
     )
 
+    if request.user.is_authenticated:
+        tags_form = BBSTagsForm(instance=bbs)
+    else:
+        tags_form = None
+
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
         'bbstros': bbstros,
@@ -50,6 +55,8 @@ def show(request, bbs_id):
         'affiliations': affiliations,
         'editing_affiliations': (request.GET.get('editing') == 'affiliations'),
         'text_ads': bbs.text_ads.all(),
+        'tags': bbs.tags.order_by('name'),
+        'tags_form': tags_form,
     })
 
 
