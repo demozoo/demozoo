@@ -11,8 +11,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 from taggit.models import Tag
@@ -20,8 +18,7 @@ from taggit.models import Tag
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
-from demoscene.utils.text import slugify_tag
-from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView
+from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
@@ -784,32 +781,13 @@ class ProductionAddTagView(AddTagView):
         return subject.editable_by_user(self.request.user)
 
 
-class RemoveTagView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def post(self, request, production_id):
+class ProductionRemoveTagView(RemoveTagView):
+    subject_model = Production
+    action_type = 'production_remove_tag'
+    template_name = 'productions/_tags_list.html'
 
-        # Only used in AJAX calls.
-
-        production = get_object_or_404(Production, id=production_id)
-        if not production.editable_by_user(request.user):
-            raise PermissionDenied
-        if request.method == 'POST':
-            tag_name = slugify_tag(request.POST.get('tag_name'))
-            existing_tag = production.tags.filter(name=tag_name)
-            if existing_tag:
-                production.tags.remove(tag_name)
-                Edit.objects.create(
-                    action_type='production_remove_tag', focus=production,
-                    description=u"Removed tag '%s'" % tag_name, user=request.user
-                )
-                if not existing_tag[0].taggit_taggeditem_items.count():
-                    # no more items use this tag - delete it
-                    existing_tag[0].delete()
-
-        return render(request, 'productions/_tags_list.html', {
-            'tags': production.tags.order_by('name'),
-        })
+    def can_edit(self, subject):
+        return subject.editable_by_user(self.request.user)
 
 
 def autocomplete_tags(request):

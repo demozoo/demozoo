@@ -225,3 +225,34 @@ class AddTagView(View):
             'clean_tag_name': tag_name,
             'message': message,
         })
+
+
+class RemoveTagView(View):
+    def can_edit(self, subject):  # pragma: no cover
+        return True
+
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def post(self, request, subject_id):
+
+        # Only used in AJAX calls.
+
+        subject = get_object_or_404(self.subject_model, id=subject_id)
+        if not self.can_edit(subject):
+            raise PermissionDenied
+        if request.method == 'POST':
+            tag_name = slugify_tag(request.POST.get('tag_name'))
+            existing_tag = subject.tags.filter(name=tag_name)
+            if existing_tag:
+                subject.tags.remove(tag_name)
+                Edit.objects.create(
+                    action_type=self.action_type, focus=subject,
+                    description=u"Removed tag '%s'" % tag_name, user=request.user
+                )
+                if not existing_tag[0].taggit_taggeditem_items.count():
+                    # no more items use this tag - delete it
+                    existing_tag[0].delete()
+
+        return render(request, self.template_name, {
+            'tags': subject.tags.order_by('name'),
+        })
