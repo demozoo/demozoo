@@ -4,8 +4,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet, modelformset_factory
 
-from demoscene.models import Edit
+from demoscene.models import BlacklistedTag, Edit
 from demoscene.utils.groklinks import ARCHIVED_LINK_TYPES
+from demoscene.utils.text import slugify_tag
 from productions.models import Credit
 
 
@@ -99,3 +100,22 @@ class CreditForm(forms.ModelForm):
 CreditFormSet = modelformset_factory(
     Credit, fields=('category', 'role'), can_delete=True, form=CreditForm
 )
+
+
+class BaseTagsForm(forms.ModelForm):
+    def clean_tags(self):
+        clean_tags = []
+        for name in self.cleaned_data['tags']:
+            name = slugify_tag(name)
+            try:
+                blacklisted_tag = BlacklistedTag.objects.get(tag=name)
+                name = slugify_tag(blacklisted_tag.replacement)
+            except BlacklistedTag.DoesNotExist:
+                pass
+            if name:
+                clean_tags.append(name)
+
+        return clean_tags
+
+    class Meta:
+        fields = ['tags']

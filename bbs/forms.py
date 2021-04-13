@@ -5,6 +5,7 @@ from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 
 from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, TextAd
+from demoscene.forms.common import BaseTagsForm
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField
 
@@ -106,3 +107,8 @@ class AffiliationForm(forms.Form):
 
 
 BBSTextAdFormset = inlineformset_factory(BBS, TextAd, fields=[], extra=0)
+
+
+class BBSTagsForm(BaseTagsForm):
+    class Meta(BaseTagsForm.Meta):
+        model = BBS

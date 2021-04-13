@@ -6,11 +6,10 @@ from django.forms.models import BaseModelFormSet, ModelFormOptions, inlineformse
 from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
 
-from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
-from demoscene.models import BlacklistedTag, Edit
+from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
+from demoscene.models import Edit
 from demoscene.utils import groklinks
 from demoscene.utils.party_field import PartyField
-from demoscene.utils.text import slugify_tag
 from platforms.models import Platform
 from productions.fields.byline_field import BylineField
 from productions.fields.production_field import ProductionField
@@ -262,24 +261,9 @@ class ProductionBlurbForm(forms.ModelForm):
         }
 
 
-class ProductionTagsForm(forms.ModelForm):
-    def clean_tags(self):
-        clean_tags = []
-        for name in self.cleaned_data['tags']:
-            name = slugify_tag(name)
-            try:
-                blacklisted_tag = BlacklistedTag.objects.get(tag=name)
-                name = slugify_tag(blacklisted_tag.replacement)
-            except BlacklistedTag.DoesNotExist:
-                pass
-            if name:
-                clean_tags.append(name)
-
-        return clean_tags
-
-    class Meta:
+class ProductionTagsForm(BaseTagsForm):
+    class Meta(BaseTagsForm.Meta):
         model = Production
-        fields = ['tags']
 
 
 class ProductionDownloadLinkForm(ExternalLinkForm):

@@ -20,4 +20,7 @@ urlpatterns = [
     url(r'^(\d+)/remove_affiliation/(\d+)/$', views.RemoveAffiliationView.as_view(), {}, 'bbs_remove_affiliation'),
     url(r'^(\d+)/edit_text_ads/$', views.EditTextAdsView.as_view(), {}, 'bbs_edit_text_ads'),
     url(r'^(\d+)/text_ad/(\d+)/$', views.text_ad, {}, 'bbs_text_ad'),
+    url(r'^(\d+)/edit_tags/$', views.BBSEditTagsView.as_view(), {}, 'bbs_edit_tags'),
+    url(r'^(\d+)/add_tag/$', views.BBSAddTagView.as_view(), {}, 'bbs_add_tag'),
+    url(r'^(\d+)/remove_tag/$', views.BBSRemoveTagView.as_view(), {}, 'bbs_remove_tag'),
 ]
