@@ -226,7 +226,9 @@ def add_operator(request, bbs_id):
             operator = Operator(
                 releaser=releaser,
                 bbs=bbs,
-                role=form.cleaned_data['role'])
+                role=form.cleaned_data['role'],
+                is_current=form.cleaned_data['is_current']
+            )
             operator.save()
             description = u"Added %s as staff member of %s" % (releaser.name, bbs.name)
             Edit.objects.create(
@@ -252,11 +254,13 @@ def edit_operator(request, bbs_id, operator_id):
         form = OperatorForm(request.POST, initial={
             'releaser_nick': operator.releaser.primary_nick,
             'role': operator.role,
+            'is_current': operator.is_current,
         })
         if form.is_valid():
             releaser = form.cleaned_data['releaser_nick'].commit().releaser
             operator.releaser = releaser
             operator.role = form.cleaned_data['role']
+            operator.is_current = form.cleaned_data['is_current']
             operator.save()
             form.log_edit(request.user, releaser, bbs)
 
@@ -265,6 +269,7 @@ def edit_operator(request, bbs_id, operator_id):
         form = OperatorForm(initial={
             'releaser_nick': operator.releaser.primary_nick,
             'role': operator.role,
+            'is_current': operator.is_current,
         })
     return render(request, 'bbs/edit_operator.html', {
         'bbs': bbs,

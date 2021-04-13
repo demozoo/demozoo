@@ -63,6 +63,7 @@ BBStroFormset = formset_factory(BBStroForm, can_delete=True, extra=1)
 class OperatorForm(forms.Form):
     releaser_nick = NickField(label='Staff member', sceners_only=True)
     role = forms.ChoiceField(label='Role', choices=OPERATOR_TYPES)
+    is_current = forms.BooleanField(required=False, label='Current member?', initial=True)
 
     def log_edit(self, user, releaser, bbs):
         # build up log description
@@ -70,6 +71,11 @@ class OperatorForm(forms.Form):
         changed_fields = self.changed_data
         if 'releaser_nick' in changed_fields:
             descriptions.append(u"changed staff member to %s" % releaser)
+        if 'is_current' in changed_fields:
+            if self.cleaned_data['is_current']:
+                descriptions.append("set as current staff")
+            else:
+                descriptions.append("set as ex-staff")
         if 'role' in changed_fields:
             descriptions.append("changed role to %s" % self.cleaned_data['role'])
         if descriptions:
