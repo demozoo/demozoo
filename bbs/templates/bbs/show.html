@@ -73,8 +73,8 @@
 
             <ul class="staff">
                 {% for operator in staff %}
-                    <li class="scener">
-                        <a href="{% url 'scener' operator.releaser.id %}">{{ operator.releaser.name }}</a>
+                    <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
+                        <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
                         {% releaser_flag operator.releaser %}
                         - {{ operator.get_role_display }}
                         {% if site_is_writeable and user.is_authenticated %}

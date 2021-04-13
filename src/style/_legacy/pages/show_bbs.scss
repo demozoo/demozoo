@@ -63,6 +63,9 @@
 
             &.scener {
                 background-image: url(/static/images/icons/scener.png);
+                &.previous_membership {
+                    background-image: url(/static/images/icons/scener_grey.png);
+                }
             }
 
             a.edit_operator {

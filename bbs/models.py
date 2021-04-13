@@ -90,6 +90,7 @@ class Operator(models.Model):
     bbs = models.ForeignKey(BBS, related_name='staff', on_delete=models.CASCADE)
     releaser = models.ForeignKey('demoscene.Releaser', related_name='bbses_operated', on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=OPERATOR_TYPES)
+    is_current = models.BooleanField(default=True)
 
     def __str__(self):
         return "%s - %s of %s" % (self.releaser.name, self.role, self.bbs.name)
