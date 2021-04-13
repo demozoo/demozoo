@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
 
 {% block html_title %}BBSes - Demozoo{% endblock %}
 
@@ -14,23 +13,7 @@
         <h1 class="page__title">BBSes</h1>
     </header>
 
-    <ul class="list list--results">
-        {% for bbs in page.object_list %}
-            <li class="list__item">
-                <div class="result">
-                    <div class="media media--thumbnail">
-                        <svg class="icon">
-                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--bbs"></use>
-                        </svg>
-                    </div>
-                    <div>
-                        <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
-                        {% releaser_flag bbs %}
-                    </div>
-                </div>
-            </li>
-        {% endfor %}
-    </ul>
+    {% include "bbs/_list.html" with bbses=page.object_list %}
     <br />
 
     {% include "shared/pagination_links.html" %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load safe_markdown demoscene_tags %}
+
+{% block html_title %}BBSes tagged '{{ tag.name }}' - Demozoo{% endblock %}
+
+{% block base_main %}
+    {% if site_is_writeable %}
+        <ul class="actions">
+            <li><a href="{% url 'new_bbs' %}" class="action_button icon add open_in_lightbox">New BBS</a></li>
+        </ul>
+    {% endif %}
+
+    <h2>BBSes tagged '{{ tag.name }}'</h2>
+    {% if tag.description %}
+        <div class="notes">
+            {{ tag.description.description|safe_markdown }}
+        </div>
+    {% endif %}
+
+    {% include "bbs/_list.html" with bbses=page.object_list %}
+    <br />
+
+    {% include "shared/pagination_links.html" %}
+{% endblock %}
