@@ -7,11 +7,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from read_only_mode import writeable_site_required
 
-from bbs.forms import AffiliationForm, BBSEditNotesForm, BBSForm, BBSTextAdFormset, BBStroFormset, OperatorForm
+from bbs.forms import (
+    AffiliationForm, BBSEditNotesForm, BBSForm, BBSTagsForm, BBSTextAdFormset, BBStroFormset, OperatorForm
+)
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
-from demoscene.views.generic import AjaxConfirmationView, EditTextFilesView
+from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 
 
 def index(request):
@@ -380,3 +382,21 @@ def text_ad(request, bbs_id, file_id):
         'bbs': bbs,
         'text_ad': text_ad,
     })
+
+
+class BBSEditTagsView(EditTagsView):
+    subject_model = BBS
+    form_class = BBSTagsForm
+    action_type = 'bbs_edit_tags'
+
+
+class BBSAddTagView(AddTagView):
+    subject_model = BBS
+    action_type = 'bbs_add_tag'
+    template_name = 'bbs/_tags_list.html'
+
+
+class BBSRemoveTagView(RemoveTagView):
+    subject_model = BBS
+    action_type = 'bbs_remove_tag'
+    template_name = 'bbs/_tags_list.html'
