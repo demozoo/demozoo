@@ -36,7 +36,14 @@ class BBS(models.Model):
     def save(self, *args, **kwargs):
         self.search_title = generate_search_title(self.name)
 
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+        # ensure that a Name with matching name exists for this BBS
+        name, created = Name.objects.get_or_create(bbs=self, name=self.name)
+
+    @property
+    def primary_name(self):
+        return self.names.get(name=self.name)
 
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])
@@ -60,6 +67,15 @@ class BBS(models.Model):
         return self.location and unidecode(self.location)
 
     @property
+    def all_names_string(self):
+        all_names = [name.name for name in self.names.all()]
+        return ', '.join(all_names)
+
+    @property
+    def asciified_all_names_string(self):
+        return unidecode(self.all_names_string)
+
+    @property
     def plaintext_notes(self):
         return strip_markup(self.notes)
 
@@ -69,15 +85,45 @@ class BBS(models.Model):
 
     def index_components(self):
         return {
-            'A': self.asciified_name,
+            'A': self.asciified_all_names_string,
             'C': self.asciified_location + ' ' + self.tags_string + ' ' + self.plaintext_notes,
         }
 
     class Meta:
+        ordering = ['name']
         verbose_name_plural = 'BBSes'
         indexes = [
             GinIndex(fields=['search_document']),
         ]
+
+
+class Name(models.Model):
+    bbs = models.ForeignKey(BBS, related_name='names', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_name = self.name
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        # update BBS name if it matches this nick's previous name
+        if self.id is not None:
+            super().save(*args, **kwargs)  # Call the original save() method
+            if (self._original_name == self.bbs.name) and (self._original_name != self.name):
+                self.bbs.name = self.name
+                self.bbs.save()
+        else:
+            super().save(*args, **kwargs)  # Call the original save() method
+
+    def is_primary_name(self):
+        return (self.bbs.name == self.name)
+
+    class Meta:
+        unique_together = ("bbs", "name")
+        ordering = ['name']
 
 
 OPERATOR_TYPES = [
