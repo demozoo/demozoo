@@ -85,7 +85,7 @@ class ProductionWidget(forms.Widget):
         self.supertype = supertype
         self.production_type_widget = ProductionTypeChoiceField(queryset=ProductionType.objects.all()).widget
         self.show_production_type_field = show_production_type_field
-        super(ProductionWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def value_from_datadict(self, data, files, name):
         id = self.id_widget.value_from_datadict(data, files, name + '_id')
@@ -177,7 +177,7 @@ class ProductionField(forms.Field):
             show_production_type_field=self.show_production_type_field,
         )
 
-        super(ProductionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         if not value:
@@ -186,7 +186,7 @@ class ProductionField(forms.Field):
             value = ProductionSelection.from_value(value, types_to_set=self.types_to_set)
             value.byline = self.byline_field.clean(value.byline_lookup)
 
-        return super(ProductionField, self).clean(value)
+        return super().clean(value)
 
     def has_changed(self, initial, data):
         initial = ProductionSelection.from_value(initial)

@@ -121,7 +121,7 @@ class Party(Commentable):
         if self.name:
             self.search_title = generate_search_title(self.name)
 
-        super(Party, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.share_image_file_url and not self.share_image_file:
             # clear the previous share_image_file_url field

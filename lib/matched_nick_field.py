@@ -75,7 +75,7 @@ class MatchedNickWidget(forms.Widget):
         self.select_widget = NickChoicesWidget(choices=self.choices, attrs=attrs)
         self.name_widget = forms.HiddenInput()
 
-        super(MatchedNickWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def value_from_datadict(self, data, files, name):
         nick_id = self.select_widget.value_from_datadict(data, files, name + '_id')
@@ -115,7 +115,7 @@ class MatchedNickField(forms.Field):
 
         self.widget = MatchedNickWidget(self.nick_search)
 
-        super(MatchedNickField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         if not value:
@@ -132,6 +132,6 @@ class MatchedNickField(forms.Field):
             raise Exception("Expected NickSelection, got Nick: %r" % value)
 
         if isinstance(value, NickSelection) or value is None:
-            return super(MatchedNickField, self).clean(value)
+            return super().clean(value)
         else:  # pragma: no cover
             raise Exception("Don't know how to clean %s" % repr(value))

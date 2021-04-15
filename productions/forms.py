@@ -29,7 +29,7 @@ def readable_list(list):
 class BaseProductionEditCoreDetailsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', Production())
-        super(BaseProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['title'] = forms.CharField(initial=self.instance.title, max_length=255)
         self.fields['byline'] = BylineField(required=False, initial=self.instance.byline_search(), label='By')
         self.fields['release_date'] = FuzzyDateField(
@@ -98,7 +98,7 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
 class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     # has multiple types
     def __init__(self, *args, **kwargs):
-        super(ProductionEditCoreDetailsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['types'] = ProductionTypeMultipleChoiceField(
             required=False, label='Type',
             initial=[typ.id for typ in self.instance.types.all()],
@@ -108,13 +108,13 @@ class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
         self.has_multiple_types = True
 
     def save(self, *args, **kwargs):
-        super(ProductionEditCoreDetailsForm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.instance.types.set(self.cleaned_data['types'])
 
 
 class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     def __init__(self, *args, **kwargs):
-        super(MusicEditCoreDetailsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.has_multiple_types = False
 
@@ -129,7 +129,7 @@ class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
         )
 
     def save(self, *args, **kwargs):
-        super(MusicEditCoreDetailsForm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.cleaned_data['type']:
             self.instance.types.set([self.cleaned_data['type']])
         return self.instance
@@ -137,7 +137,7 @@ class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 
 class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     def __init__(self, *args, **kwargs):
-        super(GraphicsEditCoreDetailsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.has_multiple_types = False
 
@@ -152,7 +152,7 @@ class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
         )
 
     def save(self, *args, **kwargs):
-        super(GraphicsEditCoreDetailsForm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         if self.cleaned_data['type']:
             self.instance.types.set([self.cleaned_data['type']])
         return self.instance
@@ -161,7 +161,7 @@ class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
 class CreateProductionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', Production())
-        super(CreateProductionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['title'] = forms.CharField(max_length=255)
         self.fields['byline'] = BylineField(required=False, label='By')
         self.fields['release_date'] = FuzzyDateField(
@@ -198,7 +198,7 @@ class CreateProductionForm(forms.Form):
 
 class CreateMusicForm(CreateProductionForm):
     def __init__(self, *args, **kwargs):
-        super(CreateMusicForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['type'] = ProductionTypeChoiceField(
             queryset=ProductionType.music_types(),
             initial=ProductionType.objects.get(internal_name='music')
@@ -209,7 +209,7 @@ class CreateMusicForm(CreateProductionForm):
 
     def save(self, *args, **kwargs):
         self.instance.supertype = 'music'
-        super(CreateMusicForm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.cleaned_data['type']:
             self.instance.types.set([self.cleaned_data['type']])
@@ -220,7 +220,7 @@ class CreateMusicForm(CreateProductionForm):
 
 class CreateGraphicsForm(CreateProductionForm):
     def __init__(self, *args, **kwargs):
-        super(CreateGraphicsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['type'] = ProductionTypeChoiceField(
             queryset=ProductionType.graphic_types(),
             initial=ProductionType.objects.get(internal_name='graphics')
@@ -231,7 +231,7 @@ class CreateGraphicsForm(CreateProductionForm):
 
     def save(self, *args, **kwargs):
         self.instance.supertype = 'graphics'
-        super(CreateGraphicsForm, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if self.cleaned_data['type']:
             self.instance.types.set([self.cleaned_data['type']])
@@ -273,7 +273,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
         if self.instance.pk is None:
             self.instance.source = 'manual'
 
-        instance = super(ProductionDownloadLinkForm, self).save(commit=False)
+        instance = super().save(commit=False)
 
         if instance.link_class in groklinks.PRODUCTION_EXTERNAL_LINK_TYPES:
             instance.is_download_link = False
@@ -306,7 +306,7 @@ class ProductionExternalLinkForm(ExternalLinkForm):
         if self.instance.pk is None:
             self.instance.source = 'manual'
 
-        instance = super(ProductionExternalLinkForm, self).save(commit=False)
+        instance = super().save(commit=False)
 
         if instance.link_class in groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES:
             instance.is_download_link = True
@@ -345,7 +345,7 @@ class ProductionCreditedNickForm(forms.Form):
         else:
             authoring_groups = []
 
-        super(ProductionCreditedNickForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if nick:
             self.fields['nick'] = NickField(initial=nick, prefer_members_of=authoring_groups)
         else:
@@ -364,7 +364,7 @@ class ProductionCreditedNickForm(forms.Form):
 class SoundtrackLinkForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', SoundtrackLink())
-        super(SoundtrackLinkForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['soundtrack'] = ProductionField(
             initial=self.instance.soundtrack_id,
             supertype='music',
@@ -395,7 +395,7 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
         else:
             self.instance = instance
         qs = self.instance.soundtrack_links.order_by('position')
-        super(BaseProductionSoundtrackLinkFormSet, self).__init__(data, files, prefix=prefix, queryset=qs)
+        super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):
         # SoundtrackLinkForm has no unique constraints,
@@ -404,7 +404,7 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
 
     def _construct_form(self, i, **kwargs):
         # ensure foreign key to production is set
-        form = super(BaseProductionSoundtrackLinkFormSet, self)._construct_form(i, **kwargs)
+        form = super()._construct_form(i, **kwargs)
         form.instance.production = self.instance
         return form
 
@@ -420,7 +420,7 @@ ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if 
 class PackMemberForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', PackMember())
-        super(PackMemberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['member'] = ProductionField(
             initial=self.instance.member_id,
             # supertype='production',  # add this if we require pack members to be productions (not music or gfx)
@@ -447,7 +447,7 @@ class BasePackMemberFormSet(BaseModelFormSet):
         else:
             self.instance = instance
         qs = self.instance.pack_members.order_by('position')
-        super(BasePackMemberFormSet, self).__init__(data, files, prefix=prefix, queryset=qs)
+        super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):
         # PackMemberForm has no unique constraints,
@@ -456,7 +456,7 @@ class BasePackMemberFormSet(BaseModelFormSet):
 
     def _construct_form(self, i, **kwargs):
         # ensure foreign key to pack is set
-        form = super(BasePackMemberFormSet, self)._construct_form(i, **kwargs)
+        form = super()._construct_form(i, **kwargs)
         form.instance.pack = self.instance
         return form
 
@@ -483,7 +483,7 @@ class ProductionIndexFilterForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(ProductionIndexFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['production_type'].queryset = ProductionType.featured_types()
 
 
@@ -494,7 +494,7 @@ class GraphicsIndexFilterForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(GraphicsIndexFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['production_type'].queryset = ProductionType.graphic_types()
 
 
@@ -505,7 +505,7 @@ class MusicIndexFilterForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(MusicIndexFilterForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['production_type'].queryset = ProductionType.music_types()
 
 

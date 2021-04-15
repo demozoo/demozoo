@@ -163,7 +163,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         if self.updated_at is None:
             self.updated_at = datetime.datetime.now()
 
-        return super(Production, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -507,7 +507,7 @@ class Screenshot(models.Model):
         return (round(thumbnail_width * scale), round(thumbnail_height * scale))
 
     def save(self, *args, **kwargs):
-        super(Screenshot, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # Mark the corresponding production as having a screenshot
         if self.thumbnail_url:
@@ -629,7 +629,7 @@ class ProductionLink(ExternalLink):
     link_types = groklinks.PRODUCTION_LINK_TYPES
 
     def __init__(self, *args, **kwargs):
-        super(ProductionLink, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.pk:
             self._original_link_class = self.link_class
             self._original_parameter = self.parameter
@@ -664,7 +664,7 @@ class ProductionLink(ExternalLink):
             self._original_link_class = self.link_class
             self._original_parameter = self.parameter
 
-        super(ProductionLink, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         if should_fetch_embed_data:
             from productions.tasks import fetch_production_link_embed_data

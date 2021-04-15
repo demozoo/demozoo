@@ -41,7 +41,7 @@ class Platform(ModelWithThumbnails):
             self.photo_url = self.photo.url
             self.thumbnail_url = self.thumbnail.url
 
-        super(Platform, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # following the call to super(), self.photo.url is now defined and can be used
         # to populate photo_url - but we'll do this via `update` to avoid another call to save

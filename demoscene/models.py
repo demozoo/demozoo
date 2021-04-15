@@ -66,7 +66,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
             self.updated_at = datetime.datetime.now()
 
         with transaction.atomic():
-            super(Releaser, self).save(*args, **kwargs)  # Call the "real" save() method
+            super().save(*args, **kwargs)  # Call the "real" save() method
 
             # ensure that a Nick with matching name exists for this releaser
             nick, created = Nick.objects.get_or_create(releaser=self, name=self.name)
@@ -272,7 +272,7 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
     )
 
     def __init__(self, *args, **kwargs):
-        super(Nick, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._has_written_nick_variant_list = False
         self._nick_variant_list = None
 
@@ -316,12 +316,12 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
         # update releaser's name if it matches this nick's previous name
         if self.id is not None:
             old_name = Nick.objects.get(id=self.id).name
-            super(Nick, self).save(*args, **kwargs)  # Call the original save() method
+            super().save(*args, **kwargs)  # Call the original save() method
             if (old_name == self.releaser.name) and (old_name != self.name):
                 self.releaser.name = self.name
                 self.releaser.save()
         else:
-            super(Nick, self).save(*args, **kwargs)  # Call the original save() method
+            super().save(*args, **kwargs)  # Call the original save() method
             if not self._has_written_nick_variant_list:
                 # force writing a nick variant list containing just the primary nick (and abbreviation if specified)
                 self._has_written_nick_variant_list = True
@@ -409,7 +409,7 @@ class NickVariant(models.Model):
         if self.name:
             self.search_title = generate_search_title(self.name)
 
-        return super(NickVariant, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -591,7 +591,7 @@ class ExternalLink(models.Model):
     url = property(_get_url, _set_url)
 
     def __init__(self, *args, **kwargs):
-        super(ExternalLink, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.link_class:
             self.link = groklinks.__dict__[self.link_class](self.parameter)
         else:
@@ -731,7 +731,7 @@ class TextFile(models.Model):
             decode = self.guess_encoding(data)
             if decode:
                 self.encoding = decode[0]
-        super(TextFile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self.file.close()
 
     @staticmethod

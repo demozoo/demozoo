@@ -93,7 +93,7 @@ class PartyWidget(forms.Widget):
         self.search_widget = forms.TextInput(attrs={'class': 'party_field_search'})
         self.lookup_widget = SubmitButtonInput(button_text='Find party', attrs={'class': 'party_field_lookup'})
         self.party_id_widget = forms.HiddenInput(attrs={'class': 'party_field_party_id'})
-        super(PartyWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         party_lookup = PartyLookup.from_value(value)
@@ -130,7 +130,7 @@ class PartyField(forms.Field):
 
     def clean(self, value):
         if value is None:
-            return super(PartyField, self).clean(value)
+            return super().clean(value)
         else:
             # if the value has come from a form submission, it will already be a PartyLookup
             # (and therefore party_lookup.redisplay will be meaningful).

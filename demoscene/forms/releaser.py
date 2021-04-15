@@ -25,20 +25,20 @@ class CreateGroupForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(CreateGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.instance.is_group = True
         self.updated_at = datetime.datetime.now()
 
     def save(self, commit=True):
         if commit:
             with transaction.atomic():
-                instance = super(CreateGroupForm, self).save(commit=True)
+                instance = super().save(commit=True)
                 primary_nick = instance.primary_nick
                 primary_nick.abbreviation = self.cleaned_data['abbreviation']
                 primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
                 primary_nick.save()
         else:
-            instance = super(CreateGroupForm, self).save(commit=False)
+            instance = super().save(commit=False)
 
         return instance
 
@@ -61,19 +61,19 @@ class CreateScenerForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(CreateScenerForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.instance.is_group = False
         self.updated_at = datetime.datetime.now()
 
     def save(self, commit=True):
         if commit:
             with transaction.atomic():
-                instance = super(CreateScenerForm, self).save(commit=True)
+                instance = super().save(commit=True)
                 primary_nick = instance.primary_nick
                 primary_nick.nick_variant_list = self.cleaned_data['nick_variant_list']
                 primary_nick.save()
         else:
-            instance = super(CreateScenerForm, self).save(commit=False)
+            instance = super().save(commit=False)
 
         return instance
 
@@ -140,7 +140,7 @@ class NickForm(forms.ModelForm):
     def __init__(self, releaser, *args, **kwargs):
         for_admin = kwargs.pop('for_admin', False)
 
-        super(NickForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if 'instance' in kwargs:
             instance = kwargs['instance']
@@ -175,7 +175,7 @@ class NickForm(forms.ModelForm):
             self._update_errors(e)
 
     def save(self, commit=True):
-        instance = super(NickForm, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.nick_variant_list = self.cleaned_data['nick_variant_list']
         if commit:
             instance.save()
@@ -316,7 +316,7 @@ class GroupSubgroupForm(forms.Form):
 
 class ReleaserCreditForm(forms.Form):
     def __init__(self, releaser, *args, **kwargs):
-        super(ReleaserCreditForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['nick'] = forms.ModelChoiceField(
             label='Credited as',
             queryset=releaser.nicks.order_by('name'),

@@ -42,7 +42,7 @@ class PartyForm(ModelFormWithLocation):
             self.instance.party_series.website = self.instance.website
             self.instance.party_series.save()
 
-        super(PartyForm, self).save(commit=commit)
+        super().save(commit=commit)
 
         if commit:
             # create a Pouet link if we already know the Pouet party id from the party series record
@@ -249,7 +249,7 @@ PartyReleaseFormset = formset_factory(PartyReleaseForm, can_delete=True, extra=1
 
 class PartyShareImageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(PartyShareImageForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['share_screenshot'] = forms.ModelChoiceField(
             required=False, queryset=self.instance.get_screenshots(), widget=forms.RadioSelect,
             empty_label=None

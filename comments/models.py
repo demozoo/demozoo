@@ -23,7 +23,7 @@ class Comment(models.Model):
         if self.created_at is None:
             self.created_at = self.updated_at
 
-        super(Comment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return self.commentable.get_absolute_url() + ('#comment-%d' % self.id)

@@ -22,7 +22,7 @@ class AddCommentView(TemplateView):
         commentable_id = self.args[0]
         self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
         self.comment = Comment(commentable=self.commentable, user=request.user)
-        return super(AddCommentView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.form = CommentForm(instance=self.comment, prefix='comment')
@@ -41,7 +41,7 @@ class AddCommentView(TemplateView):
             return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
-        context = super(AddCommentView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['commentable'] = self.commentable
         context['commentable_name'] = self.get_commentable_name(self.commentable)
         context['comment_form'] = self.form
@@ -83,7 +83,7 @@ class EditCommentView(TemplateView):
         if not request.user.is_staff:
             return redirect(self.comment.get_absolute_url())
 
-        return super(EditCommentView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.form = CommentForm(instance=self.comment, prefix='comment')
@@ -100,7 +100,7 @@ class EditCommentView(TemplateView):
             return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
-        context = super(EditCommentView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['commentable'] = self.commentable
         context['commentable_name'] = self.get_commentable_name(self.commentable)
         context['comment'] = self.comment

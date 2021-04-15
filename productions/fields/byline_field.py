@@ -119,7 +119,7 @@ class BylineWidget(forms.Widget):
     def __init__(self, attrs=None):
         self.search_widget = forms.TextInput(attrs=attrs)
         self.lookup_widget = SubmitButtonInput(button_text='Find names')
-        super(BylineWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def value_from_datadict(self, data, files, name):
         search_term = self.search_widget.value_from_datadict(data, files, name + '_search')
@@ -204,12 +204,12 @@ class BylineWidget(forms.Widget):
 class BylineField(forms.Field):
     def __init__(self, *args, **kwargs):
         self.widget = BylineWidget()
-        super(BylineField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         if not value:
             # pass on to Field to handle null value according to the 'blank' parameter
-            return super(BylineField, self).clean(value)
+            return super().clean(value)
         else:
             byline_lookup = BylineLookup.from_value(value)
 

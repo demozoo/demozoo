@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 class UserSignupForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         self.captcha_question = kwargs.pop('captcha')
-        return super(UserSignupForm, self).__init__(*args, **kwargs)
+        return super().__init__(*args, **kwargs)
 
     email = forms.EmailField(
         required=False, help_text=_('Needed if you want to be able to reset your password later on')

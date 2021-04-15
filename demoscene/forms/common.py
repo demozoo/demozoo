@@ -12,7 +12,7 @@ from productions.models import Credit
 
 class ExternalLinkForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ExternalLinkForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['url'] = forms.CharField(label='URL', initial=self.instance.url, max_length=4096)
 
     def clean_url(self):
@@ -25,7 +25,7 @@ class ExternalLinkForm(forms.ModelForm):
         return data
 
     def save(self, commit=True):
-        instance = super(ExternalLinkForm, self).save(commit=False)
+        instance = super().save(commit=False)
         instance.url = self.cleaned_data['url']
         if commit:
             instance.validate_unique()
@@ -40,7 +40,7 @@ class ExternalLinkForm(forms.ModelForm):
 
 class BaseExternalLinkFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
-        super(BaseExternalLinkFormSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.queryset = self.queryset.exclude(link_class__in=ARCHIVED_LINK_TYPES)
 
     def log_edit(self, user, action_type):

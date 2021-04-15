@@ -48,7 +48,7 @@ class ModelFormWithLocation(forms.ModelForm):
         return self.cleaned_data['location']
 
     def save(self, commit=True, **kwargs):
-        model = super(ModelFormWithLocation, self).save(commit=False, **kwargs)
+        model = super().save(commit=False, **kwargs)
 
         if self.cleaned_data['location']:
             if self.location_has_changed:

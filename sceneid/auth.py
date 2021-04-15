@@ -26,7 +26,7 @@ class SceneIDUserSignupForm(forms.ModelForm):
     )
 
     def save(self, commit=True):
-        user = super(SceneIDUserSignupForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_unusable_password()
         if commit:
             user.save()

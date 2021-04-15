@@ -81,7 +81,7 @@ class NickWidget(forms.Widget):
         self.prefer_members_of = prefer_members_of
         self.search_widget = forms.TextInput(attrs=attrs)
         self.lookup_widget = SubmitButtonInput(button_text='Find name')
-        super(NickWidget, self).__init__(attrs=attrs)
+        super().__init__(attrs=attrs)
 
     def value_from_datadict(self, data, files, name):
         search_term = self.search_widget.value_from_datadict(data, files, name + '_search')
@@ -166,11 +166,11 @@ class NickField(forms.Field):
         self.widget = NickWidget(
             sceners_only=sceners_only, groups_only=groups_only, prefer_members_of=prefer_members_of
         )
-        super(NickField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self, value):
         if not value:
-            return super(NickField, self).clean(value)
+            return super().clean(value)
         else:
             nick_lookup = NickLookup.from_value(
                 value, sceners_only=self.sceners_only, groups_only=self.groups_only,

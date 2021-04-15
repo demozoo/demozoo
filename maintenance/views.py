@@ -40,7 +40,7 @@ class StaffOnlyMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
             return redirect('home')
-        return super(StaffOnlyMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class Report(TemplateView):
@@ -59,7 +59,7 @@ class Report(TemplateView):
         return url('^%s$' % cls.name, cls.as_view(), name=cls.name)
 
     def get_context_data(self, **kwargs):
-        context = super(Report, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['title'] = self.title
         context['report_name'] = self.name
         context['exclusion_name'] = self.exclusion_name
@@ -71,7 +71,7 @@ class FilterableProductionReport(Report):
     limit = 100
 
     def get_context_data(self, **kwargs):
-        context = super(FilterableProductionReport, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         filter_form = ProductionFilterForm(self.request.GET)
         if filter_form.is_valid():
@@ -119,7 +119,7 @@ class RandomisedProductionReport(Report):
     limit = 100
 
     def get_context_data(self, **kwargs):
-        context = super(RandomisedProductionReport, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions, total_count = self.report_class.run(limit=self.limit)
 
@@ -144,7 +144,7 @@ class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
     name = 'prods_without_external_links'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutExternalLinks, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT productions_production.*
@@ -171,7 +171,7 @@ class ProdsWithoutReleaseDate(StaffOnlyMixin, Report):
     name = 'prods_without_release_date'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutReleaseDate, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = (
             Production.objects.filter(release_date_date__isnull=True)
@@ -197,7 +197,7 @@ class SceneorgDownloadLinksWithUnicode(StaffOnlyMixin, Report):
     name = 'sceneorg_download_links_with_unicode'
 
     def get_context_data(self, **kwargs):
-        context = super(SceneorgDownloadLinksWithUnicode, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = (
             Production.objects.filter(links__is_download_link=True, links__link_class='SceneOrgFile')
@@ -221,7 +221,7 @@ class ProdsWithoutPlatforms(StaffOnlyMixin, Report):
     name = 'prods_without_platforms'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutPlatforms, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = (
             Production.objects.filter(platforms__isnull=True, supertype='production')
@@ -249,7 +249,7 @@ class ProdsWithoutPlatformsExcludingLost(StaffOnlyMixin, Report):
     name = 'prods_without_platforms_excluding_lost'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutPlatformsExcludingLost, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = (
             Production.objects.filter(platforms__isnull=True, supertype='production')
@@ -278,7 +278,7 @@ class ProdsWithoutPlatformsWithDownloads(StaffOnlyMixin, Report):
     name = 'prods_without_platforms_with_downloads'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutPlatformsWithDownloads, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = (
             Production.objects.filter(platforms__isnull=True, supertype='production')
@@ -306,7 +306,7 @@ class ProdsWithoutReleaseDateWithPlacement(StaffOnlyMixin, Report):
     name = 'prods_without_release_date_with_placement'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithoutReleaseDateWithPlacement, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT DISTINCT ON (productions_production.id)
@@ -350,7 +350,7 @@ class ProdSoundtracksWithoutReleaseDate(StaffOnlyMixin, Report):
     name = 'prod_soundtracks_without_release_date'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdSoundtracksWithoutReleaseDate, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT DISTINCT ON (soundtrack.id)
@@ -389,7 +389,7 @@ class GroupNicksWithBrackets(StaffOnlyMixin, Report):
     name = 'group_nicks_with_brackets'
 
     def get_context_data(self, **kwargs):
-        context = super(GroupNicksWithBrackets, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         nicks = (
             Nick.objects.filter(name__contains='(', releaser__is_group=True)
@@ -410,7 +410,7 @@ class AmbiguousGroupsWithNoDifferentiators(StaffOnlyMixin, Report):
     name = 'ambiguous_groups_with_no_differentiators'
 
     def get_context_data(self, **kwargs):
-        context = super(AmbiguousGroupsWithNoDifferentiators, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         nicks = Nick.objects.raw('''
             SELECT demoscene_nick.*,
@@ -444,7 +444,7 @@ class ProdsWithReleaseDateOutsideParty(StaffOnlyMixin, Report):
     name = 'prods_with_release_date_outside_party'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithReleaseDateOutsideParty, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT * FROM (
@@ -498,7 +498,7 @@ class ProdsWithSameNamedCredits(StaffOnlyMixin, Report):
     name = 'prods_with_same_named_credits'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithSameNamedCredits, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT DISTINCT productions_production.*
@@ -527,7 +527,7 @@ class SameNamedProdsBySameReleaser(StaffOnlyMixin, Report):
     name = 'same_named_prods_by_same_releaser'
 
     def get_context_data(self, **kwargs):
-        context = super(SameNamedProdsBySameReleaser, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT DISTINCT productions_production.*
@@ -569,7 +569,7 @@ class SameNamedProdsWithoutSpecialChars(StaffOnlyMixin, Report):
     name = 'same_named_prods_without_special_chars'
 
     def get_context_data(self, **kwargs):
-        context = super(SameNamedProdsWithoutSpecialChars, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         productions = Production.objects.raw('''
             SELECT DISTINCT productions_production.*
@@ -612,7 +612,7 @@ class DuplicateExternalLinks(StaffOnlyMixin, Report):
     name = 'duplicate_external_links'
 
     def get_context_data(self, **kwargs):
-        context = super(DuplicateExternalLinks, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         def prod_duplicates_by_link_class(link_class):
             return Production.objects.raw('''
@@ -667,7 +667,7 @@ class DuplicateReleaserKestraLinks(StaffOnlyMixin, Report):
     name = 'duplicate_releaser_kestra_links'
 
     def get_context_data(self, **kwargs):
-        context = super(DuplicateReleaserKestraLinks, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         context.update({
             'releasers': Releaser.objects.raw('''
@@ -696,7 +696,7 @@ class MatchingRealNames(StaffOnlyMixin, Report):
     name = 'matching_real_names'
 
     def get_context_data(self, **kwargs):
-        context = super(MatchingRealNames, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         releasers = Releaser.objects.raw('''
             SELECT DISTINCT demoscene_releaser.*
@@ -721,7 +721,7 @@ class MatchingSurnames(StaffOnlyMixin, Report):
     name = 'matching_surnames'
 
     def get_context_data(self, **kwargs):
-        context = super(MatchingSurnames, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         releasers = Releaser.objects.raw('''
             SELECT DISTINCT demoscene_releaser.*
@@ -744,7 +744,7 @@ class ImpliedMemberships(StaffOnlyMixin, Report):
     name = 'implied_memberships'
 
     def get_context_data(self, **kwargs):
-        context = super(ImpliedMemberships, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         cursor = connection.cursor()
         cursor.execute("""
@@ -801,7 +801,7 @@ class GroupsWithSameNamedMembers(StaffOnlyMixin, Report):
     name = 'groups_with_same_named_members'
 
     def get_context_data(self, **kwargs):
-        context = super(GroupsWithSameNamedMembers, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         groups = Releaser.objects.raw('''
             SELECT grp.id, grp.name,
                 demoscene_nickvariant.name AS member_1_name, scener.id AS member_1_id,
@@ -836,7 +836,7 @@ class ReleasersWithSameNamedGroups(StaffOnlyMixin, Report):
     name = 'releasers_with_same_named_groups'
 
     def get_context_data(self, **kwargs):
-        context = super(ReleasersWithSameNamedGroups, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         releasers = Releaser.objects.raw('''
             SELECT member.id, member.name, member.is_group,
                 demoscene_nickvariant.name AS group_1_name, grp.id AS group_1_id,
@@ -869,7 +869,7 @@ class SceneorgPartyDirsWithNoParty(StaffOnlyMixin, Report):
     name = 'sceneorg_party_dirs_with_no_party'
 
     def get_context_data(self, **kwargs):
-        context = super(SceneorgPartyDirsWithNoParty, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         directories_plain = Directory.objects.raw('''
             SELECT party_dir.*
@@ -926,7 +926,7 @@ class PartiesWithIncompleteDates(StaffOnlyMixin, Report):
     name = 'parties_with_incomplete_dates'
 
     def get_context_data(self, **kwargs):
-        context = super(PartiesWithIncompleteDates, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         parties = Party.objects.extra(
             where=[
                 "(start_date_precision <> 'd' OR end_date_precision <> 'd')",
@@ -947,7 +947,7 @@ class PartiesWithNoLocation(StaffOnlyMixin, Report):
     name = 'parties_with_no_location'
 
     def get_context_data(self, **kwargs):
-        context = super(PartiesWithNoLocation, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         parties = Party.objects.extra(
             where=[
                 "latitude IS NULL",
@@ -969,7 +969,7 @@ class EmptyReleasers(StaffOnlyMixin, Report):
     name = 'empty_releasers'
 
     def get_context_data(self, **kwargs):
-        context = super(EmptyReleasers, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         releasers = Releaser.objects.raw('''
             SELECT id, is_group, name
             FROM demoscene_releaser
@@ -1034,7 +1034,7 @@ class EmptyCompetitions(StaffOnlyMixin, Report):
     name = 'empty_competitions'
 
     def get_context_data(self, **kwargs):
-        context = super(EmptyCompetitions, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         competitions = Competition.objects.filter(
             placings__isnull=True
         ).extra(
@@ -1056,7 +1056,7 @@ class UnresolvedScreenshots(StaffOnlyMixin, Report):
     name = 'unresolved_screenshots'
 
     def get_context_data(self, **kwargs):
-        context = super(UnresolvedScreenshots, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         links = (
             ProductionLink.objects
             .filter(is_unresolved_for_screenshotting=True, production__screenshots__isnull=True)
@@ -1083,7 +1083,7 @@ class PublicRealNames(StaffOnlyMixin, Report):
     name = 'public_real_names'
 
     def get_context_data(self, **kwargs):
-        context = super(PublicRealNames, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         has_first_name = ~Q(first_name='')
         has_surname = ~Q(surname='')
@@ -1108,7 +1108,7 @@ class ProdsWithBlurbs(StaffOnlyMixin, Report):
     name = 'prods_with_blurbs'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdsWithBlurbs, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         blurbs = ProductionBlurb.objects.select_related('production')
 
@@ -1124,7 +1124,7 @@ class ProdComments(StaffOnlyMixin, Report):
     name = 'prod_comments'
 
     def get_context_data(self, **kwargs):
-        context = super(ProdComments, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         production_type = ContentType.objects.get_for_model(Production)
 
@@ -1150,7 +1150,7 @@ class CreditsToMoveToText(StaffOnlyMixin, Report):
     name = 'credits_to_move_to_text'
 
     def get_context_data(self, **kwargs):
-        context = super(CreditsToMoveToText, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         credits = Credit.objects.raw('''
             SELECT
@@ -1257,7 +1257,7 @@ class ResultsWithNoEncoding(StaffOnlyMixin, Report):
     name = 'results_with_no_encoding'
 
     def get_context_data(self, **kwargs):
-        context = super(ResultsWithNoEncoding, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         results_files = (
             ResultsFile.objects.filter(encoding__isnull=True).select_related('party').
             order_by('party__start_date_date')
@@ -1411,7 +1411,7 @@ class TinyIntrosWithoutDownloadLinks(Report):
     name = 'tiny_intros_without_download_links'
 
     def get_context_data(self, **kwargs):
-        context = super(TinyIntrosWithoutDownloadLinks, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         prod_types = list(ProductionType.objects.filter(name__in=[
             '32b Intro', '64b Intro', '128b Intro', '512b Intro', '1K Intro', '2K Intro', '4K Intro'
@@ -1445,7 +1445,7 @@ class UniqueAuthorNameMatchesOnJaneway(StaffOnlyMixin, Report):
     name = 'janeway_unique_author_name_matches'
 
     def get_context_data(self, **kwargs):
-        context = super(UniqueAuthorNameMatchesOnJaneway, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['matches'] = Releaser.objects.raw('''
             SELECT unique_janeway_names.name, janeway_id, min(demoscene_nick.releaser_id) AS id
             FROM (

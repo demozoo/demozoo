@@ -43,7 +43,7 @@ class BannerImage(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        super(BannerImage, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # following the call to super(), self.image.url is now defined and can be used
         # to populate image_url - but we'll do this via `update` to avoid another call to save
@@ -92,7 +92,7 @@ class NewsImage(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        super(NewsImage, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # following the call to super(), self.image.url is now defined and can be used
         # to populate image_url - but we'll do this via `update` to avoid another call to save

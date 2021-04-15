@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 
 class SubmitButtonInput(forms.Widget):
     def __init__(self, attrs=None, button_text=None):
-        super(SubmitButtonInput, self).__init__(attrs)
+        super().__init__(attrs)
         self.button_text = button_text
 
     def render(self, name, value, attrs=None, renderer=None):
@@ -28,7 +28,7 @@ class SubmitButtonField(forms.Field):
         self, button_text=None, required=True, widget=None, label=None,
         initial=None, help_text=None, *args, **kwargs
     ):
-        super(SubmitButtonField, self).__init__(
+        super().__init__(
             required=required, widget=widget, label=label,
             initial=initial, help_text=help_text, *args, **kwargs
         )
