@@ -327,7 +327,7 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
                 self._has_written_nick_variant_list = True
                 self._nick_variant_list = ''
 
-        if kwargs.get('commit', True) and self._has_written_nick_variant_list:
+        if self._has_written_nick_variant_list:
             # update the nick variant list
             old_variant_names = [variant.name for variant in self.variants.all()]
             new_variant_names = re.split(r"\s*\,\s*", self._nick_variant_list)
