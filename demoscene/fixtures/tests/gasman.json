@@ -501,6 +501,14 @@
     },
     {
         "pk": 1,
+        "model": "bbs.name",
+        "fields": {
+            "bbs": 1,
+            "name": "StarPort"
+        }
+    },
+    {
+        "pk": 1,
         "model": "bbs.operator",
         "fields": {
             "bbs": 1,
