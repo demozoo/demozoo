@@ -560,7 +560,7 @@ class SceneOrgFile(BaseUrl):
 
 
 class AmigascneFile(BaseUrl):
-    canonical_format = "ftp://ftp.amigascne.org/pub/amiga%s"
+    canonical_format = "https://ftp.amigascne.org/pub/amiga%s"
     tests = [
         regex_match(r'(?:http|ftp|https)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)', re.I),
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/amigascne(/.*)', re.I),
