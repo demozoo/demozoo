@@ -629,7 +629,7 @@ class PaduaOrgFile(BaseUrl):
 
     @property
     def nl_url(self):
-        return "ftp://ftp.scene.org/pub/mirrors/padua%s" % self.param
+        return "https://archive.scene.org/pub/mirrors/padua/%s" % self.param
 
     @property
     def us_http_url(self):
