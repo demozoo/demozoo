@@ -1522,7 +1522,7 @@ class Plus4WorldMember(BaseUrl):
 class Plus4WorldCompo(BaseUrl):
     canonical_format = "http://plus4world.powweb.com/compos/%s"
     tests = [
-        regex_match(r'https?://plus4world\.powweb\.com/compos/(\d+)', re.I);
+        regex_match(r'https?://plus4world\.powweb\.com/compos/(\d+)', re.I),
     ]
     html_link_class = "plus4world"
     html_link_text = "Plus/4 World"
