@@ -25,25 +25,11 @@
     <form action="{% url 'new_production' %}" method="post" class="entry_form production_create_form">
         {% csrf_token %}
 
-        {% with form.title as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-
-        {% with form.byline as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-
-        {% with form.release_date as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-
-        {% with form.types as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-
-        {% with form.platforms as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
+        {% include "shared/form_field.html" with field=form.title %}
+        {% include "shared/form_field.html" with field=form.byline %}
+        {% include "shared/form_field.html" with field=form.release_date %}
+        {% include "shared/form_field.html" with field=form.types %}
+        {% include "shared/form_field.html" with field=form.platforms %}
 
         {% include "shared/production_download_formset.html" %}
         <div class="field">

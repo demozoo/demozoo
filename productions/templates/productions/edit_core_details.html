@@ -18,32 +18,18 @@
 
     <form action="{{ production.get_edit_core_details_url }}" method="post" class="entry_form production_core_details_form">
         {% csrf_token %}
-        
-        {% with form.title as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-        
-        {% with form.byline as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
-        
-        {% with form.release_date as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
+
+        {% include "shared/form_field.html" with field=form.title %}
+        {% include "shared/form_field.html" with field=form.byline %}
+        {% include "shared/form_field.html" with field=form.release_date %}
 
         {% if form.has_multiple_types %}
-            {% with form.types as field %}
-                {% include "shared/form_field.html" %}
-            {% endwith %}
+            {% include "shared/form_field.html" with field=form.types %}
         {% else %}
-            {% with form.type as field %}
-                {% include "shared/form_field.html" %}
-            {% endwith %}
+            {% include "shared/form_field.html" with field=form.type %}
         {% endif %}
-        
-        {% with form.platforms as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
+
+        {% include "shared/form_field.html" with field=form.platforms %}
 
         {% if invitation_formset %}
             <div class="field">

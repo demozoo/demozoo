@@ -4,26 +4,18 @@
 
 <form action="{{ action_url }}" method="post" class="entry_form nick_form {{ html_form_class }}">
     {% csrf_token %}
-    
+
     {{ form.non_field_errors }}
-    {% with form.name as field %}
-        {% include "shared/form_field.html" %}
-    {% endwith %}
-    
+    {% include "shared/form_field.html" with field=form.name %}
+
     {% if form.abbreviation %}
-        {% with form.abbreviation as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
+        {% include "shared/form_field.html" with field=form.abbreviation %}
     {% endif %}
-    
-    {% with form.nick_variant_list as field %}
-        {% include "shared/form_field.html" %}
-    {% endwith %}
+
+    {% include "shared/form_field.html" with field=form.nick_variant_list %}
 
     {% if form.differentiator %}
-        {% with form.differentiator as field %}
-            {% include "shared/form_field.html" %}
-        {% endwith %}
+        {% include "shared/form_field.html" with field=form.differentiator %}
     {% endif %}
 
     {% with form.override_primary_nick as field %}
