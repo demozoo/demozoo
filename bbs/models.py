@@ -30,6 +30,10 @@ class BBS(models.Model):
 
     search_result_template = 'search/results/bbs.html'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_name = self.name
+
     def __str__(self):
         return self.name
 
@@ -37,6 +41,11 @@ class BBS(models.Model):
         self.search_title = generate_search_title(self.name)
 
         super().save(*args, **kwargs)
+
+        # if name has changed, remove the old Name record
+        if self.name != self._original_name:
+            self.names.filter(name=self._original_name).delete()
+            self._original_name = self.name
 
         # ensure that a Name with matching name exists for this BBS
         name, created = Name.objects.get_or_create(bbs=self, name=self.name)

@@ -116,20 +116,43 @@ def edit(request, bbs_id):
 
     if request.method == 'POST':
         form = BBSForm(request.POST, instance=bbs)
-        if form.is_valid():
+        alternative_name_formset = AlternativeNameFormSet(
+            request.POST, instance=bbs, queryset=bbs.alternative_names.all()
+        )
+        form_is_valid = form.is_valid()
+        alternative_name_formset_is_valid = alternative_name_formset.is_valid()
+        if form_is_valid and alternative_name_formset_is_valid:
             form.save()
-            form.log_edit(request.user)
+            alternative_name_formset.save()
+
+            edit_description = form.changed_data_description
+            if alternative_name_formset.has_changed():
+                alternative_names = ', '.join([name.name for name in bbs.alternative_names.all()])
+                if edit_description:
+                    edit_description += ", alternative names to %s" % alternative_names
+                else:
+                    edit_description = "Set alternative names to %s" % alternative_names
+
+            if edit_description:
+                Edit.objects.create(
+                    action_type='edit_bbs', focus=bbs,
+                    description=edit_description, user=request.user
+                )
 
             messages.success(request, 'BBS updated')
             return redirect('bbs', bbs.id)
     else:
         form = BBSForm(instance=bbs)
+        alternative_name_formset = AlternativeNameFormSet(
+            instance=bbs, queryset=bbs.alternative_names.all()
+        )
 
     title = "Editing BBS: %s" % bbs.name
     return render(request, 'bbs/bbs_form.html', {
         'html_title': title,
         'title': title,
         'form': form,
+        'alternative_name_formset': alternative_name_formset,
         'action_url': reverse('edit_bbs', args=[bbs.id])
     })
 

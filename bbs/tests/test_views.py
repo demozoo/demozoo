@@ -92,6 +92,7 @@ class TestEdit(TestCase):
         User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
         self.bbs = BBS.objects.get(name='StarPort')
+        self.alt_name = self.bbs.alternative_names.first()
 
     def test_get(self):
         response = self.client.get('/bbs/%d/edit/' % self.bbs.id)
@@ -101,8 +102,50 @@ class TestEdit(TestCase):
         response = self.client.post('/bbs/%d/edit/' % self.bbs.id, {
             'name': 'StarWhisky',
             'location': 'Oxford',
+            'names-TOTAL_FORMS': '1',
+            'names-INITIAL_FORMS': '1',
+            'names-MIN_NUM_FORMS': '0',
+            'names-MAX_NUM_FORMS': '1000',
+            'names-0-name': 'Star Whisky episode IV: A New Hope',
+            'names-0-id': self.alt_name.id,
+            'names-0-bbs': self.bbs.id
         })
         self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
+        self.bbs.refresh_from_db()
+        self.assertEqual(self.bbs.name, 'StarWhisky')
+        self.assertEqual(self.bbs.names.count(), 2)
+        self.assertTrue(self.bbs.names.filter(name='StarWhisky').exists())
+        self.assertTrue(self.bbs.names.filter(name='Star Whisky episode IV: A New Hope').exists())
+        edit = Edit.for_model(self.bbs, True).first()
+        self.assertEqual(
+            "Set name to 'StarWhisky', location to Oxford, alternative names to "
+            "Star Whisky episode IV: A New Hope",
+            edit.description
+        )
+
+    def test_post_edit_alternate_names_only(self):
+        response = self.client.post('/bbs/%d/edit/' % self.bbs.id, {
+            'name': 'StarPort',
+            'location': 'Helsinki, Finland',
+            'names-TOTAL_FORMS': '1',
+            'names-INITIAL_FORMS': '1',
+            'names-MIN_NUM_FORMS': '0',
+            'names-MAX_NUM_FORMS': '1000',
+            'names-0-name': 'Star Whisky episode V',
+            'names-0-id': self.alt_name.id,
+            'names-0-bbs': self.bbs.id
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
+        self.bbs.refresh_from_db()
+        self.assertEqual(self.bbs.name, 'StarPort')
+        self.assertEqual(self.bbs.names.count(), 2)
+        self.assertTrue(self.bbs.names.filter(name='StarPort').exists())
+        self.assertTrue(self.bbs.names.filter(name='Star Whisky episode V').exists())
+        edit = Edit.for_model(self.bbs, True).first()
+        self.assertEqual(
+            "Set alternative names to Star Whisky episode V",
+            edit.description
+        )
 
 
 class TestEditNotes(TestCase):
