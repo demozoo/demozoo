@@ -9,7 +9,8 @@ from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
 from bbs.forms import (
-    AffiliationForm, BBSEditNotesForm, BBSForm, BBSTagsForm, BBSTextAdFormset, BBStroFormset, OperatorForm
+    AffiliationForm, AlternativeNameFormSet, BBSEditNotesForm, BBSForm, BBSTagsForm, BBSTextAdFormset, BBStroFormset,
+    OperatorForm
 )
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
@@ -85,16 +86,22 @@ def create(request):
     if request.method == 'POST':
         bbs = BBS()
         form = BBSForm(request.POST, instance=bbs)
-        if form.is_valid():
+        alternative_name_formset = AlternativeNameFormSet(request.POST, instance=bbs)
+        form_is_valid = form.is_valid()
+        alternative_name_formset_is_valid = alternative_name_formset.is_valid()
+        if form_is_valid and alternative_name_formset_is_valid:
             form.save()
+            alternative_name_formset.save()
             form.log_creation(request.user)
 
             messages.success(request, 'BBS added')
             return redirect('bbs', bbs.id)
     else:
         form = BBSForm()
-    return render(request, 'shared/simple_form.html', {
+        alternative_name_formset = AlternativeNameFormSet()
+    return render(request, 'bbs/bbs_form.html', {
         'form': form,
+        'alternative_name_formset': alternative_name_formset,
         'title': "New BBS",
         'html_title': "New bbs",
         'action_url': reverse('new_bbs'),
@@ -118,7 +125,7 @@ def edit(request, bbs_id):
         form = BBSForm(instance=bbs)
 
     title = "Editing BBS: %s" % bbs.name
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'bbs/bbs_form.html', {
         'html_title': title,
         'title': title,
         'form': form,

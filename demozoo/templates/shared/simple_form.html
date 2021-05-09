@@ -10,16 +10,18 @@
         <h2>{{ title }}</h2>
     {% endif %}
 
-    <form action="{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {{ html_form_class }}">
+    <form action="{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {% block html_form_class %}{{ html_form_class }}{% endblock %}">
         {% csrf_token %}
-        
+
         {% for field in form.visible_fields %}
             {% include "shared/form_field.html" %}
         {% endfor %}
         {% for field in form.hidden_fields %}
             {{ field }}
         {% endfor %}
-        
+
+        {% block after_form_fields %}{% endblock %}
+
         <div class="field">
             <input type="submit" />
         </div>
