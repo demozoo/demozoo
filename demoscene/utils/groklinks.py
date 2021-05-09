@@ -1624,7 +1624,7 @@ RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
     MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
-    ScenesatAct, ZxdemoAuthor, FacebookPage,
+    ScenesatAct, ZxdemoAuthor, FacebookPage, Defacto2Group, Defacto2People,
     PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
     GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel, TwitchChannel,
     DeviantartUser, ModarchiveMember, WikipediaPage,
@@ -1637,7 +1637,7 @@ RELEASER_LINK_TYPES = [
 ]
 
 PRODUCTION_LINK_TYPES = [
-    PouetProduction, CsdbRelease, ZxdemoItem,
+    PouetProduction, CsdbRelease, ZxdemoItem, Defacto2File,
     YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
@@ -1657,7 +1657,7 @@ PRODUCTION_DOWNLOAD_LINK_TYPES = [
 ]
 
 PRODUCTION_EXTERNAL_LINK_TYPES = [
-    'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'YoutubeVideo',
+    'PouetProduction', 'CsdbRelease', 'CsdbMusic', 'ZxdemoItem', 'Defacto2File', 'YoutubeVideo',
     'VimeoVideo', 'DemosceneTvVideo', 'CappedVideo', 'DhsVideoDbVideo', 'AsciiarenaRelease', 'ScenesatTrack',
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
@@ -1671,7 +1671,7 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
+    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, Plus4WorldCompo, WaybackMachinePage, BaseUrl,
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing
