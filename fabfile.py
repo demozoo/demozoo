@@ -23,7 +23,7 @@ DB_HOSTS = [{
 
 @task(hosts=PRODUCTION_HOSTS)
 def deploy(c):
-    """Deploy the current git master to the live site"""
+    """Deploy the current git 'main' branch to the live site"""
     c.run('cd /home/demozoo/demozoo && git pull')
     c.run(
         'cd /home/demozoo/demozoo && '

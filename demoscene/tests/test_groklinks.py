@@ -135,10 +135,10 @@ class TestLinkRecognition(TestCase):
         pondlife = Production.objects.get(title='Pondlife')
         link = ProductionLink(production=pondlife, is_download_link=False)
 
-        link.url = 'http://github.com/gasman/demos/tree/master/pondlife'
+        link.url = 'http://github.com/gasman/demos/tree/main/pondlife'
         self.assertEqual(link.link_class, 'GithubDirectory')
-        self.assertEqual(link.parameter, 'gasman/demos/master/pondlife')
-        self.assertEqual(str(link.link), 'http://github.com/gasman/demos/tree/master/pondlife')
+        self.assertEqual(link.parameter, 'gasman/demos/main/pondlife')
+        self.assertEqual(str(link.link), 'http://github.com/gasman/demos/tree/main/pondlife')
 
     def test_bandcamp_track(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")

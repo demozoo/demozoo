@@ -70,7 +70,7 @@ su - vagrant -c "createdb demozoo"
 su - vagrant -c "wget http://data.demozoo.org/demozoo-export.sql.gz -O /home/vagrant/demozoo-export.sql.gz"
 su - vagrant -c "gunzip -c /home/vagrant/demozoo-export.sql.gz | psql demozoo"
 
-# migrate (in case master's db schema is ahead of the live export)
+# migrate (in case the db schema in git is ahead of the live export)
 su - vagrant -c "$PYTHON $PROJECT_DIR/manage.py migrate --settings=demozoo.settings.dev"
 
 # Install project dependencies for node and run a first time
