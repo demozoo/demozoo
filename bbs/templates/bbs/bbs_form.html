@@ -17,8 +17,14 @@
     <div class="field">
         <label class="field_label">Also known as</label>
         <div class="field_input">
+            {% if alternative_name_formset.non_form_errors %}
+                {{ alternative_name_formset.non_form_errors }}
+            {% endif %}
             {% spawningformset alternative_name_formset add_button_text="Add another name" %}
                 {% spawningform as form %}
+                    {% if form.non_field_errors %}
+                        {{ form.non_field_errors }}
+                    {% endif %}
                     {{ form.name.errors }}
                     {{ form.name }}
                     {% for field in form.hidden_fields %}

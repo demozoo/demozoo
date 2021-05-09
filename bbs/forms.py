@@ -28,21 +28,13 @@ class BBSForm(ModelFormWithLocation):
         if descriptions:
             return u"Set %s" % (u", ".join(descriptions))
 
-    def log_edit(self, user):
-        description = self.changed_data_description
-        if description:
-            Edit.objects.create(
-                action_type='edit_bbs', focus=self.instance,
-                description=description, user=user
-            )
-
     class Meta:
         model = BBS
         fields = ('name', 'location')
 
 
 AlternativeNameFormSet = forms.inlineformset_factory(
-    BBS, Name, fields=['name'], extra=0
+    BBS, Name, fields=['name'], extra=1
 )
 
 
