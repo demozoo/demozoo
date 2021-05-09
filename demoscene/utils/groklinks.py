@@ -1589,6 +1589,29 @@ class AtarikiEntry(BaseUrl):
         regex_match(r'https?://(?:www\.)?atariki\.krap\.pl/index\.php/(.*)', re.I),
     ]
 
+class Defacto2Entry(BaseUrl): # abstract superclass for defacto2
+    html_link_class = "defacto2"
+    html_link_text = "Defacto2"
+    html_title_format = "%s on Defacto2"
+
+class Defacto2File(Defacto2Entry):
+    canonical_format = "https://defacto2.net/f/%s"
+    tests = [
+        regex_match(r'https?://(?:www\.)?defacto2\.net/f/(.*)', re.I)
+    ]
+
+class Defacto2People(Defacto2Entry):
+    canonical_format = "https://defacto2.net/p/%s"
+    tests = [
+        regex_match(r'https?://https://(?:www\.)?defacto2.net/p/(.*)', re.I)
+    ]
+
+class Defacto2Group(Defacto2Entry):
+    canonical_format = "https://defacto2.net/g/%s"
+    tests = [
+        regex_match(r'https?://https://(?:www\.)?defacto2.net/g/(.*)', re.I)
+    ]
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
