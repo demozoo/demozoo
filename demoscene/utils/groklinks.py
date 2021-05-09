@@ -1524,6 +1524,9 @@ class Plus4WorldCompo(BaseUrl):
     tests = [
         regex_match(r'https?://plus4world\.powweb\.com/compos/(\d+)', re.I);
     ]
+    html_link_class = "plus4world"
+    html_link_text = "Plus/4 World"
+    html_title_format = "%s on Plus/4 World"
 
 
 class BandcampEntry(BaseUrl):  # Bandcamp abstract superclass
