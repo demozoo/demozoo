@@ -69,6 +69,7 @@ def show(request, bbs_id):
 
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
+        'alternative_names': bbs.alternative_names.all(),
         'bbstros': bbstros,
         'staff': staff,
         'editing_staff': (request.GET.get('editing') == 'staff'),
