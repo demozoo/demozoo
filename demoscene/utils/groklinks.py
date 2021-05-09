@@ -629,7 +629,7 @@ class PaduaOrgFile(BaseUrl):
 
     @property
     def nl_url(self):
-        return "https://archive.scene.org/pub/mirrors/padua/%s" % self.param
+        return "https://archive.scene.org/pub/mirrors/padua%s" % self.param
 
     @property
     def us_http_url(self):
@@ -694,11 +694,11 @@ class ModlandFile(BaseUrl):
 
     @property
     def se_url(self):
-        return "ftp://modland.ziphoid.com%s" % self.param
+        return "https://modland.ziphoid.com%s" % self.param
 
     @property
     def us_url(self):
-        return "ftp://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
+        return "http://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
 
     # @property
     # def ca_url(self):
