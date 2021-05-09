@@ -517,6 +517,7 @@ class SceneOrgFile(BaseUrl):
         urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)', re.I),
         urldecoded_regex_match(r'https?://http\.pl\.scene\.org/pub/demos(/.*)', re.I),
         urldecoded_regex_match(r'ftp://ftp\.ua\.scene\.org/pub/mirrors/sceneorg(/.*)', re.I),
+        urldecoded_regex_match(r'http://mirror\.scenesat\.com/scene\.org/(/.*)', re.I),
     ]
 
     @property
