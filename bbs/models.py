@@ -45,6 +45,10 @@ class BBS(models.Model):
     def primary_name(self):
         return self.names.get(name=self.name)
 
+    @property
+    def alternative_names(self):
+        return self.names.exclude(name=self.name)
+
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])
 

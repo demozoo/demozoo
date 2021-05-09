@@ -508,6 +508,14 @@
         }
     },
     {
+        "pk": 2,
+        "model": "bbs.name",
+        "fields": {
+            "bbs": 1,
+            "name": "Star Port episode IV: A New Hope"
+        }
+    },
+    {
         "pk": 1,
         "model": "bbs.operator",
         "fields": {

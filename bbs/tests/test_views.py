@@ -43,6 +43,7 @@ class TestShow(TestCase):
         response = self.client.get('/bbs/%d/' % bbs.id)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "StarPort")
+        self.assertContains(response, "<b>Star Port episode IV: A New Hope</b>")
 
 
 class TestCreate(TestCase):

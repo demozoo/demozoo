@@ -33,6 +33,16 @@
             <h2>{{ bbs.name }}</h2>
         </div>
 
+        {% if alternative_names %}
+            <h3 class="panel__title">Also known as</h3>
+
+            <ul class="alternative_names">
+                {% for name in alternative_names %}
+                    <li><b>{{ name.name }}</b></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% if bbs.location %}
             <p>
                 Location:
