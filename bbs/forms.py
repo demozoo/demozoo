@@ -4,7 +4,7 @@ from django.forms.models import inlineformset_factory
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 
-from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, TextAd
+from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, Name, TextAd
 from demoscene.forms.common import BaseTagsForm
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField
@@ -39,6 +39,11 @@ class BBSForm(ModelFormWithLocation):
     class Meta:
         model = BBS
         fields = ('name', 'location')
+
+
+AlternativeNameFormSet = forms.inlineformset_factory(
+    BBS, Name, fields=['name'], extra=0
+)
 
 
 class BBSEditNotesForm(forms.ModelForm):

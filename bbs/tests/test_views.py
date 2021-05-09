@@ -60,8 +60,28 @@ class TestCreate(TestCase):
         response = self.client.post('/bbs/new/', {
             'name': 'Eclipse',
             'location': '',
+            'names-TOTAL_FORMS': '0',
+            'names-INITIAL_FORMS': '0',
+            'names-MIN_NUM_FORMS': '0',
+            'names-MAX_NUM_FORMS': '1000',
         })
         self.assertRedirects(response, '/bbs/%d/' % BBS.objects.get(name='Eclipse').id)
+
+    def test_create_with_alternative_name(self):
+        response = self.client.post('/bbs/new/', {
+            'name': 'Eclipse',
+            'location': '',
+            'names-TOTAL_FORMS': '1',
+            'names-INITIAL_FORMS': '0',
+            'names-MIN_NUM_FORMS': '0',
+            'names-MAX_NUM_FORMS': '1000',
+            'names-0-name': 'Total Eclipse',
+        })
+        bbs = BBS.objects.get(name='Eclipse')
+        self.assertRedirects(response, '/bbs/%d/' % bbs.id)
+        self.assertEqual(bbs.names.count(), 2)
+        self.assertTrue(bbs.names.filter(name='Eclipse').exists())
+        self.assertTrue(bbs.names.filter(name='Total Eclipse').exists())
 
 
 class TestEdit(TestCase):

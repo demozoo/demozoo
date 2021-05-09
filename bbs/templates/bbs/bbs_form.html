@@ -1,0 +1,31 @@
+{% extends "shared/simple_form.html" %}
+{% load spawning_formset %}
+
+{% block extra_head %}
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+    <script>
+        $(function() {
+            applyEditControls($('form.bbs-form'));
+        })
+    </script>
+{% endblock %}
+
+{% block html_form_class %}bbs-form{% endblock %}
+
+{% block after_form_fields %}
+    <div class="field">
+        <label class="field_label">Also known as</label>
+        <div class="field_input">
+            {% spawningformset alternative_name_formset add_button_text="Add another name" %}
+                {% spawningform as form %}
+                    {{ form.name.errors }}
+                    {{ form.name }}
+                    {% for field in form.hidden_fields %}
+                        {{ field }}
+                    {% endfor %}
+                {% endspawningform %}
+            {% endspawningformset %}
+        </div>
+    </div>
+{% endblock %}
