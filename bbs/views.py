@@ -16,6 +16,7 @@ from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
+from search.indexing import index as search_index
 
 
 def index(request):
@@ -94,6 +95,7 @@ def create(request):
             form.save()
             alternative_name_formset.save()
             form.log_creation(request.user)
+            search_index(bbs)
 
             messages.success(request, 'BBS added')
             return redirect('bbs', bbs.id)
@@ -124,6 +126,7 @@ def edit(request, bbs_id):
         if form_is_valid and alternative_name_formset_is_valid:
             form.save()
             alternative_name_formset.save()
+            search_index(bbs)
 
             edit_description = form.changed_data_description
             if alternative_name_formset.has_changed():
