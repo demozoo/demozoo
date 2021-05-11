@@ -9,14 +9,26 @@ from bs4 import BeautifulSoup
 from django.utils.html import escape, format_html
 
 
-class BaseUrl():
+class Site:
+    def __init__(self, name, long_name=None, classname=None, title_format=None):
+        self.name = name
+        self.long_name = long_name or name
+        self.classname = classname or name.lower()
+        self.title_format = title_format or ("%%s on %s" % self.long_name)
+
+    def get_link_html(self, url, subject):
+        return format_html(
+            '<a href="{url}" class="{classname}" title="{title}">{label}</a>',
+            url=url,
+            classname=self.classname,
+            title=(self.title_format % subject),
+            label=self.name,
+        )
+
+
+class AbstractBaseUrl():
     def __init__(self, param):
         self.param = param
-
-    tests = [
-        lambda urlstring, url: urlstring  # always match, return full url
-    ]
-    canonical_format = "%s"
 
     @classmethod
     def extract_param(cls, urlstring, url):
@@ -43,20 +55,16 @@ class BaseUrl():
     def __str__(self):
         return self.canonical_format % self.param
 
-    html_link_class = "website"
-    html_link_text = "WWW"
-    html_title_format = "%s website"
-
     def as_html(self, subject):
-        return '<a href="%s" class="%s" title="%s">%s</a>' % (
-            escape(str(self)), escape(self.html_link_class),
-            escape(self.html_title_format % subject),
-            escape(self.html_link_text)
-        )
+        return self.site.get_link_html(str(self), subject)
 
     @property
     def download_link_label(self):
         return urllib.parse.urlparse(str(self)).hostname
+
+    @property
+    def html_link_class(self):
+        return self.site.classname
 
     def as_download_link(self):
         return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
@@ -84,6 +92,15 @@ class BaseUrl():
 
     def get_embed_data(self):
         return None
+
+
+class BaseUrl(AbstractBaseUrl):  # catch-all handler where nothing more specific is found
+    site = Site("WWW", classname="website", title_format="%s website")
+
+    tests = [
+        lambda urlstring, url: urlstring  # always match, return full url
+    ]
+    canonical_format = "%s"
 
 
 def regex_match(pattern, flags=None, add_slash=False):
@@ -171,91 +188,85 @@ def querystring_match(pattern, varname, flags=None, othervars={}, numeric=False)
     return match_fn
 
 
-class TwitterAccount(BaseUrl):
+class TwitterAccount(AbstractBaseUrl):
+    site = Site("Twitter")
     canonical_format = "https://twitter.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?twitter\.com/#!/([^/]+)', re.I),
         regex_match(r'https?://(?:www\.)?twitter\.com/([^/]+)', re.I),
     ]
-    html_link_class = "twitter"
-    html_link_text = "Twitter"
-    html_title_format = "%s on Twitter"
 
 
-class SceneidAccount(BaseUrl):
+pouet = Site(u"Pouët", classname="pouet")
+
+
+class SceneidAccount(AbstractBaseUrl):
+    site = pouet
     canonical_format = "https://www.pouet.net/user.php?who=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', re.I, numeric=True),
     ]
-    html_link_class = "pouet"
-    html_link_text = u"Pouët"
-    html_title_format = u"%s on Pouët"
 
 
-class PouetGroup(BaseUrl):
+class PouetGroup(AbstractBaseUrl):
+    site = pouet
     canonical_format = "https://www.pouet.net/groups.php?which=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', re.I, numeric=True),
     ]
-    html_link_class = "pouet"
-    html_link_text = u"Pouët"
-    html_title_format = u"%s on Pouët"
 
 
-class PouetProduction(BaseUrl):
+class PouetProduction(AbstractBaseUrl):
+    site = pouet
     canonical_format = "https://www.pouet.net/prod.php?which=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', re.I, numeric=True),
     ]
-    html_link_class = "pouet"
-    html_link_text = u"Pouët"
-    html_title_format = u"%s on Pouët"
 
 
-class SlengpungUser(BaseUrl):
+slengpung = Site("Slengpung")
+
+
+class SlengpungUser(AbstractBaseUrl):
+    site = slengpung
     canonical_format = "http://www.slengpung.com/?userid=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/show_user\.php', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'userid', re.I),
     ]
-    html_link_class = "slengpung"
-    html_link_text = "Slengpung"
-    html_title_format = "%s on Slengpung"
 
 
-class AmpAuthor(BaseUrl):
+class AmpAuthor(AbstractBaseUrl):
+    site = Site("AMP", long_name="Amiga Music Preservation")
     canonical_format = "https://amp.dascene.net/detail.php?view=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?amp\.dascene\.net/detail\.php', 'view', re.I),
     ]
-    html_link_class = "amp"
-    html_link_text = "AMP"
-    html_title_format = "%s on Amiga Music Preservation"
 
 
-class CsdbScener(BaseUrl):
+csdb = Site("CSDb")
+
+
+class CsdbScener(AbstractBaseUrl):
+    site = csdb
     canonical_format = "https://csdb.dk/scener/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/scener/(?:index\.php)?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/scener/(?:index\.php)?', 'id', re.I),
     ]
-    html_link_class = "csdb"
-    html_link_text = "CSDb"
-    html_title_format = "%s on CSDb"
 
 
-class CsdbGroup(BaseUrl):
+class CsdbGroup(AbstractBaseUrl):
+    site = csdb
     canonical_format = "https://csdb.dk/group/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/group/(?:index\.php)?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/group/(?:index\.php)?', 'id', re.I),
     ]
-    html_link_class = "csdb"
-    html_link_text = "CSDb"
-    html_title_format = "%s on CSDb"
 
 
-class CsdbRelease(BaseUrl):
+class CsdbRelease(AbstractBaseUrl):
+    site = csdb
     canonical_format = "https://csdb.dk/release/?id=%s"
     tests = [
         # need to include the ? in the match so that we don't also match /release/download.php,
@@ -264,12 +275,10 @@ class CsdbRelease(BaseUrl):
         querystring_match(r'https?://(?:www\.)?csdb\.dk/release/(?:index\.php)?\?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/(?:index\.php)?\?', 'rid', re.I),
     ]
-    html_link_class = "csdb"
-    html_link_text = "CSDb"
-    html_title_format = "%s on CSDb"
 
 
-class CsdbMusic(BaseUrl):
+class CsdbMusic(AbstractBaseUrl):
+    site = csdb
     canonical_format = "https://csdb.dk/sid/?id=%s"
     tests = [
         # need to include the ? in the match so that we don't also match /release/download.php,
@@ -277,205 +286,189 @@ class CsdbMusic(BaseUrl):
         querystring_match(r'https?://noname\.c64\.org/csdb/sid/(?:index\.php)?\?', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/sid/(?:index\.php)?\?', 'id', re.I),
     ]
-    html_link_class = "csdb"
-    html_link_text = "CSDb"
-    html_title_format = "%s on CSDb"
 
 
-class NectarineArtist(BaseUrl):
+nectarine = Site("Nectarine", long_name="Nectarine Demoscene Radio")
+
+
+class NectarineArtist(AbstractBaseUrl):
+    site = nectarine
     canonical_format = "https://scenestream.net/demovibes/artist/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/artist/(\d+)', re.I),
         regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/artist/(\d+)', re.I),
     ]
-    html_link_class = "nectarine"
-    html_link_text = "Nectarine"
-    html_title_format = "%s on Nectarine Demoscene Radio"
 
 
-class NectarineSong(BaseUrl):
+class NectarineSong(AbstractBaseUrl):
+    site = nectarine
     canonical_format = "https://scenestream.net/demovibes/song/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/song/(\d+)', re.I),
         regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/song/(\d+)', re.I),
     ]
-    html_link_class = "nectarine"
-    html_link_text = "Nectarine"
-    html_title_format = "%s on Nectarine Demoscene Radio"
 
 
-class NectarineGroup(BaseUrl):
+class NectarineGroup(AbstractBaseUrl):
+    site = nectarine
     canonical_format = "https://scenestream.net/demovibes/group/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/group/(\d+)', re.I),
         regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/group/(\d+)', re.I),
     ]
-    html_link_class = "nectarine"
-    html_link_text = "Nectarine"
-    html_title_format = "%s on Nectarine Demoscene Radio"
 
 
-class BitjamAuthor(BaseUrl):
+bitjam = Site("BitJam")
+
+
+class BitjamAuthor(AbstractBaseUrl):
+    site = bitjam
     canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?search&q=%s&type=author&page=1"
     tests = [
         querystring_match(r'https?://(?:www\.)?bitfellas\.org/e107_plugins/radio/radio\.php\?search', 'q', re.I),
     ]
-    html_link_class = "bitjam"
-    html_link_text = "BitJam"
-    html_title_format = "%s on BitJam"
 
 
-class BitjamSong(BaseUrl):
+class BitjamSong(AbstractBaseUrl):
+    site = bitjam
     canonical_format = "http://www.bitfellas.org/e107_plugins/radio/radio.php?info&id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?bitfellas\.org/e107_plugins/radio/radio\.php\?info', 'id', re.I),
     ]
-    html_link_class = "bitjam"
-    html_link_text = "BitJam"
-    html_title_format = "%s on BitJam"
 
 
-class ArtcityArtist(BaseUrl):
+artcity = Site("ArtCity")
+
+
+class ArtcityArtist(AbstractBaseUrl):
+    site = artcity
     canonical_format = "http://artcity.bitfellas.org/index.php?a=artist&id=%s"
     tests = [
         querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', re.I, othervars={'a': 'artist'}),
     ]
-    html_link_class = "artcity"
-    html_link_text = "ArtCity"
-    html_title_format = "%s on ArtCity"
 
 
-class ArtcityImage(BaseUrl):
+class ArtcityImage(AbstractBaseUrl):
+    site = artcity
     canonical_format = "http://artcity.bitfellas.org/index.php?a=show&id=%s"
     tests = [
         querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', re.I, othervars={'a': 'show'}),
     ]
-    html_link_class = "artcity"
-    html_link_text = "ArtCity"
-    html_title_format = "%s on ArtCity"
 
 
-class DeviantartUser(BaseUrl):
+class DeviantartUser(AbstractBaseUrl):
+    site = Site("deviantART")
     canonical_format = "http://%s.deviantart.com"
     tests = [
         regex_match(r'https?://(.*)\.deviantart\.com/?', re.I),
     ]
-    html_link_class = "deviantart"
-    html_link_text = "deviantART"
-    html_title_format = "%s on deviantART"
 
 
-class MobygamesDeveloper(BaseUrl):
+class MobygamesDeveloper(AbstractBaseUrl):
+    site = Site("MobyGames")
     canonical_format = "https://www.mobygames.com/developer/sheet/view/developerId,%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?mobygames\.com/developer/sheet/view/developerId\,(\d+)', re.I),
     ]
-    html_link_class = "mobygames"
-    html_link_text = "MobyGames"
-    html_title_format = "%s on MobyGames"
 
 
-class AsciiarenaArtist(BaseUrl):
+asciiarena = Site("AsciiArena")
+
+
+class AsciiarenaArtist(AbstractBaseUrl):
+    site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename"
     tests = [
         querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_artist\.php', 'artist', re.I),
     ]
-    html_link_class = "asciiarena"
-    html_link_text = "AsciiArena"
-    html_title_format = "%s on AsciiArena"
 
 
-class AsciiarenaCrew(BaseUrl):
+class AsciiarenaCrew(AbstractBaseUrl):
+    site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_crew.php?crew=%s&sort_by=filename"
     tests = [
         querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_crew\.php', 'crew', re.I),
     ]
-    html_link_class = "asciiarena"
-    html_link_text = "AsciiArena"
-    html_title_format = "%s on AsciiArena"
 
 
-class AsciiarenaRelease(BaseUrl):
+class AsciiarenaRelease(AbstractBaseUrl):
+    site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_release\.php', 'filename', re.I),
     ]
-    html_link_class = "asciiarena"
-    html_link_text = "AsciiArena"
-    html_title_format = "%s on AsciiArena"
 
 
-class ScenesatAct(BaseUrl):
+scenesat = Site("SceneSat", long_name="SceneSat Radio")
+
+
+class ScenesatAct(AbstractBaseUrl):
+    site = scenesat
     canonical_format = "https://scenesat.com/act/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?scenesat\.com/act/(\d+)', re.I),
     ]
-    html_link_class = "scenesat"
-    html_link_text = "SceneSat"
-    html_title_format = "%s on SceneSat Radio"
 
 
-class ScenesatTrack(BaseUrl):
+class ScenesatTrack(AbstractBaseUrl):
+    site = scenesat
     canonical_format = "https://scenesat.com/track/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?scenesat\.com/track/(\d+)', re.I),
     ]
-    html_link_class = "scenesat"
-    html_link_text = "SceneSat"
-    html_title_format = "%s on SceneSat Radio"
 
 
-class ZxdemoAuthor(BaseUrl):
+zxdemo = Site("ZXdemo", long_name="zxdemo.org")
+
+
+class ZxdemoAuthor(AbstractBaseUrl):
+    site = zxdemo
     canonical_format = "https://zxdemo.org/author.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/author\.php', 'id', re.I),
     ]
-    html_link_class = "zxdemo"
-    html_link_text = "ZXdemo"
-    html_title_format = "%s on zxdemo.org"
 
 
-class ZxdemoItem(BaseUrl):
+class ZxdemoItem(AbstractBaseUrl):
+    site = zxdemo
     canonical_format = "https://zxdemo.org/item.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/item\.php', 'id', re.I),
     ]
-    html_link_class = "zxdemo"
-    html_link_text = "ZXdemo"
-    html_title_format = "%s on zxdemo.org"
 
 
-class KestraBitworldRelease(BaseUrl):
+kestra_bitworld = Site("Kestra BitWorld", classname="kestra_bitworld")
+
+
+class KestraBitworldRelease(AbstractBaseUrl):
+    site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/release.php?id=%s"
     tests = [
         querystring_match(r'https?://janeway\.exotica\.org\.uk/release\.php', 'id', re.I),
     ]
-    html_link_class = "kestra_bitworld"
-    html_link_text = "Kestra BitWorld"
-    html_title_format = "%s on Kestra BitWorld"
 
 
-class KestraBitworldAuthor(BaseUrl):
+class KestraBitworldAuthor(AbstractBaseUrl):
+    site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/author.php?id=%s"
     tests = [
         querystring_match(r'https?://janeway\.exotica\.org\.uk/author\.php', 'id', re.I),
     ]
-    html_link_class = "kestra_bitworld"
-    html_link_text = "Kestra BitWorld"
-    html_title_format = "%s on Kestra BitWorld"
 
 
-class KestraBitworldParty(BaseUrl):
+class KestraBitworldParty(AbstractBaseUrl):
+    site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/party.php?id=%s"
     tests = [
         querystring_match(r'https?://janeway\.exotica\.org\.uk/party\.php', 'id', re.I),
     ]
-    html_link_class = "kestra_bitworld"
-    html_link_text = "Kestra BitWorld"
-    html_title_format = "%s on Kestra BitWorld"
 
 
-class SceneOrgFile(BaseUrl):
+sceneorg = Site("scene.org", classname="sceneorg")
+
+
+class SceneOrgFile(AbstractBaseUrl):
+    site = sceneorg
 
     # custom test for file_dl.php URLs, of the format:
     # http://www.scene.org/file_dl.php?url=ftp://ftp.scene.org/pub/parties/2009/stream09/in4k/moldtype.zip&id=523700
@@ -530,10 +523,6 @@ class SceneOrgFile(BaseUrl):
     def __str__(self):
         return self.info_url
 
-    html_link_class = "sceneorg"
-    html_link_text = "scene.org"
-    html_title_format = "%s on scene.org"
-
     @property
     def nl_url(self):
         return u"ftp://ftp.scene.org/pub%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
@@ -559,7 +548,8 @@ class SceneOrgFile(BaseUrl):
         )
 
 
-class AmigascneFile(BaseUrl):
+class AmigascneFile(AbstractBaseUrl):
+    site = Site("amigascne.org", classname="amigascne")
     canonical_format = "ftp://ftp.amigascne.org/pub/amiga%s"
     tests = [
         regex_match(r'(?:http|ftp|https)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)', re.I),
@@ -571,9 +561,6 @@ class AmigascneFile(BaseUrl):
         regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/amigascne(/.*)', re.I),
         regex_match(r'https?://http\.us\.scene\.org/pub/scene.org/mirrors/amigascne(/.*)', re.I),
     ]
-    html_link_class = "amigascne"
-    html_link_text = "amigascne.org"
-    html_title_format = "%s on amigascne.org"
 
     @property
     def mirror_links(self):
@@ -602,7 +589,8 @@ class AmigascneFile(BaseUrl):
         )
 
 
-class PaduaOrgFile(BaseUrl):
+class PaduaOrgFile(AbstractBaseUrl):
+    site = Site("padua.org", long_name="ftp.padua.org", classname="padua")
     canonical_format = "ftp://ftp.padua.org/pub/c64%s"
     tests = [
         regex_match(r'ftp://ftp\.padua\.org/pub/c64(/.*)', re.I),
@@ -614,9 +602,6 @@ class PaduaOrgFile(BaseUrl):
         regex_match(r'ftp://ftp\.us\.scene\.org/scene.org/mirrors/padua(/.*)', re.I),
         regex_match(r'https?://http\.us\.scene\.org/pub/scene.org/mirrors/padua(/.*)', re.I),
     ]
-    html_link_class = "padua"
-    html_link_text = "padua.org"
-    html_title_format = "%s on ftp.padua.org"
 
     @property
     def mirror_links(self):
@@ -645,7 +630,8 @@ class PaduaOrgFile(BaseUrl):
         )
 
 
-class ModlandFile(BaseUrl):
+class ModlandFile(AbstractBaseUrl):
+    site = Site("Modland")
     canonical_format = "ftp://ftp.modland.com%s"
 
     # need to fiddle querystring_match to prepend a slash to the matched query param
@@ -672,9 +658,6 @@ class ModlandFile(BaseUrl):
         regex_match(r'https?://modland\.antarctica\.no(/.*)', re.I),
         exotica_querystring_match(),
     ]
-    html_link_class = "modland"
-    html_link_text = "Modland"
-    html_title_format = "%s on Modland"
 
     @property
     def mirror_links(self):
@@ -718,18 +701,20 @@ class ModlandFile(BaseUrl):
         )
 
 
-class FujiologyFile(BaseUrl):
+fujiology = Site("Fujiology", long_name="the Fujiology Archive")
+
+
+class FujiologyFile(AbstractBaseUrl):
+    site = fujiology
     canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
         regex_match(r'(?:https|ftp)://(?:fujiology\.|ftp\.)untergrund\.net/users/ltk_tscc/fujiology(/.*)', re.I),
     ]
-    html_link_class = "fujiology"
-    html_link_text = "Fujiology"
-    html_title_format = "%s on the Fujiology Archive"
     download_link_label = "Fujiology @ untergrund.net"
 
 
-class FujiologyFolder(BaseUrl):
+class FujiologyFolder(AbstractBaseUrl):
+    site = fujiology
     canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
         regex_match(
@@ -737,53 +722,44 @@ class FujiologyFolder(BaseUrl):
             re.I, add_slash=True
         ),
     ]
-    html_link_class = "fujiology"
-    html_link_text = "Fujiology"
-    html_title_format = "%s on the Fujiology Archive"
 
 
-class UntergrundFile(BaseUrl):
+class UntergrundFile(AbstractBaseUrl):
+    site = Site("untergrund.net", classname="untergrund")
     canonical_format = "https://ftp.untergrund.net%s"
     tests = [
         regex_match(r'(?:https|ftp)://(?:ftp\.)?untergrund\.net(/.*)', re.I),
     ]
-    html_link_class = "untergrund"
-    html_link_text = "untergrund.net"
-    html_title_format = "%s on untergrund.net"
 
 
-class DemopartyNetParty(BaseUrl):
+class DemopartyNetParty(AbstractBaseUrl):
+    site = Site("demoparty.net", classname="demoparty_net")
     canonical_format = "http://www.demoparty.net/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?demoparty\.net/(.+)', re.I),
     ]
-    html_link_class = "demoparty_net"
-    html_link_text = "demoparty.net"
-    html_title_format = "%s on demoparty.net"
 
 
-class LanyrdEvent(BaseUrl):
+class LanyrdEvent(AbstractBaseUrl):
+    site = Site("Lanyrd")
     canonical_format = "http://lanyrd.com/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?lanyrd\.com/(\d+/[^/]+)', re.I),
     ]
-    html_link_class = "lanyrd"
-    html_link_text = "Lanyrd"
-    html_title_format = "%s on Lanyrd"
 
 
-class SlengpungParty(BaseUrl):
+class SlengpungParty(AbstractBaseUrl):
+    site = slengpung
     canonical_format = "http://www.slengpung.com/?eventid=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/parties\.php', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'eventid', re.I),
     ]
-    html_link_class = "slengpung"
-    html_link_text = "Slengpung"
-    html_title_format = "%s on Slengpung"
 
 
-class PouetParty(BaseUrl):
+class PouetParty(AbstractBaseUrl):
+    site = pouet
+
     def match_pouet_party(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?pouet\.net/party\.php', re.I)
         if regex.match(urlstring):
@@ -798,23 +774,19 @@ class PouetParty(BaseUrl):
     def __str__(self):
         (id, year) = self.param.split('/')
         return u"http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
-    html_link_class = "pouet"
-    html_link_text = u"Pouët"
-    html_title_format = u"%s on Pouët"
 
 
-class CsdbEvent(BaseUrl):
+class CsdbEvent(AbstractBaseUrl):
+    site = csdb
     canonical_format = "https://csdb.dk/event/?id=%s"
     tests = [
         querystring_match(r'https?://noname\.c64\.org/csdb/event/', 'id', re.I),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/event/', 'id', re.I),
     ]
-    html_link_class = "csdb"
-    html_link_text = "CSDb"
-    html_title_format = "%s on CSDb"
 
 
-class BreaksAmigaParty(BaseUrl):
+class BreaksAmigaParty(AbstractBaseUrl):
+    site = Site("Break's Amiga Collection", classname="breaks_amiga")
     canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
     tests = [
         querystring_match(
@@ -822,12 +794,10 @@ class BreaksAmigaParty(BaseUrl):
             'partyid', re.I, othervars={'mode': 'party'}
         ),
     ]
-    html_link_class = "breaks_amiga"
-    html_link_text = "Break's Amiga Collection"
-    html_title_format = "%s on Break's Amiga Collection"
 
 
-class SceneOrgFolder(BaseUrl):
+class SceneOrgFolder(AbstractBaseUrl):
+    site = sceneorg
     tests = [
         urldecoded_regex_match(r'https?://files\.scene\.org/browse(/.*)', re.I, add_slash=True),
         querystring_match(r'https?://(?:www\.)?scene\.org/dir\.php', 'dir', re.I),
@@ -848,22 +818,22 @@ class SceneOrgFolder(BaseUrl):
 
     def __str__(self):
         return u"https://files.scene.org/browse%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
-    html_link_class = "sceneorg"
-    html_link_text = "scene.org"
-    html_title_format = "%s on scene.org"
 
 
-class ZxdemoParty(BaseUrl):
+class ZxdemoParty(AbstractBaseUrl):
+    site = zxdemo
     canonical_format = "https://zxdemo.org/party.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxdemo\.org/party\.php', 'id', re.I),
     ]
-    html_link_class = "zxdemo"
-    html_link_text = "ZXdemo"
-    html_title_format = "%s on zxdemo.org"
 
 
-class YoutubeVideo(BaseUrl):
+youtube = Site("YouTube")
+
+
+class YoutubeVideo(AbstractBaseUrl):
+    site = youtube
+
     def match_long_url(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?youtube\.com/watch\?', re.I)
         if regex.match(urlstring):
@@ -903,9 +873,6 @@ class YoutubeVideo(BaseUrl):
         match_embed_url,
         match_short_url,
     ]
-    html_link_class = "youtube"
-    html_link_text = "YouTube"
-    html_title_format = "%s on YouTube"
     is_streaming_video = True
 
     oembed_base_url = "https://www.youtube.com/oembed"
@@ -967,34 +934,31 @@ class YoutubeVideo(BaseUrl):
         )
 
 
-class YoutubeUser(BaseUrl):
+class YoutubeUser(AbstractBaseUrl):
+    site = youtube
     canonical_format = "https://www.youtube.com/user/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)', re.I),
     ]
-    html_link_class = "youtube"
-    html_link_text = "YouTube"
-    html_title_format = "%s on YouTube"
 
 
-class YoutubeChannel(BaseUrl):
+class YoutubeChannel(AbstractBaseUrl):
+    site = youtube
     canonical_format = "https://www.youtube.com/channel/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?youtube\.com/channel/([^\/\?]+)', re.I),
     ]
-    html_link_class = "youtube"
-    html_link_text = "YouTube"
-    html_title_format = "%s on YouTube"
 
 
-class VimeoVideo(BaseUrl):
+vimeo = Site("Vimeo")
+
+
+class VimeoVideo(AbstractBaseUrl):
+    site = vimeo
     canonical_format = "https://vimeo.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?vimeo\.com/(\d+)', re.I),
     ]
-    html_link_class = "vimeo"
-    html_link_text = "Vimeo"
-    html_title_format = "%s on Vimeo"
     is_streaming_video = True
 
     oembed_base_url = "https://vimeo.com/api/oembed.json"
@@ -1035,17 +999,16 @@ class VimeoVideo(BaseUrl):
         )
 
 
-class VimeoUser(BaseUrl):
+class VimeoUser(AbstractBaseUrl):
+    site = vimeo
     canonical_format = "https://vimeo.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?vimeo\.com/([\w-]+)/?$', re.I),
     ]
-    html_link_class = "vimeo"
-    html_link_text = "Vimeo"
-    html_title_format = "%s on Vimeo"
 
 
-class DemosceneTvVideo(BaseUrl):
+class DemosceneTvVideo(AbstractBaseUrl):
+    site = Site("Demoscene.tv", classname="demoscene_tv")
     canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod', re.I),
@@ -1054,125 +1017,114 @@ class DemosceneTvVideo(BaseUrl):
             othervars={'id': '172', 'vsmaction': 'view_prod'}
         ),
     ]
-    html_link_class = "demoscene_tv"
-    html_link_text = "Demoscene.tv"
-    html_title_format = "%s on Demoscene.tv"
     is_streaming_video = True
 
 
-class CappedVideo(BaseUrl):
+class CappedVideo(AbstractBaseUrl):
+    site = Site("Capped.TV", classname="capped")
     canonical_format = "http://capped.tv/%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?capped\.tv/playeralt\.php', 'vid', re.I),
         regex_match(r'https?://(?:www\.)?capped\.tv/([-_\w]+)$', re.I),
     ]
-    html_link_class = "capped"
-    html_link_text = "Capped.TV"
-    html_title_format = "%s on Capped.TV"
     is_streaming_video = True
 
 
-class DhsVideoDbVideo(BaseUrl):
+class DhsVideoDbVideo(AbstractBaseUrl):
+    site = Site("DHS VideoDB", classname="dhs_videodb")
     canonical_format = "http://dhs.nu/video.php?ID=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?dhs\.nu/video.php', 'ID', re.I),
     ]
-    html_link_class = "dhs_videodb"
-    html_link_text = "DHS VideoDB"
-    html_title_format = "%s on DHS VideoDB"
 
 
-class FacebookPage(BaseUrl):
+class FacebookPage(AbstractBaseUrl):
+    site = Site("Facebook")
     canonical_format = "https://www.facebook.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?facebook\.com/(.+)', re.I),
     ]
-    html_link_class = "facebook"
-    html_link_text = "Facebook"
-    html_title_format = "%s on Facebook"
 
 
-class GooglePlusPage(BaseUrl):
+googleplus = Site("Google+", classname="googleplus")
+
+
+class GooglePlusPage(AbstractBaseUrl):
+    site = googleplus
     canonical_format = "https://plus.google.com/%s/"
     tests = [
         regex_match(r'https?://plus\.google\.com/(\d+)', re.I),
     ]
-    html_link_class = "googleplus"
-    html_link_text = "Google+"
-    html_title_format = "%s on Google+"
 
 
-class GooglePlusEvent(BaseUrl):
+class GooglePlusEvent(AbstractBaseUrl):
+    site = googleplus
     canonical_format = "https://plus.google.com/u/0/events/%s"
     tests = [
         regex_match(r'https?://plus\.google\.com/u/0/events/(\w+)', re.I),
     ]
-    html_link_class = "googleplus"
-    html_link_text = "Google+"
-    html_title_format = "%s on Google+"
 
 
-class SoundcloudUser(BaseUrl):
+soundcloud = Site("SoundCloud")
+
+
+class SoundcloudUser(AbstractBaseUrl):
+    site = soundcloud
     canonical_format = "https://soundcloud.com/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+)', re.I),
     ]
-    html_link_class = "soundcloud"
-    html_link_text = "SoundCloud"
-    html_title_format = "%s on SoundCloud"
 
 
-class HearthisUser(BaseUrl):
+hearthis = Site("hearthis.at", classname="hearthis")
+
+
+class HearthisUser(AbstractBaseUrl):
+    site = hearthis
     canonical_format = "https://hearthis.at/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+)', re.I),
     ]
-    html_link_class = "hearthis"
-    html_link_text = "hearthis.at"
-    html_title_format = "%s on hearthis.at"
 
 
-class SoundcloudTrack(BaseUrl):
+class SoundcloudTrack(AbstractBaseUrl):
+    site = soundcloud
     canonical_format = "https://soundcloud.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+/[^\/]+)', re.I),
     ]
-    html_link_class = "soundcloud"
-    html_link_text = "SoundCloud"
-    html_title_format = "%s on SoundCloud"
 
 
-class HearthisTrack(BaseUrl):
+class HearthisTrack(AbstractBaseUrl):
+    site = hearthis
     canonical_format = "https://hearthis.at/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+/[^\/]+)', re.I),
     ]
-    html_link_class = "hearthis"
-    html_link_text = "hearthis.at"
-    html_title_format = "%s on hearthis.at"
 
 
-class DiscogsEntry(BaseUrl):  # for use as an abstract superclass
-    html_link_class = "discogs"
-    html_link_text = "Discogs"
-    html_title_format = "%s on Discogs"
+discogs = Site("Discogs")
 
 
-class DiscogsArtist(DiscogsEntry):
+class DiscogsArtist(AbstractBaseUrl):
+    site = discogs
     canonical_format = "https://www.discogs.com/artist/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)', re.I),
     ]
 
 
-class DiscogsLabel(DiscogsEntry):
+class DiscogsLabel(AbstractBaseUrl):
+    site = discogs
     canonical_format = "https://www.discogs.com/label/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)', re.I),
     ]
 
 
-class DiscogsRelease(DiscogsEntry):
+class DiscogsRelease(AbstractBaseUrl):
+    site = discogs
+
     def match_discogs_release(urlstring, url):
         regex = re.compile(r'https?://(?:www\.)?discogs\.com/([^\/]+)/release/(\d+)', re.I)
         match = regex.match(urlstring)
@@ -1187,7 +1139,11 @@ class DiscogsRelease(DiscogsEntry):
         return u"http://www.discogs.com/%s/release/%s" % (slug, id)
 
 
-class ModarchiveMember(BaseUrl):
+modarchive = Site("ModArchive", long_name="The Mod Archive")
+
+
+class ModarchiveMember(AbstractBaseUrl):
+    site = modarchive
     canonical_format = "https://modarchive.org/member.php?%s"
     tests = [
         regex_match(r'https?://(?:www\.)?modarchive\.org/member\.php\?(\d+)', re.I),
@@ -1196,12 +1152,10 @@ class ModarchiveMember(BaseUrl):
             'query', re.I, othervars={'request': 'view_profile'}
         ),
     ]
-    html_link_class = "modarchive"
-    html_link_text = "ModArchive"
-    html_title_format = "%s on The Mod Archive"
 
 
-class ModarchiveModule(BaseUrl):
+class ModarchiveModule(AbstractBaseUrl):
+    site = modarchive
     canonical_format = "https://modarchive.org/module.php?%s"
     tests = [
         regex_match(r'https?://(?:www\.|lite\.)?modarchive\.org/module\.php\?(\d+)', re.I),
@@ -1212,82 +1166,72 @@ class ModarchiveModule(BaseUrl):
         querystring_match(r'https?://(?:www\.|lite\.)?modarchive\.org/data/downloads\.php', 'moduleid', re.I),
         querystring_match(r'https?://api.modarchive\.org/downloads\.php', 'moduleid', re.I),
     ]
-    html_link_class = "modarchive"
-    html_link_text = "ModArchive"
-    html_title_format = "%s on The Mod Archive"
 
 
-class WikipediaPage(BaseUrl):
+class WikipediaPage(AbstractBaseUrl):
+    site = Site("Wikipedia")
     canonical_format = "%s"  # entire URL is stored as parameter, to cover all language domains
     tests = [
         regex_match(r'(https?://\w+\.wikipedia\.org/.*)', re.I),
     ]
-    html_link_class = "wikipedia"
-    html_link_text = "Wikipedia"
-    html_title_format = "%s on Wikipedia"
 
 
-class SpeccyWikiPage(BaseUrl):
+class SpeccyWikiPage(AbstractBaseUrl):
+    site = Site("SpeccyWiki")
     canonical_format = "http://speccy.info/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?speccy.info/(.+)', re.I),
     ]
-    html_link_class = "speccywiki"
-    html_link_text = "SpeccyWiki"
-    html_title_format = "%s on SpeccyWiki"
 
 
-class AtarimaniaPage(BaseUrl):
+class AtarimaniaPage(AbstractBaseUrl):
+    site = Site("Atarimania")
     canonical_format = "http://www.atarimania.com/%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?atarimania.com/(.+)\.html', re.I),
     ]
-    html_link_class = "atarimania"
-    html_link_text = "Atarimania"
-    html_title_format = "%s on Atarimania"
 
 
-class PushnpopEntry(BaseUrl):  # for use as an abstract superclass
-    html_link_class = "pushnpop"
-    html_link_text = "Push'n'Pop"
-    html_title_format = "%s on Push'n'Pop"
+pushnpop = Site("Push'n'Pop", classname="pushnpop")
 
 
-class PushnpopProduction(PushnpopEntry):
+class PushnpopProduction(AbstractBaseUrl):
+    site = pushnpop
     canonical_format = "http://pushnpop.net/prod-%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?pushnpop\.net/prod-(\d+)\.html', re.I),
     ]
 
 
-class PushnpopParty(PushnpopEntry):
+class PushnpopParty(AbstractBaseUrl):
+    site = pushnpop
     canonical_format = "http://pushnpop.net/parties-%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?pushnpop\.net/parties-(\d+)\.html', re.I),
     ]
 
 
-class PushnpopGroup(PushnpopEntry):
+class PushnpopGroup(AbstractBaseUrl):
+    site = pushnpop
     canonical_format = "http://pushnpop.net/group-%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?pushnpop\.net/group-(\d+)\.html', re.I),
     ]
 
 
-class PushnpopProfile(PushnpopEntry):
+class PushnpopProfile(AbstractBaseUrl):
+    site = pushnpop
     canonical_format = "http://pushnpop.net/profile-%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?pushnpop\.net/profile-(\d+)\.html', re.I),
     ]
 
 
-class ZxArtEntry(BaseUrl):  # for use as an abstract superclass
-    html_link_class = "zxart"
-    html_link_text = "ZXArt"
-    html_title_format = "%s on ZXArt"
+zxart = Site("ZXArt")
 
 
-class ZxArtAuthor(ZxArtEntry):
+class ZxArtAuthor(AbstractBaseUrl):
+    site = zxart
     canonical_format = "http://zxart.ee/eng/authors/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?', re.I),
@@ -1295,7 +1239,8 @@ class ZxArtAuthor(ZxArtEntry):
     ]
 
 
-class ZxArtPicture(ZxArtEntry):
+class ZxArtPicture(AbstractBaseUrl):
+    site = zxart
     canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
@@ -1303,7 +1248,8 @@ class ZxArtPicture(ZxArtEntry):
     ]
 
 
-class ZxArtMusic(ZxArtEntry):
+class ZxArtMusic(AbstractBaseUrl):
+    site = zxart
     canonical_format = "http://zxart.ee/eng/music/authors/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?', re.I),
@@ -1311,7 +1257,8 @@ class ZxArtMusic(ZxArtEntry):
     ]
 
 
-class ZxArtPartyGraphics(ZxArtEntry):
+class ZxArtPartyGraphics(AbstractBaseUrl):
+    site = zxart
     canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/parties/([^\/]+/[^\/]+)/?', re.I),
@@ -1319,7 +1266,8 @@ class ZxArtPartyGraphics(ZxArtEntry):
     ]
 
 
-class ZxArtPartyMusic(ZxArtEntry):
+class ZxArtPartyMusic(AbstractBaseUrl):
+    site = zxart
     canonical_format = "http://zxart.ee/eng/music/parties/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/parties/([^\/]+/[^\/]+)/?', re.I),
@@ -1327,67 +1275,66 @@ class ZxArtPartyMusic(ZxArtEntry):
     ]
 
 
-class HallOfLightEntry(BaseUrl):  # for use as an abstract superclass
-    html_link_class = "hall_of_light"
-    html_link_text = "Hall Of Light"
-    html_title_format = "%s on Hall Of Light"
+hall_of_light = Site("Hall Of Light", classname="hall_of_light")
 
 
-class HallOfLightGame(HallOfLightEntry):
+class HallOfLightGame(AbstractBaseUrl):
+    site = hall_of_light
     canonical_format = "http://hol.abime.net/%s"
     tests = [
         regex_match(r'https?://hol\.abime\.net/(\d+)', re.I),
     ]
 
 
-class HallOfLightArtist(HallOfLightEntry):
+class HallOfLightArtist(AbstractBaseUrl):
+    site = hall_of_light
     canonical_format = "http://hol.abime.net/hol_search.php?N_ref_artist=%s"
     tests = [
         querystring_match(r'https?://hol\.abime\.net/hol_search\.php', 'N_ref_artist', re.I),
     ]
 
 
-class SpotifyArtist(BaseUrl):
+spotify = Site("Spotify")
+
+
+class SpotifyArtist(AbstractBaseUrl):
+    site = spotify
     canonical_format = "https://play.spotify.com/artist/%s"
     tests = [
         regex_match(r'https?://(?:open|play)\.spotify\.com/artist/(\w+)', re.I),
     ]
-    html_link_class = "spotify"
-    html_link_text = "Spotify"
-    html_title_format = "%s on Spotify"
 
 
-class SpotifyTrack(BaseUrl):
+class SpotifyTrack(AbstractBaseUrl):
+    site = spotify
     canonical_format = "https://play.spotify.com/track/%s"
     tests = [
         regex_match(r'https?://(?:open|play)\.spotify\.com/track/(\w+)', re.I),
     ]
-    html_link_class = "spotify"
-    html_link_text = "Spotify"
-    html_title_format = "%s on Spotify"
 
 
-class GithubAccount(BaseUrl):
+github = Site("GitHub")
+
+
+class GithubAccount(AbstractBaseUrl):
+    site = github
     canonical_format = "https://github.com/%s"
     tests = [
         regex_match(r'https?://github\.com/([^\/]+)/?$', re.I),
     ]
-    html_link_class = "github"
-    html_link_text = "GitHub"
-    html_title_format = "%s on GitHub"
 
 
-class GithubRepo(BaseUrl):
+class GithubRepo(AbstractBaseUrl):
+    site = github
     canonical_format = "https://github.com/%s"
     tests = [
         regex_match(r'https?://github\.com/([^\/]+/[^\/]+)/?$', re.I),
     ]
-    html_link_class = "github"
-    html_link_text = "GitHub"
-    html_title_format = "%s on GitHub"
 
 
-class GithubDirectory(BaseUrl):
+class GithubDirectory(AbstractBaseUrl):
+    site = github
+
     def __str__(self):
         params = self.param.split('/')
         user, repo = params[0:2]
@@ -1404,135 +1351,119 @@ class GithubDirectory(BaseUrl):
     tests = [
         github_dir_match,
     ]
-    html_link_class = "github"
-    html_link_text = "GitHub"
-    html_title_format = "%s on GitHub"
 
 
-class InternetArchivePage(BaseUrl):
+class InternetArchivePage(AbstractBaseUrl):
+    site = Site("Internet Archive", long_name="the Internet Archive", classname="internetarchive")
     canonical_format = "https://archive.org/details/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?archive.org/details/(.+)', re.I),
     ]
-    html_link_class = "internetarchive"
-    html_link_text = "Internet Archive"
-    html_title_format = "%s on the Internet Archive"
 
 
-class WaybackMachinePage(BaseUrl):
+class WaybackMachinePage(AbstractBaseUrl):
+    site = Site("Wayback Machine", long_name="the Wayback Machine", classname="waybackmachine")
     canonical_format = "https://web.archive.org/web/%s"
     tests = [
         regex_match(r'https?://web\.archive.org/web/(.+)', re.I),
     ]
-    html_link_class = "waybackmachine"
-    html_link_text = "Wayback Machine"
-    html_title_format = "%s on the Wayback Machine"
 
 
-class StonishDisk(BaseUrl):
+class StonishDisk(AbstractBaseUrl):
+    site = Site("Stonish")
     canonical_format = "http://stonish.net/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)', re.I),
     ]
-    html_link_class = "stonish"
-    html_link_text = "Stonish"
-    html_title_format = "%s on Stonish"
 
 
-class ZxTunesArtist(BaseUrl):
+class ZxTunesArtist(AbstractBaseUrl):
+    site = Site("ZXTunes")
     canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
     ]
-    html_link_class = "zxtunes"
-    html_link_text = "ZXTunes"
-    html_title_format = "%s on ZXTunes"
 
 
-class GameboyDemospottingAuthor(BaseUrl):
+gameboy_demospotting = Site("Gameboy Demospotting", classname="gameboydemospotting")
+
+
+class GameboyDemospottingAuthor(AbstractBaseUrl):
+    site = gameboy_demospotting
     canonical_format = "http://gameboy.modermodemet.se/en/author/%s"
     tests = [
         regex_match(r'https?://gameboy\.modermodemet\.se/\w+/author/(\d+)', re.I),
     ]
-    html_link_class = "gameboydemospotting"
-    html_link_text = "Gameboy Demospotting"
-    html_title_format = "%s on Gameboy Demospotting"
 
 
-class GameboyDemospottingDemo(BaseUrl):
+class GameboyDemospottingDemo(AbstractBaseUrl):
+    site = gameboy_demospotting
     canonical_format = "http://gameboy.modermodemet.se/en/demo/%s"
     tests = [
         regex_match(r'https?://gameboy\.modermodemet\.se/\w+/demo/(\d+)', re.I),
     ]
-    html_link_class = "gameboydemospotting"
-    html_link_text = "Gameboy Demospotting"
-    html_title_format = "%s on Gameboy Demospotting"
 
 
-class PixeljointArtist(BaseUrl):
+pixeljoint = Site("Pixeljoint")
+
+
+class PixeljointArtist(AbstractBaseUrl):
+    site = pixeljoint
     canonical_format = "http://pixeljoint.com/p/%s.htm"
     tests = [
         regex_match(r'https?://(?:www\.)?pixeljoint\.com/p/(\d+)\.htm', re.I),
     ]
-    html_link_class = "pixeljoint"
-    html_link_text = "Pixeljoint"
-    html_title_format = "%s on Pixeljoint"
 
 
-class PixeljointImage(BaseUrl):
+class PixeljointImage(AbstractBaseUrl):
+    site = pixeljoint
     canonical_format = "http://pixeljoint.com/pixelart/%s.htm"
     tests = [
         regex_match(r'https?://(?:www\.)?pixeljoint\.com/pixelart/(\d+)\.htm', re.I),
     ]
-    html_link_class = "pixeljoint"
-    html_link_text = "Pixeljoint"
-    html_title_format = "%s on Pixeljoint"
 
 
-class Plus4WorldProduction(BaseUrl):
+plus4world = Site("Plus/4 World", classname="plus4world")
+
+
+class Plus4WorldProduction(AbstractBaseUrl):
+    site = plus4world
     canonical_format = "http://plus4world.powweb.com/software/%s"
     tests = [
         regex_match(r'https?://plus4world\.powweb\.com/software/(\w+)', re.I),
     ]
-    html_link_class = "plus4world"
-    html_link_text = "Plus/4 World"
-    html_title_format = "%s on Plus/4 World"
 
 
-class Plus4WorldGroup(BaseUrl):
+class Plus4WorldGroup(AbstractBaseUrl):
+    site = plus4world
     canonical_format = "http://plus4world.powweb.com/groups/%s"
     tests = [
         regex_match(r'https?://plus4world\.powweb\.com/groups/(\w+)', re.I),
     ]
-    html_link_class = "plus4world"
-    html_link_text = "Plus/4 World"
-    html_title_format = "%s on Plus/4 World"
 
 
-class Plus4WorldMember(BaseUrl):
+class Plus4WorldMember(AbstractBaseUrl):
+    site = plus4world
     canonical_format = "http://plus4world.powweb.com/members/%s"
     tests = [
         regex_match(r'https?://plus4world\.powweb\.com/members/(\w+)', re.I),
     ]
-    html_link_class = "plus4world"
-    html_link_text = "Plus/4 World"
-    html_title_format = "%s on Plus/4 World"
 
 
-class BandcampEntry(BaseUrl):  # Bandcamp abstract superclass
-    html_link_class = "bandcamp"
-    html_link_text = "Bandcamp"
-    html_title_format = "%s on Bandcamp"
+bandcamp = Site("Bandcamp")
 
 
-class BandcampArtist(BandcampEntry):
+class BandcampArtist(AbstractBaseUrl):
+    site = bandcamp
     canonical_format = "https://%s.bandcamp.com/"
     tests = [
         regex_match(r'https?://([\w-]+)\.bandcamp\.com/?$', re.I),
     ]
 
 
-class BandcampTrack(BandcampEntry):
+class BandcampTrack(AbstractBaseUrl):
+    site = bandcamp
+
     def match_bandcamp_release(urlstring, url):
         regex = re.compile(r'https?://([\w-]+)\.bandcamp\.com/track/([\w-]+)', re.I)
         match = regex.match(urlstring)
@@ -1547,7 +1478,8 @@ class BandcampTrack(BandcampEntry):
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
-class TwitchChannel(BaseUrl):
+class TwitchChannel(AbstractBaseUrl):
+    site = Site("Twitch")
     canonical_format = "https://twitch.tv/%s"  # Channel name
     tests = [
         # Use (\w+) as Twitch does not accept `-` during registration
@@ -1555,35 +1487,28 @@ class TwitchChannel(BaseUrl):
         regex_match(r'https?://(?:www\.)?twitch\.tv/(\w+)', re.I),
     ]
 
-    html_link_class = "twitch"
-    html_link_text = "Twitch"
-    html_title_format = "%s on Twitch"
+
+speccypl = Site("speccy.pl", classname="speccypl")
 
 
-class SpeccyPlEntry(BaseUrl):  # speccy.pl abstract superclass
-    html_link_class = "speccypl"
-    html_link_text = "speccy.pl"
-    html_title_format = "%s on speccy.pl"
-
-
-class SpeccyPlProduction(SpeccyPlEntry):
+class SpeccyPlProduction(AbstractBaseUrl):
+    site = speccypl
     canonical_format = "http://speccy.pl/archive/prod.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/prod\.php', 'id', re.I),
     ]
 
 
-class SpeccyPlAuthor(SpeccyPlEntry):
+class SpeccyPlAuthor(AbstractBaseUrl):
+    site = speccypl
     canonical_format = "http://speccy.pl/archive/author.php?id=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/author\.php', 'id', re.I),
     ]
 
 
-class AtarikiEntry(BaseUrl):
-    html_link_class = "atariki"
-    html_link_text = "Atariki"
-    html_title_format = "%s on Atariki"
+class AtarikiEntry(AbstractBaseUrl):
+    site = Site("Atariki")
     canonical_format = "http://atariki.krap.pl/index.php/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?atariki\.krap\.pl/index\.php/(.*)', re.I),
