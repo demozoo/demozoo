@@ -220,7 +220,7 @@ def urldecoded_regex_match(pattern, flags=re.IGNORECASE, add_slash=False):
     return match_fn
 
 
-def querystring_match(pattern, varname, flags=re.IGNORECASE, othervars={}, numeric=False):
+def querystring_match(pattern, varname, flags=re.IGNORECASE, othervars={}):
     """
     Build a function that tests a URL against the regexp 'pattern'. If it matches,
     AND all of the query parameters in 'othervars' match, return the query parameter
@@ -236,15 +236,30 @@ def querystring_match(pattern, varname, flags=re.IGNORECASE, othervars={}, numer
                     if querystring[key][0] != val:
                         return None
 
-                result = querystring[varname][0]
+                return querystring[varname][0]
+            except KeyError:
+                return None
+
+    return match_fn
+
+
+def query_path_match(path, varname, othervars={}, numeric=False):
+    def match_fn(urlstring, url):
+        if url.path == path:
+            query = urllib.parse.parse_qs(url.query)
+            try:
+                for (key, val) in othervars.items():
+                    if query[key][0] != val:
+                        return None
+
+                result = query[varname][0]
             except KeyError:
                 return None
 
             if numeric:
-                numeric_match = re.match(r'\d+', querystring[varname][0])
-                if numeric_match:
-                    result = int(numeric_match.group())
-                else:
+                try:
+                    result = int(result)
+                except ValueError:
                     return None
 
             return result
@@ -268,7 +283,7 @@ class SceneidAccount(AbstractBaseUrl):
     site = pouet
     canonical_format = "https://www.pouet.net/user.php?who=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/user\.php', 'who', numeric=True),
+        query_path_match('/user.php', 'who', numeric=True),
     ]
 
 
@@ -276,7 +291,7 @@ class PouetGroup(AbstractBaseUrl):
     site = pouet
     canonical_format = "https://www.pouet.net/groups.php?which=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/groups\.php', 'which', numeric=True),
+        query_path_match('/groups.php', 'which', numeric=True),
     ]
 
 
@@ -284,7 +299,7 @@ class PouetProduction(AbstractBaseUrl):
     site = pouet
     canonical_format = "https://www.pouet.net/prod.php?which=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?pouet\.net/prod\.php', 'which', numeric=True),
+        query_path_match('/prod.php', 'which', numeric=True),
     ]
 
 
@@ -296,7 +311,7 @@ class SlengpungUser(AbstractBaseUrl):
     canonical_format = "http://www.slengpung.com/?userid=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/show_user\.php', 'id'),
-        querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'userid'),
+        query_path_match('/', 'userid'),
     ]
 
 
@@ -304,7 +319,7 @@ class AmpAuthor(AbstractBaseUrl):
     site = Site("AMP", long_name="Amiga Music Preservation", url='https://amp.dascene.net/')
     canonical_format = "https://amp.dascene.net/detail.php?view=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?amp\.dascene\.net/detail\.php', 'view'),
+        query_path_match('/detail.php', 'view'),
     ]
 
 
@@ -410,7 +425,7 @@ class ArtcityArtist(AbstractBaseUrl):
     site = artcity
     canonical_format = "http://artcity.bitfellas.org/index.php?a=artist&id=%s"
     tests = [
-        querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', othervars={'a': 'artist'}),
+        query_path_match('/index.php', 'id', othervars={'a': 'artist'}),
     ]
 
 
@@ -418,7 +433,7 @@ class ArtcityImage(AbstractBaseUrl):
     site = artcity
     canonical_format = "http://artcity.bitfellas.org/index.php?a=show&id=%s"
     tests = [
-        querystring_match(r'https?://artcity\.bitfellas\.org/index\.php', 'id', othervars={'a': 'show'}),
+        query_path_match('/index.php', 'id', othervars={'a': 'show'}),
     ]
 
 
@@ -445,7 +460,7 @@ class AsciiarenaArtist(AbstractBaseUrl):
     site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename"
     tests = [
-        querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_artist\.php', 'artist'),
+        query_path_match('/info_artist.php', 'artist'),
     ]
 
 
@@ -453,7 +468,7 @@ class AsciiarenaCrew(AbstractBaseUrl):
     site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_crew.php?crew=%s&sort_by=filename"
     tests = [
-        querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_crew\.php', 'crew'),
+        query_path_match('/info_crew.php', 'crew'),
     ]
 
 
@@ -461,7 +476,7 @@ class AsciiarenaRelease(AbstractBaseUrl):
     site = asciiarena
     canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?asciiarena\.com/info_release\.php', 'filename'),
+        query_path_match('/info_release.php', 'filename'),
     ]
 
 
@@ -491,7 +506,7 @@ class ZxdemoAuthor(AbstractBaseUrl):
     site = zxdemo
     canonical_format = "https://zxdemo.org/author.php?id=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?zxdemo\.org/author\.php', 'id'),
+        query_path_match('/author.php', 'id'),
     ]
 
 
@@ -499,7 +514,7 @@ class ZxdemoItem(AbstractBaseUrl):
     site = zxdemo
     canonical_format = "https://zxdemo.org/item.php?id=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?zxdemo\.org/item\.php', 'id'),
+        query_path_match('/item.php', 'id'),
     ]
 
 
@@ -513,7 +528,7 @@ class KestraBitworldRelease(AbstractBaseUrl):
     site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/release.php?id=%s"
     tests = [
-        querystring_match(r'https?://janeway\.exotica\.org\.uk/release\.php', 'id'),
+        query_path_match('/release.php', 'id'),
     ]
 
 
@@ -521,7 +536,7 @@ class KestraBitworldAuthor(AbstractBaseUrl):
     site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/author.php?id=%s"
     tests = [
-        querystring_match(r'https?://janeway\.exotica\.org\.uk/author\.php', 'id'),
+        query_path_match('/author.php', 'id'),
     ]
 
 
@@ -529,7 +544,7 @@ class KestraBitworldParty(AbstractBaseUrl):
     site = kestra_bitworld
     canonical_format = "http://janeway.exotica.org.uk/party.php?id=%s"
     tests = [
-        querystring_match(r'https?://janeway\.exotica\.org\.uk/party\.php', 'id'),
+        query_path_match('/party.php', 'id'),
     ]
 
 
@@ -828,7 +843,7 @@ class SlengpungParty(AbstractBaseUrl):
     canonical_format = "http://www.slengpung.com/?eventid=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?slengpung\.com/v[\d_]+/parties\.php', 'id'),
-        querystring_match(r'https?://(?:www\.)?slengpung\.com/', 'eventid'),
+        query_path_match('/', 'eventid'),
     ]
 
 
@@ -864,10 +879,7 @@ class BreaksAmigaParty(AbstractBaseUrl):
     site = Site("Break's Amiga Collection", classname="breaks_amiga", url='http://arabuusimiehet.com/')
     canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
     tests = [
-        querystring_match(
-            r'https?://(?:www\.)?arabuusimiehet\.com/break/amiga/index\.php',
-            'partyid', othervars={'mode': 'party'}
-        ),
+        query_path_match('/break/amiga/index.php', 'partyid', othervars={'mode': 'party'}),
     ]
 
 
@@ -899,7 +911,7 @@ class ZxdemoParty(AbstractBaseUrl):
     site = zxdemo
     canonical_format = "https://zxdemo.org/party.php?id=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?zxdemo\.org/party\.php', 'id'),
+        query_path_match('/party.php', 'id'),
     ]
 
 
@@ -1086,11 +1098,8 @@ class DemosceneTvVideo(AbstractBaseUrl):
     site = Site("Demoscene.tv", classname="demoscene_tv", url='http://demoscene.tv/')
     canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod'),
-        querystring_match(
-            r'https?://(?:www\.)?demoscene\.tv/page\.php', 'id_prod',
-            othervars={'id': '172', 'vsmaction': 'view_prod'}
-        ),
+        query_path_match('/prod.php', 'id_prod'),
+        query_path_match('/page.php', 'id_prod', othervars={'id': '172', 'vsmaction': 'view_prod'}),
     ]
     is_streaming_video = True
 
@@ -1099,7 +1108,7 @@ class CappedVideo(AbstractBaseUrl):
     site = Site("Capped.TV", classname="capped", url='http://capped.tv/')
     canonical_format = "http://capped.tv/%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?capped\.tv/playeralt\.php', 'vid'),
+        query_path_match('/playeralt.php', 'vid'),
         path_regex_match(r'/([-_\w]+)$'),
     ]
     is_streaming_video = True
@@ -1109,7 +1118,7 @@ class DhsVideoDbVideo(AbstractBaseUrl):
     site = Site("DHS VideoDB", classname="dhs_videodb", url='http://dhs.nu/')
     canonical_format = "http://dhs.nu/video.php?ID=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?dhs\.nu/video.php', 'ID'),
+        query_path_match('/video.php', 'ID'),
     ]
 
 
@@ -1369,7 +1378,7 @@ class HallOfLightArtist(AbstractBaseUrl):
     site = hall_of_light
     canonical_format = "http://hol.abime.net/hol_search.php?N_ref_artist=%s"
     tests = [
-        querystring_match(r'https?://hol\.abime\.net/hol_search\.php', 'N_ref_artist'),
+        query_path_match('/hol_search.php', 'N_ref_artist'),
     ]
 
 
@@ -1471,7 +1480,7 @@ class ZxTunesArtist(AbstractBaseUrl):
     site = Site("ZXTunes", url='http://zxtunes.com/')
     canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
     tests = [
-        querystring_match(r'https?://(?:www\.)?zxtunes\.com/author\.php', 'id'),
+        query_path_match('/author.php', 'id'),
     ]
 
 
@@ -1592,7 +1601,7 @@ class SpeccyPlProduction(AbstractBaseUrl):
     site = speccypl
     canonical_format = "http://speccy.pl/archive/prod.php?id=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/prod\.php', 'id'),
+        query_path_match('/archive/prod.php', 'id'),
     ]
 
 
@@ -1600,7 +1609,7 @@ class SpeccyPlAuthor(AbstractBaseUrl):
     site = speccypl
     canonical_format = "http://speccy.pl/archive/author.php?id=%s"
     tests = [
-        querystring_match(r'https?://(?:www\.)?speccy\.pl/archive/author\.php', 'id'),
+        query_path_match('/archive/author.php', 'id'),
     ]
 
 
