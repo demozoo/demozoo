@@ -126,6 +126,17 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'ModlandFile')
         self.assertEqual(link.parameter, '/artists/gasman/cybernoids_revenge.zip')
 
+    def test_modarchive_other_params(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        link = ProductionLink(production=cybrev, is_download_link=True)
+        link.url = 'https://modarchive.org/index.php?request=view_by_moduleid&query=123'
+        self.assertEqual(link.link_class, 'ModarchiveModule')
+        self.assertEqual(link.parameter, '123')
+        link.url = 'https://modarchive.org/index.php?request=view_by_instrument&query=keytar'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        link.url = 'https://modarchive.org/index.php?request=view_by_moduleid&whichone=123'
+        self.assertEqual(link.link_class, 'BaseUrl')
+
     def test_youtube_video(self):
         pondlife = Production.objects.get(title='Pondlife')
         link = ProductionLink(production=pondlife, is_download_link=False)
