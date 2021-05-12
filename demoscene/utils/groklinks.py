@@ -171,6 +171,20 @@ def regex_match(pattern, flags=re.IGNORECASE, add_slash=False):
     return match_fn
 
 
+def path_regex_match(pattern, flags=re.IGNORECASE):
+    """
+    Build a function that tests the path portion of a URL against the given regexp,
+    and, if it matches, returns the first captured (bracketed) expression from it.
+    """
+    regex = re.compile(pattern, flags)
+
+    def match_fn(urlstring, url):
+        m = regex.match(url.path)
+        if m:
+            return m.group(1)
+    return match_fn
+
+
 def urldecoded_regex_match(pattern, flags=re.IGNORECASE, add_slash=False):
     """
     Build a function that tests a URL against the given regexp, and, if it matches,
@@ -243,7 +257,7 @@ class TwitterAccount(AbstractBaseUrl):
     canonical_format = "https://twitter.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?twitter\.com/#!/([^/]+)'),
-        regex_match(r'https?://(?:www\.)?twitter\.com/([^/]+)'),
+        path_regex_match(r'/([^/]+)'),
     ]
 
 
@@ -350,8 +364,7 @@ class NectarineArtist(AbstractBaseUrl):
     site = nectarine
     canonical_format = "https://scenestream.net/demovibes/artist/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/artist/(\d+)'),
-        regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/artist/(\d+)'),
+        path_regex_match(r'/demovibes/artist/(\d+)'),
     ]
 
 
@@ -359,8 +372,7 @@ class NectarineSong(AbstractBaseUrl):
     site = nectarine
     canonical_format = "https://scenestream.net/demovibes/song/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/song/(\d+)'),
-        regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/song/(\d+)'),
+        path_regex_match(r'/demovibes/song/(\d+)'),
     ]
 
 
@@ -368,8 +380,7 @@ class NectarineGroup(AbstractBaseUrl):
     site = nectarine
     canonical_format = "https://scenestream.net/demovibes/group/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?scenemusic\.net/demovibes/group/(\d+)'),
-        regex_match(r'https?://(?:www\.)?scenestream\.net/demovibes/group/(\d+)'),
+        path_regex_match(r'/demovibes/group/(\d+)'),
     ]
 
 
@@ -423,7 +434,7 @@ class MobygamesDeveloper(AbstractBaseUrl):
     site = Site("MobyGames", url='https://www.mobygames.com/')
     canonical_format = "https://www.mobygames.com/developer/sheet/view/developerId,%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?mobygames\.com/developer/sheet/view/developerId\,(\d+)'),
+        path_regex_match(r'/developer/sheet/view/developerId\,(\d+)'),
     ]
 
 
@@ -461,7 +472,7 @@ class ScenesatAct(AbstractBaseUrl):
     site = scenesat
     canonical_format = "https://scenesat.com/act/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?scenesat\.com/act/(\d+)'),
+        path_regex_match(r'/act/(\d+)'),
     ]
 
 
@@ -469,7 +480,7 @@ class ScenesatTrack(AbstractBaseUrl):
     site = scenesat
     canonical_format = "https://scenesat.com/track/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?scenesat\.com/track/(\d+)'),
+        path_regex_match(r'/track/(\d+)'),
     ]
 
 
@@ -769,7 +780,7 @@ class FujiologyFile(AbstractBaseUrl):
     site = fujiology
     canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
     tests = [
-        regex_match(r'(?:https|ftp)://(?:fujiology\.|ftp\.)untergrund\.net/users/ltk_tscc/fujiology(/.*)'),
+        path_regex_match(r'/users/ltk_tscc/fujiology(/.*)'),
     ]
     download_link_label = "Fujiology @ untergrund.net"
 
@@ -780,7 +791,7 @@ class FujiologyFolder(AbstractBaseUrl):
     tests = [
         regex_match(
             r'(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)',
-            re.I, add_slash=True
+            add_slash=True
         ),
     ]
 
@@ -792,7 +803,7 @@ class UntergrundFile(AbstractBaseUrl):
     )
     canonical_format = "https://ftp.untergrund.net%s"
     tests = [
-        regex_match(r'(?:https|ftp)://(?:ftp\.)?untergrund\.net(/.*)'),
+        path_regex_match(r'(/.*)'),
     ]
 
 
@@ -800,7 +811,7 @@ class DemopartyNetParty(AbstractBaseUrl):
     site = Site("demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/')
     canonical_format = "http://www.demoparty.net/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?demoparty\.net/(.+)'),
+        path_regex_match(r'/(.+)'),
     ]
 
 
@@ -808,7 +819,7 @@ class LanyrdEvent(AbstractBaseUrl):
     site = Site("Lanyrd", url='http://lanyrd.com/')
     canonical_format = "http://lanyrd.com/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?lanyrd\.com/(\d+/[^/]+)'),
+        path_regex_match(r'/(\d+/[^/]+)'),
     ]
 
 
@@ -1021,7 +1032,7 @@ class VimeoVideo(AbstractBaseUrl):
     site = vimeo
     canonical_format = "https://vimeo.com/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?vimeo\.com/(\d+)'),
+        path_regex_match(r'/(\d+)'),
     ]
     is_streaming_video = True
 
@@ -1067,7 +1078,7 @@ class VimeoUser(AbstractBaseUrl):
     site = vimeo
     canonical_format = "https://vimeo.com/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?vimeo\.com/([\w-]+)/?$'),
+        path_regex_match(r'/([\w-]+)/?$'),
     ]
 
 
@@ -1089,7 +1100,7 @@ class CappedVideo(AbstractBaseUrl):
     canonical_format = "http://capped.tv/%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?capped\.tv/playeralt\.php', 'vid'),
-        regex_match(r'https?://(?:www\.)?capped\.tv/([-_\w]+)$'),
+        path_regex_match(r'/([-_\w]+)$'),
     ]
     is_streaming_video = True
 
@@ -1106,7 +1117,7 @@ class FacebookPage(AbstractBaseUrl):
     site = Site("Facebook", url='https://www.facebook.com/')
     canonical_format = "https://www.facebook.com/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?facebook\.com/(.+)'),
+        path_regex_match(r'/(.+)'),
     ]
 
 
@@ -1119,7 +1130,7 @@ class GooglePlusPage(AbstractBaseUrl):
     site = googleplus
     canonical_format = "https://plus.google.com/%s/"
     tests = [
-        regex_match(r'https?://plus\.google\.com/(\d+)'),
+        path_regex_match(r'/(\d+)'),
     ]
 
 
@@ -1127,7 +1138,7 @@ class GooglePlusEvent(AbstractBaseUrl):
     site = googleplus
     canonical_format = "https://plus.google.com/u/0/events/%s"
     tests = [
-        regex_match(r'https?://plus\.google\.com/u/0/events/(\w+)'),
+        path_regex_match(r'/u/0/events/(\w+)'),
     ]
 
 
@@ -1138,7 +1149,7 @@ class SoundcloudUser(AbstractBaseUrl):
     site = soundcloud
     canonical_format = "https://soundcloud.com/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+)'),
+        path_regex_match(r'/([^\/]+)'),
     ]
 
 
@@ -1149,7 +1160,7 @@ class HearthisUser(AbstractBaseUrl):
     site = hearthis
     canonical_format = "https://hearthis.at/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+)'),
+        path_regex_match(r'/([^\/]+)'),
     ]
 
 
@@ -1157,7 +1168,7 @@ class SoundcloudTrack(AbstractBaseUrl):
     site = soundcloud
     canonical_format = "https://soundcloud.com/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?soundcloud\.com/([^\/]+/[^\/]+)'),
+        path_regex_match(r'/([^\/]+/[^\/]+)'),
     ]
 
 
@@ -1165,7 +1176,7 @@ class HearthisTrack(AbstractBaseUrl):
     site = hearthis
     canonical_format = "https://hearthis.at/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?hearthis\.at/([^\/]+/[^\/]+)'),
+        path_regex_match(r'/([^\/]+/[^\/]+)'),
     ]
 
 
@@ -1176,7 +1187,7 @@ class DiscogsArtist(AbstractBaseUrl):
     site = discogs
     canonical_format = "https://www.discogs.com/artist/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?discogs\.com/artist/(.+)'),
+        path_regex_match(r'/artist/(.+)'),
     ]
 
 
@@ -1184,7 +1195,7 @@ class DiscogsLabel(AbstractBaseUrl):
     site = discogs
     canonical_format = "https://www.discogs.com/label/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?discogs\.com/label/(.+)'),
+        path_regex_match(r'/label/(.+)'),
     ]
 
 
@@ -1192,8 +1203,8 @@ class DiscogsRelease(AbstractBaseUrl):
     site = discogs
 
     def match_discogs_release(urlstring, url):
-        regex = re.compile(r'https?://(?:www\.)?discogs\.com/([^\/]+)/release/(\d+)', re.I)
-        match = regex.match(urlstring)
+        regex = re.compile(r'/([^\/]+)/release/(\d+)', re.I)
+        match = regex.match(url.path)
         if match:
             slug, id = match.groups()
             return "%s/%s" % (id, slug)
@@ -1246,7 +1257,7 @@ class SpeccyWikiPage(AbstractBaseUrl):
     site = Site("SpeccyWiki", url='http://speccy.info/')
     canonical_format = "http://speccy.info/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?speccy.info/(.+)'),
+        path_regex_match(r'/(.+)'),
     ]
 
 
@@ -1254,7 +1265,7 @@ class AtarimaniaPage(AbstractBaseUrl):
     site = Site("Atarimania", url='http://www.atarimania.com/')
     canonical_format = "http://www.atarimania.com/%s.html"
     tests = [
-        regex_match(r'https?://(?:www\.)?atarimania.com/(.+)\.html'),
+        path_regex_match(r'/(.+)\.html'),
     ]
 
 
@@ -1265,7 +1276,7 @@ class PushnpopProduction(AbstractBaseUrl):
     site = pushnpop
     canonical_format = "http://pushnpop.net/prod-%s.html"
     tests = [
-        regex_match(r'https?://(?:www\.)?pushnpop\.net/prod-(\d+)\.html'),
+        path_regex_match(r'/prod-(\d+)\.html'),
     ]
 
 
@@ -1273,7 +1284,7 @@ class PushnpopParty(AbstractBaseUrl):
     site = pushnpop
     canonical_format = "http://pushnpop.net/parties-%s.html"
     tests = [
-        regex_match(r'https?://(?:www\.)?pushnpop\.net/parties-(\d+)\.html'),
+        path_regex_match(r'/parties-(\d+)\.html'),
     ]
 
 
@@ -1281,7 +1292,7 @@ class PushnpopGroup(AbstractBaseUrl):
     site = pushnpop
     canonical_format = "http://pushnpop.net/group-%s.html"
     tests = [
-        regex_match(r'https?://(?:www\.)?pushnpop\.net/group-(\d+)\.html'),
+        path_regex_match(r'/group-(\d+)\.html'),
     ]
 
 
@@ -1289,7 +1300,7 @@ class PushnpopProfile(AbstractBaseUrl):
     site = pushnpop
     canonical_format = "http://pushnpop.net/profile-%s.html"
     tests = [
-        regex_match(r'https?://(?:www\.)?pushnpop\.net/profile-(\d+)\.html'),
+        path_regex_match(r'/profile-(\d+)\.html'),
     ]
 
 
@@ -1300,8 +1311,8 @@ class ZxArtAuthor(AbstractBaseUrl):
     site = zxart
     canonical_format = "http://zxart.ee/eng/authors/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?zxart\.ee/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?'),
-        regex_match(r'https?://(?:www\.)?zxart\.ee/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?'),
     ]
 
 
@@ -1309,8 +1320,8 @@ class ZxArtPicture(AbstractBaseUrl):
     site = zxart
     canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
-        regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1318,8 +1329,8 @@ class ZxArtMusic(AbstractBaseUrl):
     site = zxart
     canonical_format = "http://zxart.ee/eng/music/authors/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
-        regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1327,8 +1338,8 @@ class ZxArtPartyGraphics(AbstractBaseUrl):
     site = zxart
     canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?zxart\.ee/eng/graphics/parties/([^\/]+/[^\/]+)/?'),
-        regex_match(r'https?://(?:www\.)?zxart\.ee/rus/grafika/pati/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/eng/graphics/parties/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/grafika/pati/([^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1336,8 +1347,8 @@ class ZxArtPartyMusic(AbstractBaseUrl):
     site = zxart
     canonical_format = "http://zxart.ee/eng/music/parties/%s/"
     tests = [
-        regex_match(r'https?://(?:www\.)?zxart\.ee/eng/music/parties/([^\/]+/[^\/]+)/?'),
-        regex_match(r'https?://(?:www\.)?zxart\.ee/rus/muzyka/pati/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/eng/music/parties/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/muzyka/pati/([^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1350,7 +1361,7 @@ class HallOfLightGame(AbstractBaseUrl):
     site = hall_of_light
     canonical_format = "http://hol.abime.net/%s"
     tests = [
-        regex_match(r'https?://hol\.abime\.net/(\d+)'),
+        path_regex_match(r'/(\d+)'),
     ]
 
 
@@ -1371,7 +1382,7 @@ class SpotifyArtist(AbstractBaseUrl):
     site = spotify
     canonical_format = "https://play.spotify.com/artist/%s"
     tests = [
-        regex_match(r'https?://(?:open|play)\.spotify\.com/artist/(\w+)'),
+        path_regex_match(r'/artist/(\w+)'),
     ]
 
 
@@ -1379,7 +1390,7 @@ class SpotifyTrack(AbstractBaseUrl):
     site = spotify
     canonical_format = "https://play.spotify.com/track/%s"
     tests = [
-        regex_match(r'https?://(?:open|play)\.spotify\.com/track/(\w+)'),
+        path_regex_match(r'/track/(\w+)'),
     ]
 
 
@@ -1390,7 +1401,7 @@ class GithubAccount(AbstractBaseUrl):
     site = github
     canonical_format = "https://github.com/%s"
     tests = [
-        regex_match(r'https?://github\.com/([^\/]+)/?$'),
+        path_regex_match(r'/([^\/]+)/?$'),
     ]
 
 
@@ -1398,7 +1409,7 @@ class GithubRepo(AbstractBaseUrl):
     site = github
     canonical_format = "https://github.com/%s"
     tests = [
-        regex_match(r'https?://github\.com/([^\/]+/[^\/]+)/?$'),
+        path_regex_match(r'/([^\/]+/[^\/]+)/?$'),
     ]
 
 
@@ -1411,10 +1422,10 @@ class GithubDirectory(AbstractBaseUrl):
         dirs = '/'.join(params[2:])
         return u"http://github.com/%s/%s/tree/%s" % (user, repo, dirs)
 
-    regex = re.compile(r'https?://github\.com/([^\/]+)/([^\/]+)/tree/(.+)$', re.I)
+    regex = re.compile(r'/([^\/]+)/([^\/]+)/tree/(.+)$', re.I)
 
     def github_dir_match(urlstring, url):
-        m = GithubDirectory.regex.match(urlstring)
+        m = GithubDirectory.regex.match(url.path)
         if m:
             return "%s/%s/%s" % (m.group(1), m.group(2), m.group(3))
 
@@ -1430,6 +1441,7 @@ class InternetArchivePage(AbstractBaseUrl):
     )
     canonical_format = "https://archive.org/details/%s"
     tests = [
+        # keep as regex_match in case we need to match an anchor fragment in addition to the path
         regex_match(r'https?://(?:www\.)?archive.org/details/(.+)'),
     ]
 
@@ -1441,6 +1453,7 @@ class WaybackMachinePage(AbstractBaseUrl):
     )
     canonical_format = "https://web.archive.org/web/%s"
     tests = [
+        # keep as regex_match in case we need to match an anchor fragment in addition to the path
         regex_match(r'https?://web\.archive.org/web/(.+)'),
     ]
 
@@ -1449,6 +1462,7 @@ class StonishDisk(AbstractBaseUrl):
     site = Site("Stonish", url='http://stonish.net/')
     canonical_format = "http://stonish.net/%s"
     tests = [
+        # keep as regex_match to preserve the anchor fragment
         regex_match(r'https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)'),
     ]
 
@@ -1471,7 +1485,7 @@ class GameboyDemospottingAuthor(AbstractBaseUrl):
     site = gameboy_demospotting
     canonical_format = "http://gameboy.modermodemet.se/en/author/%s"
     tests = [
-        regex_match(r'https?://gameboy\.modermodemet\.se/\w+/author/(\d+)'),
+        path_regex_match(r'/\w+/author/(\d+)'),
     ]
 
 
@@ -1479,7 +1493,7 @@ class GameboyDemospottingDemo(AbstractBaseUrl):
     site = gameboy_demospotting
     canonical_format = "http://gameboy.modermodemet.se/en/demo/%s"
     tests = [
-        regex_match(r'https?://gameboy\.modermodemet\.se/\w+/demo/(\d+)'),
+        path_regex_match(r'/\w+/demo/(\d+)'),
     ]
 
 
@@ -1490,7 +1504,7 @@ class PixeljointArtist(AbstractBaseUrl):
     site = pixeljoint
     canonical_format = "http://pixeljoint.com/p/%s.htm"
     tests = [
-        regex_match(r'https?://(?:www\.)?pixeljoint\.com/p/(\d+)\.htm'),
+        path_regex_match(r'/p/(\d+)\.htm'),
     ]
 
 
@@ -1498,7 +1512,7 @@ class PixeljointImage(AbstractBaseUrl):
     site = pixeljoint
     canonical_format = "http://pixeljoint.com/pixelart/%s.htm"
     tests = [
-        regex_match(r'https?://(?:www\.)?pixeljoint\.com/pixelart/(\d+)\.htm'),
+        path_regex_match(r'/pixelart/(\d+)\.htm'),
     ]
 
 
@@ -1512,7 +1526,7 @@ class Plus4WorldProduction(AbstractBaseUrl):
     site = plus4world
     canonical_format = "http://plus4world.powweb.com/software/%s"
     tests = [
-        regex_match(r'https?://plus4world\.powweb\.com/software/(\w+)'),
+        path_regex_match(r'/software/(\w+)'),
     ]
 
 
@@ -1520,7 +1534,7 @@ class Plus4WorldGroup(AbstractBaseUrl):
     site = plus4world
     canonical_format = "http://plus4world.powweb.com/groups/%s"
     tests = [
-        regex_match(r'https?://plus4world\.powweb\.com/groups/(\w+)'),
+        path_regex_match(r'/groups/(\w+)'),
     ]
 
 
@@ -1528,7 +1542,7 @@ class Plus4WorldMember(AbstractBaseUrl):
     site = plus4world
     canonical_format = "http://plus4world.powweb.com/members/%s"
     tests = [
-        regex_match(r'https?://plus4world\.powweb\.com/members/(\w+)'),
+        path_regex_match(r'/members/(\w+)'),
     ]
 
 
@@ -1567,8 +1581,7 @@ class TwitchChannel(AbstractBaseUrl):
     canonical_format = "https://twitch.tv/%s"  # Channel name
     tests = [
         # Use (\w+) as Twitch does not accept `-` during registration
-        regex_match(r'https?://m\.twitch\.tv/(\w+)'),  # Mobile version
-        regex_match(r'https?://(?:www\.)?twitch\.tv/(\w+)'),
+        path_regex_match(r'/(\w+)'),
     ]
 
 
@@ -1592,10 +1605,10 @@ class SpeccyPlAuthor(AbstractBaseUrl):
 
 
 class AtarikiEntry(AbstractBaseUrl):
-    site = Site("Atariki")
+    site = Site("Atariki", url='http://atariki.krap.pl/')
     canonical_format = "http://atariki.krap.pl/index.php/%s"
     tests = [
-        regex_match(r'https?://(?:www\.)?atariki\.krap\.pl/index\.php/(.*)'),
+        path_regex_match(r'/index\.php/(.*)'),
     ]
 
 
