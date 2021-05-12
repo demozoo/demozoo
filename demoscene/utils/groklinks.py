@@ -10,11 +10,58 @@ from django.utils.html import escape, format_html
 
 
 class Site:
-    def __init__(self, name, long_name=None, classname=None, title_format=None):
+    def __init__(
+        self, name, long_name=None, classname=None, title_format=None, url=None,
+        allowed_schemes=None, allowed_hostnames=None
+    ):
         self.name = name
         self.long_name = long_name or name
         self.classname = classname or name.lower()
         self.title_format = title_format or ("%%s on %s" % self.long_name)
+
+        if url:
+            parsed_url = urllib.parse.urlparse(url)
+
+        # which URL schemes are allowed for this site?
+        # Use the explicitly passed list if there is one
+        # (or leave it as None if a 'url' param wasn't passed either)
+        if allowed_schemes is not None or url is None:
+            self.allowed_schemes = allowed_schemes
+        elif parsed_url.scheme in ('http', 'https'):
+            # if URL is specified as http OR https, recognise both
+            self.allowed_schemes = ['http', 'https']
+        else:
+            self.allowed_schemes = [parsed_url.scheme]
+
+        # which hostnames are recognised for this site?
+        # Use the explicitly passed list if there is one
+        # (or leave it as None if a 'url' param wasn't passed either)
+        if allowed_hostnames is not None or url is None:
+            self.allowed_hostnames = allowed_hostnames
+        else:
+            # if allowed_schemes indicates that this is a website
+            # (and not ftp or something else weird), allow both
+            is_website = self.allowed_schemes is not None and (
+                'http' in self.allowed_schemes
+                or 'https' in self.allowed_schemes
+            )
+            if is_website and parsed_url.hostname.startswith('www.'):
+                self.allowed_hostnames = [
+                    parsed_url.hostname,
+                    parsed_url.hostname.replace('www.', '', 1)
+                ]
+            elif is_website:
+                self.allowed_hostnames = [
+                    parsed_url.hostname, 'www.' + parsed_url.hostname
+                ]
+            else:
+                self.allowed_hostnames = [parsed_url.hostname]
+
+    def matches_url(self, url):
+        return (
+            (self.allowed_schemes is None or url.scheme in self.allowed_schemes)
+            and (self.allowed_hostnames is None or url.hostname in self.allowed_hostnames)
+        )
 
     def get_link_html(self, url, subject):
         return format_html(
@@ -48,6 +95,9 @@ class AbstractBaseUrl():
         Test whether 'urlstring' is a URL format that we recognise. If so, return an
         instance of this link class. If not, return None.
         """
+        if not cls.site.matches_url(url):
+            return None
+
         param = cls.extract_param(urlstring, url)
         if param is not None:
             return cls(param)
@@ -189,7 +239,7 @@ def querystring_match(pattern, varname, flags=None, othervars={}, numeric=False)
 
 
 class TwitterAccount(AbstractBaseUrl):
-    site = Site("Twitter")
+    site = Site("Twitter", url='https://twitter.com/')
     canonical_format = "https://twitter.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?twitter\.com/#!/([^/]+)', re.I),
@@ -197,7 +247,7 @@ class TwitterAccount(AbstractBaseUrl):
     ]
 
 
-pouet = Site(u"Pouët", classname="pouet")
+pouet = Site(u"Pouët", classname="pouet", url='https://www.pouet.net/')
 
 
 class SceneidAccount(AbstractBaseUrl):
@@ -224,7 +274,7 @@ class PouetProduction(AbstractBaseUrl):
     ]
 
 
-slengpung = Site("Slengpung")
+slengpung = Site("Slengpung", url='http://www.slengpung.com/')
 
 
 class SlengpungUser(AbstractBaseUrl):
@@ -237,14 +287,16 @@ class SlengpungUser(AbstractBaseUrl):
 
 
 class AmpAuthor(AbstractBaseUrl):
-    site = Site("AMP", long_name="Amiga Music Preservation")
+    site = Site("AMP", long_name="Amiga Music Preservation", url='https://amp.dascene.net/')
     canonical_format = "https://amp.dascene.net/detail.php?view=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?amp\.dascene\.net/detail\.php', 'view', re.I),
     ]
 
 
-csdb = Site("CSDb")
+csdb = Site(
+    "CSDb", url='https://csdb.dk/', allowed_hostnames=['csdb.dk', 'www.csdb.dk', 'noname.c64.org']
+)
 
 
 class CsdbScener(AbstractBaseUrl):
@@ -288,7 +340,10 @@ class CsdbMusic(AbstractBaseUrl):
     ]
 
 
-nectarine = Site("Nectarine", long_name="Nectarine Demoscene Radio")
+nectarine = Site(
+    "Nectarine", long_name="Nectarine Demoscene Radio", url='https://scenestream.net/',
+    allowed_hostnames=['scenemusic.net', 'www.scenemusic.net', 'scenestream.net', 'www.scenestream.net']
+)
 
 
 class NectarineArtist(AbstractBaseUrl):
@@ -318,7 +373,7 @@ class NectarineGroup(AbstractBaseUrl):
     ]
 
 
-bitjam = Site("BitJam")
+bitjam = Site("BitJam", url='http://www.bitfellas.org/')
 
 
 class BitjamAuthor(AbstractBaseUrl):
@@ -337,7 +392,7 @@ class BitjamSong(AbstractBaseUrl):
     ]
 
 
-artcity = Site("ArtCity")
+artcity = Site("ArtCity", url='http://artcity.bitfellas.org/', allowed_hostnames=['artcity.bitfellas.org'])
 
 
 class ArtcityArtist(AbstractBaseUrl):
@@ -365,14 +420,14 @@ class DeviantartUser(AbstractBaseUrl):
 
 
 class MobygamesDeveloper(AbstractBaseUrl):
-    site = Site("MobyGames")
+    site = Site("MobyGames", url='https://www.mobygames.com/')
     canonical_format = "https://www.mobygames.com/developer/sheet/view/developerId,%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?mobygames\.com/developer/sheet/view/developerId\,(\d+)', re.I),
     ]
 
 
-asciiarena = Site("AsciiArena")
+asciiarena = Site("AsciiArena", url='http://www.asciiarena.com/')
 
 
 class AsciiarenaArtist(AbstractBaseUrl):
@@ -399,7 +454,7 @@ class AsciiarenaRelease(AbstractBaseUrl):
     ]
 
 
-scenesat = Site("SceneSat", long_name="SceneSat Radio")
+scenesat = Site("SceneSat", long_name="SceneSat Radio", url='https://scenesat.com/')
 
 
 class ScenesatAct(AbstractBaseUrl):
@@ -418,7 +473,7 @@ class ScenesatTrack(AbstractBaseUrl):
     ]
 
 
-zxdemo = Site("ZXdemo", long_name="zxdemo.org")
+zxdemo = Site("ZXdemo", long_name="zxdemo.org", url='https://zxdemo.org/')
 
 
 class ZxdemoAuthor(AbstractBaseUrl):
@@ -437,7 +492,10 @@ class ZxdemoItem(AbstractBaseUrl):
     ]
 
 
-kestra_bitworld = Site("Kestra BitWorld", classname="kestra_bitworld")
+kestra_bitworld = Site(
+    "Kestra BitWorld", classname="kestra_bitworld", url='http://janeway.exotica.org.uk/',
+    allowed_hostnames=['janeway.exotica.org.uk']
+)
 
 
 class KestraBitworldRelease(AbstractBaseUrl):
@@ -701,7 +759,10 @@ class ModlandFile(AbstractBaseUrl):
         )
 
 
-fujiology = Site("Fujiology", long_name="the Fujiology Archive")
+fujiology = Site(
+    "Fujiology", long_name="the Fujiology Archive", url='https://ftp.untergrund.net/',
+    allowed_schemes=['https', 'ftp'], allowed_hostnames=['ftp.untergrund.net', 'fujiology.untergrund.net']
+)
 
 
 class FujiologyFile(AbstractBaseUrl):
@@ -725,7 +786,10 @@ class FujiologyFolder(AbstractBaseUrl):
 
 
 class UntergrundFile(AbstractBaseUrl):
-    site = Site("untergrund.net", classname="untergrund")
+    site = Site(
+        "untergrund.net", classname="untergrund", url='https://ftp.untergrund.net/',
+        allowed_schemes=['https', 'ftp'], allowed_hostnames=['ftp.untergrund.net', 'untergrund.net']
+    )
     canonical_format = "https://ftp.untergrund.net%s"
     tests = [
         regex_match(r'(?:https|ftp)://(?:ftp\.)?untergrund\.net(/.*)', re.I),
@@ -733,7 +797,7 @@ class UntergrundFile(AbstractBaseUrl):
 
 
 class DemopartyNetParty(AbstractBaseUrl):
-    site = Site("demoparty.net", classname="demoparty_net")
+    site = Site("demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/')
     canonical_format = "http://www.demoparty.net/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?demoparty\.net/(.+)', re.I),
@@ -741,7 +805,7 @@ class DemopartyNetParty(AbstractBaseUrl):
 
 
 class LanyrdEvent(AbstractBaseUrl):
-    site = Site("Lanyrd")
+    site = Site("Lanyrd", url='http://lanyrd.com/')
     canonical_format = "http://lanyrd.com/%s/"
     tests = [
         regex_match(r'https?://(?:www\.)?lanyrd\.com/(\d+/[^/]+)', re.I),
@@ -786,7 +850,7 @@ class CsdbEvent(AbstractBaseUrl):
 
 
 class BreaksAmigaParty(AbstractBaseUrl):
-    site = Site("Break's Amiga Collection", classname="breaks_amiga")
+    site = Site("Break's Amiga Collection", classname="breaks_amiga", url='http://arabuusimiehet.com/')
     canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
     tests = [
         querystring_match(
@@ -950,7 +1014,7 @@ class YoutubeChannel(AbstractBaseUrl):
     ]
 
 
-vimeo = Site("Vimeo")
+vimeo = Site("Vimeo", url='https://vimeo.com/')
 
 
 class VimeoVideo(AbstractBaseUrl):
@@ -1008,7 +1072,7 @@ class VimeoUser(AbstractBaseUrl):
 
 
 class DemosceneTvVideo(AbstractBaseUrl):
-    site = Site("Demoscene.tv", classname="demoscene_tv")
+    site = Site("Demoscene.tv", classname="demoscene_tv", url='http://demoscene.tv/')
     canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?demoscene\.tv/prod\.php', 'id_prod', re.I),
@@ -1021,7 +1085,7 @@ class DemosceneTvVideo(AbstractBaseUrl):
 
 
 class CappedVideo(AbstractBaseUrl):
-    site = Site("Capped.TV", classname="capped")
+    site = Site("Capped.TV", classname="capped", url='http://capped.tv/')
     canonical_format = "http://capped.tv/%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?capped\.tv/playeralt\.php', 'vid', re.I),
@@ -1031,7 +1095,7 @@ class CappedVideo(AbstractBaseUrl):
 
 
 class DhsVideoDbVideo(AbstractBaseUrl):
-    site = Site("DHS VideoDB", classname="dhs_videodb")
+    site = Site("DHS VideoDB", classname="dhs_videodb", url='http://dhs.nu/')
     canonical_format = "http://dhs.nu/video.php?ID=%s"
     tests = [
         querystring_match(r'https?://(?:www\.)?dhs\.nu/video.php', 'ID', re.I),
@@ -1039,14 +1103,16 @@ class DhsVideoDbVideo(AbstractBaseUrl):
 
 
 class FacebookPage(AbstractBaseUrl):
-    site = Site("Facebook")
+    site = Site("Facebook", url='https://www.facebook.com/')
     canonical_format = "https://www.facebook.com/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?facebook\.com/(.+)', re.I),
     ]
 
 
-googleplus = Site("Google+", classname="googleplus")
+googleplus = Site(
+    "Google+", classname="googleplus", url='https://plus.google.com/', allowed_hostnames=['plus.google.com']
+)
 
 
 class GooglePlusPage(AbstractBaseUrl):
@@ -1065,7 +1131,7 @@ class GooglePlusEvent(AbstractBaseUrl):
     ]
 
 
-soundcloud = Site("SoundCloud")
+soundcloud = Site("SoundCloud", url='https://soundcloud.com/')
 
 
 class SoundcloudUser(AbstractBaseUrl):
@@ -1076,7 +1142,7 @@ class SoundcloudUser(AbstractBaseUrl):
     ]
 
 
-hearthis = Site("hearthis.at", classname="hearthis")
+hearthis = Site("hearthis.at", classname="hearthis", url='https://hearthis.at/')
 
 
 class HearthisUser(AbstractBaseUrl):
@@ -1103,7 +1169,7 @@ class HearthisTrack(AbstractBaseUrl):
     ]
 
 
-discogs = Site("Discogs")
+discogs = Site("Discogs", url='https://www.discogs.com/')
 
 
 class DiscogsArtist(AbstractBaseUrl):
@@ -1177,7 +1243,7 @@ class WikipediaPage(AbstractBaseUrl):
 
 
 class SpeccyWikiPage(AbstractBaseUrl):
-    site = Site("SpeccyWiki")
+    site = Site("SpeccyWiki", url='http://speccy.info/')
     canonical_format = "http://speccy.info/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?speccy.info/(.+)', re.I),
@@ -1185,14 +1251,14 @@ class SpeccyWikiPage(AbstractBaseUrl):
 
 
 class AtarimaniaPage(AbstractBaseUrl):
-    site = Site("Atarimania")
+    site = Site("Atarimania", url='http://www.atarimania.com/')
     canonical_format = "http://www.atarimania.com/%s.html"
     tests = [
         regex_match(r'https?://(?:www\.)?atarimania.com/(.+)\.html', re.I),
     ]
 
 
-pushnpop = Site("Push'n'Pop", classname="pushnpop")
+pushnpop = Site("Push'n'Pop", classname="pushnpop", url='http://pushnpop.net/')
 
 
 class PushnpopProduction(AbstractBaseUrl):
@@ -1227,7 +1293,7 @@ class PushnpopProfile(AbstractBaseUrl):
     ]
 
 
-zxart = Site("ZXArt")
+zxart = Site("ZXArt", url='http://zxart.ee/')
 
 
 class ZxArtAuthor(AbstractBaseUrl):
@@ -1275,7 +1341,9 @@ class ZxArtPartyMusic(AbstractBaseUrl):
     ]
 
 
-hall_of_light = Site("Hall Of Light", classname="hall_of_light")
+hall_of_light = Site(
+    "Hall Of Light", classname="hall_of_light", url='http://hol.abime.net/', allowed_hostnames=['hol.abime.net']
+)
 
 
 class HallOfLightGame(AbstractBaseUrl):
@@ -1294,7 +1362,9 @@ class HallOfLightArtist(AbstractBaseUrl):
     ]
 
 
-spotify = Site("Spotify")
+spotify = Site(
+    "Spotify", url='https://play.spotify.com/', allowed_hostnames=['open.spotify.com', 'play.spotify.com']
+)
 
 
 class SpotifyArtist(AbstractBaseUrl):
@@ -1313,7 +1383,7 @@ class SpotifyTrack(AbstractBaseUrl):
     ]
 
 
-github = Site("GitHub")
+github = Site("GitHub", url='https://github.com/', allowed_hostnames=['github.com'])
 
 
 class GithubAccount(AbstractBaseUrl):
@@ -1354,7 +1424,10 @@ class GithubDirectory(AbstractBaseUrl):
 
 
 class InternetArchivePage(AbstractBaseUrl):
-    site = Site("Internet Archive", long_name="the Internet Archive", classname="internetarchive")
+    site = Site(
+        "Internet Archive", long_name="the Internet Archive", classname="internetarchive",
+        url='https://archive.org/'
+    )
     canonical_format = "https://archive.org/details/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?archive.org/details/(.+)', re.I),
@@ -1362,7 +1435,10 @@ class InternetArchivePage(AbstractBaseUrl):
 
 
 class WaybackMachinePage(AbstractBaseUrl):
-    site = Site("Wayback Machine", long_name="the Wayback Machine", classname="waybackmachine")
+    site = Site(
+        "Wayback Machine", long_name="the Wayback Machine", classname="waybackmachine",
+        url='https://web.archive.org/'
+    )
     canonical_format = "https://web.archive.org/web/%s"
     tests = [
         regex_match(r'https?://web\.archive.org/web/(.+)', re.I),
@@ -1370,7 +1446,7 @@ class WaybackMachinePage(AbstractBaseUrl):
 
 
 class StonishDisk(AbstractBaseUrl):
-    site = Site("Stonish")
+    site = Site("Stonish", url='http://stonish.net/')
     canonical_format = "http://stonish.net/%s"
     tests = [
         regex_match(r'https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)', re.I),
@@ -1378,14 +1454,17 @@ class StonishDisk(AbstractBaseUrl):
 
 
 class ZxTunesArtist(AbstractBaseUrl):
-    site = Site("ZXTunes")
+    site = Site("ZXTunes", url='http://zxtunes.com/')
     canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
     tests = [
         querystring_match(r'https?://(?:www\.)?zxtunes\.com/author\.php', 'id', re.I),
     ]
 
 
-gameboy_demospotting = Site("Gameboy Demospotting", classname="gameboydemospotting")
+gameboy_demospotting = Site(
+    "Gameboy Demospotting", classname="gameboydemospotting", url='http://gameboy.modermodemet.se/',
+    allowed_hostnames=['gameboy.modermodemet.se']
+)
 
 
 class GameboyDemospottingAuthor(AbstractBaseUrl):
@@ -1404,7 +1483,7 @@ class GameboyDemospottingDemo(AbstractBaseUrl):
     ]
 
 
-pixeljoint = Site("Pixeljoint")
+pixeljoint = Site("Pixeljoint", url='http://pixeljoint.com/')
 
 
 class PixeljointArtist(AbstractBaseUrl):
@@ -1423,7 +1502,10 @@ class PixeljointImage(AbstractBaseUrl):
     ]
 
 
-plus4world = Site("Plus/4 World", classname="plus4world")
+plus4world = Site(
+    "Plus/4 World", classname="plus4world", url='http://plus4world.powweb.com/',
+    allowed_hostnames=['plus4world.powweb.com']
+)
 
 
 class Plus4WorldProduction(AbstractBaseUrl):
@@ -1479,7 +1561,9 @@ class BandcampTrack(AbstractBaseUrl):
 
 
 class TwitchChannel(AbstractBaseUrl):
-    site = Site("Twitch")
+    site = Site(
+        "Twitch", url='https://twitch.tv/', allowed_hostnames=['m.twitch.tv', 'twitch.tv', 'www.twitch.tv']
+    )
     canonical_format = "https://twitch.tv/%s"  # Channel name
     tests = [
         # Use (\w+) as Twitch does not accept `-` during registration
@@ -1488,7 +1572,7 @@ class TwitchChannel(AbstractBaseUrl):
     ]
 
 
-speccypl = Site("speccy.pl", classname="speccypl")
+speccypl = Site("speccy.pl", classname="speccypl", url='http://speccy.pl/')
 
 
 class SpeccyPlProduction(AbstractBaseUrl):

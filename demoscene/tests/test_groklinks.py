@@ -1,10 +1,47 @@
 from __future__ import absolute_import, unicode_literals
 
+from urllib.parse import urlparse
+
 from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
+from demoscene.utils.groklinks import Site
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
+
+
+class TestSiteMatching(TestCase):
+    def test_url_only(self):
+        site = Site("Example", url='https://example.com/')
+        self.assertTrue(site.matches_url(urlparse('http://example.com/foo')))
+        self.assertTrue(site.matches_url(urlparse('https://www.example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('ftp://example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('http://www2.example.com/foo')))
+
+    def test_ftp_only(self):
+        site = Site("Example", url='ftp://example.com/')
+        self.assertTrue(site.matches_url(urlparse('ftp://example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('http://example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('ftp://www.example.com/foo')))
+
+    def test_url_and_schemes(self):
+        site = Site("Example", url='https://www.example.com/', allowed_schemes=['https'])
+        self.assertFalse(site.matches_url(urlparse('http://example.com/foo')))
+        self.assertTrue(site.matches_url(urlparse('https://www.example.com/foo')))
+
+    def test_url_and_hostnames(self):
+        site = Site("Example", url='https://example.com/', allowed_hostnames=['example.com', 'www2.example.com'])
+        self.assertTrue(site.matches_url(urlparse('http://example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('https://www.example.com/foo')))
+        self.assertTrue(site.matches_url(urlparse('http://www2.example.com/foo')))
+
+    def test_hostnames_and_schemes(self):
+        site = Site(
+            "Example", allowed_schemes=['https', 'ftp'], allowed_hostnames=['www.example.com', 'ftp.example.com']
+        )
+        self.assertTrue(site.matches_url(urlparse('https://ftp.example.com/foo')))
+        self.assertFalse(site.matches_url(urlparse('http://www.example.com/foo')))
+        self.assertTrue(site.matches_url(urlparse('ftp://www.example.com/foo')))
 
 
 class TestLinkRecognition(TestCase):
