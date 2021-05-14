@@ -2,10 +2,11 @@ from __future__ import absolute_import, unicode_literals
 
 from urllib.parse import urlparse
 
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
-from demoscene.utils.groklinks import Site
+from demoscene.utils.groklinks import Site, UrlPattern
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
 
@@ -42,6 +43,16 @@ class TestSiteMatching(TestCase):
         self.assertTrue(site.matches_url(urlparse('https://ftp.example.com/foo')))
         self.assertFalse(site.matches_url(urlparse('http://www.example.com/foo')))
         self.assertTrue(site.matches_url(urlparse('ftp://www.example.com/foo')))
+
+    def test_cannot_have_path(self):
+        with self.assertRaises(ImproperlyConfigured):
+            Site("Example", url='https://www.example.com/woo')
+
+        with self.assertRaises(ImproperlyConfigured):
+            Site("Example", url='https://www.example.com/?woo=yay')
+
+        with self.assertRaises(ImproperlyConfigured):
+            Site("Example", url='https://www.example.com/#hoopla')
 
 
 class TestLinkRecognition(TestCase):
@@ -231,6 +242,23 @@ class TestLinkRecognition(TestCase):
         link = PartyExternalLink(party=forever2e3)
         link.url = 'http://atariki.krap.pl/index.php/Lato_Ludzik%C3%B3w_1999'
         self.assertEqual(link.link_class, 'AtarikiEntry')
+
+    def test_bad_pattern(self):
+        with self.assertRaises(ImproperlyConfigured):
+            class ExampleLink1(UrlPattern):
+                site = Site('Example', url='https://example.com/')
+                pattern = '/index.php?first=<str>&second=<str>'
+
+        with self.assertRaises(ImproperlyConfigured):
+            class ExampleLink2(UrlPattern):
+                site = Site('Example', url='https://example.com/')
+                pattern = '/<int>/?id=<str>'
+
+    def test_path_based_patterns(self):
+        with self.assertRaises(ImproperlyConfigured):
+            class ExampleLink(UrlPattern):
+                site = Site('Example', url='https://example.com/')
+                pattern = '/<int>/'
 
 
 class TestEmbeds(TestCase):

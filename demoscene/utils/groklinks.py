@@ -6,6 +6,7 @@ import re
 import urllib
 
 from bs4 import BeautifulSoup
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.html import escape, format_html
 
 
@@ -21,6 +22,11 @@ class Site:
 
         if url:
             parsed_url = urllib.parse.urlparse(url)
+
+            if parsed_url.query or parsed_url.fragment or (parsed_url.path and parsed_url.path != '/'):
+                raise ImproperlyConfigured("Site url %s must not have a path, query or fragment" % url)
+
+            self.base_url = url.rstrip('/')
 
         # which URL schemes are allowed for this site?
         # Use the explicitly passed list if there is one
@@ -267,6 +273,51 @@ def query_path_match(path, varname, othervars={}, numeric=False):
     return match_fn
 
 
+class UrlPatternConstructor(type):
+    def __new__(cls, name, bases, dct):
+        pattern = dct.get('pattern')
+        if pattern is None:
+            # assume we are processing the base UrlPattern class
+            pass
+        else:
+            url = urllib.parse.urlparse(pattern)
+            path_placeholder_count = len(re.findall(r'<\w+>', url.path))
+
+            if url.query:
+                query_placeholder_count = len(re.findall(r'<\w+>', url.query))
+                if not (path_placeholder_count == 0 and query_placeholder_count == 1):
+                    raise ImproperlyConfigured(
+                        "Invalid pattern '%s': a pattern with a query must have one "
+                        "placeholder in the query and nowhere else" % pattern
+                    )
+                query = urllib.parse.parse_qs(url.query)
+                othervars = {}
+                for key, [val] in query.items():
+                    if val == '<int>':
+                        varname = key
+                        numeric = True
+                    elif val == '<str>':
+                        varname = key
+                        numeric = False
+                    else:
+                        othervars[key] = val
+
+                dct['tests'] = [
+                    query_path_match(url.path, varname, numeric=numeric, othervars=othervars),
+                ]
+            else:
+                raise ImproperlyConfigured("path-based patterns not implemented yet")
+
+            pattern_as_format = re.sub(r'<\w+>', '%s', pattern)
+            dct['canonical_format'] = dct['site'].base_url + pattern_as_format
+
+        return super().__new__(cls, name, bases, dct)
+
+
+class UrlPattern(AbstractBaseUrl, metaclass=UrlPatternConstructor):
+    pass
+
+
 class TwitterAccount(AbstractBaseUrl):
     site = Site("Twitter", url='https://twitter.com/')
     canonical_format = "https://twitter.com/%s"
@@ -279,28 +330,19 @@ class TwitterAccount(AbstractBaseUrl):
 pouet = Site(u"Pouët", classname="pouet", url='https://www.pouet.net/')
 
 
-class SceneidAccount(AbstractBaseUrl):
+class SceneidAccount(UrlPattern):
     site = pouet
-    canonical_format = "https://www.pouet.net/user.php?who=%s"
-    tests = [
-        query_path_match('/user.php', 'who', numeric=True),
-    ]
+    pattern = "/user.php?who=<int>"
 
 
-class PouetGroup(AbstractBaseUrl):
+class PouetGroup(UrlPattern):
     site = pouet
-    canonical_format = "https://www.pouet.net/groups.php?which=%s"
-    tests = [
-        query_path_match('/groups.php', 'which', numeric=True),
-    ]
+    pattern = "/groups.php?which=<int>"
 
 
-class PouetProduction(AbstractBaseUrl):
+class PouetProduction(UrlPattern):
     site = pouet
-    canonical_format = "https://www.pouet.net/prod.php?which=%s"
-    tests = [
-        query_path_match('/prod.php', 'which', numeric=True),
-    ]
+    pattern = "/prod.php?which=<int>"
 
 
 slengpung = Site("Slengpung", url='http://www.slengpung.com/')
@@ -315,12 +357,9 @@ class SlengpungUser(AbstractBaseUrl):
     ]
 
 
-class AmpAuthor(AbstractBaseUrl):
+class AmpAuthor(UrlPattern):
     site = Site("AMP", long_name="Amiga Music Preservation", url='https://amp.dascene.net/')
-    canonical_format = "https://amp.dascene.net/detail.php?view=%s"
-    tests = [
-        query_path_match('/detail.php', 'view'),
-    ]
+    pattern = "/detail.php?view=<str>"
 
 
 csdb = Site(
@@ -421,20 +460,14 @@ class BitjamSong(AbstractBaseUrl):
 artcity = Site("ArtCity", url='http://artcity.bitfellas.org/', allowed_hostnames=['artcity.bitfellas.org'])
 
 
-class ArtcityArtist(AbstractBaseUrl):
+class ArtcityArtist(UrlPattern):
     site = artcity
-    canonical_format = "http://artcity.bitfellas.org/index.php?a=artist&id=%s"
-    tests = [
-        query_path_match('/index.php', 'id', othervars={'a': 'artist'}),
-    ]
+    pattern = "/index.php?a=artist&id=<str>"
 
 
-class ArtcityImage(AbstractBaseUrl):
+class ArtcityImage(UrlPattern):
     site = artcity
-    canonical_format = "http://artcity.bitfellas.org/index.php?a=show&id=%s"
-    tests = [
-        query_path_match('/index.php', 'id', othervars={'a': 'show'}),
-    ]
+    pattern = "/index.php?a=show&id=<str>"
 
 
 class DeviantartUser(AbstractBaseUrl):
@@ -472,12 +505,9 @@ class AsciiarenaCrew(AbstractBaseUrl):
     ]
 
 
-class AsciiarenaRelease(AbstractBaseUrl):
+class AsciiarenaRelease(UrlPattern):
     site = asciiarena
-    canonical_format = "http://www.asciiarena.com/info_release.php?filename=%s"
-    tests = [
-        query_path_match('/info_release.php', 'filename'),
-    ]
+    pattern = "/info_release.php?filename=<str>"
 
 
 scenesat = Site("SceneSat", long_name="SceneSat Radio", url='https://scenesat.com/')
@@ -502,20 +532,14 @@ class ScenesatTrack(AbstractBaseUrl):
 zxdemo = Site("ZXdemo", long_name="zxdemo.org", url='https://zxdemo.org/')
 
 
-class ZxdemoAuthor(AbstractBaseUrl):
+class ZxdemoAuthor(UrlPattern):
     site = zxdemo
-    canonical_format = "https://zxdemo.org/author.php?id=%s"
-    tests = [
-        query_path_match('/author.php', 'id'),
-    ]
+    pattern = "/author.php?id=<str>"
 
 
-class ZxdemoItem(AbstractBaseUrl):
+class ZxdemoItem(UrlPattern):
     site = zxdemo
-    canonical_format = "https://zxdemo.org/item.php?id=%s"
-    tests = [
-        query_path_match('/item.php', 'id'),
-    ]
+    pattern = "/item.php?id=<str>"
 
 
 kestra_bitworld = Site(
@@ -524,28 +548,19 @@ kestra_bitworld = Site(
 )
 
 
-class KestraBitworldRelease(AbstractBaseUrl):
+class KestraBitworldRelease(UrlPattern):
     site = kestra_bitworld
-    canonical_format = "http://janeway.exotica.org.uk/release.php?id=%s"
-    tests = [
-        query_path_match('/release.php', 'id'),
-    ]
+    pattern = "/release.php?id=<str>"
 
 
-class KestraBitworldAuthor(AbstractBaseUrl):
+class KestraBitworldAuthor(UrlPattern):
     site = kestra_bitworld
-    canonical_format = "http://janeway.exotica.org.uk/author.php?id=%s"
-    tests = [
-        query_path_match('/author.php', 'id'),
-    ]
+    pattern = "/author.php?id=<str>"
 
 
-class KestraBitworldParty(AbstractBaseUrl):
+class KestraBitworldParty(UrlPattern):
     site = kestra_bitworld
-    canonical_format = "http://janeway.exotica.org.uk/party.php?id=%s"
-    tests = [
-        query_path_match('/party.php', 'id'),
-    ]
+    pattern = "/party.php?id=<str>"
 
 
 sceneorg = Site("scene.org", classname="sceneorg")
@@ -875,12 +890,9 @@ class CsdbEvent(AbstractBaseUrl):
     ]
 
 
-class BreaksAmigaParty(AbstractBaseUrl):
+class BreaksAmigaParty(UrlPattern):
     site = Site("Break's Amiga Collection", classname="breaks_amiga", url='http://arabuusimiehet.com/')
-    canonical_format = "http://arabuusimiehet.com/break/amiga/index.php?mode=party&partyid=%s"
-    tests = [
-        query_path_match('/break/amiga/index.php', 'partyid', othervars={'mode': 'party'}),
-    ]
+    pattern = "/break/amiga/index.php?mode=party&partyid=<str>"
 
 
 class SceneOrgFolder(AbstractBaseUrl):
@@ -907,12 +919,9 @@ class SceneOrgFolder(AbstractBaseUrl):
         return u"https://files.scene.org/browse%s" % urllib.parse.quote(self.param.encode('iso-8859-1'))
 
 
-class ZxdemoParty(AbstractBaseUrl):
+class ZxdemoParty(UrlPattern):
     site = zxdemo
-    canonical_format = "https://zxdemo.org/party.php?id=%s"
-    tests = [
-        query_path_match('/party.php', 'id'),
-    ]
+    pattern = "/party.php?id=<str>"
 
 
 youtube = Site("YouTube")
@@ -1114,12 +1123,9 @@ class CappedVideo(AbstractBaseUrl):
     is_streaming_video = True
 
 
-class DhsVideoDbVideo(AbstractBaseUrl):
+class DhsVideoDbVideo(UrlPattern):
     site = Site("DHS VideoDB", classname="dhs_videodb", url='http://dhs.nu/')
-    canonical_format = "http://dhs.nu/video.php?ID=%s"
-    tests = [
-        query_path_match('/video.php', 'ID'),
-    ]
+    pattern = "/video.php?ID=<str>"
 
 
 class FacebookPage(AbstractBaseUrl):
@@ -1374,12 +1380,9 @@ class HallOfLightGame(AbstractBaseUrl):
     ]
 
 
-class HallOfLightArtist(AbstractBaseUrl):
+class HallOfLightArtist(UrlPattern):
     site = hall_of_light
-    canonical_format = "http://hol.abime.net/hol_search.php?N_ref_artist=%s"
-    tests = [
-        query_path_match('/hol_search.php', 'N_ref_artist'),
-    ]
+    pattern = "/hol_search.php?N_ref_artist=<str>"
 
 
 spotify = Site(
@@ -1597,20 +1600,14 @@ class TwitchChannel(AbstractBaseUrl):
 speccypl = Site("speccy.pl", classname="speccypl", url='http://speccy.pl/')
 
 
-class SpeccyPlProduction(AbstractBaseUrl):
+class SpeccyPlProduction(UrlPattern):
     site = speccypl
-    canonical_format = "http://speccy.pl/archive/prod.php?id=%s"
-    tests = [
-        query_path_match('/archive/prod.php', 'id'),
-    ]
+    pattern = "/archive/prod.php?id=<str>"
 
 
-class SpeccyPlAuthor(AbstractBaseUrl):
+class SpeccyPlAuthor(UrlPattern):
     site = speccypl
-    canonical_format = "http://speccy.pl/archive/author.php?id=%s"
-    tests = [
-        query_path_match('/archive/author.php', 'id'),
-    ]
+    pattern = "/archive/author.php?id=<str>"
 
 
 class AtarikiEntry(AbstractBaseUrl):
