@@ -296,7 +296,7 @@ class UrlPatternConstructor(type):
                     if val == '<int>':
                         varname = key
                         numeric = True
-                    elif val == '<str>':
+                    elif val == '<str>' or val == '<slug>':
                         varname = key
                         numeric = False
                     else:
@@ -306,7 +306,13 @@ class UrlPatternConstructor(type):
                     query_path_match(url.path, varname, numeric=numeric, othervars=othervars),
                 ]
             else:
-                raise ImproperlyConfigured("path-based patterns not implemented yet")
+                pattern_re = re.escape(url.path.rstrip('/'))
+                pattern_re = pattern_re.replace(r'\<int\>', r'(\d+)')
+                pattern_re = pattern_re.replace(r'\<slug\>', r'([^\/]+)')
+                pattern_re = pattern_re.replace(r'\<str\>', r'(.+)')
+                dct['tests'] = [
+                    path_regex_match(pattern_re),
+                ]
 
             pattern_as_format = re.sub(r'<\w+>', '%s', pattern)
             dct['canonical_format'] = dct['site'].base_url + pattern_as_format
@@ -414,28 +420,19 @@ nectarine = Site(
 )
 
 
-class NectarineArtist(AbstractBaseUrl):
+class NectarineArtist(UrlPattern):
     site = nectarine
-    canonical_format = "https://scenestream.net/demovibes/artist/%s/"
-    tests = [
-        path_regex_match(r'/demovibes/artist/(\d+)'),
-    ]
+    pattern = '/demovibes/artist/<int>/'
 
 
-class NectarineSong(AbstractBaseUrl):
+class NectarineSong(UrlPattern):
     site = nectarine
-    canonical_format = "https://scenestream.net/demovibes/song/%s/"
-    tests = [
-        path_regex_match(r'/demovibes/song/(\d+)'),
-    ]
+    pattern = '/demovibes/song/<int>/'
 
 
-class NectarineGroup(AbstractBaseUrl):
+class NectarineGroup(UrlPattern):
     site = nectarine
-    canonical_format = "https://scenestream.net/demovibes/group/%s/"
-    tests = [
-        path_regex_match(r'/demovibes/group/(\d+)'),
-    ]
+    pattern = '/demovibes/group/<int>/'
 
 
 bitjam = Site("BitJam", url='http://www.bitfellas.org/')
@@ -478,12 +475,9 @@ class DeviantartUser(AbstractBaseUrl):
     ]
 
 
-class MobygamesDeveloper(AbstractBaseUrl):
+class MobygamesDeveloper(UrlPattern):
     site = Site("MobyGames", url='https://www.mobygames.com/')
-    canonical_format = "https://www.mobygames.com/developer/sheet/view/developerId,%s/"
-    tests = [
-        path_regex_match(r'/developer/sheet/view/developerId\,(\d+)'),
-    ]
+    pattern = '/developer/sheet/view/developerId,<int>/'
 
 
 asciiarena = Site("AsciiArena", url='http://www.asciiarena.com/')
@@ -513,20 +507,14 @@ class AsciiarenaRelease(UrlPattern):
 scenesat = Site("SceneSat", long_name="SceneSat Radio", url='https://scenesat.com/')
 
 
-class ScenesatAct(AbstractBaseUrl):
+class ScenesatAct(UrlPattern):
     site = scenesat
-    canonical_format = "https://scenesat.com/act/%s"
-    tests = [
-        path_regex_match(r'/act/(\d+)'),
-    ]
+    pattern = "/act/<int>"
 
 
-class ScenesatTrack(AbstractBaseUrl):
+class ScenesatTrack(UrlPattern):
     site = scenesat
-    canonical_format = "https://scenesat.com/track/%s"
-    tests = [
-        path_regex_match(r'/track/(\d+)'),
-    ]
+    pattern = "/track/<int>"
 
 
 zxdemo = Site("ZXdemo", long_name="zxdemo.org", url='https://zxdemo.org/')
@@ -837,12 +825,9 @@ class UntergrundFile(AbstractBaseUrl):
     ]
 
 
-class DemopartyNetParty(AbstractBaseUrl):
+class DemopartyNetParty(UrlPattern):
     site = Site("demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/')
-    canonical_format = "http://www.demoparty.net/%s"
-    tests = [
-        path_regex_match(r'/(.+)'),
-    ]
+    pattern = "/<str>"
 
 
 class LanyrdEvent(AbstractBaseUrl):
@@ -1049,12 +1034,9 @@ class YoutubeChannel(AbstractBaseUrl):
 vimeo = Site("Vimeo", url='https://vimeo.com/')
 
 
-class VimeoVideo(AbstractBaseUrl):
+class VimeoVideo(UrlPattern):
     site = vimeo
-    canonical_format = "https://vimeo.com/%s"
-    tests = [
-        path_regex_match(r'/(\d+)'),
-    ]
+    pattern = "/<int>"
     is_streaming_video = True
 
     oembed_base_url = "https://vimeo.com/api/oembed.json"
@@ -1128,12 +1110,9 @@ class DhsVideoDbVideo(UrlPattern):
     pattern = "/video.php?ID=<str>"
 
 
-class FacebookPage(AbstractBaseUrl):
+class FacebookPage(UrlPattern):
     site = Site("Facebook", url='https://www.facebook.com/')
-    canonical_format = "https://www.facebook.com/%s"
-    tests = [
-        path_regex_match(r'/(.+)'),
-    ]
+    pattern = '/<str>'
 
 
 googleplus = Site(
@@ -1141,42 +1120,30 @@ googleplus = Site(
 )
 
 
-class GooglePlusPage(AbstractBaseUrl):
+class GooglePlusPage(UrlPattern):
     site = googleplus
-    canonical_format = "https://plus.google.com/%s/"
-    tests = [
-        path_regex_match(r'/(\d+)'),
-    ]
+    pattern = '/<int>/'
 
 
-class GooglePlusEvent(AbstractBaseUrl):
+class GooglePlusEvent(UrlPattern):
     site = googleplus
-    canonical_format = "https://plus.google.com/u/0/events/%s"
-    tests = [
-        path_regex_match(r'/u/0/events/(\w+)'),
-    ]
+    pattern = '/u/0/events/<slug>'
 
 
 soundcloud = Site("SoundCloud", url='https://soundcloud.com/')
 
 
-class SoundcloudUser(AbstractBaseUrl):
+class SoundcloudUser(UrlPattern):
     site = soundcloud
-    canonical_format = "https://soundcloud.com/%s/"
-    tests = [
-        path_regex_match(r'/([^\/]+)'),
-    ]
+    pattern = '/<slug>/'
 
 
 hearthis = Site("hearthis.at", classname="hearthis", url='https://hearthis.at/')
 
 
-class HearthisUser(AbstractBaseUrl):
+class HearthisUser(UrlPattern):
     site = hearthis
-    canonical_format = "https://hearthis.at/%s/"
-    tests = [
-        path_regex_match(r'/([^\/]+)'),
-    ]
+    pattern = '/<slug>/'
 
 
 class SoundcloudTrack(AbstractBaseUrl):
@@ -1198,20 +1165,14 @@ class HearthisTrack(AbstractBaseUrl):
 discogs = Site("Discogs", url='https://www.discogs.com/')
 
 
-class DiscogsArtist(AbstractBaseUrl):
+class DiscogsArtist(UrlPattern):
     site = discogs
-    canonical_format = "https://www.discogs.com/artist/%s"
-    tests = [
-        path_regex_match(r'/artist/(.+)'),
-    ]
+    pattern = '/artist/<str>'
 
 
-class DiscogsLabel(AbstractBaseUrl):
+class DiscogsLabel(UrlPattern):
     site = discogs
-    canonical_format = "https://www.discogs.com/label/%s"
-    tests = [
-        path_regex_match(r'/label/(.+)'),
-    ]
+    pattern = '/label/<str>'
 
 
 class DiscogsRelease(AbstractBaseUrl):
@@ -1268,55 +1229,37 @@ class WikipediaPage(AbstractBaseUrl):
     ]
 
 
-class SpeccyWikiPage(AbstractBaseUrl):
+class SpeccyWikiPage(UrlPattern):
     site = Site("SpeccyWiki", url='http://speccy.info/')
-    canonical_format = "http://speccy.info/%s"
-    tests = [
-        path_regex_match(r'/(.+)'),
-    ]
+    pattern = '/<str>'
 
 
-class AtarimaniaPage(AbstractBaseUrl):
+class AtarimaniaPage(UrlPattern):
     site = Site("Atarimania", url='http://www.atarimania.com/')
-    canonical_format = "http://www.atarimania.com/%s.html"
-    tests = [
-        path_regex_match(r'/(.+)\.html'),
-    ]
+    pattern = "/<slug>.html"
 
 
 pushnpop = Site("Push'n'Pop", classname="pushnpop", url='http://pushnpop.net/')
 
 
-class PushnpopProduction(AbstractBaseUrl):
+class PushnpopProduction(UrlPattern):
     site = pushnpop
-    canonical_format = "http://pushnpop.net/prod-%s.html"
-    tests = [
-        path_regex_match(r'/prod-(\d+)\.html'),
-    ]
+    pattern = "/prod-<int>.html"
 
 
-class PushnpopParty(AbstractBaseUrl):
+class PushnpopParty(UrlPattern):
     site = pushnpop
-    canonical_format = "http://pushnpop.net/parties-%s.html"
-    tests = [
-        path_regex_match(r'/parties-(\d+)\.html'),
-    ]
+    pattern = "/parties-<int>.html"
 
 
-class PushnpopGroup(AbstractBaseUrl):
+class PushnpopGroup(UrlPattern):
     site = pushnpop
-    canonical_format = "http://pushnpop.net/group-%s.html"
-    tests = [
-        path_regex_match(r'/group-(\d+)\.html'),
-    ]
+    pattern = "/group-<int>.html"
 
 
-class PushnpopProfile(AbstractBaseUrl):
+class PushnpopProfile(UrlPattern):
     site = pushnpop
-    canonical_format = "http://pushnpop.net/profile-%s.html"
-    tests = [
-        path_regex_match(r'/profile-(\d+)\.html'),
-    ]
+    pattern = "/profile-<int>.html"
 
 
 zxart = Site("ZXArt", url='http://zxart.ee/')
@@ -1372,12 +1315,9 @@ hall_of_light = Site(
 )
 
 
-class HallOfLightGame(AbstractBaseUrl):
+class HallOfLightGame(UrlPattern):
     site = hall_of_light
-    canonical_format = "http://hol.abime.net/%s"
-    tests = [
-        path_regex_match(r'/(\d+)'),
-    ]
+    pattern = "/<int>"
 
 
 class HallOfLightArtist(UrlPattern):
@@ -1390,20 +1330,14 @@ spotify = Site(
 )
 
 
-class SpotifyArtist(AbstractBaseUrl):
+class SpotifyArtist(UrlPattern):
     site = spotify
-    canonical_format = "https://play.spotify.com/artist/%s"
-    tests = [
-        path_regex_match(r'/artist/(\w+)'),
-    ]
+    pattern = "/artist/<slug>"
 
 
-class SpotifyTrack(AbstractBaseUrl):
+class SpotifyTrack(UrlPattern):
     site = spotify
-    canonical_format = "https://play.spotify.com/track/%s"
-    tests = [
-        path_regex_match(r'/track/(\w+)'),
-    ]
+    pattern = "/track/<slug>"
 
 
 github = Site("GitHub", url='https://github.com/', allowed_hostnames=['github.com'])
@@ -1512,20 +1446,14 @@ class GameboyDemospottingDemo(AbstractBaseUrl):
 pixeljoint = Site("Pixeljoint", url='http://pixeljoint.com/')
 
 
-class PixeljointArtist(AbstractBaseUrl):
+class PixeljointArtist(UrlPattern):
     site = pixeljoint
-    canonical_format = "http://pixeljoint.com/p/%s.htm"
-    tests = [
-        path_regex_match(r'/p/(\d+)\.htm'),
-    ]
+    pattern = "/p/<int>.htm"
 
 
-class PixeljointImage(AbstractBaseUrl):
+class PixeljointImage(UrlPattern):
     site = pixeljoint
-    canonical_format = "http://pixeljoint.com/pixelart/%s.htm"
-    tests = [
-        path_regex_match(r'/pixelart/(\d+)\.htm'),
-    ]
+    pattern = "/pixelart/<int>.htm"
 
 
 plus4world = Site(
@@ -1534,28 +1462,19 @@ plus4world = Site(
 )
 
 
-class Plus4WorldProduction(AbstractBaseUrl):
+class Plus4WorldProduction(UrlPattern):
     site = plus4world
-    canonical_format = "http://plus4world.powweb.com/software/%s"
-    tests = [
-        path_regex_match(r'/software/(\w+)'),
-    ]
+    pattern = "/software/<slug>"
 
 
-class Plus4WorldGroup(AbstractBaseUrl):
+class Plus4WorldGroup(UrlPattern):
     site = plus4world
-    canonical_format = "http://plus4world.powweb.com/groups/%s"
-    tests = [
-        path_regex_match(r'/groups/(\w+)'),
-    ]
+    pattern = "/groups/<slug>"
 
 
-class Plus4WorldMember(AbstractBaseUrl):
+class Plus4WorldMember(UrlPattern):
     site = plus4world
-    canonical_format = "http://plus4world.powweb.com/members/%s"
-    tests = [
-        path_regex_match(r'/members/(\w+)'),
-    ]
+    pattern = "/members/<slug>"
 
 
 bandcamp = Site("Bandcamp")
@@ -1586,15 +1505,11 @@ class BandcampTrack(AbstractBaseUrl):
         return u"https://%s.bandcamp.com/track/%s" % (domain, name)
 
 
-class TwitchChannel(AbstractBaseUrl):
+class TwitchChannel(UrlPattern):
     site = Site(
         "Twitch", url='https://twitch.tv/', allowed_hostnames=['m.twitch.tv', 'twitch.tv', 'www.twitch.tv']
     )
-    canonical_format = "https://twitch.tv/%s"  # Channel name
-    tests = [
-        # Use (\w+) as Twitch does not accept `-` during registration
-        path_regex_match(r'/(\w+)'),
-    ]
+    pattern = "/<slug>"
 
 
 speccypl = Site("speccy.pl", classname="speccypl", url='http://speccy.pl/')
@@ -1610,12 +1525,9 @@ class SpeccyPlAuthor(UrlPattern):
     pattern = "/archive/author.php?id=<str>"
 
 
-class AtarikiEntry(AbstractBaseUrl):
+class AtarikiEntry(UrlPattern):
     site = Site("Atariki", url='http://atariki.krap.pl/')
-    canonical_format = "http://atariki.krap.pl/index.php/%s"
-    tests = [
-        path_regex_match(r'/index\.php/(.*)'),
-    ]
+    pattern = "/index.php/<str>"
 
 
 RELEASER_LINK_TYPES = [

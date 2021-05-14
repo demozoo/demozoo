@@ -254,12 +254,6 @@ class TestLinkRecognition(TestCase):
                 site = Site('Example', url='https://example.com/')
                 pattern = '/<int>/?id=<str>'
 
-    def test_path_based_patterns(self):
-        with self.assertRaises(ImproperlyConfigured):
-            class ExampleLink(UrlPattern):
-                site = Site('Example', url='https://example.com/')
-                pattern = '/<int>/'
-
 
 class TestEmbeds(TestCase):
     fixtures = ['tests/gasman.json']
