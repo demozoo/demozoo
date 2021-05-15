@@ -1563,6 +1563,27 @@ class Defacto2Person(UrlPattern):
     pattern = "/p/<slug>"
 
 
+sixteencolors = Site(
+    "16colors", url='https://16colo.rs/', classname='sixteencolors',
+    icon_path='images/icons/external_sites/16colors.png'
+)
+
+
+class SixteenColorsPack(UrlPattern):
+    site = sixteencolors
+    pattern = '/pack/<slug>/'
+
+
+class SixteenColorsArtist(UrlPattern):
+    site = sixteencolors
+    pattern = '/artist/<slug>'
+
+
+class SixteenColorsGroup(UrlPattern):
+    site = sixteencolors
+    pattern = '/group/<slug>'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1576,6 +1597,7 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
+    SixteenColorsArtist, SixteenColorsGroup,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1585,7 +1607,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
-    SpeccyPlProduction, AtarikiEntry,
+    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
