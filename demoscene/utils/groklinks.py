@@ -1640,8 +1640,9 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-    'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo',
-    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry'
+    'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
+    'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
+    'SixteenColorsPack', 'ShadertoyShader',
 ]
 
 PARTY_LINK_TYPES = [
