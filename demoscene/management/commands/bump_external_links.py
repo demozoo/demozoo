@@ -11,12 +11,16 @@ from parties.models import PartyExternalLink
 from productions.models import ProductionLink
 
 
-external_link_models = [PartyExternalLink, ReleaserExternalLink, ProductionLink]
+external_link_models = [
+    (PartyExternalLink, 'party_id'),
+    (ReleaserExternalLink, 'releaser_id'),
+    (ProductionLink, 'production_id'),
+]
 
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        for model in external_link_models:
+        for model, fk_name in external_link_models:
             for link in model.objects.filter(link_class__in=['BaseUrl', 'UntergrundFile', 'SceneOrgFile']):
                 original_link_class = link.link_class
                 if link.link_class == 'SceneOrgFile':
@@ -24,7 +28,8 @@ class Command(BaseCommand):
                 else:
                     link.url = link.url
                 if link.link_class != original_link_class:
-                    print("%s ID %s bumped to %s" % (model.__name__, link.id, link.link_class))
+                    item_id = getattr(link, fk_name)
+                    print("%s ID %s on item %s bumped to %s" % (model.__name__, link.id, item_id, link.link_class))
                     try:
                         sid = transaction.savepoint()
                         link.save()
