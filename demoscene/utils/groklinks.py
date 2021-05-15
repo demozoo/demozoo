@@ -1597,6 +1597,22 @@ class ShadertoyShader(UrlPattern):
     pattern = '/view/<slug>'
 
 
+tic80 = Site(
+    "TIC-80", url='https://tic80.com/', classname='tic80',
+    allowed_hostnames=['tic80.com', 'tic.computer', 'www.tic80.com', 'www.tic.computer']
+)
+
+
+class Tic80Dev(UrlPattern):
+    site = tic80
+    pattern = '/dev?id=<int>'
+
+
+class Tic80Cart(UrlPattern):
+    site = tic80
+    pattern = '/play?cart=<int>'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1610,7 +1626,7 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
-    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser,
+    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1625,6 +1641,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
+    Tic80Cart,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1642,7 +1659,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
-    'SixteenColorsPack', 'ShadertoyShader',
+    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart',
 ]
 
 PARTY_LINK_TYPES = [
