@@ -7,18 +7,20 @@ import urllib
 
 from bs4 import BeautifulSoup
 from django.core.exceptions import ImproperlyConfigured
+from django.templatetags.static import static
 from django.utils.html import escape, format_html
 
 
 class Site:
     def __init__(
         self, name, long_name=None, classname=None, title_format=None, url=None,
-        allowed_schemes=None, allowed_hostnames=None
+        allowed_schemes=None, allowed_hostnames=None, icon_path=None
     ):
         self.name = name
         self.long_name = long_name or name
         self.classname = classname or name.lower()
         self.title_format = title_format or ("%%s on %s" % self.long_name)
+        self.icon_path = icon_path or ('images/icons/external_sites/%s.png' % self.classname)
 
         if url:
             parsed_url = urllib.parse.urlparse(url)
@@ -71,9 +73,9 @@ class Site:
 
     def get_link_html(self, url, subject):
         return format_html(
-            '<a href="{url}" class="{classname}" title="{title}">{label}</a>',
+            '<a href="{url}" style="background-image: url(\'{icon_path}\')" title="{title}">{label}</a>',
             url=url,
-            classname=self.classname,
+            icon_path=static(self.icon_path),
             title=(self.title_format % subject),
             label=self.name,
         )
@@ -151,7 +153,7 @@ class AbstractBaseUrl():
 
 
 class BaseUrl(AbstractBaseUrl):  # catch-all handler where nothing more specific is found
-    site = Site("WWW", classname="website", title_format="%s website")
+    site = Site("WWW", classname="website", title_format="%s website", icon_path='images/icons/world.png')
 
     tests = [
         lambda urlstring, url: urlstring  # always match, return full url
@@ -435,7 +437,7 @@ class NectarineGroup(UrlPattern):
     pattern = '/demovibes/group/<int>/'
 
 
-bitjam = Site("BitJam", url='http://www.bitfellas.org/')
+bitjam = Site("BitJam", url='http://www.bitfellas.org/', icon_path='images/icons/external_sites/bitfellas.png')
 
 
 class BitjamAuthor(AbstractBaseUrl):
@@ -454,7 +456,10 @@ class BitjamSong(AbstractBaseUrl):
     ]
 
 
-artcity = Site("ArtCity", url='http://artcity.bitfellas.org/', allowed_hostnames=['artcity.bitfellas.org'])
+artcity = Site(
+    "ArtCity", url='http://artcity.bitfellas.org/', allowed_hostnames=['artcity.bitfellas.org'],
+    icon_path='images/icons/external_sites/bitfellas.png'
+)
 
 
 class ArtcityArtist(UrlPattern):
@@ -826,7 +831,10 @@ class UntergrundFile(AbstractBaseUrl):
 
 
 class DemopartyNetParty(UrlPattern):
-    site = Site("demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/')
+    site = Site(
+        "demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/',
+        icon_path='images/icons/external_sites/demopartynet.png'
+    )
     pattern = "/<str>"
 
 
@@ -1311,7 +1319,8 @@ class ZxArtPartyMusic(AbstractBaseUrl):
 
 
 hall_of_light = Site(
-    "Hall Of Light", classname="hall_of_light", url='http://hol.abime.net/', allowed_hostnames=['hol.abime.net']
+    "Hall Of Light", classname="hall_of_light", url='http://hol.abime.net/', allowed_hostnames=['hol.abime.net'],
+    icon_path='images/icons/external_sites/halloflight.png'
 )
 
 
@@ -1383,7 +1392,7 @@ class GithubDirectory(AbstractBaseUrl):
 class InternetArchivePage(AbstractBaseUrl):
     site = Site(
         "Internet Archive", long_name="the Internet Archive", classname="internetarchive",
-        url='https://archive.org/'
+        url='https://archive.org/', icon_path='images/icons/external_sites/archive_org.png'
     )
     canonical_format = "https://archive.org/details/%s"
     tests = [
@@ -1395,7 +1404,7 @@ class InternetArchivePage(AbstractBaseUrl):
 class WaybackMachinePage(AbstractBaseUrl):
     site = Site(
         "Wayback Machine", long_name="the Wayback Machine", classname="waybackmachine",
-        url='https://web.archive.org/'
+        url='https://web.archive.org/', icon_path='images/icons/external_sites/wayback.png'
     )
     canonical_format = "https://web.archive.org/web/%s"
     tests = [
