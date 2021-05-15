@@ -1584,6 +1584,19 @@ class SixteenColorsGroup(UrlPattern):
     pattern = '/group/<slug>'
 
 
+shadertoy = Site("Shadertoy", url='https://www.shadertoy.com/')
+
+
+class ShadertoyUser(UrlPattern):
+    site = shadertoy
+    pattern = '/user/<slug>'
+
+
+class ShadertoyShader(UrlPattern):
+    site = shadertoy
+    pattern = '/view/<slug>'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1597,7 +1610,7 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
-    SixteenColorsArtist, SixteenColorsGroup,
+    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1607,7 +1620,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
-    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack,
+    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack, ShadertoyShader,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
