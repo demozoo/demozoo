@@ -1613,6 +1613,21 @@ class Tic80Cart(UrlPattern):
     pattern = '/play?cart=<int>'
 
 
+lexaloffle = Site(
+    "Pico-8", url='https://www.lexaloffle.com/', long_name="Lexaloffle", classname='pico8'
+)
+
+
+class Pico8User(UrlPattern):
+    site = lexaloffle
+    pattern = '/bbs/?uid=<int>'
+
+
+class Pico8Cart(UrlPattern):
+    site = lexaloffle
+    pattern = '/bbs/?tid=<int>'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1626,7 +1641,7 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
-    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev,
+    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1641,7 +1656,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
-    Tic80Cart,
+    Tic80Cart, Pico8Cart,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1659,7 +1674,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
-    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart',
+    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart',
 ]
 
 PARTY_LINK_TYPES = [
