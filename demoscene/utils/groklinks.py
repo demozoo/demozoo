@@ -309,9 +309,9 @@ class UrlPatternConstructor(type):
                 ]
             else:
                 pattern_re = re.escape(url.path.rstrip('/'))
-                pattern_re = pattern_re.replace(r'\<int\>', r'(\d+)')
-                pattern_re = pattern_re.replace(r'\<slug\>', r'([^\/]+)')
-                pattern_re = pattern_re.replace(r'\<str\>', r'(.+)')
+                pattern_re = pattern_re.replace(r'\<int\>', r'(\d+)').replace(r'<int>', r'(\d+)')
+                pattern_re = pattern_re.replace(r'\<slug\>', r'([^\/]+)').replace(r'<slug>', r'([^\/]+)')
+                pattern_re = pattern_re.replace(r'\<str\>', r'(.+)').replace(r'<str>', r'(.+)')
                 dct['tests'] = [
                     path_regex_match(pattern_re),
                 ]
