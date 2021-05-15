@@ -1487,6 +1487,11 @@ class Plus4WorldMember(UrlPattern):
     pattern = "/members/<slug>"
 
 
+class Plus4WorldCompo(UrlPattern):
+    site = plus4world
+    pattern = "/compos/<int>"
+
+
 bandcamp = Site("Bandcamp")
 
 
@@ -1590,7 +1595,7 @@ PARTY_LINK_TYPES = [
     DemopartyNetParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
-    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage,
+    FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
 ]
 
