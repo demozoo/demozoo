@@ -602,6 +602,7 @@ class SceneOrgFile(AbstractBaseUrl):
         urldecoded_regex_match(r'ftp://ftp\.pl\.scene\.org/pub/demos(/.*)'),
         urldecoded_regex_match(r'https?://http\.pl\.scene\.org/pub/demos(/.*)'),
         urldecoded_regex_match(r'ftp://ftp\.ua\.scene\.org/pub/mirrors/sceneorg(/.*)'),
+        urldecoded_regex_match(r'http://mirror\.scenesat\.com/scene\.org(/.*)')
     ]
 
     @property
@@ -642,7 +643,7 @@ class SceneOrgFile(AbstractBaseUrl):
 
 class AmigascneFile(AbstractBaseUrl):
     site = Site("amigascne.org", classname="amigascne")
-    canonical_format = "ftp://ftp.amigascne.org/pub/amiga%s"
+    canonical_format = "http://ftp.amigascne.org/pub/amiga%s"
     tests = [
         regex_match(r'(?:http|ftp|https)://(?:\w+\@)?(?:ftp\.)?amigascne\.org/pub/amiga(/.*)'),
         regex_match(r'ftp://ftp\.(?:nl\.)?scene\.org/mirrors/amigascne(/.*)'),
@@ -665,7 +666,7 @@ class AmigascneFile(AbstractBaseUrl):
 
     @property
     def nl_url(self):
-        return "ftp://ftp.scene.org/pub/mirrors/amigascne%s" % self.param
+        return "https://archive.scene.org/pub/mirrors/amigascne%s" % self.param
 
     @property
     def us_http_url(self):
@@ -706,7 +707,7 @@ class PaduaOrgFile(AbstractBaseUrl):
 
     @property
     def nl_url(self):
-        return "ftp://ftp.scene.org/pub/mirrors/padua%s" % self.param
+        return "https://archive.scene.org/pub/mirrors/padua%s" % self.param
 
     @property
     def us_http_url(self):
@@ -724,7 +725,7 @@ class PaduaOrgFile(AbstractBaseUrl):
 
 class ModlandFile(AbstractBaseUrl):
     site = Site("Modland")
-    canonical_format = "ftp://ftp.modland.com%s"
+    canonical_format = "https://ftp.modland.com%s"
 
     # need to fiddle querystring_match to prepend a slash to the matched query param
     def exotica_querystring_match():
@@ -769,11 +770,11 @@ class ModlandFile(AbstractBaseUrl):
 
     @property
     def se_url(self):
-        return "ftp://modland.ziphoid.com%s" % self.param
+        return "https://modland.ziphoid.com%s" % self.param
 
     @property
     def us_url(self):
-        return "ftp://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
+        return "http://ftp.amigascne.org/mirrors/ftp.modland.com%s" % self.param
 
     # @property
     # def ca_url(self):
