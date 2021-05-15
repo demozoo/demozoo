@@ -1545,11 +1545,29 @@ class AtarikiEntry(UrlPattern):
     pattern = "/index.php/<str>"
 
 
+defacto2 = Site("Defacto2", url='https://defacto2.net/')
+
+
+class Defacto2File(UrlPattern):
+    site = defacto2
+    pattern = "/f/<slug>"
+
+
+class Defacto2Group(UrlPattern):
+    site = defacto2
+    pattern = "/g/<slug>"
+
+
+class Defacto2Person(UrlPattern):
+    site = defacto2
+    pattern = "/p/<slug>"
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
     MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
-    ScenesatAct, ZxdemoAuthor, FacebookPage,
+    ScenesatAct, ZxdemoAuthor, FacebookPage, Defacto2Group, Defacto2Person,
     PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
     GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel, TwitchChannel,
     DeviantartUser, ModarchiveMember, WikipediaPage,
@@ -1562,7 +1580,7 @@ RELEASER_LINK_TYPES = [
 ]
 
 PRODUCTION_LINK_TYPES = [
-    PouetProduction, CsdbRelease, ZxdemoItem,
+    PouetProduction, CsdbRelease, ZxdemoItem, Defacto2File,
     YoutubeVideo, VimeoVideo, DemosceneTvVideo, CappedVideo, DhsVideoDbVideo,
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
