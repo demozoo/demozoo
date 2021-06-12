@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Value
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -50,17 +50,17 @@ def show(request, group_id):
         'editing_nicks': (request.GET.get('editing') == 'nicks'),
         'supergroupships': (
             group.group_memberships.all().select_related('group').defer('group__notes')
-            .order_by('-is_current', 'group__name')
+            .order_by('-is_current', Lower('group__name'))
         ),
         'memberships': (
             group.member_memberships.filter(member__is_group=False).select_related('member')
-            .defer('member__notes').order_by('-is_current', 'member__name')
+            .defer('member__notes').order_by('-is_current', Lower('member__name'))
         ),
         'editing_members': (request.GET.get('editing') == 'members'),
         'editing_subgroups': (request.GET.get('editing') == 'subgroups'),
         'subgroupships': (
             group.member_memberships.filter(member__is_group=True).select_related('member')
-            .defer('member__notes').order_by('-is_current', 'member__name')
+            .defer('member__notes').order_by('-is_current', Lower('member__name'))
         ),
         'parties_organised': parties_organised,
         'bbs_affiliations': bbs_affiliations,

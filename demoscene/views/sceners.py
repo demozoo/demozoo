@@ -5,6 +5,7 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -62,7 +63,7 @@ def show(request, scener_id, edit_mode=False):
         'editing_nicks': (request.GET.get('editing') == 'nicks'),
         'memberships': (
             scener.group_memberships.select_related('group').defer('group__notes')
-            .order_by('-is_current', 'group__name')
+            .order_by('-is_current', Lower('group__name'))
         ),
         'parties_organised': parties_organised,
         'bbses_operated': bbses_operated,
