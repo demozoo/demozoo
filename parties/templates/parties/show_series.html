@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load static demoscene_tags compress %}
 {% load safe_markdown %}
 
 
@@ -36,17 +36,17 @@
                 <ul class="external_links">
                     {% if party_series.website %}
                         <li>
-                            <a href="{{ party_series.website }}" class="website" title="{{ party_series.name }} website">WWW</a>
+                            <a href="{{ party_series.website }}" style="background-image: url({% static 'images/icons/world.png' %});" title="{{ party_series.name }} website">WWW</a>
                         </li>
                     {% endif %}
                     {% if party_series.twitter_url %}
                         <li>
-                            <a href="{{ party_series.twitter_url }}" class="twitter" title="{{ party_series.name }} on Twitter">Twitter</a>
+                            <a href="{{ party_series.twitter_url }}" style="background-image: url({% static 'images/icons/external_sites/twitter.png' %});" title="{{ party_series.name }} on Twitter">Twitter</a>
                         </li>
                     {% endif %}
                     {% if party_series.pouet_url %}
                         <li>
-                            <a href="{{ party_series.pouet_url }}" class="pouet" title="{{ party_series.name }} on Pouët">Pouët</a>
+                            <a href="{{ party_series.pouet_url }}" style="background-image: url({% static 'images/icons/external_sites/pouet.png' %});" title="{{ party_series.name }} on Pouët">Pouët</a>
                         </li>
                     {% endif %}
                 </ul>
