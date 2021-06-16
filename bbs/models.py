@@ -6,7 +6,8 @@ from strip_markup import strip_markup
 from taggit.managers import TaggableManager
 from unidecode import unidecode
 
-from demoscene.models import TextFile
+from demoscene.models import ExternalLink, TextFile
+from demoscene.utils import groklinks
 from demoscene.utils.text import generate_search_title
 
 
@@ -179,3 +180,21 @@ class Affiliation(models.Model):
 class TextAd(TextFile):
     bbs = models.ForeignKey(BBS, related_name='text_ads', on_delete=models.CASCADE)
     file = models.FileField(upload_to='bbs_ads', blank=True)
+
+
+class BBSExternalLink(ExternalLink):
+    bbs = models.ForeignKey(BBS, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.RELEASER_LINK_TYPES
+    source = models.CharField(
+        max_length=32, blank=True, editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+    )
+
+    def html_link(self):
+        return self.link.as_html(self.bbs.name)
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'bbs'),
+        )
+        ordering = ['link_class']

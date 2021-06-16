@@ -353,6 +353,11 @@ class PouetProduction(UrlPattern):
     pattern = "/prod.php?which=<int>"
 
 
+class PouetBBS(UrlPattern):
+    site = pouet
+    pattern = "/boards.php?which=<int>"
+
+
 slengpung = Site("Slengpung", url='http://www.slengpung.com/')
 
 
@@ -413,6 +418,15 @@ class CsdbMusic(AbstractBaseUrl):
         # which is totally different...
         querystring_match(r'https?://noname\.c64\.org/csdb/sid/(?:index\.php)?\?', 'id'),
         querystring_match(r'https?://(?:www\.)?csdb\.dk/sid/(?:index\.php)?\?', 'id'),
+    ]
+
+
+class CsdbBBS(AbstractBaseUrl):
+    site = csdb
+    canonical_format = "https://csdb.dk/bbs/?id=%s"
+    tests = [
+        querystring_match(r'https?://noname\.c64\.org/csdb/bbs/(?:index\.php)?', 'id'),
+        querystring_match(r'https?://(?:www\.)?csdb\.dk/bbs/(?:index\.php)?', 'id'),
     ]
 
 
@@ -1683,6 +1697,13 @@ PARTY_LINK_TYPES = [
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
+]
+
+BBS_LINK_TYPES = [
+    PouetBBS, CsdbBBS, KestraBitworldAuthor,
+    TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
+    SpeccyWikiPage, AtarikiEntry,
+    WaybackMachinePage, BaseUrl
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing
