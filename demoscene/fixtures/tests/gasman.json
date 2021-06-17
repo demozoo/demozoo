@@ -532,5 +532,14 @@
             "group": 9,
             "role": "010-whq"
         }
+    },
+    {
+        "pk": 1,
+        "model": "bbs.bbsexternallink",
+        "fields": {
+            "bbs": 1,
+            "link_class": "PouetBBS",
+            "parameter": "116"
+        }
     }
 ]
