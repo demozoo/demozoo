@@ -1,0 +1,5 @@
+{% extends "shared/edit_external_links.html" %}
+
+{% block html_title %}Editing external links for {{ bbs.name }} - Demozoo{% endblock %}
+{% block title %}Editing external links for {{ bbs.name }}:{% endblock %}
+{% block action_url %}{% url 'bbs_edit_external_links' bbs.id %}{% endblock %}
