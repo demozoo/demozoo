@@ -1708,7 +1708,7 @@ PARTY_LINK_TYPES = [
 ]
 
 BBS_LINK_TYPES = [
-    PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS,
+    PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry,
     WaybackMachinePage, BaseUrl
