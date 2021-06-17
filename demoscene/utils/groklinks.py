@@ -1642,6 +1642,14 @@ class Pico8Cart(UrlPattern):
     pattern = '/bbs/?tid=<int>'
 
 
+bbsmates = Site("BBSmates", url='http://www.bbsmates.com/')
+
+
+class BBSmatesBBS(UrlPattern):
+    site = bbsmates
+    pattern = '/viewbbs.aspx?id=<int>'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1700,7 +1708,7 @@ PARTY_LINK_TYPES = [
 ]
 
 BBS_LINK_TYPES = [
-    PouetBBS, CsdbBBS, KestraBitworldAuthor,
+    PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry,
     WaybackMachinePage, BaseUrl
