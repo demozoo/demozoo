@@ -1650,6 +1650,14 @@ class BBSmatesBBS(UrlPattern):
     pattern = '/viewbbs.aspx?id=<int>'
 
 
+telnetbbsguide = Site("Telnet BBS Guide", url='https://www.telnetbbsguide.com/', classname='telnetbbsguide')
+
+
+class TelnetBBSGuideBBS(UrlPattern):
+    site = telnetbbsguide
+    pattern = '/bbs/<slug>/'
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1708,7 +1716,7 @@ PARTY_LINK_TYPES = [
 ]
 
 BBS_LINK_TYPES = [
-    PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group,
+    PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group, TelnetBBSGuideBBS,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry,
     WaybackMachinePage, BaseUrl
