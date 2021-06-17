@@ -59,6 +59,10 @@ class BBS(models.Model):
     def alternative_names(self):
         return self.names.exclude(name=self.name)
 
+    @property
+    def active_external_links(self):
+        return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
+
     def get_absolute_url(self):
         return reverse('bbs', args=[self.id])
 

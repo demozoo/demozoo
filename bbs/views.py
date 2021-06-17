@@ -63,6 +63,8 @@ def show(request, bbs_id):
         'group__name'
     )
 
+    external_links = bbs.active_external_links.select_related('bbs').defer('bbs__notes')
+
     if request.user.is_authenticated:
         tags_form = BBSTagsForm(instance=bbs)
     else:
@@ -79,6 +81,7 @@ def show(request, bbs_id):
         'text_ads': bbs.text_ads.all(),
         'tags': bbs.tags.order_by('name'),
         'tags_form': tags_form,
+        'external_links': external_links,
     })
 
 
