@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
-from bbs.models import BBS, Affiliation, Operator
+from bbs.models import BBS, BBSExternalLink, Affiliation, Operator
 from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
 from productions.models import Production
@@ -584,3 +584,31 @@ class TestRemoveTag(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.starport.tags.count(), 0)
+
+
+class TestEditExternalLinks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.bbs = BBS.objects.get(name='StarPort')
+
+    def test_get(self):
+        response = self.client.get('/bbs/%d/edit_external_links/' % self.bbs.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/bbs/%d/edit_external_links/' % self.bbs.id, {
+            'external_links-TOTAL_FORMS': 1,
+            'external_links-INITIAL_FORMS': 0,
+            'external_links-MIN_NUM_FORMS': 0,
+            'external_links-MAX_NUM_FORMS': 1000,
+            'external_links-0-url': 'https://csdb.dk/bbs/?id=2184',
+            'external_links-0-bbs': self.bbs.id,
+        })
+        self.assertRedirects(response, '/bbs/%d/' % self.bbs.id)
+        self.assertEqual(
+            BBSExternalLink.objects.filter(bbs=self.bbs, link_class='CsdbBBS').count(),
+            1
+        )

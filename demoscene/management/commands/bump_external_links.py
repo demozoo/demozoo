@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
+from bbs.models import BBSExternalLink
 from demoscene.models import ReleaserExternalLink
 from parties.models import PartyExternalLink
 from productions.models import ProductionLink
@@ -15,6 +16,7 @@ external_link_models = [
     (PartyExternalLink, 'party_id'),
     (ReleaserExternalLink, 'releaser_id'),
     (ProductionLink, 'production_id'),
+    (BBSExternalLink, 'bbs_id'),
 ]
 
 

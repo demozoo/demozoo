@@ -9,8 +9,8 @@ from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
 from bbs.forms import (
-    AffiliationForm, AlternativeNameFormSet, BBSEditNotesForm, BBSForm, BBSTagsForm, BBSTextAdFormset, BBStroFormset,
-    OperatorForm
+    AffiliationForm, AlternativeNameFormSet, BBSEditNotesForm, BBSExternalLinkFormSet, BBSForm, BBSTagsForm,
+    BBSTextAdFormset, BBStroFormset, OperatorForm
 )
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
@@ -468,3 +468,23 @@ class BBSRemoveTagView(RemoveTagView):
     subject_model = BBS
     action_type = 'bbs_remove_tag'
     template_name = 'bbs/_tags_list.html'
+
+
+@writeable_site_required
+@login_required
+def edit_external_links(request, bbs_id):
+    bbs = get_object_or_404(BBS, id=bbs_id)
+
+    if request.method == 'POST':
+        formset = BBSExternalLinkFormSet(request.POST, instance=bbs)
+        if formset.is_valid():
+            formset.save_ignoring_uniqueness()
+            formset.log_edit(request.user, 'bbs_edit_external_links')
+
+            return HttpResponseRedirect(bbs.get_absolute_url())
+    else:
+        formset = BBSExternalLinkFormSet(instance=bbs)
+    return render(request, 'bbs/edit_external_links.html', {
+        'bbs': bbs,
+        'formset': formset,
+    })
