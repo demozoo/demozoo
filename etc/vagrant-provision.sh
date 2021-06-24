@@ -10,7 +10,7 @@ PYTHON=$VIRTUALENV_DIR/bin/python
 apt-get update -y
 
 # Python 3.8
-apt-get install -y python3.8 python3.8-dev python3-pip
+apt-get install -y python3.8 python3.8-dev python3-pip python2
 
 # PostgreSQL
 apt-get install -y postgresql libpq-dev
@@ -22,6 +22,7 @@ apt-get install -y libffi-dev
 # node.js
 curl -sL https://deb.nodesource.com/setup_12.x | bash -
 apt-get install -y nodejs
+npm install -g npm@latest
 
 # virtualenvwrapper
 pip3 install virtualenvwrapper
