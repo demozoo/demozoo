@@ -1,0 +1,2 @@
+window.onload=function(){var t;!function(){try{new Function("(a = 0) => a")}catch(t){return!1}try{document.createElement("div").append("some text")}catch(t){return!1}return!0}()||null==document.getElementById("retrotxtCanvas")||((t=document.createElement("script")).src="/static/retrotxt/js/retrotxt.js",t.type="module",document.body.appendChild(t))};
+/*! RetroTxt for Demozoo v1.0.0 (2021-06-24); © Ben Garrett - LGPL-3.0 */
