@@ -99,7 +99,7 @@ class TestLinkRecognition(TestCase):
         link = ReleaserExternalLink(releaser=gasman)
         link.url = 'http://artcity.bitfellas.org/index.php?a=artist&id=42'
         self.assertEqual(link.link_class, 'ArtcityArtist')
-        self.assertEqual(link.parameter, '42')
+        self.assertEqual(link.parameter, 42)
 
         # 'a' query param must be present
         link = ReleaserExternalLink(releaser=gasman)
@@ -213,7 +213,7 @@ class TestLinkRecognition(TestCase):
 
         link.url = 'http://speccy.pl/archive/prod.php?id=14'
         self.assertEqual(link.link_class, 'SpeccyPlProduction')
-        self.assertEqual(link.parameter, '14')
+        self.assertEqual(link.parameter, 14)
         self.assertEqual(str(link.link), 'http://speccy.pl/archive/prod.php?id=14')
 
     def test_speccypl_author(self):
@@ -222,7 +222,7 @@ class TestLinkRecognition(TestCase):
         link = ReleaserExternalLink(releaser=gasman)
         link.url = 'http://speccy.pl/archive/author.php?id=24'
         self.assertEqual(link.link_class, 'SpeccyPlAuthor')
-        self.assertEqual(link.parameter, '24')
+        self.assertEqual(link.parameter, 24)
 
     def test_atariki_entry(self):
         pondlife = Production.objects.get(title='Pondlife')

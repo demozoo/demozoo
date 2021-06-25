@@ -372,7 +372,7 @@ class SlengpungUser(AbstractBaseUrl):
 
 class AmpAuthor(UrlPattern):
     site = Site("AMP", long_name="Amiga Music Preservation", url='https://amp.dascene.net/')
-    pattern = "/detail.php?view=<str>"
+    pattern = "/detail.php?view=<int>"
 
 
 csdb = Site(
@@ -478,12 +478,12 @@ artcity = Site(
 
 class ArtcityArtist(UrlPattern):
     site = artcity
-    pattern = "/index.php?a=artist&id=<str>"
+    pattern = "/index.php?a=artist&id=<int>"
 
 
 class ArtcityImage(UrlPattern):
     site = artcity
-    pattern = "/index.php?a=show&id=<str>"
+    pattern = "/index.php?a=show&id=<int>"
 
 
 class DeviantartUser(AbstractBaseUrl):
@@ -541,12 +541,12 @@ zxdemo = Site("ZXdemo", long_name="zxdemo.org", url='https://zxdemo.org/')
 
 class ZxdemoAuthor(UrlPattern):
     site = zxdemo
-    pattern = "/author.php?id=<str>"
+    pattern = "/author.php?id=<int>"
 
 
 class ZxdemoItem(UrlPattern):
     site = zxdemo
-    pattern = "/item.php?id=<str>"
+    pattern = "/item.php?id=<int>"
 
 
 kestra_bitworld = Site(
@@ -557,17 +557,17 @@ kestra_bitworld = Site(
 
 class KestraBitworldRelease(UrlPattern):
     site = kestra_bitworld
-    pattern = "/release.php?id=<str>"
+    pattern = "/release.php?id=<int>"
 
 
 class KestraBitworldAuthor(UrlPattern):
     site = kestra_bitworld
-    pattern = "/author.php?id=<str>"
+    pattern = "/author.php?id=<int>"
 
 
 class KestraBitworldParty(UrlPattern):
     site = kestra_bitworld
-    pattern = "/party.php?id=<str>"
+    pattern = "/party.php?id=<int>"
 
 
 sceneorg = Site("scene.org", classname="sceneorg")
@@ -900,7 +900,7 @@ class CsdbEvent(AbstractBaseUrl):
 
 class BreaksAmigaParty(UrlPattern):
     site = Site("Break's Amiga Collection", classname="breaks_amiga", url='http://arabuusimiehet.com/')
-    pattern = "/break/amiga/index.php?mode=party&partyid=<str>"
+    pattern = "/break/amiga/index.php?mode=party&partyid=<int>"
 
 
 class SceneOrgFolder(AbstractBaseUrl):
@@ -929,7 +929,7 @@ class SceneOrgFolder(AbstractBaseUrl):
 
 class ZxdemoParty(UrlPattern):
     site = zxdemo
-    pattern = "/party.php?id=<str>"
+    pattern = "/party.php?id=<int>"
 
 
 youtube = Site("YouTube")
@@ -1130,7 +1130,7 @@ class CappedVideo(AbstractBaseUrl):
 
 class DhsVideoDbVideo(UrlPattern):
     site = Site("DHS VideoDB", classname="dhs_videodb", url='http://dhs.nu/')
-    pattern = "/video.php?ID=<str>"
+    pattern = "/video.php?ID=<int>"
 
 
 class FacebookPage(UrlPattern):
@@ -1346,7 +1346,7 @@ class HallOfLightGame(UrlPattern):
 
 class HallOfLightArtist(UrlPattern):
     site = hall_of_light
-    pattern = "/hol_search.php?N_ref_artist=<str>"
+    pattern = "/hol_search.php?N_ref_artist=<int>"
 
 
 spotify = Site(
@@ -1546,12 +1546,12 @@ speccypl = Site("speccy.pl", classname="speccypl", url='http://speccy.pl/')
 
 class SpeccyPlProduction(UrlPattern):
     site = speccypl
-    pattern = "/archive/prod.php?id=<str>"
+    pattern = "/archive/prod.php?id=<int>"
 
 
 class SpeccyPlAuthor(UrlPattern):
     site = speccypl
-    pattern = "/archive/author.php?id=<str>"
+    pattern = "/archive/author.php?id=<int>"
 
 
 class AtarikiEntry(UrlPattern):
