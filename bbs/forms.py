@@ -4,7 +4,7 @@ from django.forms.models import inlineformset_factory
 from form_with_location import ModelFormWithLocation
 from nick_field import NickField
 
-from bbs.models import AFFILIATION_TYPES, BBS, BBSExternalLink, OPERATOR_TYPES, Name, TextAd
+from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, BBSExternalLink, Name, TextAd
 from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField

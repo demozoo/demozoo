@@ -5,7 +5,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
-from bbs.models import BBS, BBSExternalLink, Affiliation, Operator
+from bbs.models import BBS, Affiliation, BBSExternalLink, Operator
 from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
 from productions.models import Production
