@@ -231,7 +231,7 @@ def edit_bbstros(request, bbs_id):
                 bbstro_titles = ", ".join(bbstro_titles)
                 Edit.objects.create(
                     action_type='edit_bbs_bbstros', focus=bbs,
-                    description=u"Set BBStros to %s" % bbstro_titles, user=request.user
+                    description=u"Set promoted in to %s" % bbstro_titles, user=request.user
                 )
 
             return redirect('bbs', bbs.id)

@@ -233,7 +233,7 @@ class TestEditBBStros(TestCase):
         self.assertEqual(self.bbs.bbstros.count(), 1)
 
         edit = Edit.for_model(self.bbs, True).first()
-        self.assertEqual("Set BBStros to Pondlife", edit.description)
+        self.assertEqual("Set promoted in to Pondlife", edit.description)
 
         # no change => no edit log entry added
         edit_count = Edit.for_model(self.bbs, True).count()
