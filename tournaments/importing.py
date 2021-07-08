@@ -1,19 +1,50 @@
 from datetime import datetime
+import re
 
 from parties.models import Party
 from tournaments.models import Tournament
 
 
+PARTY_SERIES_ALIASES = {
+    'assembly summer': 'assembly',
+    'assembly autumn': 'assembly',
+    'tokyo demo fest': 'tokyodemofest',
+    'chaos constructions winter': 'chaos constructions',
+    'deadline': 'deadline (.de)',
+    'omzg': 'molvania zscene gathering',
+    'hogmanay party': 'hogmanay.party',
+}
+
+
 def find_party_from_tournament_data(tournament_data):
     start_date = datetime.fromisoformat(tournament_data['started'])
 
-    try:
-        return Party.objects.get(
-            party_series__name=tournament_data['title'],
-            start_date_date=start_date
-        )
-    except Party.DoesNotExist:
-        return None
+    # get a list of party series names to try (case-insensitively),
+    # starting with the actual name given
+    original_name = tournament_data['title'].lower()
+    series_names = [original_name]
+
+    # strip off typical 'noise' words, 'party' and 'online'
+    if original_name.endswith(' party') or original_name.endswith(' online'):
+        series_names.append(re.sub(r' (online|party)$', '', original_name))
+
+    # look for aliases in PARTY_SERIES_ALIASES
+    for name in series_names:
+        try:
+            series_names.append(PARTY_SERIES_ALIASES[name])
+        except KeyError:
+            pass
+
+    for series_name in series_names:
+        try:
+            return Party.objects.get(
+                party_series__name__iexact=series_name,
+                start_date_date=start_date
+            )
+        except Party.DoesNotExist:
+            pass
+
+    return None
 
 
 def import_tournament(filename, tournament_data):
@@ -46,7 +77,7 @@ def import_tournament(filename, tournament_data):
     if created:
         print("\tCreated tournament: %s" % tournament)
     else:
-        print("\tFound tournament: %s" % tournament)
+        # print("\tFound tournament: %s" % tournament)
         expected_party = find_party_from_tournament_data(tournament_data)
         if tournament.party != expected_party:
             print(
