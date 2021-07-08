@@ -165,6 +165,7 @@ INSTALLED_APPS = [
     'janeway',
     'awards',
     'bbs',
+    'tournaments',
 ]
 
 LOGGING = {
