@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 
+from demoscene.models import Nick, Releaser
 from parties.models import Party
 from tournaments.models import Tournament
 
@@ -47,6 +48,27 @@ def find_party_from_tournament_data(tournament_data):
     return None
 
 
+def find_nick_from_handle_data(handle_data):
+    if handle_data['demozoo_id'] is None:
+        return (None, handle_data['name'])
+
+    try:
+        nick = Nick.objects.get(
+            releaser_id=handle_data['demozoo_id'],
+            variants__name__iexact = handle_data['name']
+        )
+    except Nick.DoesNotExist:
+        print(
+            "\tCannot find nick '%s' for releaser %d (%s)" % (
+                handle_data['name'], handle_data['demozoo_id'],
+                Releaser.objects.get(id=handle_data['demozoo_id']).name
+            )
+        )
+        return (None, handle_data['name'])
+
+    return (nick.id, '')
+
+
 def import_tournament(filename, tournament_data):
     try:
         tournament = Tournament.objects.get(source_file_name=filename)
@@ -74,6 +96,8 @@ def import_tournament(filename, tournament_data):
             )
             return
 
+    phases_data = tournament_data['phases']
+
     if created:
         print("\tCreated tournament: %s" % tournament)
         create_phases = True
@@ -99,10 +123,11 @@ def import_tournament(filename, tournament_data):
         # if there are any discrepancies in phase counts or titles,
         # delete and reimport them
         phases = list(tournament.phases.all())
-        if len(phases) != len(tournament_data['phases']):
+        if len(phases) != len(phases_data):
             create_phases = True
         elif any(
-            phase.name != (tournament_data['phases'][i]['title'] or '')
+            phase.name != (phases_data[i]['title'] or '')
+            or phase.position != i
             for i, phase in enumerate(phases)
         ):
             create_phases = True
@@ -114,7 +139,65 @@ def import_tournament(filename, tournament_data):
             tournament.phases.all().delete()
 
     if create_phases:
-        for position, phase_data in enumerate(tournament_data['phases']):
+        for position, phase_data in enumerate(phases_data):
             phase = tournament.phases.create(
                 name=phase_data['title'] or '', position=position
             )
+
+            load_phase_data(phase, phase_data)
+
+    else:
+        # phases for this tournament are already defined and confirmed to match the
+        # names in the file, and have consecutive 0-based positions
+        for phase in phases:
+            load_phase_data(phase, phases_data[phase.position])
+
+
+def load_phase_data(phase, phase_data):
+    entries = list(phase.entries.all())
+    entries_data = phase_data['entries']
+
+    # if length of entries list doesn't match, or positions are inconsistent,
+    # recreate
+    create_entries = (
+        len(entries) != len(entries_data)
+        or any(entry.position != i for i, entry in enumerate(entries))
+    )
+
+    if create_entries:
+        phase.entries.all().delete()
+        for position, entry_data in enumerate(entries_data):
+            nick_id, name = find_nick_from_handle_data(entry_data['handle'])
+
+            phase.entries.create(
+                position=position,
+                nick_id=nick_id,
+                name=name,
+                ranking=entry_data['rank'] or '',
+                score=entry_data['points'] or '',
+            )
+
+    else:
+        for i, entry_data in enumerate(entries_data):
+            entry = entries[i]
+            has_changed = False
+
+            nick_id, name = find_nick_from_handle_data(entry_data['handle'])
+            if nick_id != entry.nick_id or name != entry.name:
+                entry.nick_id = nick_id
+                entry.name = name
+                has_changed = True
+
+            rank = '' if entry_data['rank'] is None else str(entry_data['rank'])
+            if rank != entry.ranking:
+                entry.ranking = rank
+                has_changed = True
+
+            score = '' if entry_data['points'] is None else str(entry_data['points'])
+            if score != entry.score:
+                entry.score = score
+                has_changed = True
+
+            if has_changed:
+                print("\tupdating entry %s" % entry)
+                entry.save()
