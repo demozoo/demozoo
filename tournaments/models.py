@@ -43,6 +43,9 @@ class Entry(models.Model):
     class Meta:
         ordering = ['position']
 
+    def __str__(self) -> str:
+        return self.nick.name if self.nick else self.name
+
 
 ROLES = [
     ('commentary', 'Commentary'),
