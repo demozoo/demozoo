@@ -1,5 +1,6 @@
 from django.db import models
 
+from demoscene.models import Nick
 from parties.models import Party
 
 
@@ -15,3 +16,45 @@ class Tournament(models.Model):
 
     def __str__(self) -> str:
         return "%s at %s" % (self.name, self.party.name)
+
+
+class Phase(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='phases')
+    name = models.CharField(max_length=255, blank=True)
+    position = models.IntegerField()
+
+    class Meta:
+        ordering = ['position']
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Entry(models.Model):
+    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='entries')
+    nick = models.ForeignKey(
+        Nick, blank=True, null=True, on_delete=models.CASCADE, related_name='tournament_entries'
+    )
+    name = models.CharField(max_length=255, blank=True, help_text="Only if nick is empty")
+    ranking = models.CharField(max_length=32, blank=True)
+    position = models.IntegerField()
+    score = models.CharField(max_length=32, blank=True)
+
+    class Meta:
+        ordering = ['position']
+
+
+ROLES = [
+    ('commentary', 'Commentary'),
+    ('dj_set', 'DJ set'),
+    ('live_music', 'Live music'),
+]
+
+
+class PhaseStaffMember(models.Model):
+    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='staff')
+    nick = models.ForeignKey(
+        Nick, blank=True, null=True, on_delete=models.CASCADE, related_name='tournament_staff'
+    )
+    name = models.CharField(max_length=255, blank=True, help_text="Only if nick is empty")
+    role = models.CharField(max_length=50, choices=ROLES)
