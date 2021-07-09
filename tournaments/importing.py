@@ -76,6 +76,7 @@ def import_tournament(filename, tournament_data):
 
     if created:
         print("\tCreated tournament: %s" % tournament)
+        create_phases = True
     else:
         # print("\tFound tournament: %s" % tournament)
         expected_party = find_party_from_tournament_data(tournament_data)
@@ -84,4 +85,36 @@ def import_tournament(filename, tournament_data):
                 "\tParty mismatch! Found %s, but data looks like %s" % (
                     tournament.party, expected_party
                 )
+            )
+
+        if tournament.name != tournament_data['type']:
+            print(
+                "\tChanged name from %s to %s" % (
+                    tournament.name, tournament_data['type']
+                )
+            )
+            tournament.name = tournament_data['type']
+            tournament.save()
+
+        # if there are any discrepancies in phase counts or titles,
+        # delete and reimport them
+        phases = list(tournament.phases.all())
+        if len(phases) != len(tournament_data['phases']):
+            create_phases = True
+        elif any(
+            phase.name != (tournament_data['phases'][i]['title'] or '')
+            for i, phase in enumerate(phases)
+        ):
+            create_phases = True
+        else:
+            create_phases = False
+
+        if create_phases:
+            print("\tPhases don't match - recreating")
+            tournament.phases.all().delete()
+
+    if create_phases:
+        for position, phase_data in enumerate(tournament_data['phases']):
+            phase = tournament.phases.create(
+                name=phase_data['title'] or '', position=position
             )
