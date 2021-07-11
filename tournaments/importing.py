@@ -16,6 +16,12 @@ PARTY_SERIES_ALIASES = {
     'hogmanay party': 'hogmanay.party',
 }
 
+ROLES_LOOKUP = {
+    'commentators': 'commentary',
+    'dj set': 'dj_set',
+    'live music': 'live_music',
+}
+
 
 def find_party_from_tournament_data(tournament_data):
     start_date = datetime.fromisoformat(tournament_data['started'])
@@ -201,3 +207,21 @@ def load_phase_data(phase, phase_data):
             if has_changed:
                 print("\tupdating entry %s" % entry)
                 entry.save()
+
+    staff_members = set()
+    for staff_member_data in phase_data['staffs']:
+        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'])
+        role = ROLES_LOOKUP[staff_member_data['job'].lower()]
+        staff_members.add((nick_id, name, role))
+
+    current_staff_members = set([
+        (staff_member.nick_id, staff_member.name, staff_member.role)
+        for staff_member in phase.staff.all()
+    ])
+    if staff_members != current_staff_members:
+        if current_staff_members:
+            print("\tupdating staff")
+            phase.staff.all().delete()
+
+        for nick_id, name, role in staff_members:
+            phase.staff.create(nick_id=nick_id, name=name, role=role)
