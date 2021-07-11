@@ -79,6 +79,7 @@ def import_tournament(filename, tournament_data):
     try:
         tournament = Tournament.objects.get(source_file_name=filename)
         created = False
+        party = tournament.party
     except Tournament.DoesNotExist:
         party = find_party_from_tournament_data(tournament_data)
         if not party:
@@ -157,6 +158,26 @@ def import_tournament(filename, tournament_data):
         # names in the file, and have consecutive 0-based positions
         for phase in phases:
             load_phase_data(phase, phases_data[phase.position])
+
+    # Add organiser credit to party if there isn't one already
+    for staff_member_data in tournament_data['staffs']:
+        if staff_member_data['job'] != 'Organizers':
+            continue
+
+        releaser_id = staff_member_data['handle']['demozoo_id']
+        if releaser_id is None:
+            continue
+
+        # check that the given demozoo_id is consistent with the name
+        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'])
+        if nick_id is None:
+            continue
+
+        if party.organisers.filter(releaser_id=releaser_id).exists():
+            continue
+
+        print("\tAdding party organiser: %s" % staff_member_data['handle']['name'])
+        party.organisers.create(releaser_id=releaser_id, role=tournament_data['type'])
 
 
 def load_phase_data(phase, phase_data):
