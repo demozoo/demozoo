@@ -116,6 +116,10 @@ def show(request, party_id):
 
     external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
 
+    tournaments = party.tournaments.order_by('name').prefetch_related(
+        'phases__entries__nick__releaser', 'phases__staff__nick__releaser'
+    )
+
     if request.user.is_authenticated:
         comment = Comment(commentable=party, user=request.user)
         comment_form = CommentForm(instance=comment, prefix="comment")
@@ -125,6 +129,7 @@ def show(request, party_id):
     return render(request, 'parties/show.html', {
         'party': party,
         'competitions_with_placings_and_screenshots': competitions_with_placings_and_screenshots,
+        'tournaments': tournaments,
         'results_files': party.results_files.all(),
         'invitations': invitations,
         'releases': releases,
