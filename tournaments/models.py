@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 
 from demoscene.models import Nick
 from parties.models import Party
@@ -22,6 +23,14 @@ class Phase(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='phases')
     name = models.CharField(max_length=255, blank=True)
     position = models.IntegerField()
+
+    @cached_property
+    def has_rankings(self):
+        return any(entry.ranking for entry in self.entries.all())
+
+    @cached_property
+    def has_scores(self):
+        return any(entry.score for entry in self.entries.all())
 
     class Meta:
         ordering = ['position']
@@ -61,3 +70,6 @@ class PhaseStaffMember(models.Model):
     )
     name = models.CharField(max_length=255, blank=True, help_text="Only if nick is empty")
     role = models.CharField(max_length=50, choices=ROLES)
+
+    class Meta:
+        ordering = ['role']

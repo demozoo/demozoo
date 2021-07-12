@@ -275,15 +275,18 @@
         </div>
     {% endif %}
 
-    {% if competitions_with_placings_and_screenshots or can_edit %}
+    {% if competitions_with_placings_and_screenshots or tournaments or can_edit %}
         <div class="panel results_panel">
             <div class="results_menu_column">
                 <div class="results_menu">
                     <h3 class="panel__title">Results</h3>
-                    {% if competitions_with_placings_and_screenshots %}
+                    {% if competitions_with_placings_and_screenshots or tournaments %}
                         <ul class="results-menu__list">
                             {% for compo, placings in competitions_with_placings_and_screenshots %}
                                 <li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
+                            {% endfor %}
+                            {% for tournament in tournaments %}
+                                <li><a href="#tournament_{{ tournament.id }}">{{ tournament.name }}</a></li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -308,6 +311,56 @@
                         {% if placings %}
                             {% include "shared/competition_results.html" %}
                         {% endif %}
+                    </section>
+                {% endfor %}
+
+                {% for tournament in tournaments %}
+                    <section class="tournament" id="tournament_{{ tournament.id }}">
+                        <h4 class="tournament__heading">{{ tournament.name }}</h4>
+                        {% with tournament.phases.all as phases %}
+                            {% for phase in phases %}
+                                {% if phases|length > 1 or phase.staff.all %}
+                                    <div>
+                                        {% if phases|length > 1 %}<b>{{ phase.name }}</b>{% endif %}
+                                        {% if phases|length > 1 and phase.staff.all %}-{% endif %}
+                                        {% regroup phase.staff.all by get_role_display as role_list %}
+                                        {% for role in role_list %}
+                                            {{ role.grouper }}:
+                                            <ul class="staff">
+                                                {% for staff_member in role.list %}
+                                                    {% if staff_member.nick %}
+                                                        <li class="{% if staff_member.nick.releaser.is_group %}group{% else %}scener{% endif %}">
+                                                            <a href="{{ staff_member.nick.releaser.get_absolute_url }}">{{ staff_member.nick.name }}</a>{% if not forloop.last %},{% endif %}
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="scener">
+                                                            {{ staff_member.name }}{% if not forloop.last %},{% endif %}
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                            {% if not forloop.last %}-{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <table>
+                                    {% for entry in phase.entries.all %}
+                                        <tr>
+                                            {% if phase.has_rankings %}<td>{{ entry.ranking }}</td>{% endif %}
+                                            <td>
+                                                {% if entry.nick %}
+                                                    <a href="{{ entry.nick.releaser.get_absolute_url }}">{{ entry.nick.name }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    {{ entry.name }}
+                                                {% endif %}
+                                            </td>
+                                            {% if phase.has_scores %}<td>{{ entry.score }}</td>{% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% endfor %}
+                        {% endwith %}
                     </section>
                 {% endfor %}
 
