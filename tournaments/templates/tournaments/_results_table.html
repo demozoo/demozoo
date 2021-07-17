@@ -1,0 +1,33 @@
+<table class="table" summary="">
+    <colgroup>
+        {% if phase.has_rankings %}<col class="col--ranking"/>{% endif %}
+        <col class="col--thumb" />
+        <col class="col--production" />
+        <col />
+        {% if phase.has_scores %}<col class="col--score" />{% endif %}
+    </colgroup>
+    <tbody>
+        {% for entry in phase.entries.all %}
+            <tr class="result">
+                {% if phase.has_rankings %}
+                    <td><span class="result__ranking">{{ entry.ranking }}</span></td>
+                {% endif %}
+                <td></td>
+                <td>
+                    <div class="result__title">
+                        {% if entry.nick %}
+                            <a href="{{ entry.nick.releaser.get_absolute_url }}">{{ entry.nick.name }}</a>
+                            </li>
+                        {% else %}
+                            {{ entry.name }}
+                        {% endif %}
+                    </div>
+                </td>
+                <td></td>
+                {% if phase.has_scores %}
+                    <td><div class="result__score">{{ entry.score }}</div></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
