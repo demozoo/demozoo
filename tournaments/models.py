@@ -18,6 +18,9 @@ class Tournament(models.Model):
     def __str__(self) -> str:
         return "%s at %s" % (self.name, self.party.name)
 
+    def get_absolute_url(self):
+        return self.party.get_absolute_url() + ("#tournament_%d" % self.id)
+
 
 class Phase(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='phases')

@@ -128,7 +128,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         from tournaments.models import Tournament
         return Tournament.objects.filter(
             phases__entries__nick__releaser_id=self.id
-        ).order_by('-party__start_date_date')
+        ).distinct().order_by('-party__start_date_date')
 
     def groups(self):
         return [
