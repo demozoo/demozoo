@@ -16,50 +16,39 @@
             <col width="40%" />
             <col />
             <col class="col--date" />
-            {% if editing and site_is_writeable %}
-            <col />
-            {% endif %}
         </colgroup>
         <tbody>
-            {% for production, nick, credits, screenshot in credits %}
+            {% for credit in credits %}
                 <tr>
                     <td>
-                        {% if screenshot %}
-                            {% microthumb screenshot %}
+                        {% if credit.screenshot %}
+                            {% microthumb credit.screenshot %}
 
                         {% else %}
                             <div class="media media--thumbnail">
-                                {% icon production.supertype %}
+                                {% icon credit.production.supertype %}
                             </div>
                         {% endif %}
                     </td>
                     <td>
                         <div>
-                            <a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
-                            {% if credits %}
+                            <a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
+                            {% if credit.roles %}
                                 -
-                                {% for credit in credits %}
-                                    <span>{{ credit.description }}</span>{% if not forloop.last %},{% endif %}
+                                {% for role in credit.roles %}
+                                    <span>{{ role.description }}</span>{% if not forloop.last %},{% endif %}
                                 {% endfor %}
-                                {% if nick.name != releaser.name %}
-                                    <em>(as <span>{{ nick.name }}</span>)</em>
+                                {% if credit.nick.name != releaser.name %}
+                                    <em>(as <span>{{ credit.nick.name }}</span>)</em>
                                 {% endif %}
                             {% endif %}
                         </div>
                         <div class="meta">
-                            {{ production.platforms_and_types_list }}
+                            {{ credit.production.platforms_and_types_list }}
                         </div>
                     </td>
-                    <td>{% byline production %}</td>
-                    <td>{{ production.release_date.short_format }}</td>
-
-                    {% if editing and site_is_writeable %}
-                        <td>
-                            <a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-                            </a>
-                        </td>
-                    {% endif %}
+                    <td>{% byline credit.production %}</td>
+                    <td>{{ credit.production.release_date.short_format }}</td>
                 </tr>
             {% endfor %}
         </tbody>
