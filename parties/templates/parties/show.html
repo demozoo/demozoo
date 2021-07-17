@@ -343,22 +343,7 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                <table>
-                                    {% for entry in phase.entries.all %}
-                                        <tr>
-                                            {% if phase.has_rankings %}<td>{{ entry.ranking }}</td>{% endif %}
-                                            <td>
-                                                {% if entry.nick %}
-                                                    <a href="{{ entry.nick.releaser.get_absolute_url }}">{{ entry.nick.name }}</a>
-                                                    </li>
-                                                {% else %}
-                                                    {{ entry.name }}
-                                                {% endif %}
-                                            </td>
-                                            {% if phase.has_scores %}<td>{{ entry.score }}</td>{% endif %}
-                                        </tr>
-                                    {% endfor %}
-                                </table>
+                                {% include "tournaments/_results_table.html" %}
                             {% endfor %}
                         {% endwith %}
                     </section>
