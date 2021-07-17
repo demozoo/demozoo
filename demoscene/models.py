@@ -124,6 +124,12 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         from productions.models import Credit
         return Credit.objects.select_related('nick').filter(nick__releaser=self)
 
+    def get_tournament_participations(self):
+        from tournaments.models import Tournament
+        return Tournament.objects.filter(
+            phases__entries__nick__releaser_id=self.id
+        ).order_by('-party__start_date_date')
+
     def groups(self):
         return [
             membership.group
