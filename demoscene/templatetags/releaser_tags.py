@@ -1,4 +1,3 @@
-from collections import namedtuple
 from itertools import groupby
 
 from django import template
@@ -9,13 +8,28 @@ from productions.models import Screenshot
 register = template.Library()
 
 
-ProductionCredit = namedtuple('ProductionCredit', [
-    'production', 'nick', 'roles', 'screenshot',
-])
+# Classes for things that can appear in the credits table, namely
+# production credits and tournament participation
+
+class ProductionCredit:
+    credit_type = 'production'
+    def __init__(self, production, nick=None, roles=None, screenshot=None):
+        self.production = production
+        self.date = production.release_date_date
+        self.nick = nick
+        self.roles = roles
+        self.screenshot = screenshot
+
+
+class TournamentCredit:
+    credit_type = 'tournament'
+    def __init__(self, tournament):
+        self.tournament = tournament
+        self.date = tournament.party.start_date_date
 
 
 @register.inclusion_tag('shared/credited_production_listing.html', takes_context=True)
-def combined_releases(context, releaser):
+def combined_releases(context, releaser, include_tournaments=False):
 
     credits = (
         releaser.credits().select_related('nick')
@@ -52,23 +66,31 @@ def combined_releases(context, releaser):
         .order_by('-release_date_date', 'release_date_precision', '-sortable_title')
 
     credits_with_prods = credits_by_production_nick + [(prod, None, None) for prod in productions]
-    credits_with_prods.sort(
-        key=lambda item: (item[0].release_date_date is None, item[0].release_date_date),
-        reverse=True
-    )
 
     # get final list of production IDs
     production_ids = [production.id for production, _, _ in credits_with_prods]
     # fetch screenshots for those prods
     screenshot_map = Screenshot.select_for_production_ids(production_ids)
-    # produce final credits struct: (production, nick, [credits], screenshot)
-    credits_with_prods_and_screenshots = [
+    # produce final credits structure for productions
+    credits = [
         ProductionCredit(prod, nick, credits, screenshot_map.get(prod.id))
         for prod, nick, credits in credits_with_prods
     ]
 
+    if include_tournaments:
+        # Add tournament credits
+        credits += [
+            TournamentCredit(tournament)
+            for tournament in releaser.get_tournament_participations()
+        ]
+
+    credits.sort(
+        key=lambda item: (item.date is None, item.date),
+        reverse=True
+    )
+
     return {
         'releaser': releaser,
-        'credits': credits_with_prods_and_screenshots,
+        'credits': credits,
         'can_edit': context.get('can_edit', False),
     }
