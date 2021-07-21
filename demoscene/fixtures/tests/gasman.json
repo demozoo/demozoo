@@ -565,7 +565,8 @@
         "model": "tournaments.tournament",
         "fields": {
             "party": 1,
-            "name": "Shader Showdown"
+            "name": "Shader Showdown",
+            "source_file_name": "2000_z80_showdown_forever.json"
         }
     },
     {
