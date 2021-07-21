@@ -35,8 +35,52 @@
                     "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-mrphong.glsl"
                 }
             ],
-            "staffs": []
+            "staffs": [
+                {
+                    "handle": {
+                        "name": "laesq",
+                        "demozoo_id": 6
+                    },
+                    "job": "Dj Set"
+                }
+            ]
         }
     ],
-    "staffs": []
+    "staffs": [
+        {
+            "handle": {
+                "name": "yerzmyey",
+                "demozoo_id": 5
+            },
+            "job": "Organizers"
+        },
+        {
+            "handle": {
+                "name": "gasman",
+                "demozoo_id": 1
+            },
+            "job": "Organizers"
+        },
+        {
+            "handle": {
+                "name": "mystery organiser",
+                "demozoo_id": null
+            },
+            "job": "Organizers"
+        },
+        {
+            "handle": {
+                "name": "laesq",
+                "demozoo_id": 6
+            },
+            "job": "not an organiser"
+        },
+        {
+            "handle": {
+                "name": "not abyss",
+                "demozoo_id": 8
+            },
+            "job": "Organizers"
+        }
+    ]
 }
