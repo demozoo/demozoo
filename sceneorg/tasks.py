@@ -83,10 +83,15 @@ def fetch_new_sceneorg_files(days=1):
         if url:
             time.sleep(1)
         else:
+            pointless_call_to_make_coverage_notice_this_line()
             break
 
     if new_file_count > 0:
         find_sceneorg_results_files()
+
+
+def pointless_call_to_make_coverage_notice_this_line():
+    pass
 
 
 @shared_task(time_limit=7200, ignore_result=True)

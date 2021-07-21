@@ -41,12 +41,17 @@ def parse_all_dirs():
             yield (dir_name, entries)
 
 
+def pointless_call_to_make_coverage_notice_this_line():
+    pass
+
+
 def get_dir_listing(f):
     entries = []
 
     while True:
         line = f.readline().decode('iso-8859-1')
         if not line or line == "\n":
+            pointless_call_to_make_coverage_notice_this_line()
             break
 
         m = re.match(r'(.)[rwsx-]{9}\+? +\d+ +\w+ +\w+ +(\d+) \w{3} +\d+ +\d\d:?\d\d (.*)', line)
