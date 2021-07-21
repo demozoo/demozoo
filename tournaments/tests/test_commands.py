@@ -38,6 +38,16 @@ class TestFetchTournaments(TestCase):
         self.assertTrue(tournament)
         phase = tournament.phases.first()
         self.assertEqual(phase.name, "Final")
+        self.assertEqual(phase.staff.get(nick__name='LaesQ').role, 'dj_set')
+        yerz_orga = party.organisers.get(releaser__name='Yerzmyey')
+        self.assertEqual(yerz_orga.role, "Shader Showdown")
+        gasman_orga = party.organisers.get(releaser__name='Gasman')
+        # already listed as an organiser, so no change
+        self.assertEqual(gasman_orga.role, "Compo team")
+        # stated role is something other than Organisers
+        self.assertFalse(party.organisers.filter(releaser__name='LaesQ').exists())
+        # nick doesn't match
+        self.assertFalse(party.organisers.filter(releaser__name='Abyss').exists())
 
         party = Party.objects.get(name="Forever 2e3")
         self.assertEqual(party.tournaments.count(), 1)

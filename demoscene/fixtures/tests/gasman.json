@@ -599,5 +599,14 @@
             "ranking": 1,
             "score": "100"
         }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.phasestaffmember",
+        "fields": {
+            "phase": 1,
+            "nick": 7,
+            "role": "dj_set"
+        }
     }
 ]
