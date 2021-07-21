@@ -62,6 +62,7 @@ class TestShowParty(TestCase):
         party = Party.objects.get(name='Forever 2e3')
         response = self.client.get('/parties/%d/' % party.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Shader Showdown")
 
     def test_organisers_panel(self):
         party = Party.objects.get(name='Revision 2011')
