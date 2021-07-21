@@ -1,0 +1,42 @@
+{
+    "title": "Forever",
+    "started": "2000-03-17",
+    "date": "17 - 19 March 2000",
+    "type": "Shader Showdown",
+    "vod": null,
+    "software_used": null,
+    "phases": [
+        {
+            "title": "Semi-final",
+            "vod": "https://youtu.be/0Xi_exoOXjw?t=6119",
+            "entries": [
+                {
+                    "id": null,
+                    "rank": 1,
+                    "points": null,
+                    "handle": {
+                        "name": "fake gasman",
+                        "demozoo_id": 1
+                    },
+                    "shadertoy_url": null,
+                    "preview_image": "revision_2011/03-gasman.jpg",
+                    "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl"
+                },
+                {
+                    "id": null,
+                    "rank": 2,
+                    "points": null,
+                    "handle": {
+                        "name": "Mr Phong",
+                        "demozoo_id": null
+                    },
+                    "shadertoy_url": null,
+                    "preview_image": "revision_2011/03-mrphong.jpg",
+                    "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-mrphong.glsl"
+                }
+            ],
+            "staffs": []
+        }
+    ],
+    "staffs": []
+}
