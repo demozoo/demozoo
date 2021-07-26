@@ -575,7 +575,7 @@
         "fields": {
             "tournament": 1,
             "name": "Final",
-            "position": 1
+            "position": 0
         }
     },
     {
@@ -584,7 +584,7 @@
         "fields": {
             "phase": 1,
             "nick": 1,
-            "position": 1,
+            "position": 0,
             "ranking": 2,
             "score": "50"
         }
@@ -595,7 +595,7 @@
         "fields": {
             "phase": 1,
             "nick": 6,
-            "position": 2,
+            "position": 1,
             "ranking": 1,
             "score": "100"
         }
