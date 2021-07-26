@@ -92,3 +92,98 @@ class TestFetchTournaments(TestCase):
         self.assertEqual(tournament.name, "Z80 Showdown")
         phase = tournament.phases.first()
         self.assertEqual(phase.name, "Semi-final")
+
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_party_mismatch(self, run, mkdir, exists, glob):
+        """
+        obscure warning where a data file that was previously associated with
+        party X now seems to contain data corresponding to party Y instead
+        """
+        party = Party.objects.get(name="Forever 2e3")
+        tournament = party.tournaments.first()
+        tournament.source_file_name = '2011_shader_showdown_revision.json'
+        tournament.save()
+
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2011_shader_showdown_revision.json',
+        ]
+
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
+        glob.assert_called_once_with('*.json')
+
+        self.assertIn(
+            "Party mismatch! Found Forever 2e3, but data looks like Revision 2011",
+            stdout.getvalue()
+        )
+
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_reimport_phases_if_counts_differ(self, run, mkdir, exists, glob):
+        party = Party.objects.get(name="Forever 2e3")
+        tournament = party.tournaments.first()
+        tournament.phases.create(name="Quarter final", position=2)
+
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2000_z80_showdown_forever.json',
+        ]
+
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
+        glob.assert_called_once_with('*.json')
+
+        self.assertIn(
+            "Phases don't match - recreating",
+            stdout.getvalue()
+        )
+        self.assertEqual(tournament.phases.count(), 1)
+
+
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_dont_reimport_phases_if_all_names_match(self, run, mkdir, exists, glob):
+        party = Party.objects.get(name="Forever 2e3")
+        tournament = party.tournaments.first()
+        phase = tournament.phases.first()
+        phase.name = "Semi-final"
+        phase.save()
+
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2000_z80_showdown_forever.json',
+        ]
+
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
+        glob.assert_called_once_with('*.json')
+
+        self.assertNotIn(
+            "Phases don't match - recreating",
+            stdout.getvalue()
+        )
+        self.assertEqual(tournament.phases.count(), 1)
+        self.assertEqual(tournament.phases.first(), phase)
