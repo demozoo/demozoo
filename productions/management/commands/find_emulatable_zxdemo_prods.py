@@ -19,7 +19,7 @@ class Command(BaseCommand):
             production__platforms__name='ZX Spectrum',
             link_class='BaseUrl',
             parameter__startswith='https://files.zxdemo.org/',
-        )
+        ).exclude(parameter__in=EmulatorConfig.objects.values_list('launch_url', flat=True))
 
         for prod_link in prod_links:
             ext = prod_link.parameter.split('.')[-1].lower()
