@@ -6,11 +6,10 @@ from socket import timeout
 from time import sleep
 from urllib.error import URLError
 from urllib.parse import urlparse
-from zipfile import BadZipFile, ZipFile
+from zipfile import BadZipFile
 
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
-import requests
 
 from mirror.actions import fetch_link, FileTooBig
 from productions.models import EmulatorConfig, Production, ProductionLink
@@ -50,7 +49,7 @@ class Command(BaseCommand):
                     print("direct link for %s: %s" % (prod.title, prod_link.download_url))
                     try:
                         download = fetch_link(prod_link)
-                    except (URLError, FileTooBig, timeout):
+                    except (URLError, FileTooBig, timeout, BadZipFile):
                         print("- broken link :-(")
                     else:
                         sha1 = download.sha1
