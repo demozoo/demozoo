@@ -9,6 +9,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.forms import Media
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from fuzzy_date import FuzzyDate
@@ -765,3 +766,13 @@ class InfoFile(TextFile):
     class Meta:
         verbose_name = 'info file'
         verbose_name_plural = 'info files'
+
+
+class EmulatorConfig(models.Model):
+    production = models.ForeignKey(Production, related_name='emulator_configs', on_delete=models.CASCADE)
+    emulator = models.CharField(max_length=30)
+    launch_url = models.URLField(max_length=4096)
+    configuration = models.TextField(blank=True)
+
+    def __str__(self):
+        return "%s on %s" % (self.production.title, self.emulator)

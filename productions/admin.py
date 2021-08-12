@@ -4,7 +4,7 @@ from django.contrib import admin
 from taggit.admin import TagAdmin
 from treebeard.admin import TreeAdmin
 
-from productions.models import Credit, Production, ProductionType, Screenshot, SoundtrackLink
+from productions.models import Credit, EmulatorConfig, Production, ProductionType, Screenshot, SoundtrackLink
 
 
 class ProductionTypeAdmin(TreeAdmin):
@@ -35,3 +35,5 @@ admin.site.register(
 )
 
 TagAdmin.inlines = []
+
+admin.site.register(EmulatorConfig, raw_id_fields=['production'])
