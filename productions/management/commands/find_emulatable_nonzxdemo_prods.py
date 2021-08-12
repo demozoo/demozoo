@@ -69,7 +69,7 @@ class Command(BaseCommand):
                     print("zip file for %s: %s" % (prod.title, prod_link.download_url))
                     try:
                         download = fetch_link(prod_link)
-                    except (URLError, FileTooBig, timeout):
+                    except (URLError, FileTooBig, timeout, BadZipFile):
                         print("- broken link :-(")
                     else:
                         try:
