@@ -252,11 +252,84 @@
         }
     };
 
+    function Emulator(fullData, carouselController) {
+        this.isProcessing = fullData['is_processing'];
+        this.id = fullData['id'];
+        this.data = fullData.data;
+        this.carouselController = carouselController;
+    }
+    Emulator.prototype.draw = function(container) {
+        var link = $('<a class="emulator"><div class="play"></div></a>').attr({'href': 'javascript:void(0);'});
+        var img;
+        if (this.data['mosaic']) {
+            img = buildMosaic(this.data['mosaic'], false, null);
+        } else {
+            img = $('<img>').attr({'src': this.data['thumbnail_url']});
+            if (this.data['thumbnail_width'] < 200 && this.data['thumbnail_height'] < 150) {
+                img.attr({
+                    'width': this.data['thumbnail_width'] * 2,
+                    'height': this.data['thumbnail_height'] * 2,
+                    'class': 'pixelated'
+                });
+            } else {
+                img.attr({
+                    'width': this.data['thumbnail_width'],
+                    'height': this.data['thumbnail_height']
+                });
+            }
+        }
+        link.prepend(img);
+        container.html(link);
+
+        var self = this;
+
+        link.click(function(e) {
+            if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+                /* probably means they want to open it in a new window, so let them... */
+                return true;
+            }
+
+            self.carouselController.openLightboxAtId(self.id);
+            return false;
+        });
+    }
+    Emulator.prototype.attachToLightbox = function(lightbox, autoplay) {
+        var self = {};
+        var jsspeccy;
+
+        if (this.data.emulator == 'jsspeccy') {
+            var emuElement = document.createElement('div');
+            lightbox.mediaWrapper.append(emuElement);
+            jsspeccy = JSSpeccy(
+                emuElement, {
+                    zoom: 1, sandbox: true, autoStart: true, autoLoadTapes: true, tapeAutoLoadMode: 'usr0',
+                    openUrl: this.data.launchUrl,
+                }
+            );
+            /* hack CSS to make close button clickable again */
+            emuElement.firstChild.style.position = 'static';
+
+            self.setSize = function(maxWidth, maxHeight) {
+                var zoom = Math.max(Math.floor(Math.min(maxWidth / 320, (maxHeight-55) / 240)), 1);
+                lightbox.setSize(zoom * 320, zoom * 240 + 55);
+                jsspeccy.setZoom(zoom);
+            };
+
+            self.unload = function() {
+                jsspeccy.exit();
+                emuElement.remove();
+            };
+            lightbox.attach(self);
+        }
+    };
+    Emulator.prototype.unload = function() {};
+
     var slideTypes = {
         'screenshot': Screenshot,
         'mosaic': Mosaic,
         'video': Video,
-        'cowbell-audio': CowbellAudio
+        'cowbell-audio': CowbellAudio,
+        'emulator': Emulator
     };
 
     /* Constructor for a carousel */

@@ -15,16 +15,34 @@ class Carousel(object):
         self.production = production
         self.user = user
 
-        self.media = self.audio_media
+        # look for things that are launchable as audio players or emulators
+        self.fetch_launchable_data()
 
-        self.slides = self.get_audio_slides() + self.get_screenshot_slides()
+        audio_slides = self.get_audio_slides()
+        screenshot_slides = self.get_screenshot_slides()
+        emu_slides = self.get_emulator_slides()
 
-        if self.videos:
-            # prepend a video slide
-            self.slides.insert(0, self.get_video_slide())
-        elif self.can_make_mosaic():
-            # prepend a mosaic slide
-            self.slides.insert(0, self.get_mosaic_slide())
+        self.slides = []
+        if audio_slides:
+            # put audio player first, because it will work more reliably than emulators...
+            # but prefer video if there is one.
+            # => video, audio, emu, screenshot
+            if self.videos:
+                # prepend a video slide
+                self.slides.append(self.get_video_slide())
+            self.slides += audio_slides + emu_slides + screenshot_slides
+        else:
+            # encourage people to watch things in emulators rather than youtube...
+            # => emu, video, screenshot
+            self.slides = emu_slides
+            if not emu_slides and self.videos:
+                # add a video slide
+                self.slides.append(self.get_video_slide())
+            self.slides += screenshot_slides
+
+            if not emu_slides and not self.videos and self.can_make_mosaic():
+                # prepend a mosaic slide
+                self.slides.insert(0, self.get_mosaic_slide())
 
     @cached_property
     def screenshots(self):
@@ -84,6 +102,41 @@ class Carousel(object):
             'data': self.get_mosaic_data()
         }
 
+    def get_slide_background_data(self):
+        """Return background image data for a video slide"""
+        data = {}
+        if self.can_make_mosaic():
+            data['mosaic'] = self.get_mosaic_data()
+        else:
+            thumbnail_url = None
+            # Use a single screenshot as the background - preferably one of ours, if we have one
+            if len(self.processed_screenshots) >= 1:
+                screenshot = random.choice(self.processed_screenshots)
+                thumbnail_url = screenshot.standard_url
+                thumbnail_width = screenshot.standard_width
+                thumbnail_height = screenshot.standard_height
+            elif self.videos:
+                # we don't have any screenshots, so use the probably crappy one extracted from
+                # the video provider
+                video = self.videos[0]
+                thumbnail_url = video.thumbnail_url
+                thumbnail_width = video.thumbnail_width
+                thumbnail_height = video.thumbnail_height
+
+            if thumbnail_url:
+                # resize to 400x300 max
+                if thumbnail_width > 400 or thumbnail_height > 300:
+                    scale_factor = min(400.0 / thumbnail_width, 300.0 / thumbnail_height)
+                    data['thumbnail_width'] = round(thumbnail_width * scale_factor)
+                    data['thumbnail_height'] = round(thumbnail_height * scale_factor)
+                else:
+                    data['thumbnail_width'] = thumbnail_width
+                    data['thumbnail_height'] = thumbnail_height
+
+                data['thumbnail_url'] = thumbnail_url
+
+        return data
+
     def get_video_slide(self):
         """Return the data for a video slide"""
         video = self.videos[0]
@@ -97,32 +150,7 @@ class Carousel(object):
             ),
         }
 
-        if self.can_make_mosaic():
-            video_data['mosaic'] = self.get_mosaic_data()
-        else:
-            # Use a single screenshot as the background - preferably one of ours, if we have one
-            if len(self.processed_screenshots) >= 1:
-                screenshot = random.choice(self.processed_screenshots)
-                thumbnail_url = screenshot.standard_url
-                thumbnail_width = screenshot.standard_width
-                thumbnail_height = screenshot.standard_height
-            else:
-                # we don't have any screenshots, so use the probably crappy one extracted from
-                # the video provider
-                thumbnail_url = video.thumbnail_url
-                thumbnail_width = video.thumbnail_width
-                thumbnail_height = video.thumbnail_height
-
-            # resize to 400x300 max
-            if thumbnail_width > 400 or thumbnail_height > 300:
-                scale_factor = min(400.0 / thumbnail_width, 300.0 / thumbnail_height)
-                video_data['thumbnail_width'] = round(thumbnail_width * scale_factor)
-                video_data['thumbnail_height'] = round(thumbnail_height * scale_factor)
-            else:
-                video_data['thumbnail_width'] = thumbnail_width
-                video_data['thumbnail_height'] = thumbnail_height
-
-            video_data['thumbnail_url'] = thumbnail_url
+        video_data.update(self.get_slide_background_data())
 
         return {
             'type': 'video',
@@ -131,20 +159,12 @@ class Carousel(object):
             'data': video_data,
         }
 
-    _audio_tracks = None
-    _audio_media = None
-
-    @property
-    def audio_tracks(self):
-        if self._audio_tracks is None:  # pragma: no cover
-            self._audio_tracks, self._audio_media = get_playable_track_data(self.production)
-        return self._audio_tracks
-
-    @property
-    def audio_media(self):
-        if self._audio_media is None:
-            self._audio_tracks, self._audio_media = get_playable_track_data(self.production)
-        return self._audio_media
+    def fetch_launchable_data(self):
+        self.audio_tracks, audio_media = get_playable_track_data(self.production)
+        self.emu_configs = self.production.emulator_configs.all()
+        self.media = audio_media
+        for emu_config in self.emu_configs:
+            self.media += emu_config.media
 
     def get_audio_slides(self):
         slides = []
@@ -170,6 +190,23 @@ class Carousel(object):
                 'data': track_data
             })
 
+        return slides
+
+    def get_emulator_slides(self):
+        slides = []
+        for emu_config in self.emu_configs:
+            slide = {
+                'type': 'emulator',
+                'id': 'emulator-%s' % emu_config.id,
+                'is_processing': False,
+                'data': {
+                    'emulator': emu_config.emulator,
+                    'launchUrl': emu_config.launch_url,
+                    'configuration': json.loads(emu_config.configuration or None),
+                },
+            }
+            slide['data'].update(self.get_slide_background_data())
+            slides.append(slide)
         return slides
 
     def get_slides_json(self):

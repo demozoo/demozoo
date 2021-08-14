@@ -768,11 +768,25 @@ class InfoFile(TextFile):
         verbose_name_plural = 'info files'
 
 
+EMULATOR_CHOICES = [
+    ('jsspeccy', 'JSSpeccy'),
+]
+
+
 class EmulatorConfig(models.Model):
     production = models.ForeignKey(Production, related_name='emulator_configs', on_delete=models.CASCADE)
-    emulator = models.CharField(max_length=30)
+    emulator = models.CharField(max_length=30, choices=EMULATOR_CHOICES)
     launch_url = models.URLField(max_length=4096)
     configuration = models.TextField(blank=True)
 
     def __str__(self):
         return "%s on %s" % (self.production.title, self.emulator)
+
+    @property
+    def media(self):
+        if self.emulator == 'jsspeccy':
+            return Media(js=[
+                'productions/js/jsspeccy/jsspeccy.js',
+            ])
+        else:
+            return Media()

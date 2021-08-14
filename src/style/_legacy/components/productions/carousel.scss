@@ -95,7 +95,8 @@
     }
 
     .screenshot,
-    .video {
+    .video,
+    .emulator {
         width: $carouselWidth;
         height: $carouselHeight;
         display: inline-block;
@@ -114,7 +115,7 @@
         }
     }
 
-    .video {
+    .video, .emulator {
         position: relative;
 
         .play {

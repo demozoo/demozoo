@@ -41,6 +41,7 @@
     };
 
     window.MediaLightbox.prototype.close = function() {
+        this.detach();
         $(window).unbind('resize', this.onResize);
         $(window).unbind('keydown', this.onKeydown);
         this.overlay.remove();
