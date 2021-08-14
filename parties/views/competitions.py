@@ -68,7 +68,13 @@ def edit(request, competition_id):
             'shown_date': competition.shown_date,
         })
 
-    competition_placings = [placing.json_data for placing in competition.results()]
+    competition_placings = [
+        placing.json_data
+        for placing in competition.results().prefetch_related(
+            'production', 'production__author_nicks', 'production__author_affiliation_nicks',
+            'production__platforms', 'production__types',
+        )
+    ]
 
     competition_placings_json = json.dumps(competition_placings)
 
