@@ -36,4 +36,4 @@ admin.site.register(
 
 TagAdmin.inlines = []
 
-admin.site.register(EmulatorConfig, raw_id_fields=['production'])
+admin.site.register(EmulatorConfig, raw_id_fields=['production'], search_fields=['production__title'])

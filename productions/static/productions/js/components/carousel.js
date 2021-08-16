@@ -300,12 +300,16 @@
         if (this.data.emulator == 'jsspeccy') {
             var emuElement = document.createElement('div');
             lightbox.mediaWrapper.append(emuElement);
-            jsspeccy = JSSpeccy(
-                emuElement, {
-                    zoom: 1, sandbox: true, autoStart: true, autoLoadTapes: true, tapeAutoLoadMode: 'usr0',
-                    openUrl: this.data.launchUrl,
+            var config = {
+                zoom: 1, sandbox: true, autoStart: true, autoLoadTapes: true, tapeAutoLoadMode: 'usr0',
+                openUrl: this.data.launchUrl
+            }
+            if (this.data.configuration) {
+                for (key in this.data.configuration) {
+                    config[key] = this.data.configuration[key];
                 }
-            );
+            }
+            jsspeccy = JSSpeccy(emuElement, config);
             /* hack CSS to make close button clickable again */
             emuElement.firstChild.style.position = 'static';
 
