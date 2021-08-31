@@ -1657,6 +1657,22 @@ class TelnetBBSGuideBBS(UrlPattern):
     site = telnetbbsguide
     pattern = '/bbs/<slug>/'
 
+class LinkedInUser(UrlPattern):
+    site = Site("LinkedIn", url='https://www.linkedin.com/', classname="linkedin")
+    pattern = '/in/<slug>'
+
+class InstagramAccount(UrlPattern):
+    site = Site("Instagram", url='https://www.instagram.com/', classname="instagram")
+    pattern = '/<slug>'
+
+class PolyworkUser(UrlPattern):
+    site = Site("Polywork", url='https://www.polywork.com/', classname="polywork", allowed_hostnames=['www.polywork.com', 'poly.work'])
+    pattern = '/<slug>'
+
+class TikTokUser(UrlPattern):
+    site = Site("TikTok", url='https://www.tiktok.com/', classname="tiktok")
+    pattern = '/@<slug>/'
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1672,6 +1688,7 @@ RELEASER_LINK_TYPES = [
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
     SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
+    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1712,13 +1729,13 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, WaybackMachinePage, BaseUrl,
+    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount, WaybackMachinePage, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
     PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group, TelnetBBSGuideBBS,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
-    SpeccyWikiPage, AtarikiEntry,
+    SpeccyWikiPage, AtarikiEntry, InstagramAccount,
     WaybackMachinePage, BaseUrl
 ]
 
