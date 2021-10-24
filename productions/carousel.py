@@ -34,7 +34,7 @@ class Carousel(object):
         else:
             # encourage people to watch things in emulators rather than youtube...
             # => emu, video, screenshot
-            self.slides = emu_slides
+            self.slides = emu_slides.copy()
             if not emu_slides and self.videos:
                 # add a video slide
                 self.slides.append(self.get_video_slide())
