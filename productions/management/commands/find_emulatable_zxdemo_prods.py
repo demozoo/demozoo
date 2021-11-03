@@ -3,8 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from io import BytesIO
 from zipfile import BadZipFile, ZipFile
 
-from django.core.management.base import BaseCommand
 import requests
+from django.core.management.base import BaseCommand
 
 from productions.models import EmulatorConfig, ProductionLink
 
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             ext = prod_link.parameter.split('.')[-1].lower()
             if ext != 'zip':
                 continue
-            
+
             if EmulatorConfig.objects.filter(launch_url=prod_link.parameter).exists():
                 continue  # pragma: no cover
 

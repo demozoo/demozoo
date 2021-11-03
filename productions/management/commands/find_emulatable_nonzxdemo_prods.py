@@ -1,6 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-from io import BytesIO
 from os.path import splitext
 from socket import timeout
 from time import sleep
@@ -11,7 +10,7 @@ from zipfile import BadZipFile
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from mirror.actions import fetch_link, FileTooBig
+from mirror.actions import FileTooBig, fetch_link
 from productions.models import EmulatorConfig, Production, ProductionLink
 from screenshots.processing import upload_to_s3
 
@@ -87,7 +86,10 @@ class Command(BaseCommand):
                             if loadable_file_count == 1:
                                 sha1 = download.sha1
                                 basename, file_ext = splitext(download.filename)
-                                filename = 'emulation/' + sha1[0:2] + '/' + sha1[2:4] + '/' + slugify(basename) + file_ext
+                                filename = (
+                                    'emulation/' + sha1[0:2] + '/' + sha1[2:4] + '/' +
+                                    slugify(basename) + file_ext
+                                )
                                 new_url = upload_to_s3(download.as_io_buffer(), filename)
                                 EmulatorConfig.objects.create(
                                     production_id=prod.id,
@@ -104,4 +106,4 @@ class Command(BaseCommand):
                     sleep(1)
 
                 if success:
-                    break;
+                    break

@@ -2,12 +2,12 @@ from __future__ import absolute_import, unicode_literals
 
 import os.path
 
+import responses
 from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
-import responses
 
 from productions.models import Production, ProductionLink
 
@@ -265,7 +265,6 @@ class TestFindEmulatableNonZxdemoProds(TestCase):
         with captured_stdout():
             call_command('find_emulatable_nonzxdemo_prods')
         self.assertEqual(pondlife.emulator_configs.count(), 1)
-
 
     @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
     @patch('boto3.Session')
