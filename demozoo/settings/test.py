@@ -104,7 +104,7 @@ def mock_response(req):
             <body></body>
         </html>
         """
-    elif url == 'https://www.youtube.com/watch?v=404':
+    elif url == 'https://www.youtube.com/watch?v=404' or url == 'http://example.com/badtapfile.tap':
         resp = urllib.response.addinfourl(
             io.StringIO("not found"),
             {},
@@ -232,8 +232,18 @@ def mock_response(req):
         body = "hello from pondlife2.txt"
     elif url == 'http://example.com/cybrev.mod':
         body = "hello from cybrev.mod"
+    elif url == 'http://example.com/pondlife.tap':
+        body = "hello from pondlife.tap"
     elif url == 'http://example.com/rubber.zip':
         path = os.path.join(FILEROOT, 'mirror', 'test_media', 'rubber.zip')  # noqa
+        with open(path, 'rb') as f:
+            body = f.read()
+    elif url == 'http://example.com/zxwister.zip':
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'zxwister.zip')  # noqa
+        with open(path, 'rb') as f:
+            body = f.read()
+    elif url == 'http://example.com/zxwister2.zip':
+        path = os.path.join(FILEROOT, 'mirror', 'test_media', 'zxwister2.zip')  # noqa
         with open(path, 'rb') as f:
             body = f.read()
     elif url == 'http://example.com/rubberbadimage.zip':

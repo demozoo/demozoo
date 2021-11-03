@@ -192,3 +192,107 @@ class TestFindEmulatableZxdemoProds(TestCase):
             call_command('find_emulatable_zxdemo_prods')
         self.assertEqual(pondlife.emulator_configs.count(), 1)
         zxwister.close()
+
+
+class TestFindEmulatableNonZxdemoProds(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
+    @patch('boto3.Session')
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.upload_to_s3')
+    def test_run_link_without_emulatable_file(self, upload_to_s3, Session, sleep):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='PouetProduction', parameter='1234',
+            is_download_link=False
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife2.txt',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/real-big-file.txt',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/rubber.zip',
+            is_download_link=True
+        )
+        upload_to_s3.return_value = 'http://s3.example.com/rubber.zip'
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_nonzxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
+    @patch('boto3.Session')
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.upload_to_s3')
+    def test_run_link_with_bad_zipfile(self, upload_to_s3, Session, sleep):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/badzipfile.zip',
+            is_download_link=True
+        )
+        upload_to_s3.return_value = 'http://s3.example.com/badzipfile.zip'
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_nonzxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
+    @patch('boto3.Session')
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.upload_to_s3')
+    def test_run_link_with_emulatable_file_in_zip(self, upload_to_s3, Session, sleep):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='PouetProduction', parameter='1234',
+            is_download_link=False
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife2.txt',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/badtapfile.tap',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/zxwister.zip',
+            is_download_link=True
+        )
+        upload_to_s3.return_value = 'http://s3.example.com/zxwister.zip'
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_nonzxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 1)
+
+
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
+    @patch('boto3.Session')
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.upload_to_s3')
+    def test_run_link_with_multiple_emulatable_files_in_zip(self, upload_to_s3, Session, sleep):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/zxwister2.zip',
+            is_download_link=True
+        )
+        upload_to_s3.return_value = 'http://s3.example.com/zxwister2.zip'
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_nonzxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.sleep')
+    @patch('boto3.Session')
+    @patch('productions.management.commands.find_emulatable_nonzxdemo_prods.upload_to_s3')
+    def test_run_link_with_emulatable_file_not_in_zip(self, upload_to_s3, Session, sleep):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='http://example.com/pondlife.tap',
+            is_download_link=True
+        )
+        upload_to_s3.return_value = 'http://s3.example.com/pondlife.tap'
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_nonzxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 1)

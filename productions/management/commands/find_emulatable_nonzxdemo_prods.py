@@ -74,7 +74,7 @@ class Command(BaseCommand):
                     else:
                         try:
                             zip = download.as_zipfile()
-                        except BadZipFile:
+                        except BadZipFile:  # pragma: no cover
                             print("- bad zip :-(")
                         else:
                             loadable_file_count = 0
