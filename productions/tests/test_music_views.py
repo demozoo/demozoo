@@ -29,6 +29,21 @@ class TestShowMusic(TestCase):
         response = self.client.get('/music/%d/' % cybrev.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_video_and_audio(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        cybrev.links.create(
+            link_class='ModlandFile', parameter='/artists/gasman/cybernoids_revenge.vtx', is_download_link=True
+        )
+        # hack to stop ProductionLink.save from clearing embed details on link change
+        cybrev.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=False)
+        cybrev.links.filter(link_class='BaseUrl').update(
+            link_class='YoutubeVideo', parameter='1lFBXWxSrKE',
+            thumbnail_url='http://example.com/yt.png', thumbnail_width=640, thumbnail_height=480
+        )
+
+        response = self.client.get('/music/%d/' % cybrev.id)
+        self.assertEqual(response.status_code, 200)
+
     def test_get_with_artwork(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
         cybrev.links.create(

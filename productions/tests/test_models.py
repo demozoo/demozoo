@@ -157,3 +157,14 @@ class TestPackMember(TestCase):
         madrielle = Production.objects.get(title='Madrielle')
         pack_member = PackMember(pack=pondlife, member=madrielle, position=1)
         self.assertEqual(str(pack_member), "Madrielle packed in Pondlife")
+
+
+class TestEmulatorConfig(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_str(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        emu_config = pondlife.emulator_configs.create(
+            emulator='jsspeccy', launch_url='https://files.zxdemo.org/pondlife.zip'
+        )
+        self.assertEqual(str(emu_config), "Pondlife on jsspeccy")

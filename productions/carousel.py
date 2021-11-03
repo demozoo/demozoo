@@ -202,7 +202,7 @@ class Carousel(object):
                 'data': {
                     'emulator': emu_config.emulator,
                     'launchUrl': emu_config.launch_url,
-                    'configuration': json.loads(emu_config.configuration or None),
+                    'configuration': json.loads(emu_config.configuration or 'null'),
                 },
             }
             slide['data'].update(self.get_slide_background_data())

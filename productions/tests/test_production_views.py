@@ -95,6 +95,21 @@ class TestShowProduction(TestCase):
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_with_jsspeccy(self):
+        pondlife = Production.objects.get(title="Pondlife")
+
+        pondlife.emulator_configs.create(emulator='jsspeccy', launch_url='https://files.zxdemo.org/pondlife.zip')
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'productions/js/jsspeccy/jsspeccy.js')
+
+    def test_get_with_other_emulator(self):
+        pondlife = Production.objects.get(title="Pondlife")
+
+        pondlife.emulator_configs.create(emulator='dosbox', launch_url='https://files.zxdemo.org/pondlife.zip')
+        response = self.client.get('/productions/%d/' % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
     def test_get_with_big_video(self):
         pondlife = Production.objects.get(title="Pondlife")
 
