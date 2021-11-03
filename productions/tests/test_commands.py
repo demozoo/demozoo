@@ -1,9 +1,13 @@
 from __future__ import absolute_import, unicode_literals
 
+import os.path
+
+from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
+import responses
 
 from productions.models import Production, ProductionLink
 
@@ -140,3 +144,51 @@ class TestPurgeDeadYoutubeLinks(TestCase):
             call_command('purge_dead_youtube_links')
 
         clean_dead_youtube_link.delay.assert_called_once_with(link.id)
+
+
+class TestFindEmulatableZxdemoProds(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    @responses.activate
+    def test_run(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='https://files.zxdemo.org/pondlife2.txt',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='https://files.zxdemo.org/zxwister.zip',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='https://files.zxdemo.org/badzipfile.zip',
+            is_download_link=True
+        )
+        pondlife.links.create(
+            link_class='BaseUrl', parameter='https://files.zxdemo.org/brokenlink.zip',
+            is_download_link=True
+        )
+
+        responses.add(
+            responses.GET, 'https://files.zxdemo.org/pondlife2.txt',
+            body="just a text file"
+        )
+        responses.add(
+            responses.GET, 'https://files.zxdemo.org/badzipfile.zip',
+            body="she wishes that she'd gone to the party on the sun"
+        )
+        path = os.path.join(settings.FILEROOT, 'mirror', 'test_media', 'zxwister.zip')  # noqa
+        zxwister = open(path, 'rb')
+        responses.add(
+            responses.GET, 'https://files.zxdemo.org/zxwister.zip',
+            body=zxwister
+        )
+
+        self.assertEqual(pondlife.emulator_configs.count(), 0)
+        with captured_stdout():
+            call_command('find_emulatable_zxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 1)
+        with captured_stdout():
+            call_command('find_emulatable_zxdemo_prods')
+        self.assertEqual(pondlife.emulator_configs.count(), 1)
+        zxwister.close()

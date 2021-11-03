@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 continue
             
             if EmulatorConfig.objects.filter(launch_url=prod_link.parameter).exists():
-                continue
+                continue  # pragma: no cover
 
             try:
                 r = requests.get(prod_link.parameter)
