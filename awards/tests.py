@@ -10,7 +10,7 @@ from requests.exceptions import HTTPError
 
 from awards.models import Category, Event, Juror, Recommendation
 from demoscene.models import SceneID
-from productions.models import Production
+from productions.models import Production, ProductionType
 
 
 class TestModels(TestCase):
@@ -42,6 +42,23 @@ class TestRecommendations(TestCase):
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "Recommend this production for The Meteoriks 2020!")
+
+    def test_recommendation_prompt_not_shown_for_non_matching_prod_type(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        response = self.client.get('/productions/%d/' % brexecutable.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Recommend this production for The Meteoriks 2020!")
+
+    def test_recommendation_prompt_shown_for_matching_prod_type(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        brexecutable.types.set([ProductionType.objects.get(name="4K Intro")])
+        response = self.client.get('/productions/%d/' % brexecutable.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Recommend this production for The Meteoriks 2020!")
 
     def test_categories_pre_ticked(self):
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")

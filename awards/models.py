@@ -3,8 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 
-from productions.models import Production
+from productions.models import Production, ProductionType
 
 
 class Event(models.Model):
@@ -19,6 +20,11 @@ class Event(models.Model):
     )
     eligibility_end_date = models.DateField(
         help_text="Latest release date a production can have to be considered for these awards"
+    )
+
+    production_types = models.ManyToManyField(
+        ProductionType, blank=True,
+        help_text="If set, these awards only accept recommendations for productions of these types"
     )
 
     recommendations_enabled = models.BooleanField(
@@ -42,10 +48,23 @@ class Event(models.Model):
         if production.release_date_date is None:
             return cls.objects.none()
 
+        # retrieve all production types that are ancestors (including self) of any production
+        # type of this production
+        prod_types_q = Q(pk__in=[])  # always false
+        for prod_type in production.types.all():
+            paths = [
+                prod_type.path[0:pos]
+                for pos in range(prod_type.steplen, len(prod_type.path) + 1, prod_type.steplen)
+            ]
+            prod_types_q |= Q(path__in=paths)
+        prod_types = list(ProductionType.objects.filter(prod_types_q))
+
         return cls.objects.filter(
             recommendations_enabled=True,
             eligibility_start_date__lte=production.release_date_date,
             eligibility_end_date__gte=production.release_date_date,
+        ).filter(
+            Q(production_types__isnull=True) | Q(production_types__in=prod_types)
         )
 
     @classmethod
