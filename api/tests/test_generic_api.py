@@ -4,6 +4,7 @@ import json
 
 from django.test import TestCase, override_settings
 
+from bbs.models import BBS
 from parties.models import Party, PartySeries
 
 
@@ -143,3 +144,22 @@ class TestParties(TestCase):
 
         response_data = json.loads(response.content)
         self.assertEqual(response_data['name'], "Forever 2e3")
+
+
+class TestBBSes(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get_bbses(self):
+        response = self.client.get('/api/v1/bbses/')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertIn("StarPort", [result['name'] for result in response_data['results']])
+
+    def test_get_bbs(self):
+        starport = BBS.objects.get(name='StarPort')
+        response = self.client.get('/api/v1/bbses/%d/' % starport.id)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['name'], "StarPort")

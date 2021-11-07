@@ -14,6 +14,7 @@ router.register(r'releasers', generic.ReleaserViewSet)
 router.register(r'platforms', generic.PlatformViewSet)
 router.register(r'party_series', generic.PartySeriesViewSet)
 router.register(r'parties', generic.PartyViewSet)
+router.register(r'bbses', generic.BBSViewSet)
 
 
 urlpatterns = [
