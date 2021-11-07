@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 from django.conf import settings
 from rest_framework import serializers
 
+from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 from platforms.models import Platform
@@ -128,6 +129,19 @@ class CompetitionPlacingCompetitionSerializer(serializers.ModelSerializer):
         model = Competition
         fields = [
             'id', 'name', 'party'
+        ]
+
+
+class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
+    demozoo_url = serializers.SerializerMethodField(read_only=True)
+
+    def get_demozoo_url(self, bbs):
+        return settings.BASE_URL + bbs.get_absolute_url()
+
+    class Meta:
+        model = BBS
+        fields = [
+            'url', 'demozoo_url', 'id', 'name', 'location'
         ]
 
 
@@ -342,4 +356,46 @@ class PartySeriesSerializer(serializers.HyperlinkedModelSerializer):
         model = PartySeries
         fields = [
             'url', 'demozoo_url', 'id', 'name', 'website', 'parties'
+        ]
+
+
+class BBSOperatorSerializer(serializers.ModelSerializer):
+    releaser = ReleaserSummarySerializer(read_only=True)
+
+    class Meta:
+        model = Operator
+        fields = ['releaser', 'role', 'is_current']
+
+
+class BBSAffiliationSerializer(serializers.ModelSerializer):
+    group = ReleaserSummarySerializer(read_only=True)
+
+    class Meta:
+        model = Affiliation
+        fields = ['group', 'role']
+
+
+class BBSSerializer(serializers.HyperlinkedModelSerializer):
+    demozoo_url = serializers.SerializerMethodField(read_only=True)
+    bbstros = ProductionListingSerializer(many=True, read_only=True)
+    staff = serializers.SerializerMethodField(read_only=True)
+    affiliations = serializers.SerializerMethodField(read_only=True)
+
+    def get_demozoo_url(self, bbs):
+        return settings.BASE_URL + bbs.get_absolute_url()
+
+    def get_staff(self, bbs):
+        operators = bbs.staff.select_related('releaser')
+        return BBSOperatorSerializer(instance=operators, many=True, context=self.context).data
+
+    def get_affiliations(self, bbs):
+        affiliations = bbs.affiliations.select_related('group')
+        return BBSAffiliationSerializer(instance=affiliations, many=True, context=self.context).data
+
+    class Meta:
+        model = BBS
+        fields = [
+            'url', 'demozoo_url', 'id', 'name',
+            'location', 'country_code', 'latitude', 'longitude',
+            'bbstros', 'staff', 'affiliations',
         ]

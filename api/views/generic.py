@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api import serializers
+from bbs.models import BBS
 from demoscene.models import Releaser
 from parties.models import Party, PartySeries
 from platforms.models import Platform
@@ -79,3 +80,9 @@ class PartyViewSet(ListDetailModelViewSet):
     queryset = Party.objects.all()
     list_serializer_class = serializers.PartyListingSerializer
     serializer_class = serializers.PartySerializer
+
+
+class BBSViewSet(ListDetailModelViewSet):
+    queryset = BBS.objects.all()
+    list_serializer_class = serializers.BBSListingSerializer
+    serializer_class = serializers.BBSSerializer
