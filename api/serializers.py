@@ -141,7 +141,8 @@ class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BBS
         fields = [
-            'url', 'demozoo_url', 'id', 'name', 'location'
+            'url', 'demozoo_url', 'id', 'name', 'location',
+            'latitude', 'longitude'
         ]
 
 
