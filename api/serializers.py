@@ -63,6 +63,7 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
     release_date = serializers.SerializerMethodField(read_only=True)
     platforms = PlatformSerializer(many=True, read_only=True)
     types = ProductionTypeSummarySerializer(many=True, read_only=True)
+    tags = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, production):
         return settings.BASE_URL + production.get_absolute_url()
@@ -71,11 +72,14 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
         release_date = production.release_date
         return release_date and release_date.numeric_format()
 
+    def get_tags(self, production):
+        return [tag.name for tag in production.tags.all()]
+
     class Meta:
         model = Production
         fields = [
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
-            'release_date', 'supertype', 'platforms', 'types'
+            'release_date', 'supertype', 'platforms', 'types', 'tags'
         ]
 
 
@@ -134,15 +138,19 @@ class CompetitionPlacingCompetitionSerializer(serializers.ModelSerializer):
 
 class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
     demozoo_url = serializers.SerializerMethodField(read_only=True)
+    tags = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, bbs):
         return settings.BASE_URL + bbs.get_absolute_url()
+
+    def get_tags(self, bbs):
+        return [tag.name for tag in bbs.tags.all()]
 
     class Meta:
         model = BBS
         fields = [
             'url', 'demozoo_url', 'id', 'name', 'location',
-            'latitude', 'longitude'
+            'latitude', 'longitude', 'tags',
         ]
 
 
@@ -268,6 +276,7 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
     competition_placings = ProductionCompetitionPlacingSerializer(many=True, read_only=True)
     invitation_parties = PartySummarySerializer(many=True, read_only=True)
     screenshots = ScreenshotSerializer(many=True, read_only=True)
+    tags = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, production):
         return settings.BASE_URL + production.get_absolute_url()
@@ -276,13 +285,16 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
         release_date = production.release_date
         return release_date and release_date.numeric_format()
 
+    def get_tags(self, bbs):
+        return [tag.name for tag in bbs.tags.all()]
+
     class Meta:
         model = Production
         fields = [
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
             'release_date', 'supertype', 'platforms', 'types', 'credits', 'download_links',
             'external_links', 'release_parties', 'competition_placings', 'invitation_parties',
-            'screenshots',
+            'screenshots', 'tags',
         ]
 
 
@@ -381,6 +393,7 @@ class BBSSerializer(serializers.HyperlinkedModelSerializer):
     bbstros = ProductionListingSerializer(many=True, read_only=True)
     staff = serializers.SerializerMethodField(read_only=True)
     affiliations = serializers.SerializerMethodField(read_only=True)
+    tags = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, bbs):
         return settings.BASE_URL + bbs.get_absolute_url()
@@ -393,10 +406,13 @@ class BBSSerializer(serializers.HyperlinkedModelSerializer):
         affiliations = bbs.affiliations.select_related('group')
         return BBSAffiliationSerializer(instance=affiliations, many=True, context=self.context).data
 
+    def get_tags(self, bbs):
+        return [tag.name for tag in bbs.tags.all()]
+
     class Meta:
         model = BBS
         fields = [
             'url', 'demozoo_url', 'id', 'name',
             'location', 'country_code', 'latitude', 'longitude',
-            'bbstros', 'staff', 'affiliations',
+            'bbstros', 'staff', 'affiliations', 'tags'
         ]
