@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import responses
 from django.contrib.auth.models import User
 from django.core.management import call_command
