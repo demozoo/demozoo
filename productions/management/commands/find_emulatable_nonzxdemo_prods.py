@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from os.path import splitext
 from socket import timeout
 from time import sleep

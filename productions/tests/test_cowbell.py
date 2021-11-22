@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.test import TestCase
 
 from productions.cowbell import identify_link_as_track
