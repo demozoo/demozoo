@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 

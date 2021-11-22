@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from productions.forms import CreateMusicForm, MusicIndexFilterForm
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView
 

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 from comments.models import Comment
 
 from .utils import CommentTestCase

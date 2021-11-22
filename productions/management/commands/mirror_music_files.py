@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import time
 import urllib
 from os.path import splitext

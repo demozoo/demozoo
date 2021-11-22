@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import markdown
 from bleach.sanitizer import Cleaner
 from django import template
