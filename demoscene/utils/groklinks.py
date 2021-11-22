@@ -1657,17 +1657,24 @@ class TelnetBBSGuideBBS(UrlPattern):
     site = telnetbbsguide
     pattern = '/bbs/<slug>/'
 
+
 class LinkedInUser(UrlPattern):
     site = Site("LinkedIn", url='https://www.linkedin.com/', classname="linkedin")
     pattern = '/in/<slug>'
+
 
 class InstagramAccount(UrlPattern):
     site = Site("Instagram", url='https://www.instagram.com/', classname="instagram")
     pattern = '/<slug>'
 
+
 class PolyworkUser(UrlPattern):
-    site = Site("Polywork", url='https://www.polywork.com/', classname="polywork", allowed_hostnames=['www.polywork.com', 'poly.work'])
+    site = Site(
+        "Polywork", url='https://www.polywork.com/', classname="polywork",
+        allowed_hostnames=['www.polywork.com', 'poly.work']
+    )
     pattern = '/<slug>'
+
 
 class TikTokUser(UrlPattern):
     site = Site("TikTok", url='https://www.tiktok.com/', classname="tiktok")
