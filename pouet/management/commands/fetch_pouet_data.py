@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 })
                 group_db_ids[group_data['id']] = group.id
                 groups_imported += 1
-                if groups_imported % 1000 == 0:
+                if groups_imported % 1000 == 0:  # pragma: no cover
                     print("%d groups imported" % groups_imported)
 
                 if created:
@@ -71,7 +71,7 @@ class Command(BaseCommand):
                 ])
 
                 prods_imported += 1
-                if prods_imported % 1000 == 0:
+                if prods_imported % 1000 == 0:  # pragma: no cover
                     print("%d prods imported" % prods_imported)
 
                 if created:
