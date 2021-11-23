@@ -81,3 +81,8 @@ class Command(BaseCommand):
         json.load(prods_file, object_hook=handle_prod)
         prods_file.close()
         print("done. %d prods imported, of which %d newly created" % (prods_imported, prods_created))
+
+        # garbage-collect productions / groups that haven't been seen for 30 days (i.e. have been deleted from Pouet)
+        last_month = datetime.datetime.now() - datetime.timedelta(days=30)
+        Production.objects.filter(last_seen_at__lt=last_month).delete()
+        Group.objects.filter(last_seen_at__lt=last_month).delete()
