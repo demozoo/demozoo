@@ -7,25 +7,50 @@ from pouet.models import Production as PouetProduction
 from productions.models import Production, ProductionLink, ProductionType
 
 
-def get_match_data(releaser):
+def get_pouetable_prod_types():
     music_prod_type = ProductionType.objects.get(internal_name='music')
     gfx_prod_type = ProductionType.objects.get(internal_name='graphics')
     exe_gfx_prod_type = ProductionType.objects.get(internal_name='exe-graphics')
 
-    pouetable_prod_types = ProductionType.objects.exclude(
+    return tuple(ProductionType.objects.exclude(
         Q(path__startswith=music_prod_type.path) |
         (Q(path__startswith=gfx_prod_type.path) & ~Q(path__startswith=exe_gfx_prod_type.path))
-    )
+    ).values_list('id', flat=True))
+
+
+def get_match_data(releaser, pouetable_prod_types=None):
+    if pouetable_prod_types is None:
+        pouetable_prod_types = get_pouetable_prod_types()
 
     releaser_pouet_ids = [
         int(param)
         for param in releaser.external_links.filter(link_class='PouetGroup').values_list('parameter', flat=True)
     ]
 
-    dz_prod_candidates = list(Production.objects.filter(
-        (Q(author_nicks__releaser=releaser) | Q(author_affiliation_nicks__releaser=releaser)) &
-        Q(types__in=pouetable_prod_types)
-    ).distinct().only('id', 'title', 'supertype'))
+    nick_ids = tuple(releaser.nicks.values_list('id', flat=True))
+    dz_prod_candidates_query = Production.objects.raw("""
+        SELECT DISTINCT
+            "productions_production"."id", "productions_production"."title",
+            "productions_production"."supertype", "productions_production"."sortable_title"
+        FROM
+            "productions_production"
+            INNER JOIN "productions_production_types" ON (
+                "productions_production"."id" = "productions_production_types"."production_id"
+            )
+        WHERE
+            (
+                productions_production.id in (
+                    select production_id from productions_production_author_nicks where nick_id in %s
+                )
+                OR productions_production.id in (
+                    select production_id from productions_production_author_affiliation_nicks where nick_id in %s
+                )
+            )
+            AND "productions_production_types"."productiontype_id" IN %s
+        ORDER BY
+            productions_production.sortable_title
+    """, [nick_ids, nick_ids, pouetable_prod_types])
+    dz_prod_candidates = list(dz_prod_candidates_query)
 
     pouet_prod_candidates = list(
         PouetProduction.objects.filter(groups__pouet_id__in=releaser_pouet_ids).order_by('name')
@@ -74,8 +99,10 @@ def get_match_data(releaser):
     return unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods
 
 
-def automatch_productions(releaser):
-    unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = get_match_data(releaser)
+def automatch_productions(releaser, pouetable_prod_types=None):
+    unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = (
+        get_match_data(releaser, pouetable_prod_types=pouetable_prod_types)
+    )
 
     matched_production_count = len(matched_prods)
     unmatched_demozoo_production_count = len(unmatched_demozoo_prods)
@@ -91,6 +118,8 @@ def automatch_productions(releaser):
     for id, title, url in unmatched_pouet_prods:
         prods_by_name[title.lower()][1].append(id)
 
+    any_matched = False
+
     for title, (demozoo_ids, pouet_ids) in prods_by_name.items():
         if len(demozoo_ids) == 1 and len(pouet_ids) == 1:
             ProductionLink.objects.create(
@@ -103,11 +132,13 @@ def automatch_productions(releaser):
             matched_production_count += 1
             unmatched_demozoo_production_count -= 1
             unmatched_pouet_production_count -= 1
+            any_matched = True
 
-    GroupMatchInfo.objects.update_or_create(
-        releaser_id=releaser.id, defaults={
-            'matched_production_count': matched_production_count,
-            'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
-            'unmatched_pouet_production_count': unmatched_pouet_production_count,
-        }
-    )
+    if any_matched:
+        GroupMatchInfo.objects.update_or_create(
+            releaser_id=releaser.id, defaults={
+                'matched_production_count': matched_production_count,
+                'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
+                'unmatched_pouet_production_count': unmatched_pouet_production_count,
+            }
+        )
