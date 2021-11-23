@@ -17,9 +17,10 @@ class Command(BaseCommand):
         days_since_wednesday = (today.weekday() - 2) % 7
         wednesday = today - datetime.timedelta(days=days_since_wednesday)
         datestamp = wednesday.strftime('%Y%m%d')
+        monthstamp = wednesday.strftime('%Y%m')
 
         print("importing groups...")
-        groups_url = "https://data.pouet.net/dumps/202111/pouetdatadump-groups-%s.json.gz" % datestamp
+        groups_url = "https://data.pouet.net/dumps/%s/pouetdatadump-groups-%s.json.gz" % (monthstamp, datestamp)
         r = requests.get(groups_url, stream=True)
         groups_file = gzip.GzipFile(fileobj=r.raw)
 
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         print("done. %d groups imported, of which %d newly created" % (groups_imported, groups_created))
 
         print("importing prods...")
-        prods_url = "https://data.pouet.net/dumps/202111/pouetdatadump-prods-%s.json.gz" % datestamp
+        prods_url = "https://data.pouet.net/dumps/%s/pouetdatadump-prods-%s.json.gz" % (monthstamp, datestamp)
         r = requests.get(prods_url, stream=True)
         prods_file = gzip.GzipFile(fileobj=r.raw)
 
