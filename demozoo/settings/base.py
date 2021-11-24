@@ -247,16 +247,6 @@ CELERYBEAT_SCHEDULE = {
         "schedule": timedelta(days=1),
         "args": ()
     },
-    "pull-pouet-groups": {
-        "task": "pouet.tasks.pull_groups",
-        "schedule": timedelta(days=14),
-        "args": ()
-    },
-    # "automatch-pouet-groups": {
-    #     "task": "pouet.tasks.automatch_all_groups",
-    #     "schedule": timedelta(days=1),
-    #     "args": ()
-    # },
     # "automatch-janeway-authors": {
     #     "task": "janeway.tasks.automatch_all_authors",
     #     "schedule": timedelta(days=1),
