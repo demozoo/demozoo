@@ -9,6 +9,7 @@ from django.core.files import File
 from django.test import TestCase
 from mock import patch
 
+from bbs.models import BBS, TextAd
 from demoscene.models import Releaser
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember, Download, DownloadBlob
@@ -450,6 +451,24 @@ class TestReports(TestCase):
         # default encoding (iso-8859-1)
         self.client.login(username='testsuperuser', password='12345')
         response = self.client.get('/maintenance/prod_info_file_encoding/%d/' % info_file.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_fix_bbs_text_ad_encoding(self):
+        bbs = BBS.objects.get(name="StarPort")
+        text_ad = TextAd.objects.create(
+            bbs=bbs,
+            file=File(
+                name="starport.nfo",
+                file=BytesIO(
+                    b"a j\xf6\xf6ssi bit me \xf6nce\n"
+                )
+            ),
+            filename="starport.nfo", filesize=100, sha1="1234123412341234"
+        )
+
+        # default encoding (iso-8859-1)
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/maintenance/bbs_text_ad_encoding/%d/' % text_ad.id)
         self.assertEqual(response.status_code, 200)
 
     def test_janeway_authors_same(self):

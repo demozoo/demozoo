@@ -11,7 +11,7 @@
         <ul>
             {% for file in text_ads %}
                 <li>
-                    <a href="{# url 'maintenance:fix_bbs_text_ad_encoding' file.id #}">{{ file.filename }}</a>
+                    <a href="{% url 'maintenance:fix_bbs_text_ad_encoding' file.id %}">{{ file.filename }}</a>
                     - <strong>{{ file.bbs.name }}</strong>
                 </li>
             {% endfor %}
