@@ -1,0 +1,9 @@
+{% extends "maintenance/fix_text_file_encoding.html" %}
+
+{% block report_heading %}
+<h2>
+    <a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
+    {% if production.byline %}by {{ production.byline}}{% endif %}
+    - {{ text_file.filename }}
+</h2>
+{% endblock %}

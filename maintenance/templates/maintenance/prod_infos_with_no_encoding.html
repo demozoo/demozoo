@@ -11,7 +11,7 @@
         <ul>
             {% for file in info_files %}
                 <li>
-                    <a href="{# url 'maintenance:fix_results_file_encoding' file.id #}">{{ file.filename }}</a>
+                    <a href="{% url 'maintenance:fix_prod_info_file_encoding' file.id %}">{{ file.filename }}</a>
                     - <strong>{{ file.production.title }}</strong>
                     {% if file.production.byline %}by {{ file.production.byline }}{% endif %}
                 </li>
