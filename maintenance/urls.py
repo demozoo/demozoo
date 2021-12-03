@@ -14,6 +14,10 @@ urlpatterns = [
         r'^result_file_encoding/(\d+)/$', views.FixResultsFileEncodingView.as_view(),
         name='fix_results_file_encoding'
     ),
+    url(
+        r'^prod_info_file_encoding/(\d+)/$', views.FixProdInfoFileEncodingView.as_view(),
+        name='fix_prod_info_file_encoding'
+    ),
     url(r'^exclude$', views.exclude, name='exclude'),
     url(r'^archive_member/(\d+)/$', views.view_archive_member, name='view_archive_member'),
     url(r'^resolve_screenshot/(\d+)/(\d+)/$', views.resolve_screenshot, name='resolve_screenshot'),

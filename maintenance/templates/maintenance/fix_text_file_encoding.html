@@ -1,0 +1,77 @@
+{% extends "maintenance/base.html" %}
+{% load compress %}
+
+{% block html_title %}{{ title }} - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block extra_css %}
+    <style>
+        table.text_file {
+            font-family: dejavu_sans_monobook, monospace;
+            white-space: pre;
+            border-collapse: collapse;
+            border-spacing: 0;
+            line-height: 1em;
+        }
+        table.text_file tr.bad_encoding {
+            background-color: #fcc;
+        }
+        table.text_file tr.non_ascii {
+            background-color: yellow;
+        }
+    </style>
+{% endblock %}
+{% block extra_js %}
+    <script type="text/javascript">
+        $(function() {
+            $('#encoding').change(function() {
+                this.form.submit();
+            });
+            $('#preview_encoding').hide();
+        });
+    </script>
+{% endblock %}
+
+{% block base_main %}
+    {% block report_heading %}
+        <h2>{{ text_file.filename }}</h2>
+    {% endblock %}
+    <p><strong>Instructions:</strong> Look through the file for any lines highlighted in yellow - these are lines containing non-ASCII characters, which need a human to figure out the correct encoding. If there are dodgy accented characters or missing letters, try a different encoding from the dropdown. If it all looks good, click 'Accept this encoding'.</p>
+    <hr>
+    {% if encoding_is_valid %}
+        <ul class="actions">
+            <li>
+                <form action="{% url action_url_name text_file.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="encoding" value="{{ encoding }}">
+                    <input type="submit" value="Accept this encoding" class="action_button icon done">
+                </form>
+            </li>
+        </ul>
+    {% endif %}
+    <form action="{% url action_url_name text_file.id %}" method="GET">
+        <div>
+            <label for="encoding">Encoding</label>
+            <select id="encoding" name="encoding">
+                {% for label, optgroup in encoding_options %}
+                    <optgroup label="{{ label }}">
+                        {% for value, label in optgroup %}
+                            <option value="{{ value }}" {% if value == encoding %}selected="selected"{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endfor %}
+            </select>
+            <input type="submit" id="preview_encoding" value="Preview">
+        </div>
+    </form>
+    {% if not encoding_is_valid %}
+        <p><strong>The chosen encoding is not valid for this file</strong></p>
+    {% endif %}
+    <hr>
+    <table class="text_file">
+        {% for is_ascii, is_valid, line in file_lines %}
+            <tr {% if not is_valid %}class="bad_encoding"{% elif not is_ascii %}class="non_ascii"{% endif %}><td>{{ line }}</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}

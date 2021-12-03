@@ -14,7 +14,7 @@ from maintenance.models import Exclusion
 from mirror.models import ArchiveMember, Download, DownloadBlob
 from parties.models import Party, ResultsFile
 from platforms.models import Platform
-from productions.models import Production, ProductionLink, ProductionType
+from productions.models import InfoFile, Production, ProductionLink, ProductionType
 from sceneorg.models import Directory
 
 
@@ -425,6 +425,24 @@ class TestReports(TestCase):
         })
         self.assertRedirects(response, '/maintenance/results_with_no_encoding')
         self.assertEqual(ResultsFile.objects.get(id=results_file.id).encoding, 'iso-8859-2')
+
+    def test_fix_prod_info_file_encoding(self):
+        prod = Production.objects.get(title="Pondlife")
+        info_file = InfoFile.objects.create(
+            production=prod,
+            file=File(
+                name="pondlife.nfo",
+                file=BytesIO(
+                    b"a g\xf6\xf6se bit me \xf6nce\n"
+                )
+            ),
+            filename="pondlife.nfo", filesize=100, sha1="1234123412341234"
+        )
+
+        # default encoding (iso-8859-1)
+        self.client.login(username='testsuperuser', password='12345')
+        response = self.client.get('/maintenance/prod_info_file_encoding/%d/' % info_file.id)
+        self.assertEqual(response.status_code, 200)
 
     def test_janeway_authors_same(self):
         raww_arse_dz_id = Releaser.objects.get(name="Raww Arse").id

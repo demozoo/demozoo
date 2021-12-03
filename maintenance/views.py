@@ -1384,17 +1384,15 @@ ENCODING_OPTIONS = [
 ]
 
 
-class FixResultsFileEncodingView(TemplateView):
-    template_name = 'maintenance/fix_results_file_encoding.html'
-
+class FixTextFileEncodingView(TemplateView):
     @method_decorator(writeable_site_required)
-    def dispatch(self, request, results_file_id):
+    def dispatch(self, request, text_file_id):
         if not request.user.is_staff:
             return redirect('home')
 
-        self.results_file = get_object_or_404(ResultsFile, id=results_file_id)
+        self.text_file = get_object_or_404(self.model, id=text_file_id)
 
-        return super().dispatch(request, results_file_id)
+        return super().dispatch(request, text_file_id)
 
     def decode(self, encoding):
         # check that the encoding is one that we recognise
@@ -1406,7 +1404,7 @@ class FixResultsFileEncodingView(TemplateView):
         file_lines = []
         encoding_is_valid = True
 
-        for line in self.results_file.file:
+        for line in self.text_file.file:
             try:
                 line.decode('ascii')
                 is_ascii = True
@@ -1420,11 +1418,11 @@ class FixResultsFileEncodingView(TemplateView):
                 encoding_is_valid = False
                 file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
 
-        self.results_file.file.close()
+        self.text_file.file.close()
 
         return encoding, encoding_is_valid, file_lines
 
-    def get(self, request, results_file_id):
+    def get(self, request, text_file_id):
         encoding = request.GET.get('encoding', 'iso-8859-1')
         self.encoding, self.encoding_is_valid, self.file_lines = self.decode(encoding)
         context = self.get_context_data()
@@ -1432,22 +1430,50 @@ class FixResultsFileEncodingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return {
-            'results_file': self.results_file,
-            'party': self.results_file.party,
+            'text_file': self.text_file,
             'file_lines': self.file_lines,
             'encoding_is_valid': self.encoding_is_valid,
             'encoding': self.encoding,
             'encoding_options': ENCODING_OPTIONS,
+            'action_url_name': self.action_url_name,
         }
 
-    def post(self, request, results_file_id):
+    def post(self, request, text_file_id):
         encoding = request.POST['encoding']
         encoding, encoding_is_valid, file_lines = self.decode(encoding)
 
         if encoding_is_valid:
-            self.results_file.encoding = encoding
-            self.results_file.save()
-        return redirect('maintenance:results_with_no_encoding')
+            self.text_file.encoding = encoding
+            self.text_file.save()
+        return redirect(self.index_url_name)
+
+
+class FixResultsFileEncodingView(FixTextFileEncodingView):
+    template_name = 'maintenance/fix_results_file_encoding.html'
+    model = ResultsFile
+    index_url_name = 'maintenance:results_with_no_encoding'
+    action_url_name = 'maintenance:fix_results_file_encoding'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'party': self.text_file.party,
+        })
+        return context
+
+
+class FixProdInfoFileEncodingView(FixTextFileEncodingView):
+    template_name = 'maintenance/fix_prod_info_file_encoding.html'
+    model = InfoFile
+    index_url_name = 'maintenance:prod_infos_with_no_encoding'
+    action_url_name = 'maintenance:fix_prod_info_file_encoding'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'production': self.text_file.production,
+        })
+        return context
 
 
 class TinyIntrosWithoutDownloadLinks(Report):
