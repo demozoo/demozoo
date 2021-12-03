@@ -1504,6 +1504,20 @@ class FixProdInfoFileEncodingView(FixTextFileEncodingView):
         return context
 
 
+class FixBBSTextAdEncodingView(FixTextFileEncodingView):
+    template_name = 'maintenance/fix_bbs_text_ad_encoding.html'
+    model = TextAd
+    index_url_name = 'maintenance:bbs_text_ads_with_no_encoding'
+    action_url_name = 'maintenance:fix_bbs_text_ad_encoding'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'bbs': self.text_file.bbs,
+        })
+        return context
+
+
 class TinyIntrosWithoutDownloadLinks(Report):
     title = "Tiny intros without download links"
     template_name = 'maintenance/production_report.html'

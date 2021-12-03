@@ -1,0 +1,8 @@
+{% extends "maintenance/fix_text_file_encoding.html" %}
+
+{% block report_heading %}
+<h2>
+    <a href="{{ bbs.get_absolute_url }}">{{ bbs.name }}</a>
+    - {{ text_file.filename }}
+</h2>
+{% endblock %}
