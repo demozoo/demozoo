@@ -11,6 +11,7 @@ from django.views.generic.base import TemplateView
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
+from bbs.models import TextAd
 from comments.models import Comment
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from janeway.importing import import_author as import_janeway_author
@@ -1298,6 +1299,33 @@ class ProdInfoFilesWithNoEncoding(StaffOnlyMixin, Report):
         return context
 
 
+class BBSTextAdsWithNoEncoding(StaffOnlyMixin, Report):
+    title = "BBS text ads with unknown character encoding"
+    template_name = 'maintenance/bbs_text_ads_with_no_encoding.html'
+    name = 'bbs_text_ads_with_no_encoding'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        text_ads = (
+            TextAd.objects.filter(encoding__isnull=True).select_related('bbs')
+            .order_by('bbs__name')
+        )
+
+        paginator = Paginator(text_ads, 100)
+
+        page_num = self.request.GET.get('page', 1)
+        try:
+            page = paginator.page(page_num)
+        except (PageNotAnInteger, EmptyPage):
+            # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+            page = paginator.page(paginator.num_pages)
+
+        context.update({
+            'text_ads': page,
+        })
+        return context
+
+
 ENCODING_OPTIONS = [
     (
         'Common encodings',
@@ -1665,6 +1693,7 @@ reports = [
         [
             ResultsWithNoEncoding,
             ProdInfoFilesWithNoEncoding,
+            BBSTextAdsWithNoEncoding,
         ]
     ),
     (

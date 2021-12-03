@@ -222,6 +222,14 @@ class TestReports(TestCase):
         response = self.client.get('/maintenance/prod_infos_with_no_encoding?page=purple')
         self.assertEqual(response.status_code, 200)
 
+    def test_bbs_text_ads_with_no_encoding(self):
+        response = self.client.get('/maintenance/bbs_text_ads_with_no_encoding')
+        self.assertEqual(response.status_code, 200)
+
+    def test_bbs_text_ads_with_no_encoding_pagination(self):
+        response = self.client.get('/maintenance/bbs_text_ads_with_no_encoding?page=aquamarine')
+        self.assertEqual(response.status_code, 200)
+
     def test_tiny_intros_without_download_links(self):
         response = self.client.get('/maintenance/tiny_intros_without_download_links')
         self.assertEqual(response.status_code, 200)
