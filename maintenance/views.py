@@ -1451,7 +1451,7 @@ class FixTextFileEncodingView(TemplateView):
         return encoding, encoding_is_valid, file_lines
 
     def get(self, request, text_file_id):
-        encoding = request.GET.get('encoding', 'iso-8859-1')
+        encoding = request.GET.get('encoding', self.text_file.encoding or 'iso-8859-1')
         self.encoding, self.encoding_is_valid, self.file_lines = self.decode(encoding)
         context = self.get_context_data()
         return self.render_to_response(context)

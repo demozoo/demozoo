@@ -4,6 +4,12 @@
 {% block html_title %}{{ party.name }} results - Demozoo{% endblock %}
 
 {% block base_main %}
+    {% if request.user.is_staff %}
+        <ul class="actions">
+            <li><a href="{% url 'maintenance:fix_results_file_encoding' results_file.id %}" class="action_button icon spanner">Fix encoding</a></li>
+        </ul>
+    {% endif %}
+
     <h2>{{ party.name }} - Results</h2>
     <p><a href="{% url 'party' party.id %}">Back to party</a></p>
     <pre>{{ text }}</pre>

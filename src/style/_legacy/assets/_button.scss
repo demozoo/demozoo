@@ -121,4 +121,8 @@ a.action_button {
     &.unlocked {
         background-image: url('/static/images/icons/lock_open.png');
     }
+
+    &.spanner {
+        background-image: url('/static/images/icons/wrench.png');
+    }
 }

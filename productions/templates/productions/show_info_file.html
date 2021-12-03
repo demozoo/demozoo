@@ -4,6 +4,12 @@
 {% block html_title %}{{ production.title }} info: {{ info_file.filename }} - Demozoo{% endblock %}
 
 {% block base_main %}
+    {% if request.user.is_staff %}
+        <ul class="actions">
+            <li><a href="{% url 'maintenance:fix_prod_info_file_encoding' info_file.id %}" class="action_button icon spanner">Fix encoding</a></li>
+        </ul>
+    {% endif %}
+
     <h2>{{ production.title }} info: {{ info_file.filename }}</h2>
     <p><a href="{{ production.get_absolute_url }}">Back to production</a></p>
     <pre>{{ info_file.text }}</pre>

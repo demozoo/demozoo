@@ -343,7 +343,8 @@ def results_file(request, party_id, file_id):
     results_file = get_object_or_404(ResultsFile, party=party, id=file_id)
     return render(request, 'parties/results_file.html', {
         'party': party,
-        'text': results_file.text
+        'results_file': results_file,
+        'text': results_file.text,
     })
 
 

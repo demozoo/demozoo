@@ -4,6 +4,12 @@
 {% block html_title %}Text ad for {{ bbs.name }}: {{ text_ad.filename }} - Demozoo{% endblock %}
 
 {% block base_main %}
+    {% if request.user.is_staff %}
+        <ul class="actions">
+            <li><a href="{% url 'maintenance:fix_bbs_text_ad_encoding' text_ad.id %}" class="action_button icon spanner">Fix encoding</a></li>
+        </ul>
+    {% endif %}
+
     <h2>Text ad for {{ bbs.name }}: {{ text_ad.filename }}</h2>
     <p><a href="{{ bbs.get_absolute_url }}">Back to BBS</a></p>
     <pre>{{ text_ad.text }}</pre>
