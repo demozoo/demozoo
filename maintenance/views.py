@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -1282,7 +1283,7 @@ class ProdInfoFilesWithNoEncoding(StaffOnlyMixin, Report):
             order_by('production__sortable_title')
         )
 
-        paginator = Paginator(info_files, 1000)
+        paginator = Paginator(info_files, 100)
 
         page_num = self.request.GET.get('page', 1)
         try:
@@ -1383,54 +1384,70 @@ ENCODING_OPTIONS = [
 ]
 
 
-@writeable_site_required
-def fix_results_file_encoding(request, results_file_id):
-    if not request.user.is_staff:
-        return redirect('home')
-    results_file = get_object_or_404(ResultsFile, id=results_file_id)
-    if request.POST:
-        encoding = request.POST['encoding']
-    else:
+class FixResultsFileEncodingView(TemplateView):
+    template_name = 'maintenance/fix_results_file_encoding.html'
+
+    @method_decorator(writeable_site_required)
+    def dispatch(self, request, results_file_id):
+        if not request.user.is_staff:
+            return redirect('home')
+
+        self.results_file = get_object_or_404(ResultsFile, id=results_file_id)
+
+        return super().dispatch(request, results_file_id)
+
+    def decode(self, encoding):
+        # check that the encoding is one that we recognise
+        try:
+            b'x'.decode(encoding)
+        except LookupError:
+            encoding = 'iso-8859-1'
+
+        file_lines = []
+        encoding_is_valid = True
+
+        for line in self.results_file.file:
+            try:
+                line.decode('ascii')
+                is_ascii = True
+            except UnicodeDecodeError:
+                is_ascii = False
+
+            try:
+                decoded_line = line.decode(encoding)
+                file_lines.append((is_ascii, True, decoded_line))
+            except UnicodeDecodeError:
+                encoding_is_valid = False
+                file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
+
+        self.results_file.file.close()
+
+        return encoding, encoding_is_valid, file_lines
+
+    def get(self, request, results_file_id):
         encoding = request.GET.get('encoding', 'iso-8859-1')
+        self.encoding, self.encoding_is_valid, self.file_lines = self.decode(encoding)
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
-    # check that the encoding is one that we recognise
-    try:
-        b'x'.decode(encoding)
-    except LookupError:
-        encoding = 'iso-8859-1'
+    def get_context_data(self, **kwargs):
+        return {
+            'results_file': self.results_file,
+            'party': self.results_file.party,
+            'file_lines': self.file_lines,
+            'encoding_is_valid': self.encoding_is_valid,
+            'encoding': self.encoding,
+            'encoding_options': ENCODING_OPTIONS,
+        }
 
-    file_lines = []
-    encoding_is_valid = True
+    def post(self, request, results_file_id):
+        encoding = request.POST['encoding']
+        encoding, encoding_is_valid, file_lines = self.decode(encoding)
 
-    for line in results_file.file:
-        try:
-            line.decode('ascii')
-            is_ascii = True
-        except UnicodeDecodeError:
-            is_ascii = False
-
-        try:
-            decoded_line = line.decode(encoding)
-            file_lines.append((is_ascii, True, decoded_line))
-        except UnicodeDecodeError:
-            encoding_is_valid = False
-            file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
-
-    results_file.file.close()
-
-    if request.POST:
         if encoding_is_valid:
-            results_file.encoding = encoding
-            results_file.save()
+            self.results_file.encoding = encoding
+            self.results_file.save()
         return redirect('maintenance:results_with_no_encoding')
-    return render(request, 'maintenance/fix_results_file_encoding.html', {
-        'results_file': results_file,
-        'party': results_file.party,
-        'file_lines': file_lines,
-        'encoding_is_valid': encoding_is_valid,
-        'encoding': encoding,
-        'encoding_options': ENCODING_OPTIONS,
-    })
 
 
 class TinyIntrosWithoutDownloadLinks(Report):
