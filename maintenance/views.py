@@ -21,7 +21,7 @@ from maintenance.forms import ProductionFilterForm
 from maintenance.models import Exclusion
 from mirror.models import ArchiveMember
 from parties.models import Competition, Party, PartyExternalLink, ResultsFile
-from productions.models import Credit, Production, ProductionBlurb, ProductionLink, ProductionType
+from productions.models import Credit, InfoFile, Production, ProductionBlurb, ProductionLink, ProductionType
 from sceneorg.models import Directory
 from screenshots.tasks import create_screenshot_from_production_link
 
@@ -1250,7 +1250,7 @@ def resolve_screenshot(request, productionlink_id, archive_member_id):
 
 
 class ResultsWithNoEncoding(StaffOnlyMixin, Report):
-    title = "Results files with unknown character encoding"
+    title = "Party results files with unknown character encoding"
     template_name = 'maintenance/results_with_no_encoding.html'
     name = 'results_with_no_encoding'
 
@@ -1263,6 +1263,36 @@ class ResultsWithNoEncoding(StaffOnlyMixin, Report):
 
         context.update({
             'results_files': results_files,
+        })
+        return context
+
+
+class ProdInfoFilesWithNoEncoding(StaffOnlyMixin, Report):
+    title = "Production info files with unknown character encoding"
+    template_name = 'maintenance/prod_infos_with_no_encoding.html'
+    name = 'prod_infos_with_no_encoding'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        info_files = (
+            InfoFile.objects.filter(encoding__isnull=True).
+            prefetch_related(
+                'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser'
+            ).
+            order_by('production__sortable_title')
+        )
+
+        paginator = Paginator(info_files, 1000)
+
+        page_num = self.request.GET.get('page', 1)
+        try:
+            page = paginator.page(page_num)
+        except (PageNotAnInteger, EmptyPage):
+            # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+            page = paginator.page(paginator.num_pages)
+
+        context.update({
+            'info_files': page,
         })
         return context
 
@@ -1585,7 +1615,13 @@ reports = [
             PartiesWithNoLocation,
             ExternalReport('sceneorg_compofolders', "scene.org competition directory matching"),
             ExternalReport('sceneorg_compofiles', "scene.org party file matching"),
+        ]
+    ),
+    (
+        "Text files",
+        [
             ResultsWithNoEncoding,
+            ProdInfoFilesWithNoEncoding,
         ]
     ),
     (
