@@ -12,5 +12,5 @@
 
     <h2>{{ production.title }} info: {{ info_file.filename }}</h2>
     <p><a href="{{ production.get_absolute_url }}">Back to production</a></p>
-    <pre>{{ info_file.text }}</pre>
+    <pre class="text-file">{{ info_file.text }}</pre>
 {% endblock %}
