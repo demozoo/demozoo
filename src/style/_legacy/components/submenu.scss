@@ -1,32 +1,51 @@
-ul.submenu {
+.submenu {
     clear: both;
     margin-top: 8px;
     margin-bottom: 16px;
 
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    p {
+        float: left;
+        line-height: 25px;
+        margin: 0;
+        padding: 0 10px 0 0;
+    }
+
     li {
-        display: inline;
+        float: left;
+        line-height: 25px;
+        padding: 0 10px;
 
-        a {
+        &:hover {
+            border-top: 4px solid #ec5a64;
+            margin-top: -4px;
+        }
+
+        a, button {
             color: #5e5f5f;
-            line-height: 25px;
-            padding: 0 10px;
-            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
             text-decoration: none;
+            border: 0;
+            background-color: inherit;
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
             text-transform: uppercase;
-
-            &:hover {
-                border-top: 4px solid #ec5a64;
-                margin-top: -4px;
-            }
+            cursor: pointer;
         }
 
         strong {
-            line-height: 25px;
-            padding: 0 10px;
-            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        &.active {
             background-color: #ec5a64;
-            color: white;
+
+            a, button {
+                color: white;
+            }
         }
     }
 }
