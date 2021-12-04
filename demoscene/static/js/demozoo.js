@@ -24,6 +24,41 @@ function applyGlobalBehaviours(context) {
     $('.microthumb', context).thumbPreview();
 
     objectFitImages();
+
+    $('.text-file', context).each(function() {
+        var text = $(this);
+
+        var menu = $('<div class="submenu"><p>View with font:</p><ul></ul></div>');
+        var dejavu = $('<li class="active"><button>Dejavu</button></li>');
+        var msdos = $('<li><button>MS-DOS</button></li>');
+        var amiga = $('<li><button>Amiga</button></li>');
+        menu.find('ul').append(dejavu, msdos, amiga);
+        text.before(menu);
+        var attribution = $('<div class="font-attribution"></div>');
+        text.after(attribution);
+
+        dejavu.find('button').click(function() {
+            text.attr('class', 'text-file');
+            dejavu.addClass('active');
+            msdos.removeClass('active');
+            amiga.removeClass('active');
+            attribution.html('');
+        });
+        msdos.find('button').click(function() {
+            text.attr('class', 'text-file font-msdos');
+            dejavu.removeClass('active');
+            msdos.addClass('active');
+            amiga.removeClass('active');
+            attribution.html('<a href="https://int10h.org/oldschool-pc-fonts/">VGA font by VileR</a>');
+        });
+        amiga.find('button').click(function() {
+            text.attr('class', 'text-file font-amiga');
+            dejavu.removeClass('active');
+            msdos.removeClass('active');
+            amiga.addClass('active');
+            attribution.html('<a href="https://github.com/rewtnull/amigafonts/">Topaz font by dMG</a>');
+        });
+    });
 }
 
 $(function() {
