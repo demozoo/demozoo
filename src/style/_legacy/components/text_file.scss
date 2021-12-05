@@ -1,15 +1,18 @@
 .text-file {
     white-space: pre-wrap;
+    min-width: 580px;
 }
 .font-msdos {
     font-family:ibm_vga_8x16, dejavu_sans_monobook, monospace;
     font-size:16px;
-    line-height:16px
+    line-height:16px;
+    min-width: 640px;
 }
 .font-amiga {
     font-family:topazplusa1200, ibm_vga_8x16, dejavu_sans_monobook, monospace;
     font-size:1rem;
     line-height:1rem;
+    min-width: 480px;
 }
 .font-attribution {
     font-size: .8em;
