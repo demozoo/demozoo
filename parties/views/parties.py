@@ -344,7 +344,6 @@ def results_file(request, party_id, file_id):
     return render(request, 'parties/results_file.html', {
         'party': party,
         'results_file': results_file,
-        'text': results_file.text,
     })
 
 
