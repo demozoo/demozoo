@@ -524,6 +524,10 @@ class TestTextAd(MediaTestMixin, TestCase):
             file=File(name="starport1.txt", file=BytesIO(b"First text ad for StarPort")),
             filename="starport1.txt", filesize=100, sha1="1234123412341234"
         )
+        self.info2 = self.starport.text_ads.create(
+            file=File(name="starport2.ans", file=BytesIO(b"Second \x1b[32mtext ad\x1b[37m for \xcdStarPort\xcd")),
+            filename="starport2.ans", filesize=100, sha1="1234123412341234"
+        )
 
     def test_get_without_login(self):
         url = '/bbs/%d/text_ad/%d/' % (self.starport.id, self.info.id)
@@ -535,6 +539,16 @@ class TestTextAd(MediaTestMixin, TestCase):
         response = self.client.get('/bbs/%d/text_ad/%d/' % (self.starport.id, self.info.id))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "First text ad for StarPort")
+        self.assertContains(response, 'class="text-file "')
+
+    def test_get_ansi(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/bbs/%d/text_ad/%d/' % (self.starport.id, self.info2.id))
+        self.assertEqual(response.status_code, 200)
+        # should be recognised as ansi
+        self.assertContains(response, 'class="text-file ansi"')
+        # should decode as cp437 as the default option
+        self.assertContains(response, '\u2550StarPort\u2550')
 
 
 class TestEditTags(TestCase):
