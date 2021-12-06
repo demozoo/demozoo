@@ -1,3 +1,6 @@
+from io import StringIO
+
+from ansipants import ANSIDecoder
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -7,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
@@ -1432,26 +1436,40 @@ class FixTextFileEncodingView(TemplateView):
         file_lines = []
         encoding_is_valid = True
 
-        for line in self.text_file.file:
+        if self.text_file.is_ansi():
             try:
-                line.decode('ascii')
-                is_ascii = True
-            except UnicodeDecodeError:
-                is_ascii = False
-
-            try:
-                decoded_line = line.decode(encoding)
-                file_lines.append((is_ascii, True, decoded_line))
+                text = self.text_file.data.decode(encoding)
             except UnicodeDecodeError:
                 encoding_is_valid = False
-                file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
+                text = self.text_file.data.decode('cp437')
 
-        self.text_file.file.close()
+            ansi = ANSIDecoder(StringIO(text))
+            for line in ansi.as_html_lines():
+                file_lines.append((line.isascii(), True, mark_safe(line)))
+
+        else:
+            source_lines = self.text_file.data.split(b'\n')
+            for line in source_lines:
+                try:
+                    line.decode('ascii')
+                    is_ascii = True
+                except UnicodeDecodeError:
+                    is_ascii = False
+
+                try:
+                    decoded_line = line.decode(encoding)
+                    file_lines.append((is_ascii, True, decoded_line))
+                except UnicodeDecodeError:
+                    encoding_is_valid = False
+                    file_lines.append((is_ascii, False, line.decode('iso-8859-1')))
 
         return encoding, encoding_is_valid, file_lines
 
     def get(self, request, text_file_id):
-        encoding = request.GET.get('encoding', self.text_file.encoding or 'iso-8859-1')
+        encoding = request.GET.get(
+            'encoding',
+            self.text_file.encoding or self.text_file.guess_encoding(self.text_file.data, fuzzy=True)[0]
+        )
         self.encoding, self.encoding_is_valid, self.file_lines = self.decode(encoding)
         context = self.get_context_data()
         return self.render_to_response(context)
