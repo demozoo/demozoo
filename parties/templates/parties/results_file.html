@@ -12,5 +12,5 @@
 
     <h2>{{ party.name }} - Results</h2>
     <p><a href="{% url 'party' party.id %}">Back to party</a></p>
-    <pre class="text-file">{{ text }}</pre>
+    <pre class="text-file {% if results_file.is_ansi %}ansi{% endif %}">{{ results_file.as_renderable }}</pre>
 {% endblock %}

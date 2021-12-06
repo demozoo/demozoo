@@ -2,7 +2,9 @@ import datetime
 import hashlib
 import re
 from collections import OrderedDict as SortedDict
+from io import StringIO
 
+from ansipants import ANSIDecoder
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -12,6 +14,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
 from demoscene.utils import groklinks
@@ -743,7 +746,11 @@ class TextFile(models.Model):
         # Try to decode the data using several candidate encodings, least permissive first.
         # Accept the first one that doesn't break.
         if fuzzy:
-            candidate_encodings = ['ascii', 'utf-8', 'windows-1252', 'iso-8859-1']
+            if b'\x1b[' in data:
+                # data contains ANSI escape codes, so is probably a DOS ANSI with cp437 encoding
+                candidate_encodings = ['ascii', 'utf-8', 'cp437', 'windows-1252', 'iso-8859-1']
+            else:
+                candidate_encodings = ['ascii', 'utf-8', 'windows-1252', 'iso-8859-1']
         else:
             candidate_encodings = ['ascii', 'utf-8']
 
@@ -761,6 +768,10 @@ class TextFile(models.Model):
         self.file.close()
         return data
 
+    def is_ansi(self):
+        """whether this file contains ANSI escape codes"""
+        return b'\x1b[' in self.data
+
     @property
     def text(self):
         if self.encoding:
@@ -768,6 +779,17 @@ class TextFile(models.Model):
         else:
             encoding, output = self.guess_encoding(self.data, fuzzy=True)
             return output
+
+    def as_renderable(self):
+        """
+        Return the text in a form that can be included into a template; either a plain string
+        (which the template engine will escape) or a SafeString containing HTML
+        """
+        if self.is_ansi():
+            ansi = ANSIDecoder(StringIO(self.text))
+            return mark_safe(ansi.as_html())
+        else:
+            return self.text
 
     class Meta:
         abstract = True

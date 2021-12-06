@@ -12,5 +12,5 @@
 
     <h2>Text ad for {{ bbs.name }}: {{ text_ad.filename }}</h2>
     <p><a href="{{ bbs.get_absolute_url }}">Back to BBS</a></p>
-    <pre class="text-file">{{ text_ad.text }}</pre>
+    <pre class="text-file {% if text_ad.is_ansi %}ansi{% endif %}">{{ text_ad.as_renderable }}</pre>
 {% endblock %}

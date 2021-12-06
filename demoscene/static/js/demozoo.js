@@ -37,27 +37,34 @@ function applyGlobalBehaviours(context) {
         var attribution = $('<div class="font-attribution"></div>');
         text.after(attribution);
 
-        dejavu.find('button').click(function() {
-            text.attr('class', 'text-file');
+        function selectDejavu() {
+            text.removeClass('font-msdos').removeClass('font-amiga');
             dejavu.addClass('active');
             msdos.removeClass('active');
             amiga.removeClass('active');
             attribution.html('');
-        });
-        msdos.find('button').click(function() {
-            text.attr('class', 'text-file font-msdos');
+        }
+        dejavu.find('button').click(selectDejavu);
+
+        function selectMsdos() {
+            text.removeClass('font-amiga').addClass('font-msdos');
             dejavu.removeClass('active');
             msdos.addClass('active');
             amiga.removeClass('active');
             attribution.html('<a href="https://int10h.org/oldschool-pc-fonts/">VGA font by VileR</a>');
-        });
-        amiga.find('button').click(function() {
-            text.attr('class', 'text-file font-amiga');
+        }
+        msdos.find('button').click(selectMsdos);
+
+        function selectAmiga() {
+            text.removeClass('font-msdos').addClass('font-amiga');
             dejavu.removeClass('active');
             msdos.removeClass('active');
             amiga.addClass('active');
             attribution.html('<a href="https://github.com/rewtnull/amigafonts/">Topaz font by dMG</a>');
-        });
+        }
+        amiga.find('button').click(selectAmiga);
+
+        if (text.hasClass('ansi')) selectMsdos();
     });
 }
 
