@@ -460,16 +460,21 @@ class TestReports(TestCase):
             file=File(
                 name="starport.nfo",
                 file=BytesIO(
-                    b"a j\xf6\xf6ssi bit me \xf6nce\n"
+                    b"a \x1b[32mj\xf6\xf6ssi\x1b[37m bit me \xf6nce\n"
                 )
             ),
             filename="starport.nfo", filesize=100, sha1="1234123412341234"
         )
 
-        # default encoding (iso-8859-1)
+        # default encoding (cp437 for ansi)
         self.client.login(username='testsuperuser', password='12345')
         response = self.client.get('/maintenance/bbs_text_ad_encoding/%d/' % text_ad.id)
         self.assertEqual(response.status_code, 200)
+
+        # invalid encoding for the text
+        response = self.client.get('/maintenance/bbs_text_ad_encoding/%d/?encoding=utf-8' % text_ad.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The chosen encoding is not valid for this file")
 
     def test_janeway_authors_same(self):
         raww_arse_dz_id = Releaser.objects.get(name="Raww Arse").id
