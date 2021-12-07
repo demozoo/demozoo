@@ -47,7 +47,8 @@ class TestTasks(TestCase):
 
     def test_pull_group_invalid(self):
         ra = Releaser.objects.get(name='Raww Arse')
-        pull_group('99999', ra.id)
+        with self.assertLogs(level='WARNING'):
+            pull_group('99999', ra.id)
 
     def test_pull_group_no_prods(self):
         ra = Releaser.objects.get(name='Raww Arse')

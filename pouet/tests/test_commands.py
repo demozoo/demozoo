@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.test.utils import captured_stdout
 from freezegun import freeze_time
 
-from pouet.models import Group, Production
+from demoscene.models import Releaser
+from pouet.models import Group, Production as PouetProduction
+from productions.models import Production, ProductionType
 
 
 @freeze_time('2021-11-01')
@@ -111,10 +113,19 @@ class TestFetchPouetData(TestCase):
             body=prod_gzdata, stream=True
         )
 
+        tbl = Releaser.objects.create(name="The Black Lotus", is_group=True)
+        tbl.external_links.create(link_class='PouetGroup', parameter='1')
+        astral_blur = Production.objects.create(title="Astral Blur")
+        astral_blur.author_nicks.add(tbl.primary_nick)
+        astral_blur.types.add(ProductionType.objects.get(name='Demo'))
+
         with captured_stdout():
             call_command('fetch_pouet_data')
 
         self.assertEqual(
-            Production.objects.get(name="Astral Blur").groups.first(),
+            PouetProduction.objects.get(name="Astral Blur").groups.first(),
             Group.objects.get(name="The Black Lotus")
+        )
+        self.assertEqual(
+            astral_blur.links.get(link_class='PouetProduction').parameter, '1'
         )
