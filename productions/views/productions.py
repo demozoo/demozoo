@@ -1,4 +1,5 @@
 import datetime
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -948,7 +949,12 @@ class EditInfoFilesView(EditTextFilesView):
 def info_file(request, production_id, file_id):
     production = get_object_or_404(Production, id=production_id)
     info_file = get_object_or_404(InfoFile, production=production, id=file_id)
+    fix_encoding_url = (
+        reverse('maintenance:fix_prod_info_file_encoding', args=(info_file.id, ))
+        + '?' + urlencode({'return_to': reverse('production_info_file', args=(production_id, file_id))})
+    )
     return render(request, 'productions/show_info_file.html', {
         'production': production,
-        'info_file': info_file
+        'info_file': info_file,
+        'fix_encoding_url': fix_encoding_url,
     })

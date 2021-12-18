@@ -1482,6 +1482,7 @@ class FixTextFileEncodingView(TemplateView):
             'encoding': self.encoding,
             'encoding_options': ENCODING_OPTIONS,
             'action_url_name': self.action_url_name,
+            'return_to': self.request.GET.get('return_to')
         }
 
     def post(self, request, text_file_id):
@@ -1491,7 +1492,9 @@ class FixTextFileEncodingView(TemplateView):
         if encoding_is_valid:
             self.text_file.encoding = encoding
             self.text_file.save()
-        return redirect(self.index_url_name)
+
+        return_to = request.POST.get('return_to') or reverse(self.index_url_name)
+        return HttpResponseRedirect(return_to)
 
 
 class FixResultsFileEncodingView(FixTextFileEncodingView):

@@ -6,7 +6,7 @@
 {% block base_main %}
     {% if request.user.is_staff %}
         <ul class="actions">
-            <li><a href="{% url 'maintenance:fix_bbs_text_ad_encoding' text_ad.id %}" class="action_button icon spanner">Fix encoding</a></li>
+            <li><a href="{{ fix_encoding_url }}" class="action_button icon spanner">Fix encoding</a></li>
         </ul>
     {% endif %}
 

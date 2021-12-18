@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Value
@@ -446,9 +448,14 @@ class EditTextAdsView(EditTextFilesView):
 def text_ad(request, bbs_id, file_id):
     bbs = get_object_or_404(BBS, id=bbs_id)
     text_ad = get_object_or_404(TextAd, bbs=bbs, id=file_id)
+    fix_encoding_url = (
+        reverse('maintenance:fix_bbs_text_ad_encoding', args=(file_id, ))
+        + '?' + urlencode({'return_to': reverse('bbs_text_ad', args=(bbs_id, file_id))})
+    )
     return render(request, 'bbs/show_text_ad.html', {
         'bbs': bbs,
         'text_ad': text_ad,
+        'fix_encoding_url': fix_encoding_url,
     })
 
 
