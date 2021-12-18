@@ -8,7 +8,8 @@ from django.test.utils import captured_stdout
 from freezegun import freeze_time
 
 from demoscene.models import Releaser
-from pouet.models import Group, Production as PouetProduction
+from pouet.models import Group
+from pouet.models import Production as PouetProduction
 from productions.models import Production, ProductionType
 
 
