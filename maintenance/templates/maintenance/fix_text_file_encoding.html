@@ -45,12 +45,14 @@
                 <form action="{% url action_url_name text_file.id %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="encoding" value="{{ encoding }}">
+                    {% if return_to %}<input type="hidden" name="return_to" value="{{ return_to }}" />{% endif %}
                     <input type="submit" value="Accept this encoding" class="action_button icon done">
                 </form>
             </li>
         </ul>
     {% endif %}
     <form action="{% url action_url_name text_file.id %}" method="GET">
+        {% if return_to %}<input type="hidden" name="return_to" value="{{ return_to }}" />{% endif %}
         <div>
             <label for="encoding">Encoding</label>
             <select id="encoding" name="encoding">

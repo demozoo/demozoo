@@ -1,6 +1,7 @@
 import datetime
 import json
 import re
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -341,9 +342,14 @@ def add_competition(request, party_id):
 def results_file(request, party_id, file_id):
     party = get_object_or_404(Party, id=party_id)
     results_file = get_object_or_404(ResultsFile, party=party, id=file_id)
+    fix_encoding_url = (
+        reverse('maintenance:fix_results_file_encoding', args=(file_id, ))
+        + '?' + urlencode({'return_to': reverse('party_results_file', args=(party_id, file_id))})
+    )
     return render(request, 'parties/results_file.html', {
         'party': party,
         'results_file': results_file,
+        'fix_encoding_url': fix_encoding_url,
     })
 
 
