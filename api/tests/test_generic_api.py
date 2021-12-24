@@ -55,6 +55,15 @@ class TestProductions(TestCase):
         pondlife = [result for result in response_data['results'] if result['title'] == "Pondlife"][0]
         self.assertIn("Hooy-Program", [nick['name'] for nick in pondlife['author_nicks']])
 
+    def test_filter_by_author(self):
+        response = self.client.get('/api/v1/productions/?author=4')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        result_titles = [result['title'] for result in response_data['results']]
+        self.assertIn("Pondlife", result_titles)
+        self.assertNotIn("Madrielle", result_titles)
+
     @override_settings(BASE_URL='https://demozoo.org')
     def test_get_production(self):
         response = self.client.get('/api/v1/productions/4/')

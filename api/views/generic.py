@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api import serializers
+from api import filters, serializers
 from bbs.models import BBS
 from demoscene.models import Releaser
 from parties.models import Party, PartySeries
@@ -25,11 +25,13 @@ class ListDetailModelViewSet(viewsets.ReadOnlyModelViewSet):
 class PlatformViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Platform.objects.all()
     serializer_class = serializers.PlatformSerializer
+    filterset_class = filters.PlatformFilter
 
 
 class ProductionTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProductionType.objects.all()
     serializer_class = serializers.ProductionTypeSerializer
+    filterset_class = filters.ProductionTypeFilter
 
 
 class ProductionViewSet(ListDetailModelViewSet):
@@ -38,12 +40,14 @@ class ProductionViewSet(ListDetailModelViewSet):
     )
     list_serializer_class = serializers.ProductionListingSerializer
     serializer_class = serializers.ProductionSerializer
+    filterset_class = filters.ProductionFilter
 
 
 class ReleaserViewSet(ListDetailModelViewSet):
     queryset = Releaser.objects.all()
     list_serializer_class = serializers.ReleaserListingSerializer
     serializer_class = serializers.ReleaserSerializer
+    filterset_class = filters.ReleaserFilter
 
     @action(detail=True)
     def productions(self, request, pk):
@@ -72,15 +76,18 @@ class PartySeriesViewSet(ListDetailModelViewSet):
     queryset = PartySeries.objects.all()
     list_serializer_class = serializers.PartySeriesListingSerializer
     serializer_class = serializers.PartySeriesSerializer
+    filterset_class = filters.PartySeriesFilter
 
 
 class PartyViewSet(ListDetailModelViewSet):
     queryset = Party.objects.all()
     list_serializer_class = serializers.PartyListingSerializer
     serializer_class = serializers.PartySerializer
+    filterset_class = filters.PartyFilter
 
 
 class BBSViewSet(ListDetailModelViewSet):
     queryset = BBS.objects.prefetch_related('tags')
     list_serializer_class = serializers.BBSListingSerializer
     serializer_class = serializers.BBSSerializer
+    filterset_class = filters.BBSFilter
