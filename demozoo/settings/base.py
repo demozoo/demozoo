@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     'compressor',
     'rest_framework',
     'corsheaders',
+    'django_filters',
 
     'demoscene',
     'parties',
@@ -259,6 +260,7 @@ MEDIA_ROOT = os.path.join(FILEROOT, 'media')
 REST_FRAMEWORK = {
     # do not support any authentication mechanism; anonymous read-only access only.
     'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
