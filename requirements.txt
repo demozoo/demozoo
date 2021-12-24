@@ -34,6 +34,9 @@ python-dateutil==2.5.1
 # which only exists on shitty broken versions (>=2.7) of python-dateutil
 freezegun==0.3.14
 
+# needed to keep django-compressor happy when analysing django-filter templates
+django-crispy-forms>=1.13.0,<1.14
+
 mock>=3.0,<4.0
 requests>=2.22,<3.0
 responses>=0.10,<0.11
