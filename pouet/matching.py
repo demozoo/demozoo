@@ -118,8 +118,6 @@ def automatch_productions(releaser, pouetable_prod_types=None):
     for id, title, url in unmatched_pouet_prods:
         prods_by_name[title.lower()][1].append(id)
 
-    any_matched = False
-
     for title, (demozoo_ids, pouet_ids) in prods_by_name.items():
         if len(demozoo_ids) == 1 and len(pouet_ids) == 1:
             ProductionLink.objects.create(
@@ -132,13 +130,11 @@ def automatch_productions(releaser, pouetable_prod_types=None):
             matched_production_count += 1
             unmatched_demozoo_production_count -= 1
             unmatched_pouet_production_count -= 1
-            any_matched = True
 
-    if any_matched:
-        GroupMatchInfo.objects.update_or_create(
-            releaser_id=releaser.id, defaults={
-                'matched_production_count': matched_production_count,
-                'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
-                'unmatched_pouet_production_count': unmatched_pouet_production_count,
-            }
-        )
+    GroupMatchInfo.objects.update_or_create(
+        releaser_id=releaser.id, defaults={
+            'matched_production_count': matched_production_count,
+            'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
+            'unmatched_pouet_production_count': unmatched_pouet_production_count,
+        }
+    )
