@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load awards_tags %}
+{% load demoscene_tags %}
 
 {% block html_title %}{{ event.name }} - {{ category.name }} recommendations - Demozoo{% endblock %}
 
@@ -11,7 +11,7 @@
 {% include "awards/_report_categories.html" with current_category=category %}
 
 {% if productions %}
-    {% recommendation_summary_listing productions show_screenshots=True show_prod_types=True %}
+    {% production_listing productions show_screenshots=True show_prod_types=True %}
 {% else %}
     <p>No recommendations for this category yet</p>
 {% endif %}
