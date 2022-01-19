@@ -27,6 +27,7 @@ class TestRecommendations(TestCase):
 
     def setUp(self):
         self.testuser = User.objects.create_user(username='testuser', password='12345')
+        self.other_user = User.objects.create_user(username='bob the commenter', password='password')
 
     def test_recommendation_prompt_shown(self):
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
@@ -139,11 +140,13 @@ class TestRecommendations(TestCase):
         best_lowend = Category.objects.get(name="Best Low-End Production")
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
         Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+        Recommendation.objects.create(production=brexecutable, user=self.other_user, category=best_lowend)
         Juror.objects.create(user=self.testuser, event=meteoriks)
 
         self.client.login(username='testuser', password='12345')
         response = self.client.get('/awards/%s/report/%d/' % (meteoriks.slug, best_lowend.id))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Brexecutable", 1)
 
 
 class TestFetchJurors(TestCase):

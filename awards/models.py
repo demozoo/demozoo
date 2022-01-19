@@ -116,7 +116,7 @@ class Category(models.Model):
         return self.name
 
     def get_recommendation_report(self):
-        return Production.objects.filter(award_recommendations__category=self).\
+        return Production.objects.filter(award_recommendations__category=self).distinct().\
             order_by('sortable_title')
 
     class Meta:
