@@ -22,6 +22,7 @@ apt-get install -y libffi-dev
 # node.js
 curl -sL https://deb.nodesource.com/setup_12.x | bash -
 apt-get install -y nodejs
+npm install -g npm@latest
 
 # virtualenvwrapper
 pip3 install virtualenvwrapper
