@@ -115,6 +115,12 @@ class ProdsWithoutVideoCaptures(FilterableProductionReport):
     report_class = reports_module.ProductionsWithoutVideosReport
 
 
+class ProdsWithoutPouetLinks(FilterableProductionReport):
+    title = "Productions without Pouet links"
+    name = 'prods_without_pouet_links'
+    report_class = reports_module.ProductionsWithoutPouetLinksReport
+
+
 class ProdsWithoutCredits(FilterableProductionReport):
     title = "Productions without individual credits"
     name = 'prods_without_credits'
@@ -1667,6 +1673,7 @@ reports = [
             ProdsWithoutExternalLinks,
             ProdsWithoutScreenshots,
             ProdsWithoutVideoCaptures,
+            ProdsWithoutPouetLinks,
             ProdsWithoutCredits,
             ProdsWithoutPlatforms,
             ProdsWithoutPlatformsExcludingLost,

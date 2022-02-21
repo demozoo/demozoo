@@ -52,6 +52,10 @@ class TestReports(TestCase):
         response = self.client.get('/maintenance/prods_without_videos')
         self.assertEqual(response.status_code, 200)
 
+    def test_prods_without_pouet_links(self):
+        response = self.client.get('/maintenance/prods_without_pouet_links')
+        self.assertEqual(response.status_code, 200)
+
     def test_prods_without_credits(self):
         response = self.client.get('/maintenance/prods_without_credits')
         self.assertEqual(response.status_code, 200)
