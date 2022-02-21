@@ -27,10 +27,7 @@
                         </svg>
                     </div>
                     <div>
-                        <a href="{% url 'group' nick.releaser_id %}">
-                            {{ nick.name }}
-                            {% if nick.differentiator %}(<span>{{ nick.differentiator }}</span>){% endif %}
-                        </a>
+                        <a href="{% url 'group' nick.releaser_id %}">{{ nick.name }}</a>
                         {% nick_variants nick %}
                     </div>
                 </div>

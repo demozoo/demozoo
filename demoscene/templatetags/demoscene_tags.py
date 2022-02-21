@@ -12,7 +12,10 @@ register = template.Library()
 
 @register.inclusion_tag('shared/nick_variants.html')
 def nick_variants(nick):
-    return {'variants': nick.nick_variant_and_abbreviation_list}
+    return {
+        'differentiator': nick.differentiator,
+        'variants': nick.nick_variant_and_abbreviation_list,
+    }
 
 
 @register.inclusion_tag('shared/scener_with_affiliations.html')
