@@ -40,7 +40,7 @@ class TestReports(TestCase):
         zx = Platform.objects.get(name='ZX Spectrum')
         demo = ProductionType.objects.get(name='Demo')
         response = self.client.get(
-            '/maintenance/prods_without_screenshots?platform=%d&production_type=%d' % (zx.id, demo.id)
+            '/maintenance/prods_without_screenshots?platform=%d&production_type=%d&release_year=2000' % (zx.id, demo.id)
         )
         self.assertEqual(response.status_code, 200)
 
