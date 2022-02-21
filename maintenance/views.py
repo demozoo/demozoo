@@ -81,12 +81,15 @@ class FilterableProductionReport(Report):
         if filter_form.is_valid():
             platform_ids = [platform.id for platform in filter_form.cleaned_data['platform']]
             prod_type_ids = [typ.id for typ in filter_form.cleaned_data['production_type']]
+            release_year = filter_form.cleaned_data['release_year']
         else:
             platform_ids = []
             prod_type_ids = []
+            release_year = None
 
         productions, total_count = self.report_class.run(
-            limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids
+            limit=self.limit, platform_ids=platform_ids, production_type_ids=prod_type_ids,
+            release_year=release_year
         )
 
         context.update({

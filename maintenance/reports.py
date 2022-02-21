@@ -16,7 +16,7 @@ def write_set(pipe, key, values):
 
 class FilteredProdutionsReport(object):
     @classmethod
-    def run(cls, limit=100, platform_ids=None, production_type_ids=None):
+    def run(cls, limit=100, platform_ids=None, production_type_ids=None, release_year=None):
         # compile a list of all the redis keys we're going to use, so that we can
         # construct a transaction that watches them
         used_keys = [cls.master_list_key]
@@ -35,19 +35,27 @@ class FilteredProdutionsReport(object):
             used_keys.append(prod_types_filter_key)
             filtered_result_key += ':by_types:%s' % id_list
 
-        if platform_ids or production_type_ids:
+        if release_year is not None:
+            release_year_filter_key = 'demozoo:productions:by_release_year:%d' % release_year
+            used_keys.append(release_year_filter_key)
+            filtered_result_key += ':by_release_year:%d' % release_year
+
+        if platform_ids or production_type_ids or (release_year is not None):
             used_keys.append(filtered_result_key)
 
         def _transaction(pipe):
             must_update_master_list = not pipe.exists(cls.master_list_key)
             must_update_platforms_filter = platform_ids and not pipe.exists(platforms_filter_key)
             must_update_prod_types_filter = production_type_ids and not pipe.exists(prod_types_filter_key)
+            must_update_release_year_filter = release_year is not None and not pipe.exists(release_year_filter_key)
 
             filter_keys = []
             if platform_ids:
                 filter_keys.append(platforms_filter_key)
             if production_type_ids:
                 filter_keys.append(prod_types_filter_key)
+            if release_year is not None:
+                filter_keys.append(release_year_filter_key)
 
             pipe.multi()
 
@@ -69,6 +77,14 @@ class FilteredProdutionsReport(object):
                     .values_list('id', flat=True)
                 )
                 write_set(pipe, prod_types_filter_key, production_ids)
+
+            if must_update_release_year_filter:
+                production_ids = (
+                    Production.objects
+                    .filter(release_date_date__year=release_year)
+                    .values_list('id', flat=True)
+                )
+                write_set(pipe, release_year_filter_key, production_ids)
 
             if filter_keys:
                 # create a resultset in filtered_result_key consisting of the intersection
