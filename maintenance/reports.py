@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models import Q
 
 from maintenance.models import Exclusion
+from pouet.matching import get_pouetable_prod_types
 from productions.models import Production, ProductionLink
 
 
@@ -150,6 +151,24 @@ class ProductionsWithoutVideosReport(FilteredProdutionsReport):
             .filter(links__is_download_link=True)
             .exclude(supertype__in=['music', 'graphics'])
             .exclude(tags__name__in=['lost', 'corrupted-file'])
+            .exclude(id__in=excluded_ids)
+            .values_list('id', flat=True)
+        )
+
+
+class ProductionsWithoutPouetLinksReport(FilteredProdutionsReport):
+    master_list_key = 'demozoo:productions:without_pouet_links'
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(
+            report_name='prods_without_pouet_links'
+        ).values_list('record_id', flat=True)
+
+        return (
+            Production.objects
+            .exclude(links__link_class='PouetProduction')
+            .filter(types__in=get_pouetable_prod_types())
             .exclude(id__in=excluded_ids)
             .values_list('id', flat=True)
         )
