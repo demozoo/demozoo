@@ -1,7 +1,7 @@
 from io import StringIO
 
 from ansipants import ANSIDecoder
-from django.conf.urls import url
+from django.conf.urls import re_path
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
@@ -60,7 +60,7 @@ class Report(TemplateView):
 
     @classmethod
     def get_urlpattern(cls):
-        return url('^%s$' % cls.name, cls.as_view(), name=cls.name)
+        return re_path('^%s$' % cls.name, cls.as_view(), name=cls.name)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
