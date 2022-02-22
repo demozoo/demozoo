@@ -11,8 +11,8 @@ django-cors-headers>=3.7,<4
 django-debug-toolbar>=3,<4
 django-filter>=21.1,<22.0
 django-storages>=1.9,<1.10
-django-taggit>=1.3,<1.4
-django-treebeard>=4.3,<4.4
+django-taggit>=2.1,<2.2
+django-treebeard>=4.5,<4.6
 djangorestframework>=3.12,<3.13
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
