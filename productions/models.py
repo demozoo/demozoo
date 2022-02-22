@@ -9,7 +9,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.forms import Media
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from fuzzy_date import FuzzyDate
 from taggit.managers import TaggableManager
 from treebeard.mp_tree import MP_Node
