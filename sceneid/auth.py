@@ -12,7 +12,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.crypto import get_random_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from read_only_mode import writeable_site_required
 
 from demoscene.models import SceneID
