@@ -1,7 +1,7 @@
 from itertools import chain
 
 from django import forms
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
@@ -23,7 +23,7 @@ class NickChoicesWidget(forms.RadioSelect):
             option_label = self.create_label(choice)
 
             selected = (
-                force_text(option_value) in value and
+                force_str(option_value) in value and
                 (has_selected is False or self.allow_multiple_selected)
             )
             if selected is True and has_selected is False:
