@@ -36,6 +36,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Local time zone for this installation. Choices can be found here:
