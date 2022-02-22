@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include, re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
@@ -11,56 +11,56 @@ admin.autodiscover()
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    re_path(r'^admin/', admin.site.urls),
 
-    url(r'^account/$', account_views.index, {}, 'account_index'),
-    url(r'^account/login/$', account_views.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
-    url(r'^account/logout/$', auth_views.LogoutView.as_view(next_page='/'), {}, 'log_out'),
-    url(r'^account/signup/$', account_views.signup, {}, 'user_signup'),
-    url(r'^account/change_password/$', account_views.change_password, {}, 'account_change_password'),
+    re_path(r'^account/$', account_views.index, {}, 'account_index'),
+    re_path(r'^account/login/$', account_views.LoginViewWithIPCheck.as_view(), {}, 'log_in'),
+    re_path(r'^account/logout/$', auth_views.LogoutView.as_view(next_page='/'), {}, 'log_out'),
+    re_path(r'^account/signup/$', account_views.signup, {}, 'user_signup'),
+    re_path(r'^account/change_password/$', account_views.change_password, {}, 'account_change_password'),
     # forgotten password
-    url(r'^account/forgotten_password/$', auth_views.PasswordResetView.as_view(), {}, 'password_reset'),
-    url(
+    re_path(r'^account/forgotten_password/$', auth_views.PasswordResetView.as_view(), {}, 'password_reset'),
+    re_path(
         r'^account/forgotten_password/success/$', auth_views.PasswordResetDoneView.as_view(), {},
         'password_reset_done'
     ),
-    url(
+    re_path(
         r'^account/forgotten_password/check/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>\w+-\w+)/$',
         auth_views.PasswordResetConfirmView.as_view(), {}, 'password_reset_confirm'
     ),
 
-    url(
+    re_path(
         r'^account/forgotten_password/done/$', auth_views.PasswordResetCompleteView.as_view(), {},
         'password_reset_complete'
     ),
 
-    url(r'^account/sceneid/auth/$', sceneid_views.do_auth_redirect, {}, 'sceneid_auth'),
-    url(r'^account/sceneid/login/$', sceneid_views.process_response, {}, 'sceneid_return'),
-    url(r'^account/sceneid/connect/$', sceneid_views.connect_accounts, {}, 'sceneid_connect'),
+    re_path(r'^account/sceneid/auth/$', sceneid_views.do_auth_redirect, {}, 'sceneid_auth'),
+    re_path(r'^account/sceneid/login/$', sceneid_views.process_response, {}, 'sceneid_return'),
+    re_path(r'^account/sceneid/connect/$', sceneid_views.connect_accounts, {}, 'sceneid_connect'),
 ]
 
 urlpatterns += [
-    url(r'^', include('demoscene.urls')),
-    url(r'^', include('homepage.urls')),
-    url(r'^', include('parties.urls')),
-    url(r'^', include('comments.urls')),
-    url(r'^', include('productions.urls')),
-    url(r'^platforms/', include('platforms.urls')),
-    url(r'^search/', include('search.urls')),
-    url(r'^maintenance/', include('maintenance.urls')),
-    url(r'^pages/', include('pages.urls')),
-    url(r'^sceneorg/', include('sceneorg.urls')),
-    url(r'^pouet/', include('pouet.urls')),
-    url(r'^janeway/', include('janeway.urls')),
-    url(r'^forums/', include('forums.urls')),
-    url(r'^api/', include('api.urls')),
-    url(r'^users/', include('users.urls')),
-    url(r'^awards/', include('awards.urls')),
-    url(r'^bbs/', include('bbs.urls')),
+    re_path(r'^', include('demoscene.urls')),
+    re_path(r'^', include('homepage.urls')),
+    re_path(r'^', include('parties.urls')),
+    re_path(r'^', include('comments.urls')),
+    re_path(r'^', include('productions.urls')),
+    re_path(r'^platforms/', include('platforms.urls')),
+    re_path(r'^search/', include('search.urls')),
+    re_path(r'^maintenance/', include('maintenance.urls')),
+    re_path(r'^pages/', include('pages.urls')),
+    re_path(r'^sceneorg/', include('sceneorg.urls')),
+    re_path(r'^pouet/', include('pouet.urls')),
+    re_path(r'^janeway/', include('janeway.urls')),
+    re_path(r'^forums/', include('forums.urls')),
+    re_path(r'^api/', include('api.urls')),
+    re_path(r'^users/', include('users.urls')),
+    re_path(r'^awards/', include('awards.urls')),
+    re_path(r'^bbs/', include('bbs.urls')),
 ]
 
 if settings.DEBUG and settings.DEBUG_TOOLBAR_ENABLED:  # pragma: no cover
     import debug_toolbar
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        re_path(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns

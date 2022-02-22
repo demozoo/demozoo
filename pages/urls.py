@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.conf.urls import re_path
 
 from pages import views as pages_views
 
 
 urlpatterns = [
-    url(r'^(.+)/$', pages_views.page, {}, 'page'),
+    re_path(r'^(.+)/$', pages_views.page, {}, 'page'),
 ]

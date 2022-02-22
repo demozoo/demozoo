@@ -1,13 +1,13 @@
-from django.conf.urls import url
+from django.conf.urls import re_path
 from django.views.generic import RedirectView
 
 from pouet import views
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='/pouet/groups/')),
-    url(r'^groups/$', views.groups, {}, 'pouet_groups'),
-    url(r'^groups/(\d+)/$', views.match_group, {}, 'pouet_match_group'),
-    url(r'^production-link/$', views.production_link, {}, 'pouet_production_link'),
-    url(r'^production-unlink/$', views.production_unlink, {}, 'pouet_production_unlink'),
+    re_path(r'^$', RedirectView.as_view(url='/pouet/groups/')),
+    re_path(r'^groups/$', views.groups, {}, 'pouet_groups'),
+    re_path(r'^groups/(\d+)/$', views.match_group, {}, 'pouet_match_group'),
+    re_path(r'^production-link/$', views.production_link, {}, 'pouet_production_link'),
+    re_path(r'^production-unlink/$', views.production_unlink, {}, 'pouet_production_unlink'),
 ]
