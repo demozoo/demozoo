@@ -13,8 +13,9 @@ def global_nav_forms(request):
 
 
 def ajax_base_template(request):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     return {
-        'base_template_with_ajax_option': 'minimal_base.html' if request.is_ajax() else 'base.html'
+        'base_template_with_ajax_option': 'minimal_base.html' if is_ajax else 'base.html'
     }
 
 
