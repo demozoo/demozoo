@@ -6,3 +6,6 @@
         {{ banner.text|safe_markdown }}
     </div>
 </a>
+{% if banner.small_print %}
+    <div class="banner-small-print">{{ banner.small_print|safe_markdown }}</div>
+{% endif %}

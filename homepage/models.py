@@ -15,6 +15,10 @@ class Banner(models.Model):
         default=False,
         help_text="Instead of displaying text, use it as fallback text for people who can't see the image"
     )
+    small_print = models.TextField(
+        blank=True,
+        help_text="Shown below the banner, for picture credits etc. Markdown supported"
+    )
 
     show_for_anonymous_users = models.BooleanField(default=True)
     show_for_logged_in_users = models.BooleanField(default=True)

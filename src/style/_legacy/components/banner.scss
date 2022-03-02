@@ -48,6 +48,13 @@
     }
 }
 
+.banner-small-print {
+    text-align: right;
+    font-size: 0.9em;
+    p {
+        margin: 0.5em;
+    }
+}
 
 /* Small-screen versions */
 @media screen and (max-width: 1081px) {
