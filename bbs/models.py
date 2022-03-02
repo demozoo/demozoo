@@ -104,7 +104,8 @@ class BBS(models.Model):
     def index_components(self):
         return {
             'A': self.asciified_all_names_string,
-            'C': self.asciified_location + ' ' + self.tags_string + ' ' + self.plaintext_notes,
+            'B': self.tags_string,
+            'C': self.asciified_location + ' ' + self.plaintext_notes,
         }
 
     class Meta:
