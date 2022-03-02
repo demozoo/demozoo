@@ -25,10 +25,13 @@ class BannerForm(forms.ModelForm):
         model = Banner
         fields = [
             'banner_image', 'title', 'text', 'hide_text', 'url',
+            'small_print',
             'show_for_anonymous_users', 'show_for_logged_in_users'
         ]
         widgets = {
-            'banner_image': forms.HiddenInput()
+            'banner_image': forms.HiddenInput(),
+            'text': forms.Textarea(attrs={'rows': 4, 'style': 'height: auto;'}),
+            'small_print': forms.Textarea(attrs={'rows': 4, 'style': 'height: auto;'}),
         }
 
 
