@@ -851,6 +851,14 @@ class DemopartyNetParty(UrlPattern):
     pattern = "/<str>"
 
 
+class PartyWikiParty(UrlPattern):
+    site = Site(
+        "PartyWiki", classname="partywiki", url='https://party.darklite.org/',
+        icon_path='images/icons/external_sites/partywiki.png'
+    )
+    pattern = "/<str>/"
+
+
 class LanyrdEvent(AbstractBaseUrl):
     site = Site("Lanyrd", url='http://lanyrd.com/')
     canonical_format = "http://lanyrd.com/%s/"
@@ -1730,7 +1738,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 ]
 
 PARTY_LINK_TYPES = [
-    DemopartyNetParty, SlengpungParty, PouetParty,
+    DemopartyNetParty, PartyWikiParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
