@@ -8,7 +8,10 @@ from productions.views import productions as production_views
 urlpatterns = [
     re_path(r'^productions/$', production_views.ProductionIndexView.as_view(), {}, 'productions'),
     re_path(r'^productions/(\d+)/$', production_views.ProductionShowView.as_view(), {}, 'production'),
-    re_path(r'^productions/(\d+)/history/$', production_views.ProductionHistoryView.as_view(), {}, 'production_history'),
+    re_path(
+        r'^productions/(\d+)/history/$', production_views.ProductionHistoryView.as_view(), {},
+        'production_history'
+    ),
     re_path(r'^productions/(\d+)/carousel/$', production_views.carousel, {}, 'production_carousel'),
 
     re_path(r'^music/$', music_views.MusicIndexView.as_view(), {}, 'musics'),
@@ -19,7 +22,10 @@ urlpatterns = [
 
     re_path(r'^graphics/$', graphic_views.GraphicsIndexView.as_view(), {}, 'graphics'),
     re_path(r'^graphics/(\d+)/$', graphic_views.GraphicsShowView.as_view(), {}, 'graphic'),
-    re_path(r'^graphics/(\d+)/edit_core_details/$', production_views.edit_core_details, {}, 'graphics_edit_core_details'),
+    re_path(
+        r'^graphics/(\d+)/edit_core_details/$', production_views.edit_core_details, {},
+        'graphics_edit_core_details'
+    ),
     re_path(r'^graphics/new/$', graphic_views.CreateGraphicsView.as_view(), {}, 'new_graphics'),
     re_path(r'^graphics/(\d+)/history/$', graphic_views.GraphicsHistoryView.as_view(), {}, 'graphics_history'),
 
@@ -33,7 +39,10 @@ urlpatterns = [
     ),
     re_path(r'^productions/(\d+)/add_credit/$', production_views.add_credit, {}, 'production_add_credit'),
     re_path(r'^productions/(\d+)/edit_credit/(\d+)/$', production_views.edit_credit, {}, 'production_edit_credit'),
-    re_path(r'^productions/(\d+)/delete_credit/(\d+)/$', production_views.delete_credit, {}, 'production_delete_credit'),
+    re_path(
+        r'^productions/(\d+)/delete_credit/(\d+)/$', production_views.delete_credit, {},
+        'production_delete_credit'
+    ),
     re_path(r'^productions/(\d+)/edit_notes/$', production_views.edit_notes, {}, 'production_edit_notes'),
     re_path(
         r'^productions/(\d+)/edit_external_links/$', production_views.edit_external_links, {},
@@ -50,7 +59,10 @@ urlpatterns = [
     ),
     re_path(r'^productions/(\d+)/screenshots/$', production_views.screenshots, {}, 'production_screenshots'),
     re_path(r'^productions/(\d+)/artwork/$', production_views.artwork, {}, 'production_artwork'),
-    re_path(r'^productions/(\d+)/screenshots/edit/$', production_views.edit_screenshots, {}, 'production_edit_screenshots'),
+    re_path(
+        r'^productions/(\d+)/screenshots/edit/$', production_views.edit_screenshots, {},
+        'production_edit_screenshots'
+    ),
     re_path(r'^productions/(\d+)/artwork/edit/$', production_views.edit_artwork, {}, 'production_edit_artwork'),
     re_path(
         r'^productions/(\d+)/delete_screenshot/(\d+)/$', production_views.DeleteScreenshotView.as_view(), {},
@@ -60,7 +72,10 @@ urlpatterns = [
         r'^productions/(\d+)/delete_artwork/(\d+)/$', production_views.DeleteArtworkView.as_view(), {},
         'production_delete_artwork'
     ),
-    re_path(r'^productions/(\d+)/edit_soundtracks/$', production_views.edit_soundtracks, {}, 'production_edit_soundtracks'),
+    re_path(
+        r'^productions/(\d+)/edit_soundtracks/$', production_views.edit_soundtracks, {},
+        'production_edit_soundtracks'
+    ),
     re_path(
         r'^productions/(\d+)/edit_pack_contents/$', production_views.edit_pack_contents, {},
         'production_edit_pack_contents'

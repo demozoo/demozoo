@@ -57,7 +57,10 @@ urlpatterns = [
     re_path(r'^releasers/(\d+)/edit_notes/$', releasers_views.edit_notes, {}, 'releaser_edit_notes'),
     re_path(r'^releasers/(\d+)/edit_nick/(\d+)/$', releasers_views.edit_nick, {}, 'releaser_edit_nick'),
     re_path(r'^releasers/(\d+)/add_nick/$', releasers_views.add_nick, {}, 'releaser_add_nick'),
-    re_path(r'^releasers/(\d+)/edit_primary_nick/$', releasers_views.edit_primary_nick, {}, 'releaser_edit_primary_nick'),
+    re_path(
+        r'^releasers/(\d+)/edit_primary_nick/$', releasers_views.edit_primary_nick, {},
+        'releaser_edit_primary_nick'
+    ),
     re_path(
         r'^releasers/(\d+)/change_primary_nick/$', releasers_views.change_primary_nick, {},
         'releaser_change_primary_nick'

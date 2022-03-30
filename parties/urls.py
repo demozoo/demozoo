@@ -40,7 +40,10 @@ urlpatterns = [
     re_path(r'^competitions/(\d+)/history/$', competition_views.history, {}, 'competition_history'),
     re_path(r'^competitions/(\d+)/edit$', competition_views.edit, {}, 'competition_edit'),
     re_path(r'^competitions/(\d+)/import_text$', competition_views.import_text, {}, 'competition_import_text'),
-    re_path(r'^competitions/(\d+)/delete/$', competition_views.DeleteCompetitionView.as_view(), {}, 'delete_competition'),
+    re_path(
+        r'^competitions/(\d+)/delete/$', competition_views.DeleteCompetitionView.as_view(), {},
+        'delete_competition'
+    ),
 
     re_path(r'^competition_api/add_placing/(\d+)/$', competition_api_views.add_placing, {}),
     re_path(r'^competition_api/update_placing/(\d+)/$', competition_api_views.update_placing, {}),
