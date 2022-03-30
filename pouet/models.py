@@ -15,6 +15,12 @@ class Production(models.Model):
     last_seen_at = models.DateTimeField()
 
 
+class DownloadLink(models.Model):
+    production = models.ForeignKey(Production, related_name='download_links', on_delete=models.CASCADE)
+    url = models.TextField()
+    link_type = models.CharField(max_length=255)
+
+
 class GroupMatchInfo(models.Model):
     releaser = models.OneToOneField('demoscene.Releaser', on_delete=models.CASCADE)
     matched_production_count = models.IntegerField()
