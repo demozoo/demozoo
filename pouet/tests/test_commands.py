@@ -123,10 +123,32 @@ class TestFetchPouetData(TestCase):
         with captured_stdout():
             call_command('fetch_pouet_data')
 
+        astral_blur_pouet = PouetProduction.objects.get(name="Astral Blur")
         self.assertEqual(
-            PouetProduction.objects.get(name="Astral Blur").groups.first(),
+            astral_blur_pouet.groups.first(),
             Group.objects.get(name="The Black Lotus")
         )
         self.assertEqual(
             astral_blur.links.get(link_class='PouetProduction').parameter, '1'
+        )
+        self.assertEqual(
+            astral_blur_pouet.download_links.get().url,
+            "https://www.youtube.com/watch?v=eZyLSHyUGBY"
+        )
+
+        astral_blur_pouet.download_links.create(
+            url="http://example.com/astralblur.mp4", link_type="video"
+        )
+
+        # re-run to confirm that existing records are handled correctly
+        with captured_stdout():
+            call_command('fetch_pouet_data')
+
+        astral_blur_pouet_new = PouetProduction.objects.get(name="Astral Blur")
+        self.assertEqual(astral_blur_pouet_new.id, astral_blur_pouet.id)
+
+        # extra link should have been deleted
+        self.assertEqual(
+            astral_blur_pouet.download_links.get().url,
+            "https://www.youtube.com/watch?v=eZyLSHyUGBY"
         )

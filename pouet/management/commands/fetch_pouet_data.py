@@ -77,6 +77,20 @@ class Command(BaseCommand):
                     group_db_ids[group['id']]
                     for group in prod_data['groups']
                 ])
+                if created:
+                    unseen_download_link_ids = set()
+                else:
+                    unseen_download_link_ids = set(prod.download_links.values_list('id', flat=True))
+
+                for link_data in prod_data['downloadLinks']:
+                    link, created = prod.download_links.get_or_create(
+                        url=link_data['link'], link_type=link_data['type']
+                    )
+                    if not created:
+                        unseen_download_link_ids.discard(link.id)
+
+                if unseen_download_link_ids:
+                    prod.download_links.filter(id__in=unseen_download_link_ids).delete()
 
                 prods_imported += 1
                 if prods_imported % 1000 == 0 and verbose:  # pragma: no cover
