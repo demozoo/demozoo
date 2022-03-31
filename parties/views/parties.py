@@ -15,6 +15,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
+from demoscene.utils.ajax import request_is_ajax
 from demoscene.views.generic import AjaxConfirmationView
 from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
@@ -168,7 +169,7 @@ def create(request):
             form.save()
             form.log_creation(request.user)
 
-            if request.is_ajax():
+            if request_is_ajax(request):
                 return HttpResponse('OK: %s' % party.get_absolute_url(), content_type='text/plain')
             else:
                 messages.success(request, 'Party added')

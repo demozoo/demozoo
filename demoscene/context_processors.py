@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 
 from demoscene.utils.accounts import is_ip_banned
+from demoscene.utils.ajax import request_is_ajax
 from search.forms import SearchForm
 
 
@@ -13,9 +14,8 @@ def global_nav_forms(request):
 
 
 def ajax_base_template(request):
-    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     return {
-        'base_template_with_ajax_option': 'minimal_base.html' if is_ajax else 'base.html'
+        'base_template_with_ajax_option': 'minimal_base.html' if request_is_ajax(request) else 'base.html'
     }
 
 

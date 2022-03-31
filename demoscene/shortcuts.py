@@ -6,6 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from modal_workflow import render_modal_workflow
 
+from demoscene.utils.ajax import request_is_ajax
+
 
 def get_page(queryset, page_number, **kwargs):
     count = kwargs.get('count', 50)
@@ -36,7 +38,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
             form.save()
             if kwargs.get('on_success'):
                 kwargs['on_success'](form)
-            if kwargs.get('ajax_submit') and request.is_ajax():
+            if kwargs.get('ajax_submit') and request_is_ajax(request):
                 return HttpResponse('OK', content_type='text/plain')
             else:
                 return HttpResponseRedirect(instance.get_absolute_url())
