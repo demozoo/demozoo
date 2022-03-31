@@ -1,4 +1,4 @@
-from django.conf.urls import re_path
+from django.urls import re_path
 
 from homepage.views import banners as banner_views
 from homepage.views import home as home_views

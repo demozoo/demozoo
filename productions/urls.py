@@ -1,4 +1,4 @@
-from django.conf.urls import re_path
+from django.urls import re_path
 
 from productions.views import graphics as graphic_views
 from productions.views import music as music_views
