@@ -17,6 +17,7 @@ from taggit.models import Tag
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
+from demoscene.utils.ajax import request_is_ajax
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from productions.carousel import Carousel
 from productions.forms import (
@@ -572,7 +573,7 @@ def add_credit(request, production_id):
         nick_form = ProductionCreditedNickForm(production=production)
         credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
-    if request.is_ajax():
+    if request_is_ajax(request):
         return render_modal_workflow(
             request, 'productions/add_credit.html', 'productions/add_credit.js', {
                 'production': production,
@@ -638,7 +639,7 @@ def edit_credit(request, production_id, nick_id):
         nick_form = ProductionCreditedNickForm(nick=nick, production=production)
         credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 
-    if request.is_ajax():
+    if request_is_ajax(request):
         return render_modal_workflow(
             request,
             'productions/edit_credit.html', 'productions/edit_credit.js', {
@@ -906,7 +907,7 @@ def protected(request, production_id):
 
 
 def render_credits_update(request, production):
-    if request.is_ajax():
+    if request_is_ajax(request):
         credits_html = render_to_string('productions/_credits.html', {
             'production': production,
             'credits': production.credits_for_listing(),

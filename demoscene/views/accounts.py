@@ -10,6 +10,7 @@ from read_only_mode import writeable_site_required
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
 from demoscene.utils.accounts import is_ip_banned
+from demoscene.utils.ajax import request_is_ajax
 
 
 class LoginViewWithIPCheck(LoginView):
@@ -19,6 +20,11 @@ class LoginViewWithIPCheck(LoginView):
             return redirect('home')
         else:
             return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_ajax'] = request_is_ajax(self.request)
+        return context
 
 
 @writeable_site_required

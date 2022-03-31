@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
+from demoscene.utils.ajax import request_is_ajax
+
 
 if settings.SITE_IS_WRITEABLE:
     # don't do any decorating, just return the view function unchanged
@@ -11,7 +13,7 @@ if settings.SITE_IS_WRITEABLE:
 else:
     def writeable_site_required(view_func):
         def replacement_view_func(request, *args, **kwargs):
-            if request.is_ajax():
+            if request_is_ajax(request):
                 # output the 'sorry' message on a template,
                 # rather than doing a redirect (which screws with AJAX)
                 return render(request, 'read_only_mode.html')
