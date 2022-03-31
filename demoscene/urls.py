@@ -1,4 +1,4 @@
-from django.conf.urls import re_path
+from django.urls import re_path
 
 from demoscene.views import groups as groups_views
 from demoscene.views import home as home_views

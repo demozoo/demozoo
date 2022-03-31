@@ -1,7 +1,7 @@
 from io import StringIO
 
 from ansipants import ANSIDecoder
-from django.conf.urls import re_path
+from django.urls import re_path
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
