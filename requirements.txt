@@ -10,7 +10,7 @@ django-compressor>=3,<4
 django-cors-headers>=3.7,<4
 django-debug-toolbar>=3,<4
 django-filter>=21.1,<22.0
-django-storages>=1.9,<1.10
+django-storages>=1.12,<1.13
 django-taggit>=2.1,<2.2
 django-treebeard>=4.5,<4.6
 djangorestframework>=3.12,<3.13
@@ -20,7 +20,7 @@ pyrecoil>=0.3.1,<0.4
 redis>=3.4,<3.5
 unidecode==0.04.14
 bcrypt>=3.1,<3.2  # 3.2 drops py2.7
-django-extensions>=2.0,<2.1
+django-extensions>=3.1,<3.2
 coverage>=5.0,<6.0
 django-dotenv>=1.4.2,<2.0
 ansipants>=0.1.2,<1.0
