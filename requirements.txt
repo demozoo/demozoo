@@ -1,6 +1,6 @@
 beautifulsoup4>=4.9.3,<5
 bleach>=3.2,<3.3
-Django>=3.2,<3.3
+Django>=4.0,<4.1
 Fabric>=2.5,<2.6
 Markdown>=3.0,<4
 Pillow>=8.0,<9
