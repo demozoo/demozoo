@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -48,10 +49,11 @@ class ReleaserViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.ReleaserListingSerializer
     serializer_class = serializers.ReleaserSerializer
     filterset_class = filters.ReleaserFilter
+    lookup_value_regex = '\d+'
 
     @action(detail=True)
     def productions(self, request, pk):
-        releaser = Releaser.objects.get(pk=pk)
+        releaser = get_object_or_404(Releaser, pk=pk)
         queryset = releaser.productions().order_by('-release_date_date').prefetch_related(
             'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
         )
@@ -62,7 +64,7 @@ class ReleaserViewSet(ListDetailModelViewSet):
 
     @action(detail=True)
     def member_productions(self, request, pk):
-        releaser = Releaser.objects.get(pk=pk)
+        releaser = get_object_or_404(Releaser, pk=pk)
         queryset = releaser.member_productions().order_by('-release_date_date').prefetch_related(
             'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
         )
