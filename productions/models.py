@@ -367,6 +367,10 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
             'A': self.asciified_title,
             'B': self.tags_string,
             'C': self.indexed_notes,
+            # Index byline with lowest weighting, so that prods still show up
+            # in a search for "square still", but are ranked below the group page
+            # in a search for just "still"
+            'D': self.byline_string,
         }
 
     class Meta:
