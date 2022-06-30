@@ -77,8 +77,9 @@ ABSENCEHQ_PYG_MUSIC = re.compile(r'https://absencehq.de/atari/.*\.(pyg)', re.I)
 ZX_MUSIC = re.compile(r'.*\.(stc|pt3|vtx|sqt)$', re.I)
 STREAMING_MUSIC = re.compile(r'.*\.(mp3|ogg|wav|opus|flac)$', re.I)
 OPENMPT_MUSIC = re.compile(
-    r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf'
-    r'|ptm|psm|mt2|dbm|digi|imf|j2b|gdm|umx|plm|mo3|xpk|ppm|mmcmp|sfx|sfx2|mms|pt36|nt|ft)$',
+    r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf|ptm'
+    r'|psm|mt2|dbm|digi|imf|j2b|gdm|umx|plm|mo3|xpk|ppm|mmcmp|sfx|sfx2|mms|pt36|nt|ft|fmt|dsym'
+    r'|symmod)$',
     re.I
 )
 # SID files on Modland have the extension .psid; .sid files on there are actually Amiga Sidmon tracker files
