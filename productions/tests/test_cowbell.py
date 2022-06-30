@@ -52,6 +52,26 @@ class TestCowbell(TestCase):
         self.assertEqual(filetype, 'sid')
         self.assertEqual(url, 'https://modland.ziphoid.com/pub/modules/PlaySID/Vincenzo/habvero.psid')
 
+    def test_modland_sid(self):
+        link = self.cybrev.links.create(
+            link_class='ModlandFile',
+            parameter='/pub/modules/PlaySID/Vincenzo/habvero.sid',
+            is_download_link=True
+        )
+        filetype, url = identify_link_as_track(link)
+        self.assertEqual(filetype, 'sid')
+        self.assertEqual(url, 'https://modland.ziphoid.com/pub/modules/PlaySID/Vincenzo/habvero.sid')
+
+    def test_modland_sidmon(self):
+        link = self.cybrev.links.create(
+            link_class='ModlandFile',
+            parameter='/pub/modules/SidMon%201/Romeo%20Knight/dinkelator.sid',
+            is_download_link=True
+        )
+        filetype, url = identify_link_as_track(link)
+        self.assertEqual(filetype, None)
+        self.assertEqual(url, None)
+
     def test_zxdemo(self):
         link = self.cybrev.links.create(
             link_class='BaseUrl',

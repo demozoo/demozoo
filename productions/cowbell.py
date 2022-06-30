@@ -82,8 +82,12 @@ OPENMPT_MUSIC = re.compile(
     r'|symmod)$',
     re.I
 )
-# SID files on Modland have the extension .psid; .sid files on there are actually Amiga Sidmon tracker files
-PSID_MUSIC = re.compile(r'.*\.psid$', re.I)
+# Recognise .sid and .psid files on Modland as SID files, UNLESS they are .sid files in
+# /pub/modules/SidMon 1/ which are a totally different Amiga format. Yay consistency.
+# SID files on Modland mostly have the extension .psid to distinguish them from Amiga Sidmon tracker files
+MODLAND_SID_MUSIC = re.compile(r'.*\.(sid|psid)$', re.I)
+MODLAND_SIDMON_MUSIC = re.compile(r'/pub/modules/sidmon( |%20)1/.*\.sid$', re.I)
+
 NONSTANDARD_MODLAND_EXTENSIONS = re.compile(r'.*\.(mmd0|mmd1|mmd2|mmd3)', re.I)
 
 # stuff mirrored on media.demozoo.org/music
@@ -102,14 +106,7 @@ def identify_link_as_track(link):
                 return (filetype, url)
 
         elif link.link_class == 'ModlandFile':
-            match = OPENMPT_MUSIC.match(link.parameter)
-            if match:
-                filetype = 'openmpt'
-                url = 'https://modland.ziphoid.com%s' % link.parameter
-                return (filetype, url)
-
-            match = NONSTANDARD_MODLAND_EXTENSIONS.match(link.parameter)
-            if match:
+            if OPENMPT_MUSIC.match(link.parameter) or NONSTANDARD_MODLAND_EXTENSIONS.match(link.parameter):
                 filetype = 'openmpt'
                 url = 'https://modland.ziphoid.com%s' % link.parameter
                 return (filetype, url)
@@ -120,8 +117,7 @@ def identify_link_as_track(link):
                 url = 'https://modland.ziphoid.com%s' % link.parameter
                 return (filetype, url)
 
-            match = PSID_MUSIC.match(link.parameter)
-            if match:
+            if MODLAND_SID_MUSIC.match(link.parameter) and not MODLAND_SIDMON_MUSIC.match(link.parameter):
                 filetype = 'sid'
                 url = 'https://modland.ziphoid.com%s' % link.parameter
                 return (filetype, url)
