@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 
 from demoscene.models import Releaser
 from pouet.matching import automatch_productions, get_pouetable_prod_types
-from pouet.models import Group, Production
+from pouet.models import Group, GroupMatchInfo, Production
 
 
 class Command(BaseCommand):
@@ -110,6 +110,9 @@ class Command(BaseCommand):
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         Production.objects.filter(last_seen_at__lt=last_month).delete()
         Group.objects.filter(last_seen_at__lt=last_month).delete()
+
+        # garbage-collect GroupMatchInfo stats for releasers with no corresponding Pouet cross-link
+        GroupMatchInfo.objects.exclude(releaser__external_links__link_class='PouetGroup').delete()
 
         if verbose:
             print("automatching prods...")

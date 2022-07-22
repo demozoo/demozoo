@@ -8,7 +8,7 @@ from django.test.utils import captured_stdout
 from freezegun import freeze_time
 
 from demoscene.models import Releaser
-from pouet.models import Group
+from pouet.models import Group, GroupMatchInfo
 from pouet.models import Production as PouetProduction
 from productions.models import Production, ProductionType
 
@@ -120,6 +120,15 @@ class TestFetchPouetData(TestCase):
         astral_blur.author_nicks.add(tbl.primary_nick)
         astral_blur.types.add(ProductionType.objects.get(name='Demo'))
 
+        # create a group with no Pouet link and a stale GroupMatchInfo record
+        spacepigs = Releaser.objects.create(name="Spacepigs", is_group=True)
+        GroupMatchInfo.objects.create(
+            releaser=spacepigs,
+            matched_production_count=1,
+            unmatched_demozoo_production_count=1,
+            unmatched_pouet_production_count=1
+        )
+
         with captured_stdout():
             call_command('fetch_pouet_data')
 
@@ -152,3 +161,8 @@ class TestFetchPouetData(TestCase):
             astral_blur_pouet.download_links.get().url,
             "https://www.youtube.com/watch?v=eZyLSHyUGBY"
         )
+
+        # GroupMatchInfo record for spacepigs should have been garbage-collected
+        self.assertFalse(GroupMatchInfo.objects.filter(releaser=spacepigs).exists())
+        # but one for tbl should have been created
+        self.assertTrue(GroupMatchInfo.objects.filter(releaser=tbl).exists())
