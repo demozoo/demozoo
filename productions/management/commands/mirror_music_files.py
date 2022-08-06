@@ -18,6 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         filetype_filter = (
             Q(parameter__iendswith='.sap') | Q(parameter__iendswith='.sid')
+            | Q(parameter__iendswith='.sndh')
             | Q(parameter__iendswith='.mod') | Q(parameter__iendswith='.s3m')
             | Q(parameter__iendswith='.xm') | Q(parameter__iendswith='.it')
         )
