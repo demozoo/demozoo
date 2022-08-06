@@ -1687,6 +1687,29 @@ class TikTokUser(UrlPattern):
     pattern = '/@<slug>/'
 
 
+class DOPEdition(AbstractBaseUrl):
+    site = Site(
+        "DOP", long_name="The Diskmag Onlinification Project",
+        url='https://diskmag.conspiracy.hu/',
+        allowed_hostnames=['diskmag.conspiracy.hu', 'www.diskmag.net', 'diskmag.net'],
+        classname="dop"
+    )
+
+    def match_dop_edition(urlstring, url):
+        regex = re.compile(r'\/magazine\/([^\/]+)\/\#\/edition\=(\w+)', re.I)
+        match = regex.search(urlstring)
+        if match:
+            magazine, edition = match.groups()
+            return "%s/%s" % (magazine, edition)
+
+
+    tests = [match_dop_edition]
+
+    def __str__(self):
+        (magazine, edition) = self.param.split('/')
+        return u"https://diskmag.conspiracy.hu/magazine/%s/#/edition=%s" % (magazine, edition)
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1716,7 +1739,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
-    Tic80Cart, Pico8Cart,
+    Tic80Cart, Pico8Cart, DOPEdition,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1734,7 +1757,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
-    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart',
+    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition',
 ]
 
 PARTY_LINK_TYPES = [
