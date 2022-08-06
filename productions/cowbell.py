@@ -79,7 +79,7 @@ PLAYERS_BY_FILETYPE = {
 
 ZXDEMO_MUSIC = re.compile(r'https://files\.zxdemo\.org/.*\.(stc|pt3|vtx|sqt|pyg|sndh)$', re.I)
 ABSENCEHQ_PYG_MUSIC = re.compile(r'https://absencehq.de/atari/.*\.(pyg)', re.I)
-ZX_MUSIC = re.compile(r'.*\.(stc|pt3|vtx|sqt)$', re.I)
+MODLAND_NON_OPENMPT_MUSIC = re.compile(r'.*\.(stc|pt3|vtx|sqt|sndh)$', re.I)
 STREAMING_MUSIC = re.compile(r'.*\.(mp3|ogg|wav|opus|flac)$', re.I)
 OPENMPT_MUSIC = re.compile(
     r'.*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf|ptm'
@@ -116,7 +116,7 @@ def identify_link_as_track(link):
                 url = 'https://modland.ziphoid.com%s' % link.parameter
                 return (filetype, url)
 
-            match = ZX_MUSIC.match(link.parameter)
+            match = MODLAND_NON_OPENMPT_MUSIC.match(link.parameter)
             if match:
                 filetype = match.group(1).lower()
                 url = 'https://modland.ziphoid.com%s' % link.parameter
