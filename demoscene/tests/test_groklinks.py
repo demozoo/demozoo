@@ -241,6 +241,14 @@ class TestLinkRecognition(TestCase):
         link.url = 'http://atariki.krap.pl/index.php/Lato_Ludzik%C3%B3w_1999'
         self.assertEqual(link.link_class, 'AtarikiEntry')
 
+    def test_dop_edition(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+        link.url = 'https://diskmag.conspiracy.hu/magazine/pain/#/edition=pain1207final'
+        self.assertEqual(link.link_class, 'DOPEdition')
+        self.assertEqual(link.parameter, 'pain/pain1207final')
+        self.assertEqual(str(link.link), 'https://diskmag.conspiracy.hu/magazine/pain/#/edition=pain1207final')
+
     def test_bad_pattern(self):
         with self.assertRaises(ImproperlyConfigured):
             class ExampleLink1(UrlPattern):
