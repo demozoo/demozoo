@@ -1710,6 +1710,14 @@ class DOPEdition(AbstractBaseUrl):
         return u"https://diskmag.conspiracy.hu/magazine/%s/#/edition=%s" % (magazine, edition)
 
 
+class EventsRetrosceneRelease(AbstractBaseUrl):
+    site =  Site("Events", long_name="Retroscene events", icon_path='images/icons/external_sites/events_retroscene.png')
+    canonical_format = "https://events.retroscene.org/%s"
+    tests = [
+        path_regex_match(r'/(.*)'),
+    ]
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1739,7 +1747,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
-    Tic80Cart, Pico8Cart, DOPEdition,
+    Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1757,7 +1765,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
-    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition',
+    'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
 ]
 
 PARTY_LINK_TYPES = [
