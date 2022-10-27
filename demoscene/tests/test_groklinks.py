@@ -249,6 +249,27 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.parameter, 'pain/pain1207final')
         self.assertEqual(str(link.link), 'https://diskmag.conspiracy.hu/magazine/pain/#/edition=pain1207final')
 
+    def test_retroscene_events_release(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        link = ProductionLink(production=pondlife, is_download_link=False)
+        link.url = 'https://events.retroscene.org/zxgfx-03/main/2491'
+        self.assertEqual(link.link_class, 'EventsRetrosceneRelease')
+        self.assertEqual(link.parameter, 'zxgfx-03/main/2491')
+        self.assertEqual(str(link.link), 'https://events.retroscene.org/zxgfx-03/main/2491')
+
+        # do not match paths under 'files'
+        link = ProductionLink(production=pondlife, is_download_link=False)
+        link.url = 'https://events.retroscene.org/files/main/2491'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://events.retroscene.org/files/main/2491')
+        self.assertEqual(str(link.link), 'https://events.retroscene.org/files/main/2491')
+
+        # do not match paths ending in a non-numeric component
+        link.url = 'https://events.retroscene.org/zxgfx-03/main/foo'
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://events.retroscene.org/zxgfx-03/main/foo')
+        self.assertEqual(str(link.link), 'https://events.retroscene.org/zxgfx-03/main/foo')
+
     def test_bad_pattern(self):
         with self.assertRaises(ImproperlyConfigured):
             class ExampleLink1(UrlPattern):
