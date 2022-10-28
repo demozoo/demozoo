@@ -1711,7 +1711,11 @@ class DOPEdition(AbstractBaseUrl):
 
 
 class EventsRetrosceneRelease(AbstractBaseUrl):
-    site =  Site("Events", long_name="Retroscene events", icon_path='images/icons/external_sites/events_retroscene.png')
+    site =  Site(
+        "Events", long_name="Retroscene events", 
+        url='https://events.retroscene.org/',
+        icon_path='images/icons/external_sites/events_retroscene.png'
+    )
     canonical_format = "https://events.retroscene.org/%s"
     tests = [
         path_regex_match(r'/(.*)'),
