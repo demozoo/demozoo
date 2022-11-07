@@ -1702,7 +1702,6 @@ class DOPEdition(AbstractBaseUrl):
             magazine, edition = match.groups()
             return "%s/%s" % (magazine, edition)
 
-
     tests = [match_dop_edition]
 
     def __str__(self):
@@ -1711,7 +1710,7 @@ class DOPEdition(AbstractBaseUrl):
 
 
 class EventsRetrosceneRelease(AbstractBaseUrl):
-    site =  Site(
+    site = Site(
         "Retroscene events",
         url='https://events.retroscene.org/',
         icon_path='images/icons/external_sites/events_retroscene.png'

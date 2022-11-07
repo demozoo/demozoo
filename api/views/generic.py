@@ -49,7 +49,7 @@ class ReleaserViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.ReleaserListingSerializer
     serializer_class = serializers.ReleaserSerializer
     filterset_class = filters.ReleaserFilter
-    lookup_value_regex = '\d+'
+    lookup_value_regex = r'\d+'
 
     @action(detail=True)
     def productions(self, request, pk):
