@@ -2,7 +2,7 @@ import calendar
 import datetime
 import re
 
-import dateutil.parser
+import europarse.parser
 
 
 MONTHS = (
@@ -120,7 +120,7 @@ class FuzzyDate(object):
         # using this as the default ensures that it doesn't try to fill in day/month with the current one,
         # leading to much hilarity when entering 'February 1996' on the 30th of the month - while still
         # allowing 'February' as a valid synonym for February of this year
-        date = dateutil.parser.parse(str, dayfirst=True, default=this_year).date()
+        date = europarse.parser.parse(str, dayfirst=True, default=this_year).date()
         if YEAR_REGEX.match(str):
             return FuzzyDate(date, 'y')
         elif MONTH_REGEX.match(str):
