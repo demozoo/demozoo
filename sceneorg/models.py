@@ -1,4 +1,5 @@
 import urllib
+import urllib.request
 
 from django.db import models
 
