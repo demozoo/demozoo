@@ -24,7 +24,9 @@ class TestTasks(TestCase):
         )
 
     def test_nonsuccess_response(self):
-        fetch_new_sceneorg_files(days=999)
+        with self.assertLogs() as captured:
+            fetch_new_sceneorg_files(days=999)
+        self.assertIn("scene.org API request returned non-success!", captured.records[0].getMessage())
 
     @freeze_time('2020-02-02')
     @patch('sceneorg.tasks.parse_all_dirs')
