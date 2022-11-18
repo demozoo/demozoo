@@ -9,8 +9,8 @@ PYTHON=$VIRTUALENV_DIR/bin/python
 # Update APT database
 apt-get update -y
 
-# Python 3.9
-apt-get install -y python3.9 python3.9-dev python3-pip
+# Python 3.10
+apt-get install -y python3.10 python3.10-dev python3-pip
 
 # PostgreSQL
 apt-get install -y postgresql libpq-dev
@@ -27,14 +27,14 @@ npm install -g npm@latest
 # virtualenvwrapper
 pip3 install virtualenvwrapper
 cat > /home/vagrant/.bashrc <<- EOM
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.9
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.10
 export WORKON_HOME=\$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 workon demozoo
 EOM
 
 # Create virtualenv
-su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR --python=/usr/bin/python3.9"
+su - vagrant -c "/usr/local/bin/virtualenv $VIRTUALENV_DIR --python=/usr/bin/python3.10"
 su - vagrant -c "echo $PROJECT_DIR > $VIRTUALENV_DIR/.project"
 su - vagrant -c "$PIP install -r $PROJECT_DIR/requirements.txt"
 
