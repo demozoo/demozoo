@@ -87,11 +87,25 @@ class TestConversion(TestCase):
         self.assertEqual(format, 'png')
         self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'left.out.png'))
 
-    def test_tiff_rgbx(self):
-        with open(os.path.join(TEST_IMAGES_DIR, 'primeraviso.tif'), mode='rb') as f:
-            img = PILConvertibleImage(f, name_hint='primeraviso.tif')
-            output, size, format = img.create_original()
+    def test_tiff(self):
+        # test two gotchas with Pillow's TIFF handling:
+        # - RGB images are returned as mode = RGBX (padded RGB), which can't be saved as PNG
+        # - loading pixel data discards the image file handle (image.fp), which is liable to
+        #   break subsequent calls to things like image.getexif
+        with open(os.path.join(TEST_IMAGES_DIR, 'bfield.tif'), mode='rb') as f:
+            img = PILConvertibleImage(f, name_hint='bfield.tif')
+            orig_output, orig_size, orig_format = img.create_original()
+            std_output, std_size, std_format = img.create_thumbnail((400, 300))
+            thumb_output, thumb_size, thumb_format = img.create_thumbnail((200, 150))
 
-        self.assertEqual(size, (1024, 554))
-        self.assertEqual(format, 'png')
-        self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'primeraviso.out.png'))
+        self.assertEqual(orig_size, (800, 600))
+        self.assertEqual(orig_format, 'png')
+        self.assertImagesSimilar(orig_output, os.path.join(TEST_IMAGES_DIR, 'bfield-original.out.png'))
+
+        self.assertEqual(std_size, (400, 300))
+        self.assertEqual(std_format, 'jpg')
+        self.assertImagesSimilar(std_output, os.path.join(TEST_IMAGES_DIR, 'bfield-standard.out.jpg'))
+
+        self.assertEqual(thumb_size, (200, 150))
+        self.assertEqual(thumb_format, 'jpg')
+        self.assertImagesSimilar(thumb_output, os.path.join(TEST_IMAGES_DIR, 'bfield-thumb.out.jpg'))

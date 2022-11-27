@@ -79,7 +79,10 @@ class PILConvertibleImage(object):
 
     def create_thumbnail(self, target_size):
         img = self.image
-        img = ImageOps.exif_transpose(img)
+
+        if img.format == 'JPEG':
+            img = ImageOps.exif_transpose(img)
+
         crop_params, resize_params = get_thumbnail_sizing_params(img.size, target_size)
         if crop_params:
             img = img.crop(crop_params)
