@@ -41,6 +41,10 @@ class TestProduction(TestCase):
         pondlife.types.add(ProductionType.objects.get(name='Intro'))
         self.assertEqual(pondlife.type_name, '(multiple)')
 
+    def test_meta_description(self):
+        pondlife = Production.objects.get(title='Pondlife')
+        self.assertEqual(pondlife.meta_description, 'Demo by Hooy-Program + Raww Arse, released 19 March 2001')
+
 
 @freeze_time('2020-08-05')
 class TestProductionLink(TestCase):
