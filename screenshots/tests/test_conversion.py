@@ -21,7 +21,7 @@ class TestConversion(TestCase):
         sum_squares = sum(sq)
         result = math.sqrt(sum_squares / float(image1.size[0] * image1.size[1]))
 
-        self.assertTrue(result < 1, "Images are too different")
+        self.assertTrue(result < 5, "Images are too different")
 
     def test_wmf(self):
         # WMF is not in our PIL_READABLE_FORMATS list

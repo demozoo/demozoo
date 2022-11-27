@@ -79,9 +79,7 @@ class PILConvertibleImage(object):
 
     def create_thumbnail(self, target_size):
         img = self.image
-
-        if img.format == 'JPEG':
-            img = ImageOps.exif_transpose(img)
+        img = ImageOps.exif_transpose(img)
 
         crop_params, resize_params = get_thumbnail_sizing_params(img.size, target_size)
         if crop_params:
@@ -96,15 +94,15 @@ class PILConvertibleImage(object):
             # must ensure image is non-paletted for a high-quality resize
             if img.mode in ['1', 'P']:
                 img = img.convert('RGB')
-            img = img.resize(resize_params, Image.ANTIALIAS)
+            img = img.resize(resize_params, Image.Resampling.LANCZOS)
 
         output = io.BytesIO()
         if has_limited_palette:
             if img.mode not in ['1', 'P']:
-                # img.convert with palette=Image.ADAPTIVE will apparently only work on
+                # img.convert with palette=Image.Palette.ADAPTIVE will apparently only work on
                 # 'L' or 'RGB' images, not RGBA for example. So, need to pre-convert to RGB...
                 img = img.convert('RGB')
-                img = img.convert('P', palette=Image.ADAPTIVE, colors=256)
+                img = img.convert('P', palette=Image.Palette.ADAPTIVE, colors=256)
             img.save(output, format='PNG', optimize=True)
             return output, img.size, 'png'
         else:
