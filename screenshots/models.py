@@ -70,8 +70,12 @@ class PILConvertibleImage(object):
             # to assume that those formats are lossless - and even if they weren't, converting to
             # JPG and potentially losing more fidelity may not me ideal.)
             output = io.BytesIO()
-            self.image.save(output, format='PNG', optimize=True)
-            return output, self.image.size, 'png'
+            img = self.image
+            if img.mode == 'RGBX':
+                # image is padded RGB (as seen in certain .tif files) which can't be written as PNG
+                img = img.convert('RGB')
+            img.save(output, format='PNG', optimize=True)
+            return output, img.size, 'png'
 
     def create_thumbnail(self, target_size):
         img = self.image
