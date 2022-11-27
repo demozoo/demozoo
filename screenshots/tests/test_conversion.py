@@ -77,3 +77,12 @@ class TestConversion(TestCase):
         self.assertEqual(size, (200, 150))
         self.assertEqual(format, 'png')
         self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'mr-scene.out.png'))
+
+    def test_exif_rotation(self):
+        with open(os.path.join(TEST_IMAGES_DIR, 'left.jpg'), mode='rb') as f:
+            img = PILConvertibleImage(f, name_hint='left.jpg')
+            output, size, format = img.create_thumbnail((400, 300))
+
+        self.assertEqual(size, (225, 300))
+        self.assertEqual(format, 'png')
+        self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'left.out.png'))
