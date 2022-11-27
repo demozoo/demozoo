@@ -1,6 +1,6 @@
 import io
 
-from PIL import Image
+from PIL import Image, ImageOps
 from recoil import RecoilImage
 
 from screenshots.processing import get_thumbnail_sizing_params
@@ -75,6 +75,7 @@ class PILConvertibleImage(object):
 
     def create_thumbnail(self, target_size):
         img = self.image
+        img = ImageOps.exif_transpose(img)
         crop_params, resize_params = get_thumbnail_sizing_params(img.size, target_size)
         if crop_params:
             img = img.crop(crop_params)
