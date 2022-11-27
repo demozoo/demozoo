@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.urls import include, re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.urls import include, re_path
 
 from demoscene.views import accounts as account_views
 from sceneid import auth as sceneid_views

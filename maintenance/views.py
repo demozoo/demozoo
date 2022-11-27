@@ -1,14 +1,13 @@
 from io import StringIO
 
 from ansipants import ANSIDecoder
-from django.urls import re_path
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView
