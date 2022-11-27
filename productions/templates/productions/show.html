@@ -34,7 +34,7 @@
     {% endwith %}
     <meta property="og:url" content="http://demozoo.org{{ production.get_absolute_url }}">
     <meta property="og:title" content="{{ production.title }}">
-    <meta property="og:description" content="A {% if production.supertype == 'production' %}demo{% else %}demoscene release{% endif %} {% if production.byline_string %}by {{ production.byline_string }}{% endif %}">
+    <meta property="og:description" content="{{ production.meta_description }}">
     {% if not meta_screenshot %}
         <meta property="og:image" content="https://demozoo.org/static/images/fb-1200x627.png"/>
     {% else %}

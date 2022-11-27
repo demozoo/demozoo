@@ -235,6 +235,28 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
     def asciified_title(self):
         return unidecode(self.title)
 
+    @property
+    def meta_description(self):
+        first_type = self.types.first()
+        if first_type:
+            description = first_type.name
+        else:
+            description = "Demoscene production"
+
+        details = []
+        byline_string = self.byline_string
+        if byline_string:
+            details.append("by %s" % byline_string)
+
+        release_date = self.release_date
+        if release_date:
+            details.append("released %s" % str(release_date).strip())
+
+        if details:
+            description += " " + ", ".join(details)
+
+        return description
+
     def get_absolute_url(self):
         if self.supertype == 'music':
             return reverse('music', args=[str(self.id)])
