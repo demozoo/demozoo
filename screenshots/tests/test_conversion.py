@@ -86,3 +86,12 @@ class TestConversion(TestCase):
         self.assertEqual(size, (225, 300))
         self.assertEqual(format, 'png')
         self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'left.out.png'))
+
+    def test_tiff_rgbx(self):
+        with open(os.path.join(TEST_IMAGES_DIR, 'primeraviso.tif'), mode='rb') as f:
+            img = PILConvertibleImage(f, name_hint='primeraviso.tif')
+            output, size, format = img.create_original()
+
+        self.assertEqual(size, (1024, 554))
+        self.assertEqual(format, 'png')
+        self.assertImagesSimilar(output, os.path.join(TEST_IMAGES_DIR, 'primeraviso.out.png'))
