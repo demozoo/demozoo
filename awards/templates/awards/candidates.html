@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load demoscene_tags %}
+
+{% block html_title %}{{ event.name }} - {{ category.name }} candidates - Demozoo{% endblock %}
+
+{% block base_main %}
+
+<h1>{{ event.name }} - {{ category.name }} candidates</h1>
+
+{% with productions=production_page.object_list %}
+    {% if productions %}
+        {% production_listing productions show_screenshots=True show_prod_types=True %}
+    {% else %}
+        <p>No candidates for this category</p>
+    {% endif %}
+{% endwith %}
+
+{% include "shared/pagination_links.html" with page=production_page %}
+
+{% endblock %}
