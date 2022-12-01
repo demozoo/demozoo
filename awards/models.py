@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
+from platforms.models import Platform
 from productions.models import Production, ProductionType
 
 
@@ -106,11 +107,26 @@ class Event(models.Model):
             and (user.is_staff or self.jurors.filter(user=user).exists())
         )
 
+    def eligible_productions(self):
+        prods = Production.objects.filter(
+            release_date_date__gte=self.eligibility_start_date,
+            release_date_date__lte=self.eligibility_end_date,
+        ).distinct()
+        prod_type_ids = list(self.production_types.values_list('id', flat=True))
+        if prod_type_ids:
+            prods = prods.filter(types__id__in=prod_type_ids)
+        return prods
+
 
 class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     position = models.IntegerField(null=True, blank=True)
+    slug = models.SlugField(blank=True, max_length=255, help_text="If set, enables a candidates listing page at /awards/[slug]/[category]/")
+    platforms = models.ManyToManyField(
+        Platform, blank=True,
+        help_text="If set, the candidates listing is filtered by these platforms"
+    )
 
     def __str__(self):
         return self.name
@@ -118,6 +134,13 @@ class Category(models.Model):
     def get_recommendation_report(self):
         return Production.objects.filter(award_recommendations__category=self).distinct().\
             order_by('sortable_title')
+
+    def eligible_productions(self):
+        prods = self.event.eligible_productions()
+        platform_ids = list(self.platforms.values_list('id', flat=True))
+        if platform_ids:
+            prods = prods.filter(platforms__id__in=platform_ids)
+        return prods
 
     class Meta:
         verbose_name_plural = "Categories"

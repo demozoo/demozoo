@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from read_only_mode import writeable_site_required
 
 from awards.models import Event, Recommendation
+from demoscene.shortcuts import get_page
 from productions.models import Production
 
 
@@ -106,4 +107,28 @@ def report(request, event_slug, category_id):
         'event': event,
         'category': category,
         'productions': productions,
+    })
+
+
+def candidates(request, event_slug, category_slug):
+    event = get_object_or_404(
+        Event.objects.filter(recommendations_enabled=True), slug=event_slug
+    )
+    category = get_object_or_404(
+        event.categories.all(), slug=category_slug
+    )
+
+    productions = category.eligible_productions().prefetch_related(
+        'author_nicks__releaser', 'author_affiliation_nicks__releaser',
+        'types', 'platforms',
+    ).order_by('sortable_title')
+
+    production_page = get_page(
+        productions,
+        request.GET.get('page', '1'))
+
+    return render(request, 'awards/candidates.html', {
+        'event': event,
+        'category': category,
+        'production_page': production_page,
     })
