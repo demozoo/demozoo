@@ -121,7 +121,7 @@ def candidates(request, event_slug, category_slug):
     productions = category.eligible_productions().prefetch_related(
         'author_nicks__releaser', 'author_affiliation_nicks__releaser',
         'types', 'platforms',
-    ).order_by('sortable_title')
+    ).order_by('-types__path', 'sortable_title')
 
     production_page = get_page(
         productions,
