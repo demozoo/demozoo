@@ -84,11 +84,29 @@ class Event(models.Model):
 
     def get_recommendation_options(self, user, production):
         """
-        Return list of (category_id, category_name, has_recommended) tuples for this
-        event's awards, where has_recommended is a boolean indicating whether this
-        user has already recommended this production for that category
+        Return list of (category_id, category_name, has_recommended) tuples for the awards in this
+        event that accept the given production, where has_recommended is a boolean indicating
+        whether this user has already recommended this production for that category
         """
-        categories = list(self.categories.all())
+        # if this prod does not match the event's eligible date range or production types,
+        # return an empty list immediately
+        if not (
+            production.release_date_date >= self.eligibility_start_date
+            and production.release_date_date <= self.eligibility_end_date
+        ):
+            return []
+
+        event_prod_types = list(self.production_types.all())
+        if event_prod_types:
+            production_prod_types = set(production.types.all())
+            if not any(t in production_prod_types for t in event_prod_types):
+                return []
+
+        production_platforms = list(production.platforms.all())
+
+        categories = list(
+            self.categories.filter(Q(platforms__isnull=True) | Q(platforms__in=production_platforms))
+        )
         recommendations = set(
             Recommendation.objects.filter(
                 user=user, production=production,
