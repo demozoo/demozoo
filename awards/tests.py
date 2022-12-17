@@ -13,13 +13,66 @@ from productions.models import Production, ProductionType
 class TestModels(TestCase):
     fixtures = ['tests/gasman.json']
 
-    def test_event_model(self):
+    def test_event_str(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
         self.assertEqual(str(meteoriks), "The Meteoriks 2020")
 
-    def test_category_model(self):
+    def test_event_recommendation_options(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        user = User.objects.create_user(username='testuser', password='12345')
+        pondlife = Production.objects.get(title="Pondlife")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        best_highend = Category.objects.get(name="Best High-End Demo")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        outstanding_concept = Category.objects.get(name="Outstanding Concept")
+
+        Recommendation.objects.create(production=brexecutable, user=user, category=best_lowend)
+
+        result = meteoriks.get_recommendation_options(user, brexecutable)
+        self.assertEqual(result, [
+            (best_lowend.pk, "Best Low-End Production", True),
+            (outstanding_concept.pk, "Outstanding Concept", False),
+        ])
+
+        # no results for prods outside the date range
+        result = meteoriks.get_recommendation_options(user, pondlife)
+        self.assertEqual(result, [])
+
+        # no results for prods of a non-eligible type
+        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        result = meteoriks.get_recommendation_options(user, brexecutable)
+        self.assertEqual(result, [])
+
+    def test_category_str(self):
         best_lowend = Category.objects.get(name="Best Low-End Production")
         self.assertEqual(str(best_lowend), "Best Low-End Production")
+
+
+class TestCandidates(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_get(self):
+        response = self.client.get('/awards/meteoriks-2020/low-end/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Brexecutable Music Compo Is Over")
+        self.assertNotContains(response, "Pondlife")
+
+        response = self.client.get('/awards/meteoriks-2020/high-end/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "The Brexecutable Music Compo Is Over")
+        self.assertNotContains(response, "Pondlife")
+
+        response = self.client.get('/awards/meteoriks-2020/outstanding-concept/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Brexecutable Music Compo Is Over")
+        self.assertNotContains(response, "Pondlife")
+
+    def test_with_prod_type_limits(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        response = self.client.get('/awards/meteoriks-2020/low-end/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "The Brexecutable Music Compo Is Over")
 
 
 class TestRecommendations(TestCase):
@@ -61,6 +114,8 @@ class TestRecommendations(TestCase):
     def test_categories_pre_ticked(self):
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
         best_lowend = Category.objects.get(name="Best Low-End Production")
+        best_highend = Category.objects.get(name="Best High-End Demo")
+        outstanding_concept = Category.objects.get(name="Outstanding Concept")
         Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
 
         self.client.login(username='testuser', password='12345')
@@ -68,14 +123,21 @@ class TestRecommendations(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            """<input class="award-recommendation__checkbox" id="award_recommendation_category_1" """
-            """name="category_id" value="1" type="checkbox">""",
+            f"""<input class="award-recommendation__checkbox" id="award_recommendation_category_{best_lowend.pk}" """
+            f"""name="category_id" value="{best_lowend.pk}" type="checkbox" checked="checked">""",
             html=True
         )
         self.assertContains(
             response,
-            """<input class="award-recommendation__checkbox" id="award_recommendation_category_2" """
-            """name="category_id" value="2" type="checkbox" checked="checked">""",
+            f"""<input class="award-recommendation__checkbox" id="award_recommendation_category_{outstanding_concept.pk}" """
+            f"""name="category_id" value="{outstanding_concept.pk}" type="checkbox">""",
+            html=True
+        )
+        # not eligible for high-end, as per platform specifiers
+        self.assertNotContains(
+            response,
+            f"""<input class="award-recommendation__checkbox" id="award_recommendation_category_{best_highend.pk}" """
+            f"""name="category_id" value="{best_highend.pk}" type="checkbox">""",
             html=True
         )
 

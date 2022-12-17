@@ -470,7 +470,10 @@
         "model": "awards.category",
         "fields": {
             "name": "Best High-End Demo",
-            "event": 1
+            "slug": "high-end",
+            "event": 1,
+            "position": 1,
+            "platforms": [2]
         }
     },
     {
@@ -478,7 +481,10 @@
         "model": "awards.category",
         "fields": {
             "name": "Best Low-End Production",
-            "event": 1
+            "slug": "low-end",
+            "event": 1,
+            "position": 2,
+            "platforms": [1]
         }
     },
     {
@@ -486,7 +492,9 @@
         "model": "awards.category",
         "fields": {
             "name": "Outstanding Concept",
-            "event": 1
+            "slug": "outstanding-concept",
+            "event": 1,
+            "position": 3
         }
     },
     {
