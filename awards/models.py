@@ -31,6 +31,9 @@ class Event(models.Model):
     reporting_enabled = models.BooleanField(
         default=False, help_text="Whether jurors can currently view reports for these awards"
     )
+    show_recommendation_counts = models.BooleanField(
+        default=False, help_text="If true, reports will show how many times a production has been recommended"
+    )
 
     juror_feed_url = models.URLField(blank=True, max_length=255, help_text="URL to a list of juror SceneIDs")
 
@@ -150,8 +153,14 @@ class Category(models.Model):
         return self.name
 
     def get_recommendation_report(self):
-        return Production.objects.filter(award_recommendations__category=self).distinct().\
-            order_by('sortable_title')
+        prods = Production.objects.filter(award_recommendations__category=self).distinct()
+        if self.event.show_recommendation_counts:
+            return (
+                prods.annotate(recommendation_count=models.Count('award_recommendations')).
+                order_by('-recommendation_count', 'sortable_title')
+            )
+        else:
+            return prods.order_by('sortable_title')
 
     def eligible_productions(self):
         prods = self.event.eligible_productions()

@@ -209,6 +209,23 @@ class TestRecommendations(TestCase):
         response = self.client.get('/awards/%s/report/%d/' % (meteoriks.slug, best_lowend.id))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Brexecutable", 1)
+        self.assertNotContains(response, "2 recommendations")
+
+    def test_report_with_counts(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.show_recommendation_counts = True
+        meteoriks.save()
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+        Recommendation.objects.create(production=brexecutable, user=self.other_user, category=best_lowend)
+        Juror.objects.create(user=self.testuser, event=meteoriks)
+
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get('/awards/%s/report/%d/' % (meteoriks.slug, best_lowend.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Brexecutable", 1)
+        self.assertContains(response, "2 recommendations")
 
 
 class TestFetchJurors(TestCase):
