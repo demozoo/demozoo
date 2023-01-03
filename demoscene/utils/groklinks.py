@@ -1722,6 +1722,19 @@ class EventsRetrosceneRelease(AbstractBaseUrl):
     ]
 
 
+class MastodonAccount(AbstractBaseUrl):
+    site = Site("Mastodon", classname="mastodon", allowed_hostnames=[
+        'icosahedron.website', 'troet.cafe', 'mastodon.gamedev.place', 'chaos.social',
+        'mastodon.social', 'techhub.social', 'graphics.social', 'mastodon.world',
+        'mastodon.online',
+    ])
+
+    tests = [
+        lambda urlstring, url: urlstring  # return full url
+    ]
+    canonical_format = "%s"
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1736,7 +1749,7 @@ RELEASER_LINK_TYPES = [
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
     SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
-    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser,
+    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1775,7 +1788,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 PARTY_LINK_TYPES = [
     DemopartyNetParty, PartyWikiParty, SlengpungParty, PouetParty,
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
-    PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel,
+    PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount, WaybackMachinePage, BaseUrl,
 ]
