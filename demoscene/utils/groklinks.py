@@ -1685,7 +1685,7 @@ class PolyworkUser(UrlPattern):
 
 class TikTokUser(UrlPattern):
     site = Site("TikTok", url='https://www.tiktok.com/', classname="tiktok")
-    pattern = '/@<slug>/'
+    pattern = '/@<slug>'
 
 
 class DOPEdition(AbstractBaseUrl):
@@ -1790,7 +1790,8 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount, WaybackMachinePage, BaseUrl,
+    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
+    TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
