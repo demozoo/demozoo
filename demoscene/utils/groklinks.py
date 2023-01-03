@@ -1046,8 +1046,9 @@ class YoutubeVideo(AbstractBaseUrl):
 
 class YoutubeUser(AbstractBaseUrl):
     site = youtube
-    canonical_format = "https://www.youtube.com/user/%s"
+    canonical_format = "https://www.youtube.com/@%s"
     tests = [
+        regex_match(r'https?://(?:www\.)?youtube\.com/@([^\/\?]+)'),
         regex_match(r'https?://(?:www\.)?youtube\.com/user/([^\/\?]+)'),
     ]
 
