@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 
 from demoscene.models import Releaser
 from pouet.matching import automatch_productions, get_pouetable_prod_types
-from pouet.models import Group, GroupMatchInfo, Production
+from pouet.models import Group, GroupMatchInfo, Platform, Production, ProductionType
 
 
 class Command(BaseCommand):
@@ -65,6 +65,9 @@ class Command(BaseCommand):
         prods_imported = 0
         prods_created = 0
 
+        platforms_by_id = {}
+        prod_types_by_name = {}
+
         def handle_prod(prod_data):
             nonlocal prods_imported, prods_created, group_db_ids
             # prods JSON contains various nested objects, but only prod entries have a 'download' field
@@ -97,6 +100,28 @@ class Command(BaseCommand):
 
                 if unseen_download_link_ids:
                     prod.download_links.filter(id__in=unseen_download_link_ids).delete()
+
+                platform_ids = []
+                for (platform_id, platform_data) in prod_data['platforms'].items():
+                    try:
+                        platform = platforms_by_id[platform_id]
+                    except KeyError:
+                        platform, created = Platform.objects.get_or_create(pouet_id=platform_id, defaults={
+                            'name': platform_data['name']
+                        })
+                        platforms_by_id[platform_id] = platform
+                    platform_ids.append(platform.id)
+                prod.platforms.set(platform_ids)
+
+                prod_type_ids = []
+                for type_name in prod_data['types']:
+                    try:
+                        prod_type = prod_types_by_name[type_name]
+                    except KeyError:
+                        prod_type, created = ProductionType.objects.get_or_create(name=type_name)
+                        prod_types_by_name[type_name] = prod_type
+                    prod_type_ids.append(prod_type.id)
+                prod.types.set(prod_type_ids)
 
                 prods_imported += 1
                 if prods_imported % 1000 == 0 and verbose:  # pragma: no cover
