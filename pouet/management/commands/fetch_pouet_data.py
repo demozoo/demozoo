@@ -72,6 +72,11 @@ class Command(BaseCommand):
                 prod, created = Production.objects.update_or_create(pouet_id=prod_data['id'], defaults={
                     'name': prod_data['name'],
                     'download_url': prod_data['download'],
+                    'vote_up_count': prod_data['voteup'],
+                    'vote_pig_count': prod_data['votepig'],
+                    'vote_down_count': prod_data['votedown'],
+                    'cdc_count': prod_data['cdc'],
+                    'popularity': prod_data['popularity'],
                     'last_seen_at': datetime.datetime.now(),
                 })
                 prod.groups.set([
