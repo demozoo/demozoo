@@ -1,5 +1,8 @@
 from django.db import models
 
+from demoscene.models import DATE_PRECISION_CHOICES
+from fuzzy_date import FuzzyDate
+
 
 class Group(models.Model):
     pouet_id = models.IntegerField(unique=True, db_index=True)
@@ -31,6 +34,8 @@ class Production(models.Model):
     pouet_id = models.IntegerField(unique=True, db_index=True)
     name = models.CharField(max_length=255)
     download_url = models.TextField()
+    release_date_date = models.DateField(null=True, blank=True)
+    release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
     groups = models.ManyToManyField(Group, related_name='productions')
     platforms = models.ManyToManyField(Platform, related_name='productions')
     types = models.ManyToManyField(ProductionType, related_name='productions')
@@ -40,6 +45,13 @@ class Production(models.Model):
     cdc_count = models.IntegerField(null=True, blank=True)
     popularity = models.FloatField(null=True, blank=True)
     last_seen_at = models.DateTimeField()
+
+    @property
+    def release_date(self):
+        if self.release_date_date and self.release_date_precision:
+            return FuzzyDate(self.release_date_date, self.release_date_precision)
+        else:
+            return None
 
 
 class CompetitionPlacing(models.Model):

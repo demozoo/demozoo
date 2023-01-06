@@ -74,6 +74,18 @@ class Command(BaseCommand):
             nonlocal prods_imported, prods_created, group_db_ids
             # prods JSON contains various nested objects, but only prod entries have a 'download' field
             if 'download' in prod_data:
+                if prod_data['releaseDate']:
+                    y, m, d = prod_data['releaseDate'].split('-')
+                    if m == '00':
+                        release_date_date = datetime.date(int(y), 1, 1)
+                        release_date_precision = 'y'
+                    else:
+                        release_date_date = datetime.date(int(y), int(m), 1)
+                        release_date_precision = 'm'
+                else:
+                    release_date_date = None
+                    release_date_precision = ''
+
                 prod, prod_created = Production.objects.update_or_create(pouet_id=prod_data['id'], defaults={
                     'name': prod_data['name'],
                     'download_url': prod_data['download'],
@@ -82,6 +94,8 @@ class Command(BaseCommand):
                     'vote_down_count': prod_data['votedown'],
                     'cdc_count': prod_data['cdc'],
                     'popularity': prod_data['popularity'],
+                    'release_date_date': release_date_date,
+                    'release_date_precision': release_date_precision,
                     'last_seen_at': datetime.datetime.now(),
                 })
                 prod.groups.set([
