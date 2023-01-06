@@ -17,6 +17,16 @@ class ProductionType(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
 
 
+class Party(models.Model):
+    pouet_id = models.IntegerField(unique=True, db_index=True)
+    name = models.CharField(max_length=255)
+
+
+class CompetitionType(models.Model):
+    pouet_id = models.IntegerField(unique=True, db_index=True)
+    name = models.CharField(max_length=255)
+
+
 class Production(models.Model):
     pouet_id = models.IntegerField(unique=True, db_index=True)
     name = models.CharField(max_length=255)
@@ -30,6 +40,14 @@ class Production(models.Model):
     cdc_count = models.IntegerField(null=True, blank=True)
     popularity = models.FloatField(null=True, blank=True)
     last_seen_at = models.DateTimeField()
+
+
+class CompetitionPlacing(models.Model):
+    production = models.ForeignKey(Production, related_name='competition_placings', on_delete=models.CASCADE)
+    party = models.ForeignKey(Party, related_name='competition_placings', on_delete=models.CASCADE)
+    competition_type = models.ForeignKey(CompetitionType, null=True, blank=True, related_name='+', on_delete=models.CASCADE)
+    ranking = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField()
 
 
 class DownloadLink(models.Model):
