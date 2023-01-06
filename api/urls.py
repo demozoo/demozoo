@@ -2,7 +2,7 @@ from django.urls import include, re_path
 from rest_framework import routers
 
 from api.views import generic
-from api.views.adhoc import eq, group_abbreviations, klubi, pouet, scenesat, zxdemo
+from api.views.adhoc import eq, group_abbreviations, klubi, meteoriks, pouet, scenesat, zxdemo
 
 
 router = routers.DefaultRouter()
@@ -27,9 +27,9 @@ urlpatterns = [
 
     re_path(r'^adhoc/klubi/demoshow-prods/$', klubi.demoshow, {}),
     re_path(r'^adhoc/scenesat/monthly-releases/$', scenesat.monthly, {}),
-
     re_path(r'^adhoc/eq/demos/$', eq.demos, {}),
     re_path(r'^adhoc/group-abbreviations/$', group_abbreviations.group_abbreviations, {}),
+    re_path(r'^adhoc/meteoriks/candidates/(\d+)/$', meteoriks.candidates, {}),
 
     re_path(r'^v1/', include(router.urls)),
 ]
