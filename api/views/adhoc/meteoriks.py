@@ -64,7 +64,7 @@ def candidates(request, year):
         Q(release_date_date__year=year)
     ).prefetch_related(
         'groups', 'platforms', 'types', 'competition_placings__party',
-        'competition_placings__competition_type',
+        'competition_placings__competition_type', 'download_links',
     )
     pouet_prods_by_id = {
         prod.pouet_id: prod
@@ -75,10 +75,12 @@ def candidates(request, year):
     csvfile = csv.writer(response)
     csvfile.writerow([
         'category', 'pouet_url', 'demozoo_url', 'title', 'groups', 'thumbup', 'piggy', 'thumbdown',
-        'up-down', 'avg', 'cdcs', 'popularity', 'party', 'type', 'platform',
+        'up-down', 'avg', 'cdcs', 'popularity', 'party', 'type', 'platform', 'youtube',
     ])
 
     def write_row(dz_prod, pouet_prod):
+        youtube_links = []
+
         if pouet_prod:
             vote_diff = pouet_prod.vote_up_count - pouet_prod.vote_down_count
             vote_count = pouet_prod.vote_up_count + pouet_prod.vote_pig_count + pouet_prod.vote_down_count
@@ -125,6 +127,10 @@ def candidates(request, year):
                     pouet_derived_category = "High-End Demo"
             else:
                 pouet_derived_category = ""
+
+            for link in pouet_prod.download_links.all():
+                if 'youtu' in link.url:
+                    youtube_links.append(link.url)
 
         if dz_prod:
             dz_platform_names = [platform.name for platform in dz_prod.platforms.all()]
@@ -173,6 +179,10 @@ def candidates(request, year):
             else:
                 dz_derived_category = ""
 
+            for link in dz_prod.links.all():
+                if link.link_class == 'YoutubeVideo':
+                    youtube_links.append(link.url)
+
         if dz_prod and pouet_prod:
             if pouet_derived_category == "Executable GFX":
                 # trust Pouet if it says a prod is exe gfx
@@ -198,6 +208,7 @@ def candidates(request, year):
                 ),
                 ', '.join(dz_prodtype_names),
                 ', '.join(dz_platform_names),
+                youtube_links[0] if youtube_links else '',
             ])
         elif dz_prod:
             csvfile.writerow([
@@ -219,6 +230,7 @@ def candidates(request, year):
                 ),
                 ', '.join(dz_prodtype_names),
                 ', '.join(dz_platform_names),
+                youtube_links[0] if youtube_links else '',
             ])
         else:
             csvfile.writerow([
@@ -244,6 +256,7 @@ def candidates(request, year):
                 ),
                 ', '.join(pouet_prodtype_names),
                 ', '.join(pouet_platform_names),
+                youtube_links[0] if youtube_links else '',
             ])
 
     for prod in prods:
