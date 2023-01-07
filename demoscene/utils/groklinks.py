@@ -1605,6 +1605,11 @@ class SixteenColorsGroup(UrlPattern):
     pattern = '/group/<slug>'
 
 
+class SixteenColorsMag(UrlPattern):
+    site = sixteencolors
+    pattern = '/mag/<slug>'
+
+
 class SixteenColorsContent(UrlPattern):
     site = sixteencolors
     pattern = '/tags/content/<slug>'
@@ -1769,7 +1774,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
-    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack, ShadertoyShader,
+    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack, SixteenColorsMag, ShadertoyShader,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
