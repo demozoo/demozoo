@@ -1,11 +1,18 @@
 import csv
 
-from django.contrib.humanize.templatetags.humanize import ordinal
+from django.contrib.humanize.templatetags.humanize import ordinal as original_ordinal
 from django.db.models import Q
 from django.http import HttpResponse
 
 from pouet.models import Production as PouetProduction
 from productions.models import Production, ProductionType
+
+
+def ordinal(val):
+    if isinstance(val, str) and val.startswith('='):
+        return '.=' + original_ordinal(val[1:])
+    else:
+        return original_ordinal(val)
 
 
 POUET_OLDSCHOOL_PLATFORM_NAMES = [
