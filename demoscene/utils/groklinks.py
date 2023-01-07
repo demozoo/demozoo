@@ -1605,6 +1605,16 @@ class SixteenColorsGroup(UrlPattern):
     pattern = '/group/<slug>'
 
 
+class SixteenColorsContent(UrlPattern):
+    site = sixteencolors
+    pattern = '/tags/content/<slug>'
+
+
+class SixteenColorsMagazine(UrlPattern):
+    site = sixteencolors
+    pattern = '/tags/magazine/<slug>'
+
+
 shadertoy = Site("Shadertoy", url='https://www.shadertoy.com/')
 
 
@@ -1748,8 +1758,8 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
-    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
-    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
+    SixteenColorsArtist, SixteenColorsGroup, SixteenColorsContent, SixteenColorsMagazine, ShadertoyUser, 
+    Tic80Dev, Pico8User, LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1797,7 +1807,7 @@ PARTY_LINK_TYPES = [
 BBS_LINK_TYPES = [
     PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group, TelnetBBSGuideBBS,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
-    SpeccyWikiPage, AtarikiEntry, InstagramAccount,
+    SpeccyWikiPage, AtarikiEntry, SixteenColorsContent, InstagramAccount,
     WaybackMachinePage, BaseUrl
 ]
 
