@@ -791,7 +791,8 @@ class ProductionRemoveTagView(RemoveTagView):
 
 
 def autocomplete_tags(request):
-    tags = Tag.objects.filter(name__istartswith=request.GET.get('term')).order_by('name').values_list('name', flat=True)
+    term = request.GET.get('term', 'hello I am a shitty web crawler that strips out query parameters')
+    tags = Tag.objects.filter(name__istartswith=term).order_by('name').values_list('name', flat=True)
     return JsonResponse(list(tags), safe=False)
 
 

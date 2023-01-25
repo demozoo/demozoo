@@ -1770,6 +1770,12 @@ class TestAutocompleteTags(TestCase):
         response_json = json.loads(response.content)
         self.assertEqual(response_json, ['fish'])
 
+    def test_get_empty(self):
+        response = self.client.get('/productions/autocomplete_tags/')
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json, [])
+
 
 class TestAutocomplete(TestCase):
     fixtures = ['tests/gasman.json']
