@@ -949,10 +949,14 @@ class YoutubeVideo(AbstractBaseUrl):
         if regex.match(urlstring):
             querystring = urllib.parse.parse_qs(url.query)
             try:
+                video_id = querystring['v'][0]
+                if not re.fullmatch(r'[\w\-\_]+', video_id):
+                    return None
+
                 if 't' in querystring:
-                    return "%s/%s" % (querystring['v'][0], querystring['t'][0])
+                    return "%s/%s" % (video_id, querystring['t'][0])
                 else:
-                    return querystring['v'][0]
+                    return video_id
             except KeyError:
                 return None
 

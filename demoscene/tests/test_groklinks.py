@@ -180,6 +180,11 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BaseUrl')
         self.assertEqual(link.parameter, 'https://www.youtube.com/watch?t=250')
 
+        link.url = 'https://www.youtube.com/watch?v=r5sH2yZFY6whttp://csdb.dk/release/?id=51348'
+        self.assertEqual(str(link.link), 'https://www.youtube.com/watch?v=r5sH2yZFY6whttp://csdb.dk/release/?id=51348')
+        self.assertEqual(link.link_class, 'BaseUrl')
+        self.assertEqual(link.parameter, 'https://www.youtube.com/watch?v=r5sH2yZFY6whttp://csdb.dk/release/?id=51348')
+
     def test_discogs_release(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
         link = ProductionLink(production=cybrev, is_download_link=True)
