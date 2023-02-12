@@ -21,7 +21,7 @@
     <ul class="submenu years">
         {% for year in years %}
             {% if year.year == selected_year %}
-                <li><strong>{{ year.year }}</strong></li>
+                <li class="active"><strong>{{ year.year }}</strong></li>
             {% else %}
                 <li><a href="{% url 'parties_year' year=year.year %}">{{ year.year }}</a></li>
             {% endif %}
