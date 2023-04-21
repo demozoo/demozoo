@@ -151,14 +151,18 @@
 
     .comments {
         margin-bottom: 20px;
+
         ul {
             clear: both;
             padding-top: 8px;
+
             li {
+                border-bottom: 1px dotted #888;
                 clear: both;
                 margin: 8px 0;
+                overflow: hidden;
                 padding-bottom: 8px;
-                border-bottom: 1px dotted #888;
+
                 q {
                     font-style: italic;
                 }
