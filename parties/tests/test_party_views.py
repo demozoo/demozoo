@@ -623,10 +623,11 @@ class TestAddOrganiser(TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
-        User.objects.create_user(username='testuser', password='12345')
+        self.testuser = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
         self.party = Party.objects.get(name='Forever 2e3')
         self.gasman = Releaser.objects.get(name='Gasman')
+        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
 
     def test_get(self):
         response = self.client.get('/parties/%d/add_organiser/' % self.party.id)
@@ -641,6 +642,30 @@ class TestAddOrganiser(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
         self.assertEqual(1, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
+
+    def test_post_locked(self):
+        response = self.client.post('/parties/%d/add_organiser/' % self.party.id, {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Beamteam'
+        }, follow=True)
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.assertEqual(0, Organiser.objects.filter(releaser=self.yerzmyey, party=self.party).count())
+        self.assertContains(response, "cannot be added as an organiser")
+
+    def test_post_locked_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+
+        response = self.client.post('/parties/%d/add_organiser/' % self.party.id, {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Beamteam'
+        }, follow=True)
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.assertEqual(1, Organiser.objects.filter(releaser=self.yerzmyey, party=self.party).count())
 
 
 class TestEditOrganiser(TestCase):
