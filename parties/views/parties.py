@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -544,6 +545,8 @@ class RemoveOrganiserView(AjaxConfirmationView):
     def get_object(self, request, party_id, organiser_id):
         self.party = Party.objects.get(id=party_id)
         self.organiser = Organiser.objects.get(party=self.party, id=organiser_id)
+        if self.organiser.releaser.locked and not request.user.is_staff:
+            raise PermissionDenied
 
     def get_redirect_url(self):
         return self.party.get_absolute_url() + "?editing=organisers"

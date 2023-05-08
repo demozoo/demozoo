@@ -700,14 +700,26 @@ class TestRemoveOrganiser(TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
-        User.objects.create_user(username='testuser', password='12345')
+        self.testuser = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
         self.party = Party.objects.get(name='Revision 2011')
         self.gasman = Releaser.objects.get(name='Gasman')
         self.orga = Organiser.objects.get(party=self.party, releaser=self.gasman)
+        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
+        self.yerz_orga = Organiser.objects.create(party=self.party, releaser=self.yerzmyey)
 
     def test_get(self):
         response = self.client.get('/parties/%d/remove_organiser/%d/' % (self.party.id, self.orga.id))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_locked(self):
+        response = self.client.get('/parties/%d/remove_organiser/%d/' % (self.party.id, self.yerz_orga.id))
+        self.assertEqual(response.status_code, 403)
+
+    def test_get_locked_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+        response = self.client.get('/parties/%d/remove_organiser/%d/' % (self.party.id, self.yerz_orga.id))
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -716,3 +728,19 @@ class TestRemoveOrganiser(TestCase):
         })
         self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
         self.assertEqual(0, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
+
+    def test_post_locked(self):
+        response = self.client.post('/parties/%d/remove_organiser/%d/' % (self.party.id, self.yerz_orga.id), {
+            'yes': 'yes',
+        })
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(1, Organiser.objects.filter(releaser=self.yerzmyey, party=self.party).count())
+
+    def test_post_locked_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+        response = self.client.post('/parties/%d/remove_organiser/%d/' % (self.party.id, self.yerz_orga.id), {
+            'yes': 'yes',
+        })
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.assertEqual(0, Organiser.objects.filter(releaser=self.yerzmyey, party=self.party).count())
