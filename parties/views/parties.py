@@ -9,6 +9,7 @@ from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.html import format_html
 from read_only_mode import writeable_site_required
 
 from comments.forms import CommentForm
@@ -479,16 +480,26 @@ def add_organiser(request, party_id):
         form = PartyOrganiserForm(request.POST)
         if form.is_valid():
             releaser = form.cleaned_data['releaser_nick'].commit().releaser
-            organiser = Organiser(
-                releaser=releaser,
-                party=party,
-                role=form.cleaned_data['role'])
-            organiser.save()
-            description = u"Added %s as organiser of %s" % (releaser.name, party.name)
-            Edit.objects.create(
-                action_type='add_party_organiser', focus=releaser, focus2=party,
-                description=description, user=request.user
-            )
+            if releaser.locked and not request.user.is_staff:
+                messages.error(
+                    request,
+                    format_html(
+                        "The scener profile for {} is protected and cannot be added as an organiser. "
+                        'If you wish to add this organiser, <a href="/forums/3/">let us know in this thread</a>.',
+                        releaser.name
+                    )
+                )
+            else:
+                organiser = Organiser(
+                    releaser=releaser,
+                    party=party,
+                    role=form.cleaned_data['role'])
+                organiser.save()
+                description = u"Added %s as organiser of %s" % (releaser.name, party.name)
+                Edit.objects.create(
+                    action_type='add_party_organiser', focus=releaser, focus2=party,
+                    description=description, user=request.user
+                )
             return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm()
