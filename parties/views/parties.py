@@ -526,6 +526,17 @@ def edit_organiser(request, party_id, organiser_id):
             })
             if form.is_valid():
                 releaser = form.cleaned_data['releaser_nick'].commit().releaser
+                if releaser.locked and not request.user.is_staff:
+                    messages.error(
+                        request,
+                        format_html(
+                            "The scener profile for {} is protected and cannot be added as an organiser. "
+                            'If you wish to add this organiser, <a href="/forums/3/">let us know in this thread</a>.',
+                            releaser.name
+                        )
+                    )
+                    return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
+
                 organiser.releaser = releaser
                 organiser.role = form.cleaned_data['role']
                 organiser.save()
