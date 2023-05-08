@@ -672,28 +672,69 @@ class TestEditOrganiser(TestCase):
     fixtures = ['tests/gasman.json']
 
     def setUp(self):
-        User.objects.create_user(username='testuser', password='12345')
+        self.testuser = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
         self.party = Party.objects.get(name='Revision 2011')
         self.gasman = Releaser.objects.get(name='Gasman')
-        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
+        self.laesq = Releaser.objects.get(name='LaesQ')
         self.orga = Organiser.objects.get(party=self.party, releaser=self.gasman)
+        self.yerzmyey = Releaser.objects.get(name='Yerzmyey')
+        self.yerz_orga = Organiser.objects.create(party=self.party, releaser=self.yerzmyey)
 
     def test_get(self):
         response = self.client.get('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editing Gasman as organiser of Revision 2011")
+
+    def test_get_locked(self):
+        response = self.client.get('/parties/%d/edit_organiser/%d/' % (self.party.id, self.yerz_orga.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "cannot be edited")
+
+    def test_get_locked_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+
+        response = self.client.get('/parties/%d/edit_organiser/%d/' % (self.party.id, self.yerz_orga.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editing Yerzmyey as organiser of Revision 2011")
 
     def test_post(self):
         response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id), {
-            'releaser_nick_search': 'yerzmyey',
-            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
-            'releaser_nick_match_name': 'yerzmyey',
+            'releaser_nick_search': 'laesq',
+            'releaser_nick_match_id': self.laesq.primary_nick.id,
+            'releaser_nick_match_name': 'laesq',
             'role': 'Beamteam'
         })
         self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
         self.orga.refresh_from_db()
         self.assertEqual(self.orga.role, "Beamteam")
-        self.assertEqual(self.orga.releaser, self.yerzmyey)
+        self.assertEqual(self.orga.releaser, self.laesq)
+
+    def test_post_locked(self):
+        response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.yerz_orga.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Infoteam'
+        })
+        self.assertEqual(response.status_code, 403)
+        self.yerz_orga.refresh_from_db()
+        self.assertEqual(self.yerz_orga.role, "")
+
+    def test_post_locked_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+
+        response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.yerz_orga.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Infoteam'
+        })
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.yerz_orga.refresh_from_db()
+        self.assertEqual(self.yerz_orga.role, "Infoteam")
 
 
 class TestRemoveOrganiser(TestCase):

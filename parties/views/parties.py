@@ -517,28 +517,38 @@ def edit_organiser(request, party_id, organiser_id):
     organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
 
     if request.method == 'POST':
-        form = PartyOrganiserForm(request.POST, initial={
-            'releaser_nick': organiser.releaser.primary_nick,
-            'role': organiser.role,
-        })
-        if form.is_valid():
-            releaser = form.cleaned_data['releaser_nick'].commit().releaser
-            organiser.releaser = releaser
-            organiser.role = form.cleaned_data['role']
-            organiser.save()
-            form.log_edit(request.user, releaser, party)
+        if organiser.releaser.locked and not request.user.is_staff:
+            raise PermissionDenied
+        else:
+            form = PartyOrganiserForm(request.POST, initial={
+                'releaser_nick': organiser.releaser.primary_nick,
+                'role': organiser.role,
+            })
+            if form.is_valid():
+                releaser = form.cleaned_data['releaser_nick'].commit().releaser
+                organiser.releaser = releaser
+                organiser.role = form.cleaned_data['role']
+                organiser.save()
+                form.log_edit(request.user, releaser, party)
 
-            return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
+                return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm(initial={
             'releaser_nick': organiser.releaser.primary_nick,
             'role': organiser.role,
         })
-    return render(request, 'parties/edit_organiser.html', {
-        'party': party,
-        'organiser': organiser,
-        'form': form,
-    })
+
+    if organiser.releaser.locked and not request.user.is_staff:
+        return render(request, 'parties/edit_organiser_protected.html', {
+            'party': party,
+            'organiser': organiser,
+        })
+    else:
+        return render(request, 'parties/edit_organiser.html', {
+            'party': party,
+            'organiser': organiser,
+            'form': form,
+        })
 
 
 class RemoveOrganiserView(AjaxConfirmationView):
