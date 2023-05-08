@@ -736,6 +736,34 @@ class TestEditOrganiser(TestCase):
         self.yerz_orga.refresh_from_db()
         self.assertEqual(self.yerz_orga.role, "Infoteam")
 
+    def test_changed_to_locked_scener(self):
+        response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Beamteam'
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "cannot be added as an organiser")
+        self.orga.refresh_from_db()
+        self.assertEqual(self.orga.role, "Compo team")
+        self.assertEqual(self.orga.releaser, self.gasman)
+
+    def test_changed_to_locked_scener_as_staff(self):
+        self.testuser.is_staff = True
+        self.testuser.save()
+
+        response = self.client.post('/parties/%d/edit_organiser/%d/' % (self.party.id, self.orga.id), {
+            'releaser_nick_search': 'yerzmyey',
+            'releaser_nick_match_id': self.yerzmyey.primary_nick.id,
+            'releaser_nick_match_name': 'yerzmyey',
+            'role': 'Beamteam'
+        }, follow=True)
+        self.assertRedirects(response, '/parties/%d/?editing=organisers' % self.party.id)
+        self.orga.refresh_from_db()
+        self.assertEqual(self.orga.role, "Beamteam")
+        self.assertEqual(self.orga.releaser, self.yerzmyey)
+
 
 class TestRemoveOrganiser(TestCase):
     fixtures = ['tests/gasman.json']
