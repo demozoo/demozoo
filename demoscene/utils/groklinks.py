@@ -16,7 +16,7 @@ class Site:
     ):
         self.name = name
         self.long_name = long_name or name
-        self.classname = classname or name.lower()
+        self.classname = classname or name.lower().replace(' ', '_')
         self.title_format = title_format or ("%%s on %s" % self.long_name)
         self.icon_path = icon_path or ('images/icons/external_sites/%s.png' % self.classname)
 
@@ -1739,6 +1739,21 @@ class MastodonAccount(AbstractBaseUrl):
     canonical_format = "%s"
 
 
+class SpectrumComputingRelease(AbstractBaseUrl):
+    site = Site(
+        "Spectrum Computing", url='https://spectrumcomputing.co.uk/',
+        allowed_hostnames=['spectrumcomputing.co.uk', 'www.spectrumcomputing.co.uk']
+    )
+    canonical_format = "https://spectrumcomputing.co.uk/entry/%s"
+    tests = [
+        path_regex_match(r'/entry/(\d+)'),
+        querystring_match(
+            r'https?://(?:www\.)?spectrumcomputing\.co\.uk/index\.php',
+            'id', othervars={'cat': '96'}
+        ),
+    ]
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
@@ -1768,7 +1783,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
-    Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease,
+    Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease, SpectrumComputingRelease,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1787,6 +1802,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
     'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
+    'SpectrumComputingRelease',
 ]
 
 PARTY_LINK_TYPES = [
