@@ -1753,6 +1753,11 @@ class SpectrumComputingRelease(AbstractBaseUrl):
         ),
     ]
 
+livecode = Site("Livecode", url="https://livecode.demozoo.org/")
+
+class LivecodeDemozooEvent(UrlPattern):
+    site = livecode
+    pattern = '/event/<slug>.html'
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1811,7 +1816,7 @@ PARTY_LINK_TYPES = [
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
-    TikTokUser, WaybackMachinePage, BaseUrl,
+    TikTokUser, WaybackMachinePage, LivecodeDemozooEvent, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
