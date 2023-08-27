@@ -32,6 +32,6 @@ md = markdown.Markdown(extensions=['footnotes', 'nl2br', autolink])
 def safe_markdown(value, arg=''):
     return mark_safe(
         cleaner.clean(
-        md.reset().convert(value)
+            md.reset().convert(value)
         )
     )
