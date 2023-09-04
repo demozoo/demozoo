@@ -131,7 +131,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
             ]
         else:
             current_memberships = (
-                self.group_memberships.filter(is_current=True).select_related('group').order_by('group__name')
+                self.group_memberships.filter(is_current=True).select_related('group').only('member', 'group', 'is_current', 'group__name').order_by('group__name')
             )
             if prefetch_nicks:
                 current_memberships = current_memberships.prefetch_related('group__nicks')
@@ -347,7 +347,7 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
             self._has_written_nick_variant_list = False
 
     def name_with_affiliations(self):
-        groups = self.releaser.current_groups()
+        groups = self.releaser.current_groups(prefetch_nicks=True)
 
         if groups:
             if sum([len(group.name) for group in groups]) >= 20:
@@ -532,6 +532,10 @@ class NickVariant(models.Model):
                 nick_variants = nick_variants[:limit]
 
             nick_variants = nick_variants.select_related('nick', 'nick__releaser')
+            nick_variants = nick_variants.only(
+                'id', 'name', 'nick__id', 'nick__name', 'nick__differentiator',
+                'nick__releaser__is_group', 'nick__releaser__country_code'
+            )
         else:
             nick_variants = NickVariant.objects.none()
 

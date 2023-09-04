@@ -70,7 +70,7 @@ def edit(request, competition_id):
         placing.json_data
         for placing in competition.results().prefetch_related(
             'production', 'production__author_nicks', 'production__author_affiliation_nicks',
-            'production__platforms', 'production__types',
+            'production__platforms', 'production__types', 'production__competition_placings',
         )
     ]
 
