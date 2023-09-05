@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
 from api import filters, serializers
@@ -27,12 +28,14 @@ class PlatformViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Platform.objects.all()
     serializer_class = serializers.PlatformSerializer
     filterset_class = filters.PlatformFilter
+    ordering_fields = ['id', 'name']
 
 
 class ProductionTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProductionType.objects.all()
     serializer_class = serializers.ProductionTypeSerializer
     filterset_class = filters.ProductionTypeFilter
+    ordering_fields = ['id', 'name', 'supertype']
 
 
 class ProductionViewSet(ListDetailModelViewSet):
@@ -42,6 +45,7 @@ class ProductionViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.ProductionListingSerializer
     serializer_class = serializers.ProductionSerializer
     filterset_class = filters.ProductionFilter
+    ordering_fields = ['id', 'name', 'release_date_date', 'supertype']
 
 
 class ReleaserViewSet(ListDetailModelViewSet):
@@ -50,6 +54,7 @@ class ReleaserViewSet(ListDetailModelViewSet):
     serializer_class = serializers.ReleaserSerializer
     filterset_class = filters.ReleaserFilter
     lookup_value_regex = r'\d+'
+    ordering_fields = ['id', 'name']
 
     @action(detail=True)
     def productions(self, request, pk):
@@ -79,6 +84,7 @@ class PartySeriesViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.PartySeriesListingSerializer
     serializer_class = serializers.PartySeriesSerializer
     filterset_class = filters.PartySeriesFilter
+    ordering_fields = ['id', 'name']
 
 
 class PartyViewSet(ListDetailModelViewSet):
@@ -86,6 +92,7 @@ class PartyViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.PartyListingSerializer
     serializer_class = serializers.PartySerializer
     filterset_class = filters.PartyFilter
+    ordering_fields = ['id', 'name', 'start_date_date', 'end_date_date', 'country_code']
 
 
 class BBSViewSet(ListDetailModelViewSet):
@@ -93,3 +100,4 @@ class BBSViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.BBSListingSerializer
     serializer_class = serializers.BBSSerializer
     filterset_class = filters.BBSFilter
+    ordering_fields = ['id', 'name']
