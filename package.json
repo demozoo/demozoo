@@ -1,18 +1,16 @@
 {
   "name": "demozoo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Demozoo - The best demoscene website in the world.",
-  "main": "Gruntfile.js",
-  "browserslist": [
+    "browserslist": [
     "last 3 versions"
   ],
   "scripts": {
     "autoprefixer": "postcss -u autoprefixer --no-map -r ./static_built/css/dz.css",
     "build": "run-p build:*",
-    "build:css": "npm run sass && npm run autoprefixer && npm run cssnano",
+    "build:css": "npm run sass && npm run autoprefixer",
     "build:icons": "npm run svgstore:icons && npm run svgo:icons",
-    "cssnano": "postcss ./static_built/css/dz.css --no-map --use cssnano -o ./static_built/css/dz.css",
-    "sass": "node-sass --importer node_modules/node-sass-glob-importer/dist/cli.js ./src/style/layout.scss ./static_built/css/dz.css",
+    "sass": "sass ./src/style/layout.scss:./static_built/css/dz.css --style compressed",
     "svgo:icons": "svgo ./static_built/images/icons.svg",
     "svgstore:icons": "svgstore -p icon-- -o ./static_built/images/icons.svg ./src/svg/icons/*.svg",
     "watch:css": "onchange \"src/style\" -- run-s sass autoprefixer",
@@ -31,16 +29,13 @@
   "homepage": "https://github.com/demozoo/demozoo#readme",
   "devDependencies": {
     "autoprefixer": "^10.4.13",
-    "cssnano": "^5.1.14",
-    "node-sass": "^8.0.0",
-    "node-sass-glob-importer": "^5.3.2",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
     "postcss": "^8.4.19",
     "postcss-cli": "^10.0.0",
     "postcss-normalize": "^10.0.1",
+    "sass": "^1.67.0",
     "svgo": "^2.8.0",
     "svgstore-cli": "^2.0.1"
-  },
-  "dependencies": {}
+  }
 }
