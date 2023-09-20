@@ -20,7 +20,7 @@ apt-get install -y postgresql libpq-dev
 apt-get install -y libffi-dev
 
 # node.js
-curl -sL https://deb.nodesource.com/setup_12.x | bash -
+curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 npm install -g npm@latest
 
