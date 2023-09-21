@@ -55,11 +55,11 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
         margin: 0 0 10px;
 
         @media (min-width: 600px) {
-            flex: 0 0 (100% / 2);
+            flex: 0 0 50%;
         }
 
         @media (min-width: 960px) {
-            flex: 0 0 (100% / 4);
+            flex: 0 0 25%;
         }
     }
 
@@ -161,7 +161,7 @@ $color-alert-inner-border: darken($color-alert-background, 6.25%);
                 background: no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBmaWxsPSIjMDAwMDAwIiBkPSJNNy40MSAxNS40MUwxMiAxMC44M2w0LjU5IDQuNThMMTggMTRsLTYtNi02IDZ6Ii8+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==") center / cover;
                 content: '';
                 position: absolute;
-                right: ( 20px - (24px / 4) );
+                right: calc( 20px - 6px );
                 top: 50%;
                 transform-origin: center;
                 transform: translateY(-50%) scaleY(1);
