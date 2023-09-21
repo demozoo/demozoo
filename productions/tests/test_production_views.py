@@ -195,12 +195,12 @@ class TestShowProduction(TestCase):
     def test_hide_from_search_engines(self):
         pondlife = Production.objects.get(title="Pondlife")
         response = self.client.get('/productions/%d/' % pondlife.id)
-        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+        self.assertNotContains(response, '<meta name="robots" content="noindex" />')
 
         pondlife.hide_from_search_engines = True
         pondlife.save()
         response = self.client.get('/productions/%d/' % pondlife.id)
-        self.assertContains(response, '<meta name="robots" content="noindex">')
+        self.assertContains(response, '<meta name="robots" content="noindex" />')
 
 
 class TestShowHistory(TestCase):

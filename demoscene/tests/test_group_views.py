@@ -33,12 +33,12 @@ class TestShowGroup(TestCase):
 
     def test_hide_from_search_results(self):
         response = self.client.get('/groups/%d/' % self.raww_arse.id)
-        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+        self.assertNotContains(response, '<meta name="robots" content="noindex" />')
 
         self.raww_arse.hide_from_search_engines = True
         self.raww_arse.save()
         response = self.client.get('/groups/%d/' % self.raww_arse.id)
-        self.assertContains(response, '<meta name="robots" content="noindex">')
+        self.assertContains(response, '<meta name="robots" content="noindex" />')
 
 
 class TestCreateGroup(TestCase):

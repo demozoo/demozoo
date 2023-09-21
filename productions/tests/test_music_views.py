@@ -65,12 +65,12 @@ class TestShowMusic(TestCase):
     def test_hide_from_search_engines(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
         response = self.client.get('/music/%d/' % cybrev.id)
-        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+        self.assertNotContains(response, '<meta name="robots" content="noindex" />')
 
         cybrev.hide_from_search_engines = True
         cybrev.save()
         response = self.client.get('/music/%d/' % cybrev.id)
-        self.assertContains(response, '<meta name="robots" content="noindex">')
+        self.assertContains(response, '<meta name="robots" content="noindex" />')
 
 
 class TestShowHistory(TestCase):
