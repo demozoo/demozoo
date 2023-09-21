@@ -54,11 +54,25 @@
             padding: 0;
         }
 
+        ol {
+            font-size: 88.75%;
+        }
+
+        @media (min-width: 600px) {
+            ol {
+                column-count: 2;
+                gap: 40px;
+            }
+        }
+
         li[id] {
             a + a {
                 margin-inline-start: 0.25em;
             }
+
+            p {
+                margin: 0 0 1ex;
+            }
         }
     }
-
 }
