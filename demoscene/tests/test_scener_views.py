@@ -41,12 +41,12 @@ class TestShowScener(TestCase):
 
     def test_hide_from_search_results(self):
         response = self.client.get('/sceners/%d/' % self.gasman.id)
-        self.assertNotContains(response, '<meta name="robots" content="noindex">')
+        self.assertNotContains(response, '<meta name="robots" content="noindex" />')
 
         self.gasman.hide_from_search_engines = True
         self.gasman.save()
         response = self.client.get('/sceners/%d/' % self.gasman.id)
-        self.assertContains(response, '<meta name="robots" content="noindex">')
+        self.assertContains(response, '<meta name="robots" content="noindex" />')
 
 
 class TestCreateScener(TestCase):
