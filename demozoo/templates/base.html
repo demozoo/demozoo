@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en">
+<html lang="en">
 {% load compress menu static %}
 <head>
     <meta charset="utf-8" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block html_title %}Demozoo{% endblock %}</title>
-
 
     {% comment %} --- CORE CSS --- {% endcomment %}
     {% compress css %}
@@ -26,7 +25,6 @@
     <meta name="theme-color" content="#ffffff"/>
 
     {% compress js %}
-        <script src="/static/js/lib/modernizr.js"></script>
         <script src="/static/js/jquery-1.7.1.js"></script>
         <script src="/static/js/jquery.color.js"></script>
         <script src="/static/js/lib/polyfill/object-fit-images/ofi.browser.js"></script>
