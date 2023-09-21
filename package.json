@@ -3,7 +3,8 @@
   "version": "1.1.0",
   "description": "Demozoo - The best demoscene website in the world.",
     "browserslist": [
-    "last 3 versions"
+      "defaults",
+      "> 0.2% and not dead"
   ],
   "scripts": {
     "autoprefixer": "postcss -u autoprefixer --no-map -r ./static_built/css/dz.css",
