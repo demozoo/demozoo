@@ -6,6 +6,7 @@
 /data
 /static
 /static_built/css/dz.css
+/static_built/css/dz.css.map
 /static_built/images/icons.svg
 /media
 /.vagrant
