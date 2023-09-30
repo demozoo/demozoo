@@ -8,8 +8,8 @@ from productions.models import Screenshot
 register = template.Library()
 
 
-@register.inclusion_tag('shared/credited_production_listing.html')
-def combined_releases(releaser):
+@register.inclusion_tag('shared/credited_production_listing.html', takes_context=True)
+def combined_releases(context, releaser):
 
     credits = (
         releaser.credits().select_related('nick')
@@ -64,4 +64,5 @@ def combined_releases(releaser):
     return {
         'releaser': releaser,
         'credits': credits_with_prods_and_screenshots,
+        'prompt_to_edit': context.get('prompt_to_edit', False),
     }
