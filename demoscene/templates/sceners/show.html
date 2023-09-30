@@ -223,18 +223,7 @@
             </div>
         {% endif %}
 
-        <div class="panel editable_chunk">
-            <h3 class="panel__title productions_header">Productions</h3>
-            {% if prompt_to_edit %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'new_production' %}?releaser_id={{ scener.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
-                    </li>
-                </ul>
-            {% endif %}
-
-            {% combined_releases scener %}
-        </div>
+        {% combined_releases scener %}
     </div>
 
     {% last_edited_by scener %}

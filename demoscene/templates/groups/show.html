@@ -237,21 +237,12 @@
                 </ul>
             </div>
         {% endif %}
-        <div class="panel editable_chunk">
-            <h3 class="panel__title productions_header">Productions</h3>
-            {% if prompt_to_edit %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'new_production' %}?releaser_id={{ group.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
-                    </li>
-                </ul>
-            {% endif %}
-            {% combined_releases group %}
-        </div>
+
+        {% combined_releases group %}
 
         {% if member_productions %}
             <div class="panel">
-                <h3 class="panel__title member_productions_header">Member productions</h3>
+                <h3 class="panel__title member_productions_header">Member productions ({{ member_productions|length }})</h3>
 
                 {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
             </div>
