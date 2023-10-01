@@ -72,10 +72,11 @@
             &__text {
                 padding: 0 1em;
             }
+        }
 
-            .js & {
-                display: none;
-            }
+        &.search button[type=submit] {
+            width: auto;
+            height: 49px;
         }
     }
 }
