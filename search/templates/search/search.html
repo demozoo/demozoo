@@ -35,9 +35,11 @@
                 <svg class="icon">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--search"></use>
                 </svg>
-                <button type="submit" class="button button--search">
-                    <span class="button__text">Search</span>
-                </button>
+                <noscript>
+                    <button type="submit" class="button button--search">
+                        <span class="button__text">Search</span>
+                    </button>
+                </noscript>
             </div>
         </fieldset>
     </form>
