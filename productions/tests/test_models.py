@@ -15,11 +15,17 @@ class TestProductionType(TestCase):
 
     def test_music_types(self):
         ProductionType.objects.filter(internal_name='music').delete()
+        ProductionType.get_base_music_type.cache_clear()
         self.assertEqual(ProductionType.music_types().count(), 0)
+        demo = ProductionType.objects.get(name='Demo')
+        self.assertEqual(demo.supertype, "production")
 
     def test_graphic_types(self):
         ProductionType.objects.filter(internal_name='graphics').delete()
+        ProductionType.get_base_graphics_type.cache_clear()
         self.assertEqual(ProductionType.graphic_types().count(), 0)
+        demo = ProductionType.objects.get(name='Demo')
+        self.assertEqual(demo.supertype, "production")
 
 
 class TestProduction(TestCase):
