@@ -19,6 +19,7 @@ class TestProductionType(TestCase):
         self.assertEqual(ProductionType.music_types().count(), 0)
         demo = ProductionType.objects.get(name='Demo')
         self.assertEqual(demo.supertype, "production")
+        ProductionType.get_base_music_type.cache_clear()
 
     def test_graphic_types(self):
         ProductionType.objects.filter(internal_name='graphics').delete()
@@ -26,6 +27,15 @@ class TestProductionType(TestCase):
         self.assertEqual(ProductionType.graphic_types().count(), 0)
         demo = ProductionType.objects.get(name='Demo')
         self.assertEqual(demo.supertype, "production")
+        ProductionType.get_base_graphics_type.cache_clear()
+
+    def test_listing_urls(self):
+        demo = ProductionType.objects.get(name='Demo')
+        self.assertEqual(demo.listing_url, "/productions/?production_type=%d" % demo.pk)
+        tracked_music = ProductionType.objects.get(name='Tracked Music')
+        self.assertEqual(tracked_music.listing_url, "/music/?production_type=%d" % tracked_music.pk)
+        graphics = ProductionType.objects.get(name='Graphics')
+        self.assertEqual(graphics.listing_url, "/graphics/?production_type=%d" % graphics.pk)
 
 
 class TestProduction(TestCase):

@@ -102,6 +102,17 @@ class ProductionType(MP_Node):
 
         return 'production'
 
+    @property
+    def listing_url(self):
+        if self.supertype == 'music':
+            url_name = 'musics'
+        elif self.supertype == 'graphics':
+            url_name = 'graphics'
+        else:
+            url_name = 'productions'
+
+        return reverse(url_name) + '?production_type=%s' % self.id
+
 
 class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
     title = models.CharField(max_length=255)
