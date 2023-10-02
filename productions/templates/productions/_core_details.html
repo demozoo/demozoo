@@ -22,7 +22,7 @@
 
     <ul class="production_types">
         {% for production_type in production.types.all %}
-            <li class="signpost">{{ production_type.name }}</li>
+            <li class="signpost"><a href="{{ production_type.listing_url }}">{{ production_type.name }}</a></li>
         {% endfor %}
     </ul>
     <div class="production_title focus_title">
