@@ -1,6 +1,7 @@
 import datetime
 import random
 from collections import defaultdict
+from functools import lru_cache
 
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
@@ -49,42 +50,57 @@ class ProductionType(MP_Node):
         return self.name
 
     @staticmethod
+    @lru_cache
+    def get_base_music_type():
+        return ProductionType.objects.get(internal_name='music')
+
+
+    @staticmethod
+    @lru_cache
+    def get_base_graphics_type():
+        return ProductionType.objects.get(internal_name='graphics')
+
+    @staticmethod
     def music_types():
         try:
-            music = ProductionType.objects.get(internal_name='music')
-            return ProductionType.get_tree(music)
+            return ProductionType.get_tree(ProductionType.get_base_music_type())
         except ProductionType.DoesNotExist:
             return ProductionType.objects.none()
 
     @staticmethod
     def graphic_types():
         try:
-            graphics = ProductionType.objects.get(internal_name='graphics')
-            return ProductionType.get_tree(graphics)
+            return ProductionType.get_tree(ProductionType.get_base_graphics_type())
         except ProductionType.DoesNotExist:
             return ProductionType.objects.none()
 
     @staticmethod
     def featured_types():
+        # prod types that aren't graphics or music
+
         tree = ProductionType.get_tree()
         music_types = ProductionType.music_types()
+        tree = tree.exclude(id__in=music_types.values('pk'))
         graphic_types = ProductionType.graphic_types()
-
-        if music_types:
-            tree = tree.exclude(id__in=music_types.values('pk'))
-        if graphic_types:
-            tree = tree.exclude(id__in=graphic_types.values('pk'))
+        tree = tree.exclude(id__in=graphic_types.values('pk'))
 
         return tree
 
     @property
     def supertype(self):
-        if self in ProductionType.music_types():
-            return 'music'
-        elif self in ProductionType.graphic_types():
-            return 'graphics'
-        else:
-            return 'production'
+        try:
+            if self.path.startswith(ProductionType.get_base_music_type().path):
+                return 'music'
+        except ProductionType.DoesNotExist:
+            pass
+
+        try:
+            if self.path.startswith(ProductionType.get_base_graphics_type().path):
+                return 'graphics'
+        except ProductionType.DoesNotExist:
+            pass
+
+        return 'production'
 
 
 class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
