@@ -49,7 +49,7 @@ class ModelWithThumbnails(models.Model):
                     int(height - (height - cropped_height) / 2)
                 )
             )
-        image.thumbnail(size, Image.ANTIALIAS)
+        image.thumbnail(size, Image.LANCZOS)
 
         # save the thumbnail to memory
         temp_handle = io.BytesIO()
