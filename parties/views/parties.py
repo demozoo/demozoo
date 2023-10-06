@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Prefetch
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -23,7 +24,7 @@ from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
     PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm, PartyShareImageForm
 )
-from parties.models import Competition, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
+from parties.models import Competition, CompetitionPlacing, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
 from productions.models import Screenshot
 
 
@@ -56,38 +57,32 @@ def by_date(request, year=None):
 def show(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
-    # trying to retrieve all competition results in one massive prefetch_related clause:
-    #    competitions = (
-    #       party.competitions.prefetch_related(
-    #           'placings__production__author_nicks__releaser',
-    #           'placings__production__author_affiliation_nicks__releaser'
-    #       )
-    #       .defer(
-    #           'placings__production__notes', 'placings__production__author_nicks__releaser__notes',
-    #           'placings__production__author_affiliation_nicks__releaser__notes'
-    #       )
-    #       .order_by('name', 'id', 'placings__position', 'placings__production__id')
-    #    )
-    # - fails with 'RelatedObject' object has no attribute 'rel', where the RelatedObject is
-    # <RelatedObject: demoscene:competitionplacing related to competition>. Shame, that...
-    # for now, we'll do it one compo at a time (which allows us to use the slightly more sane
-    # select_related approach to pull in production records)
-    competitions_with_placings = [
-        (
-            competition,
-            (
-                competition.placings.order_by('position', 'production__id')
-                .prefetch_related(
-                    'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser',
-                    'production__platforms', 'production__types',
-                )
-                .defer(
-                    'production__notes', 'production__author_nicks__releaser__notes',
-                    'production__author_affiliation_nicks__releaser__notes'
+    competitions = (
+        party.competitions.prefetch_related(
+            Prefetch(
+                'placings',
+                queryset=(
+                    CompetitionPlacing.objects
+                    .order_by('position', 'production_id')
+                    .prefetch_related(
+                        'production__author_nicks__releaser',
+                        'production__author_affiliation_nicks__releaser',
+                        'production__platforms',
+                        'production__types',
+                    )
+                    .defer(
+                        'production__notes',
+                        'production__author_nicks__releaser__notes',
+                        'production__author_affiliation_nicks__releaser__notes',
+                    )
                 )
             )
         )
-        for competition in party.competitions.order_by('name', 'id')
+        .order_by('name', 'id')
+    )
+    competitions_with_placings = [
+        (competition, competition.placings.all())
+        for competition in competitions
     ]
     entry_production_ids = [
         placing.production_id
