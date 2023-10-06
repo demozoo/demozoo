@@ -92,7 +92,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
 
     def productions(self):
         from productions.models import Production
-        return Production.objects.filter(author_nicks__releaser=self)
+        return Production.objects.filter(author_nicks__in=list(self.nicks.all()))
 
     def member_productions(self):
         # Member productions are those which list this group in the 'affiliations' portion of the byline,
