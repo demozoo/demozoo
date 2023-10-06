@@ -105,11 +105,20 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
                 releaser__is_group=True, releaser__group_memberships__group=self
             ).values_list('id', flat=True)
         )
+        subgroup_prod_ids = set(
+            Production.objects.filter(
+                author_nicks__in=subgroup_nick_ids
+            ).values_list('id', flat=True)
+        )
+        affiliation_prod_ids = set(
+            Production.objects.filter(
+                author_affiliation_nicks__in=list(self.nicks.all())
+            ).values_list('id', flat=True)
+        )
 
         return Production.objects.filter(
-            Q(author_affiliation_nicks__in=list(self.nicks.all()))
-            | Q(author_nicks__in=subgroup_nick_ids)
-        ).distinct()
+            id__in=(subgroup_prod_ids | affiliation_prod_ids)
+        )
 
     def credits(self):
         from productions.models import Credit
