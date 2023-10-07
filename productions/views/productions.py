@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -101,9 +102,16 @@ class ProductionHistoryView(HistoryView):
 
 
 @writeable_site_required
-@login_required
 @transaction.atomic
 def edit_core_details(request, production_id):
+    if not request.user.is_authenticated:
+        # Instead of redirecting back to this edit form after login, redirect to the production page.
+        # This is because the 'edit' button pointing here is the only one that non-logged-in users
+        # see, and thus it's the one they'll click on even if the thing they want to edit is something
+        # else on the page. Taking them back to the production page will give them the full complement
+        # of edit buttons, allowing them to locate the one they actually want.
+        return redirect_to_login(reverse('production', args=[production_id]))
+
     production = get_object_or_404(Production, id=production_id)
 
     if not production.editable_by_user(request.user):

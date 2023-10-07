@@ -364,6 +364,12 @@ class TestEditCoreDetails(TestCase):
         User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        pondlife = Production.objects.get(title='Pondlife')
+        response = self.client.get('/productions/%d/edit_core_details/' % pondlife.id)
+        self.assertRedirects(response, '/account/login/?next=/productions/%d/' % pondlife.id)
+
     def test_locked(self):
         mooncheese = Production.objects.get(title='Mooncheese')
         response = self.client.get('/productions/%d/edit_core_details/' % mooncheese.id)
