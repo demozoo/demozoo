@@ -123,6 +123,24 @@
         </header>
 
         <div class="site__content">
+            <!-- oh look! buttons! -->
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                {% include "shared/button.html" %}
+                {% include "shared/button.html" with icon="icon" %}
+                {% include "shared/button.html" with label="button with text" %}
+                {% include "shared/button.html" with icon="icon" label="button with icon and text" %}
+                {% include "shared/button.html" with icon="icon" label="button with icon and text disabled" disabled=true %}
+                {% include "shared/button.html" with icon="icon" label="button with icon and text reveal" variant="reveal"%}
+                {% include "shared/button.html" with href="#" label="button with text" %}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text" %}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text disabled" disabled=true %}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text reveal" variant="reveal"%}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text in reverse order" reverse="true" %}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text disabled in reverse order" disabled=true reverse="true" %}
+                {% include "shared/button.html" with href="#" icon="icon" label="button with icon and text reveal in reverse order" reverse="true" variant="reveal"%}
+            </div>
+            <!-- look away! -->
+
             {% include "shared/messages.html" %}
             {% block base_main %}{% endblock %}
             <div style="clear: both;"></div>
