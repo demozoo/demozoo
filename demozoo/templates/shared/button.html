@@ -10,7 +10,7 @@
        href="{{ href }}"
        {% if target %}target="{{ target }}"{% if target == "_blank" %} rel="noopener"{% endif %}{% endif %}
     >
-        {% if icon %}<span class="m-button__icon">{{ icon }}</span>{% endif %}
+        {% if icon %}<span class="m-button__icon">{% include "./icon.html" with icon="{{ icon }}" %}</span>{% endif %}
         {% if label %}<span class="m-button__label">{{ label }}</span>{% endif %}
     </{% if href %}a{% else %}button{% endif %}>
 {% else %}
