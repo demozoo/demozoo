@@ -43,6 +43,9 @@ def show(request, group_id):
         'bbs__name'
     )
 
+    prompt_to_edit = settings.SITE_IS_WRITEABLE and (request.user.is_staff or not group.locked)
+    can_edit = prompt_to_edit and request.user.is_authenticated
+
     return render(request, 'groups/show.html', {
         'group': group,
         'editing_nicks': (request.GET.get('editing') == 'nicks'),
@@ -70,7 +73,8 @@ def show(request, group_id):
             ).order_by('-release_date_date', 'release_date_precision', '-sortable_title')
         ),
         'external_links': external_links,
-        'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not group.locked),
+        'prompt_to_edit': prompt_to_edit,
+        'can_edit': can_edit,
         'show_locked_button': request.user.is_authenticated and group.locked,
         'show_lock_button': request.user.is_staff and settings.SITE_IS_WRITEABLE and not group.locked,
     })

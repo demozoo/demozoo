@@ -64,5 +64,5 @@ def combined_releases(context, releaser):
     return {
         'releaser': releaser,
         'credits': credits_with_prods_and_screenshots,
-        'prompt_to_edit': context.get('prompt_to_edit', False),
+        'can_edit': context.get('can_edit', False),
     }

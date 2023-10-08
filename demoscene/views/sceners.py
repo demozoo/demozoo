@@ -53,6 +53,9 @@ def show(request, scener_id, edit_mode=False):
         .order_by('-is_current', '-role', 'bbs__name')
     )
 
+    prompt_to_edit = settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked)
+    can_edit = prompt_to_edit and request.user.is_authenticated
+
     return render(request, 'sceners/show.html', {
         'scener': scener,
         'alternative_nicks': scener.alternative_nicks.prefetch_related('variants'),
@@ -67,6 +70,7 @@ def show(request, scener_id, edit_mode=False):
         'bbses_operated': bbses_operated,
         'can_edit_real_names': can_edit_real_names,
         'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not scener.locked),
+        'can_edit': can_edit,
         'show_locked_button': request.user.is_authenticated and scener.locked,
         'show_lock_button': request.user.is_staff and settings.SITE_IS_WRITEABLE and not scener.locked,
     })
