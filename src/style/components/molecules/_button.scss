@@ -1,0 +1,92 @@
+.m-button {
+  --button-border-color: #ddd;
+  --button-border-width: 1px;
+  --button-color: #eee;
+  --button-icon-size: 24px;
+  --button-size: 48px;
+  --button-text-color: #888;
+  --button-text-size: 16px;
+
+  align-items: center;
+  background: var(--button-color);
+  border-radius: var(--button-size);
+  border: var(--button-border-width) solid var(--button-border-color);
+  box-sizing: border-box;
+  color: var(--button-text-color);
+  cursor: pointer;
+  display: flex;
+  font-family: sans-serif;
+  font-size: var(--button-text-size);
+  font-weight: 600;
+  gap: calc(var(--button-icon-size) / 2);
+  height: var(--button-size);
+  letter-spacing: 0;
+  line-height: calc(var(--button-text-size) * 1.5);
+  margin: 0;
+  padding-inline: calc(var(--button-icon-size) / 2 - var(--button-border-width)) calc(var(--button-icon-size) - var(--button-border-width));
+  text-decoration: none;
+
+  &:visited { // there's a nasty inherited colour coming from legacy
+    color: var(--button-text-color);
+  }
+
+  &.-reverse {
+    flex-direction: row-reverse;
+    padding-inline: calc(var(--button-icon-size) - var(--button-border-width)) calc(var(--button-icon-size) / 2 - var(--button-border-width));
+  }
+
+  &.-iconOnly {
+    @include size(var(--button-size));
+
+    justify-content: center;
+    padding-inline: calc(var(--button-icon-size) / 2 - var(--button-border-width));
+  }
+
+  &.-labelOnly {
+    padding-inline: calc(var(--button-icon-size) - var(--button-border-width));
+  }
+
+  &[disabled],
+  &[data-disabled] {
+    cursor: not-allowed;
+    filter: grayscale(1);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &__icon {
+    @include size(var(--button-icon-size));
+  }
+
+  &__label {
+  }
+
+  &.-small {
+    --button-border-width: 1px;
+    --button-icon-size: 16px;
+    --button-size: 32px;
+    --button-text-size: 12px;
+  }
+
+  &.-large {
+    --button-border-width: 1px;
+    --button-icon-size: 32px;
+    --button-size: 64px;
+    --button-text-size: 24px;
+
+    font-weight: 400;
+  }
+
+  &.-secondary {
+    --button-color: transparent;
+  }
+
+  &.-tertiary {
+    --button-border-width: 0;
+    --button-color: transparent;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

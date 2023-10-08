@@ -124,20 +124,69 @@
 
         <div class="site__content">
             <!-- oh look! buttons! -->
-            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <h2>Buttons</h2>
+            <hr />
+
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block: 0 2em;">
                 {% include "shared/button.html" %}
                 {% include "shared/button.html" with icon="edit" %}
-                {% include "shared/button.html" with label="button with text" %}
-                {% include "shared/button.html" with icon="edit" label="button with icon and text" %}
-                {% include "shared/button.html" with icon="edit" label="button with icon and text disabled" disabled=true %}
-                {% include "shared/button.html" with icon="edit" label="button with icon and text reveal" variant="reveal"%}
-                {% include "shared/button.html" with href="#" label="button with text" %}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text" %}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text disabled" disabled=true %}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text reveal" variant="reveal"%}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text in reverse order" reverse="true" %}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text disabled in reverse order" disabled=true reverse="true" %}
-                {% include "shared/button.html" with href="#" icon="edit" label="button with icon and text reveal in reverse order" reverse="true" variant="reveal"%}
+                {% include "shared/button.html" with label="text button" %}
+                {% include "shared/button.html" with icon="edit" label="icon button" %}
+                {% include "shared/button.html" with icon="edit" label="disabled icon button" disabled="true" %}
+                {% include "shared/button.html" with icon="edit" label="reveal button" variant="reveal"%}
+                {% include "shared/button.html" with href="#" label="link button with text" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link" disabled="true" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link" variant="reveal"%}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link reversed" reverse="true" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link reversed" disabled="true" reverse="true" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link reversed" reverse="true" variant="reveal"%}
+            </div>
+
+            <h2>Small buttons</h2>
+            <hr />
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block: 0 2em;">
+                {% include "shared/button.html" with icon="edit" size="small" %}
+                {% include "shared/button.html" with label="text button" size="small" %}
+                {% include "shared/button.html" with icon="edit" label="icon button" size="small" %}
+                {% include "shared/button.html" with icon="edit" label="disabled icon button" disabled="true" size="small" %}
+                {% include "shared/button.html" with icon="edit" label="reveal button" variant="reveal" size="small" %}
+                {% include "shared/button.html" with href="#" label="link button with text" size="small" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link" size="small" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link" disabled="true" size="small" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link" variant="reveal"  size="small"%}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link reversed" reverse="true" size="small" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link reversed" disabled="true" reverse="true" size="small" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link reversed" reverse="true" variant="reveal" size="small" %}
+            </div>
+
+            <h2>Large buttons</h2>
+            <hr />
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block: 0 2em;">
+                {% include "shared/button.html" with icon="edit" size="large" %}
+                {% include "shared/button.html" with label="text button" size="large" %}
+                {% include "shared/button.html" with icon="edit" label="icon button" size="large" %}
+                {% include "shared/button.html" with icon="edit" label="disabled icon button" disabled="true" size="large" %}
+                {% include "shared/button.html" with icon="edit" label="reveal button" variant="reveal" size="large" %}
+                {% include "shared/button.html" with href="#" label="link button with text" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link" disabled="true" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link" variant="reveal" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="icon link reversed" reverse="true" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="disabled icon link reversed" disabled="true" reverse="true" size="large" %}
+                {% include "shared/button.html" with href="#" icon="edit" label="reveal link reversed" reverse="true" variant="reveal" size="large" %}
+            </div>
+
+            <h2>Button levels</h2>
+            <hr />
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block: 0 2em;">
+                {% include "shared/button.html" with icon="edit" label="primary icon button" level="primary" %}
+                {% include "shared/button.html" with icon="edit" label="secondary icon button" level="secondary" %}
+                {% include "shared/button.html" with icon="edit" label="tertiary icon button" level="tertiary" %}
+                {% include "shared/button.html" with icon="edit" level="primary" %}
+                {% include "shared/button.html" with icon="edit" level="secondary" %}
+                {% include "shared/button.html" with icon="edit" level="tertiary" %}
+                {% include "shared/button.html" with label="tertiary text button" level="tertiary" %}
             </div>
             <!-- look away! -->
 

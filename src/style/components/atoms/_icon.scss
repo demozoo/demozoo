@@ -1,0 +1,6 @@
+.a-icon {
+    @include size(100%);
+
+    display: block;
+    fill: var(--icon-fill, currentColor);
+}
