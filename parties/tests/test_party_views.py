@@ -178,6 +178,11 @@ class TestEditParty(TestCase):
         self.client.login(username='testuser', password='12345')
         self.party = Party.objects.get(name='Forever 2e3')
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/parties/%d/edit/' % self.party.id)
+        self.assertRedirects(response, '/account/login/?next=/parties/%d/' % self.party.id)
+
     def test_get(self):
         response = self.client.get('/parties/%d/edit/' % self.party.id)
         self.assertEqual(response.status_code, 200)
