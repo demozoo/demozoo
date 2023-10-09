@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch
 from django.db.models.functions import Lower
@@ -129,6 +130,8 @@ def show(request, party_id):
         ),
         'external_links': external_links,
         'comment_form': comment_form,
+        'prompt_to_edit': settings.SITE_IS_WRITEABLE,
+        'can_edit': settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
     })
 
 
