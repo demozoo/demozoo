@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
@@ -120,8 +121,13 @@ def create(request):
 
 
 @writeable_site_required
-@login_required
 def edit(request, bbs_id):
+    if not request.user.is_authenticated:
+        # Instead of redirecting back to this edit form after login, redirect to the BBS page.
+        # This is because the edit button pointing here is the only one a non-logged-in user sees,
+        # so they may intend to edit something else on the BBS page.
+        return redirect_to_login(reverse('bbs', args=[bbs_id]))
+
     bbs = get_object_or_404(BBS, id=bbs_id)
 
     if request.method == 'POST':
