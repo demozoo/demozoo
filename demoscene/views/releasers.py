@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -255,9 +256,13 @@ def add_nick(request, releaser_id):
 
 
 @writeable_site_required
-@login_required
 def edit_primary_nick(request, releaser_id):
     releaser = get_object_or_404(Releaser, id=releaser_id)
+    if not request.user.is_authenticated:
+        # Instead of redirecting back to this edit form after login, redirect to the releaser page.
+        # This is because the edit button pointing here is the only one a non-logged-in user sees,
+        # so they may intend to edit something else on the releaser page.
+        return redirect_to_login(releaser.get_absolute_url())
 
     if not releaser.editable_by_user(request.user):
         raise PermissionDenied
