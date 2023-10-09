@@ -21,7 +21,7 @@
     <div class="editable_chunk">
         <div class="signpost">BBS</div>
 
-        {% if site_is_writeable %}
+        {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
                     <a href="{% url 'edit_bbs' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" rel="nofollow">Edit</a>
@@ -55,20 +55,24 @@
 
     </div>
 
-    <div class="editable_chunk panel external_links_panel">
-        <h3 class="panel__title">External links</h3>
+    {% if external_links or can_edit %}
+        <div class="editable_chunk panel external_links_panel">
+            <h3 class="panel__title">External links</h3>
 
-        <ul class="actions">
-            <li>
-                <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
-            </li>
-        </ul>
-        <ul class="external_links">
-            {% for link in external_links %}
-                <li>{{ link.html_link|safe }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+            {% if can_edit %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
+                    </li>
+                </ul>
+            {% endif %}
+            <ul class="external_links">
+                {% for link in external_links %}
+                    <li>{{ link.html_link|safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
@@ -84,17 +88,8 @@
     {% endif %}
 
     <div id="side_column">
-        <div class="panel staff_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
+        <div class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
             <h3 class="panel__title">Staff</h3>
-
-            {% if site_is_writeable and not user.is_authenticated %}
-                {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'log_in' %}?next={{ bbs.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
-                    </li>
-                </ul>
-            {% endif %}
 
             <ul class="staff">
                 {% for operator in staff %}
@@ -102,7 +97,7 @@
                         <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
                         {% releaser_flag operator.releaser %}
                         - {{ operator.get_role_display }}
-                        {% if site_is_writeable and user.is_authenticated %}
+                        {% if can_edit %}
                             <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="open_in_lightbox edit_operator">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit staff member" title="Edit staff member" />
                             </a>
@@ -110,29 +105,20 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if site_is_writeable and user.is_authenticated %}
+            {% if can_edit %}
                 <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon add open_in_lightbox add_operator">Add staff member</a>
             {% endif %}
         </div>
 
-        <div class="panel affiliations_panel editable_chunk {% if site_is_writeable and user.is_authenticated %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
+        <div class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
             <h3 class="panel__title">Affiliated with</h3>
-
-            {% if site_is_writeable and not user.is_authenticated %}
-                {% comment %} Provide an 'edit' button that takes them to the login page{% endcomment %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'log_in' %}?next={{ bbs.get_absolute_url|urlencode }}" class="action_button icon edit edit_chunk" rel="nofollow">Edit</a>
-                    </li>
-                </ul>
-            {% endif %}
 
             <ul class="affiliations">
                 {% for affiliation in affiliations %}
                     <li class="group">
                         <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
                         {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
-                        {% if site_is_writeable and user.is_authenticated %}
+                        {% if can_edit %}
                             <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox edit_affiliation">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
                             </a>
@@ -140,25 +126,25 @@
                     </li>
                 {% endfor %}
             </ul>
-            {% if site_is_writeable and user.is_authenticated %}
+            {% if can_edit %}
                 <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
             {% endif %}
         </div>
     </div>
     
     <div id="main_column">
-        {% if text_ads or user.is_authenticated %}
+        {% if text_ads or can_edit %}
             {% include "bbs/_text_ads.html" %}
         {% endif %}
 
         {% include "bbs/_tags.html" %}
 
-        {% if bbstros or user.is_authenticated %}
+        {% if bbstros or can_edit %}
             <div class="panel bbstros_panel editable_chunk">
                 <h3 class="panel__title">
                     Promoted in
                 </h3>
-                {% if site_is_writeable %}
+                {% if can_edit %}
                     <ul class="actions">
                         <li><a href="{% url 'bbs_edit_bbstros' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit production list</a></li>
                     </ul>
