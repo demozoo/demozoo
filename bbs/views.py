@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Value
@@ -74,6 +75,8 @@ def show(request, bbs_id):
 
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
+        'prompt_to_edit': settings.SITE_IS_WRITEABLE,
+        'can_edit': settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
         'alternative_names': bbs.alternative_names.all(),
         'bbstros': bbstros,
         'staff': staff,
