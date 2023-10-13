@@ -79,6 +79,12 @@
 
   &.-secondary {
     --button-color: transparent;
+    --button-border-color: var(--button-text-color);
+    --button-text-color: #888;
+
+    &:hover {
+      --button-text-color: #444;
+    }
   }
 
   &.-tertiary {
@@ -86,7 +92,9 @@
     --button-color: transparent;
 
     &:hover {
+      --button-text-color: #444;
       text-decoration: underline;
+
     }
   }
 }
