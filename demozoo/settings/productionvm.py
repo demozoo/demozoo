@@ -1,8 +1,17 @@
+import os
+
 from .base import *  # noqa
 
 
 DEBUG = False
-EMAIL_HOST = 'localhost'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('SMTP_USERNAME', '')
+EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = "noreply@demozoo.org"
 
 BROKER_URL = 'redis://localhost:6379/0'
 
