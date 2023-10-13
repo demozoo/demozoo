@@ -13,6 +13,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('SMTP_USERNAME', '')
 EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = "noreply@demozoo.org"
+SERVER_EMAIL = "noreply@demozoo.org"
 
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
