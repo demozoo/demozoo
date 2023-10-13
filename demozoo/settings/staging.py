@@ -5,7 +5,14 @@ DATABASES['default']['USER'] = 'demozoo'  # noqa
 DATABASES['default']['NAME'] = 'demozoo_staging'  # noqa
 
 DEBUG = False
-EMAIL_HOST = 'localhost'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('SMTP_USERNAME', '')
+EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+DEFAULT_FROM_EMAIL = "noreply@demozoo.org"
 
 AWS_BOTO_FORCE_HTTP = True
 AWS_BOTO_CALLING_FORMAT = 'VHostCallingFormat'
