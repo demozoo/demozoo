@@ -892,7 +892,15 @@ class PouetParty(AbstractBaseUrl):
 
     def __str__(self):
         (id, year) = self.param.split('/')
-        return u"http://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
+        return u"https://www.pouet.net/party.php?which=%s&when=%s" % (id, year)
+
+
+class PouetPartySeries(AbstractBaseUrl):
+    site = pouet
+    canonical_format = "https://www.pouet.net/party.php?which=%s"
+    tests = [
+        querystring_match(r'https?://(?:www\.)?pouet\.net/party\.php', 'which'),
+    ]
 
 
 class CsdbEvent(AbstractBaseUrl):
@@ -1811,6 +1819,12 @@ PARTY_LINK_TYPES = [
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
+    TikTokUser, WaybackMachinePage, BaseUrl,
+]
+
+PARTY_SERIES_LINK_TYPES = [
+    PouetPartySeries, TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
+    FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
