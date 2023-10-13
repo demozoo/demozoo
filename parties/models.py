@@ -55,9 +55,18 @@ class PartySeries(models.Model):
         ordering = ("name",)
 
 
-class PartySeriesDemozoo0Reference(models.Model):
-    party_series = models.ForeignKey(PartySeries, related_name='demozoo0_ids', on_delete=models.CASCADE)
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+class PartySeriesExternalLink(ExternalLink):
+    party_series = models.ForeignKey(PartySeries, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.PARTY_SERIES_LINK_TYPES
+
+    def html_link(self):
+        return self.link.as_html(self.party_series.name)
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'party_series'),
+        )
+        ordering = ['link_class']
 
 
 def party_share_image_upload_to(i, f):
