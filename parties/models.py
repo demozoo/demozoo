@@ -35,14 +35,6 @@ class PartySeries(models.Model):
     def get_history_url(self):
         return reverse('party_series_history', args=[str(self.id)])
 
-    def twitter_url(self):
-        if self.twitter_username:
-            return "http://twitter.com/%s" % self.twitter_username
-
-    def pouet_url(self):
-        if self.pouet_party_id:
-            return "http://www.pouet.net/party.php?which=%s" % self.pouet_party_id
-
     @property
     def plaintext_notes(self):
         return strip_markup(self.notes)

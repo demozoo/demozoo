@@ -304,7 +304,10 @@ class TestEditExternalLinks(TestCase):
             PartyExternalLink.objects.filter(party=self.party, link_class='TwitterAccount').count(),
             1
         )
-        self.assertEqual(PartySeries.objects.get(name='Forever').twitter_username, 'forever8party')
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='TwitterAccount').parameter,
+            'forever8party'
+        )
 
     def test_post_with_pouet_link(self):
         response = self.client.post('/parties/%d/edit_external_links/' % self.party.id, {
@@ -326,8 +329,14 @@ class TestEditExternalLinks(TestCase):
             PartyExternalLink.objects.filter(party=self.party, link_class='PouetParty').count(),
             1
         )
-        self.assertEqual(PartySeries.objects.get(name='Forever').twitter_username, 'forever8party')
-        self.assertEqual(PartySeries.objects.get(name='Forever').pouet_party_id, 181)
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='TwitterAccount').parameter,
+            'forever8party'
+        )
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='PouetPartySeries').parameter,
+            '181'
+        )
 
 
 class TestEditSeriesNotes(TestCase):

@@ -26,7 +26,10 @@ from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
     PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm, PartyShareImageForm
 )
-from parties.models import Competition, CompetitionPlacing, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
+from parties.models import (
+    Competition, CompetitionPlacing, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink,
+    ResultsFile
+)
 from productions.models import Screenshot
 
 
@@ -260,29 +263,27 @@ def edit_external_links(request, party_id):
             formset.log_edit(request.user, 'party_edit_external_links')
 
             # see if there's anything useful we can extract for the PartySeries record
-            party_series_updated = False
-            if not party.party_series.pouet_party_id:
-                try:
-                    pouet_party_link = party.external_links.get(link_class='PouetParty')
-                    party.party_series.pouet_party_id = pouet_party_link.parameter.split('/')[0]
-                    party_series_updated = True
-                except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
-                    pass
+            try:
+                pouet_party_link = party.external_links.get(link_class='PouetParty')
+                pouet_party_id = pouet_party_link.parameter.split('/')[0]
+            except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
+                pass
+            else:
+                PartySeriesExternalLink.objects.get_or_create(
+                    party_series=party.party_series,
+                    link_class='PouetPartySeries',
+                    parameter=pouet_party_id
+                )
 
-            if not party.party_series.twitter_username:
-                # look for a Twitter username which *does not* end in a number -
-                # assume that ones with a number are year-specific
-                twitter_usernames = []
-                for link in party.external_links.filter(link_class='TwitterAccount'):
-                    if not re.search(r'\d$', link.parameter):
-                        twitter_usernames.append(link.parameter)
-
-                if len(twitter_usernames) == 1:
-                    party.party_series.twitter_username = twitter_usernames[0]
-                    party_series_updated = True
-
-            if party_series_updated:
-                party.party_series.save()
+            # look for a Twitter username which *does not* end in a number -
+            # assume that ones with a number are year-specific
+            for link in party.external_links.filter(link_class='TwitterAccount'):
+                if not re.search(r'\d$', link.parameter):
+                    PartySeriesExternalLink.objects.get_or_create(
+                        party_series=party.party_series,
+                        link_class='TwitterAccount',
+                        parameter=link.parameter
+                    )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
