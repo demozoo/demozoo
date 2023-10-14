@@ -146,8 +146,13 @@ def history(request, party_id):
 
 def show_series(request, party_series_id):
     party_series = get_object_or_404(PartySeries, id=party_series_id)
+    external_links = sorted(
+        party_series.active_external_links.select_related('party_series'),
+        key=lambda obj: obj.sort_key,
+    )
     return render(request, 'parties/show_series.html', {
         'party_series': party_series,
+        'external_links': external_links,
         'parties': party_series.parties.order_by('start_date_date', 'name')
     })
 

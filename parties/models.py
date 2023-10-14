@@ -35,9 +35,6 @@ class PartySeries(models.Model):
     def get_history_url(self):
         return reverse('party_series_history', args=[str(self.id)])
 
-    def has_any_external_links(self):
-        return self.twitter_url or self.pouet_url
-
     def twitter_url(self):
         if self.twitter_username:
             return "http://twitter.com/%s" % self.twitter_username
@@ -49,6 +46,10 @@ class PartySeries(models.Model):
     @property
     def plaintext_notes(self):
         return strip_markup(self.notes)
+
+    @property
+    def active_external_links(self):
+        return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
     class Meta:
         verbose_name_plural = "Party series"
