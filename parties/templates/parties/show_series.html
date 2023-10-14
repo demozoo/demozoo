@@ -36,20 +36,13 @@
             </ul>
         {% endif %}
 
-        {% if party_series.has_any_external_links %}
+        {% if external_links %}
             <div class="panel external_links_panel">
                 <h3 class="panel__title">External links</h3>
                 <ul class="external_links">
-                    {% if party_series.twitter_url %}
-                        <li>
-                            <a href="{{ party_series.twitter_url }}" style="background-image: url({% static 'images/icons/external_sites/twitter.png' %});" title="{{ party_series.name }} on Twitter">Twitter</a>
-                        </li>
-                    {% endif %}
-                    {% if party_series.pouet_url %}
-                        <li>
-                            <a href="{{ party_series.pouet_url }}" style="background-image: url({% static 'images/icons/external_sites/pouet.png' %});" title="{{ party_series.name }} on Pouët">Pouët</a>
-                        </li>
-                    {% endif %}
+                    {% for link in external_links %}
+                        <li>{{ link.html_link|safe }}</li>
+                    {% endfor %}
                 </ul>
             </div>
         {% endif %}
