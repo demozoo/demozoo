@@ -126,8 +126,8 @@ class TestCreateParty(TestCase):
     def test_inherit_party_series_data(self):
         ps = PartySeries.objects.get(name='Forever')
         ps.website = "http://forever8.net/"
-        ps.twitter_username = "forever8party"
-        ps.pouet_party_id = 181
+        ps.external_links.create(link_class="TwitterAccount", parameter="forever8party")
+        ps.external_links.create(link_class="PouetPartySeries", parameter="181")
         ps.save()
 
         response = self.client.post('/parties/new/', {
