@@ -24,7 +24,8 @@ from demoscene.utils.ajax import request_is_ajax
 from demoscene.views.generic import AjaxConfirmationView
 from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
-    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm, PartyShareImageForm
+    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesExternalLinkFormSet,
+    PartySeriesEditNotesForm, PartyShareImageForm
 )
 from parties.models import (
     Competition, CompetitionPlacing, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink,
@@ -156,7 +157,9 @@ def show_series(request, party_series_id):
     return render(request, 'parties/show_series.html', {
         'party_series': party_series,
         'external_links': external_links,
-        'parties': party_series.parties.order_by('start_date_date', 'name')
+        'parties': party_series.parties.order_by('start_date_date', 'name'),
+        'prompt_to_edit': settings.SITE_IS_WRITEABLE,
+        'can_edit': settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
     })
 
 
@@ -290,6 +293,26 @@ def edit_external_links(request, party_id):
         formset = PartyExternalLinkFormSet(instance=party)
     return render(request, 'parties/edit_external_links.html', {
         'party': party,
+        'formset': formset,
+    })
+
+
+@writeable_site_required
+@login_required
+def edit_series_external_links(request, party_series_id):
+    party_series = get_object_or_404(PartySeries, id=party_series_id)
+
+    if request.method == 'POST':
+        formset = PartySeriesExternalLinkFormSet(request.POST, instance=party_series)
+        if formset.is_valid():
+            formset.save_ignoring_uniqueness()
+            formset.log_edit(request.user, 'party_series_edit_external_links')
+
+            return HttpResponseRedirect(party_series.get_absolute_url())
+    else:
+        formset = PartySeriesExternalLinkFormSet(instance=party_series)
+    return render(request, 'parties/edit_series_external_links.html', {
+        'party_series': party_series,
         'formset': formset,
     })
 
