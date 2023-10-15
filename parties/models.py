@@ -36,7 +36,7 @@ class PartySeries(models.Model):
         return reverse('party_series_history', args=[str(self.id)])
 
     def has_any_external_links(self):
-        return self.website or self.twitter_url or self.pouet_url
+        return self.twitter_url or self.pouet_url
 
     def twitter_url(self):
         if self.twitter_username:
