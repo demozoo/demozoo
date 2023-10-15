@@ -7,7 +7,7 @@ from nick_field import NickField
 
 from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
 from demoscene.models import Edit
-from parties.models import Competition, Party, PartyExternalLink, PartySeries
+from parties.models import Competition, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink
 from platforms.models import Platform
 from productions.fields.production_field import ProductionField
 from productions.fields.production_type_field import ProductionTypeChoiceField
@@ -44,18 +44,27 @@ class PartyForm(ModelFormWithLocation):
 
         if commit:
             # create a Pouet link if we already know the Pouet party id from the party series record
-            if self.instance.start_date and self.instance.party_series.pouet_party_id:
-                PartyExternalLink.objects.create(
-                    link_class='PouetParty',
-                    parameter="%s/%s" % (self.instance.party_series.pouet_party_id, self.instance.start_date.date.year),
-                    party=self.instance
-                )
+            if self.instance.start_date:
+                try:
+                    pouet_party_id = self.instance.party_series.external_links.get(link_class='PouetPartySeries').parameter
+                except (PartySeriesExternalLink.DoesNotExist, PartySeriesExternalLink.MultipleObjectsReturned):
+                    pass
+                else:
+                    PartyExternalLink.objects.create(
+                        link_class='PouetParty',
+                        parameter="%s/%s" % (pouet_party_id, self.instance.start_date.date.year),
+                        party=self.instance
+                    )
 
-            # create a Twitter link if we already know a Twitter username from the party series record
-            if self.instance.party_series.twitter_username:
+            # Copy social media links from the party series record
+            copiable_link_classes = [
+                'TwitterAccount', 'YoutubeUser', 'YoutubeChannel', 'TwitchChannel', 'MastodonAccount',
+                'FacebookPage', 'InstagramAccount', 'TikTokUser',
+            ]
+            for link in self.instance.party_series.external_links.filter(link_class__in=copiable_link_classes):
                 PartyExternalLink.objects.create(
-                    link_class='TwitterAccount',
-                    parameter=self.instance.party_series.twitter_username,
+                    link_class=link.link_class,
+                    parameter=link.parameter,
                     party=self.instance
                 )
 
