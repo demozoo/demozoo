@@ -23,8 +23,6 @@ class PartySeries(models.Model):
     name = models.CharField(max_length=255, unique=True)
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
-    twitter_username = models.CharField(max_length=30, blank=True)
-    pouet_party_id = models.IntegerField(null=True, blank=True, verbose_name='Pouet party ID')
 
     def __str__(self):
         return self.name
