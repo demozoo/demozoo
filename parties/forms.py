@@ -152,10 +152,6 @@ class EditPartySeriesForm(forms.ModelForm):
             descriptions.append(u"name to '%s'" % self.cleaned_data['name'])
         if 'website' in changed_fields:
             descriptions.append(u"website to %s" % self.cleaned_data['website'])
-        if 'twitter_username' in changed_fields:
-            descriptions.append(u"Twitter username to %s" % self.cleaned_data['twitter_username'])
-        if 'pouet_party_id' in changed_fields:
-            descriptions.append(u"Pouet party ID to '%s'" % self.cleaned_data['pouet_party_id'])
         if descriptions:
             return u"Set %s" % (u", ".join(descriptions))
 
@@ -169,12 +165,7 @@ class EditPartySeriesForm(forms.ModelForm):
 
     class Meta:
         model = PartySeries
-        fields = ('name', 'website', 'twitter_username', 'pouet_party_id')
-        widgets = {
-            # not really numeric, but box is the same size
-            'twitter_username': forms.TextInput(attrs={'class': 'numeric'}),
-            'pouet_party_id': forms.TextInput(attrs={'class': 'numeric'}),
-        }
+        fields = ('name', 'website')
 
 
 class PartySeriesEditNotesForm(forms.ModelForm):

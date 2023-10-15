@@ -381,14 +381,10 @@ class TestEditSeries(TestCase):
         response = self.client.post('/parties/series/%d/edit/' % self.party_series.id, {
             'name': "For8ver",
             'website': 'http://forever.zeroteam.sk/',
-            'twitter_username': 'forever8party',
-            'pouet_party_id': 181,
         })
         self.assertRedirects(response, '/parties/series/%d/' % self.party_series.id)
         ps = PartySeries.objects.get(id=self.party_series.id)
         self.assertEqual(ps.website, 'http://forever.zeroteam.sk/')
-        self.assertEqual(ps.twitter_username, 'forever8party')
-        self.assertEqual(ps.pouet_party_id, 181)
 
 
 class TestAddCompetition(TestCase):
