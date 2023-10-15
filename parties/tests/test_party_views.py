@@ -403,6 +403,11 @@ class TestEditSeries(TestCase):
         self.client.login(username='testuser', password='12345')
         self.party_series = PartySeries.objects.get(name='Forever')
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/parties/series/%d/edit/' % self.party_series.id)
+        self.assertRedirects(response, '/account/login/?next=/parties/series/%d/' % self.party_series.id)
+
     def test_get(self):
         response = self.client.get('/parties/series/%d/edit/' % self.party_series.id)
         self.assertEqual(response.status_code, 200)

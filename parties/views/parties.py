@@ -335,8 +335,13 @@ def edit_series_notes(request, party_series_id):
 
 
 @writeable_site_required
-@login_required
 def edit_series(request, party_series_id):
+    if not request.user.is_authenticated:
+        # Instead of redirecting back to this edit form after login, redirect to the party series page.
+        # This is because the edit button pointing here is the only one a non-logged-in user sees,
+        # so they may intend to edit something else on the party series page.
+        return redirect_to_login(reverse('party_series', args=[party_series_id]))
+
     party_series = get_object_or_404(PartySeries, id=party_series_id)
 
     def success(form):
