@@ -10,7 +10,9 @@ from freezegun import freeze_time
 
 from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
-from parties.models import Competition, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
+from parties.models import (
+    Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile
+)
 from productions.models import Production
 
 
@@ -336,6 +338,34 @@ class TestEditExternalLinks(TestCase):
         self.assertEqual(
             PartySeries.objects.get(name='Forever').external_links.get(link_class='PouetPartySeries').parameter,
             '181'
+        )
+
+
+class TestEditSeriesExternalLinks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.party_series = PartySeries.objects.get(name='Forever')
+
+    def test_get(self):
+        response = self.client.get('/parties/series/%d/edit_external_links/' % self.party_series.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/parties/series/%d/edit_external_links/' % self.party_series.id, {
+            'external_links-TOTAL_FORMS': 1,
+            'external_links-INITIAL_FORMS': 0,
+            'external_links-MIN_NUM_FORMS': 0,
+            'external_links-MAX_NUM_FORMS': 1000,
+            'external_links-0-url': 'https://twitter.com/forever8party',
+            'external_links-0-party_series': self.party_series.id,
+        })
+        self.assertRedirects(response, '/parties/series/%d/' % self.party_series.id)
+        self.assertEqual(
+            PartySeriesExternalLink.objects.filter(party_series=self.party_series, link_class='TwitterAccount').count(),
+            1
         )
 
 

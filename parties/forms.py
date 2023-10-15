@@ -231,6 +231,18 @@ PartyExternalLinkFormSet = inlineformset_factory(
 )
 
 
+class PartySeriesExternalLinkForm(ExternalLinkForm):
+    class Meta:
+        model = PartySeriesExternalLink
+        exclude = ['parameter', 'link_class', 'party_series']
+
+
+PartySeriesExternalLinkFormSet = inlineformset_factory(
+    PartySeries, PartySeriesExternalLink,
+    form=PartySeriesExternalLinkForm, formset=BaseExternalLinkFormSet
+)
+
+
 class PartyInvitationForm(forms.Form):
     production = ProductionField()
 
