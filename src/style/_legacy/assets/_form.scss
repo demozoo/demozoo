@@ -64,7 +64,7 @@ fieldset {
         max-width: 90vw;
         float: left;
 
-        input[type=text] {
+        input[type=text], input[type=url] {
             width: 400px;
             max-width: 80vw;
         }

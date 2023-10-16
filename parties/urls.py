@@ -18,6 +18,7 @@ urlpatterns = [
     re_path(r'^parties/series/(\d+)/history/$', party_views.series_history, {}, 'party_series_history'),
     re_path(r'^parties/series/(\d+)/edit/$', party_views.edit_series, {}, 'party_edit_series'),
     re_path(r'^parties/series/(\d+)/edit_notes/$', party_views.edit_series_notes, {}, 'party_edit_series_notes'),
+    re_path(r'^parties/series/(\d+)/edit_external_links/$', party_views.edit_series_external_links, {}, 'party_edit_series_external_links'),
     re_path(r'^parties/new/$', party_views.create, {}, 'new_party'),
     re_path(r'^parties/(\d+)/add_competition/$', party_views.add_competition, {}, 'party_add_competition'),
     re_path(r'^parties/(\d+)/edit/$', party_views.edit, {}, 'edit_party'),

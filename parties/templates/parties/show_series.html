@@ -15,10 +15,10 @@
 {% endblock %}
 
 {% block base_main %}
-    <div class="editable_chunk">
+    <div class="party_series_core_details editable_chunk">
         <div class="signpost">Party</div>
 
-        {% if site_is_writeable %}
+        {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
                     <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
@@ -30,30 +30,32 @@
             <h2>{{ party_series.name }}</h2>
         </div>
 
-        {% if party_series.has_any_external_links %}
-            <div class="panel external_links_panel">
-                <h3 class="panel__title">External links</h3>
-                <ul class="external_links">
-                    {% if party_series.website %}
-                        <li>
-                            <a href="{{ party_series.website }}" style="background-image: url({% static 'images/icons/world.png' %});" title="{{ party_series.name }} website">WWW</a>
-                        </li>
-                    {% endif %}
-                    {% if party_series.twitter_url %}
-                        <li>
-                            <a href="{{ party_series.twitter_url }}" style="background-image: url({% static 'images/icons/external_sites/twitter.png' %});" title="{{ party_series.name }} on Twitter">Twitter</a>
-                        </li>
-                    {% endif %}
-                    {% if party_series.pouet_url %}
-                        <li>
-                            <a href="{{ party_series.pouet_url }}" style="background-image: url({% static 'images/icons/external_sites/pouet.png' %});" title="{{ party_series.name }} on Pouët">Pouët</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+        {% if party_series.website %}
+            <ul class="attributes">
+                <li class="website"><a href="{{ party_series.website }}">{{ party_series.website }}</a></li>
+            </ul>
         {% endif %}
-
     </div>
+
+    {% if external_links or can_edit %}
+        <div class="panel external_links_panel editable_chunk">
+            <h3 class="panel__title">External links</h3>
+
+            {% if can_edit %}
+                <ul class="actions">
+                    <li>
+                        <a href="{% url 'party_edit_series_external_links' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
+                    </li>
+                </ul>
+            {% endif %}
+
+            <ul class="external_links">
+                {% for link in external_links %}
+                    <li>{{ link.html_link|safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
     {% if party_series.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
@@ -68,7 +70,7 @@
         </div>
     {% endif %}
 
-    {% if site_is_writeable %}
+    {% if can_edit %}
         <ul class="actions">
             <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
         </ul>

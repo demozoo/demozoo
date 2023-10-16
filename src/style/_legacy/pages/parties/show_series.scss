@@ -1,4 +1,33 @@
 .show_party_series {
+    .party_series_core_details {
+        .attributes {
+            width: 100%;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            padding-bottom: 10px;
+
+            li {
+                color: #555;
+                padding-left: 16px;
+                background: no-repeat url(/static/images/icons/mini_bullet.png) left center;
+                font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+
+                &:first-child {
+                    background-image: none;
+                    padding-left: 0;
+                }
+
+                &.website {
+                    clear:both;
+                    background-image: none;
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+
     .external_links_panel {
         margin-bottom: 20px;
 

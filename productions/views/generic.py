@@ -114,9 +114,13 @@ class ShowView(View):
         except IndexError:
             meta_screenshot = None
 
+        prompt_to_edit = settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked)
+        can_edit = prompt_to_edit and self.request.user.is_authenticated
+
         return {
             'production': self.production,
-            'prompt_to_edit': settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked),
+            'prompt_to_edit': prompt_to_edit,
+            'can_edit': can_edit,
             'download_links': self.production.download_links,
             'external_links': self.production.external_links,
             'info_files': self.production.info_files.all(),

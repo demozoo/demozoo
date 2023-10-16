@@ -23,8 +23,6 @@ class PartySeries(models.Model):
     name = models.CharField(max_length=255, unique=True)
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
-    twitter_username = models.CharField(max_length=30, blank=True)
-    pouet_party_id = models.IntegerField(null=True, blank=True, verbose_name='Pouet party ID')
 
     def __str__(self):
         return self.name
@@ -35,29 +33,31 @@ class PartySeries(models.Model):
     def get_history_url(self):
         return reverse('party_series_history', args=[str(self.id)])
 
-    def has_any_external_links(self):
-        return self.website or self.twitter_url or self.pouet_url
-
-    def twitter_url(self):
-        if self.twitter_username:
-            return "http://twitter.com/%s" % self.twitter_username
-
-    def pouet_url(self):
-        if self.pouet_party_id:
-            return "http://www.pouet.net/party.php?which=%s" % self.pouet_party_id
-
     @property
     def plaintext_notes(self):
         return strip_markup(self.notes)
+
+    @property
+    def active_external_links(self):
+        return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
     class Meta:
         verbose_name_plural = "Party series"
         ordering = ("name",)
 
 
-class PartySeriesDemozoo0Reference(models.Model):
-    party_series = models.ForeignKey(PartySeries, related_name='demozoo0_ids', on_delete=models.CASCADE)
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+class PartySeriesExternalLink(ExternalLink):
+    party_series = models.ForeignKey(PartySeries, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.PARTY_SERIES_LINK_TYPES
+
+    def html_link(self):
+        return self.link.as_html(self.party_series.name)
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'party_series'),
+        )
+        ordering = ['link_class']
 
 
 def party_share_image_upload_to(i, f):

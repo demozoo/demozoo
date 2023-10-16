@@ -94,6 +94,11 @@ class TestEdit(TestCase):
         self.bbs = BBS.objects.get(name='StarPort')
         self.alt_name = self.bbs.alternative_names.first()
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/bbs/%d/edit/' % self.bbs.id)
+        self.assertRedirects(response, '/account/login/?next=/bbs/%d/' % self.bbs.id)
+
     def test_get(self):
         response = self.client.get('/bbs/%d/edit/' % self.bbs.id)
         self.assertEqual(response.status_code, 200)

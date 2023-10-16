@@ -10,7 +10,9 @@ from freezegun import freeze_time
 
 from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
-from parties.models import Competition, Organiser, Party, PartyExternalLink, PartySeries, ResultsFile
+from parties.models import (
+    Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile
+)
 from productions.models import Production
 
 
@@ -126,8 +128,8 @@ class TestCreateParty(TestCase):
     def test_inherit_party_series_data(self):
         ps = PartySeries.objects.get(name='Forever')
         ps.website = "http://forever8.net/"
-        ps.twitter_username = "forever8party"
-        ps.pouet_party_id = 181
+        ps.external_links.create(link_class="TwitterAccount", parameter="forever8party")
+        ps.external_links.create(link_class="PouetPartySeries", parameter="181")
         ps.save()
 
         response = self.client.post('/parties/new/', {
@@ -177,6 +179,11 @@ class TestEditParty(TestCase):
         User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
         self.party = Party.objects.get(name='Forever 2e3')
+
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/parties/%d/edit/' % self.party.id)
+        self.assertRedirects(response, '/account/login/?next=/parties/%d/' % self.party.id)
 
     def test_get(self):
         response = self.client.get('/parties/%d/edit/' % self.party.id)
@@ -299,7 +306,10 @@ class TestEditExternalLinks(TestCase):
             PartyExternalLink.objects.filter(party=self.party, link_class='TwitterAccount').count(),
             1
         )
-        self.assertEqual(PartySeries.objects.get(name='Forever').twitter_username, 'forever8party')
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='TwitterAccount').parameter,
+            'forever8party'
+        )
 
     def test_post_with_pouet_link(self):
         response = self.client.post('/parties/%d/edit_external_links/' % self.party.id, {
@@ -321,8 +331,42 @@ class TestEditExternalLinks(TestCase):
             PartyExternalLink.objects.filter(party=self.party, link_class='PouetParty').count(),
             1
         )
-        self.assertEqual(PartySeries.objects.get(name='Forever').twitter_username, 'forever8party')
-        self.assertEqual(PartySeries.objects.get(name='Forever').pouet_party_id, 181)
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='TwitterAccount').parameter,
+            'forever8party'
+        )
+        self.assertEqual(
+            PartySeries.objects.get(name='Forever').external_links.get(link_class='PouetPartySeries').parameter,
+            '181'
+        )
+
+
+class TestEditSeriesExternalLinks(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        self.client.login(username='testuser', password='12345')
+        self.party_series = PartySeries.objects.get(name='Forever')
+
+    def test_get(self):
+        response = self.client.get('/parties/series/%d/edit_external_links/' % self.party_series.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        response = self.client.post('/parties/series/%d/edit_external_links/' % self.party_series.id, {
+            'external_links-TOTAL_FORMS': 1,
+            'external_links-INITIAL_FORMS': 0,
+            'external_links-MIN_NUM_FORMS': 0,
+            'external_links-MAX_NUM_FORMS': 1000,
+            'external_links-0-url': 'https://twitter.com/forever8party',
+            'external_links-0-party_series': self.party_series.id,
+        })
+        self.assertRedirects(response, '/parties/series/%d/' % self.party_series.id)
+        self.assertEqual(
+            PartySeriesExternalLink.objects.filter(party_series=self.party_series, link_class='TwitterAccount').count(),
+            1
+        )
 
 
 class TestEditSeriesNotes(TestCase):
@@ -359,6 +403,11 @@ class TestEditSeries(TestCase):
         self.client.login(username='testuser', password='12345')
         self.party_series = PartySeries.objects.get(name='Forever')
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/parties/series/%d/edit/' % self.party_series.id)
+        self.assertRedirects(response, '/account/login/?next=/parties/series/%d/' % self.party_series.id)
+
     def test_get(self):
         response = self.client.get('/parties/series/%d/edit/' % self.party_series.id)
         self.assertEqual(response.status_code, 200)
@@ -367,14 +416,10 @@ class TestEditSeries(TestCase):
         response = self.client.post('/parties/series/%d/edit/' % self.party_series.id, {
             'name': "For8ver",
             'website': 'http://forever.zeroteam.sk/',
-            'twitter_username': 'forever8party',
-            'pouet_party_id': 181,
         })
         self.assertRedirects(response, '/parties/series/%d/' % self.party_series.id)
         ps = PartySeries.objects.get(id=self.party_series.id)
         self.assertEqual(ps.website, 'http://forever.zeroteam.sk/')
-        self.assertEqual(ps.twitter_username, 'forever8party')
-        self.assertEqual(ps.pouet_party_id, 181)
 
 
 class TestAddCompetition(TestCase):

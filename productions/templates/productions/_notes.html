@@ -1,6 +1,5 @@
 {% load safe_markdown %}
 
-
 {% if production.notes or request.user.is_staff %}
     <div class="editable_chunk panel notes_panel">
         {% if request.user.is_staff and site_is_writeable %}

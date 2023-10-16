@@ -222,6 +222,11 @@ class TestEditPrimaryNick(TestCase):
         self.gasman = Releaser.objects.get(name='Gasman')
         self.papaya_dezign = Releaser.objects.get(name='Papaya Dezign')
 
+    def test_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get('/releasers/%d/edit_primary_nick/' % self.gasman.id)
+        self.assertRedirects(response, '/account/login/?next=/sceners/%d/' % self.gasman.id)
+
     def test_locked(self):
         response = self.client.get('/releasers/%d/edit_primary_nick/' % self.papaya_dezign.id)
         self.assertEqual(response.status_code, 403)

@@ -1,6 +1,6 @@
 <div class="panel editable_chunk text_ads_panel">
     <h3 class="panel__title">Text ads</h3>
-    {% if site_is_writeable %}
+    {% if can_edit %}
         <ul class="actions">
             <li>
                 <a href="{% url 'bbs_edit_text_ads' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" rel="nofollow">Edit text ads</a>

@@ -1,6 +1,6 @@
 {% for event, recommendation_options in awards_accepting_recommendations %}
 <div class="award-recommendation">
-    {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated and site_is_writeable %}
         <header class="award-recommendation__header">
             <h2 class="award-recommendation__heading">
                 Recommend this production for <span class="award-recommendation__name">{{ event.name }}</span>!
