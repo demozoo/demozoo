@@ -17,9 +17,11 @@ PARTY_SERIES_ALIASES = {
 }
 
 ROLES_LOOKUP = {
+    'commentator': 'commentary',
     'commentators': 'commentary',
     'dj set': 'dj_set',
     'live music': 'live_music',
+    'live set': 'live_music',
 }
 
 
@@ -71,6 +73,12 @@ def find_nick_from_handle_data(handle_data):
             )
         )
         return (None, handle_data['name'])
+    except Nick.MultipleObjectsReturned:
+        raise Exception(
+            "Multiple nicks found for %s (%s)" % (
+                handle_data['name'], Releaser.objects.get(id=handle_data['demozoo_id']).name
+            )
+        )
 
     return (nick.id, '')
 
@@ -201,7 +209,7 @@ def load_phase_data(phase, phase_data):
                 nick_id=nick_id,
                 name=name,
                 ranking=entry_data['rank'] or '',
-                score=entry_data['points'] or '',
+                score=entry_data.get('points') or '',
             )
 
     else:
@@ -220,7 +228,7 @@ def load_phase_data(phase, phase_data):
                 entry.ranking = rank
                 has_changed = True
 
-            score = '' if entry_data['points'] is None else str(entry_data['points'])
+            score = '' if entry_data.get('points') is None else str(entry_data['points'])
             if score != entry.score:
                 entry.score = score
                 has_changed = True
