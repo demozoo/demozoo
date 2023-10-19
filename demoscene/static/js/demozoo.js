@@ -5,6 +5,17 @@ function htmlEncode(str) {
 function applyGlobalBehaviours(context) {
     $('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 
+    $('[data-lightbox]', context).click(function(e) {
+        if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.which === 2) {
+            /* probably means they want to open it in a new window, so let them... */
+            return true;
+        }
+        const focus = $(this).attr('data-lightbox-focus');
+        console.log(focus);
+        Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': $(this).data('focusEmptyInput')});
+        e.preventDefault();
+    });
+
     $('a.open_in_lightbox', context).click(function(e) {
         if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.which === 2) {
             /* probably means they want to open it in a new window, so let them... */

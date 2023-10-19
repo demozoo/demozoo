@@ -1,5 +1,5 @@
 
-{% load demoscene_tags %}
+{% load ui_tags demoscene_tags %}
 
 <div class="panel screenshots_panel">
     <div class="carousel">
@@ -28,23 +28,17 @@
     </div>
 
     {% if show_all_screenshots_link or show_add_screenshot_link or show_manage_screenshots_link %}
-        <ul class="actions">
+        <div class="o-actions">
             {% if show_all_screenshots_link %}
-                <li class="all_screenshots">
-                    <a class="action_button" href="{{ production.get_all_screenshots_url }}">{{ all_screenshots_label }}</a>
-                </li>
+                {% button href=production.get_all_screenshots_url label=all_screenshots_label icon="add" %}
             {% endif %}
             {% if show_add_screenshot_link %}
-                <li>
-                    <a href="{{ production.get_add_screenshot_url }}" class="action_button icon add open_in_lightbox" rel="nofollow">{{ add_screenshot_label }}</a>
-                </li>
+                {% button href=production.get_add_screenshot_url label=add_screenshot_label icon="add" lightbox=True %}
             {% endif %}
             {% if show_manage_screenshots_link %}
-                <li>
-                    <a href="{{ production.get_edit_screenshots_url }}" class="action_button icon edit" rel="nofollow">{{ manage_screenshots_label }}</a>
-                </li>
+                {% button href=production.get_edit_screenshots_url label=manage_screenshots_label icon="edit" %}
             {% endif %}
-        </ul>
+        </div>
     {% endif %}
     <div style="clear: both;"></div>
 </div>

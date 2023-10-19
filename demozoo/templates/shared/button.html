@@ -8,6 +8,8 @@
             {% if size %} -{{ size }}{% endif %}
             {% if theme %}} t-{{ theme }}{% endif %}
             {% if variant %} -{{ variant }}{% endif %}"
+       {% if lightbox %}data-lightbox{% endif %}
+       {% if lightbox and focus %}data-lightbox-focus{% endif %}
        {% if disabled and not href %}disabled{% endif %}
        {% if disabled and href %}data-disabled{% endif %}
        href="{{ href }}"
