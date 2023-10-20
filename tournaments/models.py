@@ -1,3 +1,4 @@
+import hashlib
 import re
 
 from django.db import models
@@ -5,6 +6,9 @@ from django.utils.functional import cached_property
 
 from demoscene.models import Nick
 from parties.models import Party
+from screenshots.models import PILConvertibleImage
+from screenshots.processing import upload_to_s3
+from screenshots.tasks import create_basename
 
 
 class Tournament(models.Model):
@@ -59,11 +63,33 @@ class Entry(models.Model):
     position = models.IntegerField()
     score = models.CharField(max_length=32, blank=True)
 
+    thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
+    thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
+    thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+    original_image_sha1 = models.CharField(max_length=40, blank=True, editable=False)
+
     class Meta:
         ordering = ['position']
 
     def __str__(self) -> str:
         return self.nick.name if self.nick else self.name
+
+    def set_screenshot(self, filename):
+        f = open(filename, 'rb')
+        sha1 = hashlib.sha1(f.read()).hexdigest()
+        if sha1 == self.original_image_sha1:
+            f.close()
+            return False
+
+        self.original_image_sha1 = sha1
+        f.seek(0)
+        img = PILConvertibleImage(f, name_hint=filename)
+        thumb, thumb_size, thumb_format = img.create_thumbnail((200, 150))
+        basename = create_basename(self.id)
+        self.thumbnail_url = upload_to_s3(thumb, 'tournament_screens/t/' + basename + thumb_format)
+        self.thumbnail_width, self.thumbnail_height = thumb_size
+        f.close()
+        return True
 
 
 ROLES = [
