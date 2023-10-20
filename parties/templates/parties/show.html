@@ -317,6 +317,9 @@
                 {% for tournament in tournaments %}
                     <section class="tournament" id="tournament_{{ tournament.id }}">
                         <h4 class="tournament__heading">{{ tournament.name }}</h4>
+                        <ul class="external_links">
+                            <li><a href="{{ tournament.livecode_url }}" style="background-image: url('/static/images/icons/external_sites/livecode.png')" title="{{ party.name }} {{ tournament.name }} on livecode.demozoo.org">Livecode</a></li>
+                        </ul>
                         {% with tournament.phases.all as phases %}
                             {% for phase in phases %}
                                 {% if phases|length > 1 or phase.staff.all %}
