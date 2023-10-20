@@ -12,6 +12,7 @@ REPO_URL = 'https://github.com/psenough/livecode.demozoo.org.git'
 DATA_PATH = Path(settings.FILEROOT) / 'data'
 LOCAL_REPO_PATH = DATA_PATH / 'livecode.demozoo.org'
 TOURNAMENT_DATA_PATH = LOCAL_REPO_PATH / 'public' / 'data'
+TOURNAMENT_MEDIA_PATH = LOCAL_REPO_PATH / 'public' / 'media'
 
 
 class Command(BaseCommand):
@@ -36,4 +37,4 @@ class Command(BaseCommand):
             with path.open() as f:
                 tournament_data = json.loads(f.read())
 
-            import_tournament(path.name, tournament_data)
+            import_tournament(path.name, tournament_data, TOURNAMENT_MEDIA_PATH)
