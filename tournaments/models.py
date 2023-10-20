@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.utils.functional import cached_property
 
@@ -20,6 +22,11 @@ class Tournament(models.Model):
 
     def get_absolute_url(self):
         return self.party.get_absolute_url() + ("#tournament_%d" % self.id)
+
+    @property
+    def livecode_url(self):
+        html_file_name = re.sub(r'\.json$', '.html', self.source_file_name)
+        return 'https://livecode.demozoo.org/event/%s#mc' % html_file_name
 
 
 class Phase(models.Model):
