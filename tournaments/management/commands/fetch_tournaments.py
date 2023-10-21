@@ -12,7 +12,11 @@ REPO_URL = 'https://github.com/psenough/livecode.demozoo.org.git'
 DATA_PATH = Path(settings.FILEROOT) / 'data'
 LOCAL_REPO_PATH = DATA_PATH / 'livecode.demozoo.org'
 TOURNAMENT_DATA_PATH = LOCAL_REPO_PATH / 'public' / 'data'
-TOURNAMENT_MEDIA_PATH = LOCAL_REPO_PATH / 'public' / 'media'
+try:
+    # only intended for use in the test environment
+    TOURNAMENT_MEDIA_PATH = Path(settings.TOURNAMENT_MEDIA_PATH)
+except AttributeError:  # pragma: no cover
+    TOURNAMENT_MEDIA_PATH = LOCAL_REPO_PATH / 'public' / 'media'
 
 
 class Command(BaseCommand):
