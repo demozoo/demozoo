@@ -1,3 +1,4 @@
+{% load demoscene_tags %}
 <table class="table" summary="">
     <colgroup>
         {% if phase.has_rankings %}<col class="col--ranking"/>{% endif %}
@@ -12,7 +13,11 @@
                 {% if phase.has_rankings %}
                     <td><span class="result__ranking">{{ entry.ranking }}</span></td>
                 {% endif %}
-                <td></td>
+                <td>
+                    {% if entry.thumbnail_url %}
+                        {% microthumb entry %}
+                    {% endif %}
+                </td>
                 <td>
                     <div class="result__title">
                         {% if entry.nick %}

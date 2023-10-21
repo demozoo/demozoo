@@ -1,5 +1,7 @@
 import io
 
+from django.db import models
+
 from PIL import Image, ImageOps
 from recoil import RecoilImage
 
@@ -118,3 +120,25 @@ class PILConvertibleImage(object):
                 # ...so try without optimize
                 img.save(output, format='JPEG', quality=90)
             return output, img.size, 'jpg'
+
+
+class ThumbnailMixin(models.Model):
+    thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
+    thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
+    thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
+
+    class Meta:
+        abstract = True
+
+    def thumb_dimensions_to_fit(self, width, height):
+        # return the width and height to render the thumbnail image at in order to fit within the given
+        # width/height while preserving aspect ratio
+
+        thumbnail_width = self.thumbnail_width or 1
+        thumbnail_height = self.thumbnail_height or 1
+
+        width_scale = min(float(width) / thumbnail_width, 1)
+        height_scale = min(float(height) / thumbnail_height, 1)
+        scale = min(width_scale, height_scale)
+
+        return (round(thumbnail_width * scale), round(thumbnail_height * scale))

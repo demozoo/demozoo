@@ -6,7 +6,7 @@ from django.utils.functional import cached_property
 
 from demoscene.models import Nick
 from parties.models import Party
-from screenshots.models import PILConvertibleImage
+from screenshots.models import PILConvertibleImage, ThumbnailMixin
 from screenshots.processing import upload_to_s3
 from screenshots.tasks import create_basename
 
@@ -53,7 +53,7 @@ class Phase(models.Model):
         return self.name
 
 
-class Entry(models.Model):
+class Entry(ThumbnailMixin, models.Model):
     phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='entries')
     nick = models.ForeignKey(
         Nick, blank=True, null=True, on_delete=models.CASCADE, related_name='tournament_entries'

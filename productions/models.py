@@ -24,6 +24,7 @@ from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 from mirror.models import ArchiveMember, Download
+from screenshots.models import ThumbnailMixin
 
 
 SUPERTYPE_CHOICES = (
@@ -525,15 +526,11 @@ class Credit(models.Model):
         ordering = ['production__title']
 
 
-class Screenshot(models.Model):
+class Screenshot(ThumbnailMixin, models.Model):
     production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
     original_url = models.CharField(max_length=255, blank=True)
     original_width = models.IntegerField(editable=False, null=True, blank=True)
     original_height = models.IntegerField(editable=False, null=True, blank=True)
-
-    thumbnail_url = models.CharField(max_length=255, blank=True)
-    thumbnail_width = models.IntegerField(editable=False, null=True, blank=True)
-    thumbnail_height = models.IntegerField(editable=False, null=True, blank=True)
 
     standard_url = models.CharField(max_length=255, blank=True)
     standard_width = models.IntegerField(editable=False, null=True, blank=True)
@@ -545,19 +542,6 @@ class Screenshot(models.Model):
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
     janeway_id = models.IntegerField(editable=False, null=True, blank=True)
     janeway_suffix = models.CharField(max_length=5, blank=True, null=True, editable=False)
-
-    def thumb_dimensions_to_fit(self, width, height):
-        # return the width and height to render the thumbnail image at in order to fit within the given
-        # width/height while preserving aspect ratio
-
-        thumbnail_width = self.thumbnail_width or 1
-        thumbnail_height = self.thumbnail_height or 1
-
-        width_scale = min(float(width) / thumbnail_width, 1)
-        height_scale = min(float(height) / thumbnail_height, 1)
-        scale = min(width_scale, height_scale)
-
-        return (round(thumbnail_width * scale), round(thumbnail_height * scale))
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
