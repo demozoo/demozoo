@@ -6,10 +6,11 @@ from django.test import TestCase
 from django.test.utils import captured_stdout
 from mock import patch
 
+from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
 
 
-class TestFetchTournaments(TestCase):
+class TestFetchTournaments(MediaTestMixin, TestCase):
     fixtures = ['tests/gasman.json']
 
     @patch.object(Path, 'glob')
