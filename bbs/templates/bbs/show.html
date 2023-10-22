@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags releaser_tags compress %}
+{% load demoscene_tags releaser_tags compress ui_tags %}
 {% load safe_markdown %}
 
 
@@ -22,11 +22,10 @@
         <div class="signpost">BBS</div>
 
         {% if prompt_to_edit %}
-            <ul class="actions">
-                <li>
-                    <a href="{% url 'edit_bbs' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" rel="nofollow">Edit</a>
-                </li>
-            </ul>
+            <div class="o-actions">
+                {% url 'edit_bbs' bbs.id as edit_bbs_url %}
+                {% button href=edit_bbs_url lightbox=True icon="edit" label="Edit" %}
+            </div>
         {% endif %}
 
         <div class="focus_title bbs_name">
@@ -38,7 +37,7 @@
 
             <ul class="alternative_names">
                 {% for name in alternative_names %}
-                    <li><b>{{ name.name }}</b></li>
+                    <li><strong>{{ name.name }}</strong></li>
                 {% endfor %}
             </ul>
         {% endif %}
@@ -60,11 +59,10 @@
             <h3 class="panel__title">External links</h3>
 
             {% if can_edit %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
-                    </li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'bbs_edit_external_links' bbs.id as bbs_external_links_edit_url %}
+                    {% button href=bbs_external_links_edit_url lightbox=True icon="edit" label="Edit" focus=True %}
+                </div>
             {% endif %}
             <ul class="external_links">
                 {% for link in external_links %}
@@ -77,9 +75,10 @@
     {% if bbs.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
-                <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'bbs_edit_notes' bbs.id %}">Edit notes</a></li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'bbs_edit_notes' bbs.id as edit_bbs_notes_url %}
+                    {% button href=edit_bbs_notes_url lightbox=True icon="edit" label="Edit" title="Edit notes" %}
+                </div>
             {% endif %}
             <div class="notes">
                 {{ bbs.notes|safe_markdown }}
@@ -127,7 +126,8 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
+                {% url 'bbs_add_affiliation' bbs.id as add_bbs_affiliation_url %}
+                {% button href=add_bbs_affiliation_url lightbox=True icon="add" label="Add group" %}
             {% endif %}
         </div>
     </div>
@@ -145,9 +145,10 @@
                     Promoted in
                 </h3>
                 {% if can_edit %}
-                    <ul class="actions">
-                        <li><a href="{% url 'bbs_edit_bbstros' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit production list</a></li>
-                    </ul>
+                    <div class="o-actions">
+                        {% url 'bbs_edit_bbstros' bbs.id as edit_bbstros_url %}
+                        {% button href=edit_bbstros_url label="Edit production list" icon="edit" lightbox=True %}
+                    </div>
                 {% endif %}
 
                 {% if bbstros %}
@@ -160,11 +161,12 @@
     {% last_edited_by bbs %}
 
     {% if request.user.is_staff and site_is_writeable %}
-    <ul class="maintenance_actions">
-        {% if not bbs.is_referenced %}
-            <li><a href="{% url 'delete_bbs' bbs.id %}" class="action_button icon delete open_in_lightbox">Delete BBS</a></li>
-        {% endif %}
-    </ul>
+        <div class="o-actions">
+            {% if not bbs.is_referenced %}
+                {% url 'delete_bbs' bbs.id as delete_bbs_url %}
+                {% button lightbox=True href=delete_bbs_url icon="delete" label="Delete BBS" %}
+            {% endif %}
+        </div>
     {% endif %}
 
 {% endblock %}

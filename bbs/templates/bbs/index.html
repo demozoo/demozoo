@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui_tags %}
 
 {% block html_title %}BBSes - Demozoo{% endblock %}
 
@@ -6,9 +7,10 @@
 <div>
     <header class="page__header">
         {% if site_is_writeable %}
-            <ul class="actions">
-                <li><a href="{% url 'new_bbs' %}" class="action_button icon add open_in_lightbox">New BBS</a></li>
-            </ul>
+            <div class="o-actions">
+                {% url 'new_bbs' as new_bbs_url %}
+                {% button href=new_bbs_url lightbox=True icon="add" label="New BBS" %}
+            </div>
         {% endif %}
         <h1 class="page__title">BBSes</h1>
     </header>
