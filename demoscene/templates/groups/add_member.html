@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-
+{% load ui_tags %}
 
 {% block html_title %}New member for {{ group.name }} - Demozoo{% endblock %}
 
@@ -27,7 +27,7 @@
         {% endfor %}
 
         <div class="field">
-            <input type="submit" value="Add member"/>
+            {% button label="Add member" %}
         </div>
     </form>
 {% endblock %}

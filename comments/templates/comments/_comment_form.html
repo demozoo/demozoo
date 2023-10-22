@@ -1,4 +1,4 @@
-
+{% load ui_tags %}
 
 {% comment %}Expects to receive vars: submit_action, commentable, comment_form{% endcomment %}
 
@@ -9,5 +9,5 @@
         {{ comment_form.body }}
         <p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
     </div>
-    <input type="submit" value="Post comment">
+    {% button label="Post comment" %}
 </form>
