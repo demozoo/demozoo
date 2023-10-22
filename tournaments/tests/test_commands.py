@@ -170,6 +170,10 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         phase = tournament.phases.first()
         phase.name = "Semi-final"
         phase.save()
+        gasman_entry = phase.entries.get(name='Gasman')
+        gasman_entry.original_image_sha1 = "1234123412341234"
+        gasman_entry.thumbnail_url = "http://example.com/original.png"
+        gasman_entry.save()
 
         exists.return_value = True
         data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
@@ -194,3 +198,44 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         gasman_entry = phase.entries.get(name='fake gasman')
         self.assertEqual(gasman_entry.ranking, '1')
         self.assertEqual(gasman_entry.original_image_sha1, "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5")
+        self.assertNotEqual(gasman_entry.thumbnail_url, "http://example.com/original.png")
+
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_dont_replace_screenshot_if_sha1_matches(self, run, mkdir, exists, glob):
+        party = Party.objects.get(name="Forever 2e3")
+        tournament = party.tournaments.first()
+        phase = tournament.phases.first()
+        phase.name = "Semi-final"
+        phase.save()
+        gasman_entry = phase.entries.get(name='Gasman')
+        gasman_entry.original_image_sha1 = "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5"
+        gasman_entry.thumbnail_url = "http://example.com/original.png"
+        gasman_entry.save()
+
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2000_z80_showdown_forever.json',
+        ]
+
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
+        glob.assert_called_once_with('*.json')
+
+        self.assertNotIn(
+            "Phases don't match - recreating",
+            stdout.getvalue()
+        )
+        self.assertEqual(tournament.phases.count(), 1)
+        self.assertEqual(tournament.phases.first(), phase)
+        gasman_entry = phase.entries.get(name='fake gasman')
+        self.assertEqual(gasman_entry.ranking, '1')
+        self.assertEqual(gasman_entry.original_image_sha1, "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5")
+        self.assertEqual(gasman_entry.thumbnail_url, "http://example.com/original.png")

@@ -584,6 +584,7 @@
         "fields": {
             "phase": 1,
             "nick": 1,
+            "name": "Gasman",
             "position": 0,
             "ranking": 2,
             "score": "50"
@@ -595,6 +596,7 @@
         "fields": {
             "phase": 1,
             "nick": 6,
+            "name": "Yerzmyey",
             "position": 1,
             "ranking": 1,
             "score": "100"
