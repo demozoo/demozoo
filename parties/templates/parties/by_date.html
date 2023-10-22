@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags ui_tags %}
 
 
 {% block html_title %}Parties - Demozoo{% endblock %}
@@ -7,9 +7,10 @@
 
 {% block base_main %}
     {% if site_is_writeable %}
-        <ul class="actions">
-            <li><a href="{% url 'new_party' %}" class="action_button icon add open_in_lightbox">New party</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'new_party' as new_party_url %}
+            {% button lightbox=True label="New Party" icon="add" href=new_party_url %}
+        </div>
     {% endif %}
 
     <h2>Parties</h2>

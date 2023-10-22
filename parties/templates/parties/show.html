@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
-{% load safe_markdown %}
-
+{% load demoscene_tags compress safe_markdown ui_tags %}
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
@@ -93,16 +91,14 @@
         <div class="signpost">Party</div>
 
         {% if prompt_to_edit %}
-            <ul class="actions">
-                <li>
-                    <a href="{% url 'edit_party' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
-                </li>
+            <div class="o-actions">
+                {% url 'edit_party' party.id as edit_party_url %}
+                {% button label="Edit" lightbox=True icon="edit" title="Edit party details" %}
                 {% if request.user.is_staff %}
-                    <li>
-                        <a href="{% url 'party_edit_share_image' party.id %}" class="action_button icon picture_edit">Edit social share image</a>
-                    </li>
+                    {% url 'party_edit_share_image' party.id as edit_party_share_image_url %}
+                    {% button href=edit_party_share_image_url icon="picture-edit" label="Edit social share image" %}
                 {% endif %}
-            </ul>
+            </div>
         {% endif %}
 
         <div class="focus_title party_name">
@@ -135,9 +131,10 @@
         </ul>
     </div>
 
-    <div class="editable_chunk panel organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
-        <h3 class="panel__title">Organisers</h3>
 
+<div class="editable_chunk panel organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
+        <h3 class="panel__title">Organisers</h3>
+        <!-- todo: bring this into the new button component fold -->
         {% regroup organisers by releaser.is_group as orga_type_list %}
         {% for is_group, orga_list in orga_type_list %}
             {% if is_group %}
@@ -149,7 +146,9 @@
                             <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
                             {% if organiser.role %}({{ organiser.role}}){% endif %}
                             {% if can_edit %}
-                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
+                                {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
+                                {% button href=party_edit_organiser_url lightbox=True icon="edit" level="tertiary" %}
+                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_light box edit_organiser">
                                     <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
                                 </a>
                             {% endif %}
@@ -195,11 +194,10 @@
         <div class="editable_chunk panel external_links_panel">
             <h3 class="panel__title">External links</h3>
             {% if can_edit %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'party_edit_external_links' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
-                    </li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'party_edit_external_links' party.id as edit_party_external_links_url %}
+                    {% button href=edit_party_external_links_url icon="edit" lightbox=True focus=True label="Edit" title="Edit external links" %}
+                </div>
             {% endif %}
             <ul class="external_links">
                 {% for link in external_links %}
@@ -231,11 +229,10 @@
     {% if party.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
-                <ul class="actions">
-                    <li>
-                        <a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_notes' party.id %}">Edit notes</a>
-                    </li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'party_edit_notes' party.id as party_edit_notes_url %}
+                    {% button href=party_edit_notes_url lightbox=True icon="edit" label="Edit notes" %}
+                </div>
             {% endif %}
             <div class="notes">
                 {{ party.notes|safe_markdown }}
@@ -249,9 +246,10 @@
                 Invitation{{ invitations|length|pluralize }}
             </h3>
             {% if can_edit %}
-                <ul class="actions">
-                    <li><a href="{% url 'party_edit_invitations' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit invitations</a></li>
-                </ul>
+                <div class="actions">
+                    {% url 'party_edit_invitations' party.id as party_edit_invitations_url %}
+                    {% button href=party_edit_invitations_url icon="edit" label="Edit invitations" lightbox=True %}
+                </div>
             {% endif %}
 
             {% if invitations %}
@@ -264,9 +262,10 @@
         <div class="panel releases_panel editable_chunk">
             <h3 class="panel__title">Releases</h3>
             {% if can_edit %}
-                <ul class="actions">
-                    <li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit releases</a></li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'party_edit_releases' party.id as party_edit_releases_url %}
+                    {% button href=party_edit_releases_url icon="edit" label="Edit releases" lightbox=True %}
+                </div>
             {% endif %}
 
             {% if releases %}
@@ -293,14 +292,15 @@
             <div class="results_body">
                 {% for compo, placings in competitions_with_placings_and_screenshots %}
                     <section class="competition editable_chunk" id="competition_{{ compo.id }}">
-
                         {% if can_edit %}
-                            <ul class="actions">
-                                <li><a class="action_button icon edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+                            <div class="o-actions">
+                                {% url 'competition_edit' compo.id as competition_edit_url %}
+                                {% button href=competition_edit_url icon="edit" label="Edit competition" %}
                                 {% if request.user.is_staff and not placings %}
-                                    <li><a class="action_button icon delete open_in_lightbox" href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
+                                    {% url 'delete_competition' compo.id as delete_competition_url %}
+                                    {% button href=delete_competition_url icon="delete" label="Delete competition" %}
                                 {% endif %}
-                            </ul>
+                            </div>
                         {% endif %}
 
                         <h4 class="competition__heading">{{ compo.name }}</h4>
@@ -312,11 +312,10 @@
                 {% endfor %}
 
                 {% if can_edit %}
-                    <ul class="actions">
-                        <li>
-                            <a class="action_button icon add open_in_lightbox" href="{% url 'party_add_competition' party.id %}">Add competition</a>
-                        </li>
-                    </ul>
+                    <div class="o-actions">
+                        {% url 'party_add_competition' party.id as party_add_competition_url %}
+                        {% button href=party_add_competition_url label="Add competition" lightbox=True icon="add" %}
+                    </div>
                 {% endif %}
             </div>
         </div>

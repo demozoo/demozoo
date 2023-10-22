@@ -67,7 +67,8 @@
         }
 
         &.hide_edit_controls {
-            .edit_organiser, .add_organiser {
+            .edit_organiser,
+            .add_organiser {
                 display: none;
             }
 

@@ -123,6 +123,10 @@
         </header>
 
         <div class="site__content">
+            {% include "shared/messages.html" %}
+            {% block base_main %}{% endblock %}
+            <div style="clear: both;"></div>
+
             <!-- oh look! buttons! -->
             <h2>Buttons</h2>
             <hr />
@@ -141,23 +145,6 @@
                 {% button href="#" icon="edit" label="icon link reversed" reverse="true" %}
                 {% button href="#" icon="edit" label="disabled icon link reversed" disabled="true" reverse="true" %}
                 {% button href="#" icon="edit" label="reveal link reversed" reverse="true" variant="reveal"%}
-            </div>
-
-            <h2>Small buttons</h2>
-            <hr />
-            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block: 0 2em;">
-                {% button icon="edit" size="small" %}
-                {% button label="text button" size="small" %}
-                {% button icon="edit" label="icon button" size="small" %}
-                {% button icon="edit" label="disabled icon button" disabled="true" size="small" %}
-                {% button icon="edit" label="reveal button" variant="reveal" size="small" %}
-                {% button href="#" label="link button with text" size="small" %}
-                {% button href="#" icon="edit" label="icon link" size="small" %}
-                {% button href="#" icon="edit" label="disabled icon link" disabled="true" size="small" %}
-                {% button href="#" icon="edit" label="reveal link" variant="reveal"  size="small"%}
-                {% button href="#" icon="edit" label="icon link reversed" reverse="true" size="small" %}
-                {% button href="#" icon="edit" label="disabled icon link reversed" disabled="true" reverse="true" size="small" %}
-                {% button href="#" icon="edit" label="reveal link reversed" reverse="true" variant="reveal" size="small" %}
             </div>
 
             <h2>Large buttons</h2>
@@ -189,10 +176,6 @@
                 {% button label="tertiary text button" level="tertiary" %}
             </div>
             <!-- look away! -->
-
-            {% include "shared/messages.html" %}
-            {% block base_main %}{% endblock %}
-            <div style="clear: both;"></div>
         </div>
 
         <footer>

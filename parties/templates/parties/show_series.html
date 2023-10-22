@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% load static demoscene_tags compress %}
-{% load safe_markdown %}
-
+{% load static demoscene_tags compress ui_tags safe_markdown %}
 
 {% block html_title %}{{ party_series.name }} - Demozoo{% endblock %}
 
@@ -19,11 +17,10 @@
         <div class="signpost">Party</div>
 
         {% if prompt_to_edit %}
-            <ul class="actions">
-                <li>
-                    <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit party details">Edit</a>
-                </li>
-            </ul>
+            <div class="o-actions">
+                {% url 'party_edit_series' party_series.id as party_edit_series_url %}
+                {% button href=party_edit_series_url lightbox=True icon="edit" label="Edit party details" %}
+            </div>
         {% endif %}
 
         <div class="focus_title party_name">
@@ -42,11 +39,10 @@
             <h3 class="panel__title">External links</h3>
 
             {% if can_edit %}
-                <ul class="actions">
-                    <li>
-                        <a href="{% url 'party_edit_series_external_links' party_series.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links">Edit</a>
-                    </li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'party_edit_series_external_links' party_series.id as party_edit_series_external_links_url %}
+                    {% button href=party_edit_series_external_links_url icon="edit" label="Edit" focus=True lightbox=True title="Edit external links" %}
+                </div>
             {% endif %}
 
             <ul class="external_links">
@@ -60,9 +56,10 @@
     {% if party_series.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
-                <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
-                </ul>
+                <div class="actions">
+                    {% url 'party_edit_series_notes' party_series.id as party_edit_series_url %}
+                    {% button href=party_edit_series_url lightbox=True icon="edit" label="Edit notes" %}
+                </div>
             {% endif %}
             <div class="notes">
                 {{ party_series.notes|safe_markdown }}
@@ -71,9 +68,10 @@
     {% endif %}
 
     {% if can_edit %}
-        <ul class="actions">
-            <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a></li>
-        </ul>
+        <div class="o-actions">
+            <!-- todo: bring this into the new button component fold -->
+            <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a>
+        </div>
     {% endif %}
     <div style="clear: both;"></div>
 
