@@ -7,6 +7,7 @@ from django.test.utils import captured_stdout
 from mock import patch
 
 from demoscene.tests.utils import MediaTestMixin
+from demoscene.models import Nick
 from parties.models import Party
 
 
@@ -129,6 +130,30 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
             "Party mismatch! Found Forever 2e3, but data looks like Revision 2011",
             stdout.getvalue()
         )
+
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_exception_raised_on_duplicate_nicks(self, run, mkdir, exists, glob):
+        Nick.objects.get(name="Shingebis").variants.create(name="gasman")
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2011_shader_showdown_revision.json',
+        ]
+
+        with self.assertRaisesRegex(
+            Exception,
+            "Multiple nicks found for gasman \(Gasman\)"
+        ):
+            with captured_stdout() as stdout:
+                call_command('fetch_tournaments')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
+        glob.assert_called_once_with('*.json')
 
     @patch.object(Path, 'glob')
     @patch.object(Path, 'exists')
