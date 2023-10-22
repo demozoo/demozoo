@@ -3,7 +3,7 @@ import re
 
 from demoscene.models import Nick, Releaser
 from parties.models import Party
-from tournaments.models import Tournament
+from tournaments.models import Entry, Tournament
 
 
 PARTY_SERIES_ALIASES = {
@@ -204,13 +204,19 @@ def load_phase_data(phase, phase_data, media_path):
         for position, entry_data in enumerate(entries_data):
             nick_id, name = find_nick_from_handle_data(entry_data['handle'])
 
-            phase.entries.create(
+            entry = Entry(
+                phase=phase,
                 position=position,
                 nick_id=nick_id,
                 name=name,
                 ranking=entry_data['rank'] or '',
                 score=entry_data.get('points') or '',
             )
+            screenshot_filename = entry_data.get('preview_image')
+            if screenshot_filename:
+                screenshot_path = str(media_path / screenshot_filename)
+                entry.set_screenshot(screenshot_path)
+            entry.save()
 
     else:
         for i, entry_data in enumerate(entries_data):

@@ -49,6 +49,9 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         self.assertFalse(party.organisers.filter(releaser__name='LaesQ').exists())
         # nick doesn't match
         self.assertFalse(party.organisers.filter(releaser__name='Abyss').exists())
+        gasman_entry = phase.entries.get(nick__name='Gasman')
+        self.assertEqual(gasman_entry.ranking, '1')
+        self.assertEqual(gasman_entry.original_image_sha1, "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5")
 
         party = Party.objects.get(name="Forever 2e3")
         self.assertEqual(party.tournaments.count(), 1)
@@ -188,3 +191,6 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         )
         self.assertEqual(tournament.phases.count(), 1)
         self.assertEqual(tournament.phases.first(), phase)
+        gasman_entry = phase.entries.get(name='fake gasman')
+        self.assertEqual(gasman_entry.ranking, '1')
+        self.assertEqual(gasman_entry.original_image_sha1, "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5")
