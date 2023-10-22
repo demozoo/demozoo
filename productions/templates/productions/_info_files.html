@@ -1,11 +1,11 @@
+{% load ui_tags %}
 <div class="panel editable_chunk info_files_panel">
     <h3 class="panel__title">Info file{{ info_files|length|pluralize }}</h3>
     {% if can_edit %}
-        <ul class="actions">
-            <li>
-                <a href="{% url 'production_edit_info_files' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit info files" rel="nofollow">Edit</a>
-            </li>
-        </ul>
+        <div class="o-actions">
+            {% url 'production_edit_info_files' production.id as info_files_edit_url %}
+            {% button href=info_files_edit_url lightbox=True icon="edit" label="Edit" title="Edit info files" %}
+        </div>
     {% endif %}
     <ul class="info_files">
         {% for file in info_files %}

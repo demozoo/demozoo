@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags compress %}
+{% load demoscene_tags production_tags ui_tags compress %}
 
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -168,8 +168,9 @@
     {% include "comments/_comments.html" with commentable=production edit_action='edit_production_comment' delete_action='delete_production_comment' no_comments_message='Be the first to comment on this production...' add_action='add_production_comment' %}
 
     {% if request.user.is_staff and site_is_writeable %}
-        <ul class="maintenance_actions">
-            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'delete_production' production.id as delete_production_url %}
+            {% button href=delete_production_url icon="delete" label="Delete production" lightbox=True theme="warning" %}
+        </div>
     {% endif %}
 {% endblock %}
