@@ -1765,7 +1765,8 @@ livecode = Site("Livecode", url="https://livecode.demozoo.org/")
 
 class LivecodeDemozooEvent(UrlPattern):
     site = livecode
-    pattern = '/event/<slug>.html'
+    pattern = '/serie/<str>.html'
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1824,12 +1825,12 @@ PARTY_LINK_TYPES = [
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
-    TikTokUser, WaybackMachinePage, LivecodeDemozooEvent, BaseUrl,
+    TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries, TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
-    FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount,
+    FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount, LivecodeDemozooEvent,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
