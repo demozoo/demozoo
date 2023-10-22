@@ -26,34 +26,12 @@ ROLES_LOOKUP = {
 
 
 def find_party_from_tournament_data(tournament_data):
-    start_date = datetime.fromisoformat(tournament_data['started'])
+    try:
+        party_id = int(tournament_data.get('demozoo_party_id') or '')
+    except ValueError:
+        return None
 
-    # get a list of party series names to try (case-insensitively),
-    # starting with the actual name given
-    original_name = tournament_data['title'].lower()
-    series_names = [original_name]
-
-    # strip off typical 'noise' words, 'party' and 'online'
-    if original_name.endswith(' party') or original_name.endswith(' online'):
-        series_names.append(re.sub(r' (online|party)$', '', original_name))
-
-    # look for aliases in PARTY_SERIES_ALIASES
-    for name in series_names:
-        try:
-            series_names.append(PARTY_SERIES_ALIASES[name])
-        except KeyError:
-            pass
-
-    for series_name in series_names:
-        try:
-            return Party.objects.get(
-                party_series__name__iexact=series_name,
-                start_date_date=start_date
-            )
-        except Party.DoesNotExist:
-            pass
-
-    return None
+    return Party.objects.get(id=party_id)
 
 
 def find_nick_from_handle_data(handle_data):
