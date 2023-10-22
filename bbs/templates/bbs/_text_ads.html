@@ -3,7 +3,7 @@
 <div class="panel editable_chunk text_ads_panel">
     <h3 class="panel__title">Text ads</h3>
     {% if can_edit %}
-        <div class="actions">
+        <div class="o-actions">
             {% url 'bbs_edit_text_ads' bbs.id as edit_text_ads_url %}
             {% button href=edit_text_ads_url icon="edit" label="Edit" lightbox=True title="Edit text ads" %}
         </div>
