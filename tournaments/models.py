@@ -96,6 +96,7 @@ ROLES = [
     ('commentary', 'Commentary'),
     ('dj_set', 'DJ set'),
     ('live_music', 'Live music'),
+    ('vj', 'VJ'),
 ]
 
 

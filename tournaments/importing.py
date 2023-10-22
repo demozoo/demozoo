@@ -19,9 +19,12 @@ PARTY_SERIES_ALIASES = {
 ROLES_LOOKUP = {
     'commentator': 'commentary',
     'commentators': 'commentary',
+    'commenta...': 'commentary',
     'dj set': 'dj_set',
+    'dj': 'dj_set',
     'live music': 'live_music',
     'live set': 'live_music',
+    'vj': 'vj',
 }
 
 
