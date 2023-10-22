@@ -6,14 +6,15 @@
             {% if icon and not label %} -iconOnly{% endif %}
             {% if label and not icon %} -labelOnly{% endif %}
             {% if size %} -{{ size }}{% endif %}
-            {% if theme %}} t-{{ theme }}{% endif %}
+            {% if theme %} t-{{ theme }}{% endif %}
             {% if variant %} -{{ variant }}{% endif %}"
-       {% if lightbox %}data-lightbox{% endif %}
-       {% if lightbox and focus %}data-lightbox-focus{% endif %}
-       {% if disabled and not href %}disabled{% endif %}
-       {% if disabled and href %}data-disabled{% endif %}
-       href="{{ href }}"
-       {% if target %}target="{{ target }}"{% if target == "_blank" %} rel="noopener"{% endif %}{% endif %}
+        {% if lightbox %}data-lightbox{% endif %}
+        {% if lightbox and focus %}data-lightbox-focus{% endif %}
+        {% if disabled and not href %}disabled{% endif %}
+        {% if disabled and href %}data-disabled{% endif %}
+        href="{{ href }}"
+        {% if target %}target="{{ target }}"{% if target == "_blank" %} rel="noopener"{% endif %}{% endif %}
+        {% if title %}title="{{ title }}"{% endif %}
     >
         {% if icon %}<span class="m-button__icon">{% include "./icon.html" with icon=icon %}</span>{% endif %}
         {% if label %}<span class="m-button__label">{{ label }}</span>{% endif %}

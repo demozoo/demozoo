@@ -12,7 +12,7 @@ function applyGlobalBehaviours(context) {
         }
         const focus = $(this).attr('data-lightbox-focus');
         console.log(focus);
-        Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': $(this).data('focusEmptyInput')});
+        Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focus});
         e.preventDefault();
     });
 
