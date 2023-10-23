@@ -68,6 +68,13 @@ class Phase(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    @property
+    def party_scoped_name(self):
+        if self.name:
+            return "%s %s" % (self.tournament.name, self.name)
+        else:
+            return "%s %s" % (self.tournament.party.name, self.tournament.name)
+
 
 class PhaseExternalLink(ExternalLink):
     phase = models.ForeignKey(Phase, related_name='external_links', on_delete=models.CASCADE)
@@ -75,10 +82,7 @@ class PhaseExternalLink(ExternalLink):
 
     @property
     def subject(self):
-        if self.phase.name:
-            return "%s %s" % (self.phase.tournament.name, self.phase.name)
-        else:
-            return "%s %s" % (self.phase.tournament.party.name, self.phase.tournament.name)
+        return self.phase.party_scoped_name
 
     class Meta:
         unique_together = (
@@ -96,6 +100,7 @@ class Entry(ThumbnailMixin, models.Model):
     ranking = models.CharField(max_length=32, blank=True)
     position = models.IntegerField()
     score = models.CharField(max_length=32, blank=True)
+    source_file = models.CharField(max_length=255, blank=True)
 
     thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
     thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
@@ -105,8 +110,12 @@ class Entry(ThumbnailMixin, models.Model):
     class Meta:
         ordering = ['position']
 
-    def __str__(self) -> str:
+    @property
+    def author_name(self):
         return self.nick.name if self.nick else self.name
+
+    def __str__(self) -> str:
+        return self.author_name
 
     def set_screenshot(self, filename):
         f = open(filename, 'rb')
@@ -125,6 +134,22 @@ class Entry(ThumbnailMixin, models.Model):
         f.close()
         return True
 
+    @property
+    def source_code_url(self):
+        if self.source_file:
+            return "https://livecode.demozoo.org%s" % self.source_file
+
+    @property
+    def party_scoped_name(self):
+        if self.phase.name:
+            return "%s's %s %s entry" % (
+                self.author_name, self.phase.tournament.name, self.phase.name
+            )
+        else:
+            return "%s's %s entry" % (
+                self.author_name, self.phase.tournament.name
+            )
+
 
 class EntryExternalLink(ExternalLink):
     entry = models.ForeignKey(Entry, related_name='external_links', on_delete=models.CASCADE)
@@ -132,14 +157,7 @@ class EntryExternalLink(ExternalLink):
 
     @property
     def subject(self):
-        if self.entry.phase.name:
-            return "%s's %s %s entry" % (
-                str(self.entry), self.entry.phase.tournament.name, self.entry.phase.name
-            )
-        else:
-            return "%s's %s entry" % (
-                str(self.entry), self.entry.phase.tournament.name
-            )
+        return self.entry.party_scoped_name
 
     class Meta:
         unique_together = (

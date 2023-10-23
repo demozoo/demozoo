@@ -1,4 +1,4 @@
-{% load demoscene_tags %}
+{% load demoscene_tags static %}
 <table class="table" summary="">
     <colgroup>
         {% if phase.has_rankings %}<col class="col--ranking"/>{% endif %}
@@ -26,8 +26,11 @@
                         {% else %}
                             {{ entry.name }}
                         {% endif %}
-                        {% if entry.external_links.all %}
+                        {% if entry.source_code_url or entry.external_links.all %}
                             <ul class="external_links">
+                                {% if entry.source_code_url %}
+                                    <li><a href="{{ entry.source_code_url }}"><img src="{% static "images/icons/disk.png" %}" width="16" height="16" alt="Source code" title="Download source code for {{ entry.party_scoped_name }}"></a></li>
+                                {% endif %}
                                 {% for link in entry.external_links.all %}
                                     <li>{{ link.html_icon_link|safe }}</li>
                                 {% endfor %}
