@@ -80,10 +80,11 @@ class Site:
 
     def get_icon_link_html(self, url, subject):
         return format_html(
-            '<a href="{url}" title="{title}"><img src="{icon_path}" width="16" height="16"></a>',
+            '<a href="{url}" title="{title}"><img src="{icon_path}" width="16" height="16" alt="{alt}"></a>',
             url=url,
             icon_path=static(self.icon_path),
             title=(self.title_format % subject),
+            alt=self.long_name,
         )
 
 

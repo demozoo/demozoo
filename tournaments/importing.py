@@ -242,6 +242,11 @@ def load_phase_data(phase, phase_data, media_path):
                 entry.score = score
                 has_changed = True
 
+            source_file = entry_data.get('source_file') or ''
+            if source_file != entry.source_file:
+                entry.source_file = source_file
+                has_changed = True
+
             screenshot_filename = entry_data.get('preview_image')
             if screenshot_filename:
                 screenshot_path = str(media_path / screenshot_filename)
