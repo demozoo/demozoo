@@ -707,8 +707,9 @@ class ProductionLink(ExternalLink):
             from productions.tasks import fetch_production_link_embed_data
             fetch_production_link_embed_data.delay(self.pk)
 
-    def html_link(self):
-        return self.link.as_html(self.production.title)
+    @property
+    def subject(self):
+        return self.production.title
 
     def html_link_class(self):
         return self.link.html_link_class

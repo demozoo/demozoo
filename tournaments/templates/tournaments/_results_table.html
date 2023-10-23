@@ -26,6 +26,13 @@
                         {% else %}
                             {{ entry.name }}
                         {% endif %}
+                        {% if entry.external_links.all %}
+                            <ul class="external_links">
+                                {% for link in entry.external_links.all %}
+                                    <li>{{ link.html_icon_link|safe }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                     </div>
                 </td>
                 <td></td>

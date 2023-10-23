@@ -195,8 +195,9 @@ class BBSExternalLink(ExternalLink):
         help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
     )
 
-    def html_link(self):
-        return self.link.as_html(self.bbs.name)
+    @property
+    def subject(self):
+        return self.bbs.name
 
     class Meta:
         unique_together = (

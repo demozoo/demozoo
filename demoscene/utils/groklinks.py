@@ -78,6 +78,14 @@ class Site:
             label=self.name,
         )
 
+    def get_icon_link_html(self, url, subject):
+        return format_html(
+            '<a href="{url}" title="{title}"><img src="{icon_path}" width="16" height="16"></a>',
+            url=url,
+            icon_path=static(self.icon_path),
+            title=(self.title_format % subject),
+        )
+
 
 class AbstractBaseUrl():
     def __init__(self, param):
@@ -113,6 +121,9 @@ class AbstractBaseUrl():
 
     def as_html(self, subject):
         return self.site.get_link_html(str(self), subject)
+
+    def as_icon_link(self, subject):
+        return self.site.get_icon_link_html(str(self), subject)
 
     @property
     def download_link_label(self):
@@ -1839,6 +1850,10 @@ BBS_LINK_TYPES = [
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry, InstagramAccount,
     WaybackMachinePage, BaseUrl
+]
+
+TOURNAMENT_LINK_TYPES = [
+    YoutubeVideo, VimeoVideo, ShadertoyShader, BaseUrl
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing

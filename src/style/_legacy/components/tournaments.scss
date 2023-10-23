@@ -13,6 +13,19 @@
         margin-bottom: 1em;
     }
 
+    .result ul.external_links {
+        display: inline;
+
+        a {
+            margin: 0;
+            padding: 0 3px;
+
+            img {
+                vertical-align: text-bottom;
+            }
+        }
+    }
+
     ul.staff {
         display: inline;
 
