@@ -137,7 +137,10 @@ class Entry(ThumbnailMixin, models.Model):
     @property
     def source_code_url(self):
         if self.source_file:
-            return "https://livecode.demozoo.org%s" % self.source_file
+            if self.source_file.startswith('/'):
+                return "https://livecode.demozoo.org%s" % self.source_file
+            else:
+                return self.source_file
 
     @property
     def party_scoped_name(self):
