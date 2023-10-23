@@ -4,7 +4,8 @@ import re
 from django.db import models
 from django.utils.functional import cached_property
 
-from demoscene.models import Nick
+from demoscene.models import ExternalLink, Nick
+from demoscene.utils import groklinks
 from parties.models import Party
 from screenshots.models import PILConvertibleImage, ThumbnailMixin
 from screenshots.processing import upload_to_s3
@@ -33,6 +34,21 @@ class Tournament(models.Model):
         return 'https://livecode.demozoo.org/event/%s#mc' % html_file_name
 
 
+class TournamentExternalLink(ExternalLink):
+    tournament = models.ForeignKey(Tournament, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.TOURNAMENT_LINK_TYPES
+
+    @property
+    def subject(self):
+        return "%s %s" % (self.tournament.party.name, self.tournament.name)
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'tournament'),
+        )
+        ordering = ['link_class']
+
+
 class Phase(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='phases')
     name = models.CharField(max_length=255, blank=True)
@@ -51,6 +67,24 @@ class Phase(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class PhaseExternalLink(ExternalLink):
+    phase = models.ForeignKey(Phase, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.TOURNAMENT_LINK_TYPES
+
+    @property
+    def subject(self):
+        if self.phase.name:
+            return "%s %s" % (self.phase.tournament.name, self.phase.name)
+        else:
+            return "%s %s" % (self.phase.tournament.party.name, self.phase.tournament.name)
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'phase'),
+        )
+        ordering = ['link_class']
 
 
 class Entry(ThumbnailMixin, models.Model):
@@ -90,6 +124,28 @@ class Entry(ThumbnailMixin, models.Model):
         self.thumbnail_width, self.thumbnail_height = thumb_size
         f.close()
         return True
+
+
+class EntryExternalLink(ExternalLink):
+    entry = models.ForeignKey(Entry, related_name='external_links', on_delete=models.CASCADE)
+    link_types = groklinks.TOURNAMENT_LINK_TYPES
+
+    @property
+    def subject(self):
+        if self.entry.phase.name:
+            return "%s's %s %s entry" % (
+                str(self.entry), self.entry.phase.tournament.name, self.entry.phase.name
+            )
+        else:
+            return "%s's %s entry" % (
+                str(self.entry), self.entry.phase.tournament.name
+            )
+
+    class Meta:
+        unique_together = (
+            ('link_class', 'parameter', 'entry'),
+        )
+        ordering = ['link_class']
 
 
 ROLES = [

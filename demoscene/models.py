@@ -610,6 +610,12 @@ class ExternalLink(models.Model):
             self.parameter = None
     url = property(_get_url, _set_url)
 
+    def html_link(self):
+        return self.link.as_html(self.subject)
+
+    def html_icon_link(self):
+        return self.link.as_icon_link(self.subject)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.link_class:
@@ -634,8 +640,9 @@ class ReleaserExternalLink(ExternalLink):
         help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
     )
 
-    def html_link(self):
-        return self.link.as_html(self.releaser.name)
+    @property
+    def subject(self):
+        return self.releaser.name
 
     class Meta:
         unique_together = (

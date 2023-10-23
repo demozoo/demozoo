@@ -1,9 +1,8 @@
-from datetime import datetime
-import re
+from django.db import IntegrityError
 
 from demoscene.models import Nick, Releaser
 from parties.models import Party
-from tournaments.models import Entry, Tournament
+from tournaments.models import Entry, EntryExternalLink, PhaseExternalLink, Tournament, TournamentExternalLink
 
 
 PARTY_SERIES_ALIASES = {
@@ -116,6 +115,17 @@ def import_tournament(filename, tournament_data, media_path):
             tournament.name = tournament_data['type']
             tournament.save()
 
+        video_url = tournament_data.get('vod')
+        if video_url:
+            link = TournamentExternalLink(
+                tournament=tournament
+            )
+            link.url = video_url
+            try:
+                link.save()
+            except IntegrityError:
+                pass
+
         # if there are any discrepancies in phase counts or titles,
         # delete and reimport them
         phases = list(tournament.phases.all())
@@ -180,6 +190,17 @@ def load_phase_data(phase, phase_data, media_path):
         or any(entry.position != i for i, entry in enumerate(entries))
     )
 
+    video_url = phase_data.get('vod')
+    if video_url:
+        link = PhaseExternalLink(
+            phase=phase
+        )
+        link.url = video_url
+        try:
+            link.save()
+        except IntegrityError:
+            pass
+
     if create_entries:
         phase.entries.all().delete()
         for position, entry_data in enumerate(entries_data):
@@ -198,6 +219,7 @@ def load_phase_data(phase, phase_data, media_path):
                 screenshot_path = str(media_path / screenshot_filename)
                 entry.set_screenshot(screenshot_path)
             entry.save()
+            load_entry_external_links(entry, entry_data)
 
     else:
         for i, entry_data in enumerate(entries_data):
@@ -230,6 +252,8 @@ def load_phase_data(phase, phase_data, media_path):
                 print("\tupdating entry %s" % entry)
                 entry.save()
 
+            load_entry_external_links(entry, entry_data)
+
     staff_members = set()
     for staff_member_data in phase_data['staffs']:
         nick_id, name = find_nick_from_handle_data(staff_member_data['handle'])
@@ -247,3 +271,17 @@ def load_phase_data(phase, phase_data, media_path):
 
         for nick_id, name, role in staff_members:
             phase.staff.create(nick_id=nick_id, name=name, role=role)
+
+
+def load_entry_external_links(entry, entry_data):
+    for field in ['shadertoy_url', 'vod']:
+        url = entry_data.get(field)
+        if url:
+            link = EntryExternalLink(
+                entry=entry,
+            )
+            link.url = url
+            try:
+                link.save()
+            except IntegrityError:
+                pass
