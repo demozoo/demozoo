@@ -3,6 +3,7 @@ from itertools import groupby
 from django import template
 
 from productions.models import Screenshot
+from tournaments.models import Entry as TournamentEntry
 
 
 register = template.Library()
@@ -23,9 +24,10 @@ class ProductionCredit:
 
 class TournamentCredit:
     credit_type = 'tournament'
-    def __init__(self, tournament):
+    def __init__(self, tournament, screenshot=None):
         self.tournament = tournament
         self.date = tournament.party.start_date_date
+        self.screenshot = screenshot
 
 
 @register.inclusion_tag('shared/credited_production_listing.html', takes_context=True)
@@ -79,10 +81,13 @@ def combined_releases(context, releaser, include_tournaments=False):
 
     if include_tournaments:
         # Add tournament credits
-        credits += [
-            TournamentCredit(tournament)
-            for tournament in releaser.get_tournament_participations()
-        ]
+        tournaments = releaser.get_tournament_participations()
+        if tournaments:
+            tournament_screenshot_map = TournamentEntry.select_screenshots_for_releaser_id(releaser.id)
+            credits += [
+                TournamentCredit(tournament, tournament_screenshot_map.get(tournament.id))
+                for tournament in tournaments
+            ]
 
     credits.sort(
         key=lambda item: (item.date is None, item.date),
