@@ -1,0 +1,31 @@
+{% load demoscene_tags static %}
+<ul class="entries">
+    {% for entry in phase.entries.all %}
+        <li>
+            {% if entry.thumbnail_url %}
+                <img src="{{ entry.thumbnail_url }}" width="{{ entry.thumbnail_width }}" height="{{ entry.thumbnail_height }}" alt="">
+            {% endif %}
+
+            <div class="result__title">
+                {% if entry.ranking %}{{ entry.ranking }}.{% endif %}
+                {% if entry.nick %}
+                    <a href="{{ entry.nick.releaser.get_absolute_url }}">{{ entry.nick.name }}</a>
+                {% else %}
+                    {{ entry.name }}
+                {% endif %}
+                {% if entry.score %}- {{ entry.score }} points{% endif %}
+
+                {% if entry.source_code_url or entry.external_links.all %}
+                    <ul class="external_links">
+                        {% if entry.source_code_url %}
+                            <li><a href="{{ entry.source_code_url }}"><img src="{% static "images/icons/disk.png" %}" width="16" height="16" alt="Source code" title="Download source code for {{ entry.party_scoped_name }}"></a></li>
+                        {% endif %}
+                        {% for link in entry.external_links.all %}
+                            <li>{{ link.html_icon_link|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </li>
+    {% endfor %}
+</ul>

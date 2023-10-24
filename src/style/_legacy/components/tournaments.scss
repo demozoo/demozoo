@@ -48,4 +48,30 @@
             }
         }
     }
+
+    ul.entries {
+        margin-top: 10px;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 10px;
+        text-align: center;
+        > li {
+            width: 250px;
+            padding-bottom: 10px;
+            display: inline-block;
+            text-align: center;
+
+            ul.external_links {
+                display: inline;
+
+                a {
+                    margin: 0;
+                    padding: 0 3px;
+        
+                    img {
+                        vertical-align: text-bottom;
+                    }
+                }
+            }
+        }
+    }
 }

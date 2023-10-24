@@ -15,3 +15,9 @@ class TestModels(TestCase):
 
         entry = phase.entries.get(nick__name="Gasman")
         self.assertEqual(str(entry), "Gasman")
+
+    def test_has_rankings_and_scores(self):
+        tournament = Tournament.objects.get(name="Shader Showdown", party__name="Forever 2e3")
+        phase = tournament.phases.get(name="Final")
+        self.assertTrue(phase.has_rankings)
+        self.assertTrue(phase.has_scores)
