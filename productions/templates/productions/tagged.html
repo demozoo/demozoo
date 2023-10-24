@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% load safe_markdown compress demoscene_tags %}
+{% load safe_markdown compress demoscene_tags ui_tags %}
 
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
 {% block base_main %}
     {% if site_is_writeable %}
-        <ul class="actions">
-            <li><a href="{% url 'new_production' %}" class="action_button icon add open_in_lightbox">New production</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'new_production' as new_production_url %}
+            {% button href=new_prodiction_url icon="add" lightbox=True label="New production" %}
+        </div>
     {% endif %}
 
     <h2>Productions tagged '{{ tag.name }}'</h2>

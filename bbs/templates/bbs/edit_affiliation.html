@@ -32,6 +32,7 @@
     </form>
 
     <p>
-        <a href="{% url 'bbs_remove_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox">Remove affiliation</a>
+        {% url 'bbs_remove_affiliation' bbs.id affiliation.id as bbs_remove_affiliation_url %}
+        {% button href=bbs_remove_affiliation_url lightbox=True level="tertiary" label="Remove affiliation" %}
     </p>
 {% endblock %}

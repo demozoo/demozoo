@@ -10,7 +10,7 @@
             <form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">
                 {% csrf_token %}
                 {{ tags_form.tags }}
-                {% button value="Update" %}
+                {% button label="Update" %}
             </form>
         {% endif %}
     </div>

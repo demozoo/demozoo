@@ -82,7 +82,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="path" value="{{ dir.path }}" />
                                     <input type="hidden" name="party_id" value="{{ dir.suggested_party_id }}" />
-                                    {% button value="Accept suggestion" %}
+                                    {% button label="Accept suggestion" %}
                                 </form>
                             {% else %}
                                 <form class="create_party" action="{% url 'new_party' %}" method="GET">
@@ -91,7 +91,7 @@
                                         <input type="hidden" name="name" value="{{ dir.suggested_series_name }} {{ dir.party_year }}" />
                                         <input type="hidden" name="party_series_name" value="{{ dir.suggested_series_name }}" />
                                     {% endif %}
-                                    {% button value="Create" %}
+                                    {% button label="Create" %}
                                 </form>
                             {% endif %}
                         {% endif %}

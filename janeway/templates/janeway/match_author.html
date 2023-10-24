@@ -29,7 +29,7 @@
             <form action="{% url 'janeway_import_all_author_productions' %}" method="POST" style="display: inline">
                 <input type="hidden" name="releaser_id" value="{{ releaser.id }}">
                 {% csrf_token %}
-                {% button value="Import All" %}
+                {% button label="Import All" %}
             </form>
         </li>
         {% for id, title, url, supertype in unmatched_janeway_prods %}

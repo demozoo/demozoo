@@ -49,9 +49,10 @@
     {% if request.user.is_staff %}
         {% for blurb in blurbs %}
             <div class="blurb">
-                <ul class="actions">
-                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit open_in_lightbox">Edit</a></li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'production_edit_blurb' production.id blurb.id as production_edit_blurb_url %}
+                    {% button href=production_edit_blurb_url icon="edit" lightbox=True label="Edit" %}
+                </div>
                 <p>{{ blurb.body }}</p>
             </div>
         {% endfor %}

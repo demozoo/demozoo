@@ -51,7 +51,7 @@
                                 <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
                                     <input type="hidden" name="member_id" value="{{ record.member_id }}" />
                                     <input type="hidden" name="group_id" value="{{ record.group_id }}" />
-                                    {% button value="Add" %}
+                                    {% button label="Add" %}
                                 </form>
                             {% endif %}
                         </td>

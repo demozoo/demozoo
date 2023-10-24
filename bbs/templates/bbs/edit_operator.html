@@ -32,6 +32,7 @@
     </form>
 
     <p>
-        <a href="{% url 'bbs_remove_operator' bbs.id operator.id %}" class="open_in_lightbox">Remove staff member</a>
+        {% url 'bbs_remove_operator' bbs.id operator.id as bbs_remove_operator_url %}
+        {% button href=bbs_remove_operator_url label="Remove staff member" lightbox=True %}
     </p>
 {% endblock %}
