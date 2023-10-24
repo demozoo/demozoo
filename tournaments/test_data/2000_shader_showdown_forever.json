@@ -3,7 +3,7 @@
     "started": "2000-03-17",
     "date": "17 - 19 March 2000",
     "type": "Shader Showdown",
-    "vod": null,
+    "vod": "https://www.youtube.com/watch?v=zNTaVTMoNTk",
     "software_used": null,
     "phases": [
         {
@@ -18,7 +18,7 @@
                         "name": "fake gasman",
                         "demozoo_id": 1
                     },
-                    "shadertoy_url": null,
+                    "shadertoy_url": "https://www.shadertoy.com/view/Ms2SDc",
                     "preview_image": "revision_2011/03-gasman.jpg",
                     "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl"
                 },

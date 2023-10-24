@@ -62,7 +62,16 @@ class TestShowParty(TestCase):
         party = Party.objects.get(name='Forever 2e3')
         response = self.client.get('/parties/%d/' % party.id)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Shader Showdown")
+        self.assertContains(response, "Gasman&#x27;s Shader Showdown Final entry on Shadertoy")
+
+    def test_get_without_phase_name(self):
+        party = Party.objects.get(name='Forever 2e3')
+        phase = party.tournaments.first().phases.first()
+        phase.name = ''
+        phase.save()
+        response = self.client.get('/parties/%d/' % party.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Gasman&#x27;s Shader Showdown entry on Shadertoy")
 
     def test_organisers_panel(self):
         party = Party.objects.get(name='Revision 2011')

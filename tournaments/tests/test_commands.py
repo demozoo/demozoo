@@ -145,7 +145,7 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
 
         with self.assertRaisesRegex(
             Exception,
-            "Multiple nicks found for gasman \(Gasman\)"
+            r"Multiple nicks found for gasman \(Gasman\)"
         ):
             with captured_stdout() as stdout:
                 call_command('fetch_tournaments')
