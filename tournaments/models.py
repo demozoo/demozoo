@@ -1,5 +1,7 @@
 import hashlib
+import random
 import re
+from collections import defaultdict
 
 from django.db import models
 from django.utils.functional import cached_property
@@ -153,6 +155,33 @@ class Entry(ThumbnailMixin, models.Model):
                 self.author_name, self.phase.tournament.name
             )
 
+    @staticmethod
+    def select_screenshots_for_releaser_id(releaser_id):
+        """
+        Given a releaser id, return a dict where the keys are IDs of tournaments that the
+        releaser has at least one entry with a screenshot in, and the value is a randomly-chosen
+        entry with a screenshot in that tournament.
+        """
+        tournament_and_entry_ids = (
+            Entry.objects.exclude(thumbnail_url='')
+            .filter(nick__releaser_id=releaser_id)
+            .select_related('phase')
+            .values_list('phase__tournament_id', 'id')
+        )
+
+        entries_by_tournament_id = defaultdict(list)
+        for (tournament_id, entry_id) in tournament_and_entry_ids:
+            entries_by_tournament_id[tournament_id].append(entry_id)
+
+        chosen_entry_ids = [
+            random.choice(entry_id_set)
+            for entry_id_set in entries_by_tournament_id.values()
+        ]
+
+        return {
+            entry.phase.tournament_id: entry
+            for entry in Entry.objects.filter(id__in=chosen_entry_ids).select_related('phase')
+        }
 
 class EntryExternalLink(ExternalLink):
     entry = models.ForeignKey(Entry, related_name='external_links', on_delete=models.CASCADE)

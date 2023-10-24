@@ -606,7 +606,10 @@
             "position": 0,
             "ranking": 2,
             "score": "50",
-            "source_file": "/shader_file_sources/2000_z80_showdown_forever/final_gasman.asm"
+            "source_file": "/shader_file_sources/2000_z80_showdown_forever/final_gasman.asm",
+            "thumbnail_url": "https://files.zxdemo.org/extra/2000_z80_showdown_forever/final_gasman.png",
+            "thumbnail_width": 320,
+            "thumbnail_height": 200
         }
     },
     {
