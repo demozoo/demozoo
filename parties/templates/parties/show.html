@@ -356,7 +356,11 @@
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
-                                {% include "tournaments/_results_table.html" %}
+                                {% if phase.entries.all|length > 4 %}
+                                    {% include "tournaments/_results_table.html" %}
+                                {% else %}
+                                    {% include "tournaments/_results_bar.html" %}
+                                {% endif %}
                             {% endfor %}
                         {% endwith %}
                     </section>
