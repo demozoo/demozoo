@@ -1,4 +1,4 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from demoscene.models import Nick, Releaser
 from parties.models import Party
@@ -115,17 +115,6 @@ def import_tournament(filename, tournament_data, media_path):
             tournament.name = tournament_data['type']
             tournament.save()
 
-        video_url = tournament_data.get('vod')
-        if video_url:
-            link = TournamentExternalLink(
-                tournament=tournament
-            )
-            link.url = video_url
-            try:
-                link.save()
-            except IntegrityError:
-                pass
-
         # if there are any discrepancies in phase counts or titles,
         # delete and reimport them
         phases = list(tournament.phases.all())
@@ -157,6 +146,18 @@ def import_tournament(filename, tournament_data, media_path):
         # names in the file, and have consecutive 0-based positions
         for phase in phases:
             load_phase_data(phase, phases_data[phase.position], media_path)
+
+    video_url = tournament_data.get('vod')
+    if video_url:
+        link = TournamentExternalLink(
+            tournament=tournament
+        )
+        link.url = video_url
+        try:
+            with transaction.atomic():
+                link.save()
+        except IntegrityError:
+            pass
 
     # Add organiser credit to party if there isn't one already
     for staff_member_data in tournament_data['staffs']:
@@ -197,7 +198,8 @@ def load_phase_data(phase, phase_data, media_path):
         )
         link.url = video_url
         try:
-            link.save()
+            with transaction.atomic():
+                link.save()
         except IntegrityError:
             pass
 
@@ -287,6 +289,7 @@ def load_entry_external_links(entry, entry_data):
             )
             link.url = url
             try:
-                link.save()
+                with transaction.atomic():
+                    link.save()
             except IntegrityError:
                 pass
