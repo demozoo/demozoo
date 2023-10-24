@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load compress %}
+{% load compress ui_tags %}
 
 {% block html_title %}
     {% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
@@ -23,7 +23,7 @@
         {% block after_form_fields %}{% endblock %}
 
         <div class="field">
-            <input type="submit" />
+            {% button label="submit" %}
         </div>
     </form>
     {% if delete_url and delete_link_text %}

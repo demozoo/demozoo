@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load compress %}
+{% load compress ui_tags %}
 
 
 {% block html_title %}Removing {{ scener.name }} as a member of {{ group.name }} - Demozoo{% endblock %}
@@ -35,7 +35,7 @@
             <p>Incorrect membership entries often creep in because a party results file mentioned "{{ scener.name }} / {{ group.name }}" at some point. After you've made this fix, it's worth looking out for things in the productions list that need fixing up too.</p>
         </div>
 
-        <input type="submit" value="Remove membership">
+        {% button value="Remove membership" %}
 
     </form>
 {% endblock %}

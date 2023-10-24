@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-
+{% load ui_tags %}
 
 {% block html_title %}New competition for {{ party.name }} - Demozoo{% endblock %}
 
@@ -24,7 +24,7 @@
         {% endfor %}
         
         <div class="field">
-            <input type="submit" value="Create" />
+            {% button value="Create" %}
         </div>
     </form>
 {% endblock %}

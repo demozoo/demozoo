@@ -1,6 +1,6 @@
 {% extends base_template_with_ajax_option %}
 {% load json_filter %}
-{% load demoscene_tags %}
+{% load demoscene_tags ui_tags %}
 
 
 {% block html_title %}New party - Demozoo{% endblock %}
@@ -41,7 +41,7 @@
             {{ field }}
         {% endfor %}
         <div class="field">
-            <input type="submit" value="Add new party"/>
+            {% button value="Add new party" %}
         </div>
     </form>
     <script>/* <![CDATA[ */

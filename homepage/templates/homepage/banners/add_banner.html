@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load compress %}
+
+{% load compress ui_tags %}
 
 {% block html_title %}Add banner - Demozoo{% endblock %}
 
@@ -19,7 +20,7 @@
         {% csrf_token %}
         {% include "homepage/banners/_banner_form.html" %}
         <div class="field">
-            <input type="submit" value="Add banner" />
+            {% button value="Add banner" %}
         </div>
     </form>
 {% endblock %}

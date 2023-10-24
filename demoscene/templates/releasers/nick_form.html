@@ -1,3 +1,5 @@
+{% load ui_tags %}
+
 {% if title %}
     <h2>{{ title }}</h2>
 {% endif %}
@@ -32,6 +34,6 @@
     {% endwith %}
     
     <div class="field">
-        <input type="submit" />
+        {% button value="Submit" %}
     </div>
 </form>

@@ -101,7 +101,7 @@
                                 {% block login_next_field %}
                                 <input type="hidden" name="next" value="{{ request.path }}">
                                 {% endblock %}
-                                <input type="submit" value="Log in" />
+                                {% button label="Log in" %}
                             </form>
                             <ul>
                                 <li><a href="{% url 'user_signup' %}">Register new account</a>

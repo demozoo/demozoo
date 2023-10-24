@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-
+{% load ui_tags %}
 
 {% block html_title %}Editing {{ organiser.releaser.name }} as organiser of {{ party.name }} - Demozoo{% endblock %}
 
@@ -27,7 +27,7 @@
         {% endfor %}
 
         <div class="field">
-            <input type="submit" value="Submit edit"/>
+            {% button value="Submit edit" %}
         </div>
     </form>
 

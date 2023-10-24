@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load ui_tags %}
 
 {% block html_title %}Edit social share image for {{ party.name }} - Demozoo{% endblock %}
 
@@ -39,7 +39,7 @@
         {% endwith %}
 
         <div class="field">
-            <input type="submit" value="Update" />
+            {% button value="Update" %}
         </div>
     </form>
 {% endblock %}

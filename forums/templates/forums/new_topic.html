@@ -1,6 +1,6 @@
 {% extends base_template_with_ajax_option %}
 
-{% load compress %}
+{% load compress ui_tags %}
 
 {% block html_title %}New topic - Demozoo{% endblock %}
 
@@ -18,7 +18,7 @@
             {% endfor %}
         </div>
         <div style="clear: both;">
-            <input type="submit" value="Create topic">
+            {% button value="Create topic" %}
         </div>
     </form>
 {% endblock %}

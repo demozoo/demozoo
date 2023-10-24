@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load spawning_formset compress %}
+{% load spawning_formset compress ui_tags %}
 
 
 {% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
@@ -26,7 +26,7 @@
         {% endspawningformset %}
 
         <div class="field">
-            <input type="submit" value="Update invitations"/>
+            {% button value="Update invitations" %}
         </div>
     </form>
 {% endblock %}

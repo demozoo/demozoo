@@ -1,6 +1,6 @@
 {% extends base_template_with_ajax_option %}
-{% load urlsub %}
 
+{% load urlsub ui_tags %}
 
 {% block html_title %}New music - Demozoo{% endblock %}
 
@@ -33,7 +33,7 @@
 
         {% include "shared/production_download_formset.html" %}
         <div class="field">
-            <input type="submit" Value="Add new music"/>
+            {% button value="Add new music" %}
         </div>
     </form>
 {% endblock %}

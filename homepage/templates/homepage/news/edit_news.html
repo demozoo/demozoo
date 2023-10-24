@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% load compress %}
+
+{% load compress ui_tags %}
 
 {% block html_title %}Edit news - Demozoo{% endblock %}
 
@@ -24,7 +25,7 @@
         {% csrf_token %}
         {% include "homepage/news/_news_form.html" %}
         <div class="field">
-            <input type="submit" value="Update" />
+            {% button value="Update" %}
         </div>
     </form>
 {% endblock %}

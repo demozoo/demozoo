@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags compress ui_tags %}
 
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
@@ -51,7 +51,7 @@
                                 <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
                                     <input type="hidden" name="member_id" value="{{ record.member_id }}" />
                                     <input type="hidden" name="group_id" value="{{ record.group_id }}" />
-                                    <input type="submit" value="Add" />
+                                    {% button value="Add" %}
                                 </form>
                             {% endif %}
                         </td>

@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load spawning_formset %}
+{% load spawning_formset ui_tags %}
 
 {% block html_title %}Editing {{ production.supertype }}: {{ production.title }} - Demozoo{% endblock %}
 
@@ -49,7 +49,7 @@
         {% endif %}
         
         <div class="field">
-            <input type="submit" />
+            {% button value="Submit" %}
         </div>
     </form>
 {% endblock %}

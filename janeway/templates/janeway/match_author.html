@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress demoscene_tags %}
+{% load compress demoscene_tags ui_tags %}
 
 
 {% block extra_js %}
@@ -29,7 +29,7 @@
             <form action="{% url 'janeway_import_all_author_productions' %}" method="POST" style="display: inline">
                 <input type="hidden" name="releaser_id" value="{{ releaser.id }}">
                 {% csrf_token %}
-                <input type="submit" value="Import all">
+                {% button value="Import All" %}
             </form>
         </li>
         {% for id, title, url, supertype in unmatched_janeway_prods %}

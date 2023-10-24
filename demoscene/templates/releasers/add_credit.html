@@ -1,6 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load compress %}
-
+{% load compress ui_tags %}
 
 {% block html_title %}Adding credit for {{ releaser.name }} - Demozoo{% endblock %}
 
@@ -30,7 +29,7 @@
         {% include "shared/credit_formset.html" %}
 
         <div class="field">
-            <input type="submit" value="Add credit"/>
+            {% button value="Add credit" %}
         </div>
     </form>
 {% endblock %}

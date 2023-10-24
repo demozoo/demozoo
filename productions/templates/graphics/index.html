@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% load compress demoscene_tags %}
 
+{% load compress demoscene_tags ui_tags %}
 
 {% block html_title %}Graphics - Demozoo{% endblock %}
 
@@ -23,7 +23,7 @@
         <ul class="fields">
             {{ form.as_ul }}
         </ul>
-        <input type="submit" value="Find graphics">
+        {% button value="Find graphics" %}
     </form>
 
     {% include "shared/production_reorder_links.html" %}
