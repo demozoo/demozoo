@@ -22,7 +22,6 @@
                     <div class="result__title">
                         {% if entry.nick %}
                             <a href="{{ entry.nick.releaser.get_absolute_url }}">{{ entry.nick.name }}</a>
-                            </li>
                         {% else %}
                             {{ entry.name }}
                         {% endif %}
