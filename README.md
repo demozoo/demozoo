@@ -40,6 +40,7 @@ The site will now be available at http://localhost:8000/.
 After installing [Docker Desktop](https://www.docker.com/products/docker-desktop), you can bring up Demozoo by typing the following:
 
 ```bash
+cp .docker/.env.example .docker/.env
 docker-compose up
 ```
 
