@@ -15,11 +15,10 @@
 {% endblock %}
 
 {% block base_main %}
-    <ul class="actions">
-        <li>
-            <a href="{% url 'delete_news' news_story.id %}" class="action_button icon delete open_in_lightbox" title="Delete this news story">Delete</a>
-        </li>
-    </ul>
+    <div class="o-actions">
+        {% url 'delete_news' news_story.id as delete_news_url %}
+        {% button href=delete_news_url lightbox=True title="Delete this news story" icon="delete" label="Delete" %}
+    </div>
     <h1>Edit news item</h1>
     <form action="{% url 'edit_news' news_story.id %}" class="entry_form" method="POST" enctype="multipart/form-data">
         {% csrf_token %}

@@ -1,4 +1,4 @@
-
+{% load ui_tags %}
 
 {% with commentable.get_comments as comments %}
     {% if comments or site_is_writeable %}
@@ -9,9 +9,11 @@
                     {% for comment in comments %}
                         <div class="comment" id="comment-{{ comment.id }}">
                             {% if request.user.is_staff and site_is_writeable %}
-                                <div class="admin_controls">
-                                    <a href="{% url edit_action commentable.id comment.id %}" class="open_in_lightbox">Edit</a>
-                                    | <a href="{% url delete_action commentable.id comment.id %}" class="open_in_lightbox">Delete</a>
+                                <div class="admin_controls o-actions -admin">
+                                    {% url edit_action commentable.id comment.id as edit_action_url %}
+                                    {% url delete_action commentable.id comment.id as delete_action_url %}
+                                    {% button href=edit_action_url label="Edit" lightbox=True %}
+                                    {% button href=Delete_action_url label="Delete" lightbox=True %}
                                 </div>
                             {% endif %}
                             <b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}

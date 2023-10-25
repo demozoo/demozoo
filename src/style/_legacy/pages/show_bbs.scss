@@ -42,16 +42,20 @@
     }
 
     .staff_panel {
+
         &.hide_edit_controls {
-            .edit_operator, .add_operator {
+            .edit_operator,
+            .add_operator {
                 display: none;
             }
         }
+
         &.editing {
             ul.staff li:hover {
                 background-color: #ddd;
             }
         }
+
         ul.actions {
             padding-right: 8px;
         }

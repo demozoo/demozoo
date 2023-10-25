@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% load demoscene_tags releaser_tags compress %}
-{% load safe_markdown %}
 
+{% load demoscene_tags releaser_tags compress ui_tags safe_markdown %}
 
 {% block html_title %}{{ scener.name_with_affiliations }} - Demozoo{% endblock %}
 
@@ -33,9 +32,8 @@
                     <li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' scener.id %}">Protected</a></li>
                 {% endif %}
                 {% if prompt_to_edit %}
-                    <li>
-                        <a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
-                    </li>
+                    {% url 'releaser_edit_primary_nick' scener.id as release_edit_primary_nick_url %}
+                    {% button href=release_edit_primary_nick_url icon="edit" label="Edit" title="Edit name" lightbox=True focus=True %}
                 {% endif %}
             </ul>
         {% endif %}
@@ -51,22 +49,22 @@
     </div>
 
     {% if alternative_nicks %}
-        <div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+        <div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing -editing{% endif %}{% endif %}">
             <h3 class="panel__title">Also known as</h3>
 
             <ul class="nicks">
                 {% for nick in alternative_nicks %}
                     <li>
-                        <b>{{ nick.name }}</b> {% nick_variants nick %}
+                        <strong>{{ nick.name }}</strong> {% nick_variants nick %}
                         {% if can_edit %}
-                            <a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox edit_nick">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
-                            </a>
+                            {% url 'releaser_edit_nick' scener.id nick.id as releaser_edit_nick_url %}
+                            {% button href=releaser_edit_nick_url lightbox=True icon="edit" level="tertiary" %}
                         {% endif %}
                     </li>
                 {% endfor %}
             </ul>
             {% if can_edit %}
+                {% url 'releaser_add_nick' scener.id as releaser_add_nick_url %}
                 <a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
             {% endif %}
         </div>
@@ -114,11 +112,10 @@
         <h3 class="panel__title">External links</h3>
 
         {% if can_edit %}
-            <ul class="actions">
-                <li>
-                    <a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
-                </li>
-            </ul>
+            <div class="o-actions">
+                {% url 'releaser_edit_external_links' scener.id as releaser_edit_external_links_url %}
+                {% button href=releaser_edit_external_links_url icon="edit" label="Edit" focus=True lightbox=True title="Edit external links" %}
+            </div>
         {% endif %}
         <ul class="external_links">
             {% for link in external_links %}

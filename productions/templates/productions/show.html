@@ -121,11 +121,10 @@
                 <h3 class="panel__title">Pack contents</h3>
 
                 {% if can_edit %}
-                    <ul class="actions">
-                        <li>
-                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents" rel="nofollow">Edit</a>
-                        </li>
-                    </ul>
+                    <div class="o-actions">
+                        {% url 'production_edit_pack_contents' production.id as production_edit_pack_contents_url %}
+                        {% button href=production_edit_pack_contents_url icon="edit" lightbox=True title="Edit pack contents" label="Edit" %}\
+                    </div>
                 {% endif %}
 
                 {% production_listing pack_members show_screenshots=1 %}
@@ -151,11 +150,10 @@
                 <h3 class="panel__title">Soundtrack</h3>
 
                 {% if can_edit %}
-                    <ul class="actions">
-                        <li>
-                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details" rel="nofollow">Edit</a>
-                        </li>
-                    </ul>
+                    <div class="o-actions">
+                        {% url 'production_edit_soundtracks' production.id as production_edit_soundtracks_url %}
+                        {% button href=production_edit_soundtracks_url label="Edit" title="Edit soundtrack details" icon="edit" lightbox=True %}
+                    </div>
                 {% endif %}
 
                 {% production_listing soundtracks %}
