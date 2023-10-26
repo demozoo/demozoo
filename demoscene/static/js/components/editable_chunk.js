@@ -10,7 +10,7 @@ function initEditToggle(context) {
     $('.edit_toggle', context).each(function() {
         var panel = $(this);
 
-        var actions = $('<ul class="actions"></ul>');
+        var actions = $('<div class="o-actions"></div>');
         var editButton = $('<a href="javascript:void(0);" class="action_button icon edit_chunk"></a>');
 
         function updateEditButtonState() {

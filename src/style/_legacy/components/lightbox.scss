@@ -20,9 +20,13 @@
     width: 620px;
     overflow: auto;
     border: 1px solid #444;
-    background-color: #EEE;
+    background-color: #fff;
     color: #333;
     padding: 12px;
+
+    .m-button.-lightboxClose {
+        float: right;
+    }
 }
 
 .media_lightbox_wrapper {
@@ -102,17 +106,10 @@
     background-color: #000;
 }
 
-a.lightbox_close {
-    float: right;
-    width: 16px;
-    height: 16px;
-    text-indent: -5000px;
-    background-image: url('/static/images/icons/cross.png');
-}
-
 body.loading {
     cursor: progress;
 }
+
 
 /* screenshot viewer */
 .screenshot-wrapper {

@@ -62,10 +62,6 @@
         width: 400px;
         padding-right: 20px;
         padding-bottom: 20px;
-
-        ul.actions {
-            float: left;
-        }
     }
 
     .right {
@@ -186,9 +182,7 @@
             &.hidden {
                 display: none;
             }
-            ul.actions {
-                margin-right: 20px;
-            }
+
             .credits {
                 clear: both;
             }

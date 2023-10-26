@@ -11,7 +11,7 @@
         lightboxOuter = $('<div id="lightbox_outer"></div>');
         var lightboxMiddle = $('<div id="lightbox_middle"></div>');
         lightboxElem = $('<div id="lightbox"></div>');
-        lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
+        lightboxClose = $('<button class="m-button -tertiary -iconOnly -lightboxClose" title="Close">&times;</button>');
         lightboxContent = $('<div></div>');
         lightboxElem.append(lightboxClose, lightboxContent);
         lightboxMiddle.append(lightboxElem);
