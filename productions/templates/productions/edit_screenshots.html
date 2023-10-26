@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
-{% load demoscene_tags %}
+{% load demoscene_tags ui_tags %}
 
 {% block html_title %}Editing {{ model_label }} for {{ production.title }} - Demozoo{% endblock %}
 
 {% block base_main %}
     <div class="panel">
-        <ul class="actions">
-            <li><a href="{% url 'production' production.id %}" class="action_button icon done">Back to production</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'production' production.id as production_url %}
+            {% button href=production_url icon="done" label="Back to production" %}
+        </div>
         
         <h2>Editing {{ model_label }} for {{ production.title }}</h2>
         
@@ -16,9 +17,8 @@
             {% for pic in screenshots %}
                 <li>
                     {% thumbnail pic %}
-                    <a href="{% url delete_url_name production.id pic.id %}" class="open_in_lightbox">
-                        <img src="/static/images/icons/delete.png" width="16" height="16" />
-                    </a>
+                    {% url delete_url_name production.id pic.id as delete_url_name_url %}
+                    {% button href=delete_url_name_url lightbox=True icon="delete" %}
                 </li>
             {% endfor %}
         </ul>

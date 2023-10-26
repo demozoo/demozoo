@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
-{% load compress demoscene_tags ui_tags%}
+{% load compress demoscene_tags ui_tags %}
 
 {% block html_title %}Music - Demozoo{% endblock %}
 
 {% block base_main %}
     {% if site_is_writeable %}
-        <ul class="actions">
-            <li><a href="{% url 'new_music' %}" class="action_button icon add open_in_lightbox">New music</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'new_music' as new_music_url %}
+            {% button href=new_production_url icon="add" lightbox=True label="New music" %}
+        </div>
     {% endif %}
 
     <h2>Releases</h2>

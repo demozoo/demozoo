@@ -56,7 +56,7 @@
     {% if party_series.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
-                <div class="actions">
+                <div class="o-actions">
                     {% url 'party_edit_series_notes' party_series.id as party_edit_series_url %}
                     {% button href=party_edit_series_url lightbox=True icon="edit" label="Edit notes" %}
                 </div>
@@ -69,7 +69,9 @@
 
     {% if can_edit %}
         <div class="o-actions">
-            <!-- todo: bring this into the new button component fold -->
+            {% comment %}
+                TODO: bring this into the new button component fold.
+            {% endcomment %}
             <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a>
         </div>
     {% endif %}

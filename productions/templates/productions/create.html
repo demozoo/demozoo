@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load urlsub %}
+{% load urlsub ui_tags %}
 
 
 {% block html_title %}New production - Demozoo{% endblock %}
@@ -33,7 +33,7 @@
 
         {% include "shared/production_download_formset.html" %}
         <div class="field">
-            <input type="submit" Value="Add new production"/>
+            {% button label="Add new production" %}
         </div>
     </form>
 {% endblock %}

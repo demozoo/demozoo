@@ -8,9 +8,10 @@
     <h2>Sceners</h2>
     
     {% if site_is_writeable %}
-        <ul class="actions">
-            <li><a href="{% url 'new_scener' %}" class="action_button icon add open_in_lightbox">New scener</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'new_scener' as new_scener_url %}
+            {% button href=new_scener_url lightbox=True icon="add" label="New scener" %}
+        </div>
     {% endif %}
     
     <ul class="releaser_list">

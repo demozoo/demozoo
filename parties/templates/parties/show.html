@@ -174,7 +174,8 @@
         {% endfor %}
         {% if can_edit %}
             <div class="add_organiser">
-                <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon add open_in_lightbox">Add organiser</a>
+                {% url 'party_add_organiser' party.id as party_add_organiser_url %}
+                {% button href=party_add_organiser_url icon="add" lightbox=True label="Add organiser" %}
             </div>
         {% endif %}
     </div>
@@ -246,7 +247,7 @@
                 Invitation{{ invitations|length|pluralize }}
             </h3>
             {% if can_edit %}
-                <div class="actions">
+                <div class="o-actions">
                     {% url 'party_edit_invitations' party.id as party_edit_invitations_url %}
                     {% button href=party_edit_invitations_url icon="edit" label="Edit invitations" lightbox=True %}
                 </div>

@@ -97,15 +97,15 @@
                         {% releaser_flag operator.releaser %}
                         - {{ operator.get_role_display }}
                         {% if can_edit %}
-                            <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="open_in_lightbox edit_operator">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit staff member" title="Edit staff member" />
-                            </a>
+                            {% url 'bbs_edit_operator' bbs.id operator.id as bbs_edit_operator_url %}
+                            {% button href=bbs_edit_operator_url lightbox=True level="tertiary" icon="edit" title="Edit staff member" %}
                         {% endif %}
                     </li>
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon add open_in_lightbox add_operator">Add staff member</a>
+                {% url 'bbs_add_operator' bbs.id as bbs_add_operator_url %}
+                {% button href=bbs_add_operator_url lightbox=True icon="add" label="Add staff member" %}
             {% endif %}
         </div>
 

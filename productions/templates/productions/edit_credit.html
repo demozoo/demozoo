@@ -29,6 +29,7 @@
 
     {% comment %} FIXME: a 'delete' button under the submit button is just ICK. {% endcomment %}
     <p>
-        <a href="{% url 'production_delete_credit' production.id nick.id %}" class="action_button icon delete delete_credit">Delete credit</a>
+        {% url 'production_delete_credit' production.id nick.id as production_delete_credit_url %}
+        {% button href=production_delete_credit_url icon="delete" label="Delete credit" %}
     </p>
 {% endblock %}

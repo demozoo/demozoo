@@ -5,6 +5,6 @@
 {% block html_title %}{{ group.name }} edit history - Demozoo{% endblock %}
 
 {% block base_main %}
-<h1>Edit history for <a href="{% url 'group' group.id %}">{{ group.name }}</a></h1>
-{% include "shared/history_table.html" %}
+    <h1>Edit history for <a href="{% url 'group' group.id %}">{{ group.name }}</a></h1>
+    {% include "shared/history_table.html" %}
 {% endblock %}

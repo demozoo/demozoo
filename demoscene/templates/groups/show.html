@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags releaser_tags compress %}
+{% load demoscene_tags releaser_tags compress ui_tags %}
 {% load safe_markdown %}
 
 
@@ -25,19 +25,20 @@
         <div class="signpost">Group</div>
 
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
-            <ul class="actions">
+            <div class="o-actions">
                 {% if show_lock_button %}
-                    <li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_releaser' group.id %}" title="Lock this group">Unlocked</a></li>
+                    {% url 'lock_releaser' group.id as lock_releaser_url %}
+                    {% button href=lock_releaser_url icon="unlocked" label="Unlocked" title="Lock this group" lightbox=True %}
                 {% endif %}
                 {% if show_locked_button %}
-                    <li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' group.id %}">Protected</a></li>
+                    {% url 'releaser_protected' group.id as releaser_protected_url %}
+                    {% button href=releaser_protected_url icon="locked" label="Protected" lightbox=True %}
                 {% endif %}
                 {% if prompt_to_edit %}
-                    <li>
-                        <a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
-                    </li>
+                    {% url 'releaser_edit_primary_nick' group.id as releaser_edit_primary_nick_url %}
+                    {% button href=releaser_edit_primary_nick_url icon="edit" label="Edit" title="Edit name" lightbox=True focus=True %}
                 {% endif %}
-            </ul>
+            </div>
         {% endif %}
 
         <div class="focus_title group_name">
@@ -73,7 +74,8 @@
                     {% endfor %}
                 </ul>
                 {% if can_edit %}
-                    <a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
+                    {% url 'releaser_add_nick' group.id as releaser_add_nick_url %}
+                    {% button href=releaser_add_nick_url label="Add another name" icon="add" lightbox=True %}
                 {% endif %}
             </div>
         {% endif %}
@@ -82,11 +84,10 @@
     <div class="editable_chunk panel external_links_panel">
         <h3 class="panel__title">External links</h3>
         {% if can_edit %}
-            <ul class="actions">
-                <li>
-                    <a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
-                </li>
-            </ul>
+            <div class="o-actions">
+                {% url 'releaser_edit_external_links' group.id as releaser_edit_external_links_url %}
+                {% button href=releaser_edit_external_links_url icon="edit" lightbox=True focus=True title="Edit external links" label="Edit" %}
+            </div>
         {% endif %}
         <ul class="external_links">
             {% for link in external_links %}
@@ -98,9 +99,10 @@
     {% if group.notes or request.user.is_staff %}
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
-                <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'releaser_edit_notes' group.id %}" title="Edit notes">Edit notes</a></li>
-                </ul>
+                <div class="o-actions">
+                    {% url 'releaser_edit_notes' group.id as releaser_edit_notes_url %}
+                    {% button href=releaser_edit_notes_url icon="edit" lightbox=True title="Edit notes" label="Edit notes" %}
+                </div>
             {% endif %}
             <div class="notes">
                 {{ group.notes|safe_markdown }}
@@ -140,7 +142,8 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'group_add_member' group.id %}" class="action_button icon add open_in_lightbox add_member">Add member</a>
+                {% url 'group_add_member' group.id as group_add_member_url %}
+                {% button href=group_add_member_url icon="add" lightbox=True label="Add member" %}
             {% endif %}
         </div>
 
@@ -161,7 +164,8 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon add open_in_lightbox add_subgroup">Add subgroup</a>
+                {% url 'group_add_subgroup' group.id as group_add_subgroup_url %}
+                {% button href=group_add_subgroup_url icon="add" lightbox=True label="Add subgroup" %}
             {% endif %}
         </div>
 
@@ -225,13 +229,15 @@
     {% last_edited_by group %}
 
     {% if request.user.is_staff and site_is_writeable %}
-        <ul class="maintenance_actions">
+        <div class="o-actions -maintenance">
             {% if not group.is_referenced %}
-                <li><a href="{% url 'delete_releaser' group.id %}" class="action_button icon delete open_in_lightbox">Delete group</a></li>
+                {% url 'delete_releaser' group.id as delete_releaser_url %}
+                {% button href=delete_releaser_url icon="delete" lightbox=True label="Delete group" %}
             {% endif %}
             {% if group.can_be_converted_to_scener %}
-                <li><a href="{% url 'group_convert_to_scener' group.id %}" class="action_button icon switch open_in_lightbox">Convert to scener</a></li>
+                {% url 'group_convert_to_scener' group.id as group_convert_to_scener_url %}
+                {% button href=group_convert_to_scener_url icon="switch" lightbox=True label="Convert to scener" %}
             {% endif %}
-        </ul>
+        </div>
     {% endif %}
 {% endblock %}

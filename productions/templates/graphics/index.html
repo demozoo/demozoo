@@ -6,9 +6,10 @@
 
 {% block base_main %}
     {% if site_is_writeable %}
-        <ul class="actions">
-            <li><a href="{% url 'new_graphics' %}" class="action_button icon add open_in_lightbox">New graphics</a></li>
-        </ul>
+        <div class="o-actions">
+            {% url 'new_graphics' as new_graphics_url %}
+            {% button href=new_graphics_url icon="add" lightbox=True label="New graphics" %}
+        </div>
     {% endif %}
 
     <h2>Releases</h2>

@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-{% load spawning_formset %}
+{% load spawning_formset ui_tags %}
 
 
 {% block html_title %}Editing soundtrack details for {{ production.title }} - Demozoo{% endblock %}
@@ -27,7 +27,7 @@
         {% endspawningformset %}
 
         <div class="field">
-            <input type="submit" Value="Submit edit"/>
+            {% button label="Submit edit" %}
         </div>
     </form>
 {% endblock %}

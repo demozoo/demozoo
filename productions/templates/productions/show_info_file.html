@@ -5,9 +5,9 @@
 
 {% block base_main %}
     {% if request.user.is_staff %}
-        <ul class="actions">
-            <li><a href="{{ fix_encoding_url }}" class="action_button icon spanner">Fix encoding</a></li>
-        </ul>
+        <div class="o-actions">
+            {% button href=fix_encoding_url icon="spanner" label="Fix encoding" %}
+        </div>
     {% endif %}
 
     <h2>{{ production.title }} info: {{ info_file.filename }}</h2>

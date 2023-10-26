@@ -5,6 +5,9 @@
     {% if request.user.is_staff %}
         <form action="{% url 'releaser_protected' releaser.id %}" class="confirmation_form" method="post">
             {% csrf_token %}
+            {% comment %}
+                TODO: Bring this into the new button fold
+            {% endcomment %}
             <input type="submit" name="yes" value="Unlock {% if releaser.is_group %}group{% else %}scener{% endif %}" class="yes_button" />
         </form>
     {% endif %}

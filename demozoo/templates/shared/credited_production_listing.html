@@ -1,13 +1,11 @@
-{% load demoscene_tags %}
+{% load demoscene_tags ui_tags %}
 
 <div class="panel editable_chunk">
     <h3 class="panel__title productions_header">Productions ({{ credits|length }})</h3>
     {% if can_edit %}
-        <ul class="actions">
-            <li>
-                <a href="{% url 'new_production' %}?releaser_id={{ releaser.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
-            </li>
-        </ul>
+        <div class="o-actions">
+            <a href="{% url 'new_production' %}?releaser_id={{ releaser.id }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
+        </div>
     {% endif %}
 
     <table class="table">
@@ -17,7 +15,7 @@
             <col />
             <col class="col--date" />
             {% if editing and site_is_writeable %}
-            <col />
+                <col />
             {% endif %}
         </colgroup>
         <tbody>
@@ -55,6 +53,8 @@
 
                     {% if editing and site_is_writeable %}
                         <td>
+<!--                            {% url 'releaser_edit_credit' nick.releaser_id nick.id production.id as releaser_edit_credit_url %}-->
+<!--                            {% button href=releaser_edit_credit_url level="tertiary" title="Edit credit" %}-->
                             <a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
                             </a>

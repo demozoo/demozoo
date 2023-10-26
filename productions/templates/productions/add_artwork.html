@@ -1,5 +1,5 @@
 {% extends base_template_with_ajax_option %}
-
+{% load ui_tags %}
 
 {% block html_title %}Adding artwork for {{ production.title }} - Demozoo{% endblock %}
 
@@ -29,11 +29,11 @@
         {% csrf_token %}
 
         <div class="field">
-            <input type="file" name="screenshot" multiple="multiple"/>
+            <input type="file" name="screenshot" multiple="multiple" />
         </div>
 
         <div class="field">
-            <input type="submit" value="Submit" value="Add artwork"/>
+            {% button label="Add artwork" %}
         </div>
     </form>
 {% endblock %}

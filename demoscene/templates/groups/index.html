@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress static %}
+{% load demoscene_tags compress static ui_tags %}
 
 
 {% block html_title %}Groups - Demozoo{% endblock %}
@@ -8,9 +8,10 @@
 <div class="releasers releasers--groups">
     <header class="page__header">
         {% if site_is_writeable %}
-            <ul class="actions">
-                <li><a href="{% url 'new_group' %}" class="action_button icon add open_in_lightbox">New group</a></li>
-            </ul>
+            <div class="o-actions">
+                {% url 'new_group' as new_group_url %}
+                {% button icon="add" lightbox=True label="New group" %}
+            </div>
         {% endif %}
 
         <h1 class="page__title">Groups</h1>

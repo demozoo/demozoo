@@ -1,6 +1,6 @@
 {% extends base_template_with_ajax_option %}
 
-{% load compress %}
+{% load compress ui_tags %}
 
 
 {% block html_title %}Adding credit for {{ production.title }} - Demozoo{% endblock %}
@@ -24,7 +24,7 @@
         {% include "productions/credit_form.html" %}
 
         <div class="field">
-            <input type="submit" Value="Add credit"/>
+            {% button label="Add credit" %}
         </div>
     </form>
 {% endblock %}
