@@ -35,10 +35,8 @@
                 <label class="field_label">Text ad{{ formset|length|pluralize }}</label>
                 <div class="field_input">
                     {% for form in formset %}
-                        <li>
-                            {{ form.instance.filename }} ({{ form.instance.filesize }} bytes)
-                            {% if not add_only %}{{ form }}{% endif %}
-                        </li>
+                        {{ form.instance.filename }} ({{ form.instance.filesize }} bytes)
+                        {% if not add_only %}{{ form }}{% endif %}
                     {% endfor %}
                 </div>
             </div>
