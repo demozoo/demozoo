@@ -1,6 +1,7 @@
 from itertools import groupby
 
 from django import template
+from django.urls import reverse
 
 from productions.models import Screenshot
 
@@ -65,4 +66,5 @@ def combined_releases(context, releaser):
         'releaser': releaser,
         'credits': credits_with_prods_and_screenshots,
         'can_edit': context.get('can_edit', False),
+        'new_production_url': "%s?releaser_id=%d" % (reverse('new_production'), releaser.id),
     }
