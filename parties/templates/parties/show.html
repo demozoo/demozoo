@@ -147,10 +147,7 @@
                             {% if organiser.role %}({{ organiser.role}}){% endif %}
                             {% if can_edit %}
                                 {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
-                                {% button href=party_edit_organiser_url lightbox=True icon="edit" level="tertiary" %}
-                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_light box edit_organiser">
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
-                                </a>
+                                {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
                             {% endif %}
                         </li>
                     {% endfor %}
@@ -163,9 +160,8 @@
                             {% releaser_flag organiser.releaser %}
                             {% if organiser.role %}({{ organiser.role}}){% endif %}
                             {% if can_edit %}
-                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
-                                </a>
+                                {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
+                                {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
                             {% endif %}
                         </li>
                     {% endfor %}

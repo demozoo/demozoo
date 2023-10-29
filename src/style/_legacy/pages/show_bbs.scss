@@ -124,10 +124,6 @@
             &.group {
                 background-image: url(/static/images/icons/group.png);
             }
-
-            a.edit_affiliation {
-                float: right;
-            }
         }
     }
 
@@ -148,4 +144,12 @@
             clear: both;
         }
     }
+}
+
+li.scener,
+li.group,
+li.nick {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
 }

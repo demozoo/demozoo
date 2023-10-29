@@ -63,12 +63,13 @@
 
                 <ul class="nicks">
                     {% for nick in alternative_nicks %}
-                        <li>
-                            <b>{{ nick.name }}</b> {% nick_variants nick %}
+                        <li class="nick">
+                            <span>
+                                <strong>{{ nick.name }}</strong> {% nick_variants nick %}
+                            </span>
                             {% if can_edit %}
-                                <a href="{% url 'releaser_edit_nick' group.id nick.id %}" class="open_in_lightbox edit_nick">
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
-                                </a>
+                                {% url 'releaser_edit_nick' group.id nick.id as releaser_edit_nick_url %}
+                                {% button href=releaser_edit_nick_url level="tertiary" lightbox=True title="Edit name" icon="edit" %}
                             {% endif %}
                         </li>
                     {% endfor %}
@@ -131,12 +132,13 @@
             <ul class="memberships">
                 {% for membership in memberships %}
                     <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-                        {% releaser_flag membership.member %}
+                        <span>
+                            <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+                            {% releaser_flag membership.member %}
+                        </span>
                         {% if can_edit %}
-                            <a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
-                            </a>
+                            {% url 'group_edit_membership' group.id membership.id as group_edit_membership_url %}
+                            {% button href=group_edit_membership_url level="tertiary" lightbox=True title="Edit membership" icon="edit" %}
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -156,9 +158,8 @@
                         <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
                         {% releaser_flag membership.member %}
                         {% if can_edit %}
-                            <a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
-                            </a>
+                            {% url 'group_edit_subgroup' group.id membership.id as group_edit_subgroup_url %}
+                            {% button href=group_edit_subgroup_url title="Edit subgroup" lightbox=True icon="edit" %}
                         {% endif %}
                     </li>
                 {% endfor %}

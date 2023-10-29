@@ -12,7 +12,8 @@
             <h2>
                 {{ competition }}
                 {% if site_is_writeable %}
-                    <a href="{% url 'competition_edit' competition.id %}"><img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit competition" title="Edit competition" /></a>
+                    {% url 'competition_edit' competition.id as compentition_edit_url %}
+                    {% button href=competition_edit_url title="Edit competition" lightbox=True icon="edit" %}
                 {% endif %}
             </h2>
             

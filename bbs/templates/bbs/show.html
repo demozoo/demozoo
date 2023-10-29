@@ -115,12 +115,13 @@
             <ul class="affiliations">
                 {% for affiliation in affiliations %}
                     <li class="group">
-                        <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
-                        {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
+                        <span>
+                            <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
+                            {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
+                        </span>
                         {% if can_edit %}
-                            <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox edit_affiliation">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
-                            </a>
+                            {% url 'bbs_edit_affiliation' bbs.id affiliation.id as bbs_edit_affiliation_url %}
+                            {% button href=bbs_edit_affiliation_url level="tertiary" lightbox=True title="Edit affiliation" icon="edit" %}
                         {% endif %}
                     </li>
                 {% endfor %}

@@ -4,7 +4,7 @@
     <h3 class="panel__title productions_header">Productions ({{ credits|length }})</h3>
     {% if can_edit %}
         <div class="o-actions">
-            <a href="{{ new_production_url }}" class="action_button icon add open_in_lightbox edit_chunk" rel="nofollow">Add production</a>
+            {% button href=new_production_url icon="add" lightbox=True label="Add production" %}
         </div>
     {% endif %}
 
@@ -53,11 +53,8 @@
 
                     {% if editing and site_is_writeable %}
                         <td>
-<!--                            {% url 'releaser_edit_credit' nick.releaser_id nick.id production.id as releaser_edit_credit_url %}-->
-<!--                            {% button href=releaser_edit_credit_url level="tertiary" title="Edit credit" %}-->
-                            <a href="{% url 'releaser_edit_credit' nick.releaser_id nick.id production.id %}" class="open_in_lightbox">
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
-                            </a>
+                            {% url 'releaser_edit_credit' nick.releaser_id nick.id production.id as releaser_edit_credit_url %}
+                            {% button href=releaser_edit_credit_url level="tertiary" lightbox=True title="Edit credit" %}
                         </td>
                     {% endif %}
                 </tr>
