@@ -1365,6 +1365,7 @@ class TestAddCredit(TestCase):
         }, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
+        self.assertContains(response, 'edit_toggle editing')
 
 
 class TestEditCredit(TestCase):

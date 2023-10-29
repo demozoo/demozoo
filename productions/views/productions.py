@@ -917,11 +917,15 @@ def protected(request, production_id):
 
 def render_credits_update(request, production):
     if request_is_ajax(request):
+        prompt_to_edit = settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked)
+        can_edit = prompt_to_edit and request.user.is_authenticated
+
         credits_html = render_to_string('productions/_credits.html', {
             'production': production,
             'credits': production.credits_for_listing(),
             'editing_credits': True,
-            'prompt_to_edit': settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked),
+            'prompt_to_edit': prompt_to_edit,
+            'can_edit': can_edit,
         }, request=request)
         return render_modal_workflow(
             request, None, 'productions/edit_credit_done.js', {
