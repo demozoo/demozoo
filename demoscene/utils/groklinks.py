@@ -1304,51 +1304,56 @@ class PushnpopProfile(UrlPattern):
     pattern = "/profile-<int>.html"
 
 
-zxart = Site("ZXArt", url='http://zxart.ee/')
+zxart = Site("ZXArt", url='https://zxart.ee/')
 
 
 class ZxArtAuthor(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/authors/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
     tests = [
-        path_regex_match(r'/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?'),
-        path_regex_match(r'/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/eng/authors/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/rus/avtory/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/spa/autores/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
     ]
 
 
-class ZxArtPicture(AbstractBaseUrl):
+class ZxArtProduction(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
     tests = [
+        path_regex_match(r'/eng/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/spa/autores/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
-    ]
-
-
-class ZxArtMusic(AbstractBaseUrl):
-    site = zxart
-    canonical_format = "http://zxart.ee/eng/music/authors/%s/"
-    tests = [
         path_regex_match(r'/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
     ]
 
 
-class ZxArtPartyGraphics(AbstractBaseUrl):
+class ZxArtPicture(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
+    # empty list so that no URLs match - all new URLs should map to ZxArtProduction
+    tests = []
+
+
+class ZxArtMusic(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
+    # empty list so that no URLs match - all new URLs should map to ZxArtProduction
+    tests = []
+
+
+class ZxArtParty(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/parties/%s/"
     tests = [
+        path_regex_match(r'/eng/parties/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/pati/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/spa/parties/([^\/]+/[^\/]+)/?'),
         path_regex_match(r'/eng/graphics/parties/([^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/grafika/pati/([^\/]+/[^\/]+)/?'),
-    ]
-
-
-class ZxArtPartyMusic(AbstractBaseUrl):
-    site = zxart
-    canonical_format = "http://zxart.ee/eng/music/parties/%s/"
-    tests = [
-        path_regex_match(r'/eng/music/parties/([^\/]+/[^\/]+)/?'),
-        path_regex_match(r'/rus/muzyka/pati/([^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1796,7 +1801,9 @@ PRODUCTION_LINK_TYPES = [
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
-    DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
+    DiscogsRelease,
+    ZxArtProduction, ZxArtPicture, ZxArtMusic,
+    InternetArchivePage, GameboyDemospottingDemo,
     Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease, SpectrumComputingRelease,
     WaybackMachinePage, BaseUrl,
 ]
@@ -1813,7 +1820,8 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-    'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
+    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic',
+    'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
     'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
     'SpectrumComputingRelease',
@@ -1824,7 +1832,7 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
+    SpeccyWikiPage, ZxArtParty, AtarikiEntry, InstagramAccount,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
