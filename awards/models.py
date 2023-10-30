@@ -199,3 +199,18 @@ class Juror(models.Model):
         unique_together = [
             ('user', 'event'),
         ]
+
+
+class Nomination(models.Model):
+    STATUSES = [
+        ('nominee', 'Nominee'),
+        ('winner', 'Winner'),
+    ]
+    production = models.ForeignKey(Production, related_name='award_nominations', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='nominations', on_delete=models.CASCADE)
+    status = models.CharField(max_length=32, choices=STATUSES, default='nominee')
+
+    class Meta:
+        unique_together = [
+            ('production', 'category'),
+        ]
