@@ -45,7 +45,7 @@ class TestModels(TestCase):
 
     def test_category_str(self):
         best_lowend = Category.objects.get(name="Best Low-End Production")
-        self.assertEqual(str(best_lowend), "Best Low-End Production")
+        self.assertEqual(str(best_lowend), "The Meteoriks 2020 - Best Low-End Production")
 
 
 class TestCandidates(TestCase):

@@ -150,7 +150,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return "%s - %s" % (self.event.name, self.name)
 
     def get_recommendation_report(self):
         prods = Production.objects.filter(award_recommendations__category=self).distinct()
