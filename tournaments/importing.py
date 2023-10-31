@@ -295,3 +295,8 @@ def load_entry_external_links(entry, entry_data):
                     link.save()
             except IntegrityError:
                 pass
+    tic80_cart_id = entry_data.get('tic80_cart_id')
+    if tic80_cart_id:
+        EntryExternalLink.objects.get_or_create(
+            link_class='Tic80Cart', parameter=tic80_cart_id, entry=entry
+        )
