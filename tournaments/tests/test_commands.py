@@ -216,7 +216,9 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
             stdout.getvalue()
         )
         self.assertEqual(tournament.phases.count(), 1)
-
+        phase = tournament.phases.first()
+        entry = phase.entries.get(name='Mr Phong')
+        self.assertNotEqual(entry.thumbnail_url, '')
 
     @patch.object(Path, 'glob')
     @patch.object(Path, 'exists')

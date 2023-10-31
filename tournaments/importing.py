@@ -1,3 +1,4 @@
+import re
 import sys
 from django.db import IntegrityError, transaction
 
@@ -283,6 +284,10 @@ def load_entry_screenshot(entry, entry_data, media_path):
     screenshot_filename = entry_data.get('preview_image')
     if not screenshot_filename and entry_data.get('tic80_cart_id'):
         screenshot_filename = 'cart_%s.gif' % entry_data['tic80_cart_id']
+    if not screenshot_filename and entry_data.get('shadertoy_url'):
+        match = re.match(r'https://www\.shadertoy\.com/view/(\w+)', entry_data['shadertoy_url'])
+        if match:
+            screenshot_filename = '%s.jpg' % match.group(1)
 
     if screenshot_filename:
         screenshot_path = media_path / screenshot_filename
