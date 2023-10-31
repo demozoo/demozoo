@@ -216,6 +216,7 @@ def load_phase_data(phase, phase_data, media_path, stdout=sys.stdout):
                 name=name,
                 ranking=entry_data['rank'] or '',
                 score=entry_data.get('points') or '',
+                source_file=entry_data.get('source_file') or '',
             )
             screenshot_filename = entry_data.get('preview_image')
             if screenshot_filename:
