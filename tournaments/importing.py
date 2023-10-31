@@ -1,3 +1,4 @@
+import sys
 from django.db import IntegrityError, transaction
 
 from demoscene.models import Nick, Releaser
@@ -36,7 +37,7 @@ def find_party_from_tournament_data(tournament_data):
     return Party.objects.get(id=party_id)
 
 
-def find_nick_from_handle_data(handle_data):
+def find_nick_from_handle_data(handle_data, stdout=sys.stdout):
     if handle_data['demozoo_id'] is None:
         return (None, handle_data['name'])
 
@@ -50,7 +51,7 @@ def find_nick_from_handle_data(handle_data):
             "\tCannot find nick '%s' for releaser %d (%s)" % (
                 handle_data['name'], handle_data['demozoo_id'],
                 Releaser.objects.get(id=handle_data['demozoo_id']).name
-            )
+            ), file=stdout
         )
         return (None, handle_data['name'])
     except Nick.MultipleObjectsReturned:
@@ -63,7 +64,7 @@ def find_nick_from_handle_data(handle_data):
     return (nick.id, '')
 
 
-def import_tournament(filename, tournament_data, media_path):
+def import_tournament(filename, tournament_data, media_path, stdout=sys.stdout):
     try:
         tournament = Tournament.objects.get(source_file_name=filename)
         created = False
@@ -74,7 +75,7 @@ def import_tournament(filename, tournament_data, media_path):
             print(
                 "\tNo match for party: %s %s" % (
                     tournament_data['title'], tournament_data['started']
-                )
+                ), file=stdout
             )
             return
 
@@ -87,30 +88,30 @@ def import_tournament(filename, tournament_data, media_path):
             print(
                 "\tMismatched source filename! Previously %s, now %s" % (
                     tournament.source_file_name, filename
-                )
+                ), file=stdout
             )
             return
 
     phases_data = tournament_data['phases']
 
     if created:
-        print("\tCreated tournament: %s" % tournament)
+        print("\tCreated tournament: %s" % tournament, file=stdout)
         create_phases = True
     else:
-        # print("\tFound tournament: %s" % tournament)
+        # print("\tFound tournament: %s" % tournament, file=stdout)
         expected_party = find_party_from_tournament_data(tournament_data)
         if tournament.party != expected_party:
             print(
                 "\tParty mismatch! Found %s, but data looks like %s" % (
                     tournament.party, expected_party
-                )
+                ), file=stdout
             )
 
         if tournament.name != tournament_data['type']:
             print(
                 "\tChanged name from %s to %s" % (
                     tournament.name, tournament_data['type']
-                )
+                ), file=stdout
             )
             tournament.name = tournament_data['type']
             tournament.save()
@@ -130,7 +131,7 @@ def import_tournament(filename, tournament_data, media_path):
             create_phases = False
 
         if create_phases:
-            print("\tPhases don't match - recreating")
+            print("\tPhases don't match - recreating", file=stdout)
             tournament.phases.all().delete()
 
     if create_phases:
@@ -139,13 +140,13 @@ def import_tournament(filename, tournament_data, media_path):
                 name=phase_data['title'] or '', position=position
             )
 
-            load_phase_data(phase, phase_data, media_path)
+            load_phase_data(phase, phase_data, media_path, stdout=stdout)
 
     else:
         # phases for this tournament are already defined and confirmed to match the
         # names in the file, and have consecutive 0-based positions
         for phase in phases:
-            load_phase_data(phase, phases_data[phase.position], media_path)
+            load_phase_data(phase, phases_data[phase.position], media_path, stdout=stdout)
 
     video_url = tournament_data.get('vod')
     if video_url:
@@ -169,18 +170,18 @@ def import_tournament(filename, tournament_data, media_path):
             continue
 
         # check that the given demozoo_id is consistent with the name
-        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'])
+        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'], stdout=stdout)
         if nick_id is None:
             continue
 
         if party.organisers.filter(releaser_id=releaser_id).exists():
             continue
 
-        print("\tAdding party organiser: %s" % staff_member_data['handle']['name'])
+        print("\tAdding party organiser: %s" % staff_member_data['handle']['name'], file=stdout)
         party.organisers.create(releaser_id=releaser_id, role=tournament_data['type'])
 
 
-def load_phase_data(phase, phase_data, media_path):
+def load_phase_data(phase, phase_data, media_path, stdout=sys.stdout):
     entries = list(phase.entries.all())
     entries_data = phase_data['entries']
 
@@ -206,7 +207,7 @@ def load_phase_data(phase, phase_data, media_path):
     if create_entries:
         phase.entries.all().delete()
         for position, entry_data in enumerate(entries_data):
-            nick_id, name = find_nick_from_handle_data(entry_data['handle'])
+            nick_id, name = find_nick_from_handle_data(entry_data['handle'], stdout=stdout)
 
             entry = Entry(
                 phase=phase,
@@ -228,7 +229,7 @@ def load_phase_data(phase, phase_data, media_path):
             entry = entries[i]
             has_changed = False
 
-            nick_id, name = find_nick_from_handle_data(entry_data['handle'])
+            nick_id, name = find_nick_from_handle_data(entry_data['handle'], stdout=stdout)
             if nick_id != entry.nick_id or name != entry.name:
                 entry.nick_id = nick_id
                 entry.name = name
@@ -256,14 +257,14 @@ def load_phase_data(phase, phase_data, media_path):
                     has_changed = True
 
             if has_changed:
-                print("\tupdating entry %s" % entry)
+                print("\tupdating entry %s" % entry, file=stdout)
                 entry.save()
 
             load_entry_external_links(entry, entry_data)
 
     staff_members = set()
     for staff_member_data in phase_data['staffs']:
-        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'])
+        nick_id, name = find_nick_from_handle_data(staff_member_data['handle'], stdout=stdout)
         role = ROLES_LOOKUP[staff_member_data['job'].lower()]
         staff_members.add((nick_id, name, role))
 
@@ -273,7 +274,7 @@ def load_phase_data(phase, phase_data, media_path):
     ])
     if staff_members != current_staff_members:
         if current_staff_members:
-            print("\tupdating staff")
+            print("\tupdating staff", file=stdout)
             phase.staff.all().delete()
 
         for nick_id, name, role in staff_members:
