@@ -54,6 +54,9 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         gasman_entry = phase.entries.get(nick__name='Gasman')
         self.assertEqual(gasman_entry.ranking, '1')
         self.assertEqual(gasman_entry.original_image_sha1, "bae1b44bb69fdb36ee86e689a2df876ae22e0dc5")
+        entry2 = phase.entries.get(name='Mr Phong')
+        self.assertEqual(entry2.external_links.get(link_class='Tic80Cart').parameter, '2308')
+        self.assertNotEqual(entry2.thumbnail_url, '')
 
         party = Party.objects.get(name="Forever 2e3")
         self.assertEqual(party.tournaments.count(), 1)
@@ -94,8 +97,6 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         self.assertEqual(phase.name, "Final")
         entry = phase.entries.get(nick__name='Gasman')
         self.assertEqual(entry.source_file, 'https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl')
-        entry2 = phase.entries.get(name='Mr Phong')
-        self.assertEqual(entry2.external_links.get(link_class='Tic80Cart').parameter, '2308')
 
         party = Party.objects.get(name="Forever 2e3")
         self.assertEqual(party.tournaments.count(), 1)

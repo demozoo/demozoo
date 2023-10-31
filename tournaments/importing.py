@@ -218,11 +218,11 @@ def load_phase_data(phase, phase_data, media_path, stdout=sys.stdout):
                 score=entry_data.get('points') or '',
                 source_file=entry_data.get('source_file') or '',
             )
-            screenshot_filename = entry_data.get('preview_image')
-            if screenshot_filename:
-                screenshot_path = str(media_path / screenshot_filename)
-                entry.set_screenshot(screenshot_path)
             entry.save()
+            if load_entry_screenshot(entry, entry_data, media_path):
+                # can't do this at the same time as creating the entry, as the screenshot filename
+                # includes the entry ID
+                entry.save()
             load_entry_external_links(entry, entry_data)
 
     else:
@@ -251,11 +251,8 @@ def load_phase_data(phase, phase_data, media_path, stdout=sys.stdout):
                 entry.source_file = source_file
                 has_changed = True
 
-            screenshot_filename = entry_data.get('preview_image')
-            if screenshot_filename:
-                screenshot_path = str(media_path / screenshot_filename)
-                if entry.set_screenshot(screenshot_path):
-                    has_changed = True
+            if load_entry_screenshot(entry, entry_data, media_path):
+                has_changed = True
 
             if has_changed:
                 print("\tupdating entry %s" % entry, file=stdout)
@@ -280,6 +277,19 @@ def load_phase_data(phase, phase_data, media_path, stdout=sys.stdout):
 
         for nick_id, name, role in staff_members:
             phase.staff.create(nick_id=nick_id, name=name, role=role)
+
+
+def load_entry_screenshot(entry, entry_data, media_path):
+    screenshot_filename = entry_data.get('preview_image')
+    if not screenshot_filename and entry_data.get('tic80_cart_id'):
+        screenshot_filename = 'cart_%s.gif' % entry_data['tic80_cart_id']
+
+    if screenshot_filename:
+        screenshot_path = media_path / screenshot_filename
+        if screenshot_path.exists():
+            return entry.set_screenshot(str(screenshot_path))
+
+    return False
 
 
 def load_entry_external_links(entry, entry_data):
