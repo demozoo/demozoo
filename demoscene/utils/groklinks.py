@@ -1862,7 +1862,7 @@ BBS_LINK_TYPES = [
 ]
 
 TOURNAMENT_LINK_TYPES = [
-    YoutubeVideo, VimeoVideo, ShadertoyShader, BaseUrl
+    YoutubeVideo, VimeoVideo, ShadertoyShader, Tic80Cart, BaseUrl
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing

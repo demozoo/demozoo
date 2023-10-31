@@ -31,7 +31,8 @@
                         "demozoo_id": null
                     },
                     "shadertoy_url": null,
-                    "preview_image": "revision_2011/03-mrphong.jpg",
+                    "preview_image": null,
+                    "tic80_cart_id": 2308,
                     "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-mrphong.glsl"
                 }
             ],
