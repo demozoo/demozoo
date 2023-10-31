@@ -27,8 +27,9 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
             data_path / '2000_shader_showdown_forever.json',
         ]
 
-        with captured_stdout():
+        with captured_stdout() as stdout:
             call_command('fetch_tournaments')
+        self.assertNotEqual(stdout.getvalue(), '')
 
         mkdir.assert_called_once_with(exist_ok=True)
         expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
@@ -75,13 +76,14 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
             data_path / '2000_z80_showdown_forever.json',
         ]
 
-        with captured_stdout():
-            call_command('fetch_tournaments')
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments', silent=True)
+        self.assertEqual(stdout.getvalue(), '')
 
         mkdir.assert_called_once_with(exist_ok=True)
         expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
         run.assert_called_once_with([
-            'git', 'clone', 'https://github.com/psenough/livecode.demozoo.org.git', expected_path
+            'git', 'clone', 'https://github.com/psenough/livecode.demozoo.org.git', expected_path, '--quiet'
         ])
         glob.assert_called_once_with('*.json')
 
@@ -147,13 +149,39 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
             Exception,
             r"Multiple nicks found for gasman \(Gasman\)"
         ):
-            with captured_stdout() as stdout:
+            with captured_stdout():
                 call_command('fetch_tournaments')
 
         mkdir.assert_called_once_with(exist_ok=True)
         expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
         run.assert_called_once_with(['git', '-C', expected_path, 'pull'])
         glob.assert_called_once_with('*.json')
+
+    @patch('tournaments.management.commands.fetch_tournaments.mail_admins')
+    @patch.object(Path, 'glob')
+    @patch.object(Path, 'exists')
+    @patch.object(Path, 'mkdir')
+    @patch('tournaments.management.commands.fetch_tournaments.subprocess.run')
+    def test_email_sent_on_duplicate_nicks_in_silent_mode(self, run, mkdir, exists, glob, mail_admins):
+        Nick.objects.get(name="Shingebis").variants.create(name="gasman")
+        exists.return_value = True
+        data_path = Path(settings.FILEROOT) / 'tournaments' / 'test_data'
+        glob.return_value = [
+            data_path / '2011_shader_showdown_revision.json',
+        ]
+
+        with captured_stdout() as stdout:
+            call_command('fetch_tournaments', silent=True)
+        self.assertEqual(stdout.getvalue(), '')
+
+        mkdir.assert_called_once_with(exist_ok=True)
+        expected_path = Path(settings.FILEROOT) / 'data' / 'livecode.demozoo.org'
+        run.assert_called_once_with(['git', '-C', expected_path, 'pull', '--quiet'])
+        glob.assert_called_once_with('*.json')
+        mail_admins.assert_called_once()
+        subject, body = mail_admins.call_args.args
+        self.assertEqual(subject, "Error importing tournament data")
+        self.assertIn("Multiple nicks found for gasman (Gasman)", body)
 
     @patch.object(Path, 'glob')
     @patch.object(Path, 'exists')
