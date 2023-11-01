@@ -37,10 +37,10 @@
                         <fieldset class="award-recommendation__fieldset">
                             <p class="award-recommendation__category">
                                 {% if has_recommended %}
-                                    You have already recommended this production for the <b>{{ category_name }}</b> category
+                                    You have already recommended this production for the <strong>{{ category_name }}</strong> category
                                 {% else %}
-                                    <input type="hidden" name="category_id" value="{{ category_id }}">
-                                    Recommending this production for the <b>{{ category_name }}</b> category
+                                    <input type="hidden" name="category_id" value="{{ category_id }}" />
+                                    Recommending this production for the <strong>{{ category_name }}</strong> category
                                 {% endif %}
                             </p>
                         </fieldset>
