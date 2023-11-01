@@ -2,4 +2,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1em;
+
+  &.-screenshots {
+    float: none;
+    justify-content: start;
+  }
 }

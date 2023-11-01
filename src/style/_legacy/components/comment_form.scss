@@ -1,0 +1,12 @@
+.comment_form {
+  margin-block: 20px 0;
+
+  &__heading {
+    margin-block: 0 0.5em;
+  }
+
+  textarea {
+    box-sizing: border-box;
+    width: 100%;
+  }
+}

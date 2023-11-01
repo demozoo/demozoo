@@ -1,0 +1,13 @@
+.comments {
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-block: 0 20px;
+    max-width: 920px;
+    padding: 10px;
+
+    &__title {
+        margin-bottom: 0.5em;
+    }
+}
+

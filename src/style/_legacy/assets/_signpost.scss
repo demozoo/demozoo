@@ -2,16 +2,15 @@
 .signpost {
     background-color: #6bc7f1;
     color: white;
+    display: block;
     font-family: FabricaRegular, Helvetica, Arial, sans-serif;
     font-size: 10pt;
     min-width: 120px;
     padding: 4px 6px;
+    text-decoration: none;
     text-transform: uppercase;
 
-    a {
-        color: currentColor;
-        color: inherit;
-        display: block;
-        text-decoration: none;
+    &:visited {
+        color: white;
     }
 }

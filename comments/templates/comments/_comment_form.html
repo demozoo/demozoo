@@ -4,7 +4,7 @@
 
 <form action="{% url submit_action commentable.id %}" method="POST" class="comment_form">
     {% csrf_token %}
-    <h2><label for="{{ comment_form.body.id_for_label }}">Add a comment</label></h2>
+    <h2 class="comment_form__heading"><label for="{{ comment_form.body.id_for_label }}">Add a comment</label></h2>
     <div>
         {{ comment_form.body }}
         <p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>

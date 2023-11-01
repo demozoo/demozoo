@@ -1,6 +1,6 @@
 {% load ui_tags demoscene_tags %}
 
-<div class="panel screenshots_panel">
+<section class="panel screenshots_panel">
     <div class="carousel">
         {% if initial_screenshot %}
             {% if initial_screenshot.is_processing %}
@@ -27,7 +27,7 @@
     </div>
 
     {% if show_all_screenshots_link or show_add_screenshot_link or show_manage_screenshots_link %}
-        <div class="o-actions">
+        <div class="o-actions -screenshots">
             {% if show_all_screenshots_link %}
                 {% button href=production.get_all_screenshots_url label=all_screenshots_label icon="add" %}
             {% endif %}
@@ -39,8 +39,7 @@
             {% endif %}
         </div>
     {% endif %}
-    <div style="clear: both;"></div>
-</div>
+</section>
 
 <script>
     $('.carousel').carousel({{ carousel_data|safe }}, "{% url 'production_carousel' production.id %}");

@@ -1,0 +1,11 @@
+.comment {
+    border-bottom: 1px solid #ccc;
+    margin-block: 0.5em;
+
+    &__header {
+        align-items: center;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+    }
+}

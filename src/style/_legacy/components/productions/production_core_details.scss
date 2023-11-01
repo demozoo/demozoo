@@ -1,10 +1,14 @@
 .production_core_details {
-    overflow: hidden; /* self-clear */
     padding-bottom: 10px;
 
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
     .production_title {
-        clear: both;
-        padding: 5px 0 10px 0;
+        padding-block: 5px 10px;
 
         h2 {
             font-family: FabricaRegular, Helvetica, Arial, sans-serif;
@@ -60,6 +64,6 @@
 
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 4px;
     margin-block: 0 10px;
 }

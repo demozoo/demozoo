@@ -1,18 +1,23 @@
 {% load ui_tags %}
 
-<div class="editable_chunk panel downloads_panel">
-    <h3 class="panel__title">Downloads</h3>
-    {% if can_edit %}
-        {% url 'production_edit_download_links' production.id as edit_download_links %}
-        <div class="o-actions">
-            {% button href=edit_download_links icon="edit" label="Edit" lightbox=True focus=True %}
-        </div>
-    {% endif %}
-    <ul class="list download_links">
-        {% for link in download_links %}
-            <li class="list__item download_link {{ link.html_link_class }}">
-                {{ link.as_download_link|safe }}
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+<section class="editable_chunk panel downloads_panel">
+    <header class="panel__header">
+        <h3 class="panel__title">Downloads</h3>
+
+        {% if can_edit %}
+            {% url 'production_edit_download_links' production.id as edit_download_links %}
+            <div class="o-actions">
+                {% button href=edit_download_links icon="edit" label="Edit" lightbox=True focus=True %}
+            </div>
+        {% endif %}
+    </header>
+    <div class="panel__content">
+        <ul class="list download_links">
+            {% for link in download_links %}
+                <li class="list__item download_link {{ link.html_link_class }}">
+                    {{ link.as_download_link|safe }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>

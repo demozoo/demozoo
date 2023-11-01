@@ -3,30 +3,32 @@
 
 
 <div class="production_core_details editable_chunk">
-    {% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
-        <div class="o-actions">
-            {% if show_lock_button %}
-                {% url 'lock_production' production.id as lock_button_url %}
-                {% button href=lock_button_url lightbox=True icon="lock-open" label="Unlocked" title="Lock this production" %}
-            {% endif %}
-            {% if show_locked_button %}
-                {% url 'production_protected' production.id as locked_button_url %}
-                {% button href=locked_button_url lightbox=True icon="lock" label="Protected" %}
-            {% endif %}
-            {% if show_edit_button %}
-                {% button href=production.get_edit_core_details_url icon="edit" label="Edit" lightbox=True title="Edit production details" %}
-            {% endif %}
-            {% if show_back_button %}
-                {% button href=production.get_absolute_url label="Back to production" icon="back" %}
-            {% endif %}
-        </div>
-    {% endif %}
+    <header class="production_core_details__header">
+        <ul class="production_types">
+            {% for production_type in production.types.all %}
+            <li class="production__type"><a class="signpost" href="{{ production_type.listing_url }}">{{ production_type.name }}</a></li>
+            {% endfor %}
+        </ul>
 
-    <ul class="production_types">
-        {% for production_type in production.types.all %}
-            <li class="signpost"><a href="{{ production_type.listing_url }}">{{ production_type.name }}</a></li>
-        {% endfor %}
-    </ul>
+        {% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
+            <div class="o-actions">
+                {% if show_lock_button %}
+                    {% url 'lock_production' production.id as lock_button_url %}
+                    {% button href=lock_button_url lightbox=True icon="lock-open" label="Unlocked" title="Lock this production" %}
+                {% endif %}
+                {% if show_locked_button %}
+                    {% url 'production_protected' production.id as locked_button_url %}
+                    {% button href=locked_button_url lightbox=True icon="lock" label="Protected" %}
+                {% endif %}
+                {% if show_edit_button %}
+                    {% button href=production.get_edit_core_details_url icon="edit" label="Edit" lightbox=True title="Edit production details" %}
+                {% endif %}
+                {% if show_back_button %}
+                    {% button href=production.get_absolute_url label="Back to production" icon="back" %}
+                {% endif %}
+            </div>
+        {% endif %}
+    </header>
 
     <div class="production_title focus_title">
         <h2>{{ production.title }}</h2>

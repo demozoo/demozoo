@@ -1,15 +1,20 @@
 .notes_panel {
-    border: 1px solid #eee;
+    border-width: 1px 0;
+    border-style: solid;
+    border-color: #ccc;
+
     color: #444;
-    margin-bottom: 20px;
-    margin-top: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
+    margin-block: 8px 20px;
 
     .notes {
-        width: 90%;
-        margin: auto;
+        width: 80%;
 
         @include markdown();
+    }
+
+    .o-actions {
+        float: right;
+        margin-block: 10px;
+        margin-inline-start: 10px;
     }
 }

@@ -1,15 +1,17 @@
 {% load safe_markdown ui_tags %}
 
 {% if production.notes or request.user.is_staff %}
-    <div class="editable_chunk panel notes_panel">
-        {% if request.user.is_staff and site_is_writeable %}
-            <div class="o-actions">
-                {% url 'production_edit_notes' production.id as edit_notes_url %}
-                {% button href=edit_notes_url icon="edit" label="Edit notes" lightbox=True %}
-            </div>
-        {% endif %}
-        <div class="notes">
+    <section class="editable_chunk panel notes_panel">
+        <header class="panel__header">
+            {% if request.user.is_staff and site_is_writeable %}
+                <div class="o-actions">
+                    {% url 'production_edit_notes' production.id as edit_notes_url %}
+                    {% button href=edit_notes_url icon="edit" label="Edit notes" lightbox=True %}
+                </div>
+            {% endif %}
+        </header>
+        <div class="panel__content notes">
             {{ production.notes|safe_markdown }}
         </div>
-    </div>
+    </section>
 {% endif %}
