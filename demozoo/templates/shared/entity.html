@@ -1,0 +1,5 @@
+<div class="m-entity">
+    {% if icon %}{% include "shared/icon.html" with icon=icon %}{% endif %}
+    <a href="{{ url }}">{{ label }}</a>
+    {% if flag %}{% include "shared/releaser_flag.html" with releaser=flag %}{% endif %}
+</div>
