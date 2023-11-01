@@ -8,9 +8,9 @@
             {% button href=edit_external_links_url icon="edit" label="Edit" lightbox=True focus=True %}
         </div>
     {% endif %}
-    <ul class="external_links">
+    <ul class="list -inline external_links">
         {% for link in external_links %}
-            <li>{{ link.html_link|safe }}</li>
+            <li class="list__item">{{ link.html_link|safe }}</li>
         {% endfor %}
     </ul>
 </div>

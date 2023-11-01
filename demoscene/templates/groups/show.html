@@ -21,26 +21,27 @@
 {% block body_class %}show_group{% endblock %}
 
 {% block base_main %}
-    <div class="editable_chunk">
-        <div class="signpost">Group</div>
+    <header class="editable_chunk">
+        <div class="show_group__header">
+            <div class="signpost">Group</div>
 
-        {% if prompt_to_edit or show_lock_button or show_locked_button %}
-            <div class="o-actions">
-                {% if show_lock_button %}
-                    {% url 'lock_releaser' group.id as lock_releaser_url %}
-                    {% button href=lock_releaser_url icon="unlocked" label="Unlocked" title="Lock this group" lightbox=True %}
-                {% endif %}
-                {% if show_locked_button %}
-                    {% url 'releaser_protected' group.id as releaser_protected_url %}
-                    {% button href=releaser_protected_url icon="locked" label="Protected" lightbox=True %}
-                {% endif %}
-                {% if prompt_to_edit %}
-                    {% url 'releaser_edit_primary_nick' group.id as releaser_edit_primary_nick_url %}
-                    {% button href=releaser_edit_primary_nick_url icon="edit" label="Edit" title="Edit name" lightbox=True focus=True %}
-                {% endif %}
-            </div>
-        {% endif %}
-
+            {% if prompt_to_edit or show_lock_button or show_locked_button %}
+                <div class="o-actions">
+                    {% if show_lock_button %}
+                        {% url 'lock_releaser' group.id as lock_releaser_url %}
+                        {% button href=lock_releaser_url icon="unlocked" label="Unlocked" title="Lock this group" lightbox=True %}
+                    {% endif %}
+                    {% if show_locked_button %}
+                        {% url 'releaser_protected' group.id as releaser_protected_url %}
+                        {% button href=releaser_protected_url icon="locked" label="Protected" lightbox=True %}
+                    {% endif %}
+                    {% if prompt_to_edit %}
+                        {% url 'releaser_edit_primary_nick' group.id as releaser_edit_primary_nick_url %}
+                        {% button href=releaser_edit_primary_nick_url icon="edit" label="Edit" title="Edit name" lightbox=True focus=True %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
         <div class="focus_title group_name">
             <h2>{{ group.name }}</h2>
             {% with group.primary_nick.nick_variant_and_abbreviation_list as nick_variants %}
@@ -54,30 +55,32 @@
                 {% endif %}
             {% endwith %}
         </div>
-    </div>
+    </header>
 
     {% with group.alternative_nicks as alternative_nicks %}
         {% if alternative_nicks %}
-            <div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-                <h3 class="panel__title">Also known as</h3>
-
-                <ul class="nicks">
-                    {% for nick in alternative_nicks %}
-                        <li class="nick">
-                            <span>
-                                <strong>{{ nick.name }}</strong> {% nick_variants nick %}
-                            </span>
-                            {% if can_edit %}
-                                {% url 'releaser_edit_nick' group.id nick.id as releaser_edit_nick_url %}
-                                {% button href=releaser_edit_nick_url level="tertiary" lightbox=True title="Edit name" icon="edit" %}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-                {% if can_edit %}
-                    {% url 'releaser_add_nick' group.id as releaser_add_nick_url %}
-                    {% button href=releaser_add_nick_url label="Add another name" icon="add" lightbox=True %}
-                {% endif %}
+            <div class="panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+                <header class="panel__header">
+                    <h3 class="panel__title">Also known as</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list nicks">
+                        {% for nick in alternative_nicks %}
+                            <li class="list__item">
+                                <strong>{{ nick.name }}</strong>
+                                {% nick_variants nick %}
+                                {% if can_edit %}
+                                    {% url 'releaser_edit_nick' group.id nick.id as releaser_edit_nick_url %}
+                                    {% button href=releaser_edit_nick_url level="tertiary" lightbox=True title="Edit name" icon="edit" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if can_edit %}
+                        {% url 'releaser_add_nick' group.id as releaser_add_nick_url %}
+                        {% button href=releaser_add_nick_url label="Add another name" icon="add" lightbox=True %}
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
     {% endwith %}
@@ -90,9 +93,9 @@
                 {% button href=releaser_edit_external_links_url icon="edit" lightbox=True focus=True title="Edit external links" label="Edit" %}
             </div>
         {% endif %}
-        <ul class="external_links">
+        <ul class="list -inline external_links">
             {% for link in external_links %}
-                <li>{{ link.html_link|safe }}</li>
+                <li class="list__item">{{ link.html_link|safe }}</li>
             {% endfor %}
         </ul>
     </div>
@@ -127,62 +130,68 @@
         {% endif %}
 
         <div class="panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Members</h3>
-
-            <ul class="memberships">
-                {% for membership in memberships %}
-                    <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-                        <span>
-                            <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-                            {% releaser_flag membership.member %}
-                        </span>
+            <header class="panel__header">
+                <h3 class="panel__title">Members</h3>
+            </header>
+            <div class="panel__content">
+                <ul class="list">
+                    {% for membership in memberships %}
+                    <li class="list__item{% if not membership.is_current %} -previous_membership{% endif %}">
+                        {% url 'scener' membership.member.id as scener_url %}
+                        {% include "shared/entity.html" with current=membership.is_current flag=membership.member type="scener" label=membership.member.name title="ex-member" url=scener_url %}
                         {% if can_edit %}
-                            {% url 'group_edit_membership' group.id membership.id as group_edit_membership_url %}
-                            {% button href=group_edit_membership_url level="tertiary" lightbox=True title="Edit membership" icon="edit" %}
+                        {% url 'group_edit_membership' group.id membership.id as group_edit_membership_url %}
+                        {% button href=group_edit_membership_url level="tertiary" lightbox=True title="Edit membership" icon="edit" %}
                         {% endif %}
                     </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
+                    {% endfor %}
+                </ul>
+                {% if can_edit %}
                 {% url 'group_add_member' group.id as group_add_member_url %}
                 {% button href=group_add_member_url icon="add" lightbox=True label="Add member" %}
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
 
         <div class="panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Subgroups</h3>
-
-            <ul class="memberships">
-                {% for membership in subgroupships %}
-                    <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
-                        {% releaser_flag membership.member %}
+            <header class="panel__header">
+                <h3 class="panel__title">Subgroups</h3>
+            </header>
+            <div class="panel__content">
+                <ul class="list -subgroups">
+                    {% for membership in subgroupships %}
+                    <li class="list__item">
+                        {% url 'group' membership.member.id as group_url %}
+                        {% include "shared/entity.html" with current=membership.is_current flag=membership.member type="group" label=membership.member.name title="ex-subgroup" url=group_url %}
                         {% if can_edit %}
-                            {% url 'group_edit_subgroup' group.id membership.id as group_edit_subgroup_url %}
-                            {% button href=group_edit_subgroup_url title="Edit subgroup" lightbox=True icon="edit" %}
+                        {% url 'group_edit_subgroup' group.id membership.id as group_edit_subgroup_url %}
+                        {% button href=group_edit_subgroup_url title="Edit subgroup" lightbox=True icon="edit" level="tertiary" %}
                         {% endif %}
                     </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
+                    {% endfor %}
+                </ul>
+                {% if can_edit %}
                 {% url 'group_add_subgroup' group.id as group_add_subgroup_url %}
                 {% button href=group_add_subgroup_url icon="add" lightbox=True label="Add subgroup" %}
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
 
         {% if bbs_affiliations %}
-            <div class="panel bbs_panel">
-                <h3 class="panel__title">BBS affiliations</h3>
-
-                <ul class="bbses">
-                    {% for affiliation in bbs_affiliations %}
-                        <li class="bbs">
-                            <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
-                            {% releaser_flag affiliation.bbs %}
-                            {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+            <div class="panel -bbs">
+                <header class="panel__header">
+                    <h3 class="panel__title">BBS affiliations</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list">
+                        {% for affiliation in bbs_affiliations %}
+                            <li class="list__item">
+                                {% url 'bbs' affiliation.bbs.id as bbs_url %}
+                                {% include "shared/entity.html" with url=bbs_url type="bbs" label=affiliation.bbs.name flag=affiliation.bbs description=affiliation.get_role_display %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         {% endif %}
     </div>
@@ -191,10 +200,10 @@
         {% if parties_organised %}
             <div class="panel parties_organised_panel">
                 <h3 class="panel__title">Organiser of</h3>
-                <ul class="parties">
+                <ul class="list">
                     {% for organiser in parties_organised %}
                         {% with party=organiser.party %}
-                            <li>
+                            <li class="list__item">
                                 {% if party.is_cancelled %}<del>{% endif %}
                                 <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
                                     {% if party.is_online %}

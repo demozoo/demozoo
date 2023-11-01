@@ -8,9 +8,9 @@
             {% button href=edit_download_links icon="edit" label="Edit" lightbox=True focus=True %}
         </div>
     {% endif %}
-    <ul class="download_links">
+    <ul class="list download_links">
         {% for link in download_links %}
-            <li class="download_link {{ link.html_link_class }}">
+            <li class="list__item download_link {{ link.html_link_class }}">
                 {{ link.as_download_link|safe }}
             </li>
         {% endfor %}

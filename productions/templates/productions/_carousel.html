@@ -19,7 +19,7 @@
                 <p>
                     No screenshot yet!
                     {% if prompt_to_edit %}
-                        <a href="{% url 'production_add_screenshot' production.id %}" class="open_in_lightbox" rel="nofollow">Add one</a>
+                        <a href="{% url 'production_add_screenshot' production.id %}" data-lightbox rel="nofollow">Add one</a>
                     {% endif %}
                 </p>
             </div>

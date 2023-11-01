@@ -13,9 +13,11 @@
         }
 
         .attributes {
-            width: 100%;
+            @include listReset();
+
             border-top: 1px solid #ccc;
             padding-top: 10px;
+            width: 100%;
 
             li {
                 color: #555;
@@ -71,7 +73,8 @@
     }
 
     .info_files_panel {
-        margin-bottom: 10px;
+        margin-block: 0 20px;
+
 
         ul.info_files {
             padding-top: 8px;
@@ -82,24 +85,15 @@
 
     .external_links_panel {
         margin-bottom: 10px;
-
-        ul.external_links {
-            padding-top: 8px;
-            padding-bottom: 8px;
-            clear: both;
-        }
     }
 
     .tags_panel {
         margin-bottom: 20px;
-
-        ul.tags {
-            clear: both;
-        }
     }
 
     .tell_us_something_panel {
         border-top: 1px solid #bbb;
+
         p {
             text-align: center;
         }

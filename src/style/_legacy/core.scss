@@ -36,11 +36,6 @@ h6 {
     margin: 0;
 }
 
-ul,
-ol {
-    @include listReset(); // REMOVE THIS SHITTY RESET ASAP K THX.
-}
-
 nav {
 
     ul {

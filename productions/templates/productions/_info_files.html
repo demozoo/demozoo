@@ -8,9 +8,14 @@
             {% button href=info_files_edit_url lightbox=True icon="edit" label="Edit" title="Edit info files" %}
         </div>
     {% endif %}
-    <ul class="info_files">
+    <ul class="list info_files">
         {% for file in info_files %}
-            <li><a href="{% url 'production_info_file' production.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
+            <li class="list__item">
+                <a href="{% url 'production_info_file' production.id file.id %}"
+                   title="{{ file.filename }} - ({{ file.filesize }} bytes)">
+                    {{ file.filename }}
+                </a>
+            </li>
         {% endfor %}
     </ul>
 </div>

@@ -72,7 +72,7 @@
             {% comment %}
                 TODO: bring this into the new button component fold.
             {% endcomment %}
-            <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add open_in_lightbox">New party edition</a>
+            <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add" data-lightbox>New party edition</a>
         </div>
     {% endif %}
     <div style="clear: both;"></div>

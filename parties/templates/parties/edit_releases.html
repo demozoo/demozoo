@@ -19,9 +19,9 @@
     <div class="long_help">
         <h3>Non-compo releases only!</h3>
         {% if party.competitions.count %}
-            <p>Productions that were part of a competition should be added under that competition instead. (You can <a href="{% url 'party_add_competition' party.id %}" class="open_in_lightbox">add a competition</a> if it isn't listed here already.)</p>
+            <p>Productions that were part of a competition should be added under that competition instead. (You can <a href="{% url 'party_add_competition' party.id %}" data-lightbox>add a competition</a> if it isn't listed here already.)</p>
         {% else %}
-            <p>For productions that were part of a competition, <a href="{% url 'party_add_competition' party.id %}" class="open_in_lightbox">add a competition</a> first.</p>
+            <p>For productions that were part of a competition, <a href="{% url 'party_add_competition' party.id %}" data-lightbox>add a competition</a> first.</p>
         {% endif %}
     </div>
 

@@ -8,14 +8,14 @@
     color: currentColor;
 }
 
+.banner_wrapper {
+    .o-actions {
+        inset-block-start: 4px;
+        inset-inline-end: 4px;
+        position: absolute;
+        z-index: 2;
+    }
+}
 .o-actions {
     float: right;
-}
-
-.credits li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    margin: 0;
 }

@@ -2,6 +2,43 @@ $unit: 1.25%;
 
 .list {
     @include listReset();
+
+    clear: both;
+
+    &.-inline {
+        align-items: baseline;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+    }
+
+    &.-subgroups {
+        .list__item {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+    }
+
+    .group {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+
+        .a-icon {
+            @include size(16px);
+        }
+    }
+
+    &.-credits {
+
+        .list__item {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            padding-block: 2px;
+        }
+    }
 }
 
 .list__item {

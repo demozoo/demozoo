@@ -4,13 +4,14 @@ div.result {
     display: flex;
 
     .media {
-        margin: 0 .5rem 0 0;
         @include size(2.75em);
+
         flex-shrink: 0;
+        margin-inline-end: 0.5rem;
     }
 
     .snippet {
-        padding: .125rem 0;
         line-height: 1.25rem;
+        padding-block: .125rem;
     }
 }

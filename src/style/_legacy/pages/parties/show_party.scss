@@ -3,78 +3,55 @@
     .party_core_details {
         overflow: hidden; /* self-clear */
         padding-bottom: 10px;
+    }
 
-        .attributes {
-            width: 100%;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
+    .attributes {
+        @include listReset();
 
-            li {
-                color: #555;
-                float: left;
-                padding-left: 16px;
-                background: no-repeat url(/static/images/icons/mini_bullet.png) left center;
-                font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-                letter-spacing: 1px;
-                text-transform: uppercase;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+        width: 100%;
 
-                &:first-child {
-                    background-image: none;
-                    padding-left: 0;
-                }
+        li {
+            color: #555;
+            float: left;
+            padding-left: 16px;
+            background: no-repeat url(/static/images/icons/mini_bullet.png) left center;
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
 
-                &.website {
-                    clear:both;
-                    background-image: none;
-                    padding-left: 0;
-                }
+            &:first-child {
+                background-image: none;
+                padding-left: 0;
+            }
+
+            &.website {
+                clear:both;
+                background-image: none;
+                padding-left: 0;
             }
         }
     }
 
-    .organisers_panel {
-        overflow: hidden; /* self-clear */
-        margin-bottom: 8px;
+    .list.-organisers {
+        clear: both;
+        padding-block: 0 8px;
 
-        .organisers {
-            overflow: hidden; /* self-clear */
-            clear: both;
-            padding-bottom: 8px;
-        }
-
-        li {
-            float: left;
-            padding-right: 8px;
-        }
-
-        li.scener {
-            padding-left: 24px;
-            background-position: left center;
-            background-repeat: no-repeat;
-            background-image: url(/static/images/icons/scener.png);
-        }
-
-        li.group {
-            float: left;
-            padding-left: 24px;
-            background-position: left center;
-            background-repeat: no-repeat;
-            background-image: url(/static/images/icons/group.png);
-        }
-
-        .add_organiser {
-            clear: both;
-        }
-
-        &.hide_edit_controls {
-            .edit_organiser,
-            .add_organiser {
-                display: none;
+        .group,
+        .scener {
+            .a-icon {
+                @include size(16px);
             }
 
-            li.scener {
-                padding-right: 24px;
-            }
+            display: flex;
+            gap: 4px;
+        }
+    }
+
+    .list.external_links {
+        a {
+            margin: 0;
         }
     }
 
@@ -82,15 +59,6 @@
         .results_files {
             clear: both;
             padding-bottom: 8px;
-        }
-    }
-
-    .external_links_panel {
-        margin-bottom: 20px;
-
-        ul.external_links {
-            padding-bottom: 8px;
-            clear: both;
         }
     }
 
@@ -163,9 +131,10 @@
     max-height: 100vh;
 
     ul {
+        @include listReset();
+
         clear: both;
         padding-top: 10px;
-        width: 90%;
     }
 
     li:nth-child(odd) {

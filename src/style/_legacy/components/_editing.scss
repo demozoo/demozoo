@@ -40,6 +40,10 @@ ul.nick_change_options {
 .spawning_formset {
     clear: both;
 
+    ul {
+        @include listReset();
+    }
+
     li {
         line-height: 24px;
 

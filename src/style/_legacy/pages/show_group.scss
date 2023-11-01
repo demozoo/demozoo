@@ -1,5 +1,12 @@
 .show_group {
 
+    &__header {
+        align-items: start;
+        display: flex;
+        justify-content: space-between;
+        margin-block: 0 10px;
+    }
+
     @media screen and (min-width: 800px) {
         #side_column {
             float: left;
@@ -9,16 +16,6 @@
         #main_column {
             float: left;
             width: 70%;
-        }
-    }
-
-    .external_links_panel {
-        margin-bottom: 20px;
-
-        ul.external_links {
-            padding-top: 8px;
-            padding-bottom: 8px;
-            clear: both;
         }
     }
 
@@ -32,32 +29,6 @@
         &.hide_edit_controls {
             .edit_nick, .add_nick {
                 display: none;
-            }
-        }
-    }
-
-    .members_panel {
-        &.hide_edit_controls {
-            .edit_membership, .add_member {
-                display: none;
-            }
-        }
-        &.editing {
-            ul.memberships li:hover {
-                background-color: #ddd;
-            }
-        }
-    }
-
-    .subgroups_panel {
-        &.hide_edit_controls {
-            .edit_subgroup, .add_subgroup {
-                display: none;
-            }
-        }
-        &.editing {
-            ul.memberships li:hover {
-                background-color: #ddd;
             }
         }
     }
@@ -122,14 +93,18 @@
     }
 
     .parties_organised_panel {
-        .parties {
-            clear: both;
-            padding-bottom: 16px;
+
+        .list {
+
+            li {
+                margin-block: 0 5px;
+            }
 
             a {
                 text-decoration: none;
                 color: #444;
                 font-weight: bold;
+
                 &:hover {
                     text-decoration: underline;
                 }

@@ -2,16 +2,16 @@
 .signpost {
     background-color: #6bc7f1;
     color: white;
-    float: left;
     font-family: FabricaRegular, Helvetica, Arial, sans-serif;
     font-size: 10pt;
-    margin: 0 10px 10px 0;
+    min-width: 120px;
     padding: 4px 6px;
     text-transform: uppercase;
-    width: 120px;
-}
-.signpost a {
-    display: block;
-    color: inherit;
-    text-decoration: none;
+
+    a {
+        color: currentColor;
+        color: inherit;
+        display: block;
+        text-decoration: none;
+    }
 }

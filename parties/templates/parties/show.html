@@ -131,55 +131,58 @@
         </ul>
     </div>
 
+    <section class="panel -organisers editable_chunk{% if can_edit %} edit_toggle{% if editing_organisers %} editing{% endif %}{% endif %}">
+        <header class="panel__header">
+            <h3 class="panel__title">Organisers</h3>
+        </header>
+        <div class="panel__content">
+            {% regroup organisers by releaser.is_group as orga_type_list %}
+            {% for is_group, orga_list in orga_type_list %}
+                 {% if is_group %}
+                    <ul class="list -inline -organisers">
+                        {% for organiser in orga_list %}
+                            <li class="group">
+                                {% icon 'group' %}
+                                <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
+                                {% if organiser.role %}({{ organiser.role}}){% endif %}
 
-<div class="editable_chunk panel organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
-        <h3 class="panel__title">Organisers</h3>
-        <!-- todo: bring this into the new button component fold -->
-        {% regroup organisers by releaser.is_group as orga_type_list %}
-        {% for is_group, orga_list in orga_type_list %}
-            {% if is_group %}
-                <ul class="organisers">
-                    <li>Presented by:</li>
-
-                    {% for organiser in orga_list %}
-                        <li class="group">
-                            <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                            {% if organiser.role %}({{ organiser.role}}){% endif %}
-                            {% if can_edit %}
-                                {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
-                                {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <ul class="organisers">
-                    {% for organiser in orga_list %}
-                        <li class="scener">
-                            <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                            {% releaser_flag organiser.releaser %}
-                            {% if organiser.role %}({{ organiser.role}}){% endif %}
-                            {% if can_edit %}
-                                {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
-                                {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                                {% if can_edit %}
+                                    {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
+                                    {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <ul class="list -inline -organisers">
+                        {% for organiser in orga_list %}
+                            <li class="scener">
+                                {% icon 'scener' %}
+                                <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
+                                {% releaser_flag organiser.releaser %}
+                                {% if organiser.role %}({{ organiser.role}}){% endif %}
+                                {% if can_edit %}
+                                    {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
+                                    {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+            {% if can_edit %}
+                <div class="add_organiser">
+                    {% url 'party_add_organiser' party.id as party_add_organiser_url %}
+                    {% button href=party_add_organiser_url icon="add" lightbox=True label="Add organiser" %}
+                </div>
             {% endif %}
-        {% endfor %}
-        {% if can_edit %}
-            <div class="add_organiser">
-                {% url 'party_add_organiser' party.id as party_add_organiser_url %}
-                {% button href=party_add_organiser_url icon="add" lightbox=True label="Add organiser" %}
-            </div>
-        {% endif %}
-    </div>
+        </div>
+    </section>
 
     {% if results_files %}
         <div class="panel results_file_panel">
             <h3 class="panel__title">Results file</h3>
-            <ul class="results_files">
+            <ul class="list -inline">
                 {% for file in results_files %}
                     <li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
                 {% endfor %}
@@ -196,7 +199,7 @@
                     {% button href=edit_party_external_links_url icon="edit" lightbox=True focus=True label="Edit" title="Edit external links" %}
                 </div>
             {% endif %}
-            <ul class="external_links">
+            <ul class="external_links list -inline">
                 {% for link in external_links %}
                     <li>{{ link.html_link|safe }}</li>
                 {% endfor %}

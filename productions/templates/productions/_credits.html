@@ -1,33 +1,26 @@
 {% load ui_tags %}
 
-<div class="editable_chunk credits_panel panel {% if not credits %}hidden{% endif %} {% if can_edit %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
-    <h3 class="panel__title">Credits</h3>
-
-    <ul class="credits">
-        {% regroup credits by nick as nick_list %}
-        {% for nick_credits in nick_list %}
-            <li>
-                <span data-thing="{% if nick_credits.grouper.releaser.is_group %}group{% else %}scener{% endif %}">
-                    <a href="{{ nick_credits.grouper.releaser.get_absolute_url }}">{{ nick_credits.grouper }}</a>
-                    -
-                    {% for credit in nick_credits.list %}
-                        {{ credit.description }}{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                </span>
+<section class="panel editable_chunk credits_panel {% if not credits %}hidden{% endif %} {% if can_edit %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
+    <header class="panel__header">
+        <h3 class="panel__title">Credits</h3>
+    </header>
+    <div class="panel__content">
+        <ul class="list -credits">
+            {% regroup credits by nick as nick_list %}
+            {% for nick_credits in nick_list %}
+            <li class="list__item">
+                {% include "shared/entity.html" with url=nick_credits.grouper.releaser.get_absolute_url type="scener" label=nick_credits.grouper list=nick_credits.list %}
                 {% if can_edit %}
-                    <a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="m-button -tertiary -iconOnly edit_credit" aria-label="Edit credit">
-                        <span class="m-button__icon"><svg class="a-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--edit"></use></svg></span>
-                    </a>
+                {% url 'production_edit_credit' production.id nick_credits.grouper.id as production_edit_credit_url %}
+                {% button href=production_edit_credit_url icon="edit" level="tertiary" title="Edit crdit" lightbox=True %}
                 {% endif %}
-
             </li>
-        {% endfor %}
-    </ul>
-    {% if can_edit %}
+            {% endfor %}
+        </ul>
+        {% if can_edit %}
         {# todo: bring this into the new button fold #}
-        <a href="{% url 'production_add_credit' production.id %}" class="m-button add_credit">
-            <span class="m-button__icon"><svg class="a-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--edit"></use></svg></span>
-            <span class="m-button__label">Add credit</span>
-        </a>
-    {% endif %}
-</div>
+        {% url 'production_add_credit' production.id as production_add_credit_url %}
+        {% button href=production_add_credit_url icon="add" label="Add credit" lightbox=True %}
+        {% endif %}
+    </div>
+</section>

@@ -85,8 +85,15 @@
 
     &:hover {
       --button-text-color: #444;
-      text-decoration: underline;
 
+      text-decoration: underline;
+    }
+
+    &.-iconOnly {
+      @include size(var(--button-icon-size));
+
+      line-height: 1;
+      padding-inline: 0;
     }
   }
 }

@@ -1,27 +1,20 @@
 .production_listing_filters {
-    border: 1px solid #ccc;
+    align-items: center;
+    background-color: #f5f5f5;
     border-radius: 4px;
-    background-color: #eee;
-    overflow: hidden;
+    border: 1px solid #ccc;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-block: 0 10px;
     padding: 10px;
-    clear: both;
-    text-align: center;
 
     .fields {
-        display: inline;
+        @include listReset();
 
-            li {
-            display: inline;
-            width: 50%;
-
-            select {
-                font-size: 12pt;
-                max-width: 100%;
-            }
-        }
-    }
-
-    input[type='submit'] {
-        display: inline;
+        align-items: center;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
     }
 }

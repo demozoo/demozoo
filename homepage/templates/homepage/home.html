@@ -29,9 +29,9 @@
                             <tr>
                                 <th>{{ month.list.0.start_date.date|date:"F" }}</th>
                                 <td>
-                                    <ul>
+                                    <ul class="list -inline">
                                         {% for party in month.list %}
-                                            <li>
+                                            <li class="list__item">
                                                 {% if party.is_cancelled %}<del>{% endif %}
                                                 <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
                                                     {% if party.is_online %}
@@ -93,12 +93,12 @@
             <div class="now_serving block">
                 <h3 class="block_heading">Now serving</h3>
                 {% site_stats as stats %}
-                <ul>
-                    <li class="productions"><a href="{% url 'productions' %}">{{ stats.production_count }} production{{ stats.production_count|pluralize }}</a></li>
-                    <li class="graphics"><a href="{% url 'graphics' %}">{{ stats.graphics_count }} graphics</a></li>
-                    <li class="music"><a href="{% url 'musics' %}">{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</a></li>
-                    <li class="groups"><a href="{% url 'groups' %}">{{ stats.group_count }} group{{ stats.group_count|pluralize }}</a></li>
-                    <li class="sceners"><a href="{% url 'sceners' %}">{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</a></li>
+                <ul class="list -inline">
+                    <li class="list__item"><a href="{% url 'productions' %}">{% icon 'production' %}{{ stats.production_count }} production{{ stats.production_count|pluralize }}</a></li>
+                    <li class="list__item"><a href="{% url 'graphics' %}">{% icon 'graphics' %}{{ stats.graphics_count }} graphics</a></li>
+                    <li class="list__item"><a href="{% url 'musics' %}">{% icon 'music' %}{{ stats.music_count }} music track{{ stats.music_count|pluralize }}</a></li>
+                    <li class="list__item"><a href="{% url 'groups' %}">{% icon 'group' %}{{ stats.group_count }} group{{ stats.group_count|pluralize }}</a></li>
+                    <li class="list__item"><a href="{% url 'sceners' %}">{% icon 'scener' %}{{ stats.scener_count }} scener{{ stats.scener_count|pluralize }}</a></li>
                 </ul>
             </div>
         </div>
