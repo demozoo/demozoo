@@ -130,7 +130,8 @@ class ShowView(View):
             'award_nominations': (
                 self.production.award_nominations
                 .select_related('category', 'category__event')
-                .order_by('category__event__name', 'category__name')
+                .only('production__id', 'category__name', 'category__event__name', 'category__event__id', 'status')
+                .order_by('category__event__name', '-status', 'category__name')
             ),
             'tags': self.production.tags.order_by('name'),
             'blurbs': self.production.blurbs.all() if self.request.user.is_staff else None,

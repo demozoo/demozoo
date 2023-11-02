@@ -2,7 +2,7 @@
     <h3 class="panel__title">Awards</h3>
     <ul class="awards">
         {% for nomination in award_nominations %}
-            <li>
+            <li class="{{ nomination.status }}">
                 {{ nomination.category.event.name }} -
                 {% if nomination.status == 'winner' %}
                     Winner of {{ nomination.category.name }}
