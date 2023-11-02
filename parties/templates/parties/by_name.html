@@ -5,15 +5,15 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
-        <div class="o-actions">
-            {% url 'new_party' as new_party_url %}
-            {% button lightbox=True label="New Party" icon="add" href=new_party_url %}
-        </div>
-    {% endif %}
-
-    <h2>Parties</h2>
-    
+    <header class="page__header">
+        {% if site_is_writeable %}
+            <div class="o-actions">
+                {% url 'new_party' as new_party_url %}
+                {% button href=new_party_url icon="add" label="New Party" lightbox=True %}
+            </div>
+        {% endif %}
+        <h1 class="page__title">Parties</h1>
+    </header>
     <p>
         <a href="{% url 'parties' %}">By date</a> | <strong>By name</strong>
     </p>

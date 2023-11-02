@@ -1,4 +1,6 @@
 ul.pagination {
+    @include listReset();
+
     border-left: 1px solid #888;
     clear: both; /* self-clear */
     margin-bottom: 8px;

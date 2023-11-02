@@ -7,15 +7,15 @@
 {% block body_class %}forums_index{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
-        <div class="o-actions">
-            {% url 'forums_new_topic' as forums_new_topic_url %}
-            {% button href=new_topic_url label="New topic" icon="add" lightbox=True %}
-        </div>
-    {% endif %}
+    <header class="page__header">
+        {% if site_is_writeable %}
+            <div class="o-actions">
+                {% url 'forums_new_topic' as forums_new_topic_url %}
+                {% button href=new_topic_url label="New topic" icon="add" lightbox=True %}
+            </div>
+        {% endif %}
+        <h1 class="page__title">Discussions</h1>
+    </header>
 
-    <div class="focus_title">
-        <h2>Discussions</h2>
-    </div>
     {% include "forums/_topics.html" with show_full_meta=1 %}
 {% endblock %}

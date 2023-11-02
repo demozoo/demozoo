@@ -5,18 +5,19 @@
 {% block html_title %}Sceners - Demozoo{% endblock %}
 
 {% block base_main %}
-    <h2>Sceners</h2>
-    
-    {% if site_is_writeable %}
-        <div class="o-actions">
-            {% url 'new_scener' as new_scener_url %}
-            {% button href=new_scener_url lightbox=True icon="add" label="New scener" %}
-        </div>
-    {% endif %}
-    
-    <ul class="releaser_list">
+    <header class="page__header">
+        {% if site_is_writeable %}
+            <div class="o-actions">
+                {% url 'new_scener' as new_scener_url %}
+                {% button href=new_scener_url lightbox=True icon="add" label="New scener" %}
+            </div>
+        {% endif %}
+        <h1 class="page__title">Sceners</h1>
+    </header>
+
+    <ul class="list -releasers">
         {% for nick in nick_page.object_list %}
-            <li class="scener">
+            <li class="list__item">
                 {% scener_with_affiliations nick %}
                 {% nick_variants nick %}
                 {% releaser_flag nick.releaser %}

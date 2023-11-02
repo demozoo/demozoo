@@ -7,12 +7,10 @@
 {% block body_class %}show_topic{% endblock %}
 
 {% block base_main %}
-    <a href="{% url 'forums' %}"><div class="signpost">Discussions</div></a>
-
-    <div class="focus_title">
-        <h2>{{ topic.title }}</h2>
-    </div>
-
+    <header class="page__header">
+        <a href="{% url 'forums' %}" class="signpost">Discussions</a>
+        <h1 class="page__title">{{ topic.title }}</h1>
+    </header>
     <div class="posts_panel">
         {% include 'forums/_pagination.html' %}
 

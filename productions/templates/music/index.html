@@ -5,14 +5,15 @@
 {% block html_title %}Music - Demozoo{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
-        <div class="o-actions">
-            {% url 'new_music' as new_music_url %}
-            {% button href=new_production_url icon="add" lightbox=True label="New music" %}
-        </div>
-    {% endif %}
-
-    <h2>Releases</h2>
+    <header class="page__header">
+        {% if site_is_writeable %}
+            <div class="o-actions">
+                {% url 'new_music' as new_music_url %}
+                {% button href=new_production_url icon="add" lightbox=True label="New music" %}
+            </div>
+        {% endif %}
+        <h1 class="page__title">Releases</h1>
+    </header>
 
     <ul class="submenu">
         <li><a href="{% url 'productions' %}">Productions</a></li>

@@ -6,15 +6,15 @@
 {% block body_class %}parties_by_date{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
+    <header class="page__header">
+        {% if site_is_writeable %}
         <div class="o-actions">
             {% url 'new_party' as new_party_url %}
-            {% button lightbox=True label="New Party" icon="add" href=new_party_url %}
+            {% button href=new_party_url icon="add" label="New Party" lightbox=True %}
         </div>
-    {% endif %}
-
-    <h2>Parties</h2>
-    
+        {% endif %}
+        <h1 class="page__title">Parties</h1>
+    </header>
     <p>
         <strong>By date</strong> | <a href="{% url 'parties_by_name' %}">By name</a>
     </p>
@@ -29,10 +29,10 @@
         {% endfor %}
     </ul>
 
-    <h3>{{ selected_year }}</h3>
-    <ul class="parties">
+    <h2>{{ selected_year }}</h2>
+    <ul class="list parties">
         {% for party in parties %}
-            <li>
+            <li class="list__item">
                 {% if party.is_cancelled %}<del>{% endif %}
                 <a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
                 - {% date_range party.start_date party.end_date %}
