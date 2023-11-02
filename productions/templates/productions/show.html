@@ -81,7 +81,7 @@
             {% include "productions/_tags.html" %}
 
             {% if can_edit %}
-                <div class="panel tell_us_something_panel">
+                <section class="panel tell_us_something_panel">
                     <p>Know something about this production that we don't?</p>
 
                     <div class="tell_us_something">
@@ -104,7 +104,7 @@
                             {% endif %}
                         </ul>
                     </div>
-                </div>
+                </section>
             {% endif %}
         </div>
     </div>
@@ -112,52 +112,66 @@
     {% include "productions/_notes.html" %}
 
     <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-        {% include "productions/_credits.html" %}
-
-        {% if production.can_have_pack_members %}
-            <div class="pack_contents_panel panel editable_chunk">
-                <h3 class="panel__title">Pack contents</h3>
-
-                {% if can_edit %}
-                    <div class="o-actions">
-                        {% url 'production_edit_pack_contents' production.id as production_edit_pack_contents_url %}
-                        {% button href=production_edit_pack_contents_url icon="edit" lightbox=True title="Edit pack contents" label="Edit" %}\
+        <div class="column">
+            {% include "productions/_credits.html" %}
+        </div>
+        <div class="column">
+            {% if production.can_have_pack_members %}
+                <section class="panel editable_chunk">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Pack contents</h3>
+                        {% if can_edit %}
+                            <div class="o-actions">
+                                {% url 'production_edit_pack_contents' production.id as production_edit_pack_contents_url %}
+                                {% button href=production_edit_pack_contents_url icon="edit" lightbox=True title="Edit pack contents" label="Edit" %}\
+                            </div>
+                        {% endif %}
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing pack_members show_screenshots=1 %}
                     </div>
-                {% endif %}
+                </section>
+            {% endif %}
 
-                {% production_listing pack_members show_screenshots=1 %}
-            </div>
-        {% endif %}
-
-        {% if packed_in_productions %}
-            <div class="packed_in_panel panel">
-                <h3 class="panel__title">Packed in:</h3>
-                {% production_listing packed_in_productions show_screenshots=1 %}
-            </div>
-        {% endif %}
-
-        {% if featured_in_productions %}
-            <div class="featured_in_panel panel">
-                <h3 class="panel__title">Featured in:</h3>
-                {% production_listing featured_in_productions show_screenshots=1 %}
-            </div>
-        {% endif %}
-
-        {% if soundtracks %}
-            <div class="soundtracks_panel panel editable_chunk">
-                <h3 class="panel__title">Soundtrack</h3>
-
-                {% if can_edit %}
-                    <div class="o-actions">
-                        {% url 'production_edit_soundtracks' production.id as production_edit_soundtracks_url %}
-                        {% button href=production_edit_soundtracks_url label="Edit" title="Edit soundtrack details" icon="edit" lightbox=True %}
+            {% if packed_in_productions %}
+                <section class="panel">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Packed in:</h3>
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing packed_in_productions show_screenshots=1 %}
                     </div>
-                {% endif %}
+                </section>
+            {% endif %}
 
-                {% production_listing soundtracks %}
+            {% if featured_in_productions %}
+                <section class="panel">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Featured in:</h3>
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing featured_in_productions show_screenshots=1 %}
+                    </div>
+                </section>
+            {% endif %}
 
-            </div>
-        {% endif %}
+            {% if soundtracks %}
+                <section class="panel editable_chunk">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Soundtrack</h3>
+                        {% if can_edit %}
+                            <div class="o-actions">
+                                {% url 'production_edit_soundtracks' production.id as production_edit_soundtracks_url %}
+                                {% button href=production_edit_soundtracks_url label="Edit" title="Edit soundtrack details" icon="edit" lightbox=True %}
+                            </div>
+                        {% endif %}
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing soundtracks %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
     </div>
 
     {% last_edited_by production %}
