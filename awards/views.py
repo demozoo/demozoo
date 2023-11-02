@@ -48,7 +48,12 @@ def recommend(request, event_slug, production_id):
     return HttpResponseRedirect(production.get_absolute_url())
 
 
-def user_recommendations(request, event_slug):
+def show(request, event_slug):
+    # The main award page at /awards/[event_slug]/ :
+    # * If nominees exist, show the results
+    # * If user is a juror and reports are enabled, show the links to the per-category recommendation reports
+    # * If user is logged in and recommendations are enabled, show the user's recommendations
+
     event = get_object_or_404(
         Event.active_for_user(request.user), slug=event_slug
     )
@@ -67,7 +72,7 @@ def user_recommendations(request, event_slug):
     else:
         recommendations_by_category = []
 
-    return render(request, 'awards/user_recommendations.html', {
+    return render(request, 'awards/award.html', {
         'event': event,
         'recommendations_by_category': recommendations_by_category,
         'can_view_reports': event.user_can_view_reports(request.user),
@@ -85,7 +90,7 @@ def remove_recommendation(request, recommendation_id):
     )
 
     recommendation.delete()
-    return HttpResponseRedirect(reverse('awards_user_recommendations', args=(recommendation.category.event.slug, )))
+    return HttpResponseRedirect(reverse('award', args=(recommendation.category.event.slug, )))
 
 
 @login_required

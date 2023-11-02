@@ -47,7 +47,7 @@ def user_menu(context):
 
     for event in Event.active_for_user(user):
         menu_items.append(
-            (reverse('awards_user_recommendations', args=(event.slug,)), event.name),
+            (reverse('award', args=(event.slug,)), event.name),
         )
 
     menu_items.append(

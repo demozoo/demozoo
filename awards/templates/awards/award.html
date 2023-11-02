@@ -35,7 +35,7 @@
         {% if request.user.is_authenticated %}
             <p>You haven't made any recommendations yet. Search for your favourite productions of the year and get to it :-)</p>
         {% else %}
-            {% url 'awards_user_recommendations' event.slug as recommendations_url %}
+            {% url 'award' event.slug as recommendations_url %}
             <p><a href="{% url 'log_in' %}?next={{ recommendations_url|urlencode }}">Log in</a> to start making recommendations.</p>
         {% endif %}
     {% endfor %}
