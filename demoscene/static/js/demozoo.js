@@ -10,20 +10,11 @@ function applyGlobalBehaviours(context) {
             /* probably means they want to open it in a new window, so let them... */
             return true;
         }
-        const focus = $(this).attr('data-lightbox-focus');
-        console.log(focus);
+
+        const focus = typeof $(this).data('lightboxFocus') !== 'undefined';
+
         Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focus});
         e.preventDefault();
-    });
-
-    $('a.open_in_lightbox', context).click(function(e) {
-        if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.which === 2) {
-            /* probably means they want to open it in a new window, so let them... */
-            return true;
-        }
-        var focusEmptyInput = $(this).hasClass('focus_empty_input');
-        Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
-        return false;
     });
 
     $('form.open_in_lightbox', context).submit(function() {
