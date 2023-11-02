@@ -127,7 +127,11 @@ class ShowView(View):
             'editing_credits': (self.request.GET.get('editing') == 'credits'),
             'credits': self.production.credits_for_listing(),
             'carousel': Carousel(self.production, self.request.user),
-
+            'award_nominations': (
+                self.production.award_nominations
+                .select_related('category', 'category__event')
+                .order_by('category__event__name', 'category__name')
+            ),
             'tags': self.production.tags.order_by('name'),
             'blurbs': self.production.blurbs.all() if self.request.user.is_staff else None,
             'comment_form': comment_form,
