@@ -1,0 +1,15 @@
+<div class="panel awards_panel">
+    <h3 class="panel__title">Awards</h3>
+    <ul class="awards">
+        {% for nomination in award_nominations %}
+            <li>
+                {{ nomination.category.event.name }} -
+                {% if nomination.status == 'winner' %}
+                    Winner of {{ nomination.category.name }}
+                {% else %}
+                    Nominated for {{ nomination.category.name }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
