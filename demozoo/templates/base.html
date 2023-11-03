@@ -72,11 +72,7 @@
                         <form class="search" id="global_search" method="get" action="{% url 'search' %}">
                             {{ global_search_form.q }}
                             {{ global_search_form.category }}
-                            <button type="submit">
-                                <svg class="icon">
-                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--search"></use>
-                                </svg>
-                            </button>
+                            {% button icon="search" level="primary" variant="searchGlobal" %}
                         </form>
                     {% endblock %}
                 </nav>

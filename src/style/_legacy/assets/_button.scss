@@ -31,20 +31,21 @@
     }
 
     &__text {
-        display: block;
+        align-items: center;
+        display: flex;
         padding: .8em 1.6em;
-        margin-top: 1px;
+
     }
 
-    .icon {
+    .a-icon {
         @include size(24px);
-        line-height: 1;
-        vertical-align: middle;
+
         fill: #888;
-        margin-left: .25em;
-        margin-top: -1px;
+        line-height: 1;
+        margin-left: 0.25em;
         position: relative;
         right: -8px;
+        vertical-align: middle;
     }
 }
 

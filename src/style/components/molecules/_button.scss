@@ -96,4 +96,15 @@
       padding-inline: 0;
     }
   }
+
+//  variants
+  &.-searchGlobal {
+    --button-color: #386580;
+    --button-border-width: 0;
+    --button-size: 25px;
+    --button-text-color: #fff;
+
+    border-radius: 0;
+    width: 40px;
+  }
 }

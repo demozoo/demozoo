@@ -97,6 +97,12 @@ $unit: 1.25%;
         border-top: 1px solid demozoo-color('table-border');
         display: flex;
 
+        .media {
+            box-sizing: border-box;
+            color: #aaa;
+            padding: 6px;
+        }
+
         &:nth-child(odd) {
             background: #F8F8F8;
 

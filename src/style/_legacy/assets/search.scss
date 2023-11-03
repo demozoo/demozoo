@@ -11,9 +11,12 @@
             position: relative;
             transition: 150ms ease-in border;
 
-            .icon {
+            .a-icon {
                 @include size(3.5rem);
+
+                box-sizing: border-box;
                 left: 0;
+                fill: #aaa;
                 padding: 1rem;
                 pointer-events: none;
                 position: absolute;
@@ -58,7 +61,7 @@
             &:focus {
                 border-color: #fff #fff demozoo-color('primary');
 
-                & ~ .icon {
+                & ~ .a-icon {
                     fill: demozoo-color('primary');
                 }
             }

@@ -15,12 +15,19 @@
         <h1 class="page__title">Sceners</h1>
     </header>
 
-    <ul class="list -releasers">
+    <ul class="list list--results">
         {% for nick in nick_page.object_list %}
             <li class="list__item">
-                {% scener_with_affiliations nick %}
-                {% nick_variants nick %}
-                {% releaser_flag nick.releaser %}
+                <div class="result">
+                    <div class="media media--thumbnail">
+                        {% icon 'scener' %}
+                    </div>
+                    <div>
+                        {% scener_with_affiliations nick %}
+                        {% nick_variants nick %}
+                        {% releaser_flag nick.releaser %}
+                    </div>
+                </div>
             </li>
         {% endfor %}
     </ul>
