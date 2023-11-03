@@ -121,11 +121,11 @@
         var screenshotWrapper = $('<div class="screenshot-wrapper"></div>');
 
         var zoomControls = $('<ul class="zoom-controls"></ul>');
-        var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_out_white"></use></svg></a>');
+        var zoomOutControl = $('<a href="javascript:void(0)" class="zoom-out"><svg class="a-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_out_white"></use></svg></a>');
         zoomControls.append($('<li></li>').append(zoomOutControl));
-        var zoomOriginalControl = $('<a href="javascript:void(0)" class="zoom-original"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_original_white"></use></svg></a>');
+        var zoomOriginalControl = $('<a href="javascript:void(0)" class="zoom-original"><svg class="a-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_original_white"></use></svg></a>');
         zoomControls.append($('<li></li>').append(zoomOriginalControl));
-        var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in"><svg class="icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_in_white"></use></svg></a>');
+        var zoomInControl = $('<a href="javascript:void(0)" class="zoom-in"><svg class="a-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg?1#icon--zoom_in_white"></use></svg></a>');
         zoomControls.append($('<li></li>').append(zoomInControl));
 
         var windowWidth, windowHeight;

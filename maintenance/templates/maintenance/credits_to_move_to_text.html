@@ -16,8 +16,9 @@
                 <col width="40%" />
                 {% for credit in credits %}
                     <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
-                        <td class="icon icon_production">
-                            <a href="{% url 'production' credit.production_id %}">{{ credit.title }}</a>
+                        <td>
+                            {% url 'production' credit.production_id as production_url %}
+                            {% include "shared/entity.html" with href=production_url type="production" label=credit.title %}
                         </td>
                         <td>{{ credit.nick_name }}</td>
                         <td>{{ credit.description }}</td>

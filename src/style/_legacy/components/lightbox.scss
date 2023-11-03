@@ -119,6 +119,8 @@ body.loading {
     position: absolute;
     top: 75%;
     left: 50%;
+    padding: 0;
+    list-style: none;
     margin-left: -72px;
     margin-top: -24px;
     width: 149px;
@@ -146,17 +148,22 @@ body.loading {
             border-top-left-radius: 5px;
             border-bottom-left-radius: 5px;
         }
+
         &.zoom-original {
             border-left: none;
         }
+
         &.zoom-in {
             border-left: none;
             border-top-right-radius: 5px;
             border-bottom-right-radius: 5px;
         }
 
-        svg.icon {
+        .a-icon {
+            @include size(24px);
+
             fill: #fff;
+            padding: 12px;
         }
     }
 }
