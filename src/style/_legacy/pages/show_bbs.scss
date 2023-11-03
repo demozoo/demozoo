@@ -17,22 +17,6 @@
         padding-top: 8px;
     }
 
-    .last_edited_by {
-        clear: both;
-        padding-top: 16px;
-        border-top: 1px dotted #ddd;
-
-        a.user {
-            font-weight: bold;
-            color: #333;
-            text-decoration: none;
-
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-    }
-
     .staff_panel {
 
         &.hide_edit_controls {
