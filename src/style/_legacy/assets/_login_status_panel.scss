@@ -50,6 +50,7 @@
         }
 
         ul {
+            @include listReset();
 
             li {
                 border-bottom: 1px solid #5e5f5f;

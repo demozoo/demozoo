@@ -1,0 +1,29 @@
+.attributes {
+    @include listReset();
+
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      color: #555;
+      padding-left: 16px;
+      background: no-repeat url(/static/images/icons/mini_bullet.png) left center;
+      font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+
+      &:first-child {
+        background-image: none;
+        padding-left: 0;
+      }
+
+      &.website {
+        clear:both;
+        background-image: none;
+        padding-left: 0;
+      }
+    }
+}

@@ -10,31 +10,6 @@
             padding-left: 10px;
             line-height: 1.5em;
         }
-
-        .attributes {
-            @include listReset();
-
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-            width: 100%;
-
-            li {
-                color: #555;
-                float: left;
-                padding-left: 16px;
-                background-image: url(/static/images/icons/mini_bullet.png);
-                background-repeat: no-repeat;
-                background-position: left center;
-                font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-
-                &:first-child {
-                    background-image: none;
-                    padding-left: 0;
-                }
-            }
-        }
     }
 
     .blurb {

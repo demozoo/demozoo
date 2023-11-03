@@ -25,6 +25,7 @@
 {% block body_class %}show_party{% endblock %}
 
 {% block base_main %}
+
     <script>
         $(function() {
             var resultsMenuList = $('.results-menu__list');
@@ -87,20 +88,21 @@
         })
     </script>
 
-    <div class="editable_chunk party_core_details">
-        <div class="signpost">Party</div>
+    <div class="core_details -party editable_chunk">
+        <header class="core_details__header">
+            <div class="signpost">Party</div>
 
-        {% if prompt_to_edit %}
-            <div class="o-actions">
-                {% url 'edit_party' party.id as edit_party_url %}
-                {% button label="Edit" lightbox=True icon="edit" title="Edit party details" %}
-                {% if request.user.is_staff %}
-                    {% url 'party_edit_share_image' party.id as edit_party_share_image_url %}
-                    {% button href=edit_party_share_image_url icon="picture-edit" label="Edit social share image" %}
-                {% endif %}
-            </div>
-        {% endif %}
-
+            {% if prompt_to_edit %}
+                <div class="o-actions">
+                    {% url 'edit_party' party.id as edit_party_url %}
+                    {% button label="Edit" lightbox=True icon="edit" title="Edit party details" %}
+                    {% if request.user.is_staff %}
+                        {% url 'party_edit_share_image' party.id as edit_party_share_image_url %}
+                        {% button href=edit_party_share_image_url icon="picture-edit" label="Edit social share image" %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </header>
         <div class="focus_title party_name">
             <h2>{{ party.name }}{% if party.tagline %}:{% endif %}</h2>
             {% if party.tagline %}<h3>"{{ party.tagline }}"</h3>{% endif %}
@@ -180,30 +182,40 @@
     </section>
 
     {% if results_files %}
-        <div class="panel results_file_panel">
-            <h3 class="panel__title">Results file</h3>
-            <ul class="list -inline">
-                {% for file in results_files %}
-                    <li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
-                {% endfor %}
-            </ul>
-        </div>
+        <section class="panel results_file_panel">
+            <header class="panel__header">
+                <h3 class="panel__title">Results file</h3>
+            </header>
+            <div class="panel__content">
+                <ul class="list -inline">
+                    {% for file in results_files %}
+                    <li class="list__item">
+                        <a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
     {% endif %}
 
     {% if external_links or can_edit %}
         <div class="editable_chunk panel external_links_panel">
-            <h3 class="panel__title">External links</h3>
-            {% if can_edit %}
-                <div class="o-actions">
-                    {% url 'party_edit_external_links' party.id as edit_party_external_links_url %}
-                    {% button href=edit_party_external_links_url icon="edit" lightbox=True focus=True label="Edit" title="Edit external links" %}
-                </div>
-            {% endif %}
-            <ul class="external_links list -inline">
-                {% for link in external_links %}
-                    <li>{{ link.html_link|safe }}</li>
-                {% endfor %}
-            </ul>
+            <header class="panel__header">
+                <h3 class="panel__title">External links</h3>
+                {% if can_edit %}
+                    <div class="o-actions">
+                        {% url 'party_edit_external_links' party.id as edit_party_external_links_url %}
+                        {% button href=edit_party_external_links_url icon="edit" lightbox=True focus=True label="Edit" title="Edit external links" %}
+                    </div>
+                {% endif %}
+            </header>
+            <div class="panel__content">
+                <ul class="external_links list -inline">
+                    {% for link in external_links %}
+                        <li class="list__item">{{ link.html_link|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     {% endif %}
 
@@ -227,7 +239,7 @@
     {% endif %}
 
     {% if party.notes or request.user.is_staff %}
-        <div class="editable_chunk panel notes_panel">
+        <section class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'party_edit_notes' party.id as party_edit_notes_url %}
@@ -237,45 +249,49 @@
             <div class="notes">
                 {{ party.notes|safe_markdown }}
             </div>
-        </div>
+        </section>
     {% endif %}
 
     {% if invitations or can_edit %}
-        <div class="panel invitations_panel editable_chunk">
-            <h3 class="panel__title">
-                Invitation{{ invitations|length|pluralize }}
-            </h3>
-            {% if can_edit %}
-                <div class="o-actions">
-                    {% url 'party_edit_invitations' party.id as party_edit_invitations_url %}
-                    {% button href=party_edit_invitations_url icon="edit" label="Edit invitations" lightbox=True %}
-                </div>
-            {% endif %}
-
-            {% if invitations %}
-                {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
-            {% endif %}
-        </div>
+        <section class="panel invitations_panel editable_chunk">
+            <header class="panel__header">
+                <h3 class="panel__title">Invitation{{ invitations|length|pluralize }}</h3>
+                {% if can_edit %}
+                    <div class="o-actions">
+                        {% url 'party_edit_invitations' party.id as party_edit_invitations_url %}
+                        {% button href=party_edit_invitations_url icon="edit" label="Edit invitations" lightbox=True %}
+                    </div>
+                {% endif %}
+            </header>
+            <div class="panel__content">
+                {% if invitations %}
+                    {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
+                {% endif %}
+            </div>
+        </section>
     {% endif %}
 
     {% if releases or can_edit %}
-        <div class="panel releases_panel editable_chunk">
-            <h3 class="panel__title">Releases</h3>
-            {% if can_edit %}
+        <section class="panel releases_panel editable_chunk">
+            <header class="panel__header">
+                <h3 class="panel__title">Releases</h3>
+                {% if can_edit %}
                 <div class="o-actions">
                     {% url 'party_edit_releases' party.id as party_edit_releases_url %}
                     {% button href=party_edit_releases_url icon="edit" label="Edit releases" lightbox=True %}
                 </div>
-            {% endif %}
-
-            {% if releases %}
-                {% production_listing releases show_screenshots=1 show_prod_types=1 %}
-            {% endif %}
-        </div>
+                {% endif %}
+            </header>
+            <div class="panel__content">
+                {% if releases %}
+                    {% production_listing releases show_screenshots=1 show_prod_types=1 %}
+                {% endif %}
+            </div>
+        </section>
     {% endif %}
 
     {% if competitions_with_placings_and_screenshots or can_edit %}
-        <div class="panel results_panel">
+        <section class="panel results_panel">
             <div class="results_menu_column">
                 <div class="results_menu">
                     <h3 class="panel__title">Results</h3>
@@ -292,6 +308,7 @@
             <div class="results_body">
                 {% for compo, placings in competitions_with_placings_and_screenshots %}
                     <section class="competition editable_chunk" id="competition_{{ compo.id }}">
+                        <header class="competition__header">
                         {% if can_edit %}
                             <div class="o-actions">
                                 {% url 'competition_edit' compo.id as competition_edit_url %}
@@ -302,9 +319,8 @@
                                 {% endif %}
                             </div>
                         {% endif %}
-
-                        <h4 class="competition__heading">{{ compo.name }}</h4>
-
+                            <h4 class="competition__heading">{{ compo.name }}</h4>
+                        </header>
                         {% if placings %}
                             {% include "shared/competition_results.html" %}
                         {% endif %}
@@ -318,7 +334,7 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
+        </section>
     {% endif %}
 
     {% last_edited_by party %}
