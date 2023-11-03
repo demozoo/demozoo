@@ -14,50 +14,57 @@
             <col width="40%" />
             <col />
             <col class="col--date" />
-            {% if editing and site_is_writeable %}
-                <col />
-            {% endif %}
         </colgroup>
         <tbody>
-            {% for production, nick, credits, screenshot in credits %}
-                <tr>
-                    <td>
-                        {% if screenshot %}
-                            {% microthumb screenshot %}
-
-                        {% else %}
-                            <div class="media media--thumbnail">
-                                {% icon production.supertype %}
-                            </div>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div>
-                            <a href="{{ production.get_absolute_url }}">{{ production.title }}</a>
-                            {% if credits %}
-                                -
-                                {% for credit in credits %}
-                                    <span>{{ credit.description }}</span>{% if not forloop.last %},{% endif %}
-                                {% endfor %}
-                                {% if nick.name != releaser.name %}
-                                    <em>(as <span>{{ nick.name }}</span>)</em>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                        <div class="meta">
-                            {{ production.platforms_and_types_list }}
-                        </div>
-                    </td>
-                    <td>{% byline production %}</td>
-                    <td>{{ production.release_date.short_format }}</td>
-
-                    {% if editing and site_is_writeable %}
+            {% for credit in credits %}
+                {% if credit.credit_type == 'production' %}
+                    <tr>
                         <td>
-                            {% url 'releaser_edit_credit' nick.releaser_id nick.id production.id as releaser_edit_credit_url %}
-                            {% button href=releaser_edit_credit_url level="tertiary" lightbox=True title="Edit credit" %}
+                            {% if credit.screenshot %}
+                                {% microthumb credit.screenshot %}
+
+                            {% else %}
+                                <div class="media media--thumbnail">
+                                    {% icon credit.production.supertype %}
+                                </div>
+                            {% endif %}
                         </td>
-                    {% endif %}
-                </tr>
+                        <td>
+                            <div>
+                                <a href="{{ credit.production.get_absolute_url }}">{{ credit.production.title }}</a>
+                                {% if credit.roles %}
+                                    -
+                                    {% for role in credit.roles %}
+                                        <span>{{ role.description }}</span>{% if not forloop.last %},{% endif %}
+                                    {% endfor %}
+                                    {% if credit.nick.name != releaser.name %}
+                                        <em>(as <span>{{ credit.nick.name }}</span>)</em>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="meta">
+                                {{ credit.production.platforms_and_types_list }}
+                            </div>
+                        </td>
+                        <td>{% byline credit.production %}</td>
+                        <td>{{ credit.production.release_date.short_format }}</td>
+                    </tr>
+                {% elif credit.credit_type == 'tournament' %}
+                    <tr>
+                        <td>
+                            {% if credit.screenshot %}
+                                {% microthumb credit.screenshot %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>Participated in <a href="{{ credit.tournament.get_absolute_url }}">{{ credit.tournament.name }}</a></div>
+                        </td>
+                        <td>
+                            <a href="{{ credit.tournament.party.get_absolute_url }}">{{ credit.tournament.party.name }}</a>
+                        </td>
+                        <td>{{ credit.tournament.party.start_date.short_format }}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>

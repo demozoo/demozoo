@@ -78,6 +78,15 @@ class Site:
             label=self.name,
         )
 
+    def get_icon_link_html(self, url, subject):
+        return format_html(
+            '<a href="{url}" title="{title}"><img src="{icon_path}" width="16" height="16" alt="{alt}"></a>',
+            url=url,
+            icon_path=static(self.icon_path),
+            title=(self.title_format % subject),
+            alt=self.long_name,
+        )
+
 
 class AbstractBaseUrl():
     def __init__(self, param):
@@ -113,6 +122,9 @@ class AbstractBaseUrl():
 
     def as_html(self, subject):
         return self.site.get_link_html(str(self), subject)
+
+    def as_icon_link(self, subject):
+        return self.site.get_icon_link_html(str(self), subject)
 
     @property
     def download_link_label(self):
@@ -1304,51 +1316,56 @@ class PushnpopProfile(UrlPattern):
     pattern = "/profile-<int>.html"
 
 
-zxart = Site("ZXArt", url='http://zxart.ee/')
+zxart = Site("ZXArt", url='https://zxart.ee/')
 
 
 class ZxArtAuthor(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/authors/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
     tests = [
-        path_regex_match(r'/eng/authors/(\w/[^\/]+)(/qid:\d+)?/?'),
-        path_regex_match(r'/rus/avtory/(\w/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/eng/authors/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/rus/avtory/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
+        path_regex_match(r'/spa/autores/([^\/]+/[^\/]+)(/qid:\d+)?/?'),
     ]
 
 
-class ZxArtPicture(AbstractBaseUrl):
+class ZxArtProduction(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/graphics/authors/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
     tests = [
+        path_regex_match(r'/eng/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/spa/autores/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/eng/graphics/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/grafika/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
-    ]
-
-
-class ZxArtMusic(AbstractBaseUrl):
-    site = zxart
-    canonical_format = "http://zxart.ee/eng/music/authors/%s/"
-    tests = [
         path_regex_match(r'/eng/music/authors/([^\/]+/[^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/muzyka/avtory/([^\/]+/[^\/]+/[^\/]+)/?'),
     ]
 
 
-class ZxArtPartyGraphics(AbstractBaseUrl):
+class ZxArtPicture(AbstractBaseUrl):
     site = zxart
-    canonical_format = "http://zxart.ee/eng/graphics/parties/%s/"
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
+    # empty list so that no URLs match - all new URLs should map to ZxArtProduction
+    tests = []
+
+
+class ZxArtMusic(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/authors/%s/"
+    # empty list so that no URLs match - all new URLs should map to ZxArtProduction
+    tests = []
+
+
+class ZxArtParty(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/parties/%s/"
     tests = [
+        path_regex_match(r'/eng/parties/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/rus/pati/([^\/]+/[^\/]+)/?'),
+        path_regex_match(r'/spa/parties/([^\/]+/[^\/]+)/?'),
         path_regex_match(r'/eng/graphics/parties/([^\/]+/[^\/]+)/?'),
         path_regex_match(r'/rus/grafika/pati/([^\/]+/[^\/]+)/?'),
-    ]
-
-
-class ZxArtPartyMusic(AbstractBaseUrl):
-    site = zxart
-    canonical_format = "http://zxart.ee/eng/music/parties/%s/"
-    tests = [
-        path_regex_match(r'/eng/music/parties/([^\/]+/[^\/]+)/?'),
-        path_regex_match(r'/rus/muzyka/pati/([^\/]+/[^\/]+)/?'),
     ]
 
 
@@ -1761,6 +1778,12 @@ class SpectrumComputingRelease(AbstractBaseUrl):
         ),
     ]
 
+livecode = Site("Livecode", url="https://livecode.demozoo.org/")
+
+class LivecodeDemozooEvent(UrlPattern):
+    site = livecode
+    pattern = '/serie/<str>.html'
+
 
 RELEASER_LINK_TYPES = [
     TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
@@ -1790,7 +1813,9 @@ PRODUCTION_LINK_TYPES = [
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
-    DiscogsRelease, ZxArtPicture, ZxArtMusic, InternetArchivePage, GameboyDemospottingDemo,
+    DiscogsRelease,
+    ZxArtProduction, ZxArtPicture, ZxArtMusic,
+    InternetArchivePage, GameboyDemospottingDemo,
     Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease, SpectrumComputingRelease,
     WaybackMachinePage, BaseUrl,
 ]
@@ -1807,7 +1832,8 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-    'ZxArtPicture', 'ZxArtMusic', 'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
+    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic',
+    'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
     'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
     'SpectrumComputingRelease',
@@ -1818,13 +1844,13 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
-    SpeccyWikiPage, ZxArtPartyGraphics, ZxArtPartyMusic, AtarikiEntry, InstagramAccount,
+    SpeccyWikiPage, ZxArtParty, AtarikiEntry, InstagramAccount,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries, TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
-    FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount,
+    FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount, LivecodeDemozooEvent,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
@@ -1833,6 +1859,10 @@ BBS_LINK_TYPES = [
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry, InstagramAccount,
     WaybackMachinePage, BaseUrl
+]
+
+TOURNAMENT_LINK_TYPES = [
+    YoutubeVideo, VimeoVideo, ShadertoyShader, Tic80Cart, BaseUrl
 ]
 
 # Links that should be kept for archiving purposes, but not shown or available for editing

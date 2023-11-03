@@ -50,8 +50,9 @@ class PartySeriesExternalLink(ExternalLink):
     party_series = models.ForeignKey(PartySeries, related_name='external_links', on_delete=models.CASCADE)
     link_types = groklinks.PARTY_SERIES_LINK_TYPES
 
-    def html_link(self):
-        return self.link.as_html(self.party_series.name)
+    @property
+    def subject(self):
+        return self.party_series.name
 
     class Meta:
         unique_together = (
@@ -281,8 +282,9 @@ class PartyExternalLink(ExternalLink):
     party = models.ForeignKey(Party, related_name='external_links', on_delete=models.CASCADE)
     link_types = groklinks.PARTY_LINK_TYPES
 
-    def html_link(self):
-        return self.link.as_html(self.party.name)
+    @property
+    def subject(self):
+        return self.party.name
 
     class Meta:
         unique_together = (

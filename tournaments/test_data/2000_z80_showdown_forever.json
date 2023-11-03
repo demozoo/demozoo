@@ -1,0 +1,43 @@
+{
+    "title": "Forever",
+    "started": "2000-03-17",
+    "date": "17 - 19 March 2000",
+    "type": "Z80 Showdown",
+    "vod": "https://www.youtube.com/watch?v=Dfyswlszyhg",
+    "software_used": null,
+    "phases": [
+        {
+            "title": "Semi-final",
+            "vod": "https://youtu.be/Np7fFcHFkpg",
+            "entries": [
+                {
+                    "id": null,
+                    "rank": 1,
+                    "points": null,
+                    "handle": {
+                        "name": "fake gasman",
+                        "demozoo_id": 1
+                    },
+                    "shadertoy_url": "https://www.shadertoy.com/view/4sX3zS",
+                    "preview_image": "revision_2011/03-gasman.jpg",
+                    "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl"
+                },
+                {
+                    "id": null,
+                    "rank": 2,
+                    "points": null,
+                    "handle": {
+                        "name": "Mr Phong",
+                        "demozoo_id": null
+                    },
+                    "shadertoy_url": "https://www.shadertoy.com/view/3d33zs",
+                    "preview_image": null,
+                    "source_file": "https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-mrphong.glsl"
+                }
+            ],
+            "staffs": []
+        }
+    ],
+    "staffs": [],
+    "demozoo_party_id": 1
+}

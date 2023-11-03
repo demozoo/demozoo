@@ -6,7 +6,7 @@
 
 {% block base_main %}
 
-<h1>Edit history for {{ party_series.name }}</h1>
+<h1>Edit history for <a href="{{ party_series.get_absolute_url }}">{{ party_series.name }}</a></h1>
 
 {% include "shared/history_table.html" %}
 

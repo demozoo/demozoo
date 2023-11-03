@@ -5,6 +5,6 @@
 {% block html_title %}{{ bbs.name }} edit history - Demozoo{% endblock %}
 
 {% block base_main %}
-    <h1>Edit history for {{ bbs.name }}</h1>
+    <h1>Edit history for <a href="{{ bbs.get_absolute_url }}">{{ bbs.name }}</a></h1>
     {% include "shared/history_table.html" %}
 {% endblock %}

@@ -30,6 +30,9 @@ class TestShowScener(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Revision 2011")
         self.assertContains(response, "(Compo team)")
+        self.assertContains(response, "Participated in"),
+        self.assertContains(response, "/parties/1/#tournament_1"),
+        self.assertContains(response, "Shader Showdown"),
 
     def test_redirect_to_group(self):
         response = self.client.get('/sceners/%d/' % self.raww_arse.id)

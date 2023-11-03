@@ -360,3 +360,5 @@ COVERAGE_MODULE_EXCLUDES = [
 ]
 
 ZXDEMO_PLATFORM_IDS = [1]
+
+TOURNAMENT_MEDIA_PATH = os.path.join(FILEROOT, 'tournaments', 'test_media')

@@ -559,5 +559,88 @@
             "link_class": "PouetBBS",
             "parameter": "116"
         }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.tournament",
+        "fields": {
+            "party": 1,
+            "name": "Shader Showdown",
+            "source_file_name": "2000_z80_showdown_forever.json"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.tournamentexternallink",
+        "fields": {
+            "tournament": 1,
+            "link_class": "YoutubeVideo",
+            "parameter": "Dfyswlszyhg"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.phase",
+        "fields": {
+            "tournament": 1,
+            "name": "Final",
+            "position": 0
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.phaseexternallink",
+        "fields": {
+            "phase": 1,
+            "link_class": "YoutubeVideo",
+            "parameter": "Np7fFcHFkpg"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.entry",
+        "fields": {
+            "phase": 1,
+            "nick": 1,
+            "name": "Gasman",
+            "position": 0,
+            "ranking": 2,
+            "score": "50",
+            "source_file": "/shader_file_sources/2000_z80_showdown_forever/final_gasman.asm",
+            "thumbnail_url": "https://files.zxdemo.org/extra/2000_z80_showdown_forever/final_gasman.png",
+            "thumbnail_width": 320,
+            "thumbnail_height": 200
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.entryexternallink",
+        "fields": {
+            "entry": 1,
+            "link_class": "ShadertoyShader",
+            "parameter": "4sX3zS"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "tournaments.entry",
+        "fields": {
+            "phase": 1,
+            "nick": 6,
+            "name": "Yerzmyey",
+            "position": 1,
+            "ranking": 1,
+            "score": "100",
+            "source_file": "https://files.zxdemo.org/extra/2000_z80_showdown_forever/final_yerzmyey.asm"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "tournaments.phasestaffmember",
+        "fields": {
+            "phase": 1,
+            "nick": 7,
+            "role": "dj_set"
+        }
     }
 ]
