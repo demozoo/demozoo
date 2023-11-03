@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags compress ui_tags %}
 
 
 {% block html_title %}{{ competition }} - Demozoo{% endblock %}
@@ -13,7 +13,7 @@
                 {{ competition }}
                 {% if site_is_writeable %}
                     {% url 'competition_edit' competition.id as compentition_edit_url %}
-                    {% button href=competition_edit_url title="Edit competition" lightbox=True icon="edit" %}
+                    {% button href=competition_edit_url icon="edit" title="Edit competition" lightbox=True %}
                 {% endif %}
             </h2>
             
