@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from read_only_mode import writeable_site_required
 
-from awards.models import Event, Recommendation
+from awards.models import Event, Nomination, Recommendation
 from demoscene.shortcuts import get_page
 from productions.models import Production
 
@@ -54,11 +54,17 @@ def show(request, event_slug):
     # * If user is a juror and reports are enabled, show the links to the per-category recommendation reports
     # * If user is logged in and recommendations are enabled, show the user's recommendations
 
-    event = get_object_or_404(
-        Event.active_for_user(request.user), slug=event_slug
+    event = get_object_or_404(Event, slug=event_slug)
+    nominations = (
+        Nomination.objects.filter(category__event=event)
+        .order_by('category', '-status', 'production__title')
     )
+    nominations_by_category = [
+        (category, [nom.production for nom in noms])
+        for category, noms in itertools.groupby(nominations, lambda r: r.category)
+    ]
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and event.recommendations_enabled:
         recommendations = Recommendation.objects.filter(
             user=request.user, category__event=event
         ).select_related('category', 'production').prefetch_related(
@@ -75,7 +81,14 @@ def show(request, event_slug):
     return render(request, 'awards/award.html', {
         'event': event,
         'recommendations_by_category': recommendations_by_category,
+        'nominations_by_category': nominations_by_category,
         'can_view_reports': event.user_can_view_reports(request.user),
+        # Normally, recommendations will be shown until the nominations are posted, even if the
+        # recommendation period closes before then (in which case the recommendations will be
+        # shown but "locked-in"). However, an event might leave recommendations open even after
+        # nominations are posted (e.g. because they're using the recommendations as public voting
+        # on the final winner), in which case we should (obviously) show them.
+        'showing_recommendations': event.recommendations_enabled or not nominations_by_category,
         'can_remove_recommendations': event.recommendations_enabled,
     })
 
