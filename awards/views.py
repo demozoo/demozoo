@@ -11,7 +11,7 @@ from read_only_mode import writeable_site_required
 
 from awards.models import Event, Nomination, Recommendation
 from demoscene.shortcuts import get_page
-from productions.models import Production
+from productions.models import Production, Screenshot
 
 
 @require_POST
@@ -57,10 +57,24 @@ def show(request, event_slug):
     event = get_object_or_404(Event, slug=event_slug)
     nominations = (
         Nomination.objects.filter(category__event=event)
+        .select_related('category')
+        .prefetch_related(
+            'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser',
+            'production__platforms', 'production__types',
+        )
         .order_by('category', '-status', 'production__title')
     )
+    production_ids = {nom.production_id for nom in nominations}
+    screenshots = Screenshot.select_for_production_ids(production_ids)
+
     nominations_by_category = [
-        (category, [nom.production for nom in noms])
+        (
+            category,
+            [
+                (nom.production, screenshots.get(nom.production.id))
+                for nom in noms
+            ]
+        )
         for category, noms in itertools.groupby(nominations, lambda r: r.category)
     ]
 

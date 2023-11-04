@@ -20,7 +20,7 @@
 {% if nominations_by_category %}
     {% for category, nominations in nominations_by_category %}
         <h2 id="{{ category.slug_with_fallback }}">{{ category.name }}</h2>
-        {% production_listing nominations %}
+        {% include "shared/production_listing.html" with productions_and_screenshots=nominations show_prod_types=True show_screenshots=True mark_excludable=False %}
     {% endfor %}
 {% endif %}
 
