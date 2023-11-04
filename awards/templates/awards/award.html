@@ -4,6 +4,8 @@
 
 {% block html_title %}{{ event.name }} - Your recommendations - Demozoo{% endblock %}
 
+{% block body_class %}show_award{% endblock %}
+
 {% block base_main %}
 
 {% if can_view_reports %}
@@ -18,9 +20,28 @@
 {% endif %}
 
 {% if nominations_by_category %}
-    {% for category, nominations in nominations_by_category %}
+    {% for category, category_data in nominations_by_category %}
         <h2 id="{{ category.slug_with_fallback }}">{{ category.name }}</h2>
-        {% include "shared/production_listing.html" with productions_and_screenshots=nominations show_prod_types=True show_screenshots=True mark_excludable=False %}
+        <table class="table" summary="">
+            <colgroup>
+                <col class="col--thumb" />
+                <col width="40%" />
+                <col />
+                <col class="col--date" />
+            </colgroup>
+            {% for status, nominations in category_data %}
+                <tbody>
+                    <tr>
+                        <th colspan="4" class="nominee_status nominee_status_{{ status }}">
+                            {% if status == "winner" %}Winner{% else %}Nominees{% endif %}
+                        </th>
+                    </tr>
+                    {% for production, screenshot in nominations %}
+                        {% include "shared/production_listing_row.html" with show_prod_types=True show_screenshots=True mark_excludable=False %}
+                    {% endfor %}
+                </tbody>
+            {% endfor %}
+        </table>
     {% endfor %}
 {% endif %}
 
