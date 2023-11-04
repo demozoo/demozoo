@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 
 from platforms.models import Platform
 from productions.models import Production, ProductionType
@@ -39,6 +40,9 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('award', args=[self.slug])
 
     @classmethod
     def accepting_recommendations_for(cls, production):
@@ -151,6 +155,13 @@ class Category(models.Model):
 
     def __str__(self):
         return "%s - %s" % (self.event.name, self.name)
+
+    @property
+    def slug_with_fallback(self):
+        return self.slug or "category-%d" % self.id
+
+    def get_results_url(self):
+        return f"{self.event.get_absolute_url()}#{self.slug_with_fallback}"
 
     def get_recommendation_report(self):
         prods = Production.objects.filter(award_recommendations__category=self).distinct()

@@ -3,11 +3,11 @@
     <ul class="awards">
         {% for nomination in award_nominations %}
             <li class="{{ nomination.status }}">
-                {{ nomination.category.event.name }} -
+                <b>{{ nomination.category.event.name }}</b> -
                 {% if nomination.status == 'winner' %}
-                    Winner of {{ nomination.category.name }}
+                    Winner of <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
                 {% else %}
-                    Nominated for {{ nomination.category.name }}
+                    Nominated for <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
                 {% endif %}
             </li>
         {% endfor %}
