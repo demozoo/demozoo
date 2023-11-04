@@ -10,6 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from mock import patch
 
+from awards.models import Event, Nomination
 from demoscene.models import BlacklistedTag, Edit, Nick, Releaser
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
@@ -69,8 +70,12 @@ class TestShowProduction(TestCase):
         pondlife.links.create(link_class='BaseUrl', parameter='http://example.com/pondlife.zip', is_download_link=True)
         pondlife.links.create(link_class='AmigascneFile', parameter='/demos/pondlife.zip', is_download_link=True)
         pondlife.links.create(link_class='PaduaOrgFile', parameter='/demos/pondlife.zip', is_download_link=True)
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks_low_end = meteoriks.categories.get(slug='low-end')
+        Nomination.objects.create(production=pondlife, category=meteoriks_low_end, status="nominee")
         response = self.client.get('/productions/%d/' % pondlife.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Meteoriks 2020")
         self.assertNotContains(response, '/productions/%d/screenshots/edit/' % pondlife.id)
 
     def test_get_locked(self):
