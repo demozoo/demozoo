@@ -1,0 +1,12 @@
+.show_award {
+    th.nominee_status {
+        text-align: left;
+        padding: 0 8px;
+    }
+    th.nominee_status_winner {
+        background-color: rgb(255, 237, 136);
+    }
+    th.nominee_status_nominee {
+        background-color: #ddd;
+    }
+}

@@ -67,16 +67,21 @@ def show(request, event_slug):
     production_ids = {nom.production_id for nom in nominations}
     screenshots = Screenshot.select_for_production_ids(production_ids)
 
-    nominations_by_category = [
-        (
-            category,
-            [
-                (nom.production, screenshots.get(nom.production.id))
-                for nom in noms
-            ]
+    nominations_by_category = []
+    for category, category_nominations in itertools.groupby(nominations, lambda r: r.category):
+        status_groups = [
+            (
+                status,
+                [
+                    (nom.production, screenshots.get(nom.production.id))
+                    for nom in noms
+                ]
+            )
+            for status, noms in itertools.groupby(category_nominations, lambda r: r.status)
+        ]
+        nominations_by_category.append(
+            (category, status_groups)
         )
-        for category, noms in itertools.groupby(nominations, lambda r: r.category)
-    ]
 
     if request.user.is_authenticated and event.recommendations_enabled:
         recommendations = Recommendation.objects.filter(
