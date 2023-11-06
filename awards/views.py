@@ -3,6 +3,7 @@ import itertools
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import models
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -83,6 +84,14 @@ def show(request, event_slug):
             (category, status_groups)
         )
 
+    if nominations and event.series_id:
+        # look for other events in the series that have nominations
+        other_events = Event.objects.filter(series_id=event.series_id).annotate(
+            num_nominations=models.Count('categories__nominations')
+        ).filter(num_nominations__gt=0).order_by('eligibility_start_date')
+    else:
+        other_events = []
+
     if request.user.is_authenticated and event.recommendations_enabled:
         recommendations = Recommendation.objects.filter(
             user=request.user, category__event=event
@@ -99,6 +108,7 @@ def show(request, event_slug):
 
     return render(request, 'awards/award.html', {
         'event': event,
+        'other_events': other_events,
         'recommendations_by_category': recommendations_by_category,
         'nominations_by_category': nominations_by_category,
         'can_view_reports': event.user_can_view_reports(request.user),
