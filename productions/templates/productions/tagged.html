@@ -4,14 +4,16 @@
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
+    <header class="page__header">
+        {% if site_is_writeable %}
         <div class="o-actions">
             {% url 'new_production' as new_production_url %}
             {% button href=new_prodiction_url icon="add" lightbox=True label="New production" %}
         </div>
-    {% endif %}
+        {% endif %}
+        <h1 class="page__title">Productions tagged '{{ tag.name }}'</h1>
+    </header>
 
-    <h2>Productions tagged '{{ tag.name }}'</h2>
     {% if tag.description %}
         <div class="notes">
             {{ tag.description.description|safe_markdown }}
@@ -20,10 +22,8 @@
 
     {% include "shared/production_reorder_links.html" %}
 
-    <ul>
-        {% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
-    </ul>
-    
+    {% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
+
     {% with production_page as page %}
         {% include "shared/pagination_links.html" %}
     {% endwith %}

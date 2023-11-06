@@ -52,7 +52,7 @@
     </header>
 
     {% if alternative_nicks %}
-        <div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing -editing{% endif %}{% endif %}">
+        <section class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing -editing{% endif %}{% endif %}">
             <header class="panel__header">
                 <h3 class="panel__title">Also known as</h3>
             </header>
@@ -73,7 +73,7 @@
                 {% button href=releaser_add_nick_url icon="add" label="Add another name" lightbox=True %}
                 {% endif %}
             </div>
-        </div>
+        </section>
     {% endif %}
 
     <div>
@@ -112,7 +112,7 @@
 
     </div>
 
-    <div class="editable_chunk panel external_links_panel">
+    <section class="panel external_links_panel editable_chunk ">
         <header class="panel__header">
             <h3 class="panel__title">External links</h3>
             {% if can_edit %}
@@ -129,10 +129,10 @@
                 {% endfor %}
             </ul>
         </div>
-    </div>
+    </section>
 
     {% if scener.notes or request.user.is_staff %}
-        <div class="panel notes_panel editable_chunk">
+        <section class="panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'releaser_edit_notes' scener.id as releaser_edit_notes_url %}
@@ -142,17 +142,18 @@
             <div class="notes">
                 {{ scener.notes|safe_markdown }}
             </div>
-        </div>
+        </section>
     {% endif %}
 
-    <div id="side_column">
-        <div class="panel groups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
-            <header class="panel__header">
-                <h3 class="panel__title">Member of</h3>
-            </header>
-            <div class="panel__content">
-                <ul class="list">
-                    {% for membership in memberships %}
+    <section class="scener__attributions">
+        <div class="column">
+            <section class="panel groups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
+                <header class="panel__header">
+                    <h3 class="panel__title">Member of</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list">
+                        {% for membership in memberships %}
                         <li class="list__item">
                             {% url 'group' membership.group.id as group_url %}
                             {% include "shared/entity.html" with current=membership.is_current type="group" label=membership.group.name title="previous membership" url=group_url %}
@@ -161,69 +162,71 @@
                                 {% button href=scener_edit_membership_url icon="edit" title="Edit membership" level="tertiary" lightbox=True %}
                             {% endif %}
                         </li>
-                    {% endfor %}
-                </ul>
-                {% if can_edit %}
-                    {% url 'scener_add_group' scener.id as scener_add_group_url %}
-                    {% button href=scener_add_group_url label="Add group" lightbox=True icon="add" %}
-                {% endif %}
-            </div>
+                        {% endfor %}
+                    </ul>
+                    {% if can_edit %}
+                        {% url 'scener_add_group' scener.id as scener_add_group_url %}
+                        {% button href=scener_add_group_url label="Add group" lightbox=True icon="add" %}
+                    {% endif %}
+                </div>
+            </section>
         </div>
-    </div>
-    
-    <div id="main_column">
-        {% if parties_organised %}
-            <div class="panel parties_organised_panel">
-                <header class="panel__header">
-                    <h3 class="panel__title">Organiser of</h3>
-                </header>
-                <div class="panel__content">
-                    <ul class="list parties">
-                        {% for organiser in parties_organised %}
-                            {% with party=organiser.party %}
-                                <li class="list__item">
-                                    {% if party.is_cancelled %}<del>{% endif %}
-                                    <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
-                                        {% if party.is_online %}
-                                            <img src="/static/images/icons/computer.png" alt="[Online]" />
-                                        {% elif party.country_code %}
-                                            <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
+
+        <div class="column">
+            {% if parties_organised %}
+                <section class="panel parties_organised_panel">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Organiser of</h3>
+                    </header>
+                    <div class="panel__content">
+                        <ul class="list parties">
+                            {% for organiser in parties_organised %}
+                                {% with party=organiser.party %}
+                                    <li class="list__item">
+                                        {% if party.is_cancelled %}<del>{% endif %}
+                                        <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
+                                            {% if party.is_online %}
+                                                <img src="/static/images/icons/computer.png" alt="[Online]" />
+                                            {% elif party.country_code %}
+                                                <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
+                                            {% endif %}
+                                            {{ party.name }}
+                                        </a>
+                                        {% if party.start_date %}
+                                            - {% date_range party.start_date party.end_date %}
                                         {% endif %}
-                                        {{ party.name }}
-                                    </a>
-                                    {% if party.start_date %}
-                                        - {% date_range party.start_date party.end_date %}
-                                    {% endif %}
-                                    {% if party.is_cancelled %}</del>{% endif %}
-                                    {% if organiser.role %}({{ organiser.role }}){% endif %}
+                                        {% if party.is_cancelled %}</del>{% endif %}
+                                        {% if organiser.role %}({{ organiser.role }}){% endif %}
+                                    </li>
+                                {% endwith %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if bbses_operated %}
+                <section class="panel bbses_operated_panel">
+                    <header class="panel__header">
+                        <h3 class="panel__title">BBS</h3>
+                    </header>
+                    <div class="panel__content">
+                        <ul class="list">
+                            {% for operator in bbses_operated %}
+                                <li class="list__item">
+                                    {% url 'bbs' operator.bbs.id as bbs_url %}
+                                    {% include "shared/entity.html" with current=operator.is_current type="bbs" label=operator.bbs.name title="ex-staff" url=bbs_url description=operator.get_role_display %}
                                 </li>
-                            {% endwith %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </section>
+            {% endif %}
 
-        {% if bbses_operated %}
-            <div class="panel bbses_operated_panel">
-                <header class="panel__header">
-                    <h3 class="panel__title">BBS</h3>
-                </header>
-                <div class="panel__content">
-                    <ul class="list">
-                        {% for operator in bbses_operated %}
-                            <li class="list__item">
-                                {% url 'bbs' operator.bbs.id as bbs_url %}
-                                {% include "shared/entity.html" with current=operator.is_current type="bbs" label=operator.bbs.name title="ex-staff" url=bbs_url description=operator.get_role_display %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
+            {% combined_releases scener include_tournaments=True %}
+        </div>
+    </section>
 
-        {% combined_releases scener include_tournaments=True %}
-    </div>
 
     {% last_edited_by scener %}
 

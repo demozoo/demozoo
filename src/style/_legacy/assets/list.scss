@@ -64,6 +64,26 @@ $unit: 1.25%;
             }
         }
     }
+
+    &.-unresolvedScreenshots {
+
+        > .list__item {
+            border-block-start: 1px solid #ccc;
+
+            h3 {
+                padding: 1ex 0;
+            }
+        }
+    }
+
+    &.-files {
+        border-block-start: 1px solid #eee;
+        padding-block-end: 1em;
+
+        > .list__item {
+            padding-block: 4px;
+        }
+    }
 }
 
 .list--party-editions {

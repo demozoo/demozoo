@@ -62,10 +62,11 @@
         {% include "productions/_award_recommendations.html" %}
     {% endif %}
 
-    <div class="mainstage">
+    <div class="production__mainStage">
+
         {{ carousel.render }}
 
-        <div class="right">
+        <div class="column">
             {% if download_links %}
                 {% include "productions/_downloads.html" %}
             {% endif %}
@@ -111,7 +112,7 @@
 
     {% include "productions/_notes.html" %}
 
-    <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
+    <div class="production__attributions secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
         <div class="column">
             {% include "productions/_credits.html" %}
         </div>

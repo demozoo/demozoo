@@ -144,3 +144,19 @@
         }
     }
 }
+
+.production {
+    @media(min-width: 800px) {
+        &__mainStage {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: 400px minmax(0, 1fr);
+        }
+
+        &__attributions {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+        }
+    }
+}

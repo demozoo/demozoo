@@ -19,23 +19,6 @@
         }
     }
 
-    //.alternative_nicks_panel {
-    //    padding-bottom: 8px;
-    //
-    //    &.hide_edit_controls {
-    //
-    //        .edit_nick,
-    //        .add_nick {
-    //            display: none;
-    //        }
-    //    }
-    //
-    //    ul.nicks {
-    //        clear: both;
-    //        padding-top: 8px;
-    //    }
-    //}
-
     .parties_organised_panel,
     .bbses_operated_panel {
         a {
@@ -49,4 +32,20 @@
         }
     }
 
+}
+
+.scener {
+    @media(min-width: 800px) {
+        &__mainStage {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: 400px minmax(0, 1fr);
+        }
+
+        &__attributions {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: minmax(0, 3fr) minmax(0, 7fr);
+        }
+    }
 }
