@@ -5,13 +5,17 @@ from django.test import TestCase
 from django.test.utils import captured_stdout
 from requests.exceptions import HTTPError
 
-from awards.models import Category, Event, Juror, Recommendation
+from awards.models import Category, Event, EventSeries, Juror, Recommendation
 from demoscene.models import SceneID
 from productions.models import Production, ProductionType
 
 
 class TestModels(TestCase):
     fixtures = ['tests/gasman.json']
+
+    def test_event_series_str(self):
+        meteoriks = EventSeries.objects.get(name="Meteoriks")
+        self.assertEqual(str(meteoriks), "Meteoriks")
 
     def test_event_str(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")

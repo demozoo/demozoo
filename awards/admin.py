@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-from awards.models import Category, Event, Juror, Nomination
+from awards.models import Category, Event, EventSeries, Juror, Nomination
 
 
 class CategoryInline(admin.TabularInline):
@@ -34,5 +34,6 @@ class CategoryAdmin(admin.ModelAdmin):
         )
 
 
+admin.site.register(EventSeries)
 admin.site.register(Event, inlines=[CategoryInline, JurorInline])
 admin.site.register(Category, CategoryAdmin)
