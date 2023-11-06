@@ -465,10 +465,18 @@
     },
     {
         "pk": 1,
+        "model": "awards.eventseries",
+        "fields": {
+            "name": "Meteoriks"
+        }
+    },
+    {
+        "pk": 1,
         "model": "awards.event",
         "fields": {
             "name": "The Meteoriks 2020",
             "slug": "meteoriks-2020",
+            "series": 1,
             "eligibility_start_date": "2019-01-01",
             "eligibility_end_date": "2019-12-31",
             "recommendations_enabled": true,

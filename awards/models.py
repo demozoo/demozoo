@@ -7,9 +7,21 @@ from platforms.models import Platform
 from productions.models import Production, ProductionType
 
 
+class EventSeries(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = "event series"
+
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, help_text="Used in URLs - /awards/[slug]/")
+    series = models.ForeignKey(EventSeries, blank=True, null=True, related_name='events', on_delete=models.SET_NULL)
     intro = models.TextField(
         blank=True, help_text="Intro text to show on 'your recommendations' page - Markdown / HTML supported"
     )
