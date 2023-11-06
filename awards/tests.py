@@ -305,6 +305,9 @@ class TestRecommendations(TestCase):
         response = self.client.get('/awards/%s/' % meteoriks.slug)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Brexecutable")
+        self.assertContains(response, '<a href="/awards/meteoriks-2019/">2019</a>', html=True)
+        # 2021 has no nominations
+        self.assertNotContains(response, '<a href="/awards/meteoriks-2021/">2021</a>', html=True)
 
 
 class TestFetchJurors(TestCase):

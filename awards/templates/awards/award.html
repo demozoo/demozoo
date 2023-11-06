@@ -19,6 +19,23 @@
     {% endif %}
 {% endif %}
 
+{% if other_events|length > 1 %}
+<div class="events_in_series">
+    <strong>Other {{ event.series.name }} events:</strong>
+    <ul>
+        {% for evt in other_events %}
+            <li>
+                {% if evt == event %}
+                    <strong>{{ evt.suffix }}</strong>
+                {% else %}
+                    <a href="{{ evt.get_absolute_url }}">{{ evt.suffix }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 {% if nominations_by_category %}
     {% for category, category_data in nominations_by_category %}
         <h2 id="{{ category.slug_with_fallback }}">{{ category.name }}</h2>

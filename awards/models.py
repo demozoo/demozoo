@@ -56,6 +56,10 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse('award', args=[self.slug])
 
+    @property
+    def suffix(self):
+        return self.name.split(' ')[-1]
+
     @classmethod
     def accepting_recommendations_for(cls, production):
         """
