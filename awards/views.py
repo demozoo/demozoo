@@ -63,7 +63,7 @@ def show(request, event_slug):
             'production__author_nicks__releaser', 'production__author_affiliation_nicks__releaser',
             'production__platforms', 'production__types',
         )
-        .order_by('category', '-status', 'production__title')
+        .order_by('category__position', 'category__name', 'category__id', '-status', 'production__title')
     )
     production_ids = {nom.production_id for nom in nominations}
     screenshots = Screenshot.select_for_production_ids(production_ids)
