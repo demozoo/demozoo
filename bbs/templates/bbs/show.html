@@ -33,13 +33,18 @@
         </div>
 
         {% if alternative_names %}
-            <h3 class="panel__title">Also known as</h3>
-
-            <ul class="alternative_names">
-                {% for name in alternative_names %}
-                    <li><strong>{{ name.name }}</strong></li>
-                {% endfor %}
-            </ul>
+            <section class="panel">
+                <header class="panel__header">
+                    <h3 class="panel__title">Also known as</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list -inline">
+                        {% for name in alternative_names %}
+                            <li class="list__item"><strong>{{ name.name }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
         {% endif %}
 
         {% if bbs.location %}
@@ -55,25 +60,28 @@
     </div>
 
     {% if external_links or can_edit %}
-        <div class="editable_chunk panel external_links_panel">
-            <h3 class="panel__title">External links</h3>
-
-            {% if can_edit %}
-                <div class="o-actions">
-                    {% url 'bbs_edit_external_links' bbs.id as bbs_external_links_edit_url %}
-                    {% button href=bbs_external_links_edit_url lightbox=True icon="edit" label="Edit" focus=True %}
-                </div>
-            {% endif %}
-            <ul class="external_links">
-                {% for link in external_links %}
-                    <li>{{ link.html_link|safe }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        <section class="panel external_links_panel editable_chunk">
+            <header class="panel__header">
+                <h3 class="panel__title">External links</h3>
+                {% if can_edit %}
+                    <div class="o-actions">
+                        {% url 'bbs_edit_external_links' bbs.id as bbs_external_links_edit_url %}
+                        {% button href=bbs_external_links_edit_url lightbox=True icon="edit" label="Edit" focus=True %}
+                    </div>
+                {% endif %}
+            </header>
+            <div class="panel__content">
+                <ul class="list -inline external_links">
+                    {% for link in external_links %}
+                        <li class="list__item">{{ link.html_link|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
     {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}
-        <div class="editable_chunk panel notes_panel">
+        <section class="panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'bbs_edit_notes' bbs.id as edit_bbs_notes_url %}
@@ -83,81 +91,90 @@
             <div class="notes">
                 {{ bbs.notes|safe_markdown }}
             </div>
-        </div>
+        </section>
     {% endif %}
 
-    <div id="side_column">
-        <div class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Staff</h3>
+    <section class="bbs__attributions">
+        <div class="column">
+            <section class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
+                <header class="panel__header">
+                    <h3 class="panel__title">Staff</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list">
+                        {% for operator in staff %}
+                            <li class="list__item">
+                                {% comment %}todo: if not operator.is_current tooltip is 'ex-staff' {% endcomment %}
+                                {% url 'scener' operator.releaser.id as scener_url %}
+                                {% include "shared/entity.html" with url=scener_url type="scener" flag=operator.releaser label=operator.releaser.name %}
+                                - {{ operator.get_role_display }}
+                                {% if can_edit %}
+                                    {% url 'bbs_edit_operator' bbs.id operator.id as bbs_edit_operator_url %}
+                                    {% button href=bbs_edit_operator_url lightbox=True level="tertiary" icon="edit" title="Edit staff member" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if can_edit %}
+                        {% url 'bbs_add_operator' bbs.id as bbs_add_operator_url %}
+                        {% button href=bbs_add_operator_url lightbox=True icon="add" label="Add staff member" %}
+                    {% endif %}
+                </div>
+            </section>
 
-            <ul class="staff">
-                {% for operator in staff %}
-                    <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
-                        {% releaser_flag operator.releaser %}
-                        - {{ operator.get_role_display }}
-                        {% if can_edit %}
-                            {% url 'bbs_edit_operator' bbs.id operator.id as bbs_edit_operator_url %}
-                            {% button href=bbs_edit_operator_url lightbox=True level="tertiary" icon="edit" title="Edit staff member" %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                {% url 'bbs_add_operator' bbs.id as bbs_add_operator_url %}
-                {% button href=bbs_add_operator_url lightbox=True icon="add" label="Add staff member" %}
-            {% endif %}
+            <section class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
+                <header class="panel__header">
+                    <h3 class="panel__title">Affiliated with</h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list">
+                        {% for affiliation in affiliations %}
+                            <li class="list__item">
+                                {% url 'group' affiliation.group.id as group_url %}
+                                {% include "shared/entity.html" with href=group_url type="group" label=affiliation.group.name description=affiliation.get_role_display %}
+                                {% if can_edit %}
+                                    {% url 'bbs_edit_affiliation' bbs.id affiliation.id as bbs_edit_affiliation_url %}
+                                    {% button href=bbs_edit_affiliation_url level="tertiary" lightbox=True title="Edit affiliation" icon="edit" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if can_edit %}
+                        {% url 'bbs_add_affiliation' bbs.id as add_bbs_affiliation_url %}
+                        {% button href=add_bbs_affiliation_url lightbox=True icon="add" label="Add group" %}
+                    {% endif %}
+                </div>
+            </section>
         </div>
-
-        <div class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Affiliated with</h3>
-
-            <ul class="affiliations">
-                {% for affiliation in affiliations %}
-                    <li class="group">
-                        <span>
-                            <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
-                            {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
-                        </span>
-                        {% if can_edit %}
-                            {% url 'bbs_edit_affiliation' bbs.id affiliation.id as bbs_edit_affiliation_url %}
-                            {% button href=bbs_edit_affiliation_url level="tertiary" lightbox=True title="Edit affiliation" icon="edit" %}
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                {% url 'bbs_add_affiliation' bbs.id as add_bbs_affiliation_url %}
-                {% button href=add_bbs_affiliation_url lightbox=True icon="add" label="Add group" %}
+        <div class="column">
+            {% if text_ads or can_edit %}
+                {% include "bbs/_text_ads.html" %}
             {% endif %}
-        </div>
-    </div>
-    
-    <div id="main_column">
-        {% if text_ads or can_edit %}
-            {% include "bbs/_text_ads.html" %}
-        {% endif %}
 
-        {% include "bbs/_tags.html" %}
+            {% include "bbs/_tags.html" %}
 
-        {% if bbstros or can_edit %}
-            <div class="panel bbstros_panel editable_chunk">
-                <h3 class="panel__title">
-                    Promoted in
-                </h3>
-                {% if can_edit %}
-                    <div class="o-actions">
-                        {% url 'bbs_edit_bbstros' bbs.id as edit_bbstros_url %}
-                        {% button href=edit_bbstros_url label="Edit production list" icon="edit" lightbox=True %}
+            {% if bbstros or can_edit %}
+                <section class="panel bbstros_panel editable_chunk">
+                    <header class="panel__header">
+                        <h3 class="panel__title">
+                            Promoted in
+                        </h3>
+                        {% if can_edit %}
+                            <div class="o-actions">
+                                {% url 'bbs_edit_bbstros' bbs.id as edit_bbstros_url %}
+                                {% button href=edit_bbstros_url label="Edit production list" icon="edit" lightbox=True %}
+                            </div>
+                        {% endif %}
+                    </header>
+                    <div class="panel__content">
+                        {% if bbstros %}
+                            {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
+                        {% endif %}
                     </div>
-                {% endif %}
-
-                {% if bbstros %}
-                    {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
+                </section>
+            {% endif %}
+        </div>
+    </section>
 
     {% last_edited_by bbs %}
 

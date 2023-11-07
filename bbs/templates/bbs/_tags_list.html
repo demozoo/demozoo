@@ -1,8 +1,8 @@
 {% load safe_markdown %}
 
-<ul class="tags">
+<ul class="list -inline tags">
     {% for tag in tags %}
-        <li>
+        <li class="list__item">
             <a class="tag_name" href="{% url 'bbses_tagged' tag.name %}" {% if tag.description %}data-description="{{ tag.description.description|safe_markdown|force_escape }}"{% endif %}>{{ tag }}</a>
         </li>
     {% endfor %}

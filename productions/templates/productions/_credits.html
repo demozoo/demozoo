@@ -8,13 +8,13 @@
         <ul class="list -credits">
             {% regroup credits by nick as nick_list %}
             {% for nick_credits in nick_list %}
-            <li class="list__item">
-                {% include "shared/entity.html" with url=nick_credits.grouper.releaser.get_absolute_url type="scener" label=nick_credits.grouper list=nick_credits.list %}
-                {% if can_edit %}
-                {% url 'production_edit_credit' production.id nick_credits.grouper.id as production_edit_credit_url %}
-                {% button href=production_edit_credit_url icon="edit" level="tertiary" title="Edit crdit" lightbox=True %}
-                {% endif %}
-            </li>
+                <li class="list__item">
+                    {% include "shared/entity.html" with url=nick_credits.grouper.releaser.get_absolute_url type="scener" label=nick_credits.grouper list=nick_credits.list %}
+                    {% if can_edit %}
+                        {% url 'production_edit_credit' production.id nick_credits.grouper.id as production_edit_credit_url %}
+                        {% button href=production_edit_credit_url icon="edit" level="tertiary" title="Edit crdit" lightbox=True %}
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
         {% if can_edit %}

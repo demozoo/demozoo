@@ -22,7 +22,7 @@
 
 {% block base_main %}
     <header class="editable_chunk">
-        <div class="show_group__header">
+        <div class="group__header">
             <div class="signpost">Group</div>
 
             {% if prompt_to_edit or show_lock_button or show_locked_button %}
@@ -128,10 +128,10 @@
                     <div class="panel__content">
                         <ul class="list memberships">
                             {% for membership in supergroupships %}
-                            <li class="list__item">
-                                {% url 'group' membership.group.id as group_url %}
-                                {% include "shared/entity.html" with current=membership.is_current flag=membership.group type="scener" label=membership.group.name title="ex-parent group" url=group_url %}
-                            </li>
+                                <li class="list__item">
+                                    {% url 'group' membership.group.id as group_url %}
+                                    {% include "shared/entity.html" with current=membership.is_current flag=membership.group type="scener" label=membership.group.name title="ex-parent group" url=group_url %}
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -240,11 +240,14 @@
             {% combined_releases group %}
 
             {% if member_productions %}
-                <div class="panel">
-                    <h3 class="panel__title member_productions_header">Member productions ({{ member_productions|length }})</h3>
-
-                    {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
-                </div>
+                <section class="panel">
+                    <header class="panel__header">
+                        <h3 class="panel__title">Member productions ({{ member_productions|length }})</h3>
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
+                    </div>
+                </section>
             {% endif %}
         </div>
     </section>

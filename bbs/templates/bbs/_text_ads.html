@@ -1,16 +1,20 @@
 {% load ui_tags %}
 
-<div class="panel editable_chunk text_ads_panel">
-    <h3 class="panel__title">Text ads</h3>
-    {% if can_edit %}
-        <div class="o-actions">
-            {% url 'bbs_edit_text_ads' bbs.id as edit_text_ads_url %}
-            {% button href=edit_text_ads_url icon="edit" label="Edit" lightbox=True title="Edit text ads" %}
-        </div>
-    {% endif %}
-    <ul class="text_ads">
-        {% for file in text_ads %}
-            <li><a href="{% url 'bbs_text_ad' bbs.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
-        {% endfor %}
-    </ul>
-</div>
+<section class="panel editable_chunk">
+    <header class="panel__header">
+        <h3 class="panel__title">Text ads</h3>
+        {% if can_edit %}
+            <div class="o-actions">
+                {% url 'bbs_edit_text_ads' bbs.id as edit_text_ads_url %}
+                {% button href=edit_text_ads_url icon="edit" label="Edit" lightbox=True title="Edit text ads" %}
+            </div>
+        {% endif %}
+    </header>
+    <div class="panel__content">
+        <ul class="list text_ads">
+            {% for file in text_ads %}
+                <li class="list__item"><a href="{% url 'bbs_text_ad' bbs.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>

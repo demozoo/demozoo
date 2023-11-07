@@ -13,48 +13,49 @@
 {% endblock %}
 
 {% block base_main %}
-    <div class="party_series_core_details editable_chunk">
-        <div class="signpost">Party</div>
-
-        {% if prompt_to_edit %}
-            <div class="o-actions">
-                {% url 'party_edit_series' party_series.id as party_edit_series_url %}
-                {% button href=party_edit_series_url lightbox=True icon="edit" label="Edit party details" %}
-            </div>
-        {% endif %}
-
-        <div class="focus_title party_name">
-            <h2>{{ party_series.name }}</h2>
+    <header class="core_details editable_chunk">
+        <div class="core_details__header">
+            <div class="signpost">Party</div>
+            {% if prompt_to_edit %}
+                <div class="o-actions">
+                    {% url 'party_edit_series' party_series.id as party_edit_series_url %}
+                    {% button href=party_edit_series_url lightbox=True icon="edit" label="Edit party details" %}
+                </div>
+            {% endif %}
         </div>
+
+        <h1 class="core_details__heading">{{ party_series.name }}</h1>
 
         {% if party_series.website %}
             <ul class="attributes">
                 <li class="website"><a href="{{ party_series.website }}">{{ party_series.website }}</a></li>
             </ul>
         {% endif %}
-    </div>
+    </header>
 
     {% if external_links or can_edit %}
-        <div class="panel external_links_panel editable_chunk">
-            <h3 class="panel__title">External links</h3>
-
-            {% if can_edit %}
-                <div class="o-actions">
-                    {% url 'party_edit_series_external_links' party_series.id as party_edit_series_external_links_url %}
-                    {% button href=party_edit_series_external_links_url icon="edit" label="Edit" focus=True lightbox=True title="Edit external links" %}
-                </div>
-            {% endif %}
-
-            <ul class="external_links">
-                {% for link in external_links %}
-                    <li>{{ link.html_link|safe }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        <section class="panel external_links_panel editable_chunk">
+            <header class="panel__header">
+                <h3 class="panel__title">External links</h3>
+                {% if can_edit %}
+                    <div class="o-actions">
+                        {% url 'party_edit_series_external_links' party_series.id as party_edit_series_external_links_url %}
+                        {% button href=party_edit_series_external_links_url icon="edit" label="Edit" focus=True lightbox=True title="Edit external links" %}
+                    </div>
+                {% endif %}
+            </header>
+            <div class="panel__content">
+                <ul class="list -inline external_links">
+                    {% for link in external_links %}
+                        <li class="list__item">{{ link.html_link|safe }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
     {% endif %}
 
     {% if party_series.notes or request.user.is_staff %}
-        <div class="editable_chunk panel notes_panel">
+        <section class="panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'party_edit_series_notes' party_series.id as party_edit_series_url %}
@@ -64,7 +65,7 @@
             <div class="notes">
                 {{ party_series.notes|safe_markdown }}
             </div>
-        </div>
+        </section>
     {% endif %}
 
     {% if can_edit %}
@@ -72,7 +73,10 @@
             {% comment %}
                 TODO: bring this into the new button component fold.
             {% endcomment %}
-            <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add" data-lightbox>New party edition</a>
+            <a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="m-button" data-lightbox>
+                <span class="m-button__icon">{% icon 'add' %}</span>
+                <span class="m-button__label">New party edition</span>
+            </a>
         </div>
     {% endif %}
     <div style="clear: both;"></div>

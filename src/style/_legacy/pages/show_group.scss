@@ -1,5 +1,25 @@
 .show_group {
 
+    ul.bbses {
+        a {
+            color: #008;
+        }
+    }
+
+    .parties_organised_panel {
+        a {
+            text-decoration: none;
+            color: #444;
+            font-weight: bold;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.group {
     &__header {
         align-items: start;
         display: flex;
@@ -7,113 +27,6 @@
         margin-block: 0 10px;
     }
 
-    @media screen and (min-width: 800px) {
-        #side_column {
-            float: left;
-            width: 30%;
-        }
-
-        #main_column {
-            float: left;
-            width: 70%;
-        }
-    }
-
-    .alternative_nicks_panel {
-        ul.nicks {
-            clear: both;
-            padding-top: 8px;
-        }
-        padding-bottom: 8px;
-
-        &.hide_edit_controls {
-            .edit_nick, .add_nick {
-                display: none;
-            }
-        }
-    }
-
-    ul.memberships {
-        margin-bottom: 8px;
-        clear: both;
-
-        li {
-            padding-left: 24px;
-            padding-top: 2px;
-            padding-bottom: 3px;
-            background-position: left center;
-            background-repeat: no-repeat;
-
-            a {
-                color: #008;
-            }
-
-            &.previous_membership a {
-                color: #bbe;
-            }
-
-            &.scener {
-                background-image: url(/static/images/icons/scener.png);
-                &.previous_membership {
-                    background-image: url(/static/images/icons/scener_grey.png);
-                }
-            }
-            &.group {
-                background-image: url(/static/images/icons/group.png);
-                &.previous_membership {
-                    background-image: url(/static/images/icons/group_grey.png);
-                }
-            }
-
-            a.edit_membership {
-                float: right;
-            }
-            a.edit_subgroup {
-                float: right;
-            }
-        }
-    }
-
-    ul.bbses {
-        margin-bottom: 8px;
-        clear: both;
-
-        li {
-            padding-left: 24px;
-            padding-top: 2px;
-            padding-bottom: 3px;
-            background-position: left center;
-            background-repeat: no-repeat;
-            background-image: url(/static/images/icons/telephone.png);
-
-            a {
-                color: #008;
-            }
-        }
-    }
-
-    .parties_organised_panel {
-
-        .list {
-
-            li {
-                margin-block: 0 5px;
-            }
-
-            a {
-                text-decoration: none;
-                color: #444;
-                font-weight: bold;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
-    }
-}
-
-.group {
     @media(min-width: 800px) {
         &__attributions {
             display: grid;
