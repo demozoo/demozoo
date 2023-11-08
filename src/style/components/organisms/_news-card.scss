@@ -1,0 +1,68 @@
+.o-newsCard {
+
+  &__heading {
+    font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+    line-height: 1.3em;
+    margin: 0 0 .5ex;
+  }
+
+  &__image {
+    display: none;
+    max-width: 100px;
+    width: calc(100% / 6);
+
+    img {
+      max-width: 100%;
+    }
+
+    .date {
+      color: #888;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  }
+
+  &__description {
+    p {
+      margin-block: 0 1.5em;
+    }
+
+    ul {
+      list-style: disc;
+      padding: 0;
+      margin: 0 1.75em 1.5em;
+    }
+
+    ol {
+      list-style: decimal;
+      padding: 0;
+      margin: 0 1.75em 1.5em;
+    }
+  }
+
+  &__content {
+    gap: 16px;
+  }
+
+  .o-actions.-newsCard {
+    float: right;
+    margin-block: 0 1ex;
+    margin-inline: 1ex 0;
+  }
+
+  @media (min-width: 600px) {
+    &__content {
+      display: flex;
+    }
+
+    &__image {
+      display: block;
+    }
+
+    &__description {
+      width: calc(100% - (100% / 6));
+    }
+  }
+}

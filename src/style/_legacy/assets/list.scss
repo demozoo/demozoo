@@ -17,9 +17,18 @@ $unit: 1.25%;
         --even-background-color: #f5f5f5;
 
         .list__item {
-
             &:not(:first-child) {
                 border-top: 1px solid #ddd;
+            }
+        }
+    }
+
+    &.-news {
+        .list__item {
+            padding-block: 10px;
+
+            &:not(:first-child) {
+                padding-block-start: 20px;
             }
         }
     }

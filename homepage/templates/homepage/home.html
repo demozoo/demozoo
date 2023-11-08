@@ -67,22 +67,19 @@
                     {% endif %}
                 </header>
                 <div class="block__content">
-                    <ul class="list">
+                    <ul class="list -news">
                         {% for story in news_stories %}
                             <li class="list__item">
-                                <div class="news-story news_story {% if not story.is_public %}private{% endif %}">
-
+                                <div class="o-newsCard {% if not story.is_public %} -private{% endif %}">
                                     {% if perms.homepage.change_newsstory and site_is_writeable %}
-                                        <div class="o-actions">
+                                        <div class="o-actions -newsCard">
                                             {% url 'edit_news' story.id as edit_news_url %}
                                             {% button href=edit_news_url label="Edit" icon="edit" %}
                                         </div>
                                     {% endif %}
-
-                                    <h2 class="news-story__heading">{{ story.title }}</h2>
-                                    <div class="news-story__content">
-
-                                        <div class="story_image">
+                                    <h3 class="o-newsCard__heading">{{ story.title }}</h3>
+                                    <div class="o-newsCard__content">
+                                        <div class="o-newsCard__image">
                                             {% if story.image %}
                                                 <img src="{{ story.image.image_url }}" width="100" alt="" />
                                             {% else %}
@@ -90,12 +87,10 @@
                                             {% endif %}
                                             <div class="date">{{ story.created_at|date:"d M Y" }}</div>
                                         </div>
-                                        <div class="news-story__description">
-
+                                        <div class="o-newsCard__description">
                                             {{ story.text|safe_markdown }}
                                         </div>
                                     </div>
-
                                 </div>
                             </li>
                         {% endfor %}
