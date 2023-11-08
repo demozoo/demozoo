@@ -21,162 +21,206 @@
             </div>
     
             {% if upcoming_parties %}
-                <div class="upcoming_parties block">
-                    <h3 class="block_heading">Upcoming parties</h3>
+                <section class="block upcoming_parties ">
+                    <header class="block__header">
+                    <h3 class="block__heading">Upcoming parties</h3>
+                    </header>
+                    <div class="block__content">
                     {% regroup upcoming_parties by start_date.date.month as month_list %}
-                    <table>
-                        {% for month in month_list %}
-                            <tr>
-                                <th>{{ month.list.0.start_date.date|date:"F" }}</th>
-                                <td>
-                                    <ul class="list -inline">
-                                        {% for party in month.list %}
-                                            <li class="list__item">
-                                                {% if party.is_cancelled %}<del>{% endif %}
-                                                <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
-                                                    {% if party.is_online %}
-                                                        <img src="/static/images/icons/computer.png" alt="[Online]" />
-                                                    {% elif party.country_code %}
-                                                        <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
-                                                    {% endif %}
-                                                    {{ party.name }}
-                                                </a>
-                                                {% if party.is_cancelled %}</del>{% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+                        <table>
+                            {% for month in month_list %}
+                                <tr>
+                                    <th>{{ month.list.0.start_date.date|date:"F" }}</th>
+                                    <td>
+                                        <ul class="list -inline">
+                                            {% for party in month.list %}
+                                                <li class="list__item">
+                                                    {% if party.is_cancelled %}<del>{% endif %}
+                                                    <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
+                                                        {% if party.is_online %}
+                                                            <img src="/static/images/icons/computer.png" alt="[Online]" />
+                                                        {% elif party.country_code %}
+                                                            <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
+                                                        {% endif %}
+                                                        {{ party.name }}
+                                                    </a>
+                                                    {% if party.is_cancelled %}</del>{% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </section>
             {% endif %}
     
-            <div class="news block">
-                <h3 class="block_heading">Latest news</h3>
-                {% if perms.homepage.add_newsstory and site_is_writeable %}
-                    <div class="o-actions">
-                        {% url 'add_news' as add_news_url %}
-                        {% button href=add_news_url label="Add news" icon="add" %}
-                    </div>
-                {% endif %}
-                {% for story in news_stories %}
-                    <div class="news-story news_story {% if not story.is_public %}private{% endif %}">
-    
-                        {% if perms.homepage.change_newsstory and site_is_writeable %}
-                            <div class="o-actions">
-                                {% url 'edit_news' story.id as edit_news_url %}
-                                {% button href=edit_news_url label="Edit" icon="edit" %}
-                            </div>
-                        {% endif %}
-    
-                        <h2 class="news-story__heading">{{ story.title }}</h2>
-                        <div class="news-story__content">
-                            
-                            <div class="story_image">
-                                {% if story.image %}
-                                    <img src="{{ story.image.image_url }}" width="100" alt="" />
-                                {% else %}
-                                    <img src="/static/images/news.png" width="100" alt="" />
-                                {% endif %}
-                                <div class="date">{{ story.created_at|date:"d M Y" }}</div>
-                            </div>
-                            <div class="news-story__description">
-                            
-                                {{ story.text|safe_markdown }}
-                            </div>
+            <section class="block news">
+                <header class="block__header">
+                    <h2 class="block__heading">Latest news</h2>
+                    {% if perms.homepage.add_newsstory and site_is_writeable %}
+                        <div class="o-actions">
+                            {% url 'add_news' as add_news_url %}
+                            {% button href=add_news_url label="Add news" icon="add" %}
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
+                    {% endif %}
+                </header>
+                <div class="block__content">
+                    <ul class="list">
+                        {% for story in news_stories %}
+                            <li class="list__item">
+                                <div class="news-story news_story {% if not story.is_public %}private{% endif %}">
+
+                                    {% if perms.homepage.change_newsstory and site_is_writeable %}
+                                        <div class="o-actions">
+                                            {% url 'edit_news' story.id as edit_news_url %}
+                                            {% button href=edit_news_url label="Edit" icon="edit" %}
+                                        </div>
+                                    {% endif %}
+
+                                    <h2 class="news-story__heading">{{ story.title }}</h2>
+                                    <div class="news-story__content">
+
+                                        <div class="story_image">
+                                            {% if story.image %}
+                                                <img src="{{ story.image.image_url }}" width="100" alt="" />
+                                            {% else %}
+                                                <img src="/static/images/news.png" width="100" alt="" />
+                                            {% endif %}
+                                            <div class="date">{{ story.created_at|date:"d M Y" }}</div>
+                                        </div>
+                                        <div class="news-story__description">
+
+                                            {{ story.text|safe_markdown }}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
     
-            <div class="now_serving block">
-                <h3 class="block_heading">Now serving</h3>
-                {% site_stats as stats %}
-                <ul class="list -inline">
-                    <li class="list__item"><a href="{% url 'productions' %}">{% icon 'production' %}{{ stats.production_count }} productions</a></li>
-                    <li class="list__item"><a href="{% url 'graphics' %}">{% icon 'graphics' %}{{ stats.graphics_count }} graphics</a></li>
-                    <li class="list__item"><a href="{% url 'musics' %}">{% icon 'music' %}{{ stats.music_count }} music tracks</a></li>
-                    <li class="list__item"><a href="{% url 'groups' %}">{% icon 'group' %}{{ stats.group_count }} groups</a></li>
-                    <li class="list__item"><a href="{% url 'sceners' %}">{% icon 'scener' %}{{ stats.scener_count }} sceners</a></li>
-                    <li class="list__item"><a href="{% url 'parties' %}">{% icon 'party' %}{{ stats.party_count }} parties</a></li>
-                    <li class="list__item"><a href="{% url 'bbses' %}">{% icon 'bbs' %}{{ stats.bbs_count }} BBSes</a></li>
-                </ul>
-            </div>
+            <section class="block now_serving">
+                <header class="block__header">
+                    <h2 class="block__heading">Now serving</h2>
+                </header>
+                <div class="block__content">
+                    {% site_stats as stats %}
+                    <ul class="list -inline">
+                        <li class="list__item"><a href="{% url 'productions' %}">{% icon 'production' %}{{ stats.production_count }} productions</a></li>
+                        <li class="list__item"><a href="{% url 'graphics' %}">{% icon 'graphics' %}{{ stats.graphics_count }} graphics</a></li>
+                        <li class="list__item"><a href="{% url 'musics' %}">{% icon 'music' %}{{ stats.music_count }} music tracks</a></li>
+                        <li class="list__item"><a href="{% url 'groups' %}">{% icon 'group' %}{{ stats.group_count }} groups</a></li>
+                        <li class="list__item"><a href="{% url 'sceners' %}">{% icon 'scener' %}{{ stats.scener_count }} sceners</a></li>
+                        <li class="list__item"><a href="{% url 'parties' %}">{% icon 'party' %}{{ stats.party_count }} parties</a></li>
+                        <li class="list__item"><a href="{% url 'bbses' %}">{% icon 'bbs' %}{{ stats.bbs_count }} BBSes</a></li>
+                    </ul>
+                </div>
+            </section>
         </div>
     
         <div class="t-home__aside">
             {% if forum_topics %}
-                <div class="forum_topics block">
-                    <a href="{% url 'forums' %}"><h3 class="block_heading">Discussions</h3></a>
-                    {% include "forums/_topics.html" with topics=forum_topics %}
-                    <p class="more"><a href="{% url 'forums' %}">All discussions</a></p>
-                </div>
+                <section class="block -forumTopics">
+                    <header class="block__header">
+                        <h2 class="block__heading">Discussions</h2>
+                    </header>
+                    <div class="block__content">
+                        {% include "forums/_topics.html" with topics=forum_topics %}
+                    </div>
+                    <footer class="block__footer">
+                        <a href="{% url 'forums' %}">All discussions</a>
+                    </footer>
+                </section>
             {% endif %}
     
-            <div class="new_releases block">
-                <h3 class="block_heading">New releases</h3>
-                <ul>
-                    {% for prod, screenshot in latest_releases_and_screenshots %}
-                        <li>
-                            <a href="{{ prod.get_absolute_url }}">
-                                {% thumbnail screenshot %}
-                                <div class="title">{{ prod.title }}</div>
-                                {% if prod.byline_string %}
-                                    <div class="byline">by {{ prod.byline }}</div>
-                                {% endif %}
-                                <div class="platforms_and_types">
-                                    {{ prod.platforms.all|join:" / " }}
-                                    {% if prod.platforms.count and prod.types.count %} - {% endif %}
-                                    {{ prod.types.all|join:" / " }}
-                                </div>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <p class="more"><a href="{% url 'productions' %}">More releases</a></p>
-            </div>
+            <section class="block">
+                <header class="block__header">
+                    <h2 class="block__heading">New releases</h2>
+                </header>
+                <div class="block__content">
+                    <ul class="list -zebra -newReleases">
+                        {% for prod, screenshot in latest_releases_and_screenshots %}
+                            <li class="list__item">
+                                <a href="{{ prod.get_absolute_url }}" class="card -newRelease">
+                                    {% thumbnail screenshot %}
+                                    <div class="card__content">
+                                        <h3 class="card__title">{{ prod.title }}</h3>
+                                        {% if prod.byline_string %}
+                                            <p class="card__byline">by {{ prod.byline }}</p>
+                                        {% endif %}
+                                        <p class="card__meta">
+                                            {{ prod.platforms.all|join:" / " }}
+                                            {% if prod.platforms.count and prod.types.count %} - {% endif %}
+                                            {{ prod.types.all|join:" / " }}
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <footer class="block__footer">
+                    <a href="{% url 'productions' %}">More releases</a>
+                </footer>
+            </section>
     
-            <div class="new_additions block">
-                <h3 class="block_heading">New in the archive</h3>
-                <ul>
-                    {% for prod in latest_additions %}
-                        <li>
-                            <a href="{{ prod.get_absolute_url }}">
-                                <div class="title">{{ prod.title }}</div>
-                                {% if prod.byline_string %}
-                                    <div class="byline">by {{ prod.byline }}</div>
-                                {% endif %}
-                                <div class="platforms_and_types">
-                                    {% if prod.release_date %}
-                                        {{ prod.release_date.date.year }}
-                                        {% if prod.platforms.count or prod.types.count %} - {% endif %}
-                                    {% endif %}
-                                    {{ prod.platforms.all|join:" / " }}
-                                    {% if prod.platforms.count and prod.types.count %} - {% endif %}
-                                    {{ prod.types.all|join:" / " }}
-                                </div>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <p class="more">
+            <section class="block -newAdditions">
+                <header class="block__header">
+                    <h2 class="block__heading">New in the archive</h2>
+                </header>
+                <div class="block__content">
+                    <ul class="list -zebra">
+                        {% for prod in latest_additions %}
+                            <li class="list__item">
+                                <a href="{{ prod.get_absolute_url }}" class="card -newAddition">
+                                    <div class="thumbnail"></div>
+                                    <div class="card__content">
+                                        <h3 class="card__title">{{ prod.title }}</h3>
+                                        {% if prod.byline_string %}
+                                            <p class="card__byline">by {{ prod.byline }}</p>
+                                        {% endif %}
+                                        <p class="card__meta">
+                                            {% if prod.release_date %}
+                                                {{ prod.release_date.date.year }}
+                                                {% if prod.platforms.count or prod.types.count %} - {% endif %}
+                                            {% endif %}
+                                            {{ prod.platforms.all|join:" / " }}
+                                            {% if prod.platforms.count and prod.types.count %} - {% endif %}
+                                            {{ prod.types.all|join:" / " }}
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <footer class="block__footer">
                     <a href="{% url 'latest_activity' %}">Latest activity</a>
                     | <a href="{% url 'recent_edits' %}">Recent edits</a>
-                </p>
-            </div>
+                </footer>
+            </section>
     
-            <div class="comments block">
-                <h3 class="block_heading">Comments</h3>
-                <ul>
-                    {% for comment in comments %}
-                        <li>
-                            <q>{{ comment.body|truncatechars:140 }}</q>
-                            - <b>{{ comment.user.username }}</b> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <section class="block -comments">
+                <header class="block__header">
+                    <h2 class="block__heading">Comments</h2>
+                </header>
+                <div class="block__content">
+                    <ul class="list -zebra -comments">
+                        {% for comment in comments %}
+                            <li class="list__item">
+                                <div class="m-comment">
+                                    <q>{{ comment.body|truncatechars:140 }}</q>
+                                    - <strong>{{ comment.user.username }}</strong> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
         </div>
     </section>
 {% endblock %}

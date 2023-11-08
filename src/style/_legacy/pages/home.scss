@@ -1,45 +1,7 @@
 .homepage {
-
-    .forum_topics {
-
-        .topics {
-            @include listReset();
-
-            clear: both;
-            padding-top: 8px;
-
-            li {
-                border-bottom: 1px dotted #ccc;
-
-                a {
-                    display: block;
-                    padding: 4px;
-                    text-decoration: none;
-                    color: #222;
-                }
-
-                &:hover {
-                    background-color: #ddd;
-                }
-
-                .title {
-                    font-size: 10pt;
-                    font-weight: bold;
-                }
-
-                .meta {
-                    color: #888;
-                    font-size: 9pt;
-                }
-            }
-        }
-    }
-
     .news {
-        clear: both;
 
         .news_story {
-            clear: both;
             padding-top: 15px;
 
             .story_image img {
@@ -73,122 +35,84 @@
 
     }
 
-    .new_releases, 
-    .new_additions {
-        ul {
-            @include listReset();
+    @import "./home/now_serving";
 
-            clear: both;
-            padding-top: 8px;
+    .card {
+        padding-block: 10px;
 
-            li {
-                a {
+        &__content {
+            padding-inline-end: 0;
+            font-weight: 400;
+        }
+
+        &__title {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        &__byline {
+            margin: 0;
+        }
+
+        &__meta {
+            margin: 0;
+            color: #888;
+        }
+
+        &.-newAddition,
+        &.-newRelease {
+            align-items: flex-start;
+            color: #444;
+            display: flex;
+            font-size: 12px;
+            gap: 8px;
+            text-decoration: none;
+
+            .thumbnail {
+                aspect-ratio: 16/9;
+                border-radius: 4px;
+                overflow: hidden;
+                width: 128px;
+                background: #eee;
+                box-shadow: inset 0 0 24px #ccc;
+
+                img {
+                    @include size(100%);
+
                     display: block;
-                    overflow: hidden;
-                    text-decoration: none;
-                    color: inherit;
-                    border-radius: 2px;
-                    &:hover {
-                        background-color: #eee;
-                    }
-                }
-
-                .title {
-                    font-weight: bold;
-                    font-size: 11pt;
-                    color: #444;
-                }
-
-                .byline {
-                    color: #666;
-                    font-size: 9pt;
-                }
-
-                .platforms_and_types {
-                    font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-                    text-transform: uppercase;
-                    color: #888;
-                    margin-top: 0.5em;
-                    font-size: 9pt;
+                    object-fit: cover;
                 }
             }
+
+            .card__meta {
+                text-transform: uppercase;
+            }
+        }
+
+        &:hover {
+            background-color: rgba(black, 0.075);
+            transition: background-color 0.25s linear;
         }
     }
 
-    .new_releases {
-        li {
-            padding-top: 4px;
-        }
-
-        .thumbnail {
-            border-radius: 2px;
-            float: left;
-            width: 133px;
-            margin-right: 8px;
-            padding: 4px;
-            background-color: #bbb;
-
-            img {
-                display: block;
-                margin: auto;
-            }
-        }
+    .topic {
+        color: #000;
+        display: block;
+        font-size: 12px;
+        font-weight: 400;
+        padding-block: 4px;
+        text-decoration: none;
 
         .title {
-            padding-top: 4px;
+            font-size: 14px;
+            font-weight: 700;
         }
 
-        .byline {
-            margin-top: 0.5em;
-        }
-    }
-
-    .new_additions {
-        li {
-            border-bottom: 1px dotted #ccc;
-
-            a {
-                padding: 4px;
-                .title {
-                    float: left;
-                    padding-right: 6px;
-                }
-                .byline {
-                    margin-top: 0.2em;
-                    float: left;
-                    padding-bottom: 0.3em;
-                }
-                .platforms_and_types {
-                    clear: both;
-                }
-            }
+        &:hover {
+            background-color: rgba(black, 0.075);
+            transition: background-color 0.25s linear;
         }
     }
-
-    .comments {
-        margin-bottom: 20px;
-
-        ul {
-            @include listReset();
-
-            clear: both;
-            padding-top: 8px;
-
-            li {
-                border-bottom: 1px dotted #888;
-                clear: both;
-                margin: 8px 0;
-                overflow: hidden;
-                padding-bottom: 8px;
-
-                q {
-                    font-style: italic;
-                }
-            }
-        }
-    }
-
-    @import "./home/now_serving";
 }
 
 /* Small-screen versions */

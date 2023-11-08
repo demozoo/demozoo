@@ -7,6 +7,21 @@ $unit: 1.25%;
 
     &__item {
         box-sizing: border-box;
+
+        &:nth-child(even) {
+            background-color: var(--even-background-color, transparent);
+        }
+    }
+
+    &.-zebra {
+        --even-background-color: #f5f5f5;
+
+        .list__item {
+
+            &:not(:first-child) {
+                border-top: 1px solid #ddd;
+            }
+        }
     }
 
     &.-inline {
@@ -26,7 +41,6 @@ $unit: 1.25%;
 
     &.-credits,
     &.-editScreenshots {
-
         .list__item {
             align-items: center;
             display: flex;
@@ -36,7 +50,6 @@ $unit: 1.25%;
     }
 
     &.-editScreenshots {
-
         .list__item {
             justify-content: start;
         }
@@ -74,6 +87,9 @@ $unit: 1.25%;
                 padding: 1ex 0;
             }
         }
+    }
+
+    &.-comments {
     }
 
     &.-files {

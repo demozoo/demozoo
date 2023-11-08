@@ -1,7 +1,7 @@
-<ul class="list topics">
+<ul class="list -zebra topics">
     {% for topic in topics %}
-        <li class="{% cycle 'odd' 'even' %}">
-            <a href="{{ topic.get_absolute_url }}">
+        <li class="list__item {% cycle 'odd' 'even' %}">
+            <a href="{{ topic.get_absolute_url }}" class="topic">
                 <div class="title">{{ topic.title }}</div>
                 {% if show_full_meta %}
                     <div class="meta">

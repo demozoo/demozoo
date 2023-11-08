@@ -1,23 +1,29 @@
 .block {
-    margin-bottom: 25px;
+    margin-block: 0 var(--template-gap, 25px);
 
-    h3.block_heading {
-        background-color: demozoo-color('primary');
-        float: left;
-        overflow: hidden;
-        font-weight: normal;
-        color: white;
-        font-size: 10pt;
-        text-transform: uppercase;
-        font-family: FabricaRegular, sans-serif;
-        padding: 6px;
-        border-right: 6px solid #ED89A3;
-        min-width: 150px;
+    &__header {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-block: 0 10px;
     }
 
-    > .more {
+    &__heading {
+        background-color: demozoo-color('primary');
+        border-right: 6px solid #ED89A3;
+        color: white;
+        font-family: FabricaRegular, sans-serif;
+        font-size: 10pt;
+        font-weight: normal;
+        min-width: 150px;
+        overflow: hidden;
+        padding: 6px;
+        text-transform: uppercase;
+    }
+
+    &__footer {
+        border-block-start: 1px solid #ccc;
+        padding-block: 10px;
         text-align: right;
-        margin-top: 5px;
-        margin-bottom: 15px;
     }
 }
