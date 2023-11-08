@@ -18,16 +18,17 @@
 {% block body_class %}show_bbs{% endblock %}
 
 {% block base_main %}
-    <div class="editable_chunk">
-        <div class="signpost">BBS</div>
+    <div class="editable_chunk core_details">
+        <header class="core_details__header">
+            <div class="signpost">BBS</div>
 
-        {% if prompt_to_edit %}
-            <div class="o-actions">
-                {% url 'edit_bbs' bbs.id as edit_bbs_url %}
-                {% button href=edit_bbs_url lightbox=True icon="edit" label="Edit" %}
-            </div>
-        {% endif %}
-
+            {% if prompt_to_edit %}
+                <div class="o-actions">
+                    {% url 'edit_bbs' bbs.id as edit_bbs_url %}
+                    {% button href=edit_bbs_url lightbox=True icon="edit" label="Edit" %}
+                </div>
+            {% endif %}
+        </header>
         <div class="focus_title bbs_name">
             <h2>{{ bbs.name }}</h2>
         </div>
