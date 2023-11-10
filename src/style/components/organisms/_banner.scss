@@ -1,6 +1,9 @@
 .o-banner {
   --banner-background-color: var(--color-gray);
   --banner-heading-color: var(--color-lavender-blue);
+  --banner-heading-size: 24px;
+  --banner-heading-font: FabricaRegular, Helvetica,Arial, sans-serif;
+  --banner-text-font: var(--banner-heading-font);
   --banner-text-background-color: radial-gradient(rgba(32, 32, 32, 0.75), rgba(0, 0, 0, 1));
   --banner-text-color: white;
 
@@ -57,9 +60,10 @@
 
   &__heading {
     color: var(--banner-heading-color);
-    font-family: FabricaRegular, Helvetica,Arial, sans-serif;
-    font-size: 36px;
+    font-family: var(--banner-heading-font);
+    font-size: var(--banner-heading-size);
     line-height: 1em;
+    margin-block: 0 0.5ex;
   }
 
   &__smallPrint {
@@ -75,5 +79,13 @@
         color: inherit;
       }
     }
+  }
+
+  @media (min-width: 600px) {
+    --banner-heading-size: 28px;
+  }
+
+  @media (min-width: 1080px) {
+    --banner-heading-size: 36px;
   }
 }

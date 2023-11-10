@@ -1,6 +1,4 @@
 .homepage {
-    @import "./home/now_serving";
-
     .topic {
         color: #000;
         display: block;
@@ -20,5 +18,3 @@
         }
     }
 }
-
-@import "home/upcoming_parties";

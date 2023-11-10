@@ -21,9 +21,9 @@
             </div>
     
             {% if upcoming_parties %}
-                <section class="block upcoming_parties ">
+                <section class="block upcoming_parties">
                     <header class="block__header">
-                    <h3 class="block__heading">Upcoming parties</h3>
+                        <h3 class="block__heading">Upcoming parties</h3>
                     </header>
                     <div class="block__content">
                     {% regroup upcoming_parties by start_date.date.month as month_list %}
