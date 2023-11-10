@@ -20,25 +20,27 @@
     
     {% regroup parties by party_series as party_series_list %}
     <table class="party_series_index">
-        {% for item in party_series_list %}
-            <tr class="{% cycle 'odd' 'even' %}">
-                <th>
-                    <a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
-                </th>
-                <td>
-                    <ul class="parties">
-                        {% for party in item.list %}
-                            <li>
-                                {% if party.is_cancelled %}
-                                    <del><a href="{{ party.get_absolute_url }}" title="Cancelled">{{ party.suffix }}</a></del>
-                                {% else %}
-                                    <a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
+        <tbody>
+            {% for item in party_series_list %}
+                <tr>
+                    <th>
+                        <a href="{{ item.grouper.get_absolute_url }}" class="party_series_link">{{ item.grouper.name }}</a>
+                    </th>
+                    <td>
+                        <ul class="list -inline">
+                            {% for party in item.list %}
+                                <li class="list__item">
+                                    {% if party.is_cancelled %}
+                                        <del><a href="{{ party.get_absolute_url }}" title="Cancelled">{{ party.suffix }}</a></del>
+                                    {% else %}
+                                        <a href="{{ party.get_absolute_url }}">{{ party.suffix }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

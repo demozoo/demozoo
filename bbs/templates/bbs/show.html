@@ -15,10 +15,10 @@
     {% endcompress %}
 {% endblock %}
 
-{% block body_class %}show_bbs{% endblock %}
+{% block body_class %}t-bbs{% endblock %}
 
 {% block base_main %}
-    <div class="editable_chunk core_details">
+    <div class="core_details editable_chunk">
         <header class="core_details__header">
             <div class="signpost">BBS</div>
 
@@ -95,7 +95,7 @@
         </section>
     {% endif %}
 
-    <section class="bbs__attributions">
+    <section class="t-bbs__attributions">
         <div class="column">
             <section class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
                 <header class="panel__header">
@@ -107,8 +107,7 @@
                             <li class="list__item">
                                 {% comment %}todo: if not operator.is_current tooltip is 'ex-staff' {% endcomment %}
                                 {% url 'scener' operator.releaser.id as scener_url %}
-                                {% include "shared/entity.html" with url=scener_url type="scener" flag=operator.releaser label=operator.releaser.name %}
-                                - {{ operator.get_role_display }}
+                                {% include "shared/entity.html" with url=scener_url type="scener" flag=operator.releaser label=operator.releaser.name description=operator.get_role_display %}
                                 {% if can_edit %}
                                     {% url 'bbs_edit_operator' bbs.id operator.id as bbs_edit_operator_url %}
                                     {% button href=bbs_edit_operator_url lightbox=True level="tertiary" icon="edit" title="Edit staff member" %}

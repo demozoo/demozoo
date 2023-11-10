@@ -48,6 +48,12 @@ $unit: 1.25%;
         }
     }
 
+    &.-bannerList {
+        .list__item {
+            padding-block: 10px;
+        }
+    }
+
     &.-credits,
     &.-editScreenshots {
         .list__item {

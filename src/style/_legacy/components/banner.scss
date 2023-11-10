@@ -4,14 +4,15 @@
 }
 
 .banner {
-    display: block;
-    width: 100%;
-    height: 0;
-    padding-bottom: 40%; /* relative to element width */
-    position: relative;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
+    background-color: #eee;
+    display: block;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 100/40;
+
 
     h1 {
         position: absolute;

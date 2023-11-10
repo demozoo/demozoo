@@ -4,9 +4,9 @@
 
     &__header {
 
-        &:after {
-            content: "";
+        &::after {
             clear: both;
+            content: "";
             display: table-cell;
         }
     }
@@ -27,11 +27,11 @@
 
     .platform-overview__content {
         display: flex;
+        gap: 16px
     }
 
     .platform-overview__aside {
         box-sizing: border-box;
-        padding-right: 16px;
         width: 25%;
     }
 

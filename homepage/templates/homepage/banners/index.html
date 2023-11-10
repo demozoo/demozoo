@@ -1,39 +1,30 @@
 {% extends 'base.html' %}
 {% load safe_markdown compress ui_tags %}
 
+{% block body_class %}t-overview -banners{% endblock %}
 {% block html_title %}Homepage banners - Demozoo{% endblock %}
 
 {% block base_main %}
-    <h1>Banners</h1>
+    <header class="page__header">
+        <div class="o-actions">
+            {% url 'add_banner' as add_banner_url %}
+            {% button href=add_banner_url label="Add new banner" icon="add" %}
+        </div>
+        <h1 class="page__title">Banners</h1>
+    </header>
 
-    <div class="o-actions">
-        {% url 'add_banner' as add_banner_url %}
-        {% button href=add_banner_url label="Add new banner" icon="add" %}
-    </div>
-
-    <table width="100%">
-        <tr>
-            <th></th>
-            <th>Show for anon</th>
-            <th>Show for logged-in</th>
-        </tr>
+    <ul class="list -zebra -bannerList">
         {% for banner in banners %}
-            <tr>
-                <td style="width: 600px;">
-                    {% url 'edit_banner' banner.id as banner_url %}
-                    {% include 'homepage/_banner.html' with banner=banner banner_url=banner_url %}
-                </td>
-                <td align="center">
-                    {% if banner.show_for_anonymous_users %}
-                        <img src="/static/images/icons/tick.png" alt="Yes">
-                    {% endif %}
-                </td>
-                <td align="center">
-                    {% if banner.show_for_logged_in_users %}
-                        <img src="/static/images/icons/tick.png" alt="Yes">
-                    {% endif %}
-                </td>
-            </tr>
+            <li class="list__item">
+                {% url 'edit_banner' banner.id as banner_url %}
+                {% include 'homepage/_banner.html' with banner=banner banner_url=banner_url %}
+                {% if banner.show_for_anonymous_users %}
+                    <img src="/static/images/icons/tick.png" alt="Yes" /> Anonymous users
+                {% endif %}
+                {% if banner.show_for_logged_in_users %}
+                    <img src="/static/images/icons/tick.png" alt="Yes" /> Logged in users
+                {% endif %}
+            </li>
         {% endfor %}
-    </table>
+    </ul>
 {% endblock %}

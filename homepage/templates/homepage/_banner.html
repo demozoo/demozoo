@@ -1,11 +1,28 @@
 {% load safe_markdown %}
 
-<a href="{{ banner_url }}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">
-    <div class="banner_text {% if banner.hide_text %}hidden{% endif %}">
-        <h1>{{ banner.title }}</h1>
-        {{ banner.text|safe_markdown }}
+<div class="o-banner">
+    <div class="o-banner__container">
+        <picture class="o-banner__image">
+            <source src="{{ banner.banner_image.image_url }}" />
+            <img src="{{ banner.banner_image.image_url }}" alt="" title="" />
+        </picture>
+        {% if banner.small_print %}<div class="o-banner__smallPrint">{{ banner.small_print|safe_markdown }}</div>{% endif %}
+        <a class="o-banner__link" href="{{ banner_url}}"></a>
+        {% if banner.title or banner.text %}
+            <div class="o-banner__content{% if banner.hide_text %} -hidden{% endif %}">
+                {% if banner.title %}<h1 class="o-banner__heading">{{ banner.title }}</h1>{% endif %}
+                {% if banner.text %}{{ banner.text|safe_markdown }}{% endif %}
+            </div>
+        {% endif %}
     </div>
-</a>
-{% if banner.small_print %}
-    <div class="banner-small-print">{{ banner.small_print|safe_markdown }}</div>
-{% endif %}
+</div>
+
+<!--<a href="{{ banner_url }}" class="banner" style="background-image: url('{{ banner.banner_image.image_url }}');">-->
+<!--    <div class="banner_text {% if banner.hide_text %}hidden{% endif %}">-->
+<!--        <h1>{{ banner.title }}</h1>-->
+<!--        {{ banner.text|safe_markdown }}-->
+<!--    </div>-->
+<!--</a>-->
+<!--{% if banner.small_print %}-->
+<!--    <div class="banner-small-print">{{ banner.small_print|safe_markdown }}</div>-->
+<!--{% endif %}-->

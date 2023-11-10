@@ -1,0 +1,75 @@
+.o-banner {
+  aspect-ratio: 5/2;
+  background-color: #eee;
+  max-width: 833px;
+  position: relative;
+
+  &__link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 3;
+  }
+
+  &__image {
+    @include size(100%);
+
+    position: absolute;
+    z-index: 1;
+
+    img {
+      @include size(100%);
+
+      object-fit: cover;
+      position: absolute;
+    }
+  }
+
+  &__content {
+    backdrop-filter: blur(4px);
+    background: radial-gradient(rgba(32, 32, 32, 0.75), rgba(0, 0, 0, 1));
+    bottom: calc(5% / 0.4);;
+    box-sizing: border-box;
+    color: white;
+    max-width: calc(100% / 1.5);
+    padding: 10px;
+    position: absolute;
+    right: 5%;
+    text-align: end;
+    z-index: 2;
+
+    p {
+      font-family: FabricaRegular, Helvetica,Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.2;
+
+      &:last-of-type {
+        margin-block-end: 0;
+      }
+    }
+  }
+
+  &__heading {
+    color: #d4d2ff;
+    font-family: FabricaRegular, Helvetica,Arial, sans-serif;
+    font-size: 36px;
+    line-height: 1em;
+  }
+
+  &__smallPrint {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    font-size: 80%;
+
+    p {
+      margin: 0.5ex 0;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+}
