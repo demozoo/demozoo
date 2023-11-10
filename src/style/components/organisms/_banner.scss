@@ -1,15 +1,18 @@
 .o-banner {
+  --banner-background-color: var(--color-gray);
+  --banner-heading-color: var(--color-lavender-blue);
+  --banner-text-background-color: radial-gradient(rgba(32, 32, 32, 0.75), rgba(0, 0, 0, 1));
+  --banner-text-color: white;
+
   aspect-ratio: 5/2;
-  background-color: #eee;
+  background-color: var(--banner-background-color);
   max-width: 833px;
   position: relative;
 
   &__link {
+    @include pos();
+
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
     z-index: 3;
   }
 
@@ -29,10 +32,10 @@
 
   &__content {
     backdrop-filter: blur(4px);
-    background: radial-gradient(rgba(32, 32, 32, 0.75), rgba(0, 0, 0, 1));
+    background: var(--banner-text-background-color);
     bottom: calc(5% / 0.4);;
     box-sizing: border-box;
-    color: white;
+    color: var(--banner-text-color);
     max-width: calc(100% / 1.5);
     padding: 10px;
     position: absolute;
@@ -41,9 +44,10 @@
     z-index: 2;
 
     p {
-      font-family: FabricaRegular, Helvetica,Arial, sans-serif;
+      font-family: FabricaRegular, Helvetica, Arial, sans-serif;
       font-size: 16px;
       line-height: 1.2;
+      margin-block: 0 1em;
 
       &:last-of-type {
         margin-block-end: 0;
@@ -52,7 +56,7 @@
   }
 
   &__heading {
-    color: #d4d2ff;
+    color: var(--banner-heading-color);
     font-family: FabricaRegular, Helvetica,Arial, sans-serif;
     font-size: 36px;
     line-height: 1em;

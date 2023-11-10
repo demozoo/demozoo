@@ -1,0 +1,21 @@
+:root {
+  background-color: var(--color-white-smoke);
+  color: var(--color-dark-charcoal);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  line-height: 1.5;
+}
+
+nav {
+
+  ul {
+    @include listReset();
+  }
+}

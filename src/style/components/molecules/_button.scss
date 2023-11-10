@@ -1,7 +1,7 @@
 .m-button {
   --button-border-color: #ddd;
   --button-color: #eee;
-  --button-text-color: #888;
+  --button-text-color: var(--color-gray);
 
   --button-border-width: 1px;
   --button-icon-size: 16px;

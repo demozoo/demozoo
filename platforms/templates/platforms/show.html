@@ -24,21 +24,21 @@
         <aside class="platform-overview__aside">
             {% if active_groups %}
             <div class="panel">
-                <h3 class="panel__title">
-                    <span>Groups active on {{ platform.name }}&hellip;</span>
-                </h3>
-                <ul class="list list--groups">
-                    {% for group in active_groups %}
-                    <li class="list__item">
-                        <div class="group" itemscope itemtype="//schema.org/Organization">
-                            <span class="icon-legacy"></span>
-                            <a href="{% url 'group' group.id %}" itemprop="url">
-                                <span itemprop="name">{{ group.name }}</span>
-                            </a>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <header class="panel__header">
+                    <h3 class="panel__title">
+                        <span>Groups active on {{ platform.name }}</span>
+                    </h3>
+                </header>
+                <div class="panel__content">
+                    <ul class="list">
+                        {% for group in active_groups %}
+                            <li class="list__item">
+                                {% url 'group' group.id as group_url %}
+                                {% include "shared/entity.html" with type="group" url=group_url label=group.name %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
             {% endif %}
         </aside>
@@ -46,13 +46,12 @@
         <div class="platform-overview__main">
             {% if productions %}
                 <div class="panel">
-                    <h3 class="panel__title">
-                        <span class="icon-legacy icon-legacy--releases"></span>
-                        <span>Recent releases:</span>
-                    </h3>
-
-                    {% production_listing productions show_screenshots=1 %}
-
+                    <header class="panel__header">
+                        <h3 class="panel__title">Recent releases</h3>
+                    </header>
+                    <div class="panel__content">
+                        {% production_listing productions show_screenshots=1 %}
+                    </div>
                     <footer class="panel__footer">
                         <a href="{% url 'productions' %}?platform={{ platform.id }}" class="button button--more">
                             <span class="button__text">
