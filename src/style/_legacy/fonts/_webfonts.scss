@@ -9,6 +9,7 @@
     font-weight: normal;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'dejavu_sans_monobook';
     src: url('/static/font/dejavusansmono_book/DejaVuSansMono-webfont.eot');
@@ -19,12 +20,14 @@
     font-weight: normal;
     font-style: normal;
 }
+
 @font-face {
     font-family: 'topazplusa1200';
     src: url('/static/font/topaz/TopazPlus_a1200.ttf') format('ttf'),
     url('/static/font/topaz/TopazPlus_a1200.woff') format('woff'),
     url('/static/font/topaz/TopazPlus_a1200.woff2') format('woff2');
 }
+
 @font-face{
     font-family: 'ibm_vga_8x16';
     src: url('/static/font/vga/MxPlus_IBM_VGA_8x16.ttf') format('ttf'),
