@@ -5,24 +5,18 @@
         padding-bottom: 10px;
     }
 
-    .list.-organisers {
-        clear: both;
-        padding-block: 0 8px;
-
-        .group,
-        .scener {
-            .a-icon {
-                @include size(16px);
-            }
-
-            display: flex;
-            gap: 4px;
-        }
-    }
-
     .list.external_links {
         a {
             margin: 0;
+        }
+    }
+
+    .list.-organisers {
+
+        .list__item {
+            display: flex;
+            gap: 4px;
+            align-items: center;
         }
     }
 

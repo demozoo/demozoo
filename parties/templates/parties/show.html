@@ -143,11 +143,9 @@
                  {% if is_group %}
                     <ul class="list -inline -organisers">
                         {% for organiser in orga_list %}
-                            <li class="group">
-                                {% icon 'group' %}
-                                <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                                {% if organiser.role %}({{ organiser.role}}){% endif %}
-
+                            <li class="list__item">
+                                {% url 'group' organiser.releaser.id as group_url %}
+                                {% include "shared/entity.html" with href=group_url label=organiser.releaser.name type="group" description=organiser.role %}
                                 {% if can_edit %}
                                     {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
                                     {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}
@@ -158,11 +156,9 @@
                 {% else %}
                     <ul class="list -inline -organisers">
                         {% for organiser in orga_list %}
-                            <li class="scener">
-                                {% icon 'scener' %}
-                                <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                                {% releaser_flag organiser.releaser %}
-                                {% if organiser.role %}({{ organiser.role}}){% endif %}
+                            <li class="list__item">
+                                {% url 'scener' organiser.releaser.id as scener_url %}
+                                {% include "shared/entity.html" with url=scener_url label=organiser.releaser.name type="scener" flag=organiser.releaser description=organiser.role %}
                                 {% if can_edit %}
                                     {% url 'party_edit_organiser' party.id organiser.id as party_edit_organiser_url %}
                                     {% button href=party_edit_organiser_url lightbox=True icon="edit" title="Edit organiser" level="tertiary" %}

@@ -1,13 +1,11 @@
 .m-entity {
+  --icon-size: 16px;
+
   align-items: center;
   display: flex;
   gap: 4px;
 
   &.-previousAffiliation {
     opacity: 0.5;
-  }
-
-  .a-icon {
-    @include size(16px);
   }
 }
