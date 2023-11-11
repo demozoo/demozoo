@@ -10,9 +10,9 @@
         <h1>{{ title }}</h1>
         
         {% regroup releasers by surname as name_list %}
-        <div class="panel report">
+        <div class="o-panel report">
             {% for name in name_list %}
-                <h3 class="panel__title">{{ name.grouper }}</h3>
+                <h3 class="o-panel__heading">{{ name.grouper }}</h3>
                 <ul class="releaser_list" style="margin-bottom: 0.5em; border-bottom: 1px solid #ccc;">
                     {% for releaser in name.list %}
                         <li class="scener">

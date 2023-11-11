@@ -7,13 +7,12 @@
 {% block base_main %}
     <section class="t-home">
         <div class="t-home__main">
-            <div class="banner_wrapper">
+            <div class="t-home__banner">
                 {% if perms.homepage.add_banner and site_is_writeable %}
                     <div class="o-actions">
                         {% url 'banners_index' as banners_index_url %}
                         {% button href=banners_index_url label="Edit" title="Edit banner" icon="edit" %}
                     </div>
-                    <div style="clear: both;"></div>
                 {% endif %}
                 {% if banner %}
                     {% include 'homepage/_banner.html' with banner=banner banner_url=banner.url %}
@@ -21,12 +20,12 @@
             </div>
     
             {% if upcoming_parties %}
-                <section class="block upcoming_parties">
-                    <header class="block__header">
-                        <h3 class="block__heading">Upcoming parties</h3>
+                <section class="o-panel -home upcoming_parties">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Upcoming parties</h3>
                     </header>
-                    <div class="block__content">
-                    {% regroup upcoming_parties by start_date.date.month as month_list %}
+                    <div class="o-panel__content">
+                        {% regroup upcoming_parties by start_date.date.month as month_list %}
                         <table>
                             {% for month in month_list %}
                                 <tr>
@@ -56,9 +55,9 @@
                 </section>
             {% endif %}
     
-            <section class="block news">
-                <header class="block__header">
-                    <h2 class="block__heading">Latest news</h2>
+            <section class="o-panel -home -news">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">Latest news</h2>
                     {% if perms.homepage.add_newsstory and site_is_writeable %}
                         <div class="o-actions">
                             {% url 'add_news' as add_news_url %}
@@ -66,7 +65,7 @@
                         </div>
                     {% endif %}
                 </header>
-                <div class="block__content">
+                <div class="o-panel__content">
                     <ul class="list -news">
                         {% for story in news_stories %}
                             <li class="list__item">
@@ -98,11 +97,11 @@
                 </div>
             </section>
     
-            <section class="block now_serving">
-                <header class="block__header">
-                    <h2 class="block__heading">Now serving</h2>
+            <section class="o-panel -home -nowServing">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">Now serving</h2>
                 </header>
-                <div class="block__content">
+                <div class="o-panel__content">
                     {% site_stats as stats %}
                     <ul class="list -inline">
                         <li class="list__item"><a href="{% url 'productions' %}">{% icon 'production' %}{{ stats.production_count }} productions</a></li>
@@ -119,24 +118,24 @@
     
         <div class="t-home__aside">
             {% if forum_topics %}
-                <section class="block -forumTopics">
-                    <header class="block__header">
-                        <h2 class="block__heading">Discussions</h2>
+                <section class="o-panel -home -forumTopics">
+                    <header class="o-panel__header">
+                        <h2 class="o-panel__heading">Discussions</h2>
                     </header>
-                    <div class="block__content">
+                    <div class="o-panel__content">
                         {% include "forums/_topics.html" with topics=forum_topics %}
                     </div>
-                    <footer class="block__footer">
+                    <footer class="o-panel__footer">
                         <a href="{% url 'forums' %}">All discussions</a>
                     </footer>
                 </section>
             {% endif %}
     
-            <section class="block">
-                <header class="block__header">
-                    <h2 class="block__heading">New releases</h2>
+            <section class="o-panel -home">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">New releases</h2>
                 </header>
-                <div class="block__content">
+                <div class="o-panel__content">
                     <ul class="list -zebra -newReleases">
                         {% for prod, screenshot in latest_releases_and_screenshots %}
                             <li class="list__item">
@@ -158,16 +157,16 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <footer class="block__footer">
+                <footer class="o-panel__footer">
                     <a href="{% url 'productions' %}">More releases</a>
                 </footer>
             </section>
     
-            <section class="block -newAdditions">
-                <header class="block__header">
-                    <h2 class="block__heading">New in the archive</h2>
+            <section class="o-panel -home -newAdditions">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">New in the archive</h2>
                 </header>
-                <div class="block__content">
+                <div class="o-panel__content">
                     <ul class="list -zebra">
                         {% for prod in latest_additions %}
                             <li class="list__item">
@@ -193,17 +192,17 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <footer class="block__footer">
+                <footer class="o-panel__footer">
                     <a href="{% url 'latest_activity' %}">Latest activity</a>
                     | <a href="{% url 'recent_edits' %}">Recent edits</a>
                 </footer>
             </section>
     
-            <section class="block -comments">
-                <header class="block__header">
-                    <h2 class="block__heading">Comments</h2>
+            <section class="o-panel -home -comments">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">Comments</h2>
                 </header>
-                <div class="block__content">
+                <div class="o-panel__content">
                     <ul class="list -zebra -comments">
                         {% for comment in comments %}
                             <li class="list__item">

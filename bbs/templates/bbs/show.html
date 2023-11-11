@@ -34,11 +34,11 @@
         </div>
 
         {% if alternative_names %}
-            <section class="panel">
-                <header class="panel__header">
-                    <h3 class="panel__title">Also known as</h3>
+            <section class="o-panel">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Also known as</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list -inline">
                         {% for name in alternative_names %}
                             <li class="list__item"><strong>{{ name.name }}</strong></li>
@@ -61,9 +61,9 @@
     </div>
 
     {% if external_links or can_edit %}
-        <section class="panel external_links_panel editable_chunk">
-            <header class="panel__header">
-                <h3 class="panel__title">External links</h3>
+        <section class="o-panel external_links_panel editable_chunk">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">External links</h3>
                 {% if can_edit %}
                     <div class="o-actions">
                         {% url 'bbs_edit_external_links' bbs.id as bbs_external_links_edit_url %}
@@ -71,8 +71,8 @@
                     </div>
                 {% endif %}
             </header>
-            <div class="panel__content">
-                <ul class="list -inline external_links">
+            <div class="o-panel__content">
+                <ul class="list -inline -externalLinks">
                     {% for link in external_links %}
                         <li class="list__item">{{ link.html_link|safe }}</li>
                     {% endfor %}
@@ -82,7 +82,7 @@
     {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}
-        <section class="panel notes_panel editable_chunk">
+        <section class="o-panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'bbs_edit_notes' bbs.id as edit_bbs_notes_url %}
@@ -97,11 +97,11 @@
 
     <section class="t-bbs__attributions">
         <div class="column">
-            <section class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Staff</h3>
+            <section class="o-panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Staff</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list">
                         {% for operator in staff %}
                             <li class="list__item">
@@ -122,11 +122,11 @@
                 </div>
             </section>
 
-            <section class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Affiliated with</h3>
+            <section class="o-panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Affiliated with</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list">
                         {% for affiliation in affiliations %}
                             <li class="list__item">
@@ -154,9 +154,9 @@
             {% include "bbs/_tags.html" %}
 
             {% if bbstros or can_edit %}
-                <section class="panel bbstros_panel editable_chunk">
-                    <header class="panel__header">
-                        <h3 class="panel__title">
+                <section class="o-panel bbstros_panel editable_chunk">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">
                             Promoted in
                         </h3>
                         {% if can_edit %}
@@ -166,7 +166,7 @@
                             </div>
                         {% endif %}
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         {% if bbstros %}
                             {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
                         {% endif %}

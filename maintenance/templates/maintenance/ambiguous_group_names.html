@@ -7,7 +7,7 @@
 {% block base_main %}
     <h2>{{ title }}:</h2>
     <div id="main_column">
-        <div class="panel report" data-report-name="{{ exclusion_name }}">
+        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
             <ul class="releaser_list">
                 {% for nick in nicks %}
                     <li class="{% if nick.releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}

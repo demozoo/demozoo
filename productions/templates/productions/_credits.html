@@ -1,10 +1,10 @@
 {% load ui_tags %}
 
-<section class="panel editable_chunk credits_panel {% if not credits %}hidden{% endif %} {% if can_edit %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
-    <header class="panel__header">
-        <h3 class="panel__title">Credits</h3>
+<section class="o-panel -credits{% if not credits %} -hidden{% endif %}{% if can_edit %} edit_toggle{% if editing_credits %} editing{% endif %}{% endif %}" id="credits_panel">
+    <header class="o-panel__header">
+        <h3 class="o-panel__heading">Credits</h3>
     </header>
-    <div class="panel__content">
+    <div class="o-panel__content">
         <ul class="list -credits">
             {% regroup credits by nick as nick_list %}
             {% for nick_credits in nick_list %}
@@ -17,10 +17,11 @@
                 </li>
             {% endfor %}
         </ul>
-        {% if can_edit %}
-        {# todo: bring this into the new button fold #}
-        {% url 'production_add_credit' production.id as production_add_credit_url %}
-        {% button href=production_add_credit_url icon="add" label="Add credit" lightbox=True %}
-        {% endif %}
     </div>
+    {% if can_edit %}
+        <footer class="o-panel__footer">
+            {% url 'production_add_credit' production.id as production_add_credit_url %}
+            {% button href=production_add_credit_url icon="add" label="Add credit" lightbox=True %}
+        </footer>
+    {% endif %}
 </section>

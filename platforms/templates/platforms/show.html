@@ -8,7 +8,7 @@
 <div class="platform-overview">
 
     <header class="platform-overview__header">
-        <div class="panel">
+        <div class="o-panel">
             <h1 class="platform-overview__heading">{{ platform.name }}</h1>
             {% if platform.photo %}
             <img src="{{ platform.photo_url }}"
@@ -23,36 +23,36 @@
     <div class="platform-overview__content">
         <aside class="platform-overview__aside">
             {% if active_groups %}
-            <div class="panel">
-                <header class="panel__header">
-                    <h3 class="panel__title">
-                        <span>Groups active on {{ platform.name }}</span>
-                    </h3>
-                </header>
-                <div class="panel__content">
-                    <ul class="list">
-                        {% for group in active_groups %}
-                            <li class="list__item">
-                                {% url 'group' group.id as group_url %}
-                                {% include "shared/entity.html" with type="group" url=group_url label=group.name %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                <div class="o-panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">
+                            <span>Groups active on {{ platform.name }}</span>
+                        </h3>
+                    </header>
+                    <div class="o-panel__content">
+                        <ul class="list">
+                            {% for group in active_groups %}
+                                <li class="list__item">
+                                    {% url 'group' group.id as group_url %}
+                                    {% include "shared/entity.html" with type="group" url=group_url label=group.name %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
             {% endif %}
         </aside>
 
         <div class="platform-overview__main">
             {% if productions %}
-                <div class="panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">Recent releases</h3>
+                <div class="o-panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Recent releases</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         {% production_listing productions show_screenshots=1 %}
                     </div>
-                    <footer class="panel__footer">
+                    <footer class="o-panel__footer">
                         <a href="{% url 'productions' %}?platform={{ platform.id }}" class="button button--more">
                             <span class="button__text">
                                 All {{ platform.name }} releases
@@ -60,7 +60,6 @@
                             </span>
                         </a>
                     </footer>
-
                 </div>
             {% endif %}
         </div>

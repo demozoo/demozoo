@@ -52,27 +52,30 @@
     </header>
 
     {% if alternative_nicks %}
-        <section class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing -editing{% endif %}{% endif %}">
-            <header class="panel__header">
-                <h3 class="panel__title">Also known as</h3>
+        <section class="o-panel{% if can_edit %} edit_toggle{% if editing_nicks %} editing -editing{% endif %}{% endif %}">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">Also known as</h3>
             </header>
-            <div class="panel__content">
+            <div class="o-panel__content">
                 <ul class="list -inline">
                     {% for nick in alternative_nicks %}
                     <li class="list__item">
                         <strong>{{ nick.name }}</strong> {% nick_variants nick %}
                         {% if can_edit %}
-                        {% url 'releaser_edit_nick' scener.id nick.id as releaser_edit_nick_url %}
-                        {% button href=releaser_edit_nick_url icon="edit" level="tertiary" lightbox=True %}
+                            {% url 'releaser_edit_nick' scener.id nick.id as releaser_edit_nick_url %}
+                            {% button href=releaser_edit_nick_url icon="edit" level="tertiary" lightbox=True %}
                         {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
-                {% if can_edit %}
-                {% url 'releaser_add_nick' scener.id as releaser_add_nick_url %}
-                {% button href=releaser_add_nick_url icon="add" label="Add another name" lightbox=True %}
-                {% endif %}
             </div>
+            {% if can_edit %}
+                <footer class="o-panel__footer">
+                    {% url 'releaser_add_nick' scener.id as releaser_add_nick_url %}
+                    {% button href=releaser_add_nick_url icon="add" label="Add another name" lightbox=True %}
+                </footer>
+            {% endif %}
+
         </section>
     {% endif %}
 
@@ -112,9 +115,9 @@
 
     </div>
 
-    <section class="panel external_links_panel editable_chunk ">
-        <header class="panel__header">
-            <h3 class="panel__title">External links</h3>
+    <section class="o-panel external_links_panel editable_chunk ">
+        <header class="o-panel__header">
+            <h3 class="o-panel__heading">External links</h3>
             {% if can_edit %}
             <div class="o-actions">
                 {% url 'releaser_edit_external_links' scener.id as releaser_edit_external_links_url %}
@@ -122,8 +125,8 @@
             </div>
             {% endif %}
         </header>
-        <div class="panel__content">
-            <ul class="list -inline external_links">
+        <div class="o-panel__content">
+            <ul class="list -inline -externalLinks">
                 {% for link in external_links %}
                     <li class="list__item">{{ link.html_link|safe }}</li>
                 {% endfor %}
@@ -132,7 +135,7 @@
     </section>
 
     {% if scener.notes or request.user.is_staff %}
-        <section class="panel notes_panel editable_chunk">
+        <section class="o-panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'releaser_edit_notes' scener.id as releaser_edit_notes_url %}
@@ -147,11 +150,11 @@
 
     <section class="scener__attributions">
         <div class="column">
-            <section class="panel groups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Member of</h3>
+            <section class="o-panel groups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Member of</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list">
                         {% for membership in memberships %}
                         <li class="list__item">
@@ -164,21 +167,23 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% if can_edit %}
+                </div>
+                {% if can_edit %}
+                    <footer class="o-panel__footer">
                         {% url 'scener_add_group' scener.id as scener_add_group_url %}
                         {% button href=scener_add_group_url label="Add group" lightbox=True icon="add" %}
-                    {% endif %}
-                </div>
+                    </footer>
+                {% endif %}
             </section>
         </div>
 
         <div class="column">
             {% if parties_organised %}
-                <section class="panel parties_organised_panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">Organiser of</h3>
+                <section class="o-panel parties_organised_panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Organiser of</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         <ul class="list parties">
                             {% for organiser in parties_organised %}
                                 {% with party=organiser.party %}
@@ -206,11 +211,11 @@
             {% endif %}
 
             {% if bbses_operated %}
-                <section class="panel bbses_operated_panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">BBS</h3>
+                <section class="o-panel bbses_operated_panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">BBS</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         <ul class="list">
                             {% for operator in bbses_operated %}
                                 <li class="list__item">

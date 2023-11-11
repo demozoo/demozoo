@@ -133,11 +133,11 @@
         </ul>
     </div>
 
-    <section class="panel -organisers editable_chunk{% if can_edit %} edit_toggle{% if editing_organisers %} editing{% endif %}{% endif %}">
-        <header class="panel__header">
-            <h3 class="panel__title">Organisers</h3>
+    <section class="o-panel -organisers editable_chunk{% if can_edit %} edit_toggle{% if editing_organisers %} editing{% endif %}{% endif %}">
+        <header class="o-panel__header">
+            <h3 class="o-panel__heading">Organisers</h3>
         </header>
-        <div class="panel__content">
+        <div class="o-panel__content">
             {% regroup organisers by releaser.is_group as orga_type_list %}
             {% for is_group, orga_list in orga_type_list %}
                  {% if is_group %}
@@ -178,11 +178,11 @@
     </section>
 
     {% if results_files %}
-        <section class="panel results_file_panel">
-            <header class="panel__header">
-                <h3 class="panel__title">Results file</h3>
+        <section class="o-panel results_file_panel">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">Results file</h3>
             </header>
-            <div class="panel__content">
+            <div class="o-panel__content">
                 <ul class="list -inline">
                     {% for file in results_files %}
                     <li class="list__item">
@@ -195,9 +195,9 @@
     {% endif %}
 
     {% if external_links or can_edit %}
-        <div class="panel external_links_panel editable_chunk">
-            <header class="panel__header">
-                <h3 class="panel__title">External links</h3>
+        <div class="o-panel external_links_panel editable_chunk">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">External links</h3>
                 {% if can_edit %}
                     <div class="o-actions">
                         {% url 'party_edit_external_links' party.id as edit_party_external_links_url %}
@@ -205,7 +205,7 @@
                     </div>
                 {% endif %}
             </header>
-            <div class="panel__content">
+            <div class="o-panel__content">
                 <ul class="list -inline external_links ">
                     {% for link in external_links %}
                         <li class="list__item">{{ link.html_link|safe }}</li>
@@ -235,7 +235,7 @@
     {% endif %}
 
     {% if party.notes or request.user.is_staff %}
-        <section class="editable_chunk panel notes_panel">
+        <section class="o-panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'party_edit_notes' party.id as party_edit_notes_url %}
@@ -249,9 +249,9 @@
     {% endif %}
 
     {% if invitations or can_edit %}
-        <section class="panel invitations_panel editable_chunk">
-            <header class="panel__header">
-                <h3 class="panel__title">Invitation{{ invitations|length|pluralize }}</h3>
+        <section class="o-panel -invitations">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">Invitation{{ invitations|length|pluralize }}</h3>
                 {% if can_edit %}
                     <div class="o-actions">
                         {% url 'party_edit_invitations' party.id as party_edit_invitations_url %}
@@ -259,7 +259,7 @@
                     </div>
                 {% endif %}
             </header>
-            <div class="panel__content">
+            <div class="o-panel__content">
                 {% if invitations %}
                     {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
                 {% endif %}
@@ -268,9 +268,9 @@
     {% endif %}
 
     {% if releases or can_edit %}
-        <section class="panel releases_panel editable_chunk">
-            <header class="panel__header">
-                <h3 class="panel__title">Releases</h3>
+        <section class="o-panel -releases">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">Releases</h3>
                 {% if can_edit %}
                 <div class="o-actions">
                     {% url 'party_edit_releases' party.id as party_edit_releases_url %}
@@ -278,7 +278,7 @@
                 </div>
                 {% endif %}
             </header>
-            <div class="panel__content">
+            <div class="o-panel__content">
                 {% if releases %}
                     {% production_listing releases show_screenshots=1 show_prod_types=1 %}
                 {% endif %}
@@ -287,10 +287,10 @@
     {% endif %}
 
     {% if competitions_with_placings_and_screenshots or tournaments or can_edit %}
-        <section class="panel results_panel">
+        <section class="o-panel -results">
             <div class="results_menu_column">
                 <div class="results_menu">
-                    <h3 class="panel__title">Results</h3>
+                    <h3 class="o-panel__heading">Results</h3>
                     {% if competitions_with_placings_and_screenshots or tournaments %}
                         <ul class="results-menu__list">
                             {% for compo, placings in competitions_with_placings_and_screenshots %}

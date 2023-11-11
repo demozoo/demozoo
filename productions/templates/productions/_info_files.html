@@ -1,8 +1,8 @@
 {% load ui_tags %}
 
-<section class="panel editable_chunk info_files_panel">
-    <header class="panel__header">
-        <h3 class="panel__title">Info file{{ info_files|length|pluralize }}</h3>
+<section class="o-panel editable_chunk info_files_panel">
+    <header class="o-panel__header">
+        <h3 class="o-panel__heading">Info file{{ info_files|length|pluralize }}</h3>
         {% if can_edit %}
             <div class="o-actions">
                 {% url 'production_edit_info_files' production.id as info_files_edit_url %}
@@ -10,7 +10,7 @@
             </div>
         {% endif %}
     </header>
-    <div class="panel__content">
+    <div class="o-panel__content">
         <ul class="list info_files">
             {% for file in info_files %}
                 <li class="list__item">

@@ -2,6 +2,18 @@
     @media (min-width: 600px) {
         display: flex;
         gap: 25px;
+
+        &__banner {
+            position: relative;
+            margin-bottom: 20px;
+
+            .o-actions {
+                inset-block-start: 10px;
+                inset-inline-end: 10px;
+                position: absolute;
+                z-index: 10;
+            }
+        }
     
         &__main {
             width: calc(100% / 1.5);

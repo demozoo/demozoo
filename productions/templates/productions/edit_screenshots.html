@@ -5,7 +5,7 @@
 {% block html_title %}Editing {{ model_label }} for {{ production.title }} - Demozoo{% endblock %}
 
 {% block base_main %}
-    <section class="panel">
+    <section class="o-panel">
         <div class="o-actions">
             {% url 'production' production.id as production_url %}
             {% button href=production_url icon="done" label="Back to production" %}

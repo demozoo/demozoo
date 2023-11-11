@@ -1,0 +1,8 @@
+.o-form {
+  &__buttons {
+    border-block-start: 1px solid #ccc;
+    display: flex;
+    justify-content: flex-end;
+    padding-block-start: 10px;
+  }
+}

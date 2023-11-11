@@ -1,15 +1,15 @@
 {% load demoscene_tags ui_tags %}
 
-<section class="panel editable_chunk">
-    <header class="panel__header">
-        <h3 class="panel__title productions_header">Productions ({{ credits|length }})</h3>
+<section class="o-panel editable_chunk">
+    <header class="o-panel__header">
+        <h3 class="o-panel__heading productions_header">Productions ({{ credits|length }})</h3>
         {% if can_edit %}
             <div class="o-actions">
                 {% button href=new_production_url icon="add" lightbox=True label="Add production" %}
             </div>
         {% endif %}
     </header>
-    <div class="panel__content">
+    <div class="o-panel__content">
         <table class="table">
             <colgroup>
                 <col class="col--thumb" />

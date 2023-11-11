@@ -1,10 +1,10 @@
 {% load ui_tags %}
 
-<section class="editable_chunk panel tags_panel {% if can_edit %}edit_toggle{% endif %}">
-    <header class="panel__header">
-        <h3 class="panel__title">Tags</h3>
+<section class="o-panel -tags editable_chunk{% if can_edit %} edit_toggle{% endif %}">
+    <header class="o-panel__header">
+        <h3 class="o-panel__heading">Tags</h3>
     </header>
-    <div class="panel__content">
+    <div class="o-panel__content">
         <div id="tags_message"></div>
         {% include "bbs/_tags_list.html" with tags=tags only %}
         {% if can_edit %}

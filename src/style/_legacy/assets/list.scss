@@ -4,9 +4,15 @@ $unit: 1.25%;
     @include listReset();
 
     clear: both;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 
     &__item {
+        align-items: center;
         box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
 
         &:nth-child(even) {
             background-color: var(--even-background-color, transparent);
@@ -37,7 +43,12 @@ $unit: 1.25%;
         align-items: baseline;
         display: flex;
         flex-wrap: wrap;
+        flex-direction: row;
         gap: 4px 12px;
+
+        .list__item {
+            justify-content: flex-start;
+        }
     }
 
     &.-subgroups {

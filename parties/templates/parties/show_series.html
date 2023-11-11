@@ -34,9 +34,9 @@
     </header>
 
     {% if external_links or can_edit %}
-        <section class="panel external_links_panel editable_chunk">
-            <header class="panel__header">
-                <h3 class="panel__title">External links</h3>
+        <section class="o-panel external_links_panel editable_chunk">
+            <header class="o-panel__header">
+                <h3 class="o-panel__heading">External links</h3>
                 {% if can_edit %}
                     <div class="o-actions">
                         {% url 'party_edit_series_external_links' party_series.id as party_edit_series_external_links_url %}
@@ -44,8 +44,8 @@
                     </div>
                 {% endif %}
             </header>
-            <div class="panel__content">
-                <ul class="list -inline external_links">
+            <div class="o-panel__content">
+                <ul class="list -inline -externalLinks">
                     {% for link in external_links %}
                         <li class="list__item">{{ link.html_link|safe }}</li>
                     {% endfor %}
@@ -55,7 +55,7 @@
     {% endif %}
 
     {% if party_series.notes or request.user.is_staff %}
-        <section class="panel notes_panel editable_chunk">
+        <section class="o-panel notes_panel editable_chunk">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'party_edit_series_notes' party_series.id as party_edit_series_url %}

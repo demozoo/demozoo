@@ -59,11 +59,11 @@
 
     {% with group.alternative_nicks as alternative_nicks %}
         {% if alternative_nicks %}
-            <section class="panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Also known as</h3>
+            <section class="o-panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Also known as</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list nicks">
                         {% for nick in alternative_nicks %}
                             <li class="list__item">
@@ -76,18 +76,20 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    {% if can_edit %}
+                </div>
+                {% if can_edit %}
+                    <footer class="o-panel__footer">
                         {% url 'releaser_add_nick' group.id as releaser_add_nick_url %}
                         {% button href=releaser_add_nick_url label="Add another name" icon="add" lightbox=True %}
-                    {% endif %}
-                </div>
+                    </footer>
+                {% endif %}
             </section>
         {% endif %}
     {% endwith %}
 
-    <section class="editable_chunk panel external_links_panel">
-        <header class="panel__header">
-            <h3 class="panel__title">External links</h3>
+    <section class="o-panel external_links_panel">
+        <header class="o-panel__header">
+            <h3 class="o-panel__heading">External links</h3>
             {% if can_edit %}
                 <div class="o-actions">
                     {% url 'releaser_edit_external_links' group.id as releaser_edit_external_links_url %}
@@ -95,8 +97,8 @@
                 </div>
             {% endif %}
         </header>
-        <div class="panel__content">
-            <ul class="list -inline external_links">
+        <div class="o-panel__content">
+            <ul class="list -inline -externalLinks">
                 {% for link in external_links %}
                     <li class="list__item">{{ link.html_link|safe }}</li>
                 {% endfor %}
@@ -105,7 +107,7 @@
     </section>
 
     {% if group.notes or request.user.is_staff %}
-        <section class="editable_chunk panel notes_panel">
+        <section class="o-panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <div class="o-actions">
                     {% url 'releaser_edit_notes' group.id as releaser_edit_notes_url %}
@@ -121,11 +123,11 @@
     <section class="group__attributions">
         <div class="column">
             {% if supergroupships %}
-                <section class="panel supergroups_panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">Subgroup of</h3>
+                <section class="o-panel supergroups_panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Subgroup of</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         <ul class="list memberships">
                             {% for membership in supergroupships %}
                                 <li class="list__item">
@@ -138,11 +140,11 @@
                 </section>
             {% endif %}
 
-            <section class="panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Members</h3>
+            <section class="o-panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Members</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list">
                         {% for membership in memberships %}
                         <li class="list__item{% if not membership.is_current %} -previous_membership{% endif %}">
@@ -155,18 +157,20 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% if can_edit %}
+                </div>
+                {% if can_edit %}
+                    <footer class="o-panel__footer">
                         {% url 'group_add_member' group.id as group_add_member_url %}
                         {% button href=group_add_member_url icon="add" lightbox=True label="Add member" %}
-                    {% endif %}
-                </div>
+                    </footer>
+                {% endif %}
             </section>
 
-            <section class="panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-                <header class="panel__header">
-                    <h3 class="panel__title">Subgroups</h3>
+            <section class="o-panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
+                <header class="o-panel__header">
+                    <h3 class="o-panel__heading">Subgroups</h3>
                 </header>
-                <div class="panel__content">
+                <div class="o-panel__content">
                     <ul class="list -subgroups">
                         {% for membership in subgroupships %}
                         <li class="list__item">
@@ -179,19 +183,21 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% if can_edit %}
+                </div>
+                {% if can_edit %}
+                    <footer class="o-panel__footer">
                         {% url 'group_add_subgroup' group.id as group_add_subgroup_url %}
                         {% button href=group_add_subgroup_url icon="add" lightbox=True label="Add subgroup" %}
-                    {% endif %}
-                </div>
+                    </footer>
+                {% endif %}
             </section>
 
             {% if bbs_affiliations %}
-                <section class="panel -bbs">
-                    <header class="panel__header">
-                        <h3 class="panel__title">BBS affiliations</h3>
+                <section class="o-panel -bbs">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">BBS affiliations</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         <ul class="list">
                             {% for affiliation in bbs_affiliations %}
                                 <li class="list__item">
@@ -206,11 +212,11 @@
         </div>
         <div class="column">
             {% if parties_organised %}
-                <section class="panel parties_organised_panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">Organiser of</h3>
+                <section class="o-panel parties_organised_panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Organiser of</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         <ul class="list">
                             {% for organiser in parties_organised %}
                                 {% with party=organiser.party %}
@@ -240,11 +246,11 @@
             {% combined_releases group %}
 
             {% if member_productions %}
-                <section class="panel">
-                    <header class="panel__header">
-                        <h3 class="panel__title">Member productions ({{ member_productions|length }})</h3>
+                <section class="o-panel">
+                    <header class="o-panel__header">
+                        <h3 class="o-panel__heading">Member productions ({{ member_productions|length }})</h3>
                     </header>
-                    <div class="panel__content">
+                    <div class="o-panel__content">
                         {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
                     </div>
                 </section>

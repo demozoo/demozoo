@@ -1,10 +1,6 @@
 .upcoming_parties {
 
   table {
-    border-top: 10px solid white;
-    clear: both;
-    line-height: 1.5;
-
     th {
       font-family: FabricaRegular, Helvetica, Arial, sans-serif;
       vertical-align: top;
@@ -15,10 +11,6 @@
 
     td {
       vertical-align: top;
-
-      ul {
-        margin-block: 0 10px;
-      }
     }
   }
 

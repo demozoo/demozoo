@@ -8,11 +8,8 @@
     color: currentColor;
 }
 
-.banner_wrapper {
-    .o-actions {
-        inset-block-start: 10px;
-        inset-inline-end: 10px;
-        position: absolute;
-        z-index: 10;
-    }
+.list.-externalLinks a {
+    background-repeat: no-repeat;
+    background: no-repeat center left;
+    padding: 3px 0 3px 20px;
 }
