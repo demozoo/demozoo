@@ -11,7 +11,7 @@
         {% if site_is_writeable %}
             <div class="o-actions">
                 {% url 'forums_new_topic' as forums_new_topic_url %}
-                {% button href=new_topic_url label="New topic" icon="add" lightbox=True %}
+                {% button href=forums_new_topic_url label="New topic" icon="add" lightbox=True %}
             </div>
         {% endif %}
         <h1 class="page__title">Discussions</h1>
