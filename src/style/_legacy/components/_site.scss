@@ -57,6 +57,12 @@
             }
         }
     }
+
+    &::after {
+        clear: both;
+        content: "";
+        display: block;
+    }
 }
 
 .site__content {
