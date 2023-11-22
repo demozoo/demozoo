@@ -465,14 +465,48 @@
     },
     {
         "pk": 1,
+        "model": "awards.eventseries",
+        "fields": {
+            "name": "Meteoriks"
+        }
+    },
+    {
+        "pk": 1,
         "model": "awards.event",
         "fields": {
             "name": "The Meteoriks 2020",
             "slug": "meteoriks-2020",
+            "series": 1,
             "eligibility_start_date": "2019-01-01",
             "eligibility_end_date": "2019-12-31",
             "recommendations_enabled": true,
             "reporting_enabled": true
+        }
+    },
+    {
+        "pk": 2,
+        "model": "awards.event",
+        "fields": {
+            "name": "The Meteoriks 2019",
+            "slug": "meteoriks-2019",
+            "series": 1,
+            "eligibility_start_date": "2018-01-01",
+            "eligibility_end_date": "2018-12-31",
+            "recommendations_enabled": false,
+            "reporting_enabled": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "awards.event",
+        "fields": {
+            "name": "The Meteoriks 2021",
+            "slug": "meteoriks-2021",
+            "series": 1,
+            "eligibility_start_date": "2020-01-01",
+            "eligibility_end_date": "2020-12-31",
+            "recommendations_enabled": false,
+            "reporting_enabled": false
         }
     },
     {
@@ -505,6 +539,26 @@
             "slug": "outstanding-concept",
             "event": 1,
             "position": 3
+        }
+    },
+    {
+        "pk": 4,
+        "model": "awards.category",
+        "fields": {
+            "name": "Best Production On A Crusty Old Platform",
+            "slug": "low-end",
+            "event": 2,
+            "position": 1,
+            "platforms": [1]
+        }
+    },
+    {
+        "pk": 1,
+        "model": "awards.nomination",
+        "fields": {
+            "category": 4,
+            "production": 1,
+            "status": "winner"
         }
     },
     {

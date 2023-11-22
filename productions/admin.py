@@ -24,13 +24,20 @@ class SoundtrackLinkInline(admin.TabularInline):
     raw_id_fields = ['soundtrack']
 
 
+class ProductionAdmin(admin.ModelAdmin):
+    inlines = [CreditInline, ScreenshotInline, SoundtrackLinkInline]
+    raw_id_fields = ['author_nicks', 'author_affiliation_nicks']
+    search_fields = ['title']
+    list_display = ['title', 'byline_string', 'supertype']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related(
+            'author_nicks', 'author_affiliation_nicks'
+        )
+
+
 admin.site.register(ProductionType, ProductionTypeAdmin)
-admin.site.register(
-    Production,
-    inlines=[CreditInline, ScreenshotInline, SoundtrackLinkInline],
-    raw_id_fields=['author_nicks', 'author_affiliation_nicks'],
-    search_fields=['title']
-)
+admin.site.register(Production, ProductionAdmin)
 
 TagAdmin.inlines = []
 

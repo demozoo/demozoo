@@ -1,14 +1,27 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 
 from platforms.models import Platform
 from productions.models import Production, ProductionType
 
 
+class EventSeries(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = "event series"
+
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, help_text="Used in URLs - /awards/[slug]/")
+    series = models.ForeignKey(EventSeries, blank=True, null=True, related_name='events', on_delete=models.SET_NULL)
     intro = models.TextField(
         blank=True, help_text="Intro text to show on 'your recommendations' page - Markdown / HTML supported"
     )
@@ -39,6 +52,13 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('award', args=[self.slug])
+
+    @property
+    def suffix(self):
+        return self.name.split(' ')[-1]
 
     @classmethod
     def accepting_recommendations_for(cls, production):
@@ -150,7 +170,14 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return "%s - %s" % (self.event.name, self.name)
+
+    @property
+    def slug_with_fallback(self):
+        return self.slug or "category-%d" % self.id
+
+    def get_results_url(self):
+        return f"{self.event.get_absolute_url()}#{self.slug_with_fallback}"
 
     def get_recommendation_report(self):
         prods = Production.objects.filter(award_recommendations__category=self).distinct()
@@ -198,4 +225,19 @@ class Juror(models.Model):
     class Meta:
         unique_together = [
             ('user', 'event'),
+        ]
+
+
+class Nomination(models.Model):
+    STATUSES = [
+        ('nominee', 'Nominee'),
+        ('winner', 'Winner'),
+    ]
+    production = models.ForeignKey(Production, related_name='award_nominations', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='nominations', on_delete=models.CASCADE)
+    status = models.CharField(max_length=32, choices=STATUSES, default='nominee')
+
+    class Meta:
+        unique_together = [
+            ('production', 'category'),
         ]

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% load awards_tags demoscene_tags safe_markdown %}
+
+{% block html_title %}{{ event.name }} - Your recommendations - Demozoo{% endblock %}
+
+{% block body_class %}show_award{% endblock %}
+
+{% block base_main %}
+
+{% if can_view_reports %}
+    <h1>{{ event.name }} - Welcome, jury member!</h1>
+    {% include "awards/_report_categories.html" with current_category=None %}
+{% else %}
+    <h1>{{ event.name }}</h1>
+
+    {% if event.recommendations_enabled and event.intro %}
+        {{ event.intro|safe_markdown }}
+    {% endif %}
+{% endif %}
+
+{% if other_events|length > 1 %}
+<div class="events_in_series">
+    <strong>Other {{ event.series.name }} events:</strong>
+    <ul>
+        {% for evt in other_events %}
+            <li>
+                {% if evt == event %}
+                    <strong>{{ evt.suffix }}</strong>
+                {% else %}
+                    <a href="{{ evt.get_absolute_url }}">{{ evt.suffix }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if nominations_by_category %}
+    {% for category, category_data in nominations_by_category %}
+        <h2 id="{{ category.slug_with_fallback }}">{{ category.name }}</h2>
+        <table class="table" summary="">
+            <colgroup>
+                <col class="col--thumb" />
+                <col width="40%" />
+                <col />
+                <col class="col--date" />
+            </colgroup>
+            {% for status, nominations in category_data %}
+                <tbody>
+                    <tr>
+                        <th colspan="4" class="nominee_status nominee_status_{{ status }}">
+                            {% if status == "winner" %}Winner{% else %}Nominees{% endif %}
+                        </th>
+                    </tr>
+                    {% for production, screenshot in nominations %}
+                        {% include "shared/production_listing_row.html" with show_prod_types=True show_screenshots=True mark_excludable=False %}
+                    {% endfor %}
+                </tbody>
+            {% endfor %}
+        </table>
+    {% endfor %}
+{% endif %}
+
+{% if not can_view_reports and not nominations_by_category and not event.recommendations_enabled %}
+    <p>Recommendations are closed right now. Stay tuned for further announcements!</p>
+{% endif %}
+
+{% if showing_recommendations %}
+    {% if recommendations_by_category %}
+        <h2>Your recommendations</h2>
+        {% for category, recommendations in recommendations_by_category %}
+            <h3>{{ category.name }}</h3>
+            {% recommended_production_listing recommendations show_screenshots=True show_prod_types=True %}
+        {% endfor %}
+    {% elif event.recommendations_enabled %}
+        {% if can_view_reports %}
+            {# don't prompt jury members for recommendations #}
+        {% elif request.user.is_authenticated %}
+            <h2>Your recommendations</h2>
+            <p>You haven't made any recommendations yet. Search for your favourite productions of the year and get to it :-)</p>
+        {% else %}
+            <h2>Your recommendations</h2>
+            {% url 'award' event.slug as recommendations_url %}
+            <p><a href="{% url 'log_in' %}?next={{ recommendations_url|urlencode }}">Log in</a> to start making recommendations.</p>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+{% endblock %}

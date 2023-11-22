@@ -34,6 +34,33 @@
         display: table; width: 100%;
     }
 
+    .awards_panel {
+      margin-bottom: 10px;
+
+      ul.awards {
+        padding-bottom: 8px;
+        clear: both;
+
+        li {
+          line-height: 1.5em;
+          padding: 2px 0 2px 24px;
+          margin-right: 20px;
+
+          &.winner {
+            background-image: url(/static/images/icons/award_star_gold_2.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+          }
+          &.nominee {
+            background-image: url(/static/images/icons/award_star_silver_2.png);
+            background-position: left center;
+            background-repeat: no-repeat;
+          }
+
+        }
+      }
+    }
+
     .external_links_panel {
         margin-bottom: 10px;
     }

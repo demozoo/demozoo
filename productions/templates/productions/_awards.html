@@ -1,0 +1,15 @@
+<div class="panel awards_panel">
+    <h3 class="panel__title">Awards</h3>
+    <ul class="awards">
+        {% for nomination in award_nominations %}
+            <li class="{{ nomination.status }}">
+                <b>{{ nomination.category.event.name }}</b> -
+                {% if nomination.status == 'winner' %}
+                    Winner of <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
+                {% else %}
+                    Nominated for <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

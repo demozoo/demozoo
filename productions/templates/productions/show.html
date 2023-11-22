@@ -67,6 +67,9 @@
         {{ carousel.render }}
 
         <div class="column">
+            {% if award_nominations %}
+                {% include "productions/_awards.html" %}
+            {% endif %}
             {% if download_links %}
                 {% include "productions/_downloads.html" %}
             {% endif %}

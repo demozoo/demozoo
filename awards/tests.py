@@ -1,11 +1,11 @@
 import responses
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
 from requests.exceptions import HTTPError
 
-from awards.models import Category, Event, Juror, Recommendation
+from awards.models import Category, Event, EventSeries, Juror, Recommendation
 from demoscene.models import SceneID
 from productions.models import Production, ProductionType
 
@@ -13,9 +13,59 @@ from productions.models import Production, ProductionType
 class TestModels(TestCase):
     fixtures = ['tests/gasman.json']
 
+    def test_event_series_str(self):
+        meteoriks = EventSeries.objects.get(name="Meteoriks")
+        self.assertEqual(str(meteoriks), "Meteoriks")
+
     def test_event_str(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
         self.assertEqual(str(meteoriks), "The Meteoriks 2020")
+
+    def test_active_for_user(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        anon = AnonymousUser()
+        user = User.objects.create_user(username='testuser', password='12345')
+
+        # Events are active for anonymous and logged-in users when recommendations are enabled
+        self.assertTrue(
+            Event.active_for_user(anon).filter(name="The Meteoriks 2020").exists()
+        )
+        self.assertTrue(
+            Event.active_for_user(user).filter(name="The Meteoriks 2020").exists()
+        )
+        meteoriks.recommendations_enabled = False
+        meteoriks.save()
+        self.assertFalse(
+            Event.active_for_user(anon).filter(name="The Meteoriks 2020").exists()
+        )
+        self.assertFalse(
+            Event.active_for_user(user).filter(name="The Meteoriks 2020").exists()
+        )
+
+        # Events are active for staff and jury members when reporting is enabled
+        superuser = User.objects.create_superuser(
+            username='testsuperuser', email='testsuperuser@example.com', password='12345'
+        )
+        self.assertTrue(
+            Event.active_for_user(superuser).filter(name="The Meteoriks 2020").exists()
+        )
+        meteoriks.jurors.create(user=user)
+        self.assertTrue(
+            Event.active_for_user(user).filter(name="The Meteoriks 2020").exists()
+        )
+
+        # Events are not active for anyone if neither recommendations nor reporting are enabled
+        meteoriks.reporting_enabled = False
+        meteoriks.save()
+        self.assertFalse(
+            Event.active_for_user(anon).filter(name="The Meteoriks 2020").exists()
+        )
+        self.assertFalse(
+            Event.active_for_user(user).filter(name="The Meteoriks 2020").exists()
+        )
+        self.assertFalse(
+            Event.active_for_user(superuser).filter(name="The Meteoriks 2020").exists()
+        )
 
     def test_event_recommendation_options(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
@@ -45,7 +95,7 @@ class TestModels(TestCase):
 
     def test_category_str(self):
         best_lowend = Category.objects.get(name="Best Low-End Production")
-        self.assertEqual(str(best_lowend), "Best Low-End Production")
+        self.assertEqual(str(best_lowend), "The Meteoriks 2020 - Best Low-End Production")
 
 
 class TestCandidates(TestCase):
@@ -167,16 +217,35 @@ class TestRecommendations(TestCase):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
         best_lowend = Category.objects.get(name="Best Low-End Production")
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
-        Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
 
         self.client.login(username='testuser', password='12345')
+
         response = self.client.get('/awards/%s/' % meteoriks.slug)
         self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Brexecutable")
+        self.assertContains(response, "You haven't made any recommendations yet.")
+
+        Recommendation.objects.create(production=brexecutable, user=self.testuser, category=best_lowend)
+
+        response = self.client.get('/awards/%s/' % meteoriks.slug)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Brexecutable")
+        self.assertNotContains(response, "You haven't made any recommendations yet.")
 
     def test_get_recommendations_no_login(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
         response = self.client.get('/awards/%s/' % meteoriks.slug)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Log in</a> to start making recommendations.")
+
+    def test_recommendations_closed(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        meteoriks.recommendations_enabled = False
+        meteoriks.save()
+        response = self.client.get('/awards/%s/' % meteoriks.slug)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Log in</a> to start making recommendations.")
+        self.assertContains(response, "Recommendations are closed right now.")
 
     def test_remove_recommendation(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
@@ -227,6 +296,19 @@ class TestRecommendations(TestCase):
         self.assertContains(response, "Brexecutable", 1)
         self.assertContains(response, "2 recommendations")
 
+    def test_show_nominations(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+        best_lowend = Category.objects.get(name="Best Low-End Production")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        best_lowend.nominations.create(production=brexecutable, status='nominee')
+
+        response = self.client.get('/awards/%s/' % meteoriks.slug)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Brexecutable")
+        self.assertContains(response, '<a href="/awards/meteoriks-2019/">2019</a>', html=True)
+        # 2021 has no nominations
+        self.assertNotContains(response, '<a href="/awards/meteoriks-2021/">2021</a>', html=True)
+
 
 class TestFetchJurors(TestCase):
     fixtures = ['tests/gasman.json']
@@ -264,3 +346,17 @@ class TestFetchJurors(TestCase):
 
         self.assertEqual(Juror.objects.filter(user=self.testuser).count(), 1)
         self.assertEqual(Juror.objects.filter(user=self.truck).count(), 1)
+
+
+class TestAwardsAdmin(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def setUp(self):
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+
+    def test_get(self):
+        response = self.client.get('/admin/awards/category/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Meteoriks 2020")
+        self.assertContains(response, "Best High-End Demo")
