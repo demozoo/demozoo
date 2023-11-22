@@ -78,7 +78,7 @@ class TestShowParty(TestCase):
         response = self.client.get('/parties/%d/' % party.id)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Gasman')
-        self.assertContains(response, '(Compo team)')
+        self.assertContains(response, 'Compo team')
 
 
 class TestShowPartyHistory(TestCase):
