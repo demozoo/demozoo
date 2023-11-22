@@ -6,39 +6,37 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        <ul>
-            {% for file in text_ads %}
+    <h1>{{ title }}</h1>
+    <ul class="list -zebra">
+        {% for file in text_ads %}
+            <li class="list__item">
+                <a href="{% url 'maintenance:fix_bbs_text_ad_encoding' file.id %}">{{ file.filename }}</a>
+                - <strong>{{ file.bbs.name }}</strong>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if text_ads.paginator.num_pages > 1 %}
+        <ul class="pagination">
+            {% if text_ads.has_previous %}
                 <li>
-                    <a href="{% url 'maintenance:fix_bbs_text_ad_encoding' file.id %}">{{ file.filename }}</a>
-                    - <strong>{{ file.bbs.name }}</strong>
+                    <a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ text_ads.previous_page_number }}" title="Previous page">&laquo;</a>
                 </li>
+            {% endif %}
+
+            {% for i in text_ads.paginator.page_range %}
+                {% if i == text_ads.number %}
+                    <li class="current">{{ i }}</li>
+                {% else %}
+                    <li><a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
             {% endfor %}
+
+            {% if text_ads.has_next %}
+                <li>
+                    <a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ text_ads.next_page_number }}" title="Next page">&raquo;</a>
+                </li>
+            {% endif %}
         </ul>
-
-        {% if text_ads.paginator.num_pages > 1 %}
-            <ul class="pagination">
-                {% if text_ads.has_previous %}
-                    <li>
-                        <a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ text_ads.previous_page_number }}" title="Previous page">&laquo;</a>
-                    </li>
-                {% endif %}
-
-                {% for i in text_ads.paginator.page_range %}
-                    {% if i == text_ads.number %}
-                        <li class="current">{{ i }}</li>
-                    {% else %}
-                        <li><a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ i }}">{{ i }}</a></li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if text_ads.has_next %}
-                    <li>
-                        <a href="{% url 'maintenance:bbs_text_ads_with_no_encoding' %}?page={{ text_ads.next_page_number }}" title="Next page">&raquo;</a>
-                    </li>
-                {% endif %}
-            </ul>
-        {% endif %}
-    </div>
+    {% endif %}
 {% endblock %}

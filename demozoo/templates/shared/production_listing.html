@@ -1,11 +1,11 @@
 <table class="table" summary="">
     <colgroup>
         {% block columns %}
-            {% if mark_excludable and site_is_writeable %}<col />{% endif %}
-            <col class="col--thumb" />
-            <col width="40%" />
+            {% if mark_excludable and site_is_writeable %}<col class="col -fit" />{% endif %}
+            <col class="col -thumb" />
+            <col class="col" width="40%" />
             <col />
-            <col class="col--date" />
+            <col class="col -date" />
         {% endblock %}
     </colgroup>
     <tbody>

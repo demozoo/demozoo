@@ -6,10 +6,9 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}</h2>
-    <div id="main_column">
-        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-            {% production_listing productions mark_excludable=mark_excludable %}
-        </div>
+    <h1>{{ title }}</h1>
+
+    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+        {% production_listing productions mark_excludable=mark_excludable %}
     </div>
 {% endblock %}

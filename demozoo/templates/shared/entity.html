@@ -1,4 +1,4 @@
-<div class="m-entity{% if not current %} -previousAffiliation{% endif %}" itemscope{% if type == "group" %} itemtype="//schema.org/Organization"{% endif %}>
+<span class="m-entity{% if not current %} -previousAffiliation{% endif %}" itemscope{% if type == "group" %} itemtype="//schema.org/Organization"{% endif %}>
     {% if type %}{% include "shared/icon.html" with icon=type %}{% endif %}
     <a href="{{ url }}"{% if not current %} title="{{ title }}"{% endif %} itemprop="url">
         <span itemprop="name">{{ label }}</span>
@@ -6,4 +6,4 @@
     {% if flag %}{% include "shared/releaser_flag.html" with releaser=flag %}{% endif %}
     {% if description %}&minus; <span class="m-entity__description">{{ description }}</span>{% endif %}
     {% if list %}&minus; {% for credit in list %}{{credit.description}}{% if not forloop.last %}, {% endif %}{% endfor %}{%endif%}
-</div>
+</span>

@@ -1,30 +1,41 @@
 {% extends "base.html" %}
 {% load compress %}
 
-
 {% block base_main %}
-    <h2>scene.org party file matching</h2>
-    <p>Another chance to do some hypnotic button clicking to help with our data entry! Now that we know which folders on scene.org correspond to which party compos, it's time to match up the individual download files to the correct compo entries.</p>
-    <p>Pick a folder from the list below - the ones in <strong>bold</strong> contain some uncategorised files that haven't yet been attached to a production as a download link. Your mission is to match them up to the appropriate compo entry...</p>
-
-    <div style="width: 300px; float: right; border: 1px solid #ccc; padding: 10px;">
-        <h3>Leaderboard</h3>
-        <ol style="list-style-type: decimal; margin-left: 2em;">
-            {% for user in top_users %}
-                <li>{{ user }} - {{ user.edit_count }}</li>
-            {% endfor %}
-        </ol>
+<section class="t-maintenance -sceneOrgFiles">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">scene.org party file matching</h1>
+        <p>Another chance to do some hypnotic button clicking to help with our data entry! Now that we know which folders on scene.org correspond to which party compos, it's time to match up the individual download files to the correct compo entries.</p>
+        <p>Pick a folder from the list below - the ones in <strong>bold</strong> contain some uncategorised files that haven't yet been attached to a production as a download link. Your mission is to match them up to the appropriate compo entry...</p>
+    </header>
+    <div class="t-maintenance__content">
+        <main>
+            <ul class="list -zebra">
+                {% for dir in directories %}
+                    <li class="list__item">
+                        {% if dir.unmatched_count == 0 %}
+                            <a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a>
+                        {% else %}
+                            <strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong> ({{ dir.unmatched_count }})
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </main>
+        <aside>
+            <div class="o-panel">
+                <header class="o-panel__header">
+                    <h2 class="o-panel__heading">Leaderboard</h2>
+                </header>
+                <div class="o-panel__content">
+                    <ol class="list -leaderboard">
+                        {% for user in top_users %}
+                        <li class="list__item">{{ user }} - {{ user.edit_count }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </aside>
     </div>
-
-    <ul class="folders">
-        {% for dir in directories %}
-            <li>
-                {% if dir.unmatched_count == 0 %}
-                    <a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a>
-                {% else %}
-                    <strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong> ({{ dir.unmatched_count }})
-                {% endif %}
-            </li>
-        {% endfor %}
-    <ul>
+</section>
 {% endblock %}

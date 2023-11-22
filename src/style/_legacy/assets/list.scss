@@ -9,10 +9,10 @@ $unit: 1.25%;
     gap: 4px;
 
     &__item {
-        align-items: center;
+        //align-items: center;
         box-sizing: border-box;
-        display: flex;
-        justify-content: space-between;
+        //display: flex;
+        //justify-content: space-between;
 
         &:nth-child(even) {
             background-color: var(--even-background-color, transparent);
@@ -21,8 +21,11 @@ $unit: 1.25%;
 
     &.-zebra {
         --even-background-color: #f5f5f5;
+        gap: 0;
 
         .list__item {
+            padding-block: 2px;
+
             &:not(:first-child) {
                 border-top: 1px solid #ddd;
             }
@@ -104,6 +107,11 @@ $unit: 1.25%;
         }
     }
 
+    &.-leaderboard {
+        list-style-type: decimal-leading-zero;
+        padding-inline: 1.75em 0;
+    }
+
     &.-unresolvedScreenshots {
 
         > .list__item {
@@ -126,6 +134,26 @@ $unit: 1.25%;
             padding-block: 4px;
         }
     }
+}
+
+.list__item {
+
+    &.-releaser {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+
+        .exclude_button {
+            margin-right: 0;
+        }
+    }
+}
+
+.list__item.excludable {
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
 .list--party-editions {

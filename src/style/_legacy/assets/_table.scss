@@ -5,16 +5,42 @@
     font-size: 1rem;
     line-height: 1.5;
 
+    caption {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-block: 1em 1ex;
+        text-align: start;
+    }
+
     tr {
         border-top: 1px solid demozoo-color('table-border');
 
         &:last-child {
             border-bottom: 1px solid demozoo-color('table-border');
         }
+
+        &:nth-child(even) {
+            background-color: #F8F8F8;
+        }
     }
 
-    tr:nth-child(even) {
-        background-color: #F8F8F8;
+    thead {
+        tr {
+            border-top: 0;
+
+            &:nth-child(even) {
+                background-color: transparent;
+            }
+        }
+
+        th {
+            text-align: start;
+            padding: .5rem;
+
+            &:not(:first-child) {
+                padding-inline-start: 0;
+            }
+        }
     }
 
     td {

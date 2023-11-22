@@ -21,32 +21,46 @@
             })
         })
     </script>
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        {% regroup records by membership as membership_list %}
-        <table>
+
+    <h1>{{ title }}</h1>
+
+    {% regroup records by membership as membership_list %}
+    <table class="table">
+        <thead>
             <tr>
                 <th>Suggested membership</th>
                 <th>According to releases</th>
             </tr>
+        </thead>
+        <tbody>
             {% for membership in membership_list %}
                 <tr>
                     {% with membership.list.0 as record %}
-                        <td style="border-bottom: 1px solid #888; padding: 4px;">
-                            <img src="{% if record.member_is_group %}/static/images/icons/group.png{% else %}/static/images/icons/scener.png{% endif %}" />
-                            <a href="/{% if record.member_is_group %}groups{% else %}sceners{% endif %}/{{ record.member_id }}/">{{ record.member_name }}</a>
-                            / <a href="/groups/{{ record.group_id }}/">{{ record.group_name }}</a>
+                        <td>
+
+                            {% if record.member_is_group %}
+                                {% url 'group' record.member_id as group_url %}
+                                {% include "shared/entity.html" with label=record.member_name type="group" url=group_url %}
+                            {% else %}
+                                {% url 'scener' record.member_id as scener_url %}
+                                {% include "shared/entity.html" with label=record.member_name type="scener" url=scener_url %}
+                            {% endif %}
+                            /
+                            {% url 'group' record.group_id as group_url %}
+                            {% include "shared/entity.html" with label=record.group_name url=group_url %}
                         </td>
                     {% endwith %}
-                    <td style="border-bottom: 1px solid #888; padding: 4px;">
-                        <ul>
+                    <td>
+                        <ul class="list -inline">
                             {% for record in membership.list %}
-                                <li class="{{ record.production_supertype }}"><a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a></li>
+                                <li class="list__item {{ record.production_supertype }}">
+                                    <a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a>
+                                </li>
                             {% endfor %}
                         </ul>
                     </td>
                     {% with membership.list.0 as record %}
-                        <td style="border-bottom: 1px solid #888; padding: 4px;">
+                        <td>
                             {% if site_is_writeable %}
                                 <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
                                     <input type="hidden" name="member_id" value="{{ record.member_id }}" />
@@ -58,7 +72,7 @@
                     {% endwith %}
                 </tr>
             {% endfor %}
-        </table>
-    </div>
+        </tbody>
+    </table>
 </section>
 {% endblock %}

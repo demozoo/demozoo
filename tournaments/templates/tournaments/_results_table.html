@@ -1,11 +1,11 @@
 {% load demoscene_tags static %}
 <table class="table" summary="">
     <colgroup>
-        {% if phase.has_rankings %}<col class="col--ranking"/>{% endif %}
-        <col class="col--thumb" />
-        <col class="col--production" />
+        {% if phase.has_rankings %}<col class="col -ranking"/>{% endif %}
+        <col class="col -thumb" />
+        <col class="col -production" />
         <col />
-        {% if phase.has_scores %}<col class="col--score" />{% endif %}
+        {% if phase.has_scores %}<col class="col -score" />{% endif %}
     </colgroup>
     <tbody>
         {% for entry in phase.entries.all %}

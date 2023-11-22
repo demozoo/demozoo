@@ -11,9 +11,9 @@
 
 {% block base_main %}
 <section class="sceneorg">
-    <h2>Pouet release matching: {{ releaser.name }}</h2>
+    <h1>Pouet release matching: {{ releaser.name }}</h1>
 
-    <h3>Unmatched:</h3>
+    <h2>Unmatched:</h2>
 
     <ul class="unmatched_left unmatched_demozoo_prods">
         <li>Demozoo prods:</li>
@@ -31,7 +31,7 @@
         {% endfor %}
     </ul>
 
-    <h3>Matched:</h3>
+    <h2>Matched:</h2>
     <ul class="matches">
         {% for dz_id, dz_title, dz_url, pouet_id, pouet_title, pouet_url in matched_prods %}
             <li>

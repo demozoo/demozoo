@@ -1,30 +1,43 @@
 .sceneorg {
 
+    &__years {
+        gap: 24px;
+        border-block-start: 1px solid white;
+
+        @media (min-width: 600px) {
+            column-count: 2;
+        }
+
+        @media (min-width: 900px) {
+            column-count: 3;
+        }
+
+        @media (min-width: 1200px) {
+            column-count: 4;
+        }
+    }
+
+    &__year {
+        break-inside: avoid;
+        margin-block: 0 21px;
+    }
+
     h2 {
-        margin-bottom: 1em;
+        font-size: 21px;
+        line-height: 1;
+        margin-block: 0 14px;
     }
 
-    h3 {
-        clear: both;
-    }
-
-    ul.parties a {
+    .list a {
         color: #bbe;
     }
 
-    ul.parties strong a {
-        color: #448;
-    }
-
-    ul.folders a {
-        color: #bbe;
-    }
-
-    ul.folders strong a {
+    .list strong a {
         color: #448;
     }
 
     @mixin button() {
+        appearance: none;
         width: 300px;
         padding: 4px;
         border-radius: 6px;
@@ -32,6 +45,7 @@
 
     @mixin white_button() {
         @include button();
+
         color: #606060;
         border: solid 1px #b7b7b7;
         background: #fff;
@@ -47,11 +61,13 @@
 
     @mixin red_button() {
         @include button();
+
         color: #faddde;
         border: solid 1px #980c10;
         background: #d81b21;
         background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
         background: -moz-linear-gradient(top, #ed1c24, #aa1317);
+
         &:hover {
             background: #b61318;
             background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
@@ -62,6 +78,7 @@
     .unmatched_left {
         width: 50%;
         float: left;
+
         > li {
             margin: 8px;
             text-align: center;
@@ -71,6 +88,7 @@
     .unmatched_right {
         width: 50%;
         float: left;
+
         > li {
             margin: 8px;
             text-align: center;

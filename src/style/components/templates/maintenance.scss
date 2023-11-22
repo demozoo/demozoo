@@ -1,0 +1,22 @@
+.t-maintenance {
+  --template-gap: 32px;
+
+  &__header {
+    margin-block: 0 var(--template-gap);
+  }
+
+  &__heading {
+    @include overviewHeading();
+  }
+
+  &.-sceneOrgFiles {
+
+    @media (min-width: 800px) {
+      .t-maintenance__content {
+        display: grid;
+        gap: var(--template-gap);
+        grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+      }
+    }
+  }
+}

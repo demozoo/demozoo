@@ -6,25 +6,34 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <div id="main_column">
+    <h1>{{ title }}</h1>
+    <div>
         {% for column, productions in prod_dupes.items %}
-            <h2>Productions matching by {{ column }}:</h2>
-            <div class="o-panel report">
-                {% production_listing productions %}
-            </div>
+            {% if productions %}
+                <h2>Productions matching by {{ column }}</h2>
+                <div class="o-panel -report">
+                    {% production_listing productions %}
+                </div>
+            {% endif %}
         {% endfor %}
         
         {% for column, releasers in releaser_dupes.items %}
-            <h2>Releasers matching by {{ column }}:</h2>
-            <div class="o-panel report">
-                <ul class="releaser_list">
-                    {% for releaser in releasers %}
-                        <li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
-                            <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% if releasers %}
+                <h2>Releasers matching by {{ column }}</h2>
+                <div class="o-panel -report">
+                    <ul class="list -zebra">
+                        {% for releaser in releasers %}
+                            <li class="list__item">
+                                {% if releaser.is_group %}
+                                    {% include "shared/entity.html" with label=releaser.name url=releaser.get_absolute_url type="group" %}
+                                {% else %}
+                                    {% include "shared/entity.html" with label=releaser.name url=releaser.get_absolute_url type="scener" %}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
 {% endblock %}

@@ -1,9 +1,13 @@
 .m-entity {
   --icon-size: 16px;
 
-  align-items: center;
-  display: flex;
+  align-items: baseline;
+  display: inline-flex;
   gap: 4px;
+
+  .a-icon {
+    align-self: center;
+  }
 
   &.-previousAffiliation {
     opacity: 0.5;

@@ -5,17 +5,19 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-            <ul class="releaser_list">
-                {% for nick in nicks %}
-                    <li class="{% if nick.releaser.is_group %}group{% else %}scener{% endif %} {% if site_is_writeable %}
-excludable{% endif %}" data-record-id="{{ nick.id }}">
-                        <a href="{{ nick.releaser.get_absolute_url }}">{{ nick.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <h1>{{ title }}</h1>
+
+    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+        <ul class="list -zebra">
+            {% for nick in nicks %}
+                <li class="list__item{% if site_is_writeable %} excludable{% endif %}" data-record-id="{{ nick.id }}">
+                    {% if nick.releaser.is_group %}
+                        {% include "shared/entity.html" with url=nick.releaser.get_absolute_url label=nick.name type="group" %}
+                    {% else %}
+                        {% include "shared/entity.html" with url=nick.releaser.get_absolute_url label=nick.name type="scener" %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}

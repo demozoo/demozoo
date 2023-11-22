@@ -7,39 +7,46 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-            <form action="{% url 'maintenance:fix_release_dates' %}" method="post">
-                {% csrf_token %}
-                <table width="100%">
+    <h1>{{ title }}</h1>
+    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+        <form action="{% url 'maintenance:fix_release_dates' %}" method="post">
+            {% csrf_token %}
+            <table class="table">
+                <colgroup>
                     <col width="30%" />
                     <col width="10%" />
                     <col width="20%" />
                     <col width="30%" />
+                </colgroup>
+                <thead>
                     <tr>
                         <th>Production</th>
                         <th>Release date</th>
                         <th>By</th>
                         <th>Suggested date</th>
                     </tr>
+                    {% if site_is_writeable %}
                     <tr>
                         <td></td>
                         <td></td>
                         <td></td>
-                        {% if site_is_writeable %}
-                            <td><input type="checkbox" id="check_all" /><label for="check_all">Check all</label></td>
-                        {% endif %}
+                        <td>
+                            <input type="checkbox" id="check_all" />
+                            <label for="check_all">Check all</label>
+                        </td>
                     </tr>
-                    <script>
-                        $('#check_all').change(function() {
-                            if ($(this).is(':checked')) {
-                                $('input[name=production_id]').attr('checked', 'checked');
-                            } else {
-                                $('input[name=production_id]').removeAttr('checked');
-                            }
-                        })
-                    </script>
+                    {% endif %}
+                </thead>
+                <script>
+                    $('#check_all').change(function() {
+                        if ($(this).is(':checked')) {
+                            $('input[name=production_id]').attr('checked', 'checked');
+                        } else {
+                            $('input[name=production_id]').removeAttr('checked');
+                        }
+                    })
+                </script>
+                <tbody>
                     {% for prod in productions %}
                         <tr {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ prod.id }}">
                             <td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
@@ -56,8 +63,9 @@
                             </td>
                         </tr>
                     {% endfor %}
-                    
-                    {% if site_is_writeable %}
+                </tbody>
+                {% if site_is_writeable %}
+                    <tfoot>
                         <tr>
                             <td></td>
                             <td></td>
@@ -67,9 +75,9 @@
                                 {% button label="Update selected records" %}
                             </td>
                         </tr>
-                    {% endif %}
-                </table>
-            </form>
-        </div>
+                    </tfoot>
+                {% endif %}
+            </table>
+        </form>
     </div>
 {% endblock %}

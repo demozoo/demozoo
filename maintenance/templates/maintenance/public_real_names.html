@@ -1,40 +1,37 @@
 {% extends "maintenance/base.html" %}
-
+{% load ui_tags %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}: <a href="?">all</a> | <a href="?without_note=true">without notes</a></h2>
-    <div id="main_column">
-        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-            <table>
-                {% for releaser in sceners %}
-                    <tr {% if releaser.real_name_note %}style="background-color: #ccc"{% endif %}>
-                        <td>
-                            <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
-                        </td>
-                        <td>
-                            {{ releaser.first_name }}
-                            {{ releaser.surname }}
-                        </td>
-                        <td>
-                            {% if site_is_writeable %}
-                                {% comment %}TODO: update to new button paradigm{% endcomment %}
-                                <a href="{% url 'scener_edit_real_name' releaser.id %}?ajax_submit=true" data-lightbox>
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
-                                </a>
-                            {% endif %}
-                        </td>
-                        <td style="width: 80%;">
-                            <div style="display:block; max-width: 600px; word-wrap: break-word;">
-                                {{ releaser.real_name_note }}
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <h1>{{ title }}</h1>
+    <p><a href="?">all</a> | <a href="?without_note=true">without notes</a></p>
+    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+        <table class="table">
+            {% for releaser in sceners %}
+                <tr {% if releaser.real_name_note %}style="background-image: linear-gradient(rgba(192,192,206,0.25) 0%, rgba(192,192,206,0.25) 100%);"{% endif %}>
+                    <td>
+                        <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
+                    </td>
+                    <td>
+                        {{ releaser.first_name }}
+                        {{ releaser.surname }}
+                    </td>
+                    <td>
+                        {% if site_is_writeable %}
+                            {% url 'scener_edit_real_name' releaser.id as scener_edit_real_name_url %}
+                            {% include "shared/button.html" with level="secondary" href=scener_edit_real_name_url|add:'?ajax_submit=true' icon="edit" lightbox=True %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="word-wrap:break-word;max-width:600px;">
+                            {{ releaser.real_name_note }}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}

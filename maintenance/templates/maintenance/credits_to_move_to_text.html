@@ -6,14 +6,15 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-
-            <table width="100%">
+    <h1>{{ title }}</h1>
+    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+        <table class="table">
+            <colgroup>
                 <col width="40%" />
                 <col width="20%" />
                 <col width="40%" />
+            </colgroup>
+            <tbody>
                 {% for credit in credits %}
                     <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
                         <td>
@@ -24,7 +25,7 @@
                         <td>{{ credit.description }}</td>
                     </tr>
                 {% endfor %}
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 {% endblock %}

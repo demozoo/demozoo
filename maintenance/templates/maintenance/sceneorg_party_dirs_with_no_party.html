@@ -7,9 +7,10 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>The scene.org unmatched party report of doom</h2>
+    <h1>The scene.org unmatched party report of doom</h1>
     <p>{{ matched_count }} of {{ total_count }} directories matched so far!</p>
-    
+
+    {% comment %}todo: make this responsive and fun{% endcomment %}
     <div style="width: 800px; height: 20px; background-color: #eee; border: 1px solid black;">
         <div style="width:{% widthratio matched_count total_count 800 %}px; height: 20px; background-color: #080"></div>
     </div>
@@ -55,13 +56,28 @@
             })
         })
     </script>
-    
-    <h3 style="padding-top: 0.5em">{{ title }}:</h3>
-    <div id="main_column">
-        <table>
+
+    <table class="table">
+        <caption class="table__caption">{{ title }}:</caption>
+        <colgroup>
+            <col />
+            <col />
+            <col />
+            {% if site_is_writeable %}
+            <col class="col -fit" />
+            {% endif %}
+        </colgroup>
+        <thead>
             <tr>
-                <th>Path</th><th>Best guess at party series</th><th>Best guess at party</th>
+                <th>Path</th>
+                <th>Best guess at party series</th>
+                <th>Best guess at party</th>
+                {% if site_is_writeable %}
+                    <th></th>
+                {% endif %}
             </tr>
+        </thead>
+        <tbody>
             {% for dir in directories %}
                 <tr>
                     <td><a href="{{ dir.web_url }}">{{ dir.path }}</a></td>
@@ -75,8 +91,8 @@
                             <a href="{% url 'party' dir.suggested_party_id %}">{{ dir.suggested_party_name }}</a>
                         {% endif %}
                     </td>
-                    <td>
-                        {% if site_is_writeable %}
+                    {% if site_is_writeable %}
+                        <td>
                             {% if dir.suggested_party_id %}
                                 <form class="add_sceneorg_link" action="{% url 'maintenance:add_sceneorg_link_to_party' %}" method="post">
                                     {% csrf_token %}
@@ -94,10 +110,11 @@
                                     {% button label="Create" %}
                                 </form>
                             {% endif %}
-                        {% endif %}
-                    </td>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
-        </table>
-    </div>
+        </tbody>
+    </table>
+
 {% endblock %}

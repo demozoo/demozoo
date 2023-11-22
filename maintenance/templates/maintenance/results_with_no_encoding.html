@@ -6,21 +6,21 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h2>{{ title }}:</h2>
-    <div id="main_column">
-        <ul>
-            {% for file in results_files %}
-                <li>
-                    <a href="{% url 'maintenance:fix_results_file_encoding' file.id %}">
-                        {% if file.party.is_online %}
-                            <img src="/static/images/icons/computer.png" alt="[Online]" title="Online" />
-                        {% elif file.party.country_code %}
-                            <img src="/static/images/icons/flags/{{ file.party.country_code|lower }}.png" alt="[{{ file.party.country_code }}]" title="{{ file.party.location }}" />
-                        {% endif %}
-                        {{ file.party.name }} - {{ file.filename }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+    <h1>{{ title }}</h1>
+
+    <ul class="list -zebra">
+        {% for file in results_files %}
+            <li class="list__item">
+                <a href="{% url 'maintenance:fix_results_file_encoding' file.id %}">
+                    {% if file.party.is_online %}
+                        <img src="/static/images/icons/computer.png" alt="[Online]" title="Online" />
+                    {% elif file.party.country_code %}
+                        <img src="/static/images/icons/flags/{{ file.party.country_code|lower }}.png" alt="[{{ file.party.country_code }}]" title="{{ file.party.location }}" />
+                    {% endif %}
+                    {{ file.party.name }} - {{ file.filename }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}

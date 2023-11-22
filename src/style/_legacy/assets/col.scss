@@ -1,19 +1,26 @@
 .col {
+    &.-blurb {
+        width: 80%;
+    }
 
-    &--production {
+    &.-fit {
+        width: 1%;
+    }
+
+    &.-production {
         width: 40%;
     }
 
-    &--ranking,
-    &--score {
+    &.-ranking,
+    &.-score {
         width: 3em;
     }
 
-    &--thumb {
+    &.-thumb {
         width: 48px;
     }
 
-    &--date {
+    &.-date {
         width: 6em;
     }
 }
