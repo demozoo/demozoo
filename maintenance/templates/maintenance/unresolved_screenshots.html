@@ -7,36 +7,42 @@
 {% block body_class %}maintenance_report unresolved_screenshots{% endblock %}
 
 {% block base_main %}
-    <h1 class="maintenance__heading">{{ title }}</h1>
-    <h2 class="maintenance__count">Total remaining: {{ link_count }}</h2>
-    <ul class="list -unresolvedScreenshots">
-        {% for link, archive_members in entries %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+        <h2 class="maintenance__count">Total remaining: {{ link_count }}</h2>
+    </header>
+    <div class="t-maintenance__content">
+        <ul class="list -unresolvedScreenshots">
+            {% for link, archive_members in entries %}
             <li class="list__item -unresolvedScreenshots">
                 <h3><a href="{{ link.production.get_absolute_url }}">{{ link.production.title }}</a> - <a href="{{ link.download_url }}">download</a></h3>
                 {% if archive_members %}
                 <ul class="list -files">
                     {% for file in archive_members %}
-                        <li class="list__item -files">
-                            {% if site_is_writeable %}
-                                <a href="{% url 'maintenance:resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
-                            {% else %}
-                                {{ file.filename }} ({{ file.file_size }} bytes)
-                            {% endif %}
-                            - <a href="{% url 'maintenance:view_archive_member' file.id %}" target="_blank">view</a>
-                        </li>
+                    <li class="list__item -files">
+                        {% if site_is_writeable %}
+                        <a href="{% url 'maintenance:resolve_screenshot' link.id file.id %}" class="resolve">{{ file.filename }} ({{ file.file_size }} bytes)</a>
+                        {% else %}
+                        {{ file.filename }} ({{ file.file_size }} bytes)
+                        {% endif %}
+                        - <a href="{% url 'maintenance:view_archive_member' file.id %}" target="_blank">view</a>
+                    </li>
                     {% endfor %}
                 </ul>
                 {% endif %}
             </li>
-        {% endfor %}
-    </ul>
-    <script>
-        $('a.resolve').click(function() {
-            var a = this;
-            $.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
-                $(a).closest('ul').fadeOut();
-            });
-            return false;
-        })
-    </script>
+            {% endfor %}
+        </ul>
+        <script>
+            $('a.resolve').click(function() {
+                var a = this;
+                $.post(a.href, {'csrfmiddlewaretoken': $.cookie('csrftoken')}, function() {
+                    $(a).closest('ul').fadeOut();
+                });
+                return false;
+            })
+        </script>
+    </div>
+</div>
 {% endblock %}

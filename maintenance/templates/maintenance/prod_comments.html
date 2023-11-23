@@ -6,47 +6,52 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>Production comments</h1>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">Production comments</h1>
 
-    {% if comments.paginator.num_pages > 1 %}
-        <ul class="pagination">
-            {% if comments.has_previous %}
-                <li>
-                    <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
-                </li>
-            {% endif %}
-
-            {% for i in comments.paginator.page_range %}
-                {% if i == comments.number %}
-                    <li class="current">{{ i }}</li>
-                {% else %}
-                    <li><a href="{% url 'maintenance:prod_comments' %}?page={{ i }}">{{ i }}</a></li>
+        {% if comments.paginator.num_pages > 1 %}
+            <ul class="pagination">
+                {% if comments.has_previous %}
+                    <li>
+                        <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
+                    </li>
                 {% endif %}
-            {% endfor %}
 
-            {% if comments.has_next %}
-                <li>
-                    <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
-                </li>
-            {% endif %}
-        </ul>
-    {% endif %}
+                {% for i in comments.paginator.page_range %}
+                    {% if i == comments.number %}
+                        <li class="current">{{ i }}</li>
+                    {% else %}
+                        <li><a href="{% url 'maintenance:prod_comments' %}?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
 
-    <div class="o-panel -report">
-        <table>
-            <col width="20%">
-            <col width="65%">
-            <col width="15%">
-            {% for comment in comments %}
-                <tr>
-                    <td>
-                        <b><a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a></b><br>
-                        by {% byline comment.commentable %}
-                    </td>
-                    <td>{{ comment.body|urlize|linebreaks }}</td>
-                    <td><strong>{{ comment.user.username }}</strong><br />{{ comment.created_at|date:"H:i j F Y" }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+                {% if comments.has_next %}
+                    <li>
+                        <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report">
+            <table>
+                <col width="20%">
+                <col width="65%">
+                <col width="15%">
+                {% for comment in comments %}
+                    <tr>
+                        <td>
+                            <b><a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a></b><br>
+                            by {% byline comment.commentable %}
+                        </td>
+                        <td>{{ comment.body|urlize|linebreaks }}</td>
+                        <td><strong>{{ comment.user.username }}</strong><br />{{ comment.created_at|date:"H:i j F Y" }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
+</div>
 {% endblock %}

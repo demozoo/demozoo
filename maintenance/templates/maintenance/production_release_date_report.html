@@ -7,77 +7,83 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        <form action="{% url 'maintenance:fix_release_dates' %}" method="post">
-            {% csrf_token %}
-            <table class="table">
-                <colgroup>
-                    <col width="30%" />
-                    <col width="10%" />
-                    <col width="20%" />
-                    <col width="30%" />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Production</th>
-                        <th>Release date</th>
-                        <th>By</th>
-                        <th>Suggested date</th>
-                    </tr>
-                    {% if site_is_writeable %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <input type="checkbox" id="check_all" />
-                            <label for="check_all">Check all</label>
-                        </td>
-                    </tr>
-                    {% endif %}
-                </thead>
-                <script>
-                    $('#check_all').change(function() {
-                        if ($(this).is(':checked')) {
-                            $('input[name=production_id]').attr('checked', 'checked');
-                        } else {
-                            $('input[name=production_id]').removeAttr('checked');
-                        }
-                    })
-                </script>
-                <tbody>
-                    {% for prod in productions %}
-                        <tr {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ prod.id }}">
-                            <td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
-                            <td>{{ prod.release_date }}</td>
-                            <td>{% byline prod %}</td>
-                            <td>
-                                {% if prod.suggested_release_date and site_is_writeable %}
-                                    <input type="checkbox" name="production_id" id="production_id_{{ prod.id }}" value="{{ prod.id }}" />
-                                    <input type="hidden" name="production_{{ prod.id }}_release_date_date" value="{{ prod.suggested_release_date.date|date:"Y-m-d" }}" />
-                                    <input type="hidden" name="production_{{ prod.id }}_release_date_precision" value="{{ prod.suggested_release_date.precision }}" />
-                                {% endif %}
-                                <label for="production_id_{{ prod.id }}">{{ prod.suggested_release_date }}</label>
-                                <em>({{ prod.release_detail }})</em>
-                            </td>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            <form action="{% url 'maintenance:fix_release_dates' %}" method="post">
+                {% csrf_token %}
+                <table class="table">
+                    <colgroup>
+                        <col width="30%" />
+                        <col width="10%" />
+                        <col width="20%" />
+                        <col width="30%" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Production</th>
+                            <th>Release date</th>
+                            <th>By</th>
+                            <th>Suggested date</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-                {% if site_is_writeable %}
-                    <tfoot>
+                        {% if site_is_writeable %}
                         <tr>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td>
-                                <input type="hidden" name="return_to" value="{{ return_to }}" />
-                                {% button label="Update selected records" %}
+                                <input type="checkbox" id="check_all" />
+                                <label for="check_all">Check all</label>
                             </td>
                         </tr>
-                    </tfoot>
-                {% endif %}
-            </table>
-        </form>
+                        {% endif %}
+                    </thead>
+                    <script>
+                        $('#check_all').change(function() {
+                            if ($(this).is(':checked')) {
+                                $('input[name=production_id]').attr('checked', 'checked');
+                            } else {
+                                $('input[name=production_id]').removeAttr('checked');
+                            }
+                        })
+                    </script>
+                    <tbody>
+                        {% for prod in productions %}
+                            <tr {% if site_is_writeable %}class="excludable"{% endif %} data-record-id="{{ prod.id }}">
+                                <td class="{{ prod.supertype }}"><a href="{{ prod.get_absolute_url }}">{{ prod.title }}</a></td>
+                                <td>{{ prod.release_date }}</td>
+                                <td>{% byline prod %}</td>
+                                <td>
+                                    {% if prod.suggested_release_date and site_is_writeable %}
+                                        <input type="checkbox" name="production_id" id="production_id_{{ prod.id }}" value="{{ prod.id }}" />
+                                        <input type="hidden" name="production_{{ prod.id }}_release_date_date" value="{{ prod.suggested_release_date.date|date:"Y-m-d" }}" />
+                                        <input type="hidden" name="production_{{ prod.id }}_release_date_precision" value="{{ prod.suggested_release_date.precision }}" />
+                                    {% endif %}
+                                    <label for="production_id_{{ prod.id }}">{{ prod.suggested_release_date }}</label>
+                                    <em>({{ prod.release_detail }})</em>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if site_is_writeable %}
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <input type="hidden" name="return_to" value="{{ return_to }}" />
+                                    {% button label="Update selected records" %}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    {% endif %}
+                </table>
+            </form>
+        </div>
     </div>
+</div>
 {% endblock %}

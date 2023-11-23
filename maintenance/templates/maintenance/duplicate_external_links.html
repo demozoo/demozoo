@@ -6,8 +6,11 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-    <div>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
         {% for column, productions in prod_dupes.items %}
             {% if productions %}
                 <h2>Productions matching by {{ column }}</h2>
@@ -36,4 +39,5 @@
             {% endif %}
         {% endfor %}
     </div>
+</div>
 {% endblock %}

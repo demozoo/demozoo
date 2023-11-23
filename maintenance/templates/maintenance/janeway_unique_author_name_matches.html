@@ -11,18 +11,23 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-        
-    <div class="o-panel -report">
-        <ul class="releaser_list">
-            {% for match in matches %}
-                <li class="match" data-demozoo-id="{{ match.id }}" data-janeway-id="{{ match.janeway_id }}">
-                    {{ match.name }}
-                    <a href="{% url 'maintenance:janeway_authors_detail' match.id match.janeway_id %}" class="info-link" target="_blank">info</a>
-                    / <a href="/sceners/{{ match.id }}/" target="_blank">demozoo</a>
-                    / <a href="http://janeway.exotica.org.uk/author.php?id={{ match.janeway_id }}" target="_blank">janeway</a>
-                </li>
-            {% endfor %}
-        </ul>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report">
+            <ul class="releaser_list">
+                {% for match in matches %}
+                    <li class="match" data-demozoo-id="{{ match.id }}" data-janeway-id="{{ match.janeway_id }}">
+                        {{ match.name }}
+                        <a href="{% url 'maintenance:janeway_authors_detail' match.id match.janeway_id %}" class="info-link" target="_blank">info</a>
+                        / <a href="/sceners/{{ match.id }}/" target="_blank">demozoo</a>
+                        / <a href="http://janeway.exotica.org.uk/author.php?id={{ match.janeway_id }}" target="_blank">janeway</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+</div>
 {% endblock %}

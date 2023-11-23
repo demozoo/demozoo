@@ -9,6 +9,10 @@
     @include overviewHeading();
   }
 
+  &__footer {
+    margin-block: var(--template-gap) 0;
+  }
+
   &.-sceneOrgFiles {
 
     @media (min-width: 800px) {

@@ -6,14 +6,18 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-
-    <p>
-        Showing {{ count }} of {{ total_count }}
-        {% if count < total_count %}(refresh for another selection){% endif %}
-    </p>
-
-    <div class="o-panel report" data-report-name="{{ exclusion_name }}">
-        {% production_listing productions show_prod_types=1 mark_excludable=mark_excludable %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+        <p>
+            Showing {{ count }} of {{ total_count }}
+            {% if count < total_count %}(refresh for another selection){% endif %}
+        </p>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel report" data-report-name="{{ exclusion_name }}">
+            {% production_listing productions show_prod_types=1 mark_excludable=mark_excludable %}
+        </div>
     </div>
+</div>
 {% endblock %}

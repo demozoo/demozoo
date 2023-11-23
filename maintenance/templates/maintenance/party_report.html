@@ -5,15 +5,20 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        <ul class="list">
-            {% for party in parties %}
-                <li class="list__item{% if site_is_writeable %} excludable{% endif %}" data-record-id="{{ party.id }}">
-                    <a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
-                </li>
-            {% endfor %}
-        </ul>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            <ul class="list -zebra">
+                {% for party in parties %}
+                    <li class="list__item{% if site_is_writeable %} excludable{% endif %}" data-record-id="{{ party.id }}">
+                        <a href="{{ party.get_absolute_url }}">{{ party.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+</div>
 {% endblock %}

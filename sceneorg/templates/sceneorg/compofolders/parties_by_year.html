@@ -3,29 +3,32 @@
 
 
 {% block base_main %}
-<section class="sceneorg">
-    <h1>scene.org compo folder matching</h1>
-    <p>...so here's the deal. To help us on the way to having download links for all compo entries, we need to match up each individual compo to its corresponding folder on scene.org. Select a party to get started - the ones in bold are the ones not already marked as 'done'.</p>
-    <p>
-        <strong>By year</strong> | <a href="{% url 'sceneorg_compofolders' %}?order=series">By series</a>
-    </p>
-
-    {% regroup parties by start_date.date.year as year_list %}
-    <div class="sceneorg__years">
-        {% for year in year_list %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">scene.org compo folder matching</h1>
+        <p>...so here's the deal. To help us on the way to having download links for all compo entries, we need to match up each individual compo to its corresponding folder on scene.org. Select a party to get started - the ones in bold are the ones not already marked as 'done'.</p>
+        <p>
+            <strong>By year</strong> | <a href="{% url 'sceneorg_compofolders' %}?order=series">By series</a>
+        </p>
+    </header>
+    <div class="t-maintenance__content">
+        {% regroup parties by start_date.date.year as year_list %}
+        <div class="sceneorg__years">
+            {% for year in year_list %}
             <section class="sceneorg__year">
                 <h2>{{ year.grouper }}</h2>
                 <ul class="list">
                     {% for party in year.list %}
-                        <li class="list__item">
-                            {% if not party.sceneorg_compofolders_done %}<strong>{% endif %}
-                            <a href="{% url 'sceneorg_compofolder_party' party.id %}">{{ party.name }}</a>
-                            {% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
-                        </li>
+                    <li class="list__item">
+                        {% if not party.sceneorg_compofolders_done %}<strong>{% endif %}
+                        <a href="{% url 'sceneorg_compofolder_party' party.id %}">{{ party.name }}</a>
+                        {% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
+                    </li>
                     {% endfor %}
                 </ul>
             </section>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</section>
+</div>
 {% endblock %}

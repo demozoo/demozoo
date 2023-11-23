@@ -3,15 +3,17 @@
 
 
 {% block base_main %}
-<section class="sceneorg">
-    <h2>scene.org compo folder matching</h2>
-    <p>
-        <a href="{% url 'sceneorg_compofolders' %}?order=year">By year</a> | <strong>By series</strong>
-    </p>
-
-    {% regroup parties by party_series as party_series_list %}
-    <table class="party_series_index">
-        {% for item in party_series_list %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">scene.org compo folder matching</h1>
+        <p>
+            <a href="{% url 'sceneorg_compofolders' %}?order=year">By year</a> | <strong>By series</strong>
+        </p>
+    </header>
+    <div class="t-maintenance__content">
+        {% regroup parties by party_series as party_series_list %}
+        <table class="party_series_index">
+            {% for item in party_series_list %}
             <tr class="{% cycle 'odd' 'even' %}">
                 <th>
                     {{ item.grouper.name }}
@@ -19,16 +21,17 @@
                 <td>
                     <ul class="parties">
                         {% for party in item.list %}
-                            <li>
-                                {% if not party.sceneorg_compofolders_done %}<strong>{% endif %}
-                                    <a href="{% url 'sceneorg_compofolder_party' party.id %}">{{ party.suffix }}</a>
-                                {% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
-                            </li>
+                        <li>
+                            {% if not party.sceneorg_compofolders_done %}<strong>{% endif %}
+                            <a href="{% url 'sceneorg_compofolder_party' party.id %}">{{ party.suffix }}</a>
+                            {% if not party.sceneorg_compofolders_done %}</strong>{% endif %}
+                        </li>
                         {% endfor %}
                     </ul>
                 </td>
             </tr>
-        {% endfor %}
-    </table>
-</section>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 {% endblock %}

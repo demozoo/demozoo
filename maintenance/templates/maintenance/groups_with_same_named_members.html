@@ -6,15 +6,20 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-
-    <ul class="list -zebra">
-        {% for group in groups %}
-            <li class="list__item">
-                <a href="/groups/{{ group.id }}/">{{ group.name }}</a>
-                has <img src="/static/images/icons/{% if group.member_1_is_group %}group{% else %}scener{% endif %}.png" /><a href="/{% if group.member_1_is_group %}groups{% else %}sceners{% endif %}/{{ group.member_1_id }}/">{{ group.member_1_name }}</a>
-                and <img src="/static/images/icons/{% if group.member_2_is_group %}group{% else %}scener{% endif %}.png" /><a href="/{% if group.member_2_is_group %}groups{% else %}sceners{% endif %}/{{ group.member_2_id }}/">{{ group.member_2_name }}</a>
-            </li>
-        {% endfor %}
-    <ul>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <ul class="list -zebra">
+            {% for group in groups %}
+                <li class="list__item">
+                    <a href="/groups/{{ group.id }}/">{{ group.name }}</a>
+                    has <img src="/static/images/icons/{% if group.member_1_is_group %}group{% else %}scener{% endif %}.png" /><a href="/{% if group.member_1_is_group %}groups{% else %}sceners{% endif %}/{{ group.member_1_id }}/">{{ group.member_1_name }}</a>
+                    and <img src="/static/images/icons/{% if group.member_2_is_group %}group{% else %}scener{% endif %}.png" /><a href="/{% if group.member_2_is_group %}groups{% else %}sceners{% endif %}/{{ group.member_2_id }}/">{{ group.member_2_name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

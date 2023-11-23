@@ -6,22 +6,26 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <form action="{{ url }}" method="GET" class="production_listing_filters">
+            <ul class="fields">
+                {{ filter_form.as_ul }}
+            </ul>
+            {% button label="Filter results" %}
+        </form>
 
-    <form action="{{ url }}" method="GET" class="production_listing_filters">
-        <ul class="fields">
-            {{ filter_form.as_ul }}
-        </ul>
-        {% button label="Filter results" %}
-    </form>
+        <p>
+            Showing {{ count }} of {{ total_count }}
+            {% if count < total_count %}(refresh for another selection){% endif %}
+        </p>
 
-    <p>
-        Showing {{ count }} of {{ total_count }}
-        {% if count < total_count %}(refresh for another selection){% endif %}
-    </p>
-
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        {% production_listing productions show_prod_types=1 mark_excludable=mark_excludable %}
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            {% production_listing productions show_prod_types=1 mark_excludable=mark_excludable %}
+        </div>
     </div>
-
+</div>
 {% endblock %}

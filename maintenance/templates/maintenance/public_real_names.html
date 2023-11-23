@@ -6,11 +6,15 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-    <p><a href="?">all</a> | <a href="?without_note=true">without notes</a></p>
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        <table class="table">
-            {% for releaser in sceners %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+        <p><a href="?">all</a> | <a href="?without_note=true">without notes</a></p>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            <table class="table">
+                {% for releaser in sceners %}
                 <tr {% if releaser.real_name_note %}style="background-image: linear-gradient(rgba(192,192,206,0.25) 0%, rgba(192,192,206,0.25) 100%);"{% endif %}>
                     <td>
                         <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
@@ -21,8 +25,8 @@
                     </td>
                     <td>
                         {% if site_is_writeable %}
-                            {% url 'scener_edit_real_name' releaser.id as scener_edit_real_name_url %}
-                            {% include "shared/button.html" with level="secondary" href=scener_edit_real_name_url|add:'?ajax_submit=true' icon="edit" lightbox=True %}
+                        {% url 'scener_edit_real_name' releaser.id as scener_edit_real_name_url %}
+                        {% include "shared/button.html" with level="secondary" href=scener_edit_real_name_url|add:'?ajax_submit=true' icon="edit" lightbox=True %}
                         {% endif %}
                     </td>
                     <td>
@@ -31,7 +35,9 @@
                         </div>
                     </td>
                 </tr>
-            {% endfor %}
-        </table>
+                {% endfor %}
+            </table>
+        </div>
     </div>
+</div>
 {% endblock %}

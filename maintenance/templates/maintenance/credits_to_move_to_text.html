@@ -6,26 +6,32 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        <table class="table">
-            <colgroup>
-                <col width="40%" />
-                <col width="20%" />
-                <col width="40%" />
-            </colgroup>
-            <tbody>
-                {% for credit in credits %}
-                    <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
-                        <td>
-                            {% url 'production' credit.production_id as production_url %}
-                            {% include "shared/entity.html" with href=production_url type="production" label=credit.title %}
-                        </td>
-                        <td>{{ credit.nick_name }}</td>
-                        <td>{{ credit.description }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            <table class="table">
+                <colgroup>
+                    <col width="40%" />
+                    <col width="20%" />
+                    <col width="40%" />
+                </colgroup>
+                <tbody>
+                    {% for credit in credits %}
+                        <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ credit.id }}"{% endif %}>
+                            <td>
+                                {% url 'production' credit.production_id as production_url %}
+                                {% include "shared/entity.html" with href=production_url type="production" label=credit.title %}
+                            </td>
+                            <td>{{ credit.nick_name }}</td>
+                            <td>{{ credit.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
 {% endblock %}

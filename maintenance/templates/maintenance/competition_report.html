@@ -5,14 +5,20 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>{{ title }}</h1>
-    <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
-        <ul class="list -zebra">
-            {% for competition in competitions %}
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <div class="o-panel -report" data-report-name="{{ exclusion_name }}">
+            <ul class="list -zebra">
+                {% for competition in competitions %}
                 <li class="list__item{% if site_is_writeable %} excludable{% endif %}" data-record-id="{{ competition.id }}">
                     {% include "shared/entity.html" with url=competition.party.get_absolute_url label=competition.party.name description=competition.name %}
                 </li>
-            {% endfor %}
-        </ul>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -7,72 +7,74 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-<section class="implied_memberships">
-    <script>
-        $(function() {
-            $('form.add_membership').submit(function() {
-                var row = $(this).parents('tr:first');
-                $.post(this.action,
-                    $(this).serialize() + '&' + $.param({'csrfmiddlewaretoken': $.cookie('csrftoken')}),
-                    function() {
-                        row.fadeOut();
-                    });
-                return false;
-            })
+<script>
+    $(function() {
+        $('form.add_membership').submit(function() {
+            var row = $(this).parents('tr:first');
+            $.post(this.action,
+                $(this).serialize() + '&' + $.param({'csrfmiddlewaretoken': $.cookie('csrftoken')}),
+                function() {
+                    row.fadeOut();
+                });
+            return false;
         })
-    </script>
-
-    <h1>{{ title }}</h1>
-
-    {% regroup records by membership as membership_list %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Suggested membership</th>
-                <th>According to releases</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for membership in membership_list %}
+    })
+</script>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">{{ title }}</h1>
+    </header>
+    <div class="t-maintenance__content">
+        {% regroup records by membership as membership_list %}
+        <table class="table">
+            <thead>
                 <tr>
-                    {% with membership.list.0 as record %}
-                        <td>
-
-                            {% if record.member_is_group %}
-                                {% url 'group' record.member_id as group_url %}
-                                {% include "shared/entity.html" with label=record.member_name type="group" url=group_url %}
-                            {% else %}
-                                {% url 'scener' record.member_id as scener_url %}
-                                {% include "shared/entity.html" with label=record.member_name type="scener" url=scener_url %}
-                            {% endif %}
-                            /
-                            {% url 'group' record.group_id as group_url %}
-                            {% include "shared/entity.html" with label=record.group_name url=group_url %}
-                        </td>
-                    {% endwith %}
-                    <td>
-                        <ul class="list -inline">
-                            {% for record in membership.list %}
-                                <li class="list__item {{ record.production_supertype }}">
-                                    <a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    {% with membership.list.0 as record %}
-                        <td>
-                            {% if site_is_writeable %}
-                                <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
-                                    <input type="hidden" name="member_id" value="{{ record.member_id }}" />
-                                    <input type="hidden" name="group_id" value="{{ record.group_id }}" />
-                                    {% button label="Add" %}
-                                </form>
-                            {% endif %}
-                        </td>
-                    {% endwith %}
+                    <th>Suggested membership</th>
+                    <th>According to releases</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</section>
+            </thead>
+            <tbody>
+                {% for membership in membership_list %}
+                    <tr>
+                        {% with membership.list.0 as record %}
+                            <td>
+
+                                {% if record.member_is_group %}
+                                    {% url 'group' record.member_id as group_url %}
+                                    {% include "shared/entity.html" with label=record.member_name type="group" url=group_url %}
+                                {% else %}
+                                    {% url 'scener' record.member_id as scener_url %}
+                                    {% include "shared/entity.html" with label=record.member_name type="scener" url=scener_url %}
+                                {% endif %}
+                                /
+                                {% url 'group' record.group_id as group_url %}
+                                {% include "shared/entity.html" with label=record.group_name url=group_url %}
+                            </td>
+                        {% endwith %}
+                        <td>
+                            <ul class="list -inline">
+                                {% for record in membership.list %}
+                                    <li class="list__item {{ record.production_supertype }}">
+                                        <a href="/productions/{{ record.production_id }}">{{ record.production_title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        {% with membership.list.0 as record %}
+                            <td>
+                                {% if site_is_writeable %}
+                                    <form class="add_membership" action="{% url 'maintenance:add_membership' %}" method="post">
+                                        <input type="hidden" name="member_id" value="{{ record.member_id }}" />
+                                        <input type="hidden" name="group_id" value="{{ record.group_id }}" />
+                                        {% button label="Add" %}
+                                    </form>
+                                {% endif %}
+                            </td>
+                        {% endwith %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

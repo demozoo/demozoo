@@ -5,18 +5,23 @@
 {% block body_class %}maintenance_report{% endblock %}
 
 {% block base_main %}
-    <h1>Productions with blurbs</h1>
-
-    <table class="table">
-        <colgroup>
-            <col/>
-            <col class="col -blurb" />
-        </colgroup>
-        {% for blurb in blurbs %}
-            <tr>
-                <td><a href="{{ blurb.production.get_absolute_url }}">{{ blurb.production.title }}</a></td>
-                <td>"{{ blurb.body }}"</td>
-            </tr>
-        {% endfor %}
-    </table>
+<div class="t-maintenance">
+    <header class="t-maintenance__header">
+        <h1 class="t-maintenance__heading">Productions with blurbs</h1>
+    </header>
+    <div class="t-maintenance__content">
+        <table class="table">
+            <colgroup>
+                <col/>
+                <col class="col -blurb" />
+            </colgroup>
+            {% for blurb in blurbs %}
+                <tr>
+                    <td><a href="{{ blurb.production.get_absolute_url }}">{{ blurb.production.title }}</a></td>
+                    <td>"{{ blurb.body }}"</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 {% endblock %}
