@@ -1,67 +1,58 @@
-/* Tags */
-.tags_panel {
+a.tag_name {
+    color: #3383bb;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-weight: bold;
+    font-family: Trebuchet MS, Helvetica, Arial, sans-serif;
+    font-size: 1.1em;
+    text-decoration: none;
+    padding: .2em .5em;
+    float: left;
 
-    ul.tags {
-
-        li {
-
-            a.tag_name {
-                color: #3383bb;
-                background-color: #eeeeee;
-                border: 1px solid #cccccc;
-                border-radius: 6px;
-                font-weight: bold;
-                font-family: Trebuchet MS, Helvetica, Arial, sans-serif;
-                font-size: 1.1em;
-                text-decoration: none;
-                padding: .2em .5em;
-                float: left;
-
-                &:hover {
-                    text-decoration: none;
-                    background-color: #ddd;
-                }
-            }
-        }
+    &:hover {
+        text-decoration: none;
+        background-color: #ddd;
     }
+}
 
-    form.tags_form {
+form.tags_form {
 
-        #id_tags {
-            width: 400px;
-        }
+    #id_tags {
+        width: 400px;
     }
+}
 
-    ul.tagit {
-        clear: both;
-        background: white;
+ul.tagit {
+    background: white;
 
-        li.tagit-new .ui-widget-content {
-            background: transparent;
-        }
+    li.tagit-new .ui-widget-content {
+        background: transparent;
     }
+}
 
-    #tags_message.error {
-        clear: both;
-        padding: 4px;
-        margin-bottom: 4px;
-        color: #400;
-        border: 1px solid #400;
-    }
+#tags_message.error {
+    clear: both;
+    padding: 4px;
+    margin-bottom: 4px;
+    color: #400;
+    border: 1px solid #400;
 }
 
 /* hide edit controls whenever javascript adds the hide_edit_controls class */
-.tags_panel.hide_edit_controls {
 
-    form.tags_form {
-        display: none;
+.o-panel.-tags {
+    &.hide_edit_controls {
+
+        .tags_form {
+            display: none;
+        }
     }
-}
 
-.tags_panel.editing {
-
-    ul.tags {
-        display: none;
+    &.editing {
+        .tags {
+            display: none;
+        }
     }
 }
 
