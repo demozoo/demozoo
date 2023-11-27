@@ -1,11 +1,11 @@
 .o-banner {
   --banner-background-color: var(--color-gray);
   --banner-heading-color: var(--color-lavender-blue);
-  --banner-heading-size: 24px;
   --banner-heading-font: FabricaRegular, Helvetica,Arial, sans-serif;
-  --banner-text-font: var(--banner-heading-font);
+  --banner-heading-size: 24px;
   --banner-text-background-color: radial-gradient(rgba(32, 32, 32, 0.75), rgba(0, 0, 0, 1));
   --banner-text-color: white;
+  --banner-text-font: var(--banner-heading-font);
 
   aspect-ratio: 5/2;
   background-color: var(--banner-background-color);
@@ -13,7 +13,7 @@
   position: relative;
 
   &__link {
-    @include pos();
+    @include pos(0);
 
     position: absolute;
     z-index: 3;
@@ -63,7 +63,10 @@
     font-family: var(--banner-heading-font);
     font-size: var(--banner-heading-size);
     line-height: 1em;
-    margin-block: 0 0.5ex;
+
+    &:not(:last-child) {
+      margin-block: 0 0.5ex;
+    }
   }
 
   &__smallPrint {
