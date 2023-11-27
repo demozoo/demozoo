@@ -1,15 +1,19 @@
-<div class="panel awards_panel">
-    <h3 class="panel__title">Awards</h3>
-    <ul class="awards">
-        {% for nomination in award_nominations %}
+<div class="o-panel -awards">
+    <header class="o-panel__header">
+        <h2 class="o-panel__heading">Awards</h2>
+    </header>
+    <div class="o-panel__content">
+        <ul class="awards">
+            {% for nomination in award_nominations %}
             <li class="{{ nomination.status }}">
-                <b>{{ nomination.category.event.name }}</b> -
+                <strong>{{ nomination.category.event.name }}</strong> -
                 {% if nomination.status == 'winner' %}
-                    Winner of <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
+                Winner of <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
                 {% else %}
-                    Nominated for <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
+                Nominated for <a href="{{ nomination.category.get_results_url }}">{{ nomination.category.name }}</a>
                 {% endif %}
             </li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
+    </div>
 </div>

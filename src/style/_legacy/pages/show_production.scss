@@ -34,13 +34,7 @@
         display: table; width: 100%;
     }
 
-    .awards_panel {
-      margin-bottom: 10px;
-
-      ul.awards {
-        padding-bottom: 8px;
-        clear: both;
-
+    .o-panel.-awards {
         li {
           line-height: 1.5em;
           padding: 2px 0 2px 24px;
@@ -58,8 +52,12 @@
             background-repeat: no-repeat;
           }
         }
+
+      .awards {
+        @include listReset()
       }
     }
+
 
     .secondary_panels {
         padding-block: 20px;
