@@ -86,7 +86,7 @@ class Event(models.Model):
             eligibility_end_date__gte=production.release_date_date,
         ).filter(
             Q(production_types__isnull=True) | Q(production_types__in=prod_types)
-        )
+        ).distinct()
 
     @classmethod
     def active_for_user(cls, user):
