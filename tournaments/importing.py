@@ -25,6 +25,7 @@ ROLES_LOOKUP = {
     'dj': 'dj_set',
     'live music': 'live_music',
     'live set': 'live_music',
+    'piano': 'live_music',
     'vj': 'vj',
 }
 
