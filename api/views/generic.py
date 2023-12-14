@@ -35,7 +35,7 @@ class ProductionTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProductionType.objects.all()
     serializer_class = serializers.ProductionTypeSerializer
     filterset_class = filters.ProductionTypeFilter
-    ordering_fields = ['id', 'name', 'supertype']
+    ordering_fields = ['id', 'name', 'path']
 
 
 class ProductionViewSet(ListDetailModelViewSet):
