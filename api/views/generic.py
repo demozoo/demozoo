@@ -45,7 +45,7 @@ class ProductionViewSet(ListDetailModelViewSet):
     list_serializer_class = serializers.ProductionListingSerializer
     serializer_class = serializers.ProductionSerializer
     filterset_class = filters.ProductionFilter
-    ordering_fields = ['id', 'name', 'release_date_date', 'supertype']
+    ordering_fields = ['id', 'sortable_title', 'release_date_date', 'supertype']
 
 
 class ReleaserViewSet(ListDetailModelViewSet):
