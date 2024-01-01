@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 
-from demoscene.utils.accounts import is_ip_banned
+from demoscene.utils.accounts import is_login_banned
 from demoscene.utils.ajax import request_is_ajax
 from search.forms import SearchForm
 
@@ -22,5 +22,5 @@ def ajax_base_template(request):
 def read_only_mode(request):
     return {
         'site_is_writeable': settings.SITE_IS_WRITEABLE,
-        'is_ip_banned': is_ip_banned(request),
+        'is_ip_banned': is_login_banned(request),
     }

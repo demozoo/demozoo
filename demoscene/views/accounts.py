@@ -9,13 +9,13 @@ from read_only_mode import writeable_site_required
 
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
-from demoscene.utils.accounts import is_ip_banned
+from demoscene.utils.accounts import is_login_banned, is_registration_banned
 from demoscene.utils.ajax import request_is_ajax
 
 
 class LoginViewWithIPCheck(LoginView):
     def dispatch(self, request, *args, **kwargs):
-        if is_ip_banned(request):
+        if is_login_banned(request):
             messages.error(request, "Your account was disabled.")
             return redirect('home')
         else:
@@ -35,8 +35,11 @@ def index(request):
 
 @writeable_site_required
 def signup(request):
-    if is_ip_banned(request):
+    if is_login_banned(request):
         messages.error(request, "Your account was disabled.")
+        return redirect('home')
+    elif is_registration_banned(request):
+        messages.error(request, "Due to a large number of sockpuppet accounts, new registrations from this location are blocked.")
         return redirect('home')
 
     if request.method == 'POST':

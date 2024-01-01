@@ -9,7 +9,7 @@ from demoscene.models import CaptchaQuestion
 
 
 class TestLogin(TestCase):
-    def test_banned_ip(self):
+    def test_login_banned_ip(self):
         response = self.client.get('/account/login/', REMOTE_ADDR='81.234.236.23')
         self.assertRedirects(response, '/')
         messages = list(get_messages(response.wsgi_request))
@@ -18,6 +18,10 @@ class TestLogin(TestCase):
 
     def test_get(self):
         response = self.client.get('/account/login/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_registration_banned_ip(self):
+        response = self.client.get('/account/login/', REMOTE_ADDR='109.196.230.41')
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
@@ -64,8 +68,12 @@ class TestSignup(TestCase):
             answer="Four"
         )
 
-    def test_banned_ip(self):
+    def test_login_banned_ip(self):
         response = self.client.get('/account/signup/', REMOTE_ADDR='81.234.236.23')
+        self.assertRedirects(response, '/')
+
+    def test_registration_banned_ip(self):
+        response = self.client.get('/account/signup/', REMOTE_ADDR='109.196.230.41')
         self.assertRedirects(response, '/')
 
     def test_signup(self):

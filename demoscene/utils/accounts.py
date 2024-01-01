@@ -1,4 +1,4 @@
-# list from https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=<demozoo server IP>&port=443
+# list from https://check.torproject.org/torbulkexitlist
 TOR_ENDPOINT_IPS = set("""
     185.241.208.232
     194.26.192.64
@@ -1305,12 +1305,18 @@ TOR_ENDPOINT_IPS = set("""
     199.249.230.179
 """.split())
 
-BANNED_IPS = TOR_ENDPOINT_IPS | set([
+LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set([
     '81.234.236.23', '81.230.148.230',  # .se
     '86.143.83.97',  # .uk
+])
+
+REGISTRATION_BANNED_IPS = set([
     '109.196.230.41',  # .pl
 ])
 
+def is_login_banned(request):
+    return request.META['REMOTE_ADDR'] in LOGIN_BANNED_IPS
 
-def is_ip_banned(request):
-    return (request.META['REMOTE_ADDR'] in BANNED_IPS)
+
+def is_registration_banned(request):
+    return request.META['REMOTE_ADDR'] in REGISTRATION_BANNED_IPS
