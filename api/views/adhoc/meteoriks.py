@@ -19,19 +19,21 @@ POUET_OLDSCHOOL_PLATFORM_NAMES = [
     'Commodore 64', 'Amstrad CPC', 'ZX Spectrum', 'Oric', 'VIC 20', 'MSX', 'Atari XL/XE', 'Commodore 128',
     'Apple II GS', 'Apple II', 'Atari VCS', 'ZX-81', 'BBC Micro', 'TRS-80/CoCo/Dragon', 'Commodore PET',
     'NES/Famicom', 'BK-0010/11M', 'Atari Lynx', 'C16/116/plus4', 'KC-85', 'Thomson', 'SAM Coupé', 'MSX 2',
-    'Gameboy', 'Sharp MZ', 'Amstrad Plus', 'Gameboy Color',
+    'Gameboy', 'Sharp MZ', 'Amstrad Plus', 'Gameboy Color', 'Vectrex', 'Atari 7800', 'Vector-06c',
 ]
 POUET_MIDSCHOOL_PLATFORM_NAMES = [
     'MS-Dos', 'MS-Dos/gus', 'Atari ST', 'Amiga AGA', 'Atari STe', 'Amiga OCS/ECS', 'Amiga PPC/RTG',
     'Atari Falcon 030', 'Atari TT 030', 'Atari Jaguar', 'PICO-8', 'TIC-80', 'Sinclair QL', 'Acorn',
     'Wonderswan', 'NEC TurboGrafx/PC Engine', 'Gamecube', 'Playstation Portable', 'Gameboy Advance',
-    'Nintendo DS', 'SEGA Genesis/Mega Drive', 'Nintendo 64',
+    'Nintendo DS', 'SEGA Genesis/Mega Drive', 'Nintendo 64', 'MicroW8', 'SNES/Super Famicom', 'Playstation',
+    'Wonderswan',
 ]
 POUET_HIGHEND_PLATFORM_NAMES = [
-    'Linux', 'Windows', 'MacOSX Intel', 'JavaScript', 'Raspberry Pi', 'Android', 'Java', 'FreeBSD', 'MacOS',
+    'Linux', 'Windows', 'MacOSX Intel', 'JavaScript', 'Raspberry Pi', 'Android', 'Java', 'FreeBSD',
+    'MacOS', 'Nintendo Wii', 'iOS',
 ]
 POUET_LIMBO_PLATFORM_NAMES = [
-    'Animation/Video', 'Wild', 'ZX Enhanced',
+    'Animation/Video', 'Wild', 'ZX Enhanced', 'Commodore 64-DTV', 'Mobile Phone',
 ]
 
 DZ_OLDSCHOOL_PLATFORM_NAMES = [
@@ -40,19 +42,22 @@ DZ_OLDSCHOOL_PLATFORM_NAMES = [
     'Commodore PET', 'Commodore 16/Plus 4', 'Atari Lynx', 'Apple II', 'MSX', 'BBC Micro', 'Oric',
     'Apple II GS', 'Thomson', 'VIC-20', 'Atari 2600 Video Computer System (VCS)', 'SAM Coupé',
     'Nintendo Game Boy (GB)', 'Nintendo Game Boy Color (GBC)', 'Vector-06C', 'Atari 7800 ProSystem',
-    'Enterprise', 'Calculator', 'VTech Laser 200 / VZ 200', 'Vectrex',
+    'Enterprise', 'Calculator', 'VTech Laser 200 / VZ 200', 'Vectrex', 'ZVT PP01', 'PMD 85',
+    'Vector-06C',
 ]
 DZ_MIDSCHOOL_PLATFORM_NAMES = [
     'Amiga OCS/ECS', 'TIC-80', 'Atari Jaguar', 'Atari TT', 'Sony Playstation Portable (PSP)', 'Atari ST/E',
     'Amiga AGA', 'Atari Falcon', 'Amiga PPC/RTG', 'Fantasy Console', 'MS-Dos', 'Nintendo GameCube (NGC)',
     'PICO-8', 'Sega Megadrive/Genesis', 'Acorn Archimedes', 'Nintendo Game Boy Advance (GBA)', 'Sinclair QL',
     'Console Handheld', 'NEC PC Engine', 'Nintendo 3DS', 'Nintendo 64 (N64)', 'Nintendo SNES/Super FamiCom',
+    'NeoGeo', 'MicroW8', 'Sony Playstation 1 (PSX)', 'Wonderswan',
 ]
 DZ_HIGHEND_PLATFORM_NAMES = [
     'Windows', 'Javascript', 'FreeBSD', 'Linux', 'Java', 'Android', 'Browser', 'Raspberry Pi', 'macOS',
+    'Nintendo Wii',
 ]
 DZ_LIMBO_PLATFORM_NAMES = [
-    'Custom Hardware', 'ZX Spectrum Enhanced', 'Mobile',
+    'Custom Hardware', 'ZX Spectrum Enhanced', 'Mobile', 'Commodore 64-DTV', 'Paper',
 ]
 
 
@@ -102,6 +107,14 @@ def candidates(request, year):
                 pouet_platform_category.add('highend')
             elif set(pouet_platform_names) == {'MS-Dos', 'Windows'}:
                 pouet_platform_category.add('midschool')
+            elif set(pouet_platform_names) == {'MS-Dos', 'Windows', 'MS-Dos/gus'}:
+                pouet_platform_category.add('midschool')
+            elif set(pouet_platform_names) == {'Acorn', 'Raspberry Pi'}:
+                pouet_platform_category.add('midschool')
+            elif set(pouet_platform_names) == {'Gameboy', 'SNES/Super Famicom'} and pouet_prod.name == 'EsGeBe Bounce':
+                pouet_platform_category.add('midschool')
+            elif pouet_prod.pouet_id in (94983, 94385, 94814):  # TIC-80 prods with spurious windows / linux platforms assigned
+                pouet_platform_category.add('midschool')
             else:
                 for platform in pouet_platform_names:
                     if platform in POUET_OLDSCHOOL_PLATFORM_NAMES:
@@ -149,6 +162,14 @@ def candidates(request, year):
             elif dz_prodtype_names == ['Tool'] and 'JavaScript' in dz_platform_names:
                 dz_platform_category.add('highend')
             elif set(dz_platform_names) == {'MS-Dos', 'Windows'}:
+                dz_platform_category.add('midschool')
+            elif set(dz_platform_names) == {'MS-Dos', 'Linux'}:
+                dz_platform_category.add('midschool')
+            elif set(dz_platform_names) == {'Acorn Archimedes', 'Raspberry Pi'}:
+                dz_platform_category.add('midschool')
+            elif dz_prod.id == 334702:  # JoG christmas card pack 2023
+                pass
+            elif dz_prod.id == 317579:  # mhm-hny2023 - party version on Windows, final on Amiga?
                 dz_platform_category.add('midschool')
             else:
                 for platform in dz_platform_names:
