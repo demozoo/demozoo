@@ -11,9 +11,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('year', type=int, help="Year to generate report for")
+        parser.add_argument('--exclude-compo-id', type=int, action="append", help="ID of compo to exclude from report")
 
     def handle(self, *args, **options):
         year = options['year']
+        exclude_compo_ids = tuple(options['exclude_compo_id'] or (-999,))
         exe_gfx_ids = tuple(
             ProductionType.objects.filter(
                 path__startswith=ProductionType.objects.get(internal_name="exe-graphics").path
@@ -39,6 +41,9 @@ SELECT DISTINCT releaser_id FROM (
             productions_production.supertype = 'production'
             OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
         )
+        AND productions_production.id NOT IN (
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
+        )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
     FROM productions_production
@@ -56,6 +61,9 @@ SELECT DISTINCT releaser_id FROM (
         AND (
             productions_production.supertype = 'production'
             OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
+        )
+        AND productions_production.id NOT IN (
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
         )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
@@ -75,8 +83,11 @@ SELECT DISTINCT releaser_id FROM (
             productions_production.supertype = 'production'
             OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
         )
+        AND productions_production.id NOT IN (
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
+        )
 ) AS releasers_this_year;
-            """, {'year': year, 'exe_gfx_ids': exe_gfx_ids})
+            """, {'year': year, 'exe_gfx_ids': exe_gfx_ids, 'exclude_compo_ids': exclude_compo_ids})
             releasers_this_year = [
                 releaser_id
                 for releaser_id, in cursor.fetchall()
