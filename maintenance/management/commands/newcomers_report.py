@@ -3,6 +3,7 @@ from django.db import connection
 from django.db.models import Min
 
 from demoscene.models import Releaser
+from productions.models import ProductionType
 
 
 class Command(BaseCommand):
@@ -13,6 +14,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         year = options['year']
+        exe_gfx_ids = tuple(
+            ProductionType.objects.filter(
+                path__startswith=ProductionType.objects.get(internal_name="exe-graphics").path
+            ).values_list('id', flat=True))
+
         with connection.cursor() as cursor:
             cursor.execute("""
 SELECT DISTINCT releaser_id FROM (
@@ -31,7 +37,7 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN (27, 28, 56)
+            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
         )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
@@ -49,7 +55,7 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN (27, 28, 56)
+            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
         )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
@@ -67,10 +73,10 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN (27, 28, 56)
+            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
         )
 ) AS releasers_this_year;
-            """, {'year': year})
+            """, {'year': year, 'exe_gfx_ids': exe_gfx_ids})
             releasers_this_year = [
                 releaser_id
                 for releaser_id, in cursor.fetchall()
