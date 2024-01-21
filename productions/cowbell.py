@@ -58,11 +58,12 @@ PLAYERS_BY_FILETYPE = {
     }, Media(js=[
         'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/openmpt.min.js'
     ])),
-    'sndh': ('Cowbell.Player.PSGPlay', {
-        'pathToLibPSGPlay': static('productions/js/cowbell/libpsgplay.js'),
-    }, Media(js=[
-        'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/psgplay.min.js'
-    ])),
+    'sndh': (
+        'Cowbell.Player.PSGPlay', {},
+        Media(js=[
+            'productions/js/cowbell/cowbell.min.js', 'productions/js/cowbell/psgplay.min.js'
+        ])
+    ),
     'sid': (
         'Cowbell.Player.JSSID', {},
         Media(js=[
