@@ -70,7 +70,7 @@ def home(request):
         'banner': banner,
         'news_stories': news_stories,
         'forum_topics': (
-            Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5]
+            Topic.objects.filter(residue=False).order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')[:5]
         ),
         'latest_releases_and_screenshots': latest_releases_and_screenshots,
         'latest_additions': latest_additions,

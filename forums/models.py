@@ -15,6 +15,7 @@ class Topic(models.Model):
     last_post_by_user = models.ForeignKey(User, related_name='+', null=True, blank=True, on_delete=models.SET_NULL)
 
     reply_count = models.IntegerField(default=0)
+    residue = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
