@@ -104,7 +104,7 @@ def show(request, party_id):
         for competition, placings in competitions_with_placings
     ]
 
-    invitations = party.invitations.prefetch_related(
+    invitations = party.invitations.order_by('release_date_date').prefetch_related(
         'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
     )
 
