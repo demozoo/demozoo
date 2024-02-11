@@ -17,7 +17,6 @@
         lightboxMiddle.append(lightboxElem);
         lightboxOuter.append(lightboxMiddle);
         $('body').append(lightboxOuter);
-        lightboxOuter.click(self.close);
         lightboxElem.click(function(e) {
             e.stopPropagation();
         });
