@@ -21,10 +21,10 @@
                 {% endif %}
             </div>
     
-            {% if upcoming_parties %}
-                <div class="upcoming_parties block">
-                    <h3 class="block_heading">Upcoming parties</h3>
-                    {% regroup upcoming_parties by start_date.date.month as month_list %}
+            {% if parties %}
+                <div class="party_calendar block">
+                    <h3 class="block_heading">Party calendar</h3>
+                    {% regroup parties by start_date.date.month as month_list %}
                     <table>
                         {% for month in month_list %}
                             <tr>
@@ -34,7 +34,7 @@
                                         {% for party in month.list %}
                                             <li>
                                                 {% if party.is_cancelled %}<del>{% endif %}
-                                                <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
+                                                <a href="{% url 'party' party.id %}" {% if party.is_in_past %}class="past"{% endif %} title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online; {% elif party.location %}{{ party.location }}; {% endif %}{% date_range party.start_date party.end_date %}">
                                                     {% if party.is_online %}
                                                         <img src="/static/images/icons/computer.png" alt="[Online]" />
                                                     {% elif party.country_code %}

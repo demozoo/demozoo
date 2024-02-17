@@ -50,13 +50,21 @@ def home(request):
     ).order_by('-created_at')[:5]
 
     today = datetime.date.today()
-    try:
-        three_months_time = today.replace(day=1, month=today.month+3)
-    except ValueError:
-        three_months_time = today.replace(day=1, month=today.month-9, year=today.year+1)
+    if today.day > 15:
+        start_date = today.replace(day=1)
+    else:
+        try:
+            start_date = today.replace(day=1, month=today.month-1)
+        except ValueError:
+            start_date = today.replace(day=1, month=12, year=today.year-1)
 
-    upcoming_parties = Party.objects.filter(
-        end_date_date__gte=today, start_date_date__lt=three_months_time
+    try:
+        end_date = today.replace(day=1, month=today.month+3)
+    except ValueError:
+        end_date = today.replace(day=1, month=today.month-9, year=today.year+1)
+
+    parties = Party.objects.filter(
+        start_date_date__gte=start_date, start_date_date__lt=end_date
     ).exclude(
         start_date_precision='y'
     ).order_by('start_date_date')
@@ -75,5 +83,5 @@ def home(request):
         'latest_releases_and_screenshots': latest_releases_and_screenshots,
         'latest_additions': latest_additions,
         'comments': comments,
-        'upcoming_parties': upcoming_parties,
+        'parties': parties,
     })

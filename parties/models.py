@@ -254,6 +254,10 @@ class Party(Commentable):
         else:
             return 'https://demozoo.org/static/images/fb-1200x627.png'
 
+    @property
+    def is_in_past(self):
+        return self.end_date and self.end_date.date_range_end() < datetime.date.today()
+
     def index_components(self):
         return {
             'A': self.asciified_name,

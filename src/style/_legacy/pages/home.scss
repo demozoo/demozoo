@@ -249,7 +249,7 @@
     }
 }
 
-.upcoming_parties {
+.party_calendar {
 
     table {
         clear: both;
@@ -290,6 +290,10 @@
 
         &:hover {
             text-decoration: underline;
+        }
+
+        &.past {
+            color: #888;
         }
     }
 }

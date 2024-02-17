@@ -97,6 +97,37 @@ class TestParty(TestCase):
         forever.add_sceneorg_file_as_results_file(results)
         self.assertEqual(forever.results_files.count(), 1)
 
+    @freeze_time('2020-05-15')
+    def test_is_in_past(self):
+        forever = PartySeries.objects.get(name="Forever")
+
+        forever_currentparty = forever.parties.create(
+            name="Forever Currentparty 2020",
+            start_date_date=datetime.date(2020, 5, 14),
+            start_date_precision='d',
+            end_date_date=datetime.date(2020, 5, 20),
+            end_date_precision='d',
+        )
+        self.assertFalse(forever_currentparty.is_in_past)
+
+        forever_pastparty = forever.parties.create(
+            name="Forever Pastparty 2020",
+            start_date_date=datetime.date(2020, 4, 14),
+            start_date_precision='d',
+            end_date_date=datetime.date(2020, 4, 20),
+            end_date_precision='d',
+        )
+        self.assertTrue(forever_pastparty.is_in_past)
+
+        forever_fuzzyparty = forever.parties.create(
+            name="Forever Fuzzyparty 2020",
+            start_date_date=datetime.date(2020, 5, 1),
+            start_date_precision='m',
+            end_date_date=datetime.date(2020, 5, 1),
+            end_date_precision='m',
+        )
+        self.assertFalse(forever_fuzzyparty.is_in_past)
+
     def test_share_image_url(self):
         forever = Party.objects.get(name="Forever 2e3")
 

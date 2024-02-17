@@ -42,6 +42,7 @@ class SimpleTest(TestCase):
             thumbnail_url='http://example.com/pondlife.thumb.png', thumbnail_width=130, thumbnail_height=100
         )
 
+    @freeze_time('2000-04-01')
     def test_fetch_homepage(self):
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
@@ -57,8 +58,16 @@ class SimpleTest(TestCase):
             'with a <a href="http://example.com/">link</a> in it<br>\n'
             'and a <a>line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>'
         )
+        self.assertContains(response, """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""", html=True)
 
         self.assertNotContains(response, 'Secret news item')
+
+    @freeze_time('2000-04-20')
+    def test_fetch_homepage_end_of_month(self):
+        # we stop showing parties from last month after the 15th
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""", html=True)
 
     def test_fetch_homepage_as_superuser(self):
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
@@ -74,8 +83,14 @@ class SimpleTest(TestCase):
         self.assertContains(response, 'Secret news item')
         self.assertContains(response, 'wooo <a href="http://gasman.zxdemo.org/">fancy link</a>')
 
+    @freeze_time('2019-01-05')
+    def test_start_date_rollover(self):
+        # test separate code path for when 'last month' rolls over into last year
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+
     @freeze_time('2018-12-30')
-    def test_date_rollover(self):
+    def test_end_date_rollover(self):
         # test separate code path for when 'three months time' rolls over into next year
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
