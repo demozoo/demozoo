@@ -33,7 +33,8 @@ class NickLookup():
             search_term,
             sceners_only=sceners_only,
             groups_only=groups_only,
-            group_ids=group_ids
+            group_ids=group_ids,
+            id_lookup=True
         )
         self.matched_nick_field = MatchedNickField(nick_search, required=False)
 
