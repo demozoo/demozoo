@@ -1,4 +1,5 @@
 import datetime
+import re
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -805,9 +807,15 @@ def autocomplete_tags(request):
 
 
 def autocomplete(request):
-    query = request.GET.get('term')
+    term = request.GET.get('term')
+    query = Q(title__istartswith=term)
+    if term.isdigit():
+        query |= Q(id=int(term))
+    elif match := re.search(r'/(?:productions|music|graphics)/(\d+)/$', term):
+        query |= Q(id=int(match.group(1)))
+
     productions = (
-        Production.objects.filter(title__istartswith=query)
+        Production.objects.filter(query)
         .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser')
     )
     supertype = request.GET.get('supertype')

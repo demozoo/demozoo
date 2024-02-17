@@ -1798,6 +1798,18 @@ class TestAutocomplete(TestCase):
         response_json = json.loads(response.content)
         self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
 
+    def test_get_with_id(self):
+        response = self.client.get('/productions/autocomplete/', {'term': '5', 'supertype': 'music'})
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
+
+    def test_get_with_url(self):
+        response = self.client.get('/productions/autocomplete/', {'term': 'https://demozoo.org/music/5/', 'supertype': 'music'})
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.content)
+        self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
+
 
 class TestDelete(TestCase):
     fixtures = ['tests/gasman.json']
