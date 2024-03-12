@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from django.db.models import Q
+from django.db.models.functions import Lower
 
 from pouet.models import GroupMatchInfo
 from pouet.models import Production as PouetProduction
@@ -53,7 +54,7 @@ def get_match_data(releaser, pouetable_prod_types=None):
     dz_prod_candidates = list(dz_prod_candidates_query)
 
     pouet_prod_candidates = list(
-        PouetProduction.objects.filter(groups__pouet_id__in=releaser_pouet_ids).order_by('name')
+        PouetProduction.objects.filter(groups__pouet_id__in=releaser_pouet_ids).order_by(Lower('name'))
     )
 
     matched_links = list(ProductionLink.objects.filter(
