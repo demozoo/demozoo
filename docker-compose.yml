@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+
+  demozoo-web:
+    container_name: demozoo-web
+    build:
+      context: .
+      dockerfile: .docker/web/Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .docker/.env
+    environment: 
+      - POSTGRES_HOST=demozoo-db
+      - DJANGO_SETTINGS_MODULE=demozoo.settings.dev
+    volumes:
+      - type: bind
+        source: $PWD
+        target: /home/demozoo
+    depends_on:
+      - demozoo-db
+
+  demozoo-db:
+    container_name: demozoo-db
+    build:
+      context: .
+      dockerfile: .docker/db/Dockerfile
+    restart: always
+    expose:
+      - 5432
+    env_file:
+      - .docker/.env
+    volumes:
+      - ./.docker/db/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      - ./.docker/db/pgdata:/var/lib/postgresql/data
