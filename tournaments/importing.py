@@ -21,6 +21,7 @@ ROLES_LOOKUP = {
     'commentator': 'commentary',
     'commentators': 'commentary',
     'commenta...': 'commentary',
+    'mc': 'commentary',
     'dj set': 'dj_set',
     'amiga dj set': 'dj_set',
     'dj': 'dj_set',
