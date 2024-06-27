@@ -57,4 +57,4 @@ class Command(BaseCommand):
             except (urllib.error.URLError, FileTooBig, timeout):
                 pass
 
-            time.sleep(5)
+            time.sleep(1)
