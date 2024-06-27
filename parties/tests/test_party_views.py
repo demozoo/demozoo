@@ -479,14 +479,14 @@ class TestShowResultsFile(MediaTestMixin, TestCase):
             party=party,
             file=File(
                 name="forever2e3.txt",
-                file=BytesIO(b"You get a c\xe5r! You get a c\xe5r! Everybody gets a c\xe5r!")
+                file=BytesIO(b"You get a car! \xb0 You get a car! \xb0 Everybody gets a car!")
             ),
             filename="forever2e3.txt", filesize=100, sha1="1234123412341234"
         )
 
         response = self.client.get('/parties/%d/results_file/%d/' % (party.id, results_file.id))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, u"You get a cår! You get a cår! Everybody gets a cår!")
+        self.assertContains(response, u"You get a car! ░ You get a car! ░ Everybody gets a car!")
 
 
 class TestAutocomplete(TestCase):
