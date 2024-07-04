@@ -1,10 +1,13 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from read_only_mode import writeable_site_required
 
+from demoscene.views.generic import AjaxConfirmationView
 from forums.forms import NewTopicForm, ReplyForm
 from forums.models import Post, Topic
 
@@ -111,3 +114,29 @@ def topic_reply(request, topic_id):
         'topic': topic,
         'form': form,
     })
+
+
+class DeletePostView(AjaxConfirmationView):
+    action_url_path = "forums_delete_post"
+
+    def get_redirect_url(self):
+        return self.object.topic.get_absolute_url()
+
+    def get_cancel_url(self):
+        return self.object.get_absolute_url()
+
+    def get_object(self, request, post_id):
+        return Post.objects.get(id=post_id)
+
+    def is_permitted(self):
+        return self.request.user.is_staff
+
+    def get_message(self):
+        return "Are you sure you want to delete this post?"
+
+    def get_html_title(self):
+        return "Deleting forum post"
+
+    def perform_action(self):
+        self.object.delete()
+        messages.success(self.request, "Post deleted")
