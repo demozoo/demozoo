@@ -1,0 +1,18 @@
+{% extends base_template_with_ajax_option %}
+
+{% load compress %}
+
+{% block html_title %}Editing forum post - Demozoo{% endblock %}
+
+{% block base_main %}
+    <h2>Editing forum post</h2>
+
+    <form action="{% url 'forums_edit_post' post.id %}" method="POST" class="reply_form">
+        {% csrf_token %}
+        <div>
+            {{ post_form.body }}
+            <p class="help_text">No HTML or BBCode please. URLs will be link-ified</p>
+        </div>
+        <input type="submit" value="Update post">
+    </form>
+{% endblock %}

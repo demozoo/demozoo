@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from read_only_mode import writeable_site_required
 
 from demoscene.views.generic import AjaxConfirmationView
@@ -143,3 +145,40 @@ class DeletePostView(AjaxConfirmationView):
     def perform_action(self):
         self.object.delete()
         messages.success(self.request, "Post deleted")
+
+
+class EditPostView(TemplateView):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, post_id):
+        self.object = get_object_or_404(
+            Post, id=post_id
+        )
+
+        if not request.user.is_staff:
+            return redirect(self.object.get_absolute_url())
+
+        return super().dispatch(request, post_id)
+
+    def get(self, request, post_id):
+        self.form = ReplyForm(instance=self.object)
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def post(self, request, post_id):
+        self.form = ReplyForm(request.POST, instance=self.object)
+        if self.form.is_valid():
+            self.form.save()
+            messages.success(self.request, "Post updated")
+            return redirect(self.object.get_absolute_url())
+        else:
+            context = self.get_context_data()
+            return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = self.object
+        context['post_form'] = self.form
+        return context
+
+    template_name = 'forums/edit_post.html'

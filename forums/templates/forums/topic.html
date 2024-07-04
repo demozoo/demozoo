@@ -21,7 +21,8 @@
                 <div class="post" id="post-{{ post.id }}">
                     {% if request.user.is_staff and site_is_writeable %}
                         <div class="admin_controls">
-                            <a href="{% url 'forums_delete_post' post.id %}" class="open_in_lightbox">Delete</a>
+                            <a href="{% url 'forums_edit_post' post.id %}" class="open_in_lightbox">Edit</a>
+                            | <a href="{% url 'forums_delete_post' post.id %}" class="open_in_lightbox">Delete</a>
                         </div>
                     {% endif %}
                     <b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
