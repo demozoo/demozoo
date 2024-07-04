@@ -34,3 +34,14 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('forums_post', args=[str(self.id)])
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        last_topic_post = self.topic.posts.order_by("created_at").last()
+        if last_topic_post:
+            self.topic.last_post_at = last_topic_post.created_at
+            self.topic.last_post_by_user = last_topic_post.user
+            self.topic.reply_count = self.topic.posts.count() - 1
+            self.topic.save()
+        else:
+            self.topic.delete()

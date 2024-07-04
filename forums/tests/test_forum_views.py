@@ -88,7 +88,12 @@ class TestDeletePost(TestCase):
             username='testuser', email='testuser@example.com', password='12345', is_staff=True
         )
         self.client.login(username='testuser', password='12345')
-        self.post = Post.objects.create(topic_id=1, user_id=1, body="it's only a bit broken")
+        self.topic = Topic.objects.get(id=1)
+        self.post = Post.objects.create(topic=self.topic, user=self.user, body="it's only a bit broken")
+        self.topic.reply_count = 1
+        self.topic.last_post_by_user = self.user
+        self.topic.last_post_at = self.post.created_at
+        self.topic.save()
 
     def test_get(self):
         response = self.client.get('/forums/post/%d/delete/' % self.post.id)
@@ -101,6 +106,10 @@ class TestDeletePost(TestCase):
         )
         self.assertRedirects(response, '/forums/1/')
         self.assertFalse(Post.objects.filter(id=self.post.id).exists())
+        self.topic.refresh_from_db()
+        self.assertEqual(self.topic.reply_count, 0)
+        self.assertEqual(self.topic.last_post_by_user.pk, 1)
+        self.assertEqual(self.topic.last_post_at, Post.objects.get(id=1).created_at)
 
     def test_delete_requires_admin_privileges(self):
         self.user.is_staff = False
