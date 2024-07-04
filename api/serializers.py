@@ -77,7 +77,7 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
         model = Production
         fields = [
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
-            'release_date', 'supertype', 'platforms', 'types', 'tags'
+            'release_date', 'supertype', 'platforms', 'types', 'tags', 'has_screenshot',
         ]
 
 
@@ -292,7 +292,7 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
             'release_date', 'supertype', 'platforms', 'types', 'credits', 'download_links',
             'external_links', 'release_parties', 'competition_placings', 'invitation_parties',
-            'screenshots', 'tags',
+            'screenshots', 'tags', 'has_screenshot',
         ]
 
 

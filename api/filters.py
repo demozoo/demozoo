@@ -46,6 +46,7 @@ class ProductionFilter(filters.FilterSet):
         field_name='updated_at', lookup_expr='gte', label="Updated since"
     )
     author = filters.NumberFilter(method='filter_author', label="Author ID")
+    has_screenshot = filters.BooleanFilter()
 
     def filter_author(self, queryset, name, value):
         return queryset.filter(
