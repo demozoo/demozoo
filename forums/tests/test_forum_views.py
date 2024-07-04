@@ -136,3 +136,59 @@ class TestDeletePost(TestCase):
         self.assertRedirects(response, '/forums/')
         self.assertFalse(Post.objects.filter(id=self.post.id).exists())
         self.assertFalse(Topic.objects.filter(id=self.topic.id).exists())
+
+
+class TestEditPost(TestCase):
+    fixtures = ['tests/forum.json']
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser', email='testuser@example.com', password='12345', is_staff=True
+        )
+        self.client.login(username='testuser', password='12345')
+        self.topic = Topic.objects.get(id=1)
+
+    def add_reply(self):
+        self.post = Post.objects.create(topic=self.topic, user=self.user, body="it's only a bit broken")
+        self.topic.reply_count = 1
+        self.topic.last_post_by_user = self.user
+        self.topic.last_post_at = self.post.created_at
+        self.topic.save()
+
+    def test_get(self):
+        self.add_reply()
+        response = self.client.get('/forums/post/%d/edit/' % self.post.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.add_reply()
+        response = self.client.post(
+            '/forums/post/%d/edit/' % self.post.id,
+            {'body': "it's only somewhat broken"},
+        )
+        self.assertRedirects(response, '/forums/post/%d/' % self.post.id)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.body, "it's only somewhat broken")
+
+    def test_post_invalid(self):
+        self.add_reply()
+        response = self.client.post(
+            '/forums/post/%d/edit/' % self.post.id,
+            {'body': ""},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.body, "it's only a bit broken")
+
+    def test_edit_requires_admin_privileges(self):
+        self.add_reply()
+        self.user.is_staff = False
+        self.user.save()
+
+        response = self.client.post(
+            '/forums/post/%d/edit/' % self.post.id,
+            {'body': "it's only somewhat broken"},
+        )
+        self.assertRedirects(response, '/forums/post/%d/' % self.post.id)
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.body, "it's only a bit broken")
