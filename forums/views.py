@@ -120,7 +120,10 @@ class DeletePostView(AjaxConfirmationView):
     action_url_path = "forums_delete_post"
 
     def get_redirect_url(self):
-        return self.object.topic.get_absolute_url()
+        if Topic.objects.filter(id=self.object.topic.id).exists():
+            return self.object.topic.get_absolute_url()
+        else:
+            return reverse('forums')
 
     def get_cancel_url(self):
         return self.object.get_absolute_url()
