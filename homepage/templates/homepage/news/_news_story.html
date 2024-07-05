@@ -1,0 +1,26 @@
+{% load safe_markdown %}
+
+<div class="news-story news_story {% if not story.is_public %}private{% endif %}">
+    {% if perms.homepage.change_newsstory and site_is_writeable %}
+        <ul class="actions">
+            <li>
+                <a href="{% url 'edit_news' story.id %}" class="action_button icon edit">Edit</a>
+            </li>
+        </ul>
+    {% endif %}
+
+    <h2 class="news-story__heading">{{ story.title }}</h2>
+    <div class="news-story__content">
+        <div class="story_image">
+            {% if story.image %}
+                <img src="{{ story.image.image_url }}" width="100" alt="">
+            {% else %}
+                <img src="/static/images/news.png" width="100" alt="">
+            {% endif %}
+            <div class="date">{{ story.created_at|date:"d M Y" }}</div>
+        </div>
+        <div class="news-story__description">
+            {{ story.text|safe_markdown }}
+        </div>
+    </div>
+</div>

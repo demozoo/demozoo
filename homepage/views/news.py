@@ -9,6 +9,14 @@ from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory
 
 
+def news(request):
+    news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')[:10]
+
+    return render(request, 'homepage/news/index.html', {
+        'news_stories': news_stories,
+    })
+
+
 @writeable_site_required
 def add_news(request):
     if not request.user.has_perm('homepage.add_newsstory'):
