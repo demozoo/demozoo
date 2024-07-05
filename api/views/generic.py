@@ -112,9 +112,16 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
         return super().get_serializer(*args, **kwargs)
 
 
-class BBSViewSet(ListDetailModelViewSet):
+class BBSViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BBS.objects.prefetch_related('tags')
-    list_serializer_class = serializers.BBSListingSerializer
     serializer_class = serializers.BBSSerializer
     filterset_class = filters.BBSFilter
     ordering_fields = ['id', 'name']
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['fields'] = [
+                'url', 'demozoo_url', 'id', 'name', 'location',
+                'latitude', 'longitude', 'tags',
+            ]
+        return super().get_serializer(*args, **kwargs)

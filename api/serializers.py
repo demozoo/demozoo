@@ -112,25 +112,6 @@ class PlatformSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'id', 'name']
 
 
-
-class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
-    demozoo_url = serializers.SerializerMethodField(read_only=True)
-    tags = serializers.SerializerMethodField(read_only=True)
-
-    def get_demozoo_url(self, bbs):
-        return settings.BASE_URL + bbs.get_absolute_url()
-
-    def get_tags(self, bbs):
-        return [tag.name for tag in bbs.tags.all()]
-
-    class Meta:
-        model = BBS
-        fields = [
-            'url', 'demozoo_url', 'id', 'name', 'location',
-            'latitude', 'longitude', 'tags',
-        ]
-
-
 # Detail serialisers
 
 class ReleaserSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerializer):
@@ -327,7 +308,7 @@ class PartySeriesSerializer(OutputFieldsMixin, PartySeriesSummarySerializer):
         ]
 
 
-class BBSSerializer(serializers.HyperlinkedModelSerializer):
+class BBSSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerializer):
     class BBSOperatorSerializer(serializers.ModelSerializer):
         releaser = ReleaserSummarySerializer(read_only=True)
 
