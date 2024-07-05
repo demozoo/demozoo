@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from bbs.models import BBS, Affiliation, Operator
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
-from parties.models import Competition, CompetitionPlacing, Party, PartySeries
+from parties.models import Competition, CompetitionPlacing, Party, PartyExternalLink, PartySeries
 from platforms.models import Platform
 from productions.models import Credit, Production, ProductionLink, ProductionType, Screenshot
 
@@ -286,10 +286,16 @@ class PartySerializer(OutputFieldsMixin, PartySummarySerializer):
                 'id', 'demozoo_url', 'name', 'shown_date', 'platform', 'production_type', 'results'
             ]
 
+    class PartyExternalLinkSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = PartyExternalLink
+            fields = ['link_class', 'url']
+
     party_series = PartySeriesSummarySerializer(read_only=True)
     invitations = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
     releases = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
     competitions = serializers.SerializerMethodField(read_only=True)
+    external_links = PartyExternalLinkSerializer(many=True, read_only=True, source='active_external_links')
 
     def get_competitions(self, party):
         competitions = party.get_competitions_with_prefetched_results(include_tags=True)
@@ -299,7 +305,7 @@ class PartySerializer(OutputFieldsMixin, PartySummarySerializer):
         fields = [
             'url', 'demozoo_url', 'id', 'name', 'tagline', 'party_series', 'start_date', 'end_date',
             'location', 'is_online', 'country_code', 'latitude', 'longitude', 'website',
-            'invitations', 'releases', 'competitions',
+            'invitations', 'releases', 'competitions', 'external_links'
         ]
 
 
