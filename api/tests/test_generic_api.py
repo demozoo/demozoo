@@ -65,6 +65,16 @@ class TestProductions(TestCase):
         self.assertIn("Pondlife", result_titles)
         self.assertNotIn("Madrielle", result_titles)
 
+    def test_fields_param(self):
+        response = self.client.get('/api/v1/productions/?title=Madrielle&fields=id,title,competition_placings')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        result = response_data['results'][0]
+        self.assertEqual(result['title'], "Madrielle")
+        self.assertNotIn('demozoo_url', result)
+        self.assertEqual(result['competition_placings'][0]['competition']['name'], "ZX 1K Intro")
+
     def test_filter_by_competition_placing(self):
         pondlife = Production.objects.get(title="Pondlife")
         madrielle = Production.objects.get(title="Madrielle")
