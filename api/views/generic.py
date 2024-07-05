@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.utils.functional import cached_property
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,9 +19,19 @@ class ListDetailModelViewSet(viewsets.ReadOnlyModelViewSet):
     """
     listing_fields = None
 
+    @cached_property
+    def output_fields(self):
+        fields_param = self.request.GET.get('fields')
+        if fields_param:
+            return fields_param.split(',')
+        elif self.action == 'list' and self.listing_fields is not None:
+            return self.listing_fields
+        else:
+            return []
+
     def get_serializer(self, *args, **kwargs):
-        if self.action == 'list' and self.listing_fields is not None:
-            kwargs['fields'] = self.listing_fields
+        if self.output_fields:
+            kwargs['fields'] = self.output_fields
         return super().get_serializer(*args, **kwargs)
 
 
