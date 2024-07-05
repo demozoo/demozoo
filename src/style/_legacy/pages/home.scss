@@ -34,40 +34,6 @@
         clear: both;
         margin-top: 24px;
         border-top: 1px solid #888;
-
-        .news_story {
-            clear: both;
-            padding-top: 15px;
-
-            .story_image img {
-                max-width: 100%;
-            }
-
-            h2 {
-                font-family: FabricaRegular, Helvetica, Arial, sans-serif;
-                line-height: 1.3em;
-            }
-
-            .date {
-                text-align: center;
-                text-transform: uppercase;
-                font-weight: bold;
-                color: #888;
-            }
-
-            p {
-                clear: both;
-                margin-top: 0;
-            }
-
-            &.private {
-                background-color: #eee;
-                border: 1px solid #444;
-                opacity: 0.7;
-            }
-
-        }
-
     }
 
     .new_releases, 
@@ -229,6 +195,42 @@
                 }
             }
         }
+    }
+
+}
+
+.news {
+    .news_story {
+        clear: both;
+        padding-top: 15px;
+
+        .story_image img {
+            max-width: 100%;
+        }
+
+        h2 {
+            font-family: FabricaRegular, Helvetica, Arial, sans-serif;
+            line-height: 1.3em;
+        }
+
+        .date {
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #888;
+        }
+
+        p {
+            clear: both;
+            margin-top: 0;
+        }
+
+        &.private {
+            background-color: #eee;
+            border: 1px solid #444;
+            opacity: 0.7;
+        }
+
     }
 
 }

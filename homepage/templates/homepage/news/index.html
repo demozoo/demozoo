@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load demoscene_tags compress %}
+
+{% block base_main %}
+<header class="page__header">
+    {% if perms.homepage.add_newsstory and site_is_writeable %}
+        <ul class="actions">
+            <li>
+                <a href="{% url 'add_news' %}" class="action_button icon add">Add news</a>
+            </li>
+        </ul>
+    {% endif %}
+
+    <h1 class="page__title">News</h1>
+</header>
+
+<div class="news">
+    {% for story in news_stories %}
+        {% include "homepage/news/_news_story.html" %}
+    {% endfor %}
+</div>
+{% endblock %}
