@@ -6,6 +6,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.db.models import Prefetch
 from django.urls import reverse
 from fuzzy_date import FuzzyDate
 from strip_markup import strip_markup
@@ -264,6 +265,35 @@ class Party(Commentable):
             'B': self.tagline,
             'C': self.asciified_location + ' ' + self.plaintext_notes,
         }
+
+    def get_competitions_with_prefetched_results(self, include_tags=False):
+        production_prefetch_fields = [
+            'production__author_nicks__releaser',
+            'production__author_affiliation_nicks__releaser',
+            'production__platforms',
+            'production__types',
+        ]
+        if include_tags:
+            production_prefetch_fields.append('production__tags')
+
+        return (
+            self.competitions.prefetch_related(
+                Prefetch(
+                    'placings',
+                    queryset=(
+                        CompetitionPlacing.objects
+                        .order_by('position', 'production_id')
+                        .prefetch_related(*production_prefetch_fields)
+                        .defer(
+                            'production__notes',
+                            'production__author_nicks__releaser__notes',
+                            'production__author_affiliation_nicks__releaser__notes',
+                        )
+                    )
+                )
+            )
+            .order_by('name', 'id')
+        )
 
     class Meta:
         verbose_name_plural = "Parties"

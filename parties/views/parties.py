@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db.models import Prefetch
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -63,29 +62,7 @@ def by_date(request, year=None):
 def show(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
-    competitions = (
-        party.competitions.prefetch_related(
-            Prefetch(
-                'placings',
-                queryset=(
-                    CompetitionPlacing.objects
-                    .order_by('position', 'production_id')
-                    .prefetch_related(
-                        'production__author_nicks__releaser',
-                        'production__author_affiliation_nicks__releaser',
-                        'production__platforms',
-                        'production__types',
-                    )
-                    .defer(
-                        'production__notes',
-                        'production__author_nicks__releaser__notes',
-                        'production__author_affiliation_nicks__releaser__notes',
-                    )
-                )
-            )
-        )
-        .order_by('name', 'id')
-    )
+    competitions = party.get_competitions_with_prefetched_results()
     competitions_with_placings = [
         (competition, competition.placings.all())
         for competition in competitions
