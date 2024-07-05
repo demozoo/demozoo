@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from modal_workflow import render_modal_workflow
@@ -10,10 +11,18 @@ from homepage.models import NewsImage, NewsStory
 
 
 def news(request):
-    news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')[:10]
+    news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')
+    paginator = Paginator(news_stories, 10)
+
+    page = request.GET.get('page') or 1
+    try:
+        news_stories_page = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
+        news_stories_page = paginator.page(paginator.num_pages)
 
     return render(request, 'homepage/news/index.html', {
-        'news_stories': news_stories,
+        'news_stories': news_stories_page,
     })
 
 
