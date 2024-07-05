@@ -98,7 +98,7 @@ class PartyViewSet(ListDetailModelViewSet):
 
 
 class BBSViewSet(ListDetailModelViewSet):
-    queryset = BBS.objects.prefetch_related('tags')
+    queryset = BBS.objects.prefetch_related('tags', 'bbstros__platforms', 'bbstros__types', 'bbstros__author_nicks__releaser', 'bbstros__author_affiliation_nicks__releaser', 'bbstros__tags')
     serializer_class = serializers.BBSSerializer
     filterset_class = filters.BBSFilter
     ordering_fields = ['id', 'name']

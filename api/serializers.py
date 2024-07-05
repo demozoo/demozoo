@@ -289,7 +289,11 @@ class PartySerializer(OutputFieldsMixin, PartySummarySerializer):
     party_series = PartySeriesSummarySerializer(read_only=True)
     invitations = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
     releases = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
-    competitions = CompetitionSerializer(many=True, read_only=True)
+    competitions = serializers.SerializerMethodField(read_only=True)
+
+    def get_competitions(self, party):
+        competitions = party.get_competitions_with_prefetched_results(include_tags=True)
+        return PartySerializer.CompetitionSerializer(instance=competitions, many=True, context=self.context).data
 
     class Meta(PartySummarySerializer.Meta):
         fields = [
