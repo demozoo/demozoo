@@ -9,6 +9,7 @@ urlpatterns = [
     re_path(r'^$', home_views.home, {}, 'home'),
 
     re_path(r'^news/$', news_views.news, {}, 'news'),
+    re_path(r'^news/(\d+)/$', news_views.news_story, {}, 'news_story'),
     re_path(r'^news/new/$', news_views.add_news, {}, 'add_news'),
     re_path(r'^news/(\d+)/edit/$', news_views.edit_news, {}, 'edit_news'),
     re_path(r'^news/(\d+)/delete/$', news_views.DeleteNewsStoryView.as_view(), {}, 'delete_news'),
