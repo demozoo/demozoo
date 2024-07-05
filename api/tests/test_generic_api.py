@@ -3,7 +3,8 @@ import json
 from django.test import TestCase, override_settings
 
 from bbs.models import BBS
-from parties.models import Party, PartySeries
+from parties.models import Competition, CompetitionPlacing, Party, PartySeries
+from productions.models import Production
 
 
 class TestApiRoot(TestCase):
@@ -57,6 +58,29 @@ class TestProductions(TestCase):
 
     def test_filter_by_author(self):
         response = self.client.get('/api/v1/productions/?author=4')
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        result_titles = [result['title'] for result in response_data['results']]
+        self.assertIn("Pondlife", result_titles)
+        self.assertNotIn("Madrielle", result_titles)
+
+    def test_filter_by_competition_placing(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        madrielle = Production.objects.get(title="Madrielle")
+        compo = Competition.objects.get(name="ZX 1K Intro")
+        madrielle_placing = madrielle.competition_placings.first()
+        madrielle_placing.position = 2
+        madrielle_placing.save()
+        CompetitionPlacing.objects.create(
+            competition=compo,
+            production=pondlife,
+            position=1,
+            ranking='1',
+            score='100',
+        )
+
+        response = self.client.get('/api/v1/productions/?competition_placing_min=1')
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)

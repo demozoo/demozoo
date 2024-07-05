@@ -47,10 +47,16 @@ class ProductionFilter(filters.FilterSet):
     )
     author = filters.NumberFilter(method='filter_author', label="Author ID")
     has_screenshot = filters.BooleanFilter()
+    competition_placing_min = filters.NumberFilter(method='filter_competition_placing_min', label="Minimum competition placing")
 
     def filter_author(self, queryset, name, value):
         return queryset.filter(
             Q(author_nicks__releaser_id=value) | Q(author_affiliation_nicks__releaser_id=value)
+        )
+
+    def filter_competition_placing_min(self, queryset, name, value):
+        return queryset.filter(
+            competition_placings__position__lte=value, competition_placings__ranking__gt=''
         )
 
     class Meta:
