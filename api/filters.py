@@ -27,6 +27,7 @@ class ProductionTypeFilter(filters.FilterSet):
 class ProductionFilter(filters.FilterSet):
     title = filters.CharFilter(lookup_expr='iexact')
     platform = filters.ModelMultipleChoiceFilter(field_name='platforms', queryset=Platform.objects.all())
+    production_type = filters.ModelMultipleChoiceFilter(field_name='types', queryset=ProductionType.objects.all())
     released_before = filters.DateFilter(
         field_name='release_date_date', lookup_expr='lt', label="Released before"
     )
