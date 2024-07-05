@@ -10,9 +10,12 @@ from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory
 
 
+NEWS_STORIES_PER_PAGE = 10
+
+
 def news(request):
     news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')
-    paginator = Paginator(news_stories, 10)
+    paginator = Paginator(news_stories, NEWS_STORIES_PER_PAGE)
 
     page = request.GET.get('page') or 1
     try:
@@ -20,6 +23,22 @@ def news(request):
     except (PageNotAnInteger, EmptyPage):
         # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
         news_stories_page = paginator.page(paginator.num_pages)
+
+    return render(request, 'homepage/news/index.html', {
+        'news_stories': news_stories_page,
+    })
+
+
+def news_story(request, news_story_id):
+    """ news index view but ensuring that we display the page that contains the given story """
+    news_story = get_object_or_404(NewsStory, id=news_story_id)
+    story_offset = NewsStory.objects.filter(is_public=True, created_at__gt=news_story.created_at).count()
+
+    news_stories = NewsStory.objects.filter(is_public=True).select_related('image').order_by('-created_at')
+    paginator = Paginator(news_stories, NEWS_STORIES_PER_PAGE)
+
+    page = int(story_offset / NEWS_STORIES_PER_PAGE) + 1
+    news_stories_page = paginator.page(page)
 
     return render(request, 'homepage/news/index.html', {
         'news_stories': news_stories_page,

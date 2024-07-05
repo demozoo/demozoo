@@ -33,10 +33,17 @@ class TestNewsIndex(MediaTestMixin, TestCase):
     def test_get(self):
         response = self.client.get('/news/')
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Those are the headlines")
 
     def test_pagination_out_of_range(self):
         response = self.client.get('/news/', {'page': 999})
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Those are the headlines")
+
+    def test_permalink(self):
+        response = self.client.get('/news/%d/' % self.news_story.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Those are the headlines")
 
 
 class TestAddNews(MediaTestMixin, TestCase):

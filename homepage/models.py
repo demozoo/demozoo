@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from demoscene.utils.files import random_path
 
@@ -73,6 +74,9 @@ class NewsStory(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return "%s#news-%d" % (reverse('news_story', args=[str(self.id)]), self.id)
 
     class Meta:
         verbose_name_plural = 'News stories'
