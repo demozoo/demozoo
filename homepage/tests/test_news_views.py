@@ -17,6 +17,28 @@ def get_test_image():
     return ImageFile(f, name='test.png')
 
 
+class TestNewsIndex(MediaTestMixin, TestCase):
+    def setUp(self):
+        User.objects.create_user(username='testuser', password='12345')
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+
+        self.image = NewsImage.objects.create(image=get_test_image())
+        self.news_story = NewsStory.objects.create(
+            image=self.image,
+            title="Those are the headlines",
+            text="God I wish they weren't.",
+            is_public=True
+        )
+
+    def test_get(self):
+        response = self.client.get('/news/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_pagination_out_of_range(self):
+        response = self.client.get('/news/', {'page': 999})
+        self.assertEqual(response.status_code, 200)
+
+
 class TestAddNews(MediaTestMixin, TestCase):
     def setUp(self):
         User.objects.create_user(username='testuser', password='12345')
