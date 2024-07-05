@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
 
 from api import filters, serializers
@@ -38,32 +37,41 @@ class ProductionTypeViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ['id', 'name', 'path']
 
 
-class ProductionViewSet(ListDetailModelViewSet):
+class ProductionViewSet(viewsets.ReadOnlyModelViewSet):
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['fields'] = serializers.PRODUCTION_LISTING_FIELDS
+        return super().get_serializer(*args, **kwargs)
+
     queryset = Production.objects.prefetch_related(
         'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'tags'
     )
-    list_serializer_class = serializers.ProductionListingSerializer
     serializer_class = serializers.ProductionSerializer
     filterset_class = filters.ProductionFilter
     ordering_fields = ['id', 'sortable_title', 'release_date_date', 'supertype']
 
 
-class ReleaserViewSet(ListDetailModelViewSet):
+class ReleaserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Releaser.objects.all()
-    list_serializer_class = serializers.ReleaserListingSerializer
     serializer_class = serializers.ReleaserSerializer
     filterset_class = filters.ReleaserFilter
     lookup_value_regex = r'\d+'
     ordering_fields = ['id', 'name']
 
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['fields'] = ['url', 'id', 'name', 'is_group']
+        return super().get_serializer(*args, **kwargs)
+
     @action(detail=True)
     def productions(self, request, pk):
         releaser = get_object_or_404(Releaser, pk=pk)
         queryset = releaser.productions().order_by('-release_date_date').prefetch_related(
-            'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+            'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'tags'
         )
-        serializer = serializers.ProductionListingSerializer(
-            queryset, many=True, context={'request': request}
+        serializer = serializers.ProductionSerializer(
+            queryset, many=True, context={'request': request},
+            fields=serializers.PRODUCTION_LISTING_FIELDS,
         )
         return Response(serializer.data)
 
@@ -71,10 +79,11 @@ class ReleaserViewSet(ListDetailModelViewSet):
     def member_productions(self, request, pk):
         releaser = get_object_or_404(Releaser, pk=pk)
         queryset = releaser.member_productions().order_by('-release_date_date').prefetch_related(
-            'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser'
+            'platforms', 'types', 'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'tags'
         )
-        serializer = serializers.ProductionListingSerializer(
-            queryset, many=True, context={'request': request}
+        serializer = serializers.ProductionSerializer(
+            queryset, many=True, context={'request': request},
+            fields=serializers.PRODUCTION_LISTING_FIELDS
         )
         return Response(serializer.data)
 

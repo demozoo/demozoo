@@ -8,6 +8,22 @@ from platforms.models import Platform
 from productions.models import Credit, Production, ProductionLink, ProductionType, Screenshot
 
 
+class OutputFieldsMixin:
+    """
+    When mixed in to a serializer class, allows passing a `fields` kwarg to the constructor
+    to specify a list of field names to include in the output record
+    """
+    def __init__(self, *args, **kwargs):
+        self._output_fields = kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+
+    def get_fields(self):
+        fields = super().get_fields()
+        if self._output_fields is not None:
+            fields = {k: v for k,v in fields.items() if k in self._output_fields}
+        return fields
+
+
 # Summary serialisers (for inline listings in other records)
 
 class ReleaserSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -38,10 +54,10 @@ class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
 
 # Listing serialisers
 
-class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Releaser
-        fields = ['url', 'id', 'name', 'is_group']
+PRODUCTION_LISTING_FIELDS = [
+    'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
+    'release_date', 'supertype', 'platforms', 'types', 'tags'
+]
 
 
 class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -54,33 +70,6 @@ class PlatformSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Platform
         fields = ['url', 'id', 'name']
-
-
-class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
-    demozoo_url = serializers.SerializerMethodField(read_only=True)
-    author_nicks = AuthorNickSerializer(many=True, read_only=True)
-    author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
-    release_date = serializers.SerializerMethodField(read_only=True)
-    platforms = PlatformSerializer(many=True, read_only=True)
-    types = ProductionTypeSerializer(many=True, read_only=True)
-    tags = serializers.SerializerMethodField(read_only=True)
-
-    def get_demozoo_url(self, production):
-        return settings.BASE_URL + production.get_absolute_url()
-
-    def get_release_date(self, production):
-        release_date = production.release_date
-        return release_date and release_date.numeric_format()
-
-    def get_tags(self, production):
-        return [tag.name for tag in production.tags.all()]
-
-    class Meta:
-        model = Production
-        fields = [
-            'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
-            'release_date', 'supertype', 'platforms', 'types', 'tags'
-        ]
 
 
 class PartySeriesListingSerializer(serializers.HyperlinkedModelSerializer):
@@ -140,7 +129,7 @@ class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
 
 # Detail serialisers
 
-class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
+class ReleaserSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerializer):
     class NickSerializer(serializers.ModelSerializer):
         variants = serializers.StringRelatedField(many=True)
 
@@ -207,7 +196,7 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class ProductionSerializer(serializers.HyperlinkedModelSerializer):
+class ProductionSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerializer):
     class ProductionExternalLinkSerializer(serializers.ModelSerializer):
         class Meta:
             model = ProductionLink
@@ -285,7 +274,7 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
 class PartySerializer(serializers.HyperlinkedModelSerializer):
     class CompetitionSerializer(serializers.ModelSerializer):
         class CompetitionPlacingSerializer(serializers.ModelSerializer):
-            production = ProductionListingSerializer(read_only=True)
+            production = ProductionSerializer(read_only=True, fields=PRODUCTION_LISTING_FIELDS)
 
             class Meta:
                 model = CompetitionPlacing
@@ -316,8 +305,8 @@ class PartySerializer(serializers.HyperlinkedModelSerializer):
     party_series = PartySeriesListingSerializer(read_only=True)
     start_date = serializers.SerializerMethodField(read_only=True)
     end_date = serializers.SerializerMethodField(read_only=True)
-    invitations = ProductionListingSerializer(many=True, read_only=True)
-    releases = ProductionListingSerializer(many=True, read_only=True)
+    invitations = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
+    releases = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
     competitions = CompetitionSerializer(many=True, read_only=True)
 
     def get_demozoo_url(self, party):
@@ -370,7 +359,7 @@ class BBSSerializer(serializers.HyperlinkedModelSerializer):
             fields = ['group', 'role']
 
     demozoo_url = serializers.SerializerMethodField(read_only=True)
-    bbstros = ProductionListingSerializer(many=True, read_only=True)
+    bbstros = ProductionSerializer(many=True, read_only=True, fields=PRODUCTION_LISTING_FIELDS)
     staff = serializers.SerializerMethodField(read_only=True)
     affiliations = serializers.SerializerMethodField(read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
