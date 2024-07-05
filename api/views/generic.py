@@ -100,12 +100,16 @@ class PartySeriesViewSet(viewsets.ReadOnlyModelViewSet):
         return super().get_serializer(*args, **kwargs)
 
 
-class PartyViewSet(ListDetailModelViewSet):
+class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Party.objects.all()
-    list_serializer_class = serializers.PartyListingSerializer
     serializer_class = serializers.PartySerializer
     filterset_class = filters.PartyFilter
     ordering_fields = ['id', 'name', 'start_date_date', 'end_date_date', 'country_code']
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['fields'] = serializers.PARTY_LISTING_FIELDS
+        return super().get_serializer(*args, **kwargs)
 
 
 class BBSViewSet(ListDetailModelViewSet):
