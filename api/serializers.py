@@ -8,35 +8,11 @@ from platforms.models import Platform
 from productions.models import Credit, Production, ProductionLink, ProductionType, Screenshot
 
 
-# Summary / listing serialisers
-
-class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Releaser
-        fields = ['url', 'id', 'name', 'is_group']
-
+# Summary serialisers (for inline listings in other records)
 
 class ReleaserSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Releaser
-        fields = ['url', 'id', 'name']
-
-
-class ProductionTypeSummarySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ProductionType
-        fields = ['url', 'id', 'name']
-
-
-class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ProductionType
-        fields = ['url', 'id', 'name', 'supertype']
-
-
-class PlatformSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Platform
         fields = ['url', 'id', 'name']
 
 
@@ -54,13 +30,39 @@ class AuthorNickSerializer(serializers.ModelSerializer):
         fields = ['name', 'abbreviation', 'releaser']
 
 
+class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Party
+        fields = ['url', 'id', 'name']
+
+
+# Listing serialisers
+
+class ReleaserListingSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Releaser
+        fields = ['url', 'id', 'name', 'is_group']
+
+
+class ProductionTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductionType
+        fields = ['url', 'id', 'name', 'supertype']
+
+
+class PlatformSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Platform
+        fields = ['url', 'id', 'name']
+
+
 class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     author_nicks = AuthorNickSerializer(many=True, read_only=True)
     author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
     release_date = serializers.SerializerMethodField(read_only=True)
     platforms = PlatformSerializer(many=True, read_only=True)
-    types = ProductionTypeSummarySerializer(many=True, read_only=True)
+    types = ProductionTypeSerializer(many=True, read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, production):
@@ -77,7 +79,7 @@ class ProductionListingSerializer(serializers.HyperlinkedModelSerializer):
         model = Production
         fields = [
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
-            'release_date', 'supertype', 'platforms', 'types', 'tags', 'has_screenshot',
+            'release_date', 'supertype', 'platforms', 'types', 'tags'
         ]
 
 
@@ -118,22 +120,6 @@ class PartyListingSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Party
-        fields = ['url', 'id', 'name']
-
-
-class CompetitionPlacingCompetitionSerializer(serializers.ModelSerializer):
-    party = PartySummarySerializer(read_only=True)
-
-    class Meta:
-        model = Competition
-        fields = [
-            'id', 'name', 'party'
-        ]
-
-
 class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
@@ -154,48 +140,43 @@ class BBSListingSerializer(serializers.HyperlinkedModelSerializer):
 
 # Detail serialisers
 
-class NickSerializer(serializers.ModelSerializer):
-    variants = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = Nick
-        fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
-
-
-class GroupMembershipSerializer(serializers.ModelSerializer):
-    group = ReleaserSummarySerializer(read_only=True)
-
-    class Meta:
-        model = Membership
-        fields = ['group', 'is_current']
-
-
-class MemberMembershipSerializer(serializers.ModelSerializer):
-    member = ReleaserSummarySerializer(read_only=True)
-
-    class Meta:
-        model = Membership
-        fields = ['member', 'is_current']
-
-
-class SubgroupMembershipSerializer(serializers.ModelSerializer):
-    subgroup = serializers.SerializerMethodField(read_only=True)
-
-    def get_subgroup(self, membership):
-        return ReleaserSummarySerializer(instance=membership.member, context=self.context).data
-
-    class Meta:
-        model = Membership
-        fields = ['subgroup', 'is_current']
-
-
-class ReleaserExternalLinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReleaserExternalLink
-        fields = ['link_class', 'url']
-
-
 class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
+    class NickSerializer(serializers.ModelSerializer):
+        variants = serializers.StringRelatedField(many=True)
+
+        class Meta:
+            model = Nick
+            fields = ['name', 'abbreviation', 'is_primary_nick', 'variants']
+
+    class GroupMembershipSerializer(serializers.ModelSerializer):
+        group = ReleaserSummarySerializer(read_only=True)
+
+        class Meta:
+            model = Membership
+            fields = ['group', 'is_current']
+
+    class MemberMembershipSerializer(serializers.ModelSerializer):
+        member = ReleaserSummarySerializer(read_only=True)
+
+        class Meta:
+            model = Membership
+            fields = ['member', 'is_current']
+
+    class SubgroupMembershipSerializer(serializers.ModelSerializer):
+        subgroup = serializers.SerializerMethodField(read_only=True)
+
+        def get_subgroup(self, membership):
+            return ReleaserSummarySerializer(instance=membership.member, context=self.context).data
+
+        class Meta:
+            model = Membership
+            fields = ['subgroup', 'is_current']
+
+    class ReleaserExternalLinkSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = ReleaserExternalLink
+            fields = ['link_class', 'url']
+
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     nicks = NickSerializer(many=True, read_only=True)
     member_of = serializers.SerializerMethodField('get_group_memberships', read_only=True)
@@ -208,15 +189,15 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_group_memberships(self, releaser):
         memberships = releaser.group_memberships.select_related('group')
-        return GroupMembershipSerializer(instance=memberships, many=True, context=self.context).data
+        return ReleaserSerializer.GroupMembershipSerializer(instance=memberships, many=True, context=self.context).data
 
     def get_members(self, releaser):
         member_memberships = releaser.member_memberships.filter(member__is_group=False).select_related('member')
-        return MemberMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
+        return ReleaserSerializer.MemberMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
 
     def get_subgroups(self, releaser):
         member_memberships = releaser.member_memberships.filter(member__is_group=True).select_related('member')
-        return SubgroupMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
+        return ReleaserSerializer.SubgroupMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
 
     class Meta:
         model = Releaser
@@ -226,41 +207,46 @@ class ReleaserSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class ProductionExternalLinkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductionLink
-        fields = ['link_class', 'url']
-
-
-class ProductionCreditSerializer(serializers.ModelSerializer):
-    nick = AuthorNickSerializer(read_only=True)
-
-    class Meta:
-        model = Credit
-        fields = ['nick', 'category', 'role']
-
-
-class ProductionCompetitionPlacingSerializer(serializers.ModelSerializer):
-    competition = CompetitionPlacingCompetitionSerializer(read_only=True)
-
-    class Meta:
-        model = CompetitionPlacing
-        fields = [
-            'position', 'ranking', 'score', 'competition'
-        ]
-
-
-class ScreenshotSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Screenshot
-        fields = [
-            'original_url', 'original_width', 'original_height',
-            'standard_url', 'standard_width', 'standard_height',
-            'thumbnail_url', 'thumbnail_width', 'thumbnail_height',
-        ]
-
-
 class ProductionSerializer(serializers.HyperlinkedModelSerializer):
+    class ProductionExternalLinkSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = ProductionLink
+            fields = ['link_class', 'url']
+
+    class ProductionCreditSerializer(serializers.ModelSerializer):
+        nick = AuthorNickSerializer(read_only=True)
+
+        class Meta:
+            model = Credit
+            fields = ['nick', 'category', 'role']
+
+    class ProductionCompetitionPlacingSerializer(serializers.ModelSerializer):
+        class CompetitionPlacingCompetitionSerializer(serializers.ModelSerializer):
+            party = PartySummarySerializer(read_only=True)
+
+            class Meta:
+                model = Competition
+                fields = [
+                    'id', 'name', 'party'
+                ]
+
+        competition = CompetitionPlacingCompetitionSerializer(read_only=True)
+
+        class Meta:
+            model = CompetitionPlacing
+            fields = [
+                'position', 'ranking', 'score', 'competition'
+            ]
+
+    class ScreenshotSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Screenshot
+            fields = [
+                'original_url', 'original_width', 'original_height',
+                'standard_url', 'standard_width', 'standard_height',
+                'thumbnail_url', 'thumbnail_width', 'thumbnail_height',
+            ]
+
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     author_nicks = AuthorNickSerializer(many=True, read_only=True)
     author_affiliation_nicks = AuthorNickSerializer(many=True, read_only=True)
@@ -292,42 +278,40 @@ class ProductionSerializer(serializers.HyperlinkedModelSerializer):
             'url', 'demozoo_url', 'id', 'title', 'author_nicks', 'author_affiliation_nicks',
             'release_date', 'supertype', 'platforms', 'types', 'credits', 'download_links',
             'external_links', 'release_parties', 'competition_placings', 'invitation_parties',
-            'screenshots', 'tags', 'has_screenshot',
-        ]
-
-
-class CompetitionPlacingSerializer(serializers.ModelSerializer):
-    production = ProductionListingSerializer(read_only=True)
-
-    class Meta:
-        model = CompetitionPlacing
-        fields = [
-            'position', 'ranking', 'score', 'production'
-        ]
-
-
-class CompetitionSerializer(serializers.ModelSerializer):
-    demozoo_url = serializers.SerializerMethodField(read_only=True)
-    shown_date = serializers.SerializerMethodField(read_only=True)
-    platform = PlatformSerializer(read_only=True)
-    production_type = ProductionTypeSerializer(read_only=True)
-    results = CompetitionPlacingSerializer(many=True, read_only=True)
-
-    def get_demozoo_url(self, competition):
-        return settings.BASE_URL + competition.get_absolute_url()
-
-    def get_shown_date(self, competition):
-        shown_date = competition.shown_date
-        return shown_date and shown_date.numeric_format()
-
-    class Meta:
-        model = Competition
-        fields = [
-            'id', 'demozoo_url', 'name', 'shown_date', 'platform', 'production_type', 'results'
+            'screenshots', 'tags',
         ]
 
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
+    class CompetitionSerializer(serializers.ModelSerializer):
+        class CompetitionPlacingSerializer(serializers.ModelSerializer):
+            production = ProductionListingSerializer(read_only=True)
+
+            class Meta:
+                model = CompetitionPlacing
+                fields = [
+                    'position', 'ranking', 'score', 'production'
+                ]
+
+        demozoo_url = serializers.SerializerMethodField(read_only=True)
+        shown_date = serializers.SerializerMethodField(read_only=True)
+        platform = PlatformSerializer(read_only=True)
+        production_type = ProductionTypeSerializer(read_only=True)
+        results = CompetitionPlacingSerializer(many=True, read_only=True)
+
+        def get_demozoo_url(self, competition):
+            return settings.BASE_URL + competition.get_absolute_url()
+
+        def get_shown_date(self, competition):
+            shown_date = competition.shown_date
+            return shown_date and shown_date.numeric_format()
+
+        class Meta:
+            model = Competition
+            fields = [
+                'id', 'demozoo_url', 'name', 'shown_date', 'platform', 'production_type', 'results'
+            ]
+
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     party_series = PartySeriesListingSerializer(read_only=True)
     start_date = serializers.SerializerMethodField(read_only=True)
@@ -370,23 +354,21 @@ class PartySeriesSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class BBSOperatorSerializer(serializers.ModelSerializer):
-    releaser = ReleaserSummarySerializer(read_only=True)
-
-    class Meta:
-        model = Operator
-        fields = ['releaser', 'role', 'is_current']
-
-
-class BBSAffiliationSerializer(serializers.ModelSerializer):
-    group = ReleaserSummarySerializer(read_only=True)
-
-    class Meta:
-        model = Affiliation
-        fields = ['group', 'role']
-
-
 class BBSSerializer(serializers.HyperlinkedModelSerializer):
+    class BBSOperatorSerializer(serializers.ModelSerializer):
+        releaser = ReleaserSummarySerializer(read_only=True)
+
+        class Meta:
+            model = Operator
+            fields = ['releaser', 'role', 'is_current']
+
+    class BBSAffiliationSerializer(serializers.ModelSerializer):
+        group = ReleaserSummarySerializer(read_only=True)
+
+        class Meta:
+            model = Affiliation
+            fields = ['group', 'role']
+
     demozoo_url = serializers.SerializerMethodField(read_only=True)
     bbstros = ProductionListingSerializer(many=True, read_only=True)
     staff = serializers.SerializerMethodField(read_only=True)
@@ -398,11 +380,11 @@ class BBSSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_staff(self, bbs):
         operators = bbs.staff.select_related('releaser')
-        return BBSOperatorSerializer(instance=operators, many=True, context=self.context).data
+        return BBSSerializer.BBSOperatorSerializer(instance=operators, many=True, context=self.context).data
 
     def get_affiliations(self, bbs):
         affiliations = bbs.affiliations.select_related('group')
-        return BBSAffiliationSerializer(instance=affiliations, many=True, context=self.context).data
+        return BBSSerializer.BBSAffiliationSerializer(instance=affiliations, many=True, context=self.context).data
 
     def get_tags(self, bbs):
         return [tag.name for tag in bbs.tags.all()]
