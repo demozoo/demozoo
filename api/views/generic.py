@@ -88,12 +88,16 @@ class ReleaserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class PartySeriesViewSet(ListDetailModelViewSet):
+class PartySeriesViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PartySeries.objects.all()
-    list_serializer_class = serializers.PartySeriesListingSerializer
     serializer_class = serializers.PartySeriesSerializer
     filterset_class = filters.PartySeriesFilter
     ordering_fields = ['id', 'name']
+
+    def get_serializer(self, *args, **kwargs):
+        if self.action == 'list':
+            kwargs['fields'] = serializers.PARTY_SERIES_LISTING_FIELDS
+        return super().get_serializer(*args, **kwargs)
 
 
 class PartyViewSet(ListDetailModelViewSet):
