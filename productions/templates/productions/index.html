@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress demoscene_tags %}
+{% load compress demoscene_tags laces %}
 
 {% block html_title %}Productions - Demozoo{% endblock %}
 
@@ -34,8 +34,6 @@
             <p style="text-align: center; font-style: italic;">No releases matching these criteria. Maybe you should make a demo about it...?</p>
         {% endif %}
     {% endwith %}
-    
-    {% with production_page as page %}
-        {% include "shared/pagination_links.html" %}
-    {% endwith %}
+
+    {% component pagination_controls %}
 {% endblock %}
