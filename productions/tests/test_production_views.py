@@ -60,6 +60,14 @@ class TestTagIndex(TestCase):
         response = self.client.get('/productions/tagged/something-random/')
         self.assertEqual(response.status_code, 200)
 
+    def test_pagination(self):
+        for i in range(100):
+            prod = Production.objects.create(title="Production %d" % i, supertype='production')
+            prod.tags.add('48k')
+        response = self.client.get('/productions/tagged/48k/', {'order': 'title', 'bogus': 'parameter'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "/productions/tagged/48k/?order=title&amp;page=2")
+
 
 class TestShowProduction(TestCase):
     fixtures = ['tests/gasman.json']

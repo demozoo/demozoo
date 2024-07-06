@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load safe_markdown compress demoscene_tags %}
+{% load safe_markdown compress demoscene_tags laces %}
 
 {% block html_title %}Productions tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
@@ -23,7 +23,5 @@
         {% production_listing production_page.object_list show_screenshots=1 show_prod_types=1 %}
     </ul>
     
-    {% with production_page as page %}
-        {% include "shared/pagination_links.html" %}
-    {% endwith %}
+    {% component pagination_controls %}
 {% endblock %}

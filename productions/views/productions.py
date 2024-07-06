@@ -21,6 +21,7 @@ from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.utils.ajax import request_is_ajax
+from demoscene.utils.pagination import extract_query_params, PaginationControls
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from productions.carousel import Carousel
 from productions.forms import (
@@ -64,6 +65,11 @@ def tagged(request, tag_name):
         'production_page': production_page,
         'order': order,
         'asc': asc,
+        'pagination_controls': PaginationControls(
+            production_page,
+            reverse('productions_tagged', args=[tag_name]),
+            extract_query_params(request.GET, ['order', 'dir']),
+        )
     })
 
 
