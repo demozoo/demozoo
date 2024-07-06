@@ -1,7 +1,9 @@
 from django.shortcuts import redirect, render
+from django.urls import reverse
 
 from demoscene.models import Edit, Releaser
 from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import PaginationControls
 from productions.models import Production
 
 
@@ -43,4 +45,5 @@ def recent_edits(request):
 
     return render(request, 'recent_edits.html', {
         'edits_page': edits_page,
+        'pagination_controls': PaginationControls(edits_page, reverse('recent_edits')),
     })

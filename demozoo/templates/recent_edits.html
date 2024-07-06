@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load compress %}
+{% load compress laces %}
 
 {% block html_title %}Recent edits - Demozoo{% endblock %}
 {% block base_main %}
@@ -7,7 +7,5 @@
 
     {% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}
 
-    {% with edits_page as page %}
-        {% include "shared/pagination_links.html" %}
-    {% endwith %}
+    {% component pagination_controls %}
 {% endblock %}
