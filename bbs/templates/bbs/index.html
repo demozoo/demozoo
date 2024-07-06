@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load laces %}
 
 {% block html_title %}BBSes - Demozoo{% endblock %}
 
@@ -16,7 +17,7 @@
     {% include "bbs/_list.html" with bbses=page.object_list %}
     <br />
 
-    {% include "shared/pagination_links.html" %}
+    {% component pagination_controls %}
 
 </div>
 
