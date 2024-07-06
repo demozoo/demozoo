@@ -19,6 +19,7 @@ from bbs.forms import (
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.utils.pagination import PaginationControls
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from search.indexing import index as search_index
 
@@ -31,6 +32,7 @@ def index(request):
 
     return render(request, 'bbs/index.html', {
         'page': page,
+        'pagination_controls': PaginationControls(page, reverse('bbses')),
     })
 
 
