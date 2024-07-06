@@ -14,6 +14,7 @@ from demoscene.forms.releaser import (
 )
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 
 
@@ -27,6 +28,7 @@ def index(request):
 
     return render(request, 'sceners/index.html', {
         'nick_page': nick_page,
+        'pagination_controls': PaginationControls(nick_page, reverse('sceners')),
     })
 
 

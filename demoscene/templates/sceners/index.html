@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags compress laces %}
 
 
 {% block html_title %}Sceners - Demozoo{% endblock %}
@@ -22,8 +22,6 @@
             </li>
         {% endfor %}
     </ul>
-    
-    {% with nick_page as page %}
-        {% include "shared/pagination_links.html" %}
-    {% endwith %}
+
+    {% component pagination_controls %}
 {% endblock %}
