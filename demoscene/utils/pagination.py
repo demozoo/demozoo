@@ -1,4 +1,15 @@
+from django.http import QueryDict
+
 from laces.components import Component
+
+
+def extract_query_params(query_dict, params):
+    new_query_dict = QueryDict('', mutable=True)
+    for param in params:
+        if param in query_dict:
+            new_query_dict.setlist(param, query_dict.getlist(param))
+
+    return new_query_dict
 
 
 class PageLink:
@@ -12,12 +23,15 @@ class PageLink:
 class PaginationControls(Component):
     template_name = "shared/pagination_controls.html"
 
-    def __init__(self, page, base_url):
+    def __init__(self, page, base_url, query_dict=None):
         self.page = page
         self.base_url = base_url
+        self.query_dict = query_dict or QueryDict('')
 
     def get_page_url(self, page_num):
-        return "%s?page=%d" % (self.base_url, page_num)
+        new_query_dict = self.query_dict.copy()
+        new_query_dict.setlist('page', [page_num])
+        return "%s?%s" % (self.base_url, new_query_dict.urlencode())
 
     def get_context_data(self, parent_context=None):
         links = []
