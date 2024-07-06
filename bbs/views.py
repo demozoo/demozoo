@@ -48,6 +48,7 @@ def tagged(request, tag_name):
     return render(request, 'bbs/tagged.html', {
         'tag': tag,
         'page': page,
+        'pagination_controls': PaginationControls(page, reverse('bbses_tagged', args=[tag_name])),
     })
 
 
