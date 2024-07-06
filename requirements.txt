@@ -25,6 +25,7 @@ coverage>=6.0,<7.0
 django-dotenv>=1.4.2,<2.0
 ansipants>=0.1.2,<1.0
 europarse>=1.0.0,<2
+laces>=0.1.1,<0.2
 
 # needed to keep django-compressor happy when analysing django-filter templates
 django-crispy-forms>=1.13.0,<1.14

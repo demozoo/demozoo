@@ -10,10 +10,10 @@ ul.pagination {
         float: left;
         line-height: 24px;
         text-align: center;
+        width: 24px;
 
         &.current {
             background-color: white;
-            width: 24px;
             font-weight: bold;
             color: #444;
         }

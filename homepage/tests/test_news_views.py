@@ -19,9 +19,6 @@ def get_test_image():
 
 class TestNewsIndex(MediaTestMixin, TestCase):
     def setUp(self):
-        User.objects.create_user(username='testuser', password='12345')
-        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
-
         self.image = NewsImage.objects.create(image=get_test_image())
         self.news_story = NewsStory.objects.create(
             image=self.image,
@@ -44,6 +41,23 @@ class TestNewsIndex(MediaTestMixin, TestCase):
         response = self.client.get('/news/%d/' % self.news_story.id)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Those are the headlines")
+
+
+class TestPagination(MediaTestMixin, TestCase):
+    def setUp(self):
+        self.image = NewsImage.objects.create(image=get_test_image())
+        for i in range(200):
+            NewsStory.objects.create(
+                image=self.image,
+                title="News story %d" % i,
+                text="it's even more newsworthy than the others",
+                is_public=True
+            )
+
+    def test_get(self):
+        response = self.client.get('/news/', {'page': 5})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<li>…</li>", html=True)
 
 
 class TestAddNews(MediaTestMixin, TestCase):

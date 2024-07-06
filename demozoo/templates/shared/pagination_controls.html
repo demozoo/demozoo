@@ -1,0 +1,13 @@
+{% if links %}
+<ul class="pagination">
+    {% for link in links %}
+        <li{% if link.is_current %} class="current"{% endif %}>
+            {% if link.url %}
+                <a href="{{ link.url }}"{% if link.title %} title="Previous page"{% endif %}>{{ link.label }}</a>
+            {% else %}
+                {{ link.label }}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}

@@ -5,6 +5,7 @@ from django.urls import reverse
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 
+from demoscene.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory
@@ -26,6 +27,7 @@ def news(request):
 
     return render(request, 'homepage/news/index.html', {
         'news_stories': news_stories_page,
+        'pagination_controls': PaginationControls(news_stories_page, reverse('news'))
     })
 
 
@@ -42,6 +44,7 @@ def news_story(request, news_story_id):
 
     return render(request, 'homepage/news/index.html', {
         'news_stories': news_stories_page,
+        'pagination_controls': PaginationControls(news_stories_page, reverse('news'))
     })
 
 

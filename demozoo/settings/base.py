@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'crispy_forms',
+    'laces',
 
     'demoscene',
     'parties',
