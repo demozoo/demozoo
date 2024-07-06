@@ -13,6 +13,7 @@ from read_only_mode import writeable_site_required
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 
 
@@ -25,6 +26,7 @@ def index(request):
 
     return render(request, 'groups/index.html', {
         'nick_page': nick_page,
+        'pagination_controls': PaginationControls(nick_page, reverse('groups')),
     })
 
 

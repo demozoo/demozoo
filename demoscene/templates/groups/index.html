@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress static %}
+{% load demoscene_tags compress static laces %}
 
 
 {% block html_title %}Groups - Demozoo{% endblock %}
@@ -15,7 +15,6 @@
 
         <h1 class="page__title">Groups</h1>
     </header>
-
 
     <ul class="list list--results">
         {% for nick in nick_page.object_list %}
@@ -35,11 +34,7 @@
         {% endfor %}
     </ul>
     <br />
-    {% with nick_page as page %}
-        {% include "shared/pagination_links.html" %}
-    {% endwith %}
-
+    {% component pagination_controls %}
 </div>
 
-    
 {% endblock %}
