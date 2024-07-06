@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import PaginationControls
 
 
 def index(request):
@@ -28,4 +30,5 @@ def show(request, user_id):
     return render(request, 'users/show.html', {
         'user': user,
         'edits_page': edits_page,
+        'pagination_controls': PaginationControls(edits_page, reverse('user', args=[user_id])),
     })
