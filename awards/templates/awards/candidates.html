@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load demoscene_tags %}
+{% load demoscene_tags laces %}
 
 {% block html_title %}{{ event.name }} - {{ category.name }} candidates - Demozoo{% endblock %}
 
@@ -16,6 +16,6 @@
     {% endif %}
 {% endwith %}
 
-{% include "shared/pagination_links.html" with page=production_page %}
+{% component pagination_controls %}
 
 {% endblock %}
