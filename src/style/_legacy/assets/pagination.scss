@@ -10,7 +10,7 @@ ul.pagination {
         float: left;
         line-height: 24px;
         text-align: center;
-        width: 24px;
+        width: 32px;
 
         &.current {
             background-color: white;
@@ -21,7 +21,7 @@ ul.pagination {
         a {
             background-color: white;
             display: block;
-            width: 24px;
+            width: 32px;
 
             &:hover {
                 background-color: #ddd;
