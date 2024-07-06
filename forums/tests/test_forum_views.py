@@ -125,7 +125,7 @@ class TestDeletePost(TestCase):
             {'yes': 'yes'},
         )
         self.assertTrue(Post.objects.filter(id=self.post.id).exists())
-        self.assertRedirects(response, '/forums/post/%d/' % self.post.id)
+        self.assertRedirects(response, '/forums/post/%d/#post-%d' % (self.post.id, self.post.id))
 
     def test_delete_topic_when_last_post_deleted(self):
         self.post = self.topic.posts.first()
@@ -166,7 +166,7 @@ class TestEditPost(TestCase):
             '/forums/post/%d/edit/' % self.post.id,
             {'body': "it's only somewhat broken"},
         )
-        self.assertRedirects(response, '/forums/post/%d/' % self.post.id)
+        self.assertRedirects(response, '/forums/post/%d/#post-%d' % (self.post.id, self.post.id))
         self.post.refresh_from_db()
         self.assertEqual(self.post.body, "it's only somewhat broken")
 
@@ -189,6 +189,6 @@ class TestEditPost(TestCase):
             '/forums/post/%d/edit/' % self.post.id,
             {'body': "it's only somewhat broken"},
         )
-        self.assertRedirects(response, '/forums/post/%d/' % self.post.id)
+        self.assertRedirects(response, '/forums/post/%d/#post-%d' % (self.post.id, self.post.id))
         self.post.refresh_from_db()
         self.assertEqual(self.post.body, "it's only a bit broken")

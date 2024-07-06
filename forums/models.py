@@ -33,7 +33,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('forums_post', args=[str(self.id)])
+        return "%s#post-%d" % (reverse('forums_post', args=[str(self.id)]), self.id)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

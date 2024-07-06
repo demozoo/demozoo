@@ -26,7 +26,7 @@
                         </div>
                     {% endif %}
                     <b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
-                    <a href="{{ post.get_absolute_url }}#post-{{ post.id }}" title="permalink">#</a>
+                    <a href="{{ post.get_absolute_url }}" title="Permalink">#</a>
                     <p>{{ post.body|urlize|linebreaks }}</p>
                 </div>
             {% endfor %}
