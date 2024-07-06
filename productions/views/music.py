@@ -6,6 +6,7 @@ class MusicIndexView(IndexView):
     supertype = 'music'
     template = 'music/index.html'
     filter_form_class = MusicIndexFilterForm
+    url_name = 'musics'
 
 
 class MusicShowView(ShowView):

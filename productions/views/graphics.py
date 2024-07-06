@@ -6,6 +6,7 @@ class GraphicsIndexView(IndexView):
     supertype = 'graphics'
     template = 'graphics/index.html'
     filter_form_class = GraphicsIndexFilterForm
+    url_name = 'graphics'
 
 
 class GraphicsShowView(ShowView):

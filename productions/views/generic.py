@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from read_only_mode import writeable_site_required
@@ -14,13 +15,14 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import extract_query_params, PaginationControls
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
 
 
 class IndexView(View):
-    # subclasses provide supertype, filter_form_class, template
+    # subclasses provide supertype, filter_form_class, template, url_name
 
     def get(self, request):
         queryset = Production.objects.filter(supertype=self.supertype)
@@ -53,6 +55,11 @@ class IndexView(View):
             'menu_section': "productions",
             'asc': asc,
             'form': form,
+            'pagination_controls': PaginationControls(
+                production_page,
+                reverse(self.url_name),
+                extract_query_params(request.GET, ['order', 'dir'] + list(form.fields.keys()))
+            )
         })
 
 

@@ -39,6 +39,7 @@ class ProductionIndexView(IndexView):
     supertype = 'production'
     template = 'productions/index.html'
     filter_form_class = ProductionIndexFilterForm
+    url_name = 'productions'
 
 
 def tagged(request, tag_name):
