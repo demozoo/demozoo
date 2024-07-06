@@ -12,6 +12,7 @@ from read_only_mode import writeable_site_required
 
 from awards.models import Event, Nomination, Recommendation
 from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import PaginationControls
 from productions.models import Production, Screenshot
 
 
@@ -178,4 +179,5 @@ def candidates(request, event_slug, category_slug):
         'event': event,
         'category': category,
         'production_page': production_page,
+        'pagination_controls': PaginationControls(production_page, reverse('awards_candidates', args=[event_slug, category_slug])),
     })
