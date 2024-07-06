@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags compress laces %}
 
 {% block base_main %}
 <header class="page__header">
@@ -19,30 +19,6 @@
         {% include "homepage/news/_news_story.html" %}
     {% endfor %}
 
-
-
-    {% if news_stories.paginator.num_pages > 1 %}
-        <ul class="pagination">
-            {% if news_stories.has_previous %}
-                <li>
-                    <a href="{% url 'news' %}?page={{ news_stories.previous_page_number }}" title="Previous page">&laquo;</a>
-                </li>
-            {% endif %}
-
-            {% for i in news_stories.paginator.page_range %}
-                {% if i == news_stories.number %}
-                    <li class="current">{{ i }}</li>
-                {% else %}
-                    <li><a href="{% url 'news' %}?page={{ i }}">{{ i }}</a></li>
-                {% endif %}
-            {% endfor %}
-
-            {% if news_stories.has_next %}
-                <li>
-                    <a href="{% url 'news' %}?page={{ news_stories.next_page_number }}" title="Next page">&raquo;</a>
-                </li>
-            {% endif %}
-        </ul>
-    {% endif %}
+    {% component pagination_controls %}
 </div>
 {% endblock %}
