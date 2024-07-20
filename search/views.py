@@ -38,7 +38,7 @@ def search(request):
 def live_search(request):
     query = request.GET.get('q')
     category = request.GET.get('category')
-    if query:
+    if query and '\x00' not in query:
         clean_query = generate_search_title(query)
 
         # start with an empty queryset

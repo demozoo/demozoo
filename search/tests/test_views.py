@@ -305,3 +305,7 @@ class TestLiveSearch(TestCase):
     def test_no_query(self):
         response = self.client.get('/search/live/')
         self.assertEqual(response.status_code, 200)
+
+    def test_query_with_null_bytes(self):
+        response = self.client.get('/search/live/?q=f%00')
+        self.assertEqual(response.status_code, 200)
