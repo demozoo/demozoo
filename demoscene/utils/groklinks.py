@@ -509,28 +509,34 @@ class MobygamesDeveloper(UrlPattern):
     pattern = '/developer/sheet/view/developerId,<int>/'
 
 
-asciiarena = Site("AsciiArena", url='http://www.asciiarena.com/')
+asciiarena = Site("AsciiArena", url='https://asciiarena.se/')
 
 
 class AsciiarenaArtist(AbstractBaseUrl):
     site = asciiarena
-    canonical_format = "http://www.asciiarena.com/info_artist.php?artist=%s&sort_by=filename"
+    canonical_format = "https://asciiarena.se/artist/%s"
     tests = [
         query_path_match('/info_artist.php', 'artist'),
+        path_regex_match(r'/artist/(.+)'),
     ]
 
 
 class AsciiarenaCrew(AbstractBaseUrl):
     site = asciiarena
-    canonical_format = "http://www.asciiarena.com/info_crew.php?crew=%s&sort_by=filename"
+    canonical_format = "https://asciiarena.se/crew/%s"
     tests = [
         query_path_match('/info_crew.php', 'crew'),
+        path_regex_match(r'/crew/(.+)'),
     ]
 
 
 class AsciiarenaRelease(UrlPattern):
     site = asciiarena
-    pattern = "/info_release.php?filename=<str>"
+    canonical_format = "https://asciiarena.se/release/%s"
+    tests = [
+        query_path_match('/info_release.php', 'filename'),
+        path_regex_match(r'/release/(.+)'),
+    ]
 
 
 scenesat = Site("SceneSat", long_name="SceneSat Radio", url='https://scenesat.com/')
@@ -1873,7 +1879,6 @@ ARCHIVED_LINK_TYPES = [
     'LanyrdEvent',
     'GooglePlusPage', 'GooglePlusEvent',
     'CappedVideo',
-    'AsciiarenaArtist', 'AsciiarenaCrew', 'AsciiarenaRelease',
 ]
 
 
