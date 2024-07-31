@@ -37,6 +37,11 @@ The site will now be available at http://localhost:8000/.
 
 ### Docker
 
+> [!WARNING]
+> Installation under Docker is experimental and work in progress.
+> Currently front-end assets (CSS and SVG icons) are not built automatically -
+> these must be built manually after installation.
+
 After installing [Docker Desktop](https://www.docker.com/products/docker-desktop), you can bring up Demozoo by typing the following:
 
 ```bash
