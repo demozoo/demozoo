@@ -6,9 +6,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
-# RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-#     apt-get install -y nodejs && \
-#     npm install -g npm@latest
 
 COPY requirements.txt ./
 RUN pip install -r requirements.txt && rm requirements.txt
