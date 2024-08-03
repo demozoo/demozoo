@@ -15,9 +15,6 @@ do
   sleep 5
 done
 
-# mkdir -p ./static_built/images
-# npm run build
-# npm run watch &
 
 echo "Running the server on http://localhost:8000"
 
