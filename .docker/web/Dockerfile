@@ -12,8 +12,6 @@ RUN pip install -r requirements.txt && rm requirements.txt
 
 COPY ./.docker/web/local.py ./demozoo/settings/local.py
 
-# COPY package*.json ./
-# RUN npm install --no-save
 
 EXPOSE 8000
 
