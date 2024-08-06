@@ -1640,6 +1640,21 @@ class SixteenColorsGroup(UrlPattern):
     pattern = '/group/<slug>'
 
 
+class SixteenColorsMag(UrlPattern):
+    site = sixteencolors
+    pattern = '/mag/<slug>'
+
+
+class SixteenColorsContent(UrlPattern):
+    site = sixteencolors
+    pattern = '/tags/content/<slug>'
+
+
+class SixteenColorsMagazine(UrlPattern):
+    site = sixteencolors
+    pattern = '/tags/magazine/<slug>'
+
+
 shadertoy = Site("Shadertoy", url='https://www.shadertoy.com/')
 
 
@@ -1804,8 +1819,8 @@ RELEASER_LINK_TYPES = [
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
-    SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
-    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
+    SixteenColorsArtist, SixteenColorsGroup, SixteenColorsContent, SixteenColorsMagazine, ShadertoyUser, 
+    Tic80Dev, Pico8User, LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1815,7 +1830,7 @@ PRODUCTION_LINK_TYPES = [
     AsciiarenaRelease, KestraBitworldRelease, StonishDisk, ArtcityImage,
     ScenesatTrack, ModlandFile, SoundcloudTrack, HearthisTrack, BandcampTrack, CsdbMusic, NectarineSong,
     ModarchiveModule, BitjamSong, PushnpopProduction, SpotifyTrack, Plus4WorldProduction,
-    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack, ShadertoyShader,
+    SpeccyPlProduction, AtarikiEntry, SixteenColorsPack, SixteenColorsMag, ShadertoyShader,
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
@@ -1863,7 +1878,7 @@ PARTY_SERIES_LINK_TYPES = [
 BBS_LINK_TYPES = [
     PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group, TelnetBBSGuideBBS,
     TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
-    SpeccyWikiPage, AtarikiEntry, InstagramAccount,
+    SpeccyWikiPage, AtarikiEntry, SixteenColorsContent, InstagramAccount,
     WaybackMachinePage, BaseUrl
 ]
 
