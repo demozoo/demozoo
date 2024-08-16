@@ -63,6 +63,8 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
+USE_TZ = False
+
 STATIC_ROOT = os.path.join(FILEROOT, "static")
 STATIC_URL = "/static/"
 STATICFILES_FINDERS = (
