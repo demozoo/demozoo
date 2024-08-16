@@ -5,13 +5,22 @@ Markdown>=3.0,<4
 Pillow>=10.0.1,<11
 boto3>=1.14,<1.15
 celery>=5.2,<5.3
-django-compressor>=3,<4
-django-cors-headers>=3.7,<4
-django-filter>=21.1,<22.0
-django-storages>=1.12,<1.13
-django-taggit>=2.1,<2.2
-django-treebeard>=4.5,<4.6
-djangorestframework>=3.12,<3.13
+
+# django-compressor 4.5 drops support for Django <4.2
+django-compressor>=4.4,<4.5
+
+django-cors-headers>=4.4,<5
+
+# django-filter 24.1 drops support for Django <4.2
+django-filter>=23.5,<24.0
+
+django-storages>=1.13,<1.14
+
+# django-taggit 4.0 drops support for Django <4.1
+django-taggit>=3.1,<4.0
+
+django-treebeard>=4.7,<4.8
+djangorestframework>=3.15,<3.16
 djangorestframework-jsonp==1.0.2
 psycopg2>=2.5.4,<3.0
 pyrecoil>=0.3.1,<0.4
