@@ -390,9 +390,10 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
         self.model = SoundtrackLink
         if instance is None:
             self.instance = Production()
+            qs = SoundtrackLink.objects.none()
         else:
             self.instance = instance
-        qs = self.instance.soundtrack_links.order_by('position')
+            qs = self.instance.soundtrack_links.order_by('position')
         super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):
@@ -442,9 +443,10 @@ class BasePackMemberFormSet(BaseModelFormSet):
         self.model = PackMember
         if instance is None:
             self.instance = Production()
+            qs = PackMember.objects.none()
         else:
             self.instance = instance
-        qs = self.instance.pack_members.order_by('position')
+            qs = self.instance.pack_members.order_by('position')
         super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):

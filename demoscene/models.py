@@ -312,8 +312,11 @@ class Nick(ModelWithPrefetchSnooping, models.Model):
         if self._has_written_nick_variant_list:
             return self._nick_variant_list
         else:
-            variant_names = [variant.name for variant in self.variants.exclude(name__in=[self.name, self.abbreviation])]
-            return ", ".join(variant_names)
+            if self.pk is None:
+                return ""
+            else:
+                variant_names = [variant.name for variant in self.variants.exclude(name__in=[self.name, self.abbreviation])]
+                return ", ".join(variant_names)
 
     def set_nick_variant_list(self, new_list):
         self._nick_variant_list = new_list
