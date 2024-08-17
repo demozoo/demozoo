@@ -1,7 +1,7 @@
 import datetime
 
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from mirror.actions import FileTooBig, fetch_link
 from mirror.models import ArchiveMember, Download

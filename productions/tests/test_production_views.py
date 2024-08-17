@@ -8,7 +8,7 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from awards.models import Event, Nomination
 from demoscene.models import BlacklistedTag, Edit, Nick, Releaser

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
-from mock import patch
+from unittest.mock import patch
 
 from demoscene.models import Edit, Releaser
 from platforms.models import Platform

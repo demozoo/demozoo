@@ -1,5 +1,5 @@
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from demoscene.models import Releaser
 from janeway.tasks import automatch_all_authors, automatch_author, import_screenshot
