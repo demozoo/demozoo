@@ -29,4 +29,4 @@ crispy-bootstrap3>=2024.1,<2025
 
 freezegun>=1.2.2,<2
 requests>=2.22,<3.0
-responses>=0.10,<0.11
+responses>=0.25,<0.26
