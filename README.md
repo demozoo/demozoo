@@ -49,7 +49,7 @@ cp .docker/.env.example .docker/.env
 docker-compose up
 ```
 
-This will download the [`postgres:10-bullseye`](https://hub.docker.com/layers/library/postgres/10-bullseye/images/sha256-597b873ddd348f68dc0633ff13e6cb02f9006c190267d781c25f2f31df1d4dc2) and [`python:3.10`](https://hub.docker.com/layers/library/python/3.10/images/sha256-1c26c25390307b64e8ff73e7edf34b4fbeac59d41da41c08da28dc316a721899?context=explore) images and bootstrap the database with data from the latest Demozoo export.
+This will download the [`postgres:14-bullseye`](https://hub.docker.com/layers/library/postgres/14-bullseye/images/sha256-95c6dbe36bbe193c1eedcbed98a643cc5b92295a20f4c768d1335ecab39114d8?context=explore) and [`python:3.10`](https://hub.docker.com/layers/library/python/3.10/images/sha256-1c26c25390307b64e8ff73e7edf34b4fbeac59d41da41c08da28dc316a721899?context=explore) images and bootstrap the database with data from the latest Demozoo export.
 
 Booting up the first time will take quite a while, as the database import is large, so be patient. The error messages logged from `demozoo-web` during the import can be ignored. When the import is done, `Running the server on http://localhost:8000` should be printed to the console. You should then be able to visit `http://localhost:8000` in a web browser of your choice.
 
