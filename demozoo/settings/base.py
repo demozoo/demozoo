@@ -26,7 +26,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('POSTGRES_DB_NAME', 'demozoo'),
         'USER': os.getenv('POSTGRES_USER', 'demozoo'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),

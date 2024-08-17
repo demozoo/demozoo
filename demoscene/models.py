@@ -488,10 +488,10 @@ class NickVariant(models.Model):
                     ('score', '''
                         SELECT COUNT(*) FROM demoscene_membership
                         WHERE demoscene_membership.member_id = demoscene_releaser.id
-                        AND demoscene_membership.group_id IN %s
+                        AND demoscene_membership.group_id = ANY(%s)
                     '''),
                 ])
-                select_params = [tuple(group_ids)]
+                select_params = [list(group_ids)]
             elif group_names:
                 # Add a 'score' field that prioritises releasers that are members of a group with one of the given names
                 select = SortedDict([
@@ -503,10 +503,10 @@ class NickVariant(models.Model):
                             group_nick.id = group_nickvariant.nick_id
                         )
                         WHERE demoscene_membership.member_id = demoscene_releaser.id
-                        AND LOWER(group_nickvariant.name) IN %s
+                        AND LOWER(group_nickvariant.name) = ANY(%s)
                     '''),
                 ])
-                select_params = [tuple(group_names)]
+                select_params = [list(group_names)]
             elif member_names:
                 # Add a 'score' field that prioritises groups that have members with one of the given names
                 select = SortedDict([
@@ -518,10 +518,10 @@ class NickVariant(models.Model):
                             member_nick.id = member_nickvariant.nick_id
                         )
                         WHERE demoscene_membership.group_id = demoscene_releaser.id
-                        AND LOWER(member_nickvariant.name) IN %s
+                        AND LOWER(member_nickvariant.name) = ANY (%s)
                     '''),
                 ])
-                select_params = [tuple(member_names)]
+                select_params = [list(member_names)]
             else:
                 select = SortedDict([
                     ('score', '0'),

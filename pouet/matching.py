@@ -13,7 +13,7 @@ def get_pouetable_prod_types():
     gfx_prod_type = ProductionType.objects.get(internal_name='graphics')
     exe_gfx_prod_type = ProductionType.objects.get(internal_name='exe-graphics')
 
-    return tuple(ProductionType.objects.exclude(
+    return list(ProductionType.objects.exclude(
         Q(path__startswith=music_prod_type.path) |
         (Q(path__startswith=gfx_prod_type.path) & ~Q(path__startswith=exe_gfx_prod_type.path))
     ).values_list('id', flat=True))
@@ -28,7 +28,7 @@ def get_match_data(releaser, pouetable_prod_types=None):
         for param in releaser.external_links.filter(link_class='PouetGroup').values_list('parameter', flat=True)
     ]
 
-    nick_ids = tuple(releaser.nicks.values_list('id', flat=True))
+    nick_ids = list(releaser.nicks.values_list('id', flat=True))
     dz_prod_candidates_query = Production.objects.raw("""
         SELECT DISTINCT
             "productions_production"."id", "productions_production"."title",
@@ -41,13 +41,13 @@ def get_match_data(releaser, pouetable_prod_types=None):
         WHERE
             (
                 productions_production.id in (
-                    select production_id from productions_production_author_nicks where nick_id in %s
+                    select production_id from productions_production_author_nicks where nick_id = ANY(%s)
                 )
                 OR productions_production.id in (
-                    select production_id from productions_production_author_affiliation_nicks where nick_id in %s
+                    select production_id from productions_production_author_affiliation_nicks where nick_id = ANY(%s)
                 )
             )
-            AND "productions_production_types"."productiontype_id" IN %s
+            AND "productions_production_types"."productiontype_id" = ANY(%s)
         ORDER BY
             productions_production.sortable_title
     """, [nick_ids, nick_ids, pouetable_prod_types])

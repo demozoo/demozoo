@@ -566,7 +566,7 @@ class SameNamedProdsBySameReleaser(StaffOnlyMixin, Report):
                     )
                 )
             ORDER BY productions_production.sortable_title
-        ''', [self.exclusion_name])
+        ''')
 
         context.update({
             'productions': productions,
