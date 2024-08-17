@@ -8,7 +8,8 @@ RUN apt-get update && \
 
 
 COPY requirements.txt ./
-RUN pip install -r requirements.txt && rm requirements.txt
+COPY requirements-common.txt ./
+RUN pip install -r requirements.txt && rm requirements.txt requirements-common.txt
 
 COPY ./.docker/web/local.py ./demozoo/settings/local.py
 

@@ -1,4 +1,4 @@
-FROM postgres:10-bullseye as build
+FROM postgres:14-bullseye as build
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget gzip && \
@@ -8,6 +8,6 @@ RUN apt-get update && \
 RUN wget http://data.demozoo.org/demozoo-export.sql.gz -O /tmp/demozoo-export.sql.gz && \
     gunzip -f /tmp/demozoo-export.sql.gz 
 
-FROM postgres:10-bullseye
+FROM postgres:14-bullseye
 
 COPY --from=build /tmp/demozoo-export.sql /tmp/demozoo-export.sql
