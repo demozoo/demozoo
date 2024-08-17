@@ -1,5 +1,14 @@
-<ul>
-    {% for url, label in menu_items %}
-        <li><a href="{{ url }}">{{ label }}</a></li>
+<ul class="login_links">
+    {% for menu_item in menu_items %}
+        <li>
+            {% if menu_item.post %}
+                <form action="{{ menu_item.url }}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">{{ menu_item.label }}</button>
+                </form>
+            {% else %}
+                <a href="{{ menu_item.url }}">{{ menu_item.label }}</a>
+            {% endif %}
+        </li>
     {% endfor %}
 </ul>

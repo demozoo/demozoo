@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django import template
 from django.urls import Resolver404, resolve, reverse
 
@@ -37,30 +39,33 @@ class NavActiveNode(template.Node):
             return ""
 
 
+MenuItem = namedtuple('MenuItem', ['url', 'label', 'post'], defaults=[False])
+
+
 @register.inclusion_tag('shared/user_menu.html', takes_context=True)
 def user_menu(context):
     user = context['request'].user
 
     menu_items = [
-        (reverse('account_change_password'), "Change password"),
+        MenuItem(reverse('account_change_password'), "Change password"),
     ]
 
     for event in Event.active_for_user(user):
         menu_items.append(
-            (reverse('award', args=(event.slug,)), event.name),
+            MenuItem(reverse('award', args=(event.slug,)), event.name),
         )
 
     menu_items.append(
-        (reverse('user', args=(user.id, )), "Activity"),
+        MenuItem(reverse('user', args=(user.id, )), "Activity"),
     )
 
     if user.is_staff:
         menu_items.append(
-            (reverse('maintenance:index'), "Maintenance"),
+            MenuItem(reverse('maintenance:index'), "Maintenance"),
         )
 
     menu_items.append(
-        (reverse('log_out'), "Log out"),
+        MenuItem(reverse('log_out'), "Log out", post=True),
     )
 
     return {
