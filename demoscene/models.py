@@ -686,9 +686,9 @@ class Edit(models.Model):
         return edits
 
     class Meta:
-        index_together = [
-            ['focus_content_type', 'focus_object_id'],
-            ['focus2_content_type', 'focus2_object_id'],
+        indexes = [
+            models.Index(fields=['focus_content_type', 'focus_object_id']),
+            models.Index(fields=['focus2_content_type', 'focus2_object_id']),
         ]
 
 
