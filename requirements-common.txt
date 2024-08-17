@@ -24,7 +24,8 @@ europarse>=1.0.0,<2
 laces>=0.1.1,<0.2
 
 # needed to keep django-compressor happy when analysing django-filter templates
-django-crispy-forms>=1.13.0,<1.14
+django-crispy-forms>=2.3,<2.4
+crispy-bootstrap3>=2024.1,<2025
 
 freezegun>=1.2.2,<2
 mock>=3.0,<4.0

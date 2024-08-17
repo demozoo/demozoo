@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'crispy_forms',
+    'crispy_bootstrap3',
     'laces',
 
     'demoscene',
@@ -304,3 +305,6 @@ CORS_ALLOW_METHODS = ['GET']
 SITE_IS_WRITEABLE = os.getenv('SITE_IS_WRITEABLE', '1') != '0'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
