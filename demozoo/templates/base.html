@@ -87,14 +87,14 @@
                         <div class="login_status logged_in">
                             {{ request.user.username }}
                         </div>
-                        <div class="login_links">
+                        <div class="login_menu">
                             {% user_menu %}
                         </div>
                         {% else %}
                         <div class="login_status logged_out">
                             Not logged in
                         </div>
-                        <div class="login_links">
+                        <div class="login_menu">
                             <form class="login__form login__form--compact" action="{% url 'log_in' %}" method="post">
                                 {% csrf_token %}
                                 {{ global_login_form.as_p }}
@@ -103,9 +103,9 @@
                                 {% endblock %}
                                 <input type="submit" value="Log in" />
                             </form>
-                            <ul>
-                                <li><a href="{% url 'user_signup' %}">Register new account</a>
-                                    <a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
+                            <ul class="login_links">
+                                <li><a href="{% url 'user_signup' %}">Register new account</a></li>
+                                <li><a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
                             </ul>
                             <div class="login_sceneid">
                                 ...or log in with
@@ -114,7 +114,7 @@
                         </div>
                         {% endif %}
                     </div>
-                    <script type="text/javascript">$('#login_status_panel .login_links').hide();</script>
+                    <script type="text/javascript">$('#login_status_panel .login_menu').hide();</script>
                 {% endif %}
                 {% endblock %}
 

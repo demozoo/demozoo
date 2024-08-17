@@ -168,7 +168,7 @@ class TestLogout(TestCase):
         self.client.login(username='testuser', password='12345')
 
     def test_logout(self):
-        response = self.client.get('/account/logout/')
+        response = self.client.post('/account/logout/')
         self.assertRedirects(response, '/')
 
         response = self.client.get('/account/')

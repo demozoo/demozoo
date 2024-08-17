@@ -69,33 +69,33 @@ function applyGlobalBehaviours(context) {
 }
 
 $(function() {
-    var loginLinks = $('#login_status_panel .login_links');
+    var loginMenu = $('#login_status_panel .login_menu');
     
-    loginLinks.hide();
-    var loginLinksVisible = false;
+    loginMenu.hide();
+    var loginMenuVisible = false;
     
-    function hideLoginLinksOnBodyClick(e) {
-        if (loginLinksVisible && !loginLinks.has(e.target).length) {
-            loginLinks.hide(); loginLinksVisible = false;
+    function hideLoginMenuOnBodyClick(e) {
+        if (loginMenuVisible && !loginMenu.has(e.target).length) {
+            loginMenu.hide(); loginMenuVisible = false;
         }
     }
-    function showLoginLinks() {
-        loginLinks.slideDown(100);
-        loginLinksVisible = true;
-        $('body').bind('click', hideLoginLinksOnBodyClick);
+    function showLoginMenu() {
+        loginMenu.slideDown(100);
+        loginMenuVisible = true;
+        $('body').bind('click', hideLoginMenuOnBodyClick);
     }
-    function hideLoginLinks() {
-        loginLinks.hide();
-        loginLinksVisible = false;
-        $('body').unbind('click', hideLoginLinksOnBodyClick);
+    function hideLoginMenu() {
+        loginMenu.hide();
+        loginMenuVisible = false;
+        $('body').unbind('click', hideLoginMenuOnBodyClick);
     }
     
     $('#login_status_panel .login_status').wrapInner('<a href="javascript:void(0)"></a>');
     $('#login_status_panel .login_status a').click(function() {
-        if (loginLinksVisible) {
-            hideLoginLinks();
+        if (loginMenuVisible) {
+            hideLoginMenu();
         } else {
-            showLoginLinks();
+            showLoginMenu();
         }
         return false;
     });

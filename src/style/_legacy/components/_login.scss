@@ -1,4 +1,4 @@
-.login_links {
+.login_menu {
 
     input[type=text],
     input[type=password] {
@@ -41,14 +41,14 @@
         font-weight: bold;
     }
 
-    .login_links {
+    .login_menu {
         background-color: #e8e8e8;
         border-top: 1px solid #5d5f5f;
         position: absolute;
         width: 169px;
         z-index: 10;
 
-        form {
+        form.login__form {
             border-bottom: 1px solid #5e5f5f;
             padding: 8px;
             color: #5e5f5f;
@@ -59,17 +59,23 @@
             }
         }
 
-        ul {
+        ul.login_links {
 
             li {
                 border-bottom: 1px solid #5e5f5f;
 
-                a {
-                    display: block;
-                    text-decoration: none;
+                a, button {
+                    background: none;
+                    border: none;
                     color: #5e5f5f;
+                    cursor: pointer;
+                    display: block;
                     line-height: 24px;
-                    padding-left: 8px;
+                    padding: 0;
+                    text-indent: 8px;
+                    text-decoration: none;
+                    text-align: left;
+                    width: 100%;
 
                     &:hover {
                         background-color: #d3d3d3;
