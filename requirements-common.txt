@@ -16,7 +16,7 @@ djangorestframework-jsonp==1.0.2
 psycopg>=3.2.1,<3.3
 pyrecoil>=0.3.1,<0.4
 redis>=5.0.8,<5.1
-unidecode==0.04.14
+unidecode>=1.3.8,<1.4
 bcrypt>=3.1,<3.2  # 3.2 drops py2.7
 django-dotenv>=1.4.2,<2.0
 ansipants>=0.1.2,<1.0
