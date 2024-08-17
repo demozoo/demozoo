@@ -16,6 +16,10 @@ class Topic(models.Model):
 
     reply_count = models.IntegerField(default=0)
     residue = models.BooleanField(default=False)
+    locked = models.BooleanField(default=False)
+
+    def user_can_reply(self, user):
+        return user.is_authenticated and (not self.locked or user.is_staff)
 
     def __str__(self):
         return self.title

@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -62,11 +63,16 @@ def topic(request, topic_id):
         # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
         posts_page = paginator.page(paginator.num_pages)
 
+    if settings.SITE_IS_WRITEABLE and topic.user_can_reply(request.user):
+        form = ReplyForm()
+    else:
+        form = None
+
     return render(request, 'forums/topic.html', {
         'menu_section': 'forums',
         'topic': topic,
         'posts': posts_page,
-        'form': ReplyForm(),
+        'form': form,
         'pagination_controls': PaginationControls(posts_page, topic.get_absolute_url())
     })
 
@@ -83,11 +89,16 @@ def post(request, post_id):
     page = int(post_offset / POSTS_PER_PAGE) + 1
     posts_page = paginator.page(page)
 
+    if settings.SITE_IS_WRITEABLE and topic.user_can_reply(request.user):
+        form = ReplyForm()
+    else:
+        form = None
+
     return render(request, 'forums/topic.html', {
         'menu_section': 'forums',
         'topic': topic,
         'posts': posts_page,
-        'form': ReplyForm(),
+        'form': form,
         'pagination_controls': PaginationControls(posts_page, topic.get_absolute_url())
     })
 
@@ -97,6 +108,10 @@ def post(request, post_id):
 def topic_reply(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     post = Post(topic=topic, user=request.user)
+
+    if topic.locked and not request.user.is_staff:
+        messages.error(request, "This topic is locked")
+        return redirect(topic.get_absolute_url())
 
     if request.POST:
         form = ReplyForm(request.POST, instance=post)

@@ -34,7 +34,17 @@
 
         {% component pagination_controls %}
 
-        {% if form and site_is_writeable %}
+        {% if topic.locked %}
+            {% if user.is_staff %}
+                <p><strong>This topic is locked</strong> (but you can reply anyway because you're an admin).</p>
+            {% else %}
+                <p><strong>This topic is locked.</strong></p>
+            {% endif %}
+        {% elif not user.is_authenticated %}
+            <p><a href="{% url 'log_in' %}?next={{ topic.get_absolute_url|urlencode }}">Log in</a> to reply.</p>
+        {% endif %}
+
+        {% if form %}
             {% include "forums/_reply_form.html" %}
         {% endif %}
     </div>
