@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from bbs.models import BBS, TextAd
 from demoscene.models import Releaser

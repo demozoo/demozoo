@@ -3,7 +3,7 @@ import shutil
 
 from django.conf import settings
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 from PIL import Image
 
 from mirror.actions import upload_dir

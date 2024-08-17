@@ -1,7 +1,7 @@
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.test import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from demoscene.models import SceneID
 

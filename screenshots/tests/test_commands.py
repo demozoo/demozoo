@@ -3,7 +3,7 @@ import datetime
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
-from mock import patch
+from unittest.mock import patch
 
 from mirror.models import ArchiveMember, Download
 from productions.models import Production, ProductionType

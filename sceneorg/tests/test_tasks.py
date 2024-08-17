@@ -2,7 +2,7 @@ import datetime
 
 from django.test import TestCase
 from freezegun import freeze_time
-from mock import patch
+from unittest.mock import patch
 
 from sceneorg.models import Directory, File
 from sceneorg.tasks import fetch_new_sceneorg_files, scan_dir_listing
