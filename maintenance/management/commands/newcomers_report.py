@@ -15,8 +15,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         year = options['year']
-        exclude_compo_ids = tuple(options['exclude_compo_id'] or (-999,))
-        exe_gfx_ids = tuple(
+        exclude_compo_ids = list(options['exclude_compo_id'] or (-999,))
+        exe_gfx_ids = list(
             ProductionType.objects.filter(
                 path__startswith=ProductionType.objects.get(internal_name="exe-graphics").path
             ).values_list('id', flat=True))
@@ -39,10 +39,10 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
+            OR productions_production_types.productiontype_id = ANY(%(exe_gfx_ids)s)
         )
         AND productions_production.id NOT IN (
-            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id = ANY(%(exclude_compo_ids)s)
         )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
@@ -60,10 +60,10 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
+            OR productions_production_types.productiontype_id = ANY(%(exe_gfx_ids)s)
         )
         AND productions_production.id NOT IN (
-            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id = ANY(%(exclude_compo_ids)s)
         )
     UNION
     SELECT DISTINCT demoscene_nick.releaser_id
@@ -81,10 +81,10 @@ SELECT DISTINCT releaser_id FROM (
         EXTRACT(YEAR FROM release_date_date) = %(year)s
         AND (
             productions_production.supertype = 'production'
-            OR productions_production_types.productiontype_id IN %(exe_gfx_ids)s
+            OR productions_production_types.productiontype_id = ANY(%(exe_gfx_ids)s)
         )
         AND productions_production.id NOT IN (
-            SELECT production_id FROM parties_competitionplacing WHERE competition_id IN %(exclude_compo_ids)s
+            SELECT production_id FROM parties_competitionplacing WHERE competition_id = ANY(%(exclude_compo_ids)s)
         )
 ) AS releasers_this_year;
             """, {'year': year, 'exe_gfx_ids': exe_gfx_ids, 'exclude_compo_ids': exclude_compo_ids})

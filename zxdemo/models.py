@@ -38,7 +38,7 @@ def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_re
                     productions_production_platforms.production_id = productions_production_author_nicks.production_id
                 )
                 INNER JOIN demoscene_nick ON (productions_production_author_nicks.nick_id = demoscene_nick.id)
-                WHERE productions_production_platforms.platform_id IN (%%s)
+                WHERE productions_production_platforms.platform_id = ANY(%%s)
             )
             OR %(releaser_table)s.id IN (
                 SELECT DISTINCT demoscene_nick.releaser_id
@@ -50,7 +50,7 @@ def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_re
                 INNER JOIN demoscene_nick ON (
                     productions_production_author_affiliation_nicks.nick_id = demoscene_nick.id
                 )
-                WHERE productions_production_platforms.platform_id IN (%%s)
+                WHERE productions_production_platforms.platform_id = ANY(%%s)
             )
             OR %(releaser_table)s.id IN (
                 SELECT DISTINCT demoscene_nick.releaser_id
@@ -59,11 +59,11 @@ def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_re
                     productions_production_platforms.production_id = productions_credit.production_id
                 )
                 INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
-                WHERE productions_production_platforms.platform_id IN (%%s)
+                WHERE productions_production_platforms.platform_id = ANY(%%s)
             )
             """ % {'releaser_table': releaser_table}
         ],
-        params=[tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS)]
+        params=[list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS)]
     )
 
 

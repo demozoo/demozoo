@@ -28,7 +28,7 @@ def home(request):
                 INNER JOIN productions_production_author_nicks ON (
                     productions_production_platforms.production_id = productions_production_author_nicks.production_id
                 )
-                WHERE productions_production_platforms.platform_id IN (%s)
+                WHERE productions_production_platforms.platform_id = ANY(%s)
             )
             OR demoscene_nick.id IN (
                 SELECT DISTINCT productions_production_author_affiliation_nicks.nick_id
@@ -37,7 +37,7 @@ def home(request):
                     productions_production_platforms.production_id
                     = productions_production_author_affiliation_nicks.production_id
                 )
-                WHERE productions_production_platforms.platform_id IN (%s)
+                WHERE productions_production_platforms.platform_id = ANY(%s)
             )
             OR demoscene_nick.id IN (
                 SELECT DISTINCT productions_credit.nick_id
@@ -45,9 +45,9 @@ def home(request):
                 INNER JOIN productions_credit ON (
                     productions_production_platforms.production_id = productions_credit.production_id
                 )
-                WHERE productions_production_platforms.platform_id IN (%s)
+                WHERE productions_production_platforms.platform_id = ANY(%s)
             )
-        """, [tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS), tuple(ZXDEMO_PLATFORM_IDS)]
+        """, [list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS)]
     )
     releaser_count = cursor.fetchone()[0]
 
