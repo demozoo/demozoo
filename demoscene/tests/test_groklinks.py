@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
-from demoscene.utils.groklinks import Site, UrlPattern
+from demoscene.utils.groklinks import Site, UrlPattern, grok_link_by_types
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
 
@@ -274,6 +274,15 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, 'BaseUrl')
         self.assertEqual(link.parameter, 'https://events.retroscene.org/zxgfx-03/main/foo')
         self.assertEqual(str(link.link), 'https://events.retroscene.org/zxgfx-03/main/foo')
+
+    def test_string_query_parameter(self):
+        class ExampleLink(UrlPattern):
+            site = Site('Example', url='https://example.com/')
+            pattern = '/index.php?thing=<slug>'
+
+        link = grok_link_by_types('https://example.com/index.php?thing=foo-bar', [ExampleLink])
+        self.assertIsInstance(link, ExampleLink)
+        self.assertEqual(link.param, 'foo-bar')
 
     def test_bad_pattern(self):
         with self.assertRaises(ImproperlyConfigured):
