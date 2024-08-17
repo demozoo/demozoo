@@ -427,9 +427,7 @@ class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
         ordering = ['sortable_title']
         indexes = [
             GinIndex(fields=['search_document']),
-        ]
-        index_together = [
-            ['release_date_date', 'created_at']
+            models.Index(fields=['release_date_date', 'created_at']),
         ]
 
 
@@ -791,8 +789,8 @@ class ProductionLink(ExternalLink):
             ('link_class', 'parameter', 'production', 'is_download_link'),
         )
         ordering = ['link_class']
-        index_together = [
-            ['link_class', 'parameter']
+        indexes = [
+            models.Index(fields=['link_class', 'parameter']),
         ]
 
 
