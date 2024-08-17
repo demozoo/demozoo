@@ -69,6 +69,9 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['sortable_title'],
+                'indexes': [
+                    models.Index(fields=['release_date_date', 'created_at'], name='productions_release_fc8d66_idx'),
+                ],
             },
             bases=(lib.prefetch_snooping.ModelWithPrefetchSnooping, models.Model),
         ),
@@ -111,6 +114,9 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['link_class'],
+                'indexes': [
+                    models.Index(fields=['link_class', 'parameter'], name='productions_link_cl_a8fd1a_idx'),
+                ],
             },
         ),
         migrations.CreateModel(
@@ -200,13 +206,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='productionlink',
             unique_together=set([('link_class', 'parameter', 'production', 'is_download_link')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='productionlink',
-            index_together=set([('link_class', 'parameter')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='production',
-            index_together=set([('release_date_date', 'created_at')]),
         ),
     ]

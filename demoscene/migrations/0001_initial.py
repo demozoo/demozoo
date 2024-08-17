@@ -50,6 +50,12 @@ class Migration(migrations.Migration):
                 ('focus_content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='edits', to='contenttypes.ContentType')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='edits', to=settings.AUTH_USER_MODEL)),
             ],
+            options={
+                'indexes': [
+                    models.Index(fields=['focus_content_type', 'focus_object_id'], name='demoscene_e_focus_c_210c7b_idx'),
+                    models.Index(fields=['focus2_content_type', 'focus2_object_id'], name='demoscene_e_focus2__bb354d_idx'),
+                ],
+            },
         ),
         migrations.CreateModel(
             name='Membership',
@@ -160,9 +166,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='nick',
             unique_together=set([('releaser', 'name')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='edit',
-            index_together=set([('focus2_content_type', 'focus2_object_id'), ('focus_content_type', 'focus_object_id')]),
         ),
     ]
