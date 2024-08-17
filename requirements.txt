@@ -1,6 +1,6 @@
 -r requirements-common.txt
 Fabric>=2.5,<2.6
-django-debug-toolbar>=3,<4
+django-debug-toolbar>=4.4.6,<5
 django-extensions>=3.1,<3.2
 coverage>=6.0,<7.0
 isort==5.7.0
