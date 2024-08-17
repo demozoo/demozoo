@@ -523,7 +523,7 @@ class TestEditCoreDetails(TestCase):
             response,
             (
                 '<input type="hidden" name="form-0-party_party_id" class="party_field_party_id" '
-                'id="id_form-0-party" value="%d">'
+                'id="id_form-0-party" aria-invalid="true" value="%d">'
             ) % Party.objects.get(name='Forever 2e3').id,
             html=True
         )
