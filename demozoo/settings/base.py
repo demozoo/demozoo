@@ -73,8 +73,6 @@ STATICFILES_DIRS = [
     os.path.join(FILEROOT, 'static_built'),
 ]
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-
 CONTEXT_PROCESSORS = [
     # defaults
     'django.contrib.auth.context_processors.auth',
@@ -191,10 +189,17 @@ LOGGING = {
     }
 }
 
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage',
+    },
+}
+
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # yes, I like my Django storage backends to follow the motherfucking spec and not silently overwrite files, THANKS
 AWS_S3_FILE_OVERWRITE = False

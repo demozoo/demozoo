@@ -15,10 +15,7 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',  # don't use the intentionally slow default password hasher
 )
 
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
 MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')  # noqa
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/2')
 
@@ -27,6 +24,15 @@ AWS_SECRET_ACCESS_KEY = 'AWS_S3CR3T'
 
 SCENEID_KEY = 'SCENEID_K3Y'
 SCENEID_SECRET = 'SCENEID_S3CR3T'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
 
 
 # set up mock opener for urllib
