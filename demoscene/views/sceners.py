@@ -108,7 +108,7 @@ def edit_location(request, scener_id):
 @login_required
 def edit_real_name(request, scener_id):
     scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-    if not request.user.has_perm('demoscene.view_releaser_real_names'):
+    if not request.user.has_perm('demoscene.change_releaser_real_names'):
         return HttpResponseRedirect(scener.get_absolute_url())
 
     def success(form):
