@@ -16,15 +16,19 @@ def groups(request):
         GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name')
         .prefetch_related('releaser__nicks')
     )
-    show_full = request.GET.get('full')
+    # mode = matchable, pouet_unmatched or all
+    mode = request.GET.get('mode', 'matchable')
 
-    if not show_full:
+    if mode == "matchable":
         # filter to just the ones which have unmatched entries on both sides
         groups = groups.filter(unmatched_demozoo_production_count__gt=0, unmatched_pouet_production_count__gt=0)
+    elif mode == "pouet_unmatched":
+        # filter to the ones which have unmatched entries on Pouet
+        groups = groups.filter(unmatched_pouet_production_count__gt=0)
 
     return render(request, 'pouet/groups.html', {
         'groups': groups,
-        'showing_full': show_full,
+        'mode': mode,
     })
 
 

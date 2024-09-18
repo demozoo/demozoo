@@ -16,6 +16,14 @@ class TestGroupsView(TestCase):
         response = self.client.get('/pouet/groups/')
         self.assertEqual(response.status_code, 200)
 
+    def test_get_full(self):
+        response = self.client.get('/pouet/groups/?mode=full')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_pouet_unmatched(self):
+        response = self.client.get('/pouet/groups/?mode=pouet_unmatched')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestMatchGroup(TestCase):
     fixtures = ['tests/gasman.json']

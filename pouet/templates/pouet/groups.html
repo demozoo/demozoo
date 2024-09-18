@@ -5,12 +5,18 @@
 
     <p>
         Show:
-        {% if showing_full %}
-            <a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
-            <strong>All groups</strong>
-        {% else %}
+        {% if mode == 'matchable' %}
             <strong>Groups with potential matches</strong> |
-            <a href="{% url 'pouet_groups' %}?full=1">All groups</a>
+            <a href="{% url 'pouet_groups' %}?mode=pouet_unmatched">Unmatched on Pouet</a> |
+            <a href="{% url 'pouet_groups' %}?mode=all">All groups</a>
+        {% elif mode == 'pouet_unmatched' %}
+            <a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
+            <strong>Unmatched on Pouet</strong> |
+            <a href="{% url 'pouet_groups' %}?mode=all">All groups</a>
+        {% else %}
+            <a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
+            <a href="{% url 'pouet_groups' %}?mode=pouet_unmatched">Unmatched on Pouet</a> |
+            <strong>All groups</strong>
         {% endif %}
     </p>
 
