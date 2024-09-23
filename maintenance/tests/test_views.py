@@ -239,6 +239,10 @@ class TestReports(TestCase):
         response = self.client.get('/maintenance/tiny_intros_without_download_links')
         self.assertEqual(response.status_code, 200)
 
+    def test_bbstros_without_linked_bbses(self):
+        response = self.client.get('/maintenance/bbstros_without_linked_bbses')
+        self.assertEqual(response.status_code, 200)
+
     def test_janeway_unique_author_name_matches(self):
         response = self.client.get('/maintenance/janeway_unique_author_name_matches')
         self.assertEqual(response.status_code, 200)
