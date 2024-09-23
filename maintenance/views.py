@@ -1581,6 +1581,35 @@ class TinyIntrosWithoutDownloadLinks(Report):
         return context
 
 
+class BBStrosWithoutLinkedBBSes(Report):
+    title = "BBStros without linked BBSes"
+    template_name = 'maintenance/production_report.html'
+    name = 'bbstros_without_linked_bbses'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        bbstro_prod_type = ProductionType.objects.get(name='BBStro')
+        productions = (
+            Production.objects
+            .filter(supertype='production', types=bbstro_prod_type, bbses__isnull=True)
+            .exclude(tags__name='unknown-bbs')
+            .extra(
+                where=['''
+                    productions_production.id NOT IN (
+                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
+                    )
+                '''],
+                params=[self.exclusion_name]
+            ).prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser').order_by('title')
+        )
+        context.update({
+            'productions': productions,
+            'mark_excludable': self.request.user.is_staff,
+        })
+        return context
+
+
 class UniqueAuthorNameMatchesOnJaneway(StaffOnlyMixin, Report):
     title = "Unique author name matches on Janeway"
     template_name = 'maintenance/janeway_unique_author_name_matches.html'
@@ -1684,6 +1713,7 @@ reports = [
             ExternalReport('pouet_groups', "Pouet link matching"),
             ExternalReport('janeway_authors', "Janeway link matching"),
             UniqueAuthorNameMatchesOnJaneway,
+            BBStrosWithoutLinkedBBSes,
         ]
     ),
     (
