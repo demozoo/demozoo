@@ -32,7 +32,7 @@ urlpatterns = [
     re_path(r'^productions/new/$', production_views.CreateProductionView.as_view(), {}, 'new_production'),
     re_path(r'^productions/autocomplete/$', production_views.autocomplete, {}),
     re_path(r'^productions/autocomplete_tags/$', production_views.autocomplete_tags, {}),
-    re_path(r'^productions/tagged/(.+)/$', production_views.tagged, {}, 'productions_tagged'),
+    re_path(r'^productions/tagged/([^\/]+)/$', production_views.tagged, {}, 'productions_tagged'),
     re_path(
         r'^productions/(\d+)/edit_core_details/$', production_views.edit_core_details, {},
         'production_edit_core_details'

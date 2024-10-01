@@ -5,7 +5,7 @@ from bbs import views
 
 urlpatterns = [
     re_path(r'^$', views.index, {}, 'bbses'),
-    re_path(r'^tagged/(.+)/$', views.tagged, {}, 'bbses_tagged'),
+    re_path(r'^tagged/([^\/]+)/$', views.tagged, {}, 'bbses_tagged'),
     re_path(r'^(\d+)/$', views.show, {}, 'bbs'),
     re_path(r'^new/$', views.create, {}, 'new_bbs'),
     re_path(r'^(\d+)/edit/$', views.edit, {}, 'edit_bbs'),
