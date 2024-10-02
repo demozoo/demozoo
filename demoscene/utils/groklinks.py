@@ -345,6 +345,15 @@ class TwitterAccount(AbstractBaseUrl):
     ]
 
 
+class BlueskyAccount(AbstractBaseUrl):
+    site = Site("Bluesky", url='https://bsky.app/')
+    canonical_format = "https://bsky.app/profile/%s"
+    tests = [
+        regex_match(r'https?://bsky\.app/profile/([^/]+)'),
+        path_regex_match(r'/profile/([^/]+)'),
+    ]
+
+
 pouet = Site(u"Pouët", classname="pouet", url='https://www.pouet.net/')
 
 
@@ -1792,7 +1801,7 @@ class LivecodeDemozooEvent(UrlPattern):
 
 
 RELEASER_LINK_TYPES = [
-    TwitterAccount, SceneidAccount, SlengpungUser, AmpAuthor,
+    TwitterAccount, BlueskyAccount, SceneidAccount, SlengpungUser, AmpAuthor,
     CsdbScener, CsdbGroup, NectarineArtist, NectarineGroup, BitjamAuthor, ArtcityArtist,
     MobygamesDeveloper, AsciiarenaArtist, AsciiarenaCrew, PouetGroup,
     ScenesatAct, ZxdemoAuthor, FacebookPage, Defacto2Group, Defacto2Person,
@@ -1847,7 +1856,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
 
 PARTY_LINK_TYPES = [
     DemopartyNetParty, PartyWikiParty, SlengpungParty, PouetParty,
-    CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, ZxdemoParty,
+    CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, BlueskyAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
     SpeccyWikiPage, ZxArtParty, AtarikiEntry, InstagramAccount,
@@ -1855,14 +1864,14 @@ PARTY_LINK_TYPES = [
 ]
 
 PARTY_SERIES_LINK_TYPES = [
-    PouetPartySeries, TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
+    PouetPartySeries, TwitterAccount, BlueskyAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount, LivecodeDemozooEvent,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
     PouetBBS, CsdbBBS, KestraBitworldAuthor, BBSmatesBBS, Defacto2Group, TelnetBBSGuideBBS,
-    TwitterAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
+    TwitterAccount, BlueskyAccount, YoutubeUser, YoutubeChannel, TwitchChannel, FacebookPage, WikipediaPage,
     SpeccyWikiPage, AtarikiEntry, InstagramAccount,
     WaybackMachinePage, BaseUrl
 ]
