@@ -345,13 +345,9 @@ class TwitterAccount(AbstractBaseUrl):
     ]
 
 
-class BlueskyAccount(AbstractBaseUrl):
+class BlueskyAccount(UrlPattern):
     site = Site("Bluesky", url='https://bsky.app/')
-    canonical_format = "https://bsky.app/profile/%s"
-    tests = [
-        regex_match(r'https?://bsky\.app/profile/([^/]+)'),
-        path_regex_match(r'/profile/([^/]+)'),
-    ]
+    pattern = "/profile/<slug>"
 
 
 pouet = Site(u"Pouët", classname="pouet", url='https://www.pouet.net/')
