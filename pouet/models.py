@@ -11,6 +11,7 @@ class Group(models.Model):
 class Production(models.Model):
     pouet_id = models.IntegerField(unique=True, db_index=True)
     name = models.CharField(max_length=255)
+    download_url = models.TextField()
     groups = models.ManyToManyField(Group, related_name='productions')
     last_seen_at = models.DateTimeField()
 
