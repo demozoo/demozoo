@@ -1227,6 +1227,30 @@ class HearthisTrack(AbstractBaseUrl):
     ]
 
 
+c64ch = Site("C64.CH", url='https://c64.ch/', allowed_hostnames=['c64.ch', 'www.c64.ch'],
+             icon_path='images/icons/external_sites/c64ch.png')
+
+
+class C64chProduction(UrlPattern):
+    site = c64ch
+    pattern = '/productions/<int>'
+
+
+class C64chParty(UrlPattern):
+    site = c64ch
+    pattern = '/parties/<int>'
+
+
+class C64chGroup(UrlPattern):
+    site = c64ch
+    pattern = '/groups/<int>'    
+
+
+class C64chScener(UrlPattern):
+    site = c64ch
+    pattern = '/sceners/<int>'        
+
+
 discogs = Site("Discogs", url='https://www.discogs.com/')
 
 
@@ -1813,7 +1837,7 @@ RELEASER_LINK_TYPES = [
     PushnpopGroup, PushnpopProfile, SceneOrgFolder, FujiologyFolder,
     GooglePlusPage, SoundcloudUser, HearthisUser, YoutubeUser, YoutubeChannel, TwitchChannel,
     DeviantartUser, ModarchiveMember, WikipediaPage,
-    SpeccyWikiPage, DiscogsArtist, DiscogsLabel,
+    SpeccyWikiPage, DiscogsArtist, DiscogsLabel, C64chScener, C64chGroup,
     HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
@@ -1833,7 +1857,7 @@ PRODUCTION_LINK_TYPES = [
     AmigascneFile, PaduaOrgFile,  # sites mirrored by scene.org - must come before SceneOrgFile
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
-    DiscogsRelease,
+    DiscogsRelease, C64chProduction,
     ZxArtProduction, ZxArtPicture, ZxArtMusic, ZXPressIssue,
     InternetArchivePage, GameboyDemospottingDemo,
     Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease, SpectrumComputingRelease,
@@ -1852,7 +1876,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic', 'ZXPressIssue',
+    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic', 'ZXPressIssue', 'C64chProduction',
     'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
     'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
@@ -1864,7 +1888,7 @@ PARTY_LINK_TYPES = [
     CsdbEvent, BreaksAmigaParty, SceneOrgFolder, FujiologyFolder, TwitterAccount, BlueskyAccount, ZxdemoParty,
     PushnpopParty, KestraBitworldParty, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, GooglePlusPage, GooglePlusEvent, LanyrdEvent, WikipediaPage, Plus4WorldCompo,
-    SpeccyWikiPage, ZxArtParty, AtarikiEntry, InstagramAccount,
+    SpeccyWikiPage, ZxArtParty, AtarikiEntry, InstagramAccount, C64chParty,
     TikTokUser, WaybackMachinePage, BaseUrl,
 ]
 
