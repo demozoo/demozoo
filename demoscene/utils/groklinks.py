@@ -1484,6 +1484,15 @@ class StonishDisk(AbstractBaseUrl):
     ]
 
 
+class ZXPressIssue(AbstractBaseUrl):
+    site = Site("ZXPress", url='https://zxpress.ru/')
+    canonical_format = "https://zxpress.ru/issue.php?id=%s"
+    tests = [
+        # keep as regex_match to preserve the anchor fragment
+        regex_match(r'https?://(?:www\.)?zxpress\.ru/issue\.php\?id=(\d+\#\w+)'),
+    ]
+
+
 class ZxTunesArtist(AbstractBaseUrl):
     site = Site("ZXTunes", url='http://zxtunes.com/')
     canonical_format = "http://zxtunes.com/author.php?id=%s&ln=eng"
@@ -1825,7 +1834,7 @@ PRODUCTION_LINK_TYPES = [
     SceneOrgFile, FujiologyFile, UntergrundFile, GithubAccount, GithubRepo, GithubDirectory,
     WikipediaPage, SpeccyWikiPage, AtarimaniaPage, HallOfLightGame, PixeljointImage,
     DiscogsRelease,
-    ZxArtProduction, ZxArtPicture, ZxArtMusic,
+    ZxArtProduction, ZxArtPicture, ZxArtMusic, ZXPressIssue,
     InternetArchivePage, GameboyDemospottingDemo,
     Tic80Cart, Pico8Cart, DOPEdition, EventsRetrosceneRelease, SpectrumComputingRelease,
     WaybackMachinePage, BaseUrl,
@@ -1843,7 +1852,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     'ModarchiveModule', 'BitjamSong', 'SoundcloudTrack', 'HearthisTrack', 'NectarineSong', 'KestraBitworldRelease',
     'PushnpopProduction', 'WikipediaPage', 'SpeccyWikiPage', 'SpotifyTrack', 'BandcampTrack', 'StonishDisk',
     'GithubAccount', 'GithubRepo', 'GithubDirectory', 'AtarimaniaPage', 'HallOfLightGame', 'DiscogsRelease',
-    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic',
+    'ZxArtProduction', 'ZxArtPicture', 'ZxArtMusic', 'ZXPressIssue',
     'InternetArchivePage', 'GameboyDemospottingDemo', 'Defacto2File',
     'PixeljointImage', 'ArtcityImage', 'Plus4WorldProduction', 'SpeccyPlProduction', 'AtarikiEntry',
     'SixteenColorsPack', 'ShadertoyShader', 'Tic80Cart', 'Pico8Cart', 'DOPEdition', 'EventsRetrosceneRelease',
