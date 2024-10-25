@@ -8,6 +8,7 @@
 {% block extra_js %}
     {% compress js %}
         <script src="/static/js/components/notes_panel.js"></script>
+        <script src="/static/js/components/comments_panel.js"></script>
         <script src="/static/js/components/editable_chunk.js"></script>
         <script src="/static/js/tag-it.js"></script>
         <script src="/static/js/components/tagging.js"></script>
@@ -158,6 +159,8 @@
     </div>
 
     {% last_edited_by bbs %}
+
+    {% include "comments/_comments.html" with commentable=bbs edit_action='edit_bbs_comment' delete_action='delete_bbs_comment' no_comments_message='Be the first to comment on this BBS...' add_action='add_bbs_comment' %}
 
     {% if request.user.is_staff and site_is_writeable %}
     <ul class="maintenance_actions">

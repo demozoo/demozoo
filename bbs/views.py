@@ -17,6 +17,8 @@ from bbs.forms import (
     BBSTextAdFormset, BBStroFormset, OperatorForm
 )
 from bbs.models import BBS, Affiliation, Operator, TextAd
+from comments.forms import CommentForm
+from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
 from demoscene.utils.pagination import PaginationControls
@@ -74,8 +76,11 @@ def show(request, bbs_id):
 
     if request.user.is_authenticated:
         tags_form = BBSTagsForm(instance=bbs)
+        comment = Comment(commentable=bbs, user=request.user)
+        comment_form = CommentForm(instance=comment, prefix="comment")
     else:
         tags_form = None
+        comment_form = None
 
     return render(request, 'bbs/show.html', {
         'bbs': bbs,
@@ -91,6 +96,7 @@ def show(request, bbs_id):
         'tags': bbs.tags.order_by('name'),
         'tags_form': tags_form,
         'external_links': external_links,
+        'comment_form': comment_form,
     })
 
 
