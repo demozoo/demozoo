@@ -1581,6 +1581,11 @@ class Plus4WorldMember(UrlPattern):
     pattern = "/members/<slug>"
 
 
+class Plus4WorldProfile(UrlPattern):
+    site = plus4world
+    pattern = "/profile/<slug>"
+    
+
 class Plus4WorldCompo(UrlPattern):
     site = plus4world
     pattern = "/compos/<int>"
@@ -1841,7 +1846,7 @@ RELEASER_LINK_TYPES = [
     HallOfLightArtist, SpotifyArtist, KestraBitworldAuthor,
     GithubAccount, GithubRepo, AtarimaniaPage, GameboyDemospottingAuthor, PixeljointArtist,
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
-    Plus4WorldGroup, Plus4WorldMember, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
+    Plus4WorldGroup, Plus4WorldMember, Plus4WorldProfile, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
     SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
     LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
     WaybackMachinePage, BaseUrl,
