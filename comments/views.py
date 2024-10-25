@@ -42,7 +42,7 @@ class AddCommentView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['commentable'] = self.commentable
-        context['commentable_name'] = self.get_commentable_name(self.commentable)
+        context['commentable_name'] = str(self.commentable)
         context['comment_form'] = self.form
         context['submit_action'] = self.submit_action
         return context
@@ -54,24 +54,15 @@ class AddProductionCommentView(AddCommentView):
     commentable_model = Production
     submit_action = 'add_production_comment'
 
-    def get_commentable_name(self, production):
-        return production.title
-
 
 class AddPartyCommentView(AddCommentView):
     commentable_model = Party
     submit_action = 'add_party_comment'
 
-    def get_commentable_name(self, party):
-        return party.name
-
 
 class AddBBSCommentView(AddCommentView):
     commentable_model = BBS
     submit_action = 'add_bbs_comment'
-
-    def get_commentable_name(self, bbs):
-        return bbs.name
 
 
 class EditCommentView(TemplateView):
@@ -109,7 +100,7 @@ class EditCommentView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['commentable'] = self.commentable
-        context['commentable_name'] = self.get_commentable_name(self.commentable)
+        context['commentable_name'] = str(self.commentable)
         context['comment'] = self.comment
         context['comment_form'] = self.form
         context['submit_action'] = self.submit_action
@@ -122,24 +113,15 @@ class EditProductionCommentView(EditCommentView):
     commentable_model = Production
     submit_action = 'edit_production_comment'
 
-    def get_commentable_name(self, production):
-        return production.title
-
 
 class EditPartyCommentView(EditCommentView):
     commentable_model = Party
     submit_action = 'edit_party_comment'
 
-    def get_commentable_name(self, party):
-        return party.name
-
 
 class EditBBSCommentView(EditCommentView):
     commentable_model = BBS
     submit_action = 'edit_bbs_comment'
-
-    def get_commentable_name(self, bbs):
-        return bbs.name
 
 
 class DeleteCommentView(AjaxConfirmationView):
