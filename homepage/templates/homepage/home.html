@@ -150,7 +150,7 @@
                     {% for comment in comments %}
                         <li>
                             <q>{{ comment.body|truncatechars:140 }}</q>
-                            - <b>{{ comment.user.username }}</b> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a>
+                            - <b>{{ comment.user.username }}</b> on <a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable }}</a>
                         </li>
                     {% endfor %}
                 </ul>

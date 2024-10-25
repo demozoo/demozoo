@@ -132,13 +132,6 @@ class Party(Commentable):
             Party.objects.filter(pk=self.pk).update(share_image_file_url=self.share_image_file.url)
             self.share_image_file_url = self.share_image_file.url
 
-    @property
-    def title(self):
-        # make 'title' an alias of 'name', so that when we output comment listings, we can consistently
-        # refer to `commentable.title` and have it output something meaningful regardless of whether
-        # 'commentable' is a party or a production
-        return self.name
-
     def get_absolute_url(self):
         return reverse('party', args=[str(self.id)])
 
