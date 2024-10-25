@@ -41,7 +41,7 @@
                 {% for comment in comments %}
                     <tr>
                         <td>
-                            <b><a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable.title }}</a></b><br>
+                            <b><a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable }}</a></b><br>
                             by {% byline comment.commentable %}
                         </td>
                         <td>{{ comment.body|urlize|linebreaks }}</td>
