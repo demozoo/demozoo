@@ -6,12 +6,13 @@ from strip_markup import strip_markup
 from taggit.managers import TaggableManager
 from unidecode import unidecode
 
+from comments.models import Commentable
 from demoscene.models import ExternalLink, TextFile
 from demoscene.utils import groklinks
 from demoscene.utils.text import generate_search_title
 
 
-class BBS(models.Model):
+class BBS(Commentable):
     name = models.CharField(max_length=255)
 
     location = models.CharField(max_length=255, blank=True)

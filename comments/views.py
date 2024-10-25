@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from read_only_mode import writeable_site_required
 
+from bbs.models import BBS
 from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.views.generic import AjaxConfirmationView
@@ -63,6 +64,14 @@ class AddPartyCommentView(AddCommentView):
 
     def get_commentable_name(self, party):
         return party.name
+
+
+class AddBBSCommentView(AddCommentView):
+    commentable_model = BBS
+    submit_action = 'add_bbs_comment'
+
+    def get_commentable_name(self, bbs):
+        return bbs.name
 
 
 class EditCommentView(TemplateView):
@@ -125,6 +134,14 @@ class EditPartyCommentView(EditCommentView):
         return party.name
 
 
+class EditBBSCommentView(EditCommentView):
+    commentable_model = BBS
+    submit_action = 'edit_bbs_comment'
+
+    def get_commentable_name(self, bbs):
+        return bbs.name
+
+
 class DeleteCommentView(AjaxConfirmationView):
     def get_object(self, request, commentable_id, comment_id):
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
@@ -161,3 +178,8 @@ class DeleteProductionCommentView(DeleteCommentView):
 class DeletePartyCommentView(DeleteCommentView):
     commentable_model = Party
     action_url_path = 'delete_party_comment'
+
+
+class DeleteBBSCommentView(DeleteCommentView):
+    commentable_model = BBS
+    action_url_path = 'delete_bbs_comment'

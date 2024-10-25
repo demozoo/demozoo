@@ -29,4 +29,17 @@ urlpatterns = [
         r'^parties/(\d+)/comments/(\d+)/delete/$', views.DeletePartyCommentView.as_view(),
         name='delete_party_comment'
     ),
+
+    re_path(
+        r'^bbs/(\d+)/comments/new/$', views.AddBBSCommentView.as_view(),
+        name='add_bbs_comment'
+    ),
+    re_path(
+        r'^bbs/(\d+)/comments/(\d+)/edit/$', views.EditBBSCommentView.as_view(),
+        name='edit_bbs_comment'
+    ),
+    re_path(
+        r'^bbs/(\d+)/comments/(\d+)/delete/$', views.DeleteBBSCommentView.as_view(),
+        name='delete_bbs_comment'
+    ),
 ]
