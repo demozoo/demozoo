@@ -20,7 +20,6 @@
                     <tr>
                         <td>
                             <b><a href="{{ comment.commentable.get_absolute_url }}">{{ comment.commentable }}</a></b><br>
-                            by {% byline comment.commentable %}
                         </td>
                         <td>{{ comment.body|urlize|linebreaks }}</td>
                         <td><b>{{ comment.user.username }}</b><br>{{ comment.created_at|date:"H:i j F Y" }}</td>
