@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags compress laces %}
 
 {% block html_title %}Production comments - Demozoo{% endblock %}
 
@@ -8,29 +8,7 @@
 {% block base_main %}
     <h2>Production comments:</h2>
 
-    {% if comments.paginator.num_pages > 1 %}
-        <ul class="pagination">
-            {% if comments.has_previous %}
-                <li>
-                    <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.previous_page_number }}" title="Previous page">&laquo;</a>
-                </li>
-            {% endif %}
-
-            {% for i in comments.paginator.page_range %}
-                {% if i == comments.number %}
-                    <li class="current">{{ i }}</li>
-                {% else %}
-                    <li><a href="{% url 'maintenance:prod_comments' %}?page={{ i }}">{{ i }}</a></li>
-                {% endif %}
-            {% endfor %}
-
-            {% if comments.has_next %}
-                <li>
-                    <a href="{% url 'maintenance:prod_comments' %}?page={{ comments.next_page_number }}" title="Next page">&raquo;</a>
-                </li>
-            {% endif %}
-        </ul>
-    {% endif %}
+    {% component pagination_controls %}
 
     <div id="main_column">
         <div class="panel report">

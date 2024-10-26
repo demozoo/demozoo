@@ -17,6 +17,8 @@ from read_only_mode import writeable_site_required
 from bbs.models import TextAd
 from comments.models import Comment
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
+from demoscene.shortcuts import get_page
+from demoscene.utils.pagination import PaginationControls
 from janeway.importing import import_author as import_janeway_author
 from janeway.models import Author as JanewayAuthor
 from janeway.models import Credit as JanewayCredit
@@ -1140,18 +1142,15 @@ class ProdComments(StaffOnlyMixin, Report):
 
         production_type = ContentType.objects.get_for_model(Production)
 
-        comments = Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user')
-        paginator = Paginator(comments, 100)
-
-        page = self.request.GET.get('page', 1)
-        try:
-            comments_page = paginator.page(page)
-        except (PageNotAnInteger, EmptyPage):
-            # If page is not an integer, or out of range (e.g. 9999), deliver last page of results.
-            comments_page = paginator.page(paginator.num_pages)
+        comments_page = get_page(
+            Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user'),
+            self.request.GET.get('page', '1'),
+            count=100,
+        )
 
         context.update({
             'comments': comments_page,
+            'pagination_controls': PaginationControls(comments_page, reverse('maintenance:prod_comments')),
         })
         return context
 
