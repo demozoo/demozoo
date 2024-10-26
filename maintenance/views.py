@@ -14,7 +14,7 @@ from django.views.generic.base import TemplateView
 from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
-from bbs.models import TextAd
+from bbs.models import BBS, TextAd
 from comments.models import Comment
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from demoscene.shortcuts import get_page
@@ -1132,27 +1132,48 @@ class ProdsWithBlurbs(StaffOnlyMixin, Report):
         return context
 
 
-class ProdComments(StaffOnlyMixin, Report):
-    title = "Latest production comments"
-    template_name = 'maintenance/prod_comments.html'
-    name = 'prod_comments'
+class LatestComments(StaffOnlyMixin, Report):
+    template_name = 'maintenance/latest_comments.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        production_type = ContentType.objects.get_for_model(Production)
+        content_type = ContentType.objects.get_for_model(self.commentable_model)
 
         comments_page = get_page(
-            Comment.objects.filter(content_type=production_type).order_by('-created_at').select_related('user'),
+            Comment.objects.filter(content_type=content_type).order_by('-created_at').select_related('user'),
             self.request.GET.get('page', '1'),
             count=100,
         )
 
         context.update({
             'comments': comments_page,
-            'pagination_controls': PaginationControls(comments_page, reverse('maintenance:prod_comments')),
+            'pagination_controls': PaginationControls(comments_page, reverse(self.url_name)),
+            'title': self.title,
         })
         return context
+
+
+class ProdComments(LatestComments):
+    title = "Latest production comments"
+    template_name = 'maintenance/prod_comments.html'
+    name = 'prod_comments'
+    commentable_model = Production
+    url_name = 'maintenance:prod_comments'
+
+
+class PartyComments(LatestComments):
+    title = "Latest party comments"
+    name = 'party_comments'
+    commentable_model = Party
+    url_name = 'maintenance:party_comments'
+
+
+class BBSComments(LatestComments):
+    title = "Latest BBS comments"
+    name = 'bbs_comments'
+    commentable_model = BBS
+    url_name = 'maintenance:bbs_comments'
 
 
 class CreditsToMoveToText(StaffOnlyMixin, Report):
@@ -1773,6 +1794,8 @@ reports = [
         "User activity",
         [
             ProdComments,
+            PartyComments,
+            BBSComments,
         ]
     ),
 ]
