@@ -1233,22 +1233,22 @@ c64ch = Site("C64.CH", url='https://c64.ch/', allowed_hostnames=['c64.ch', 'www.
 
 class C64chProduction(UrlPattern):
     site = c64ch
-    pattern = '/productions/<slug>'
+    pattern = '/productions/<int>'
 
 
 class C64chParty(UrlPattern):
     site = c64ch
-    pattern = '/parties/<slug>'
+    pattern = '/parties/<int>'
 
 
 class C64chGroup(UrlPattern):
     site = c64ch
-    pattern = '/groups/<slug>'    
+    pattern = '/groups/<int>'    
 
 
 class C64chScener(UrlPattern):
     site = c64ch
-    pattern = '/sceners/<slug>'        
+    pattern = '/sceners/<int>'        
 
 
 discogs = Site("Discogs", url='https://www.discogs.com/')
