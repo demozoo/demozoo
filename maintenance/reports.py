@@ -5,6 +5,7 @@ from django.db.models import Q
 from maintenance.models import Exclusion
 from pouet.matching import get_pouetable_prod_types
 from productions.models import Production, ProductionLink
+from demoscene.utils import groklinks
 
 
 def write_set(pipe, key, values):
@@ -116,6 +117,36 @@ class FilteredProdutionsReport(object):
         )
 
         return (productions, count)
+
+
+class ProductionsWithoutExternalLinks(FilteredProdutionsReport):
+    master_list_key = 'demozoo:productions:without_external_links'
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(report_name='prods_without_external_links').values_list('record_id', flat=True)
+
+        return (
+            Production.objects
+            .exclude(links__link_class__in=groklinks.PRODUCTION_EXTERNAL_LINK_TYPES)
+            .exclude(id__in=excluded_ids)
+            .values_list('id', flat=True)
+        )
+
+
+class ProductionsWithoutReleaseDate(FilteredProdutionsReport):
+    master_list_key = 'demozoo:productions:without_release_date'
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(report_name='prods_without_release_date').values_list('record_id', flat=True)
+
+        return (
+            Production.objects
+            .filter(release_date_date=None)
+            .exclude(id__in=excluded_ids)
+            .values_list('id', flat=True)
+        )
 
 
 class ProductionsWithoutScreenshotsReport(FilteredProdutionsReport):
