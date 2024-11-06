@@ -104,13 +104,13 @@ class FilterableProductionReport(Report):
         return context
 
 
-class ProdsWithoutExternalLinks(FilterableProductionReport):
+class ProdsWithoutExternalLinks(StaffOnlyMixin, FilterableProductionReport):
     title = "Productions without external links (v2)"
     name = 'prods_without_external_links'
     report_class = reports_module.ProductionsWithoutExternalLinks
 
 
-class ProdsWithoutReleaseDate(FilterableProductionReport):
+class ProdsWithoutReleaseDate(StaffOnlyMixin, FilterableProductionReport):
     title = "Productions without a release date (v2)"
     name = 'prods_without_release_date'
     report_class = reports_module.ProductionsWithoutReleaseDate
