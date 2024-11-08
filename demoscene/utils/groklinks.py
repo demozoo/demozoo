@@ -866,12 +866,20 @@ class UntergrundFile(AbstractBaseUrl):
     ]
 
 
-class DemopartyNetParty(UrlPattern):
-    site = Site(
-        "demoparty.net", classname="demoparty_net", url='http://www.demoparty.net/',
+demopartynet = Site(
+        "demoparty.net", classname="demoparty_net", url='https://www.demoparty.net/',
         icon_path='images/icons/external_sites/demopartynet.png'
     )
+
+
+class DemopartyNetParty(UrlPattern):
+    site = demopartynet
     pattern = "/<str>"
+
+
+class DemopartyNetUser(UrlPattern):
+    site = site = demopartynet
+    pattern = "/users/<str>"    
 
 
 class PartyWikiParty(UrlPattern):
@@ -1848,7 +1856,7 @@ RELEASER_LINK_TYPES = [
     ZxArtAuthor, ZxTunesArtist, InternetArchivePage,
     Plus4WorldGroup, Plus4WorldMember, Plus4WorldProfile, BandcampArtist, VimeoUser, SpeccyPlAuthor, AtarikiEntry,
     SixteenColorsArtist, SixteenColorsGroup, ShadertoyUser, Tic80Dev, Pico8User,
-    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount,
+    LinkedInUser, InstagramAccount, PolyworkUser, TikTokUser, MastodonAccount, DemopartyNetUser,
     WaybackMachinePage, BaseUrl,
 ]
 
@@ -1900,7 +1908,7 @@ PARTY_LINK_TYPES = [
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries, TwitterAccount, BlueskyAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount, LivecodeDemozooEvent,
-    TikTokUser, WaybackMachinePage, BaseUrl,
+    TikTokUser, WaybackMachinePage, DemopartyNetParty, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
