@@ -1918,7 +1918,7 @@ TOURNAMENT_LINK_TYPES = [
 ARCHIVED_LINK_TYPES = [
     'ZxdemoAuthor', 'ZxdemoItem', 'ZxdemoParty',
     'PushnpopProduction', 'PushnpopParty', 'PushnpopGroup', 'PushnpopProfile',
-    'DemosceneTvVideo',
+    'DemosceneTvVideo', 'StonishDisk',
     'LanyrdEvent',
     'GooglePlusPage', 'GooglePlusEvent',
     'CappedVideo',
