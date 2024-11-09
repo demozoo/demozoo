@@ -104,6 +104,18 @@ class FilterableProductionReport(Report):
         return context
 
 
+class ProdsWithoutExternalLinks(StaffOnlyMixin, FilterableProductionReport):
+    title = "Productions without external links (v2)"
+    name = 'prods_without_external_links'
+    report_class = reports_module.ProductionsWithoutExternalLinks
+
+
+class ProdsWithoutReleaseDate(StaffOnlyMixin, FilterableProductionReport):
+    title = "Productions without a release date (v2)"
+    name = 'prods_without_release_date'
+    report_class = reports_module.ProductionsWithoutReleaseDate
+
+
 class ProdsWithoutScreenshots(FilterableProductionReport):
     title = "Productions without screenshots"
     name = 'prods_without_screenshots'
@@ -152,10 +164,10 @@ class TrackedMusicWithoutPlayableLinks(RandomisedProductionReport):
     report_class = reports_module.TrackedMusicWithoutPlayableLinksReport
 
 
-class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
-    title = "Productions without external links"
+class ProdsWithoutExternalLinksOld(StaffOnlyMixin, Report):
+    title = "Productions without external links (v1, nonfunctional)"
     template_name = 'maintenance/production_report.html'
-    name = 'prods_without_external_links'
+    name = 'prods_without_external_links_old'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -179,10 +191,10 @@ class ProdsWithoutExternalLinks(StaffOnlyMixin, Report):
         return context
 
 
-class ProdsWithoutReleaseDate(StaffOnlyMixin, Report):
-    title = "Productions without a release date"
+class ProdsWithoutReleaseDateOld(StaffOnlyMixin, Report):
+    title = "Productions without a release date (v1, nonfunctional)"
     template_name = 'maintenance/production_report.html'
-    name = 'prods_without_release_date'
+    name = 'prods_without_release_date_old'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1718,6 +1730,7 @@ reports = [
     (
         "Supporting data",
         [
+            ProdsWithoutExternalLinksOld,
             ProdsWithoutExternalLinks,
             ProdsWithoutScreenshots,
             ProdsWithoutVideoCaptures,
@@ -1739,6 +1752,7 @@ reports = [
     (
         "Release dates",
         [
+            ProdsWithoutReleaseDateOld,
             ProdsWithoutReleaseDate,
             ProdsWithoutReleaseDateWithPlacement,
             ProdsWithReleaseDateOutsideParty,
