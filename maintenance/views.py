@@ -105,13 +105,13 @@ class FilterableProductionReport(Report):
 
 
 class ProdsWithoutExternalLinks(StaffOnlyMixin, FilterableProductionReport):
-    title = "Productions without external links (v2)"
+    title = "Productions without external links"
     name = 'prods_without_external_links'
     report_class = reports_module.ProductionsWithoutExternalLinks
 
 
 class ProdsWithoutReleaseDate(StaffOnlyMixin, FilterableProductionReport):
-    title = "Productions without a release date (v2)"
+    title = "Productions without a release date"
     name = 'prods_without_release_date'
     report_class = reports_module.ProductionsWithoutReleaseDate
 
@@ -162,59 +162,6 @@ class TrackedMusicWithoutPlayableLinks(RandomisedProductionReport):
     title = "Tracked music without playable links"
     name = 'tracked_music_without_playable_links'
     report_class = reports_module.TrackedMusicWithoutPlayableLinksReport
-
-
-class ProdsWithoutExternalLinksOld(StaffOnlyMixin, Report):
-    title = "Productions without external links (v1, nonfunctional)"
-    template_name = 'maintenance/production_report.html'
-    name = 'prods_without_external_links_old'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        productions = Production.objects.raw('''
-            SELECT productions_production.*
-            FROM productions_production
-            LEFT JOIN productions_productionlink ON (
-                productions_production.id = productions_productionlink.production_id
-                AND productions_productionlink.is_download_link = 'f'
-            )
-            WHERE productions_production.supertype = 'production'
-            AND productions_productionlink.id IS NULL
-            AND productions_production.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
-            ORDER BY productions_production.title
-        ''', [self.exclusion_name])
-        context.update({
-            'productions': productions,
-            'mark_excludable': True,
-        })
-        return context
-
-
-class ProdsWithoutReleaseDateOld(StaffOnlyMixin, Report):
-    title = "Productions without a release date (v1, nonfunctional)"
-    template_name = 'maintenance/production_report.html'
-    name = 'prods_without_release_date_old'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        productions = (
-            Production.objects.filter(release_date_date__isnull=True)
-            .extra(
-                where=['''
-                    productions_production.id NOT IN (
-                        SELECT record_id FROM maintenance_exclusion WHERE report_name = %s
-                    )
-                '''],
-                params=[self.exclusion_name]
-            ).order_by('title')
-        )
-        context.update({
-            'productions': productions,
-            'mark_excludable': True,
-        })
-        return context
 
 
 class SceneorgDownloadLinksWithUnicode(StaffOnlyMixin, Report):
@@ -1730,7 +1677,6 @@ reports = [
     (
         "Supporting data",
         [
-            ProdsWithoutExternalLinksOld,
             ProdsWithoutExternalLinks,
             ProdsWithoutScreenshots,
             ProdsWithoutVideoCaptures,
@@ -1752,7 +1698,6 @@ reports = [
     (
         "Release dates",
         [
-            ProdsWithoutReleaseDateOld,
             ProdsWithoutReleaseDate,
             ProdsWithoutReleaseDateWithPlacement,
             ProdsWithReleaseDateOutsideParty,
