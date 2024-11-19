@@ -1820,7 +1820,11 @@ class MastodonAccount(AbstractBaseUrl):
     site = Site("Mastodon", classname="mastodon", allowed_hostnames=[
         'icosahedron.website', 'troet.cafe', 'mastodon.gamedev.place', 'chaos.social',
         'mastodon.social', 'techhub.social', 'graphics.social', 'mastodon.world',
-        'mastodon.online',
+        'mastodon.online', 'sueden.social', 'social.tchncs.de', 'tech.lgbt', 'bitbang.social',
+        'genart.social', 'woof.tech', 'abraum.social', 'oldbytes.space', 'mstdn.social',
+        'mastodonapp.uk', 'vis.social', '6t.vc', 'mas.to', 'toot.aquilenet.fr', 'wetdry.world',
+        'tooting.ch', 'kolektiva.social', 'social.nano.lgbt', 'fosstodon.org', 'nepeta.moe',
+        's.basspistol.org', 'deadinsi.de',
     ])
 
     tests = [
