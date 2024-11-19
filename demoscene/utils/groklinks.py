@@ -874,12 +874,20 @@ demopartynet = Site(
 
 class DemopartyNetParty(UrlPattern):
     site = demopartynet
-    pattern = "/<str>"
+    canonical_format = "https://www.demoparty.net/%s"
+    tests = [
+        path_regex_match(r'/([^\/]+/[^\/]+)'),
+    ]
 
 
 class DemopartyNetUser(UrlPattern):
-    site = site = demopartynet
-    pattern = "/users/<str>"    
+    site = demopartynet
+    pattern = "/users/<slug>"
+
+
+class DemopartyNetPartySeries(UrlPattern):
+    site = demopartynet
+    pattern = "/<slug>"
 
 
 class PartyWikiParty(UrlPattern):
@@ -1908,7 +1916,7 @@ PARTY_LINK_TYPES = [
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries, TwitterAccount, BlueskyAccount, YoutubeUser, YoutubeChannel, TwitchChannel, MastodonAccount,
     FacebookPage, WikipediaPage, SpeccyWikiPage, AtarikiEntry, InstagramAccount, LivecodeDemozooEvent,
-    TikTokUser, WaybackMachinePage, DemopartyNetParty, BaseUrl,
+    TikTokUser, WaybackMachinePage, DemopartyNetPartySeries, BaseUrl,
 ]
 
 BBS_LINK_TYPES = [
