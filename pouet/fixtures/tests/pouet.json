@@ -1,12 +1,43 @@
 [
     {
         "pk": 1,
+        "model": "pouet.platform",
+        "fields": {
+            "pouet_id": 82,
+            "name": "ZX Spectrum"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "pouet.productiontype",
+        "fields": {
+            "name": "demo"
+        }
+    },
+    {
+        "pk": 1,
         "model": "pouet.group",
         "fields": {
             "pouet_id": 1218,
             "name": "HOOY-PROGRAM",
             "demozoo_id": 4,
             "last_seen_at": "2020-01-01"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "pouet.party",
+        "fields": {
+            "pouet_id": 181,
+            "name": "Forever"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "pouet.competitiontype",
+        "fields": {
+            "pouet_id": 131,
+            "name": "zx demo"
         }
     },
     {
@@ -18,7 +49,55 @@
             "groups": [1],
             "last_seen_at": "2020-01-01",
             "release_date_date": "2001-03-01",
-            "release_date_precision": "m"
+            "release_date_precision": "m",
+            "vote_up_count": 10,
+            "vote_pig_count": 5,
+            "vote_down_count": 2,
+            "cdc_count": 0,
+            "popularity": 55.555,
+            "platforms": [1],
+            "types": [1]
+        }
+    },
+    {
+        "pk": 1,
+        "model": "pouet.competitionplacing",
+        "fields": {
+            "production": 1,
+            "party": 1,
+            "competition_type": 1,
+            "ranking": 1,
+            "year": 2001
+        }
+    },
+    {
+        "pk": 2,
+        "model": "pouet.production",
+        "fields": {
+            "pouet_id": 15875,
+            "name": "Heart Beat",
+            "groups": [],
+            "last_seen_at": "2020-01-01",
+            "release_date_date": "2001-03-01",
+            "release_date_precision": "m",
+            "vote_up_count": 10,
+            "vote_pig_count": 5,
+            "vote_down_count": 2,
+            "cdc_count": 0,
+            "popularity": 55.555,
+            "platforms": [1],
+            "types": [1]
+        }
+    },
+    {
+        "pk": 2,
+        "model": "pouet.competitionplacing",
+        "fields": {
+            "production": 2,
+            "party": 1,
+            "competition_type": 1,
+            "ranking": 2,
+            "year": 2001
         }
     }
 ]

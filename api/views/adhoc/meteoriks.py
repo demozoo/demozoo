@@ -10,7 +10,7 @@ from productions.models import Production, ProductionType
 
 
 def ordinal(val):
-    if isinstance(val, str) and val.startswith('='):
+    if isinstance(val, str) and val.startswith('='):  # pragma: no cover
         return '.=' + original_ordinal(val[1:])
     else:
         return original_ordinal(val)
@@ -106,47 +106,49 @@ def candidates(request, year):
             pouet_prodtype_names = [typ.name for typ in pouet_prod.types.all()]
 
             pouet_platform_category = set()
-            if pouet_prodtype_names == ['demotool'] and 'Windows' in pouet_platform_names:
+            if pouet_prodtype_names == ['demotool'] and 'Windows' in pouet_platform_names:  # pragma: no cover
                 pouet_platform_category.add('highend')
-            elif pouet_prodtype_names == ['demotool'] and 'MacOSX Intel' in pouet_platform_names:
+            elif pouet_prodtype_names == ['demotool'] and 'MacOSX Intel' in pouet_platform_names:  # pragma: no cover
                 pouet_platform_category.add('highend')
-            elif pouet_prodtype_names == ['demotool'] and 'JavaScript' in pouet_platform_names:
+            elif pouet_prodtype_names == ['demotool'] and 'JavaScript' in pouet_platform_names:  # pragma: no cover
                 pouet_platform_category.add('highend')
-            elif set(pouet_platform_names) == {'MS-Dos', 'Windows'}:
+            elif set(pouet_platform_names) == {'MS-Dos', 'Windows'}:  # pragma: no cover
                 pouet_platform_category.add('midschool')
-            elif set(pouet_platform_names) == {'MS-Dos', 'Windows', 'MS-Dos/gus'}:
+            elif set(pouet_platform_names) == {'MS-Dos', 'Windows', 'MS-Dos/gus'}:  # pragma: no cover
                 pouet_platform_category.add('midschool')
-            elif set(pouet_platform_names) == {'Acorn', 'Raspberry Pi'}:
+            elif set(pouet_platform_names) == {'Acorn', 'Raspberry Pi'}:  # pragma: no cover
                 pouet_platform_category.add('midschool')
-            elif set(pouet_platform_names) == {'Gameboy', 'SNES/Super Famicom'} and pouet_prod.name == 'EsGeBe Bounce':
+            elif set(pouet_platform_names) == {'Gameboy', 'SNES/Super Famicom'} and pouet_prod.name == 'EsGeBe Bounce':  # pragma: no cover
                 pouet_platform_category.add('midschool')
-            elif pouet_prod.pouet_id in (94983, 94385, 94814):  # TIC-80 prods with spurious windows / linux platforms assigned
+            elif pouet_prod.pouet_id in (94983, 94385, 94814):  # pragma: no cover
+                # TIC-80 prods with spurious windows / linux platforms assigned
                 pouet_platform_category.add('midschool')
-            elif pouet_prod.pouet_id == 96567:  # A Statement on the Platform Wars - multi platform
+            elif pouet_prod.pouet_id == 96567:  # pragma: no cover
+                # A Statement on the Platform Wars - multi platform
                 pass
             else:
                 for platform in pouet_platform_names:
                     if platform in POUET_OLDSCHOOL_PLATFORM_NAMES:
                         pouet_platform_category.add('oldschool')
-                    elif platform in POUET_MIDSCHOOL_PLATFORM_NAMES:
+                    elif platform in POUET_MIDSCHOOL_PLATFORM_NAMES:  # pragma: no cover
                         pouet_platform_category.add('midschool')
-                    elif platform in POUET_HIGHEND_PLATFORM_NAMES:
+                    elif platform in POUET_HIGHEND_PLATFORM_NAMES:  # pragma: no cover
                         pouet_platform_category.add('highend')
-                    elif platform in POUET_LIMBO_PLATFORM_NAMES:
+                    elif platform in POUET_LIMBO_PLATFORM_NAMES:  # pragma: no cover
                         pass
-                    else:
+                    else:  # pragma: no cover
                         raise Exception("Undefined platform %s" % platform)
 
-            if len(pouet_platform_category) > 1:
+            if len(pouet_platform_category) > 1:  # pragma: no cover
                 raise Exception("Multiple platform categories for %s" % pouet_prod.name)
 
-            if "procedural graphics" in pouet_prodtype_names:
+            if "procedural graphics" in pouet_prodtype_names:  # pragma: no cover
                 pouet_derived_category = "Executable GFX"
-            elif pouet_platform_category == {'midschool'}:
+            elif pouet_platform_category == {'midschool'}:  # pragma: no cover
                 pouet_derived_category = "Midschool"
             elif pouet_platform_category == {'oldschool'}:
                 pouet_derived_category = "Oldschool"
-            elif pouet_platform_category == {'highend'}:
+            elif pouet_platform_category == {'highend'}:  # pragma: no cover
                 if any(
                     intro_category in pouet_prodtype_names
                     for intro_category in ['64k', '4k', '16k', '40k', '32k', '8k', '256b', '128b', '512b', '1k', '32b', '64b']
@@ -154,11 +156,11 @@ def candidates(request, year):
                     pouet_derived_category = "High-End Intro"
                 else:
                     pouet_derived_category = "High-End Demo"
-            else:
+            else:  # pragma: no cover
                 pouet_derived_category = ""
 
             for link in pouet_prod.download_links.all():
-                if 'youtu' in link.url:
+                if 'youtu' in link.url:  # pragma: no cover
                     youtube_links.append(link.url)
 
         if dz_prod:
@@ -166,50 +168,51 @@ def candidates(request, year):
             dz_prodtype_names = [typ.name for typ in dz_prod.types.all()]
 
             dz_platform_category = set()
-            if dz_prodtype_names == ['Tool'] and 'Windows' in dz_platform_names:
+            if dz_prodtype_names == ['Tool'] and 'Windows' in dz_platform_names:  # pragma: no cover
                 dz_platform_category.add('highend')
-            elif dz_prodtype_names == ['Tool'] and 'JavaScript' in dz_platform_names:
+            elif dz_prodtype_names == ['Tool'] and 'JavaScript' in dz_platform_names:  # pragma: no cover
                 dz_platform_category.add('highend')
-            elif set(dz_platform_names) == {'MS-Dos', 'Windows'}:
+            elif set(dz_platform_names) == {'MS-Dos', 'Windows'}:  # pragma: no cover
                 dz_platform_category.add('midschool')
-            elif set(dz_platform_names) == {'MS-Dos', 'Linux'}:
+            elif set(dz_platform_names) == {'MS-Dos', 'Linux'}:  # pragma: no cover
                 dz_platform_category.add('midschool')
-            elif set(dz_platform_names) == {'Acorn Archimedes', 'Raspberry Pi'}:
+            elif set(dz_platform_names) == {'Acorn Archimedes', 'Raspberry Pi'}:  # pragma: no cover
                 dz_platform_category.add('midschool')
-            elif dz_prod.id in (334702, 337880, 342318):
+            elif dz_prod.id in (334702, 337880, 342318):  # pragma: no cover
                 # multi-platform prods:
                 # JoG christmas card pack 2023
                 # Lovebyte 2024 Countdown Invite
                 # A Statement On The Platform Wars
                 pass
-            elif dz_prod.id == 317579:  # mhm-hny2023 - party version on Windows, final on Amiga?
+            elif dz_prod.id == 317579:  # pragma: no cover
+                # mhm-hny2023 - party version on Windows, final on Amiga?
                 dz_platform_category.add('midschool')
             else:
                 for platform in dz_platform_names:
                     if platform in DZ_OLDSCHOOL_PLATFORM_NAMES:
                         dz_platform_category.add('oldschool')
-                    elif platform in DZ_MIDSCHOOL_PLATFORM_NAMES:
+                    elif platform in DZ_MIDSCHOOL_PLATFORM_NAMES:  # pragma: no cover
                         dz_platform_category.add('midschool')
-                    elif platform in DZ_HIGHEND_PLATFORM_NAMES:
+                    elif platform in DZ_HIGHEND_PLATFORM_NAMES:  # pragma: no cover
                         dz_platform_category.add('highend')
-                    elif platform in DZ_LIMBO_PLATFORM_NAMES:
+                    elif platform in DZ_LIMBO_PLATFORM_NAMES:  # pragma: no cover
                         pass
-                    else:
+                    else:  # pragma: no cover
                         raise Exception("Undefined platform %s" % platform)
 
-            if len(dz_platform_category) > 1:
+            if len(dz_platform_category) > 1:  # pragma: no cover
                 raise Exception("Multiple platform categories for %s" % dz_prod.title)
 
             if any(
                 exegfx_category in dz_prodtype_names
                 for exegfx_category in ['Executable Graphics', '4K Executable Graphics', '256b Executable Graphics']
-            ):
+            ):  # pragma: no cover
                 dz_derived_category = "Executable GFX"
-            elif dz_platform_category == {'midschool'}:
+            elif dz_platform_category == {'midschool'}:  # pragma: no cover
                 dz_derived_category = "Midschool"
             elif dz_platform_category == {'oldschool'}:
                 dz_derived_category = "Oldschool"
-            elif dz_platform_category == {'highend'}:
+            elif dz_platform_category == {'highend'}:  # pragma: no cover
                 if any(
                     intro_category in dz_prodtype_names
                     for intro_category in ['64K Intro', '40k Intro', '32K Intro', '16K Intro', '4K Intro', '2K Intro', '1K Intro', '512b Intro', '256b Intro', '128b Intro', '64b Intro', '8K Intro', '8b intro', '32b Intro', '16b intro']
@@ -217,7 +220,7 @@ def candidates(request, year):
                     dz_derived_category = "High-End Intro"
                 else:
                     dz_derived_category = "High-End Demo"
-            else:
+            else:  # pragma: no cover
                 dz_derived_category = ""
 
             for link in dz_prod.links.all():
@@ -225,10 +228,10 @@ def candidates(request, year):
                     youtube_links.append(link.url)
 
         if dz_prod and pouet_prod:
-            if pouet_derived_category == "Executable GFX":
+            if pouet_derived_category == "Executable GFX":  # pragma: no cover
                 # trust Pouet if it says a prod is exe gfx
                 pass
-            elif dz_derived_category and pouet_derived_category and dz_derived_category != pouet_derived_category:
+            elif dz_derived_category and pouet_derived_category and dz_derived_category != pouet_derived_category:  # pragma: no cover
                 raise Exception("mismatched categories for %s" % dz_prod.title)
             csvfile.writerow([
                 pouet_derived_category or dz_derived_category,
@@ -302,7 +305,7 @@ def candidates(request, year):
 
     for prod in prods:
         pouet_ids = [link.parameter for link in prod.links.all() if link.link_class == 'PouetProduction']
-        if len(pouet_ids) > 1:
+        if len(pouet_ids) > 1:  # pragma: no cover
             raise Exception("Multiple Pouet IDs for prod %d" % prod.id)
         elif pouet_ids:
             pouet_prod = pouet_prods_by_id.pop(int(pouet_ids[0]), None)

@@ -1,9 +1,11 @@
 import json
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
 from parties.models import Party, PartyExternalLink
+from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
 
 
@@ -195,3 +197,39 @@ class TestGroupAbbreviations(TestCase):
     def test_group_abbreviations(self):
         response = self.client.get('/api/adhoc/group-abbreviations/')
         self.assertEqual(response.status_code, 200)
+
+
+class TestMeteoriks(TestCase):
+    fixtures = ['tests/gasman.json', 'tests/pouet.json']
+
+    def setUp(self):
+        # add cross-link from Demozoo's Pondlife to Pouet's
+        pondlife = Production.objects.get(title='Pondlife')
+        ProductionLink.objects.create(
+            production=pondlife, link_class='PouetProduction', parameter='2611', is_download_link=False
+        )
+        ProductionLink.objects.create(
+            production=pondlife, link_class='YoutubeVideo', parameter='1lFBXWxSrKE', is_download_link=False
+        )
+
+        # add a DZ-only production
+        the_loop = Production.objects.create(
+            title="The Loop", supertype="production",
+            release_date_date='2001-03-18', release_date_precision='d'
+        )
+        the_loop.types.add(ProductionType.objects.get(name='Demo'))
+        the_loop.platforms.add(Platform.objects.get(name='ZX Spectrum'))
+
+
+    def test_meteoriks_candidates(self):
+        response = self.client.get('/api/adhoc/meteoriks/candidates/2001/')
+        self.assertEqual(response.status_code, 403)
+
+        User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')
+        self.client.login(username='testsuperuser', password='12345')
+
+        response = self.client.get('/api/adhoc/meteoriks/candidates/2001/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pondlife")
+        self.assertContains(response, "youtube.com/watch?v=1lFBXWxSrKE")
+        self.assertContains(response, "2nd at Forever zx demo")
