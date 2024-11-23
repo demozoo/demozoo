@@ -1,6 +1,7 @@
 import csv
 
 from django.contrib.humanize.templatetags.humanize import ordinal as original_ordinal
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import HttpResponse
 
@@ -62,6 +63,9 @@ DZ_LIMBO_PLATFORM_NAMES = [
 
 
 def candidates(request, year):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     exe_graphics = ProductionType.objects.get(internal_name='exe-graphics')
 
     prods = Production.objects.filter(
