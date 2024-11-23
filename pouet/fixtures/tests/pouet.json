@@ -16,7 +16,9 @@
             "pouet_id": 2611,
             "name": "Pondlife",
             "groups": [1],
-            "last_seen_at": "2020-01-01"
+            "last_seen_at": "2020-01-01",
+            "release_date_date": "2001-03-01",
+            "release_date_precision": "m"
         }
     }
 ]
