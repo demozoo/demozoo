@@ -48,6 +48,10 @@ class TestIndex(TestCase):
         response = self.client.get('/productions/?dir=asc')
         self.assertEqual(response.status_code, 200)
 
+    def test_get_by_date_added(self):
+        response = self.client.get('/productions/?order=added&dir=desc')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestTagIndex(TestCase):
     fixtures = ['tests/gasman.json']
