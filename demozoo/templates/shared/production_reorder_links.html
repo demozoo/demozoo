@@ -12,4 +12,10 @@
     {% else %}
         <a href="{% urlsub order='title' dir='asc' page=1 %}">Title</a>
     {% endif %}
+    |
+    {% if order == 'added' %}
+        <strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Date added</a></strong>
+    {% else %}
+        <a href="{% urlsub order='added' dir='desc' page=1 %}">Date added</a>
+    {% endif %}
 </p>

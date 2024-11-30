@@ -66,6 +66,8 @@ class IndexView(View):
 def apply_order(queryset, order, asc):
     if order == 'title':
         return queryset.order_by('%ssortable_title' % ('' if asc else '-'))
+    elif order == 'added':
+        return queryset.order_by('%screated_at' % ('' if asc else '-'))
     else:  # date
         if asc:
             return queryset.order_by('release_date_date', 'title')
