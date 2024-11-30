@@ -31,6 +31,10 @@
                     <strong class="stats__count">{{ stats.scener_count }}</strong>
                     <span class="stats__label">scener{{ stats.scener_count|pluralize }}</span>
                 </li>
+                <li>
+                    <strong class="stats__count">{{ stats.bbs_count }}</strong>
+                    <span class="stats__label">BBS{{ stats.bbs_count|pluralize:"es" }}</span>
+                </li>
             </ul>
         </div>
     </section>
@@ -123,6 +127,36 @@
                                 {% icon 'group' %}
                             </div>
                             <a href="{% url 'group' group.id %}">{{ group.name }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+        <section>
+            <h2>Latest added BBSes</h2>
+            <ul class="list list--results">
+                {% for bbs in latest_added_bbses %}
+                    <li class="list__item" data-type="bbs">
+                        <div class="result">
+                            <div class="media media--thumbnail">
+                                {% icon 'bbs' %}
+                            </div>
+                            <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+        <section>
+            <h2>Latest updated BBSes</h2>
+            <ul class="list list--results">
+                {% for bbs in latest_updated_bbses %}
+                    <li class="list__item" data-type="bbs">
+                        <div class="result">
+                            <div class="media media--thumbnail">
+                                {% icon 'bbs' %}
+                            </div>
+                            <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
                         </div>
                     </li>
                 {% endfor %}

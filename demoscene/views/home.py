@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+from bbs.models import BBS
 from demoscene.models import Edit, Releaser
 from demoscene.shortcuts import get_page
 from demoscene.utils.pagination import PaginationControls
@@ -21,6 +22,8 @@ def latest_activity(request):
         'latest_updated_groups': Releaser.objects.filter(is_group=True).order_by('-updated_at')[0:10],
         'latest_added_sceners': latest_added_sceners,
         'latest_updated_sceners': latest_updated_sceners,
+        'latest_added_bbses': BBS.objects.order_by('-created_at')[0:10],
+        'latest_updated_bbses': BBS.objects.order_by('-updated_at')[0:10],
     })
 
 
