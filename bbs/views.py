@@ -1,3 +1,4 @@
+import datetime
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -253,6 +254,8 @@ def edit_bbstros(request, bbs_id):
                     action_type='edit_bbs_bbstros', focus=bbs,
                     description=u"Set promoted in to %s" % bbstro_titles, user=request.user
                 )
+                bbs.updated_at = datetime.datetime.now()
+                bbs.save(update_fields=['updated_at'])
 
             return redirect('bbs', bbs.id)
     else:
@@ -292,6 +295,8 @@ def add_operator(request, bbs_id):
                 action_type='add_bbs_operator', focus=releaser, focus2=bbs,
                 description=description, user=request.user
             )
+            bbs.updated_at = datetime.datetime.now()
+            bbs.save(update_fields=['updated_at'])
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
         form = OperatorForm()
@@ -320,6 +325,8 @@ def edit_operator(request, bbs_id, operator_id):
             operator.is_current = form.cleaned_data['is_current']
             operator.save()
             form.log_edit(request.user, releaser, bbs)
+            bbs.updated_at = datetime.datetime.now()
+            bbs.save(update_fields=['updated_at'])
 
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
@@ -361,6 +368,8 @@ class RemoveOperatorView(AjaxConfirmationView):
             action_type='remove_bbs_operator', focus=self.operator.releaser, focus2=self.bbs,
             description=description, user=self.request.user
         )
+        self.bbs.updated_at = datetime.datetime.now()
+        self.bbs.save(update_fields=['updated_at'])
 
 
 @writeable_site_required
@@ -385,6 +394,8 @@ def add_affiliation(request, bbs_id):
                 action_type='add_bbs_affiliation', focus=group, focus2=bbs,
                 description=description, user=request.user
             )
+            bbs.updated_at = datetime.datetime.now()
+            bbs.save(update_fields=['updated_at'])
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
         form = AffiliationForm()
@@ -411,6 +422,8 @@ def edit_affiliation(request, bbs_id, affiliation_id):
             affiliation.role = form.cleaned_data['role']
             affiliation.save()
             form.log_edit(request.user, affiliation)
+            bbs.updated_at = datetime.datetime.now()
+            bbs.save(update_fields=['updated_at'])
 
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
@@ -451,6 +464,8 @@ class RemoveAffiliationView(AjaxConfirmationView):
             action_type='remove_bbs_affiliation', focus=self.affiliation.group, focus2=self.bbs,
             description=description, user=self.request.user
         )
+        self.bbs.updated_at = datetime.datetime.now()
+        self.bbs.save(update_fields=['updated_at'])
 
 
 class EditTextAdsView(EditTextFilesView):
