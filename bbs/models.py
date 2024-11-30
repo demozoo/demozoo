@@ -27,6 +27,9 @@ class BBS(Commentable):
 
     tags = TaggableManager(blank=True)
 
+    created_at = models.DateTimeField(null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True)
+
     search_title = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
     search_document = SearchVectorField(null=True, editable=False)
 

@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
@@ -11,6 +13,10 @@ from productions.fields.production_field import ProductionField
 
 
 class BBSForm(ModelFormWithLocation):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.updated_at = datetime.datetime.now()
+
     def log_creation(self, user):
         Edit.objects.create(
             action_type='create_bbs', focus=self.instance,
@@ -39,6 +45,10 @@ AlternativeNameFormSet = forms.inlineformset_factory(
 
 
 class BBSEditNotesForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.updated_at = datetime.datetime.now()
+
     def log_edit(self, user):
         Edit.objects.create(
             action_type='edit_bbs_notes', focus=self.instance,
