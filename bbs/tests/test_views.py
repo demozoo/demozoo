@@ -19,6 +19,11 @@ class TestIndex(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "StarPort")
 
+    def test_get_ordered_by_date_added(self):
+        response = self.client.get('/bbs/?order=added&dir=desc')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "StarPort")
+
 
 class TestTagIndex(TestCase):
     fixtures = ['tests/gasman.json']

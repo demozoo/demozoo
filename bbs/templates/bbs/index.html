@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load laces %}
+{% load laces urlsub %}
 
 {% block html_title %}BBSes - Demozoo{% endblock %}
 
@@ -13,6 +13,21 @@
         {% endif %}
         <h1 class="page__title">BBSes</h1>
     </header>
+
+    <p>
+        Order by:
+        {% if order == 'name' %}
+            <strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Name</a></strong>
+        {% else %}
+            <a href="{% urlsub order='name' dir='asc' page=1 %}">Name</a>
+        {% endif %}
+        |
+        {% if order == 'added' %}
+            <strong><a href="{% if asc %}{% urlsub dir='desc' page=1 %}{% else %}{% urlsub dir='asc' page=1 %}{% endif %}">Date added</a></strong>
+        {% else %}
+            <a href="{% urlsub order='added' dir='desc' page=1 %}">Date added</a>
+        {% endif %}
+    </p>
 
     {% include "bbs/_list.html" with bbses=page.object_list %}
     <br />
