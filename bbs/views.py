@@ -28,14 +28,23 @@ from search.indexing import index as search_index
 
 
 def index(request):
-    page = get_page(
-        BBS.objects.order_by(Lower('name')),
-        request.GET.get('page', '1')
-    )
+    order = request.GET.get('order', 'name')
+    asc = request.GET.get('dir', 'asc') == 'asc'
+
+    queryset = BBS.objects.all()
+
+    if order == 'added':
+        queryset = queryset.order_by('%screated_at' % ('' if asc else '-'))
+    else:  # name
+        queryset = queryset.order_by(Lower('name')) if asc else queryset.order_by(Lower('name').desc())
+
+    page = get_page(queryset, request.GET.get('page', '1'))
 
     return render(request, 'bbs/index.html', {
         'page': page,
         'pagination_controls': PaginationControls(page, reverse('bbses')),
+        'order': order,
+        'asc': asc,
     })
 
 
