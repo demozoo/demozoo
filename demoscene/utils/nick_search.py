@@ -65,7 +65,8 @@ class NickSearch():
         self, search_term, selection=None,
         sceners_only=False, groups_only=False,
         group_ids=[],
-        group_names=[], member_names=[]
+        group_names=[], member_names=[],
+        id_lookup=False,
     ):
 
         self.search_term = search_term
@@ -78,6 +79,7 @@ class NickSearch():
 
         self.suggestions = []
 
+        suggested_nick_ids = set()
         for nv in nick_variants:
             suggestion = {
                 'className': ('group' if nv.nick.releaser.is_group else 'scener'),
@@ -98,6 +100,47 @@ class NickSearch():
                 suggestion['alias'] = nv.name
 
             self.suggestions.append(suggestion)
+
+        has_id_lookup = False
+        if id_lookup and search_term:
+            id_to_look_up = None
+            if search_term.isdigit():
+                id_to_look_up = int(search_term)
+            elif match := re.search(r'/(?:sceners|groups)/(\d+)/$', search_term):
+                id_to_look_up = int(match.group(1))
+            if id_to_look_up is not None:
+                releaser_lookup_filters = {
+                    'id': id_to_look_up,
+                }
+                if groups_only:
+                    releaser_lookup_filters['is_group'] = True
+                elif sceners_only:
+                    releaser_lookup_filters['is_group'] = False
+                try:
+                    releaser = Releaser.objects.get(**releaser_lookup_filters)
+                except Releaser.DoesNotExist:
+                    pass
+                else:
+                    nicks = releaser.nicks.all()
+                    ordered_nicks = sorted(nicks, key=lambda nick: (1 if nick.name == releaser.name else 2, nick.name))
+                    for nick in ordered_nicks:
+                        suggestion = {
+                            'className': ('group' if releaser.is_group else 'scener'),
+                            'nameWithAffiliations': nick.name_with_affiliations(),
+                            'nameWithDifferentiator': nick.name,
+                            'name': nick.name,
+                            'id': nick.id
+                        }
+                        if releaser.country_code:
+                            suggestion['countryCode'] = releaser.country_code.lower()
+                        if nick.differentiator:
+                            suggestion['differentiator'] = nick.differentiator
+                            suggestion['nameWithDifferentiator'] = "%s (%s)" % (nick.name, nick.differentiator)
+                        else:
+                            suggestion['nameWithDifferentiator'] = nick.name
+
+                        self.suggestions.append(suggestion)
+                    has_id_lookup = True
 
         if not groups_only:
             self.suggestions.append({
@@ -120,10 +163,13 @@ class NickSearch():
         if selection:
             self.selection = selection
         else:
+            nick_variant_count = len(nick_variants)
             # if there is a definite best-scoring nickvariant, select it
-            if nick_variants.count() == 0:
-                self.selection = None
-            elif nick_variants.count() == 1 or nick_variants[0].score > nick_variants[1].score:
+            if (
+                nick_variant_count == 1
+                or (nick_variant_count > 1 and nick_variants[0].score > nick_variants[1].score)
+                or has_id_lookup
+            ):
                 self.selection = NickSelection(self.suggestions[0]['id'], self.suggestions[0]['nameWithDifferentiator'])
             else:
                 self.selection = None

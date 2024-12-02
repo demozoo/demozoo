@@ -31,7 +31,7 @@ def match(request):
     else:
         query = initial_query
 
-    nick_search = NickSearch(query.strip(), **filters)
+    nick_search = NickSearch(query.strip(), id_lookup=True, **filters)
 
     data = {
         'query': query,
