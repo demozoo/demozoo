@@ -18,9 +18,8 @@ from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
 from common.utils import groklinks
-from common.utils.text import generate_search_title
+from common.utils.text import generate_search_title, strip_markup
 from common.models import Lockable, PrefetchSnoopingMixin
-from lib.strip_markup import strip_markup
 
 
 DATE_PRECISION_CHOICES = [
