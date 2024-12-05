@@ -3,10 +3,10 @@ import datetime
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
-from nick_field import NickField
 
 from bbs.models import AFFILIATION_TYPES, BBS, OPERATOR_TYPES, BBSExternalLink, Name, TextAd
 from common.forms import ModelFormWithLocation
+from demoscene.fields import NickField
 from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
 from demoscene.models import Edit
 from productions.fields.production_field import ProductionField

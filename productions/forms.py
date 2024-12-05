@@ -1,12 +1,12 @@
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import BaseModelFormSet, ModelFormOptions, inlineformset_factory
-from nick_field import NickField
 
-from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
-from demoscene.models import Edit
 from common.fields import FuzzyDateField
 from common.utils import groklinks
+from demoscene.fields import NickField
+from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
+from demoscene.models import Edit
 from demoscene.utils.party_field import PartyField
 from platforms.models import Platform
 from productions.fields.byline_field import BylineField
