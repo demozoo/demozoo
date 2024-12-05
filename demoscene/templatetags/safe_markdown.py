@@ -2,7 +2,7 @@ import markdown
 from bleach.sanitizer import Cleaner
 from django import template
 from django.utils.safestring import mark_safe
-from mdx_autolink import AutoLinkExtension
+from common.utils.markdown import AutoLinkExtension
 
 
 register = template.Library()

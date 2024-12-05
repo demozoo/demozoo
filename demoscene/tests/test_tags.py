@@ -160,3 +160,9 @@ then it's
             safe_markdown('Here is a <a href="smb://example.com/warez">link</a>'),
             '<p>Here is a <a>link</a></p>'
         )
+
+    def test_autolink(self):
+        self.assertEqual(
+            safe_markdown('Here is a link to http://example.com/'),
+            '<p>Here is a link to <a href="http://example.com/">http://example.com/</a></p>'
+        )
