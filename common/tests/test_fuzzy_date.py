@@ -3,7 +3,8 @@ import datetime
 from django import forms
 from django.test import TestCase
 from freezegun import freeze_time
-from fuzzy_date import FuzzyDate
+
+from common.utils.fuzzy_date import FuzzyDate
 from fuzzy_date_field import FuzzyDateField
 
 

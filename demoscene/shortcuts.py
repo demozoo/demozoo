@@ -4,9 +4,9 @@ from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from modal_workflow import render_modal_workflow
 
 from common.utils.ajax import request_is_ajax
+from common.utils.modal_workflow import render_modal_workflow
 
 
 def get_page(queryset, page_number, **kwargs):

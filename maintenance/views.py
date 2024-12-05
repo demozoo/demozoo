@@ -11,13 +11,13 @@ from django.urls import re_path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView
-from fuzzy_date import FuzzyDate
 from read_only_mode import writeable_site_required
 
 from bbs.models import BBS, TextAd
 from comments.models import Comment
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from demoscene.shortcuts import get_page
+from common.utils.fuzzy_date import FuzzyDate
 from common.utils.pagination import PaginationControls
 from janeway.importing import import_author as import_janeway_author
 from janeway.models import Author as JanewayAuthor
