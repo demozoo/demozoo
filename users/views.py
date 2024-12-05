@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from demoscene.shortcuts import get_page
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 
 
 def index(request):

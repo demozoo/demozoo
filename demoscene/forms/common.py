@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet, modelformset_factory
 
 from demoscene.models import BlacklistedTag, Edit
-from demoscene.utils.groklinks import ARCHIVED_LINK_TYPES
-from demoscene.utils.text import slugify_tag
+from common.utils.groklinks import ARCHIVED_LINK_TYPES
+from common.utils.text import slugify_tag
 from productions.models import Credit
 
 

@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from demoscene.utils.ajax import request_is_ajax
+from common.utils.ajax import request_is_ajax
 
 
 if settings.SITE_IS_WRITEABLE:

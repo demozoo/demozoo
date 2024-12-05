@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from demoscene.models import Releaser
-from demoscene.utils.files import random_path
+from common.utils.files import random_path
 from lib.model_thumbnail import ModelWithThumbnails
 
 

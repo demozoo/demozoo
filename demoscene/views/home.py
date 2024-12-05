@@ -4,7 +4,7 @@ from django.urls import reverse
 from bbs.models import BBS
 from demoscene.models import Edit, Releaser
 from demoscene.shortcuts import get_page
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 from productions.models import Production
 
 

@@ -11,7 +11,7 @@ from unidecode import unidecode
 
 from bbs.models import BBS
 from demoscene.models import Releaser
-from demoscene.utils.text import generate_search_title
+from common.utils.text import generate_search_title
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionType, Screenshot

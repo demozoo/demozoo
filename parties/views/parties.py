@@ -19,7 +19,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
-from demoscene.utils.ajax import request_is_ajax
+from common.utils.ajax import request_is_ajax
 from demoscene.views.generic import AjaxConfirmationView
 from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,

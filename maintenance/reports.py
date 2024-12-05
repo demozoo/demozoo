@@ -5,7 +5,7 @@ from django.db.models import Q
 from maintenance.models import Exclusion
 from pouet.matching import get_pouetable_prod_types
 from productions.models import Production, ProductionLink
-from demoscene.utils import groklinks
+from common.utils import groklinks
 
 
 def write_set(pipe, key, values):

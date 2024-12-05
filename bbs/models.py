@@ -8,8 +8,8 @@ from unidecode import unidecode
 
 from comments.models import Commentable
 from demoscene.models import ExternalLink, TextFile
-from demoscene.utils import groklinks
-from demoscene.utils.text import generate_search_title
+from common.utils import groklinks
+from common.utils.text import generate_search_title
 
 
 class BBS(Commentable):

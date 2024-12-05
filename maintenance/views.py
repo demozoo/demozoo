@@ -18,7 +18,7 @@ from bbs.models import BBS, TextAd
 from comments.models import Comment
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from demoscene.shortcuts import get_page
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 from janeway.importing import import_author as import_janeway_author
 from janeway.models import Author as JanewayAuthor
 from janeway.models import Credit as JanewayCredit

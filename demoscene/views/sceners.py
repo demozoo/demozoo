@@ -14,7 +14,7 @@ from demoscene.forms.releaser import (
 )
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page, simple_ajax_form
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 
 

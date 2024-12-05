@@ -14,9 +14,9 @@ from unidecode import unidecode
 
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, TextFile
-from demoscene.utils import groklinks
-from demoscene.utils.files import random_path
-from demoscene.utils.text import generate_search_title
+from common.utils import groklinks
+from common.utils.files import random_path
+from common.utils.text import generate_search_title
 from productions.models import Production, Screenshot
 
 

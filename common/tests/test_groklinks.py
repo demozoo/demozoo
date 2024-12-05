@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
 from demoscene.models import Releaser, ReleaserExternalLink
-from demoscene.utils.groklinks import Site, UrlPattern, grok_link_by_types
+from common.utils.groklinks import Site, UrlPattern, grok_link_by_types
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
 

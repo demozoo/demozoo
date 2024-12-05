@@ -18,8 +18,8 @@ from unidecode import unidecode
 
 from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Nick, Releaser, ReleaserExternalLink, TextFile
-from demoscene.utils import groklinks
-from demoscene.utils.text import generate_search_title, generate_sort_key
+from common.utils import groklinks
+from common.utils.text import generate_search_title, generate_sort_key
 from lib.lockable import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup

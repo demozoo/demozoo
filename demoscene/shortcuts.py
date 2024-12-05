@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from modal_workflow import render_modal_workflow
 
-from demoscene.utils.ajax import request_is_ajax
+from common.utils.ajax import request_is_ajax
 
 
 def get_page(queryset, page_number, **kwargs):
