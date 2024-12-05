@@ -1,4 +1,4 @@
-class ModelWithPrefetchSnooping(object):
+class PrefetchSnoopingMixin:
     """
         Adds a has_prefetched method to a model, which indicates whether the specified
         relation has been prefetched with prefetch_related. This knowledge can be used
@@ -15,7 +15,7 @@ class ModelWithPrefetchSnooping(object):
         would do an unnecessary query if the Pizza instance had been built from
         Pizza.objects.prefetch_related('toppings'). An improvement would be:
 
-        class Pizza(ModelWithPrefetchSnooping, models.Model):
+        class Pizza(PrefetchSnoopingMixin, models.Model):
             def spicy_toppings(self):
                 if self.has_prefetched('toppings'):
                     return [topping from topping in self.toppings.all() if topping.spicy == True]

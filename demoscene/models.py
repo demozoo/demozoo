@@ -19,8 +19,7 @@ from unidecode import unidecode
 
 from common.utils import groklinks
 from common.utils.text import generate_search_title
-from common.models import Lockable
-from lib.prefetch_snooping import ModelWithPrefetchSnooping
+from common.models import Lockable, PrefetchSnoopingMixin
 from lib.strip_markup import strip_markup
 
 
@@ -31,7 +30,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(ModelWithPrefetchSnooping, Lockable):
+class Releaser(PrefetchSnoopingMixin, Lockable):
     name = models.CharField(max_length=255)
     is_group = models.BooleanField(db_index=True)
     notes = models.TextField(blank=True)
@@ -275,7 +274,7 @@ class Releaser(ModelWithPrefetchSnooping, Lockable):
         )
 
 
-class Nick(ModelWithPrefetchSnooping, models.Model):
+class Nick(PrefetchSnoopingMixin, models.Model):
     releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(

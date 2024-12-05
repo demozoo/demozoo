@@ -3,7 +3,7 @@
 import django.contrib.postgres.indexes
 import django.contrib.postgres.search
 import django.db.models.deletion
-import lib.prefetch_snooping
+import common.models.prefetch_snooping
 import taggit.managers
 from django.db import migrations, models
 
@@ -451,7 +451,7 @@ class Migration(migrations.Migration):
                     models.Index(fields=['release_date_date', 'created_at'], name='productions_release_fc8d66_idx'),
                 ],
             },
-            bases=(lib.prefetch_snooping.ModelWithPrefetchSnooping, models.Model),
+            bases=(common.models.prefetch_snooping.PrefetchSnoopingMixin, models.Model),
         ),
         migrations.CreateModel(
             name='ProductionBlurb',
