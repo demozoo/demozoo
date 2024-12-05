@@ -8,7 +8,6 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models import Prefetch
 from django.urls import reverse
-from strip_markup import strip_markup
 from unidecode import unidecode
 
 from comments.models import Commentable
@@ -16,7 +15,7 @@ from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, Tex
 from common.utils import groklinks
 from common.utils.files import random_path
 from common.utils.fuzzy_date import FuzzyDate
-from common.utils.text import generate_search_title
+from common.utils.text import generate_search_title, strip_markup
 from productions.models import Production, Screenshot
 
 

@@ -19,9 +19,8 @@ from comments.models import Commentable
 from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Nick, Releaser, ReleaserExternalLink, TextFile
 from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
-from common.utils.text import generate_search_title, generate_sort_key
+from common.utils.text import generate_search_title, generate_sort_key, strip_markup
 from common.models import Lockable, PrefetchSnoopingMixin
-from lib.strip_markup import strip_markup
 from mirror.models import ArchiveMember, Download
 from screenshots.models import ThumbnailMixin
 

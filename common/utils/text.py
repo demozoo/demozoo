@@ -1,6 +1,8 @@
 import re
 import unicodedata
+import markdown
 
+from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 
 
@@ -53,3 +55,10 @@ def strip_music_extensions(s):
 
     # revert to original title if there's nothing left
     return s if s.strip() else original_title
+
+
+md = markdown.Markdown(extensions=['nl2br'])
+
+
+def strip_markup(str):
+    return strip_tags(md.convert(str))

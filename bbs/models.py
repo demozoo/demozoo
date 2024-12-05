@@ -2,14 +2,13 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.urls import reverse
-from strip_markup import strip_markup
 from taggit.managers import TaggableManager
 from unidecode import unidecode
 
 from comments.models import Commentable
 from demoscene.models import ExternalLink, TextFile
 from common.utils import groklinks
-from common.utils.text import generate_search_title
+from common.utils.text import generate_search_title, strip_markup
 
 
 class BBS(Commentable):
