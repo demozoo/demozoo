@@ -144,6 +144,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap3',
     'laces',
 
+    'common',
     'demoscene',
     'parties',
     'platforms',
