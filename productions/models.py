@@ -20,8 +20,7 @@ from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Nick, Release
 from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title, generate_sort_key
-from common.models import Lockable
-from lib.prefetch_snooping import ModelWithPrefetchSnooping
+from common.models import Lockable, PrefetchSnoopingMixin
 from lib.strip_markup import strip_markup
 from mirror.models import ArchiveMember, Download
 from screenshots.models import ThumbnailMixin
@@ -115,7 +114,7 @@ class ProductionType(MP_Node):
         return reverse(url_name) + '?production_type=%s' % self.id
 
 
-class Production(ModelWithPrefetchSnooping, Commentable, Lockable):
+class Production(PrefetchSnoopingMixin, Commentable, Lockable):
     title = models.CharField(max_length=255)
     platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
     supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)

@@ -3,7 +3,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import lib.prefetch_snooping
+import common.models.prefetch_snooping
 
 
 class Migration(migrations.Migration):
@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
                 'ordering': ['name'],
                 'permissions': (('view_releaser_real_names', 'Can view non-public real names'),),
             },
-            bases=(models.Model, lib.prefetch_snooping.ModelWithPrefetchSnooping),
+            bases=(models.Model, common.models.prefetch_snooping.PrefetchSnoopingMixin),
         ),
         migrations.CreateModel(
             name='ReleaserExternalLink',
