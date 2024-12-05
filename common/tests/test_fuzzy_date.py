@@ -5,7 +5,7 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from common.utils.fuzzy_date import FuzzyDate
-from fuzzy_date_field import FuzzyDateField
+from common.fields import FuzzyDateField
 
 
 class TestFuzzyDate(TestCase):

@@ -1,9 +1,9 @@
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
-from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
 
+from common.fields import FuzzyDateField
 from common.forms import ModelFormWithLocation
 from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
 from demoscene.models import Edit

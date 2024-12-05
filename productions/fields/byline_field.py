@@ -2,8 +2,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from matched_nick_field import MatchedNickField
-from submit_button_field import SubmitButtonInput
 
+from common.fields import SubmitButtonInput
 from demoscene.utils.nick_search import BylineSearch
 from productions.models import Byline
 

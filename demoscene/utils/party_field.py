@@ -1,8 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
-from submit_button_field import SubmitButtonInput
 
+from common.fields import SubmitButtonInput
 from parties.models import Party
 
 
