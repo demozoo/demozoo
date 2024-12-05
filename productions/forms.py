@@ -7,7 +7,7 @@ from common.utils import groklinks
 from demoscene.fields import NickField
 from demoscene.forms.common import BaseExternalLinkFormSet, BaseTagsForm, ExternalLinkForm
 from demoscene.models import Edit
-from demoscene.utils.party_field import PartyField
+from parties.fields import PartyField
 from platforms.models import Platform
 from productions.fields.byline_field import BylineField
 from productions.fields.production_field import ProductionField
