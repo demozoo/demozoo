@@ -20,7 +20,7 @@ from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Nick, Release
 from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title, generate_sort_key
-from lib.lockable import Lockable
+from common.models import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 from mirror.models import ArchiveMember, Download

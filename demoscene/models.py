@@ -19,7 +19,7 @@ from unidecode import unidecode
 
 from common.utils import groklinks
 from common.utils.text import generate_search_title
-from lib.lockable import Lockable
+from common.models import Lockable
 from lib.prefetch_snooping import ModelWithPrefetchSnooping
 from lib.strip_markup import strip_markup
 
