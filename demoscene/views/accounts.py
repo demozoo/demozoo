@@ -5,12 +5,12 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 
-from demoscene.forms.account import UserSignupForm
-from demoscene.models import CaptchaQuestion
 from common.utils.accounts import is_login_banned, is_registration_banned
 from common.utils.ajax import request_is_ajax
+from common.views import writeable_site_required
+from demoscene.forms.account import UserSignupForm
+from demoscene.models import CaptchaQuestion
 
 
 class LoginViewWithIPCheck(LoginView):

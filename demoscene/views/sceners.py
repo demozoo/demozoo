@@ -7,14 +7,14 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 
+from common.utils.pagination import PaginationControls
+from common.views import writeable_site_required
 from demoscene.forms.releaser import (
     CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm, ScenerMembershipForm
 )
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page, simple_ajax_form
-from common.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 
 

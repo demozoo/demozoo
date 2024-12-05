@@ -4,11 +4,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from read_only_mode import writeable_site_required
 
 from bbs.models import BBS
 from comments.forms import CommentForm
 from comments.models import Comment
+from common.views import writeable_site_required
 from demoscene.views.generic import AjaxConfirmationView
 from parties.models import Party
 from productions.models import Production

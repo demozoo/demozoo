@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from read_only_mode import writeable_site_required
 
+from common.views import writeable_site_required
 from demoscene.models import Edit, Releaser
 from janeway.importing import import_release
 from janeway.matching import get_production_match_data

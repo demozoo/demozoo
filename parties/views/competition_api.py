@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from read_only_mode import writeable_site_required
 
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.utils.nick_search import NickSelection
 from parties.models import Competition, CompetitionPlacing

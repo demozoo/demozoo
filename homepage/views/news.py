@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import PaginationControls
+from common.views import writeable_site_required
 from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory
