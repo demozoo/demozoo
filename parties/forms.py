@@ -1,10 +1,10 @@
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import inlineformset_factory
-from form_with_location import ModelFormWithLocation
 from fuzzy_date_field import FuzzyDateField
 from nick_field import NickField
 
+from common.forms import ModelFormWithLocation
 from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
 from demoscene.models import Edit
 from parties.models import Competition, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink
