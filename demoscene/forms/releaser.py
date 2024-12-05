@@ -4,9 +4,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.forms.models import inlineformset_factory
-from nick_field import NickField
 
 from common.forms import ModelFormWithLocation
+from demoscene.fields import NickField
 from demoscene.forms.common import BaseExternalLinkFormSet, ExternalLinkForm
 from demoscene.models import Edit, Nick, Releaser, ReleaserExternalLink
 

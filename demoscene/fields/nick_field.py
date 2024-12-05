@@ -1,9 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
-from matched_nick_field import MatchedNickField
 
 from common.fields import SubmitButtonInput
+from demoscene.fields import MatchedNickField
 from demoscene.models import Nick
 from demoscene.utils.nick_search import NickSearch, NickSelection
 
