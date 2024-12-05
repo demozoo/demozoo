@@ -11,7 +11,7 @@ from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
 from demoscene.models import BlacklistedTag, Edit
-from demoscene.utils.text import slugify_tag
+from common.utils.text import slugify_tag
 
 
 class AjaxConfirmationView(View):

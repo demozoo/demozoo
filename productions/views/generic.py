@@ -15,7 +15,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
-from demoscene.utils.pagination import extract_query_params, PaginationControls
+from common.utils.pagination import extract_query_params, PaginationControls
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType

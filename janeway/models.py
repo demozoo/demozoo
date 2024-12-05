@@ -1,6 +1,6 @@
 from django.db import models
 
-from demoscene.utils.text import generate_search_title
+from common.utils.text import generate_search_title
 
 
 class Author(models.Model):

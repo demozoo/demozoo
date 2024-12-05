@@ -12,7 +12,7 @@ from read_only_mode import writeable_site_required
 
 from awards.models import Event, Nomination, Recommendation
 from demoscene.shortcuts import get_page
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 from productions.models import Production, Screenshot
 
 

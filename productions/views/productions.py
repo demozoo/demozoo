@@ -20,8 +20,8 @@ from taggit.models import Tag
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
-from demoscene.utils.ajax import request_is_ajax
-from demoscene.utils.pagination import extract_query_params, PaginationControls
+from common.utils.ajax import request_is_ajax
+from common.utils.pagination import extract_query_params, PaginationControls
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from productions.carousel import Carousel
 from productions.forms import (

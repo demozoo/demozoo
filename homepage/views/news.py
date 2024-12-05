@@ -5,7 +5,7 @@ from django.urls import reverse
 from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 
-from demoscene.utils.pagination import PaginationControls
+from common.utils.pagination import PaginationControls
 from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import NewsImageForm, NewsStoryForm
 from homepage.models import NewsImage, NewsStory

@@ -9,8 +9,8 @@ from read_only_mode import writeable_site_required
 
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
-from demoscene.utils.accounts import is_login_banned, is_registration_banned
-from demoscene.utils.ajax import request_is_ajax
+from common.utils.accounts import is_login_banned, is_registration_banned
+from common.utils.ajax import request_is_ajax
 
 
 class LoginViewWithIPCheck(LoginView):

@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from demoscene.utils.text import generate_search_title
+from common.utils.text import generate_search_title
 
 
 def populate_search_title(apps, schema_editor):

@@ -22,7 +22,7 @@ from comments.forms import CommentForm
 from comments.models import Comment
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
-from demoscene.utils.pagination import PaginationControls, extract_query_params
+from common.utils.pagination import PaginationControls, extract_query_params
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from search.indexing import index as search_index
 

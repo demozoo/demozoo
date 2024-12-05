@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.functional import cached_property
 
 from demoscene.models import ExternalLink
-from demoscene.utils.groklinks import PRODUCTION_LINK_TYPES
+from common.utils.groklinks import PRODUCTION_LINK_TYPES
 
 
 class Download(ExternalLink):
