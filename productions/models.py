@@ -197,7 +197,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         return Byline(self.author_nicks.all(), self.author_affiliation_nicks.all())
 
     def byline_search(self):
-        from demoscene.utils.nick_search import BylineSearch
+        from productions.fields.byline_search import BylineSearch
         if self.unparsed_byline:
             return BylineSearch(self.unparsed_byline)
         else:
@@ -207,7 +207,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         return self.unparsed_byline or str(self.byline())
 
     def _set_byline_string(self, byline_string):
-        from demoscene.utils.nick_search import BylineSearch
+        from productions.fields.byline_search import BylineSearch
         byline_search = BylineSearch(byline_string)
 
         if all(byline_search.author_nick_selections) and all(byline_search.affiliation_nick_selections):
@@ -444,7 +444,7 @@ class Byline(object):
             return authors_string
 
     def commit(self, production):
-        from demoscene.utils.nick_search import NickSelection
+        from demoscene.fields import NickSelection
 
         author_nicks = []
         for nick in self.author_nicks:

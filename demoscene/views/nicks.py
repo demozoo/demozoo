@@ -2,8 +2,9 @@ import json
 
 from django.http import HttpResponse
 
+from demoscene.fields import NickSearch
 from demoscene.models import NickVariant
-from demoscene.utils.nick_search import BylineSearch, NickSearch
+from productions.fields.byline_search import BylineSearch
 
 
 def match(request):

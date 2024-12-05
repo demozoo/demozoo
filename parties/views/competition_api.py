@@ -7,8 +7,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from common.views import writeable_site_required
+from demoscene.fields import NickSelection
 from demoscene.models import Edit
-from demoscene.utils.nick_search import NickSelection
 from parties.models import Competition, CompetitionPlacing
 from platforms.models import Platform
 from productions.models import Production, ProductionType

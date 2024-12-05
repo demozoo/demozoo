@@ -3,9 +3,10 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from common.fields import SubmitButtonInput
-from demoscene.fields import MatchedNickField
 from demoscene.models import Nick
-from demoscene.utils.nick_search import NickSearch, NickSelection
+
+from .matched_nick_field import MatchedNickField
+from .nick_search import NickSearch, NickSelection
 
 
 # An object which encapsulates the state of a NickWidget as derived from its posted data;

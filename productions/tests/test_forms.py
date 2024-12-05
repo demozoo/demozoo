@@ -4,10 +4,10 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from demoscene.models import Edit, Nick
-from demoscene.utils.nick_search import BylineSearch
 from platforms.models import Platform
 
 from ..fields.byline_field import BylineLookup
+from ..fields.byline_search import BylineSearch
 from ..fields.production_field import ProductionField, ProductionSelection
 from ..forms import (
     PackMemberFormset, ProductionCreditedNickForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm,
