@@ -6,11 +6,11 @@ from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.db import models
 from django.db.models import F, Func, Q
-from fuzzy_date import FuzzyDate
 from unidecode import unidecode
 
 from bbs.models import BBS
 from demoscene.models import Releaser
+from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title
 from parties.models import Party
 from platforms.models import Platform

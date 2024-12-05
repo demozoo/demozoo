@@ -1,9 +1,9 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from modal_workflow import render_modal_workflow
 from read_only_mode import writeable_site_required
 
+from common.utils.modal_workflow import render_modal_workflow
 from demoscene.views.generic import AjaxConfirmationView
 from homepage.forms import BannerForm, BannerImageForm
 from homepage.models import Banner, BannerImage
