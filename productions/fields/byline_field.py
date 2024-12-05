@@ -4,8 +4,9 @@ from django.utils.safestring import mark_safe
 
 from common.fields import SubmitButtonInput
 from demoscene.fields import MatchedNickField
-from demoscene.utils.nick_search import BylineSearch
 from productions.models import Byline
+
+from .byline_search import BylineSearch
 
 
 # An object which encapsulates the state of a BylineWidget as derived from its posted data;

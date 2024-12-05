@@ -2,8 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from demoscene.fields import MatchedNickField, NickField, NickLookup
-from demoscene.utils.nick_search import NickSearch, NickSelection
+from demoscene.fields import MatchedNickField, NickField, NickLookup, NickSearch, NickSelection
 from demoscene.utils.party_field import PartyField, PartyLookup
 
 
