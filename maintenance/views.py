@@ -11,10 +11,10 @@ from django.urls import re_path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView
-from read_only_mode import writeable_site_required
 
 from bbs.models import BBS, TextAd
 from comments.models import Comment
+from common.views import writeable_site_required
 from demoscene.models import Membership, Nick, Releaser, ReleaserExternalLink
 from demoscene.shortcuts import get_page
 from common.utils.fuzzy_date import FuzzyDate

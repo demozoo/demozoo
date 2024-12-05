@@ -8,9 +8,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from read_only_mode import writeable_site_required
 
 from common.utils.pagination import PaginationControls
+from common.views import writeable_site_required
 from demoscene.views.generic import AjaxConfirmationView
 from forums.forms import NewTopicForm, ReplyForm
 from forums.models import Post, Topic

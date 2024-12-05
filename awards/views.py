@@ -8,11 +8,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from read_only_mode import writeable_site_required
 
 from awards.models import Event, Nomination, Recommendation
 from demoscene.shortcuts import get_page
 from common.utils.pagination import PaginationControls
+from common.views import writeable_site_required
 from productions.models import Production, Screenshot
 
 

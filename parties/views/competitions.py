@@ -5,8 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, redirect, render
-from read_only_mode import writeable_site_required
 
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.utils import result_parser
 from demoscene.views.generic import AjaxConfirmationView

@@ -7,11 +7,11 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
-from demoscene.models import BlacklistedTag, Edit
 from common.utils.text import slugify_tag
+from common.views import writeable_site_required
+from demoscene.models import BlacklistedTag, Edit
 
 
 class AjaxConfirmationView(View):

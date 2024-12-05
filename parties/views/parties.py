@@ -13,10 +13,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
-from read_only_mode import writeable_site_required
 
 from comments.forms import CommentForm
 from comments.models import Comment
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
 from common.utils.ajax import request_is_ajax

@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from read_only_mode import writeable_site_required
 
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from parties.models import Competition, Party
 from productions.models import Production, ProductionLink

@@ -8,14 +8,14 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from read_only_mode import writeable_site_required
 
 from awards.models import Event
 from comments.forms import CommentForm
 from comments.models import Comment
+from common.utils.pagination import extract_query_params, PaginationControls
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
-from common.utils.pagination import extract_query_params, PaginationControls
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType

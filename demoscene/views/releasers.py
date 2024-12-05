@@ -7,8 +7,8 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 
+from common.views import writeable_site_required
 from demoscene.forms.common import CreditFormSet
 from demoscene.forms.releaser import (
     GroupNickForm, ReleaserCreditForm, ReleaserEditNotesForm, ReleaserExternalLinkFormSet, ScenerNickForm

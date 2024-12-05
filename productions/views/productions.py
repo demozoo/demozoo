@@ -13,15 +13,15 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
-from demoscene.forms.common import CreditFormSet
-from demoscene.models import Edit, Nick
-from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from common.utils.ajax import request_is_ajax
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import extract_query_params, PaginationControls
+from common.views import writeable_site_required
+from demoscene.forms.common import CreditFormSet
+from demoscene.models import Edit, Nick
+from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from demoscene.views.generic import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView
 from productions.carousel import Carousel
 from productions.forms import (

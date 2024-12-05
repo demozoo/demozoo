@@ -10,7 +10,6 @@ from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from read_only_mode import writeable_site_required
 from taggit.models import Tag
 
 from bbs.forms import (
@@ -20,6 +19,7 @@ from bbs.forms import (
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from comments.forms import CommentForm
 from comments.models import Comment
+from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
 from common.utils.pagination import PaginationControls, extract_query_params
