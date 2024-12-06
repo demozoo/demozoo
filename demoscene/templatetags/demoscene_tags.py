@@ -12,7 +12,7 @@ from productions.models import Production, Screenshot
 register = template.Library()
 
 
-@register.inclusion_tag('shared/nick_variants.html')
+@register.inclusion_tag('tags/nick_variants.html')
 def nick_variants(nick):
     return {
         'differentiator': nick.differentiator,
@@ -20,7 +20,7 @@ def nick_variants(nick):
     }
 
 
-@register.inclusion_tag('shared/scener_with_affiliations.html')
+@register.inclusion_tag('tags/scener_with_affiliations.html')
 def scener_with_affiliations(releaser_or_nick):
     if isinstance(releaser_or_nick, Nick):
         releaser = releaser_or_nick.releaser
@@ -37,17 +37,17 @@ def scener_with_affiliations(releaser_or_nick):
     }
 
 
-@register.inclusion_tag('shared/icon.html')
+@register.inclusion_tag('tags/icon.html')
 def icon(icon):
     return {'icon': icon}
 
 
-@register.inclusion_tag('shared/releaser_flag.html')
+@register.inclusion_tag('tags/releaser_flag.html')
 def releaser_flag(releaser):
     return {'releaser': releaser}
 
 
-@register.inclusion_tag('shared/byline.html')
+@register.inclusion_tag('tags/byline.html')
 def byline(production):
     return {
         'unparsed_byline': production.unparsed_byline,
@@ -88,7 +88,7 @@ def date_range(start_date, end_date):
             return date_format(start_date.date, arg="jS F Y")
 
 
-@register.inclusion_tag('shared/last_edited_by.html', takes_context=True)
+@register.inclusion_tag('tags/last_edited_by.html', takes_context=True)
 def last_edited_by(context, item):
     edit = Edit.for_model(item, is_admin=context['request'].user.is_staff).order_by('-timestamp').first()
     return {
@@ -109,17 +109,17 @@ def thumbnail_params_for_size(screenshot, target_width, target_height):
     }
 
 
-@register.inclusion_tag('shared/thumbnail.html')
+@register.inclusion_tag('tags/thumbnail.html')
 def thumbnail(screenshot):
     return thumbnail_params_for_size(screenshot, 133, 100)
 
 
-@register.inclusion_tag('shared/microthumb.html')
+@register.inclusion_tag('tags/microthumb.html')
 def microthumb(screenshot):
     return thumbnail_params_for_size(screenshot, 48, 36)
 
 
-@register.inclusion_tag('shared/thumbnail.html')
+@register.inclusion_tag('tags/thumbnail.html')
 def megathumb(screenshot):
     width, height = screenshot.thumb_dimensions_to_fit(400, 300)
     return {
@@ -142,7 +142,7 @@ def site_stats():
     }
 
 
-@register.inclusion_tag('shared/production_listing.html')
+@register.inclusion_tag('tags/production_listing.html')
 def production_listing(productions, show_screenshots=False, show_prod_types=False, mark_excludable=False):
     if show_screenshots:
         screenshots = Screenshot.select_for_production_ids([prod.id for prod in productions])

@@ -54,7 +54,7 @@
                         </th>
                     </tr>
                     {% for production, screenshot in nominations %}
-                        {% include "shared/production_listing_row.html" with show_prod_types=True show_screenshots=True mark_excludable=False %}
+                        {% include "tags/production_listing_row.html" with show_prod_types=True show_screenshots=True mark_excludable=False %}
                     {% endfor %}
                 </tbody>
             {% endfor %}
