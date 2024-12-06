@@ -1,5 +1,6 @@
 from django.urls import re_path
 
+from homepage.views import activity as activity_views
 from homepage.views import banners as banner_views
 from homepage.views import home as home_views
 from homepage.views import news as news_views
@@ -20,4 +21,7 @@ urlpatterns = [
     re_path(r'^banners/(\d+)/edit/$', banner_views.edit_banner, {}, 'edit_banner'),
     re_path(r'^banners/(\d+)/delete/$', banner_views.DeleteBannerView.as_view(), {}, 'delete_banner'),
     re_path(r'^banners/browse_images/$', banner_views.browse_images, {}, 'banner_images_browse'),
+
+    re_path(r'^latest_activity/$', activity_views.latest_activity, {}, 'latest_activity'),
+    re_path(r'^edits/$', activity_views.recent_edits, {}, 'recent_edits'),
 ]

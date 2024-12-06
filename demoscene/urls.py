@@ -8,11 +8,8 @@ from demoscene.views import sceners as sceners_views
 
 
 urlpatterns = [
-    re_path(r'^latest_activity/$', home_views.latest_activity, {}, 'latest_activity'),
-
     re_path(r'^error/$', home_views.error_test, {}, 'error_test'),
     re_path(r'^404/$', home_views.page_not_found_test, {}, 'page_not_found_test'),
-    re_path(r'^edits/$', home_views.recent_edits, {}, 'recent_edits'),
 
     re_path(r'^groups/$', groups_views.index, {}, 'groups'),
     re_path(r'^groups/(\d+)/$', groups_views.show, {}, 'group'),
