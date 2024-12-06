@@ -1,16 +1,11 @@
 # Determine paths
 import os
-import sys
 from datetime import timedelta
 
 
 # Django settings for demozoo2 project.
 
 FILEROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
-
-# Modify sys.path so it contains the right things
-sys.path.append(FILEROOT)
-sys.path.append(os.path.join(FILEROOT, "lib"))
 
 # subsite: 'demozoo' or 'zxdemo'. Varies root_urlconf and context processors
 SUBSITE = os.getenv('DEMOZOO_SUBSITE', 'demozoo')
