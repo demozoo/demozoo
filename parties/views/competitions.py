@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from common.views import writeable_site_required
 from demoscene.models import Edit
-from demoscene.utils import result_parser
 from demoscene.views.generic import AjaxConfirmationView
+from parties import result_parser
 from parties.forms import CompetitionForm
 from parties.models import Competition, CompetitionPlacing
 from platforms.models import Platform
