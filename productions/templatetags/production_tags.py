@@ -4,7 +4,7 @@ from django import template
 register = template.Library()
 
 
-@register.inclusion_tag('productions/_core_details.html', takes_context=True)
+@register.inclusion_tag('productions/tags/core_details.html', takes_context=True)
 def production_core_details(context, production, subpage=False):
     ctx = {
         'production': production,

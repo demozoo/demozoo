@@ -3,7 +3,7 @@
         <h3 class="panel__title">Tags</h3>
 
         <div id="tags_message"></div>
-        {% include "productions/_tags_list.html" with tags=tags only %}
+        {% include "productions/includes/tags_list.html" with tags=tags only %}
         {% if can_edit %}
             <form class="tags_form" action="{% url 'production_edit_tags' production.id %}" method="post">
                 {% csrf_token %}

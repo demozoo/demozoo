@@ -161,7 +161,7 @@ def connect_accounts(request):
                 pass
             return redirect('home')
 
-    return render(request, 'shared/sceneid_connect_accounts.html', {
+    return render(request, 'sceneid/connect_accounts.html', {
         'nick': request.session['sceneid_login_userdata']['display_name'],
         'form': form,
     })

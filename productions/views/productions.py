@@ -791,7 +791,7 @@ class ProductionEditTagsView(EditTagsView):
 class ProductionAddTagView(AddTagView):
     subject_model = Production
     action_type = 'production_add_tag'
-    template_name = 'productions/_tags_list.html'
+    template_name = 'productions/includes/tags_list.html'
 
     def can_edit(self, subject):
         return subject.editable_by_user(self.request.user)
@@ -800,7 +800,7 @@ class ProductionAddTagView(AddTagView):
 class ProductionRemoveTagView(RemoveTagView):
     subject_model = Production
     action_type = 'production_remove_tag'
-    template_name = 'productions/_tags_list.html'
+    template_name = 'productions/includes/tags_list.html'
 
     def can_edit(self, subject):
         return subject.editable_by_user(self.request.user)
@@ -934,7 +934,7 @@ def render_credits_update(request, production):
         prompt_to_edit = settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked)
         can_edit = prompt_to_edit and request.user.is_authenticated
 
-        credits_html = render_to_string('productions/_credits.html', {
+        credits_html = render_to_string('productions/includes/credits.html', {
             'production': production,
             'credits': production.credits_for_listing(),
             'editing_credits': True,

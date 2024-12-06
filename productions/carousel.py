@@ -240,7 +240,7 @@ class Carousel(object):
             show_add_screenshot_link = False
             show_manage_screenshots_link = False
 
-        return render_to_string('productions/_carousel.html', {
+        return render_to_string('productions/includes/carousel.html', {
             'production': self.production,
             'prompt_to_edit': prompt_to_edit,
 
