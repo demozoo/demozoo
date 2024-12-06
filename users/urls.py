@@ -3,7 +3,7 @@ from django.urls import re_path
 
 from users.views import users as users_views
 from users.views import accounts as account_views
-from sceneid import auth as sceneid_views
+from users.views import sceneid as sceneid_views
 
 
 urlpatterns = [
