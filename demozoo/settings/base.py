@@ -126,24 +126,6 @@ else:
     ROOT_URLCONF = 'demozoo.urls'
 
 INSTALLED_APPS = [
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.messages',
-    'django.contrib.admin',
-    'django.contrib.humanize',
-    'django.contrib.staticfiles',
-    'treebeard',
-    'taggit',
-    'compressor',
-    'rest_framework',
-    'corsheaders',
-    'django_filters',
-    'crispy_forms',
-    'crispy_bootstrap3',
-    'laces',
-
     'common',
     'demoscene',
     'parties',
@@ -165,6 +147,24 @@ INSTALLED_APPS = [
     'awards',
     'bbs',
     'tournaments',
+
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.admin',
+    'django.contrib.humanize',
+    'django.contrib.staticfiles',
+    'treebeard',
+    'taggit',
+    'compressor',
+    'rest_framework',
+    'corsheaders',
+    'django_filters',
+    'crispy_forms',
+    'crispy_bootstrap3',
+    'laces',
 ]
 
 LOGGING = {

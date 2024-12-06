@@ -26,3 +26,12 @@ class TestShowUser(TestCase):
         self.client.login(username='testsuperuser', password='12345')
         response = self.client.get('/users/%d/' % testuser.id)
         self.assertEqual(response.status_code, 200)
+
+
+class TestRegistrationViews(TestCase):
+    fixtures = ['tests/gasman.json']
+
+    def test_reset_password(self):
+        response = self.client.get('/account/forgotten_password/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Reset password - Demozoo')
