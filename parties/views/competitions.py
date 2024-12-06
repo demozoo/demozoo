@@ -6,9 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, redirect, render
 
-from common.views import writeable_site_required
+from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.models import Edit
-from demoscene.views.generic import AjaxConfirmationView
 from parties import result_parser
 from parties.forms import CompetitionForm
 from parties.models import Competition, CompetitionPlacing

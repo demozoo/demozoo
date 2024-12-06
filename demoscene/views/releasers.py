@@ -8,14 +8,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from common.views import writeable_site_required
+from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.forms.common import CreditFormSet
 from demoscene.forms.releaser import (
     GroupNickForm, ReleaserCreditForm, ReleaserEditNotesForm, ReleaserExternalLinkFormSet, ScenerNickForm
 )
 from demoscene.models import Edit, Nick, Releaser
 from demoscene.shortcuts import simple_ajax_form
-from demoscene.views.generic import AjaxConfirmationView
 from productions.models import Credit, Production
 
 
