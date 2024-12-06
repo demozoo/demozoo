@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 
-from common.utils.accounts import is_login_banned
 from common.utils.ajax import request_is_ajax
 from search.forms import SearchForm
+from users.utils import is_login_banned
 
 
 def global_nav_forms(request):

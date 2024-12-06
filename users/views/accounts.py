@@ -6,11 +6,11 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from common.utils.accounts import is_login_banned, is_registration_banned
 from common.utils.ajax import request_is_ajax
 from common.views import writeable_site_required
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
+from users.utils import is_login_banned, is_registration_banned
 
 
 class LoginViewWithIPCheck(LoginView):
