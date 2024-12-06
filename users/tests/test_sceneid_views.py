@@ -7,7 +7,7 @@ from demoscene.models import SceneID
 
 
 class TestLogin(TestCase):
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_new_user(self, get_random_string):
         get_random_string.return_value = '66666666'
         response = self.client.get('/account/sceneid/auth/?next=/music/')
@@ -44,7 +44,7 @@ class TestLogin(TestCase):
         logged_in_user.delete()
         self.assertFalse(auth.get_user(self.client).is_authenticated)
 
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_new_user_with_previous_session(self, get_random_string):
         testuser = User.objects.create_user(username='testuser', password='12345')
         self.client.login(username='testuser', password='12345')
@@ -82,7 +82,7 @@ class TestLogin(TestCase):
         self.assertNotEqual(logged_in_user, testuser)
         self.assertEqual(SceneID.objects.get(user=logged_in_user).sceneid, 2260)
 
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_connect_user(self, get_random_string):
         testuser = User.objects.create_user(username='testuser', password='12345')
 
@@ -117,7 +117,7 @@ class TestLogin(TestCase):
         self.assertEqual(logged_in_user, testuser)
         self.assertEqual(SceneID.objects.get(user=testuser).sceneid, 2260)
 
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_connect_user_bad_login(self, get_random_string):
         testuser = User.objects.create_user(username='testuser', password='12345')
 
@@ -152,7 +152,7 @@ class TestLogin(TestCase):
         self.assertFalse(logged_in_user.is_authenticated)
         self.assertFalse(SceneID.objects.filter(user=testuser).exists())
 
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_existing_user(self, get_random_string):
         testuser = User.objects.create_user(username='testuser', password='12345')
         SceneID.objects.create(user=testuser, sceneid=2260)
@@ -176,7 +176,7 @@ class TestLogin(TestCase):
         logged_in_user = auth.get_user(self.client)
         self.assertEqual(logged_in_user, testuser)
 
-    @patch('sceneid.auth.get_random_string')
+    @patch('users.views.sceneid.get_random_string')
     def test_login_banned_user(self, get_random_string):
         testuser = User.objects.create_user(username='testuser', password='12345')
         testuser.is_active = False

@@ -280,7 +280,7 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'sceneid.backends.SceneIDBackend',
+    'users.backends.SceneIDBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
