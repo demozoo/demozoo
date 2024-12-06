@@ -51,7 +51,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
     else:
         clean_title = title
 
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'generic/simple_form.html', {
         'form': form,
         'html_form_class': kwargs.get('html_form_class'),
         'title': title,
@@ -64,7 +64,7 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
 def modal_workflow_confirmation(request, action_url, message, html_title=None):
     return render_modal_workflow(
         request,
-        'shared/simple_confirmation.html', 'shared/simple_confirmation.js',
+        'generic/simple_confirmation.html', 'generic/simple_confirmation.js',
         {
             'html_title': html_title,
             'message': message,

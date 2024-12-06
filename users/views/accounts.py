@@ -76,7 +76,7 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
 
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'generic/simple_form.html', {
         'form': form,
         'title': "Change password",
         'html_title': "Change password",

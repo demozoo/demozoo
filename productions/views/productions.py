@@ -235,7 +235,7 @@ def add_blurb(request, production_id):
     else:
         form = ProductionBlurbForm(instance=blurb)
 
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'generic/simple_form.html', {
         'form': form,
         'title': 'Adding blurb for %s:' % production.title,
         'html_title': 'Adding blurb for %s' % production.title,

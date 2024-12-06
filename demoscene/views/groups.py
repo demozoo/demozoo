@@ -101,7 +101,7 @@ def create(request):
     else:
         form = CreateGroupForm()
 
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'generic/simple_form.html', {
         'form': form,
         'title': "New group",
         'html_title': "New group",
