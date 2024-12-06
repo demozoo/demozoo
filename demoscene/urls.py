@@ -1,16 +1,12 @@
 from django.urls import re_path
 
 from demoscene.views import groups as groups_views
-from demoscene.views import home as home_views
 from demoscene.views import nicks as nicks_views
 from demoscene.views import releasers as releasers_views
 from demoscene.views import sceners as sceners_views
 
 
 urlpatterns = [
-    re_path(r'^error/$', home_views.error_test, {}, 'error_test'),
-    re_path(r'^404/$', home_views.page_not_found_test, {}, 'page_not_found_test'),
-
     re_path(r'^groups/$', groups_views.index, {}, 'groups'),
     re_path(r'^groups/(\d+)/$', groups_views.show, {}, 'group'),
     re_path(r'^groups/(\d+)/history/$', groups_views.history, {}, 'group_history'),
