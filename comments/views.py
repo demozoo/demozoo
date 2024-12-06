@@ -8,8 +8,7 @@ from django.views.generic import TemplateView
 from bbs.models import BBS
 from comments.forms import CommentForm
 from comments.models import Comment
-from common.views import writeable_site_required
-from demoscene.views.generic import AjaxConfirmationView
+from common.views import AjaxConfirmationView, writeable_site_required
 from parties.models import Party
 from productions.models import Production
 

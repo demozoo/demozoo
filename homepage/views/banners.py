@@ -3,8 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from common.utils.modal_workflow import render_modal_workflow
-from common.views import writeable_site_required
-from demoscene.views.generic import AjaxConfirmationView
+from common.views import AjaxConfirmationView, writeable_site_required
 from homepage.forms import BannerForm, BannerImageForm
 from homepage.models import Banner, BannerImage
 

@@ -10,8 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 
 from common.utils.pagination import PaginationControls
-from common.views import writeable_site_required
-from demoscene.views.generic import AjaxConfirmationView
+from common.views import AjaxConfirmationView, writeable_site_required
 from forums.forms import NewTopicForm, ReplyForm
 from forums.models import Post, Topic
 
