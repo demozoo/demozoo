@@ -58,7 +58,7 @@
     {% endif %}
 
     {% if site_is_writeable %}
-        {% include "productions/_award_recommendations.html" %}
+        {% include "productions/includes/award_recommendations.html" %}
     {% endif %}
 
     <div class="mainstage">
@@ -66,22 +66,22 @@
 
         <div class="right">
             {% if award_nominations %}
-                {% include "productions/_awards.html" %}
+                {% include "productions/includes/awards.html" %}
             {% endif %}
 
             {% if download_links %}
-                {% include "productions/_downloads.html" %}
+                {% include "productions/includes/downloads.html" %}
             {% endif %}
 
             {% if info_files %}
-                {% include "productions/_info_files.html" %}
+                {% include "productions/includes/info_files.html" %}
             {% endif %}
 
             {% if external_links %}
-                {% include "productions/_external_links.html" %}
+                {% include "productions/includes/external_links.html" %}
             {% endif %}
 
-            {% include "productions/_tags.html" %}
+            {% include "productions/includes/tags.html" %}
 
             {% if can_edit %}
                 <div class="panel tell_us_something_panel">
@@ -114,10 +114,10 @@
 
     <div style="clear: both;"></div>
 
-    {% include "productions/_notes.html" %}
+    {% include "productions/includes/notes.html" %}
 
     <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-        {% include "productions/_credits.html" %}
+        {% include "productions/includes/credits.html" %}
 
         {% if production.can_have_pack_members %}
             <div class="pack_contents_panel panel editable_chunk">
