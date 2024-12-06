@@ -30,7 +30,7 @@ class TournamentCredit:
         self.screenshot = screenshot
 
 
-@register.inclusion_tag('shared/credited_production_listing.html', takes_context=True)
+@register.inclusion_tag('releasers/tags/credited_production_listing.html', takes_context=True)
 def combined_releases(context, releaser, include_tournaments=False):
 
     credits = (
