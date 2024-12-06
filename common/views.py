@@ -101,7 +101,7 @@ class AjaxConfirmationView(View):
             else:
                 return self.cancel()
         else:
-            return render(request, 'shared/simple_confirmation.html', {
+            return render(request, 'generic/simple_confirmation.html', {
                 'html_title': self.get_html_title(),
                 'message': self.get_message(),
                 'action_url': self.get_action_url(),

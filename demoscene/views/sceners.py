@@ -132,7 +132,7 @@ def create(request):
     else:
         form = CreateScenerForm()
 
-    return render(request, 'shared/simple_form.html', {
+    return render(request, 'generic/simple_form.html', {
         'form': form,
         'html_title': "New scener",
         'title': "New scener",
