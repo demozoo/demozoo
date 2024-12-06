@@ -92,9 +92,9 @@ if SUBSITE == 'zxdemo':
     ]
 else:
     CONTEXT_PROCESSORS += [
-        'demoscene.context_processors.global_nav_forms',
-        'demoscene.context_processors.ajax_base_template',
-        'demoscene.context_processors.read_only_mode',
+        'common.context_processors.global_nav_forms',
+        'common.context_processors.ajax_base_template',
+        'common.context_processors.read_only_mode',
     ]
 
 TEMPLATES = [
