@@ -2,6 +2,7 @@ from django.urls import re_path
 
 from homepage.views import activity as activity_views
 from homepage.views import banners as banner_views
+from homepage.views import diagnostics as diagnostics_views
 from homepage.views import home as home_views
 from homepage.views import news as news_views
 
@@ -24,4 +25,7 @@ urlpatterns = [
 
     re_path(r'^latest_activity/$', activity_views.latest_activity, {}, 'latest_activity'),
     re_path(r'^edits/$', activity_views.recent_edits, {}, 'recent_edits'),
+
+    re_path(r'^error/$', diagnostics_views.error_test, {}, 'error_test'),
+    re_path(r'^404/$', diagnostics_views.page_not_found_test, {}, 'page_not_found_test'),
 ]
