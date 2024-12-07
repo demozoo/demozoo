@@ -101,3 +101,11 @@ def combined_releases(context, releaser, include_tournaments=False):
         "credits": credits,
         "can_edit": context.get("can_edit", False),
     }
+
+
+@register.inclusion_tag("releasers/tags/nick_variants.html")
+def nick_variants(nick):
+    return {
+        "differentiator": nick.differentiator,
+        "variants": nick.nick_variant_and_abbreviation_list,
+    }
