@@ -26,7 +26,7 @@ class Article(models.Model):
         return self.title
 
 
-def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_releaser'):
+def filter_releasers_queryset_to_spectrum(queryset, releaser_table="demoscene_releaser"):
     ZXDEMO_PLATFORM_IDS = settings.ZXDEMO_PLATFORM_IDS
     return queryset.extra(
         where=[
@@ -61,9 +61,10 @@ def filter_releasers_queryset_to_spectrum(queryset, releaser_table='demoscene_re
                 INNER JOIN demoscene_nick ON (productions_credit.nick_id = demoscene_nick.id)
                 WHERE productions_production_platforms.platform_id = ANY(%%s)
             )
-            """ % {'releaser_table': releaser_table}
+            """
+            % {"releaser_table": releaser_table}
         ],
-        params=[list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS)]
+        params=[list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS), list(ZXDEMO_PLATFORM_IDS)],
     )
 
 

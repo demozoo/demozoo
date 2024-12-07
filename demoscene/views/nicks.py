@@ -8,24 +8,24 @@ from productions.fields.byline_search import BylineSearch
 
 
 def match(request):
-    initial_query = request.GET.get('q')
-    autocomplete = request.GET.get('autocomplete', False)
-    sceners_only = request.GET.get('sceners_only', False)
-    groups_only = request.GET.get('groups_only', False)
-    group_ids = request.GET.get('group_ids')
+    initial_query = request.GET.get("q")
+    autocomplete = request.GET.get("autocomplete", False)
+    sceners_only = request.GET.get("sceners_only", False)
+    groups_only = request.GET.get("groups_only", False)
+    group_ids = request.GET.get("group_ids")
 
     # irritating workaround for not being able to pass an "omit this parameter" value to jquery
-    if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
+    if autocomplete == "false" or autocomplete == "null" or autocomplete == "0":
         autocomplete = False
 
     filters = {}  # also doubles up as options to pass to NickSearch
 
     if group_ids:
-        filters['group_ids'] = group_ids.split(',')
+        filters["group_ids"] = group_ids.split(",")
     if sceners_only:
-        filters['sceners_only'] = True
+        filters["sceners_only"] = True
     elif groups_only:
-        filters['groups_only'] = True
+        filters["groups_only"] = True
 
     if autocomplete:
         query = initial_query + NickVariant.autocomplete(initial_query, **filters)
@@ -35,9 +35,9 @@ def match(request):
     nick_search = NickSearch(query.strip(), **filters)
 
     data = {
-        'query': query,
-        'initial_query': initial_query,
-        'match': nick_search.match_data,
+        "query": query,
+        "initial_query": initial_query,
+        "match": nick_search.match_data,
     }
     # to simulate network lag:
     # import time
@@ -46,20 +46,20 @@ def match(request):
 
 
 def byline_match(request):
-    initial_query = request.GET.get('q')
-    autocomplete = request.GET.get('autocomplete', False)
+    initial_query = request.GET.get("q")
+    autocomplete = request.GET.get("autocomplete", False)
 
     # irritating workaround for not being able to pass an "omit this parameter" value to jquery
-    if autocomplete == 'false' or autocomplete == 'null' or autocomplete == '0':
+    if autocomplete == "false" or autocomplete == "null" or autocomplete == "0":
         autocomplete = False
 
     byline_search = BylineSearch(search_term=initial_query, autocomplete=autocomplete)
 
     data = {
-        'query': byline_search.search_term,
-        'initial_query': initial_query,
-        'author_matches': byline_search.author_matches_data,
-        'affiliation_matches': byline_search.affiliation_matches_data,
+        "query": byline_search.search_term,
+        "initial_query": initial_query,
+        "author_matches": byline_search.author_matches_data,
+        "affiliation_matches": byline_search.affiliation_matches_data,
     }
     return HttpResponse(json.dumps(data), content_type="text/javascript")
 

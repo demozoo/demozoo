@@ -6,23 +6,22 @@ from django.utils.translation import gettext_lazy as _
 
 class UserSignupForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
-        self.captcha_question = kwargs.pop('captcha')
+        self.captcha_question = kwargs.pop("captcha")
         return super().__init__(*args, **kwargs)
 
     email = forms.EmailField(
-        required=False, help_text=_('Needed if you want to be able to reset your password later on')
+        required=False, help_text=_("Needed if you want to be able to reset your password later on")
     )
     captcha = forms.CharField(
-        required=True, label=_("To prove you're not a bot"),
-        widget=forms.TextInput(attrs={'class': 'short'})
+        required=True, label=_("To prove you're not a bot"), widget=forms.TextInput(attrs={"class": "short"})
     )
 
     def clean_captcha(self):
-        data = self.cleaned_data['captcha']
+        data = self.cleaned_data["captcha"]
         if data.lower() != self.captcha_question.answer.lower():
             raise forms.ValidationError("Please adjust your humanity settings and try again.")
         return data
 
     class Meta:
-        fields = ('username', 'email')
+        fields = ("username", "email")
         model = User

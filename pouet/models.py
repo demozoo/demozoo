@@ -36,9 +36,9 @@ class Production(models.Model):
     download_url = models.TextField()
     release_date_date = models.DateField(null=True, blank=True)
     release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
-    groups = models.ManyToManyField(Group, related_name='productions')
-    platforms = models.ManyToManyField(Platform, related_name='productions')
-    types = models.ManyToManyField(ProductionType, related_name='productions')
+    groups = models.ManyToManyField(Group, related_name="productions")
+    platforms = models.ManyToManyField(Platform, related_name="productions")
+    types = models.ManyToManyField(ProductionType, related_name="productions")
     vote_up_count = models.IntegerField(null=True, blank=True)
     vote_pig_count = models.IntegerField(null=True, blank=True)
     vote_down_count = models.IntegerField(null=True, blank=True)
@@ -55,23 +55,23 @@ class Production(models.Model):
 
 
 class CompetitionPlacing(models.Model):
-    production = models.ForeignKey(Production, related_name='competition_placings', on_delete=models.CASCADE)
-    party = models.ForeignKey(Party, related_name='competition_placings', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="competition_placings", on_delete=models.CASCADE)
+    party = models.ForeignKey(Party, related_name="competition_placings", on_delete=models.CASCADE)
     competition_type = models.ForeignKey(
-        CompetitionType, null=True, blank=True, related_name='+', on_delete=models.CASCADE
+        CompetitionType, null=True, blank=True, related_name="+", on_delete=models.CASCADE
     )
     ranking = models.IntegerField(null=True, blank=True)
     year = models.IntegerField()
 
 
 class DownloadLink(models.Model):
-    production = models.ForeignKey(Production, related_name='download_links', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="download_links", on_delete=models.CASCADE)
     url = models.TextField()
     link_type = models.CharField(max_length=255)
 
 
 class GroupMatchInfo(models.Model):
-    releaser = models.OneToOneField('demoscene.Releaser', on_delete=models.CASCADE)
+    releaser = models.OneToOneField("demoscene.Releaser", on_delete=models.CASCADE)
     matched_production_count = models.IntegerField()
     unmatched_demozoo_production_count = models.IntegerField()
     unmatched_pouet_production_count = models.IntegerField()

@@ -19,12 +19,16 @@ POSTS_PER_PAGE = 50
 
 
 def index(request):
-    topics = Topic.objects.order_by('-last_post_at').select_related('created_by_user', 'last_post_by_user')
+    topics = Topic.objects.order_by("-last_post_at").select_related("created_by_user", "last_post_by_user")
 
-    return render(request, 'forums/index.html', {
-        'menu_section': 'forums',
-        'topics': topics,
-    })
+    return render(
+        request,
+        "forums/index.html",
+        {
+            "menu_section": "forums",
+            "topics": topics,
+        },
+    )
 
 
 @writeable_site_required
@@ -34,28 +38,32 @@ def new_topic(request):
         form = NewTopicForm(request.POST)
         if form.is_valid():
             topic = Topic.objects.create(
-                title=form.cleaned_data['title'],
+                title=form.cleaned_data["title"],
                 created_by_user=request.user,
                 last_post_at=datetime.datetime.now(),
-                last_post_by_user=request.user
+                last_post_by_user=request.user,
             )
-            Post.objects.create(user=request.user, topic=topic, body=form.cleaned_data['body'])
+            Post.objects.create(user=request.user, topic=topic, body=form.cleaned_data["body"])
             return redirect(topic.get_absolute_url())
     else:
         form = NewTopicForm()
 
-    return render(request, 'forums/new_topic.html', {
-        'menu_section': 'forums',
-        'form': form,
-    })
+    return render(
+        request,
+        "forums/new_topic.html",
+        {
+            "menu_section": "forums",
+            "form": form,
+        },
+    )
 
 
 def topic(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
-    posts = topic.posts.order_by('created_at').select_related('user')
+    posts = topic.posts.order_by("created_at").select_related("user")
     paginator = Paginator(posts, POSTS_PER_PAGE)
 
-    page = request.GET.get('page')
+    page = request.GET.get("page")
     try:
         posts_page = paginator.page(page)
     except (PageNotAnInteger, EmptyPage):
@@ -67,20 +75,24 @@ def topic(request, topic_id):
     else:
         form = None
 
-    return render(request, 'forums/topic.html', {
-        'menu_section': 'forums',
-        'topic': topic,
-        'posts': posts_page,
-        'form': form,
-        'pagination_controls': PaginationControls(posts_page, topic.get_absolute_url())
-    })
+    return render(
+        request,
+        "forums/topic.html",
+        {
+            "menu_section": "forums",
+            "topic": topic,
+            "posts": posts_page,
+            "form": form,
+            "pagination_controls": PaginationControls(posts_page, topic.get_absolute_url()),
+        },
+    )
 
 
 def post(request, post_id):
-    """ topic view but ensuring that we display the page that contains the given post """
+    """topic view but ensuring that we display the page that contains the given post"""
     post = get_object_or_404(Post, id=post_id)
     topic = post.topic
-    posts = topic.posts.order_by('created_at').select_related('user')
+    posts = topic.posts.order_by("created_at").select_related("user")
 
     post_offset = topic.posts.filter(created_at__lt=post.created_at).count()
     paginator = Paginator(posts, POSTS_PER_PAGE)
@@ -93,13 +105,17 @@ def post(request, post_id):
     else:
         form = None
 
-    return render(request, 'forums/topic.html', {
-        'menu_section': 'forums',
-        'topic': topic,
-        'posts': posts_page,
-        'form': form,
-        'pagination_controls': PaginationControls(posts_page, topic.get_absolute_url())
-    })
+    return render(
+        request,
+        "forums/topic.html",
+        {
+            "menu_section": "forums",
+            "topic": topic,
+            "posts": posts_page,
+            "form": form,
+            "pagination_controls": PaginationControls(posts_page, topic.get_absolute_url()),
+        },
+    )
 
 
 @writeable_site_required
@@ -120,7 +136,7 @@ def topic_reply(request, topic_id):
             topic.last_post_by_user = request.user
             topic.reply_count = topic.posts.count() - 1
             topic.save()
-            return redirect(topic.get_absolute_url() + ('#post-%d' % post.id))
+            return redirect(topic.get_absolute_url() + ("#post-%d" % post.id))
         else:
             # the only possible error is leaving the box totally empty.
             # Redirect back to topic page in that case
@@ -128,11 +144,15 @@ def topic_reply(request, topic_id):
     else:
         form = ReplyForm(instance=post)
 
-    return render(request, 'forums/add_reply.html', {
-        'menu_section': 'forums',
-        'topic': topic,
-        'form': form,
-    })
+    return render(
+        request,
+        "forums/add_reply.html",
+        {
+            "menu_section": "forums",
+            "topic": topic,
+            "form": form,
+        },
+    )
 
 
 class DeletePostView(AjaxConfirmationView):
@@ -142,7 +162,7 @@ class DeletePostView(AjaxConfirmationView):
         if Topic.objects.filter(id=self.object.topic.id).exists():
             return self.object.topic.get_absolute_url()
         else:
-            return reverse('forums')
+            return reverse("forums")
 
     def get_cancel_url(self):
         return self.object.get_absolute_url()
@@ -168,9 +188,7 @@ class EditPostView(TemplateView):
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, post_id):
-        self.object = get_object_or_404(
-            Post, id=post_id
-        )
+        self.object = get_object_or_404(Post, id=post_id)
 
         if not request.user.is_staff:
             return redirect(self.object.get_absolute_url())
@@ -194,8 +212,8 @@ class EditPostView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['post'] = self.object
-        context['post_form'] = self.form
+        context["post"] = self.object
+        context["post_form"] = self.form
         return context
 
-    template_name = 'forums/edit_post.html'
+    template_name = "forums/edit_post.html"

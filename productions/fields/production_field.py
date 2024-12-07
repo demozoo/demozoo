@@ -43,7 +43,7 @@ class ProductionSelection(object):
         return self.production
 
     def __str__(self):
-        return u"ProductionSelection: %s - %s" % (self.id, self.title)
+        return "ProductionSelection: %s - %s" % (self.id, self.title)
 
     def __eq__(self, other):
         if not isinstance(other, ProductionSelection):
@@ -86,11 +86,11 @@ class ProductionWidget(forms.Widget):
         super().__init__(attrs=attrs)
 
     def value_from_datadict(self, data, files, name):
-        id = self.id_widget.value_from_datadict(data, files, name + '_id')
-        title = self.title_widget.value_from_datadict(data, files, name + '_title')
-        byline_lookup = self.byline_widget.value_from_datadict(data, files, name + '_byline')
+        id = self.id_widget.value_from_datadict(data, files, name + "_id")
+        title = self.title_widget.value_from_datadict(data, files, name + "_title")
+        byline_lookup = self.byline_widget.value_from_datadict(data, files, name + "_byline")
         if self.show_production_type_field:
-            type_to_set = self.production_type_widget.value_from_datadict(data, files, name + '_type')
+            type_to_set = self.production_type_widget.value_from_datadict(data, files, name + "_type")
             if type_to_set:
                 types_to_set = [ProductionType.objects.get(id=type_to_set)]
             else:
@@ -120,55 +120,53 @@ class ProductionWidget(forms.Widget):
                     "<b>%s</b> by %s" % (production_selection.production.title, byline_text)
                 ]
             else:
-                static_view = [
-                    "<b>%s</b>" % production_selection.production.title
-                ]
+                static_view = ["<b>%s</b>" % production_selection.production.title]
         else:
             static_view = []
 
         title_attrs = self.build_attrs(attrs)
-        title_attrs['class'] = 'title_field'
+        title_attrs["class"] = "title_field"
         if self.supertype:
-            title_attrs['data-supertype'] = self.supertype
+            title_attrs["data-supertype"] = self.supertype
         byline_attrs = self.build_attrs(attrs)
-        byline_attrs['id'] += '_byline'
+        byline_attrs["id"] += "_byline"
 
         prodtype_attrs = self.build_attrs(attrs)
-        prodtype_attrs['id'] += '_type'
+        prodtype_attrs["id"] += "_type"
 
         form_view = [
-            self.id_widget.render(name + '_id', production_id, renderer=renderer),
-            self.title_widget.render(name + '_title', '', attrs=title_attrs, renderer=renderer),
-            ' <label for="%s">by</label> ' % self.byline_widget.id_for_label('id_' + name + '_byline'),
-            self.byline_widget.render(name + '_byline', '', attrs=byline_attrs, renderer=renderer),
+            self.id_widget.render(name + "_id", production_id, renderer=renderer),
+            self.title_widget.render(name + "_title", "", attrs=title_attrs, renderer=renderer),
+            ' <label for="%s">by</label> ' % self.byline_widget.id_for_label("id_" + name + "_byline"),
+            self.byline_widget.render(name + "_byline", "", attrs=byline_attrs, renderer=renderer),
         ]
         if self.show_production_type_field:
             form_view += [
-                '<label for="%s">Type:</label> ' % self.production_type_widget.id_for_label('id_' + name + '_type'),
-                self.production_type_widget.render(name + '_type', '', attrs=prodtype_attrs, renderer=renderer)
+                '<label for="%s">Type:</label> ' % self.production_type_widget.id_for_label("id_" + name + "_type"),
+                self.production_type_widget.render(name + "_type", "", attrs=prodtype_attrs, renderer=renderer),
             ]
 
         output = [
             '<div class="production_field">',
             '<div class="static_view">',
             '<div class="static_view_text">',
-            u''.join(static_view),
-            '</div>',
-            '</div>',
+            "".join(static_view),
+            "</div>",
+            "</div>",
             '<div class="form_view">',
-            u''.join(form_view),
-            '</div>',
-            '</div>',
+            "".join(form_view),
+            "</div>",
+            "</div>",
         ]
-        return mark_safe(u''.join(output))
+        return mark_safe("".join(output))
 
 
 class ProductionField(forms.Field):
     def __init__(self, *args, **kwargs):
-        self.types_to_set = kwargs.pop('types_to_set', [])
-        self.show_production_type_field = kwargs.pop('show_production_type_field', False)
+        self.types_to_set = kwargs.pop("types_to_set", [])
+        self.show_production_type_field = kwargs.pop("show_production_type_field", False)
         self.byline_field = BylineField(required=False)
-        supertype = kwargs.pop('supertype', None)
+        supertype = kwargs.pop("supertype", None)
         self.widget = ProductionWidget(
             types_to_set=self.types_to_set,
             supertype=supertype,

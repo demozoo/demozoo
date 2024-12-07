@@ -18,8 +18,8 @@ def do_nav_active(parser, token):
 class NavActiveNode(template.Node):
     def __init__(self, section_names):
         self.section_names = section_names
-        self.request_var = template.Variable('request')
-        self.menu_section_var = template.Variable('menu_section')
+        self.request_var = template.Variable("request")
+        self.menu_section_var = template.Variable("menu_section")
 
     def render(self, context):
         # grab current section name from 'menu_section' variable, falling back on last part of module name if not set
@@ -29,7 +29,7 @@ class NavActiveNode(template.Node):
             try:
                 request = self.request_var.resolve(context)
                 func, args, kwargs = resolve(request.path)
-                current_section_name = func.__module__.split('.')[-1]
+                current_section_name = func.__module__.split(".")[-1]
             except (template.VariableDoesNotExist, Resolver404):
                 return ""
 
@@ -39,35 +39,35 @@ class NavActiveNode(template.Node):
             return ""
 
 
-MenuItem = namedtuple('MenuItem', ['url', 'label', 'post'], defaults=[False])
+MenuItem = namedtuple("MenuItem", ["url", "label", "post"], defaults=[False])
 
 
-@register.inclusion_tag('shared/user_menu.html', takes_context=True)
+@register.inclusion_tag("shared/user_menu.html", takes_context=True)
 def user_menu(context):
-    user = context['request'].user
+    user = context["request"].user
 
     menu_items = [
-        MenuItem(reverse('account_change_password'), "Change password"),
+        MenuItem(reverse("account_change_password"), "Change password"),
     ]
 
     for event in Event.active_for_user(user):
         menu_items.append(
-            MenuItem(reverse('award', args=(event.slug,)), event.name),
+            MenuItem(reverse("award", args=(event.slug,)), event.name),
         )
 
     menu_items.append(
-        MenuItem(reverse('user', args=(user.id, )), "Activity"),
+        MenuItem(reverse("user", args=(user.id,)), "Activity"),
     )
 
     if user.is_staff:
         menu_items.append(
-            MenuItem(reverse('maintenance:index'), "Maintenance"),
+            MenuItem(reverse("maintenance:index"), "Maintenance"),
         )
 
     menu_items.append(
-        MenuItem(reverse('log_out'), "Log out", post=True),
+        MenuItem(reverse("log_out"), "Log out", post=True),
     )
 
     return {
-        'menu_items': menu_items,
+        "menu_items": menu_items,
     }

@@ -27,38 +27,40 @@ def readable_list(list):
     if len(list) == 0:
         return "none"
     else:
-        return u", ".join([str(item) for item in list])
+        return ", ".join([str(item) for item in list])
 
 
 class BaseProductionEditCoreDetailsForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', Production())
+        self.instance = kwargs.pop("instance", Production())
         super().__init__(*args, **kwargs)
-        self.fields['title'] = forms.CharField(initial=self.instance.title, max_length=255)
-        self.fields['byline'] = BylineField(required=False, initial=self.instance.byline_search(), label='By')
-        self.fields['release_date'] = FuzzyDateField(
-            required=False, initial=self.instance.release_date,
-            help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")'
+        self.fields["title"] = forms.CharField(initial=self.instance.title, max_length=255)
+        self.fields["byline"] = BylineField(required=False, initial=self.instance.byline_search(), label="By")
+        self.fields["release_date"] = FuzzyDateField(
+            required=False,
+            initial=self.instance.release_date,
+            help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")',
         )
-        self.fields['platforms'] = forms.ModelMultipleChoiceField(
-            required=False, label='Platform',
+        self.fields["platforms"] = forms.ModelMultipleChoiceField(
+            required=False,
+            label="Platform",
             initial=[platform.id for platform in self.instance.platforms.all()],
-            queryset=Platform.objects.all()
+            queryset=Platform.objects.all(),
         )
 
     def save(self, commit=True):
-        self.instance.title = self.cleaned_data['title']
+        self.instance.title = self.cleaned_data["title"]
 
         # will probably fail if commit = False...
-        if self.cleaned_data['byline']:
-            self.cleaned_data['byline'].commit(self.instance)
+        if self.cleaned_data["byline"]:
+            self.cleaned_data["byline"].commit(self.instance)
         else:
             self.instance.author_nicks.clear()
             self.instance.author_affiliation_nicks.clear()
         self.instance.unparsed_byline = None
 
-        self.instance.platforms.set(self.cleaned_data['platforms'])
-        self.instance.release_date = self.cleaned_data['release_date']
+        self.instance.platforms.set(self.cleaned_data["platforms"])
+        self.instance.release_date = self.cleaned_data["release_date"]
         if commit:
             self.instance.save()
         return self.instance
@@ -67,35 +69,34 @@ class BaseProductionEditCoreDetailsForm(forms.Form):
     def changed_data_description(self):
         descriptions = []
         changed_fields = self.changed_data
-        if 'title' in changed_fields:
-            descriptions.append(u"title to '%s'" % self.cleaned_data['title'])
-        if 'byline' in changed_fields:
-            descriptions.append(u"author to '%s'" % self.cleaned_data['byline'])
-        if 'release_date' in changed_fields:
-            descriptions.append(u"release date to %s" % self.cleaned_data['release_date'])
-        if 'type' in changed_fields:
-            descriptions.append(u"type to %s" % self.cleaned_data['type'])
-        if 'types' in changed_fields:
-            if len(self.cleaned_data['types']) > 1:
-                descriptions.append(u"types to %s" % readable_list(self.cleaned_data['types']))
+        if "title" in changed_fields:
+            descriptions.append("title to '%s'" % self.cleaned_data["title"])
+        if "byline" in changed_fields:
+            descriptions.append("author to '%s'" % self.cleaned_data["byline"])
+        if "release_date" in changed_fields:
+            descriptions.append("release date to %s" % self.cleaned_data["release_date"])
+        if "type" in changed_fields:
+            descriptions.append("type to %s" % self.cleaned_data["type"])
+        if "types" in changed_fields:
+            if len(self.cleaned_data["types"]) > 1:
+                descriptions.append("types to %s" % readable_list(self.cleaned_data["types"]))
             else:
-                descriptions.append(u"type to %s" % readable_list(self.cleaned_data['types']))
-        if 'platform' in changed_fields:  # pragma: no cover
-            descriptions.append(u"platform to %s" % self.cleaned_data['platform'])
-        if 'platforms' in changed_fields:
-            if len(self.cleaned_data['platforms']) > 1:
-                descriptions.append(u"platforms to %s" % readable_list(self.cleaned_data['platforms']))
+                descriptions.append("type to %s" % readable_list(self.cleaned_data["types"]))
+        if "platform" in changed_fields:  # pragma: no cover
+            descriptions.append("platform to %s" % self.cleaned_data["platform"])
+        if "platforms" in changed_fields:
+            if len(self.cleaned_data["platforms"]) > 1:
+                descriptions.append("platforms to %s" % readable_list(self.cleaned_data["platforms"]))
             else:
-                descriptions.append(u"platform to %s" % readable_list(self.cleaned_data['platforms']))
+                descriptions.append("platform to %s" % readable_list(self.cleaned_data["platforms"]))
         if descriptions:
-            return u"Set %s" % (u", ".join(descriptions))
+            return "Set %s" % (", ".join(descriptions))
 
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
             Edit.objects.create(
-                action_type='edit_production_core_details', focus=self.instance,
-                description=description, user=user
+                action_type="edit_production_core_details", focus=self.instance, description=description, user=user
             )
 
 
@@ -103,17 +104,18 @@ class ProductionEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
     # has multiple types
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['types'] = ProductionTypeMultipleChoiceField(
-            required=False, label='Type',
+        self.fields["types"] = ProductionTypeMultipleChoiceField(
+            required=False,
+            label="Type",
             initial=[typ.id for typ in self.instance.types.all()],
-            queryset=ProductionType.featured_types()
+            queryset=ProductionType.featured_types(),
         )
 
         self.has_multiple_types = True
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.instance.types.set(self.cleaned_data['types'])
+        self.instance.types.set(self.cleaned_data["types"])
 
 
 class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
@@ -127,15 +129,12 @@ class MusicEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
         except IndexError:
             initial_type = None
 
-        self.fields['type'] = ProductionTypeChoiceField(
-            queryset=ProductionType.music_types(),
-            initial=initial_type
-        )
+        self.fields["type"] = ProductionTypeChoiceField(queryset=ProductionType.music_types(), initial=initial_type)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if self.cleaned_data['type']:
-            self.instance.types.set([self.cleaned_data['type']])
+        if self.cleaned_data["type"]:
+            self.instance.types.set([self.cleaned_data["type"]])
         return self.instance
 
 
@@ -150,32 +149,29 @@ class GraphicsEditCoreDetailsForm(BaseProductionEditCoreDetailsForm):
         except IndexError:
             initial_type = None
 
-        self.fields['type'] = ProductionTypeChoiceField(
-            queryset=ProductionType.graphic_types(),
-            initial=initial_type
-        )
+        self.fields["type"] = ProductionTypeChoiceField(queryset=ProductionType.graphic_types(), initial=initial_type)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if self.cleaned_data['type']:
-            self.instance.types.set([self.cleaned_data['type']])
+        if self.cleaned_data["type"]:
+            self.instance.types.set([self.cleaned_data["type"]])
         return self.instance
 
 
 class CreateProductionForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', Production())
+        self.instance = kwargs.pop("instance", Production())
         super().__init__(*args, **kwargs)
-        self.fields['title'] = forms.CharField(max_length=255)
-        self.fields['byline'] = BylineField(required=False, label='By')
-        self.fields['release_date'] = FuzzyDateField(
+        self.fields["title"] = forms.CharField(max_length=255)
+        self.fields["byline"] = BylineField(required=False, label="By")
+        self.fields["release_date"] = FuzzyDateField(
             required=False, help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")'
         )
-        self.fields['types'] = ProductionTypeMultipleChoiceField(
-            required=False, label='Type', queryset=ProductionType.featured_types()
+        self.fields["types"] = ProductionTypeMultipleChoiceField(
+            required=False, label="Type", queryset=ProductionType.featured_types()
         )
-        self.fields['platforms'] = forms.ModelMultipleChoiceField(
-            required=False, label='Platform', queryset=Platform.objects.all()
+        self.fields["platforms"] = forms.ModelMultipleChoiceField(
+            required=False, label="Platform", queryset=Platform.objects.all()
         )
 
     def save(self, commit=True):
@@ -183,85 +179,84 @@ class CreateProductionForm(forms.Form):
             raise Exception("we don't support saving CreateProductionForm with commit = False. Sorry!")
 
         if not self.instance.supertype:
-            self.instance.supertype = 'production'
-        self.instance.title = self.cleaned_data['title']
-        self.instance.release_date = self.cleaned_data['release_date']
+            self.instance.supertype = "production"
+        self.instance.title = self.cleaned_data["title"]
+        self.instance.release_date = self.cleaned_data["release_date"]
         self.instance.save()
-        if self.cleaned_data['byline']:
-            self.cleaned_data['byline'].commit(self.instance)
-        self.instance.types.set(self.cleaned_data['types'])
-        self.instance.platforms.set(self.cleaned_data['platforms'])
+        if self.cleaned_data["byline"]:
+            self.cleaned_data["byline"].commit(self.instance)
+        self.instance.types.set(self.cleaned_data["types"])
+        self.instance.platforms.set(self.cleaned_data["platforms"])
         return self.instance
 
     def log_creation(self, user):
         Edit.objects.create(
-            action_type='create_production', focus=self.instance,
-            description=(u"Added production '%s'" % self.instance.title), user=user
+            action_type="create_production",
+            focus=self.instance,
+            description=("Added production '%s'" % self.instance.title),
+            user=user,
         )
 
 
 class CreateMusicForm(CreateProductionForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['type'] = ProductionTypeChoiceField(
-            queryset=ProductionType.music_types(),
-            initial=ProductionType.objects.get(internal_name='music')
+        self.fields["type"] = ProductionTypeChoiceField(
+            queryset=ProductionType.music_types(), initial=ProductionType.objects.get(internal_name="music")
         )
-        self.fields['platform'] = forms.ModelChoiceField(
-            required=False, queryset=Platform.objects.all(), empty_label='Any'
+        self.fields["platform"] = forms.ModelChoiceField(
+            required=False, queryset=Platform.objects.all(), empty_label="Any"
         )
 
     def save(self, *args, **kwargs):
-        self.instance.supertype = 'music'
+        self.instance.supertype = "music"
         super().save(*args, **kwargs)
 
-        if self.cleaned_data['type']:
-            self.instance.types.set([self.cleaned_data['type']])
-        if self.cleaned_data['platform']:
-            self.instance.platforms.set([self.cleaned_data['platform']])
+        if self.cleaned_data["type"]:
+            self.instance.types.set([self.cleaned_data["type"]])
+        if self.cleaned_data["platform"]:
+            self.instance.platforms.set([self.cleaned_data["platform"]])
         return self.instance
 
 
 class CreateGraphicsForm(CreateProductionForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['type'] = ProductionTypeChoiceField(
-            queryset=ProductionType.graphic_types(),
-            initial=ProductionType.objects.get(internal_name='graphics')
+        self.fields["type"] = ProductionTypeChoiceField(
+            queryset=ProductionType.graphic_types(), initial=ProductionType.objects.get(internal_name="graphics")
         )
-        self.fields['platform'] = forms.ModelChoiceField(
-            required=False, queryset=Platform.objects.all(), empty_label='Any'
+        self.fields["platform"] = forms.ModelChoiceField(
+            required=False, queryset=Platform.objects.all(), empty_label="Any"
         )
 
     def save(self, *args, **kwargs):
-        self.instance.supertype = 'graphics'
+        self.instance.supertype = "graphics"
         super().save(*args, **kwargs)
 
-        if self.cleaned_data['type']:
-            self.instance.types.set([self.cleaned_data['type']])
-        if self.cleaned_data['platform']:
-            self.instance.platforms.set([self.cleaned_data['platform']])
+        if self.cleaned_data["type"]:
+            self.instance.types.set([self.cleaned_data["type"]])
+        if self.cleaned_data["platform"]:
+            self.instance.platforms.set([self.cleaned_data["platform"]])
         return self.instance
 
 
 class ProductionEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
         Edit.objects.create(
-            action_type='edit_production_notes', focus=self.instance,
-            description="Edited notes", user=user
+            action_type="edit_production_notes", focus=self.instance, description="Edited notes", user=user
         )
 
     class Meta:
         model = Production
-        fields = ['notes']
+        fields = ["notes"]
 
 
 class ProductionBlurbForm(forms.ModelForm):
     class Meta:
         model = ProductionBlurb
-        exclude = ['production']
+        exclude = ["production"]
         widgets = {
-            'body': forms.Textarea(attrs={'class': 'short_notes'}),
+            "body": forms.Textarea(attrs={"class": "short_notes"}),
         }
 
 
@@ -275,7 +270,7 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
         # populate the source field of new instances with 'manual' to indicate that they
         # were created by filling in this form rather than automated matching
         if self.instance.pk is None:
-            self.instance.source = 'manual'
+            self.instance.source = "manual"
 
         instance = super().save(commit=False)
 
@@ -292,14 +287,19 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
     class Meta:
         model = ProductionLink
         exclude = [
-            'parameter', 'link_class', 'production', 'is_download_link', 'description',
-            'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting',
+            "parameter",
+            "link_class",
+            "production",
+            "is_download_link",
+            "description",
+            "demozoo0_id",
+            "file_for_screenshot",
+            "is_unresolved_for_screenshotting",
         ]
 
 
 ProductionDownloadLinkFormSet = inlineformset_factory(
-    Production, ProductionLink,
-    form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=2
+    Production, ProductionLink, form=ProductionDownloadLinkForm, formset=BaseExternalLinkFormSet, extra=2
 )
 
 
@@ -308,7 +308,7 @@ class ProductionExternalLinkForm(ExternalLinkForm):
         # populate the source field of new instances with 'manual' to indicate that they
         # were created by filling in this form rather than automated matching
         if self.instance.pk is None:
-            self.instance.source = 'manual'
+            self.instance.source = "manual"
 
         instance = super().save(commit=False)
 
@@ -325,8 +325,14 @@ class ProductionExternalLinkForm(ExternalLinkForm):
     class Meta:
         model = ProductionLink
         exclude = [
-            'parameter', 'link_class', 'production', 'is_download_link', 'description',
-            'demozoo0_id', 'file_for_screenshot', 'is_unresolved_for_screenshotting',
+            "parameter",
+            "link_class",
+            "production",
+            "is_download_link",
+            "description",
+            "demozoo0_id",
+            "file_for_screenshot",
+            "is_unresolved_for_screenshotting",
         ]
 
 
@@ -337,8 +343,8 @@ ProductionExternalLinkFormSet = inlineformset_factory(
 
 class ProductionCreditedNickForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        nick = kwargs.pop('nick', None)
-        production = kwargs.pop('production', None)
+        nick = kwargs.pop("nick", None)
+        production = kwargs.pop("production", None)
 
         if production:
             # get the list of groups who made the production, and tell the NickField to
@@ -351,9 +357,9 @@ class ProductionCreditedNickForm(forms.Form):
 
         super().__init__(*args, **kwargs)
         if nick:
-            self.fields['nick'] = NickField(initial=nick, prefer_members_of=authoring_groups)
+            self.fields["nick"] = NickField(initial=nick, prefer_members_of=authoring_groups)
         else:
-            self.fields['nick'] = NickField(prefer_members_of=authoring_groups)
+            self.fields["nick"] = NickField(prefer_members_of=authoring_groups)
 
 
 # An individual form row in the 'edit soundtrack details' form.
@@ -367,12 +373,12 @@ class ProductionCreditedNickForm(forms.Form):
 # - and we can't use an unsaved Production object there because it has dependent relations.
 class SoundtrackLinkForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', SoundtrackLink())
+        self.instance = kwargs.pop("instance", SoundtrackLink())
         super().__init__(*args, **kwargs)
-        self.fields['soundtrack'] = ProductionField(
+        self.fields["soundtrack"] = ProductionField(
             initial=self.instance.soundtrack_id,
-            supertype='music',
-            types_to_set=[ProductionType.objects.get(internal_name='music')],
+            supertype="music",
+            types_to_set=[ProductionType.objects.get(internal_name="music")],
         )
         self._meta = ModelFormOptions()  # required by BaseModelFormSet.add_fields. eww.
 
@@ -380,7 +386,7 @@ class SoundtrackLinkForm(forms.Form):
         if not commit:  # pragma: no cover
             raise Exception("we don't support saving SoundtrackLinkForm with commit = False. Sorry!")
 
-        self.instance.soundtrack = self.cleaned_data['soundtrack'].commit()
+        self.instance.soundtrack = self.cleaned_data["soundtrack"].commit()
         self.instance.save()
         return self.instance
 
@@ -399,7 +405,7 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
             qs = SoundtrackLink.objects.none()
         else:
             self.instance = instance
-            qs = self.instance.soundtrack_links.order_by('position')
+            qs = self.instance.soundtrack_links.order_by("position")
         super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):
@@ -415,18 +421,16 @@ class BaseProductionSoundtrackLinkFormSet(BaseModelFormSet):
 
 
 ProductionSoundtrackLinkFormset = formset_factory(
-    SoundtrackLinkForm,
-    formset=BaseProductionSoundtrackLinkFormSet,
-    can_delete=True, can_order=True, extra=1
+    SoundtrackLinkForm, formset=BaseProductionSoundtrackLinkFormSet, can_delete=True, can_order=True, extra=1
 )
-ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == 'production'][0]
+ProductionSoundtrackLinkFormset.fk = [f for f in SoundtrackLink._meta.fields if f.name == "production"][0]
 
 
 class PackMemberForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.instance = kwargs.pop('instance', PackMember())
+        self.instance = kwargs.pop("instance", PackMember())
         super().__init__(*args, **kwargs)
-        self.fields['member'] = ProductionField(
+        self.fields["member"] = ProductionField(
             initial=self.instance.member_id,
             # supertype='production',  # add this if we require pack members to be productions (not music or gfx)
         )
@@ -436,7 +440,7 @@ class PackMemberForm(forms.Form):
         if not commit:  # pragma: no cover
             raise Exception("we don't support saving PackMemberForm with commit = False. Sorry!")
 
-        self.instance.member = self.cleaned_data['member'].commit()
+        self.instance.member = self.cleaned_data["member"].commit()
         self.instance.save()
         return self.instance
 
@@ -452,7 +456,7 @@ class BasePackMemberFormSet(BaseModelFormSet):
             qs = PackMember.objects.none()
         else:
             self.instance = instance
-            qs = self.instance.pack_members.order_by('position')
+            qs = self.instance.pack_members.order_by("position")
         super().__init__(data, files, prefix=prefix, queryset=qs)
 
     def validate_unique(self):
@@ -468,11 +472,9 @@ class BasePackMemberFormSet(BaseModelFormSet):
 
 
 PackMemberFormset = formset_factory(
-    PackMemberForm,
-    formset=BasePackMemberFormSet,
-    can_delete=True, can_order=True, extra=1
+    PackMemberForm, formset=BasePackMemberFormSet, can_delete=True, can_order=True, extra=1
 )
-PackMemberFormset.fk = [f for f in PackMember._meta.fields if f.name == 'pack'][0]
+PackMemberFormset.fk = [f for f in PackMember._meta.fields if f.name == "pack"][0]
 
 
 class ProductionInvitationPartyForm(forms.Form):
@@ -483,36 +485,36 @@ ProductionInvitationPartyFormset = formset_factory(ProductionInvitationPartyForm
 
 
 class ProductionIndexFilterForm(forms.Form):
-    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
+    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label="All platforms")
     production_type = ProductionTypeChoiceField(
-        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+        required=False, queryset=ProductionType.objects.none(), empty_label="All types"
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['production_type'].queryset = ProductionType.featured_types()
+        self.fields["production_type"].queryset = ProductionType.featured_types()
 
 
 class GraphicsIndexFilterForm(forms.Form):
-    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
+    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label="All platforms")
     production_type = ProductionTypeChoiceField(
-        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+        required=False, queryset=ProductionType.objects.none(), empty_label="All types"
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['production_type'].queryset = ProductionType.graphic_types()
+        self.fields["production_type"].queryset = ProductionType.graphic_types()
 
 
 class MusicIndexFilterForm(forms.Form):
-    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label='All platforms')
+    platform = forms.ModelChoiceField(required=False, queryset=Platform.objects.all(), empty_label="All platforms")
     production_type = ProductionTypeChoiceField(
-        required=False, queryset=ProductionType.objects.none(), empty_label='All types'
+        required=False, queryset=ProductionType.objects.none(), empty_label="All types"
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['production_type'].queryset = ProductionType.music_types()
+        self.fields["production_type"].queryset = ProductionType.music_types()
 
 
 ProductionInfoFileFormset = inlineformset_factory(Production, InfoFile, fields=[], extra=0)

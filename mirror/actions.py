@@ -15,9 +15,9 @@ from screenshots.processing import select_screenshot_file
 
 
 max_size = 10485760
-mirror_bucket_name = 'mirror.demozoo.org'
+mirror_bucket_name = "mirror.demozoo.org"
 
-upload_dir = os.path.join(settings.FILEROOT, 'media', 'mirror')
+upload_dir = os.path.join(settings.FILEROOT, "media", "mirror")
 try:  # create upload_dir if not already present
     os.makedirs(upload_dir)
 except OSError as exc:
@@ -34,10 +34,10 @@ class FileTooBig(Exception):
 def fetch_origin_url(url):
     # fetch file from the given URL (any protocol supported by urllib),
     # throwing FileTooBig if it exceeds max_size
-    req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+    req = urllib.request.Request(url, None, {"User-Agent": settings.HTTP_USER_AGENT})
     f = urllib.request.urlopen(req, None, 10)
 
-    content_length = f.info().get('Content-Length')
+    content_length = f.info().get("Content-Length")
     if content_length and int(content_length) > max_size:
         f.close()
         raise FileTooBig("File exceeded the size limit of %d bytes" % max_size)
@@ -49,13 +49,13 @@ def fetch_origin_url(url):
     if len(file_content) > max_size:
         raise FileTooBig("File exceeded the size limit of %d bytes" % max_size)
 
-    remote_filename = urllib.parse.urlparse(resolved_url).path.split('/')[-1]
+    remote_filename = urllib.parse.urlparse(resolved_url).path.split("/")[-1]
 
     return DownloadBlob(remote_filename, file_content)
 
 
 def clean_filename(filename):
-    return re.sub(r'[^A-Za-z0-9\_\.\-]', '_', filename)
+    return re.sub(r"[^A-Za-z0-9\_\.\-]", "_", filename)
 
 
 def open_bucket():
@@ -63,7 +63,7 @@ def open_bucket():
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
-    s3 = session.resource('s3')
+    s3 = session.resource("s3")
     return s3.Bucket(mirror_bucket_name)
 
 
@@ -74,9 +74,12 @@ def fetch_link(link):
     url = link.download_url
 
     # find last mirrored download
-    download = Download.objects.filter(
-        link_class=link.link_class, parameter=link.parameter
-    ).exclude(mirror_s3_key='').order_by('-downloaded_at').first()
+    download = (
+        Download.objects.filter(link_class=link.link_class, parameter=link.parameter)
+        .exclude(mirror_s3_key="")
+        .order_by("-downloaded_at")
+        .first()
+    )
 
     if download:
         # existing download was found; fetch it
@@ -90,7 +93,7 @@ def fetch_link(link):
                 downloaded_at=datetime.datetime.now(),
                 link_class=link.link_class,
                 parameter=link.parameter,
-                error_type=ex.__class__.__name__
+                error_type=ex.__class__.__name__,
             )
             raise
 
@@ -109,7 +112,7 @@ def fetch_link(link):
             download.mirror_s3_key = existing_download.mirror_s3_key
         else:
             key_name = (
-                blob.sha1[0:2] + '/' + blob.sha1[2:4] + '/' + blob.sha1[4:16] + '/' + clean_filename(blob.filename)
+                blob.sha1[0:2] + "/" + blob.sha1[2:4] + "/" + blob.sha1[4:16] + "/" + clean_filename(blob.filename)
             )
             bucket = open_bucket()
             bucket.put_object(Key=key_name, Body=blob.file_content)
@@ -169,34 +172,39 @@ def fetch_link(link):
 
                     filename = info.filename
                     if isinstance(filename, str):  # pragma: no cover
-                        filename = filename.encode('cp437')
-                    filename = filename.decode('iso-8859-1')
+                        filename = filename.encode("cp437")
+                    filename = filename.decode("iso-8859-1")
 
                     ArchiveMember.objects.get_or_create(
-                        filename=filename,
-                        file_size=info.file_size,
-                        archive_sha1=blob.sha1)
+                        filename=filename, file_size=info.file_size, archive_sha1=blob.sha1
+                    )
 
         return blob
 
 
 def unpack_db_zip_filename(filename):
-    bytestring = filename.encode('iso-8859-1')
-    return bytestring.decode('cp437')
+    bytestring = filename.encode("iso-8859-1")
+    return bytestring.decode("cp437")
 
 
 def find_screenshottable_graphics():
     # Graphic productions with downloads but no screenshots
     from django.db.models import Count
-    prods = Production.objects.annotate(screenshot_count=Count('screenshots')).filter(
-        supertype='graphics', screenshot_count=0, links__is_download_link=True).prefetch_related('links')
+
+    prods = (
+        Production.objects.annotate(screenshot_count=Count("screenshots"))
+        .filter(supertype="graphics", screenshot_count=0, links__is_download_link=True)
+        .prefetch_related("links")
+    )
 
     prod_links = []
     for prod in prods:
         for link in prod.links.all():
             if (
-                link.is_download_link and not link.has_bad_image
-                and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS and link.is_believed_downloadable()
+                link.is_download_link
+                and not link.has_bad_image
+                and link.download_file_extension() in USABLE_IMAGE_FILE_EXTENSIONS
+                and link.is_believed_downloadable()
             ):
                 prod_links.append(link)
                 break  # ignore any remaining links for this prod
@@ -210,18 +218,19 @@ def find_zipped_screenshottable_graphics():
     # have screenshots already.
 
     # prods of supertype=graphics that have download links but no screenshots
-    prods = Production.objects.annotate(screenshot_count=Count('screenshots')).filter(
-        supertype='graphics', screenshot_count=0, links__is_download_link=True).prefetch_related('links', 'types')
+    prods = (
+        Production.objects.annotate(screenshot_count=Count("screenshots"))
+        .filter(supertype="graphics", screenshot_count=0, links__is_download_link=True)
+        .prefetch_related("links", "types")
+    )
 
     prod_links = []
     for prod in prods:
-
         # skip ASCII/ANSI prods
-        if prod.types.filter(internal_name__in=['ascii', 'ascii-collection', 'ansi']):
+        if prod.types.filter(internal_name__in=["ascii", "ascii-collection", "ansi"]):
             continue
 
         for link in prod.links.all():
-
             if not (link.is_download_link and link.is_zip_file()):
                 continue
 
@@ -254,7 +263,7 @@ def find_zipped_screenshottable_graphics():
             if file_for_screenshot:
                 # we know in advance which file we'd like to extract from the archive -
                 # better make sure it's a format we can actually handle, then.
-                extension = link.file_for_screenshot.split('.')[-1].lower()
+                extension = link.file_for_screenshot.split(".")[-1].lower()
                 if extension not in USABLE_IMAGE_FILE_EXTENSIONS:
                     continue
 

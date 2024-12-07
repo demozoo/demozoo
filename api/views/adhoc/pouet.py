@@ -10,7 +10,7 @@ from productions.models import Credit, ProductionLink
 
 def credits(request):
     # Retrieve productions with Pouet IDs with credits for releasers who have Pouet user IDs
-    credits = Credit.objects.raw('''
+    credits = Credit.objects.raw("""
         SELECT
             productions_credit.id,
             productions_productionlink.parameter AS pouet_prod_id,
@@ -32,16 +32,15 @@ def credits(request):
             )
         ORDER BY
             pouet_prod_id, pouet_user_id, category
-    ''')
+    """)
 
     credits_json = [
         {
-            'pouet_prod_id': prod_id,
-            'pouet_user_id': user_id,
-            'role': ', '.join([
-                ("%s (%s)" % (cred.category, cred.role)) if cred.role else cred.category
-                for cred in creds
-            ]),
+            "pouet_prod_id": prod_id,
+            "pouet_user_id": user_id,
+            "role": ", ".join(
+                [("%s (%s)" % (cred.category, cred.role)) if cred.role else cred.category for cred in creds]
+            ),
         }
         for ((prod_id, user_id), creds) in groupby(credits, lambda c: (c.pouet_prod_id, c.pouet_user_id))
     ]
@@ -50,30 +49,21 @@ def credits(request):
 
 
 def prod_demozoo_ids_by_pouet_id(request):
-    links = ProductionLink.objects.filter(link_class='PouetProduction')
-    links_json = [
-        {'pouet_id': int(link.parameter), 'demozoo_id': link.production_id}
-        for link in links
-    ]
+    links = ProductionLink.objects.filter(link_class="PouetProduction")
+    links_json = [{"pouet_id": int(link.parameter), "demozoo_id": link.production_id} for link in links]
     return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def group_demozoo_ids_by_pouet_id(request):
-    links = ReleaserExternalLink.objects.filter(link_class='PouetGroup')
-    links_json = [
-        {'pouet_id': int(link.parameter), 'demozoo_id': link.releaser_id}
-        for link in links
-    ]
+    links = ReleaserExternalLink.objects.filter(link_class="PouetGroup")
+    links_json = [{"pouet_id": int(link.parameter), "demozoo_id": link.releaser_id} for link in links]
     return HttpResponse(json.dumps(links_json), content_type="text/javascript")
 
 
 def party_demozoo_ids_by_pouet_id(request):
-    links = PartyExternalLink.objects.filter(link_class='PouetParty')
+    links = PartyExternalLink.objects.filter(link_class="PouetParty")
     links_json = []
     for link in links:
-        party_id, year = link.parameter.split('/')
-        links_json.append({
-            'pouet_id': int(party_id), 'year': int(year),
-            'demozoo_id': link.party_id
-        })
+        party_id, year = link.parameter.split("/")
+        links_json.append({"pouet_id": int(party_id), "year": int(year), "demozoo_id": link.party_id})
     return HttpResponse(json.dumps(links_json), content_type="text/javascript")

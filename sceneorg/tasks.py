@@ -23,34 +23,35 @@ def fetch_new_sceneorg_files(days=1):
     new_file_count = 0
 
     while True:
-        req = urllib.request.Request(url, None, {'User-Agent': settings.HTTP_USER_AGENT})
+        req = urllib.request.Request(url, None, {"User-Agent": settings.HTTP_USER_AGENT})
         page = urllib.request.urlopen(req)
         response = json.loads(page.read())
         page.close()
 
-        if not response.get('success'):
+        if not response.get("success"):
             logger.warning("scene.org API request returned non-success! %r" % response)
             break
 
-        logger.info("API request to %s succeeded - %d files returned" % (url, len(response['files'])))
+        logger.info("API request to %s succeeded - %d files returned" % (url, len(response["files"])))
 
-        for item in response['files']:
+        for item in response["files"]:
             # the fullPath field in the API consists of a byte string (de facto utf-8) interpreted
             # as windows-1252 and served to us as a Unicode string.
             # Here we encode as windows-1252 (to reconstruct the original bytestream as closely as
             # possible), then decode the bytestream as iso-8859-1 to embed that bytestream into
             # a unicode string that we can process and ultimately insert into the db.
-            full_path = item['fullPath'].encode('Windows-1252', 'ignore').decode('iso-8859-1')
-            path_components = full_path.split('/')[1:]
+            full_path = item["fullPath"].encode("Windows-1252", "ignore").decode("iso-8859-1")
+            path_components = full_path.split("/")[1:]
             dirs = path_components[:-1]
 
-            path = '/'
+            path = "/"
             current_dir, created = Directory.objects.get_or_create(
-                path='/', defaults={'last_seen_at': datetime.datetime.now()})
+                path="/", defaults={"last_seen_at": datetime.datetime.now()}
+            )
 
             for d in dirs:
                 last_dir = current_dir
-                path += d + '/'
+                path += d + "/"
 
                 try:
                     current_dir = Directory.objects.get(path=path)
@@ -68,16 +69,16 @@ def fetch_new_sceneorg_files(days=1):
                 f = File.objects.get(path=path)
                 f.last_seen_at = datetime.datetime.now()
                 f.is_deleted = False
-                f.size = item['size']
+                f.size = item["size"]
                 f.save()
             except File.DoesNotExist:
                 logger.info("New file found: %s" % path)
                 File.objects.create(
-                    path=path, last_seen_at=datetime.datetime.now(), directory=current_dir,
-                    size=item['size'])
+                    path=path, last_seen_at=datetime.datetime.now(), directory=current_dir, size=item["size"]
+                )
                 new_file_count += 1
 
-        url = response.get('nextPageURL')
+        url = response.get("nextPageURL")
         if url:
             time.sleep(1)
         else:
@@ -114,17 +115,16 @@ def update_dir_records(dir, files, mark_deletions=True):
 
     new_file_count = 0
 
-    for (filename, is_dir, file_size) in files:
+    for filename, is_dir, file_size in files:
         if is_dir:
-            subpath = dir.path + filename + '/'
+            subpath = dir.path + filename + "/"
             try:
                 subdir = Directory.objects.get(path=subpath)
                 subdir.last_seen_at = datetime.datetime.now()
                 subdir.is_deleted = False
                 subdir.save()
             except Directory.DoesNotExist:
-                subdir = Directory.objects.create(
-                    path=subpath, last_seen_at=datetime.datetime.now(), parent=dir)
+                subdir = Directory.objects.create(path=subpath, last_seen_at=datetime.datetime.now(), parent=dir)
             seen_dirs.append(subdir)
         else:
             subpath = dir.path + filename
@@ -137,8 +137,8 @@ def update_dir_records(dir, files, mark_deletions=True):
                 file.save()
             except File.DoesNotExist:
                 file = File.objects.create(
-                    path=subpath, last_seen_at=datetime.datetime.now(), directory=dir,
-                    size=file_size)
+                    path=subpath, last_seen_at=datetime.datetime.now(), directory=dir, size=file_size
+                )
                 new_file_count += 1
             seen_files.append(file)
 

@@ -10,7 +10,7 @@ from common.utils.modal_workflow import render_modal_workflow
 
 
 def get_page(queryset, page_number, **kwargs):
-    count = kwargs.get('count', 50)
+    count = kwargs.get("count", 50)
 
     paginator = Paginator(queryset, count)
 
@@ -28,46 +28,51 @@ def get_page(queryset, page_number, **kwargs):
 
 
 def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = form_class(request.POST, instance=instance)
         if form.is_valid():
-            if kwargs.get('update_datestamp', False):
+            if kwargs.get("update_datestamp", False):
                 instance.updated_at = datetime.datetime.now()
-            if kwargs.get('update_bonafide_flag', False):
+            if kwargs.get("update_bonafide_flag", False):
                 instance.has_bonafide_edits = True
             form.save()
-            if kwargs.get('on_success'):
-                kwargs['on_success'](form)
-            if kwargs.get('ajax_submit') and request_is_ajax(request):
-                return HttpResponse('OK', content_type='text/plain')
+            if kwargs.get("on_success"):
+                kwargs["on_success"](form)
+            if kwargs.get("ajax_submit") and request_is_ajax(request):
+                return HttpResponse("OK", content_type="text/plain")
             else:
                 return HttpResponseRedirect(instance.get_absolute_url())
     else:
         form = form_class(instance=instance)
 
-    title = kwargs.get('title')
-    if title and title.endswith(':'):
+    title = kwargs.get("title")
+    if title and title.endswith(":"):
         clean_title = title[:-1]
     else:
         clean_title = title
 
-    return render(request, 'generic/simple_form.html', {
-        'form': form,
-        'html_form_class': kwargs.get('html_form_class'),
-        'title': title,
-        'html_title': clean_title,
-        'action_url': reverse(url_name, args=[instance.id]),
-        'ajax_submit': kwargs.get('ajax_submit'),
-    })
+    return render(
+        request,
+        "generic/simple_form.html",
+        {
+            "form": form,
+            "html_form_class": kwargs.get("html_form_class"),
+            "title": title,
+            "html_title": clean_title,
+            "action_url": reverse(url_name, args=[instance.id]),
+            "ajax_submit": kwargs.get("ajax_submit"),
+        },
+    )
 
 
 def modal_workflow_confirmation(request, action_url, message, html_title=None):
     return render_modal_workflow(
         request,
-        'generic/simple_confirmation.html', 'generic/simple_confirmation.js',
+        "generic/simple_confirmation.html",
+        "generic/simple_confirmation.js",
         {
-            'html_title': html_title,
-            'message': message,
-            'action_url': action_url,
-        }
+            "html_title": html_title,
+            "message": message,
+            "action_url": action_url,
+        },
     )

@@ -11,27 +11,27 @@ from screenshots.tasks import upload_original, upload_standard, upload_thumb
 @shared_task(ignore_result=True)
 def automatch_all_authors():
     for releaser_id in (
-        ReleaserExternalLink.objects.filter(link_class='KestraBitworldAuthor').distinct()
-        .values_list('releaser_id', flat=True)
+        ReleaserExternalLink.objects.filter(link_class="KestraBitworldAuthor")
+        .distinct()
+        .values_list("releaser_id", flat=True)
     ):
         automatch_author.delay(releaser_id)
 
 
-@shared_task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit="6/m", ignore_result=True)
 def automatch_author(releaser_id):
     automatch_productions(Releaser.objects.get(id=releaser_id))
 
 
-@shared_task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit="6/m", ignore_result=True)
 def import_screenshot(production_id, janeway_id, url, suffix):
     blob = fetch_origin_url(url)
     sha1 = blob.sha1
     img = PILConvertibleImage(blob.as_io_buffer(), name_hint=blob.filename)
-    basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.jw' + str(janeway_id) + suffix + '.'
+    basename = sha1[0:2] + "/" + sha1[2:4] + "/" + sha1[4:8] + ".jw" + str(janeway_id) + suffix + "."
 
     screenshot = Screenshot(
-        production_id=production_id,
-        data_source='janeway', janeway_id=janeway_id, janeway_suffix=suffix
+        production_id=production_id, data_source="janeway", janeway_id=janeway_id, janeway_suffix=suffix
     )
     upload_standard(img, screenshot, basename)
     upload_thumb(img, screenshot, basename)

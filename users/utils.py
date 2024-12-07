@@ -1,5 +1,6 @@
 # list from https://check.torproject.org/torbulkexitlist
-TOR_ENDPOINT_IPS = set("""
+TOR_ENDPOINT_IPS = set(
+    """
     185.241.208.232
     194.26.192.64
     171.25.193.25
@@ -1303,22 +1304,28 @@ TOR_ENDPOINT_IPS = set("""
     176.58.117.81
     218.102.234.200
     199.249.230.179
-""".split())
+""".split()
+)
 
 
-LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set([
-    '81.234.236.23', '81.230.148.230',  # .se
-    '86.143.83.97',  # .uk
-])
+LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set(
+    [
+        "81.234.236.23",
+        "81.230.148.230",  # .se
+        "86.143.83.97",  # .uk
+    ]
+)
 
-REGISTRATION_BANNED_IPS = set([
-    '109.196.230.41',  # .pl
-])
+REGISTRATION_BANNED_IPS = set(
+    [
+        "109.196.230.41",  # .pl
+    ]
+)
 
 
 def is_login_banned(request):
-    return request.META['REMOTE_ADDR'] in LOGIN_BANNED_IPS
+    return request.META["REMOTE_ADDR"] in LOGIN_BANNED_IPS
 
 
 def is_registration_banned(request):
-    return request.META['REMOTE_ADDR'] in REGISTRATION_BANNED_IPS
+    return request.META["REMOTE_ADDR"] in REGISTRATION_BANNED_IPS

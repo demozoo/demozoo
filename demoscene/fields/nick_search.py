@@ -9,7 +9,7 @@ from demoscene.models import Nick, NickVariant, Releaser
 # the form might be failing validation elsewhere), and using an unsaved Nick object
 # isn't an option either because we need to create a Releaser as a side effect, and
 # Django won't let us build multi-object structures of unsaved models.
-class NickSelection():
+class NickSelection:
     def __init__(self, id, name):
         self.id = id
         self.name = name
@@ -18,12 +18,12 @@ class NickSelection():
         pass
 
     def commit(self):
-        if self.id == 'newscener':
+        if self.id == "newscener":
             releaser = Releaser(name=self.name, is_group=False, updated_at=datetime.datetime.now())
             releaser.save()
             self.id = releaser.primary_nick.id
             return releaser.primary_nick
-        elif self.id == 'newgroup':
+        elif self.id == "newgroup":
             releaser = Releaser(name=self.name, is_group=True, updated_at=datetime.datetime.now())
             releaser.save()
             self.id = releaser.primary_nick.id
@@ -45,9 +45,9 @@ class NickSelection():
     def __eq__(self, other):
         if not isinstance(other, NickSelection):
             return False
-        if self.id == 'newscener' and other.id == 'newscener' and self.name == other.name:
+        if self.id == "newscener" and other.id == "newscener" and self.name == other.name:
             return True
-        elif self.id == 'newgroup' and other.id == 'newgroup' and self.name == other.name:
+        elif self.id == "newgroup" and other.id == "newgroup" and self.name == other.name:
             return True
 
         try:
@@ -59,62 +59,73 @@ class NickSelection():
         return not self.__eq__(other)
 
 
-class NickSearch():
+class NickSearch:
     def __init__(
-        self, search_term, selection=None,
-        sceners_only=False, groups_only=False,
+        self,
+        search_term,
+        selection=None,
+        sceners_only=False,
+        groups_only=False,
         group_ids=[],
-        group_names=[], member_names=[]
+        group_names=[],
+        member_names=[],
     ):
-
         self.search_term = search_term
 
         nick_variants = NickVariant.autocompletion_search(
-            search_term, exact=True,
-            sceners_only=sceners_only, groups_only=groups_only,
+            search_term,
+            exact=True,
+            sceners_only=sceners_only,
+            groups_only=groups_only,
             group_ids=group_ids,
-            group_names=group_names, member_names=member_names)
+            group_names=group_names,
+            member_names=member_names,
+        )
 
         self.suggestions = []
 
         for nv in nick_variants:
             suggestion = {
-                'className': ('group' if nv.nick.releaser.is_group else 'scener'),
-                'nameWithAffiliations': nv.nick.name_with_affiliations(),
-                'name': nv.nick.name,
-                'id': nv.nick_id
+                "className": ("group" if nv.nick.releaser.is_group else "scener"),
+                "nameWithAffiliations": nv.nick.name_with_affiliations(),
+                "name": nv.nick.name,
+                "id": nv.nick_id,
             }
             if nv.nick.releaser.country_code:
-                suggestion['countryCode'] = nv.nick.releaser.country_code.lower()
+                suggestion["countryCode"] = nv.nick.releaser.country_code.lower()
 
             if nv.nick.differentiator:
-                suggestion['differentiator'] = nv.nick.differentiator
-                suggestion['nameWithDifferentiator'] = "%s (%s)" % (nv.nick.name, nv.nick.differentiator)
+                suggestion["differentiator"] = nv.nick.differentiator
+                suggestion["nameWithDifferentiator"] = "%s (%s)" % (nv.nick.name, nv.nick.differentiator)
             else:
-                suggestion['nameWithDifferentiator'] = nv.nick.name
+                suggestion["nameWithDifferentiator"] = nv.nick.name
 
             if nv.nick.name != nv.name:
-                suggestion['alias'] = nv.name
+                suggestion["alias"] = nv.name
 
             self.suggestions.append(suggestion)
 
         if not groups_only:
-            self.suggestions.append({
-                'className': 'add_scener',
-                'nameWithAffiliations': "Add a new scener named '%s'" % search_term,
-                'nameWithDifferentiator': search_term,
-                'name': search_term,
-                'id': 'newscener',
-            })
+            self.suggestions.append(
+                {
+                    "className": "add_scener",
+                    "nameWithAffiliations": "Add a new scener named '%s'" % search_term,
+                    "nameWithDifferentiator": search_term,
+                    "name": search_term,
+                    "id": "newscener",
+                }
+            )
 
         if not sceners_only:
-            self.suggestions.append({
-                'className': 'add_group',
-                'nameWithAffiliations': "Add a new group named '%s'" % search_term,
-                'nameWithDifferentiator': search_term,
-                'name': search_term,
-                'id': 'newgroup'
-            })
+            self.suggestions.append(
+                {
+                    "className": "add_group",
+                    "nameWithAffiliations": "Add a new group named '%s'" % search_term,
+                    "nameWithDifferentiator": search_term,
+                    "name": search_term,
+                    "id": "newgroup",
+                }
+            )
 
         if selection:
             self.selection = selection
@@ -123,16 +134,16 @@ class NickSearch():
             if nick_variants.count() == 0:
                 self.selection = None
             elif nick_variants.count() == 1 or nick_variants[0].score > nick_variants[1].score:
-                self.selection = NickSelection(self.suggestions[0]['id'], self.suggestions[0]['nameWithDifferentiator'])
+                self.selection = NickSelection(self.suggestions[0]["id"], self.suggestions[0]["nameWithDifferentiator"])
             else:
                 self.selection = None
 
     @property
     def match_data(self):
         return {
-            'choices': self.suggestions,
-            'selection': {
-                'id': (self.selection and self.selection.id),
-                'name': self.search_term,
-            }
+            "choices": self.suggestions,
+            "selection": {
+                "id": (self.selection and self.selection.id),
+                "name": self.search_term,
+            },
         }

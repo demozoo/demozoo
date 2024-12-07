@@ -21,19 +21,20 @@ if settings.SITE_IS_WRITEABLE:
     def writeable_site_required(view_func):
         return view_func
 else:
+
     def writeable_site_required(view_func):
         def replacement_view_func(request, *args, **kwargs):
             if request_is_ajax(request):
                 # output the 'sorry' message on a template,
                 # rather than doing a redirect (which screws with AJAX)
-                return render(request, 'read_only_mode.html')
+                return render(request, "read_only_mode.html")
             else:
                 messages.error(
                     request,
                     "Sorry, the website is in read-only mode at the moment. "
-                    "We'll get things back to normal as soon as possible."
+                    "We'll get things back to normal as soon as possible.",
                 )
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect("/")
 
         return replacement_view_func
 
@@ -94,18 +95,22 @@ class AjaxConfirmationView(View):
         if response:
             return response
 
-        if request.method == 'POST':
-            if request.POST.get('yes'):
+        if request.method == "POST":
+            if request.POST.get("yes"):
                 self.perform_action()
                 return self.redirect()
             else:
                 return self.cancel()
         else:
-            return render(request, 'generic/simple_confirmation.html', {
-                'html_title': self.get_html_title(),
-                'message': self.get_message(),
-                'action_url': self.get_action_url(),
-            })
+            return render(
+                request,
+                "generic/simple_confirmation.html",
+                {
+                    "html_title": self.get_html_title(),
+                    "message": self.get_message(),
+                    "action_url": self.get_action_url(),
+                },
+            )
 
 
 class EditTextFilesView(View):
@@ -125,7 +130,7 @@ class EditTextFilesView(View):
         self.relation = getattr(self.subject, self.relation_name)
         text_file_model = self.subject_model._meta.get_field(self.relation_name).related_model
 
-        if request.method == 'POST':
+        if request.method == "POST":
             action_descriptions = []
             all_valid = True
 
@@ -139,11 +144,11 @@ class EditTextFilesView(View):
                         filename_list = ", ".join(deleted_files)
                         if len(deleted_files) > 1:
                             action_descriptions.append(
-                                u"Deleted %s: %s" % (text_file_model._meta.verbose_name_plural, filename_list)
+                                "Deleted %s: %s" % (text_file_model._meta.verbose_name_plural, filename_list)
                             )
                         else:
                             action_descriptions.append(
-                                u"Deleted %s %s" % (text_file_model._meta.verbose_name, filename_list)
+                                "Deleted %s %s" % (text_file_model._meta.verbose_name, filename_list)
                             )
 
             if all_valid:
@@ -162,12 +167,14 @@ class EditTextFilesView(View):
 
                 if action_descriptions:
                     # at least one change was made
-                    action_description = '; '.join(action_descriptions)
+                    action_description = "; ".join(action_descriptions)
                     self.mark_as_edited(self.subject)
 
                     Edit.objects.create(
-                        action_type='edit_info_files', focus=self.subject,
-                        description=action_description, user=request.user
+                        action_type="edit_info_files",
+                        focus=self.subject,
+                        description=action_description,
+                        user=request.user,
                     )
 
                 return HttpResponseRedirect(self.subject.get_absolute_url())
@@ -175,11 +182,15 @@ class EditTextFilesView(View):
         else:
             formset = self.formset_class(instance=self.subject)
 
-        return render(request, self.template_name, {
-            self.subject_context_name: self.subject,
-            'formset': formset,
-            'add_only': (not request.user.is_staff) or (self.relation.count() == 0),
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                self.subject_context_name: self.subject,
+                "formset": formset,
+                "add_only": (not request.user.is_staff) or (self.relation.count() == 0),
+            },
+        )
 
 
 class EditTagsView(View):
@@ -197,14 +208,16 @@ class EditTagsView(View):
         form.save()
         new_tags = set(subject.tags.names())
         if new_tags != old_tags:
-            names_string = u', '.join(subject.tags.names())
+            names_string = ", ".join(subject.tags.names())
             Edit.objects.create(
-                action_type=self.action_type, focus=subject,
-                description=u"Set tags to %s" % names_string, user=request.user
+                action_type=self.action_type,
+                focus=subject,
+                description="Set tags to %s" % names_string,
+                user=request.user,
             )
 
             # delete any tags that are now unused
-            Tag.objects.annotate(num_items=Count('taggit_taggeditem_items')).filter(num_items=0).delete()
+            Tag.objects.annotate(num_items=Count("taggit_taggeditem_items")).filter(num_items=0).delete()
         return HttpResponseRedirect(subject.get_absolute_url())
 
 
@@ -215,13 +228,12 @@ class AddTagView(View):
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def post(self, request, subject_id):
-
         # Only used in AJAX calls.
 
         subject = get_object_or_404(self.subject_model, id=subject_id)
         if not self.can_edit(subject):
             raise PermissionDenied
-        tag_name = slugify_tag(request.POST.get('tag_name'))
+        tag_name = slugify_tag(request.POST.get("tag_name"))
 
         try:
             blacklisted_tag = BlacklistedTag.objects.get(tag=tag_name)
@@ -236,19 +248,21 @@ class AddTagView(View):
             if not existing_tag:
                 subject.tags.add(tag_name)
                 Edit.objects.create(
-                    action_type=self.action_type, focus=subject,
-                    description=u"Added tag '%s'" % tag_name, user=request.user
+                    action_type=self.action_type,
+                    focus=subject,
+                    description="Added tag '%s'" % tag_name,
+                    user=request.user,
                 )
 
-        tags_list_html = render_to_string(self.template_name, {
-            'tags': subject.tags.order_by('name')
-        })
+        tags_list_html = render_to_string(self.template_name, {"tags": subject.tags.order_by("name")})
 
-        return JsonResponse({
-            'tags_list_html': tags_list_html,
-            'clean_tag_name': tag_name,
-            'message': message,
-        })
+        return JsonResponse(
+            {
+                "tags_list_html": tags_list_html,
+                "clean_tag_name": tag_name,
+                "message": message,
+            }
+        )
 
 
 class RemoveTagView(View):
@@ -258,25 +272,30 @@ class RemoveTagView(View):
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def post(self, request, subject_id):
-
         # Only used in AJAX calls.
 
         subject = get_object_or_404(self.subject_model, id=subject_id)
         if not self.can_edit(subject):
             raise PermissionDenied
-        if request.method == 'POST':
-            tag_name = slugify_tag(request.POST.get('tag_name'))
+        if request.method == "POST":
+            tag_name = slugify_tag(request.POST.get("tag_name"))
             existing_tag = subject.tags.filter(name=tag_name)
             if existing_tag:
                 subject.tags.remove(tag_name)
                 Edit.objects.create(
-                    action_type=self.action_type, focus=subject,
-                    description=u"Removed tag '%s'" % tag_name, user=request.user
+                    action_type=self.action_type,
+                    focus=subject,
+                    description="Removed tag '%s'" % tag_name,
+                    user=request.user,
                 )
                 if not existing_tag[0].taggit_taggeditem_items.count():
                     # no more items use this tag - delete it
                     existing_tag[0].delete()
 
-        return render(request, self.template_name, {
-            'tags': subject.tags.order_by('name'),
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                "tags": subject.tags.order_by("name"),
+            },
+        )

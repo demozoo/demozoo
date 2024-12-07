@@ -4,7 +4,7 @@ from forums.models import Topic
 
 
 class TestTopicModel(TestCase):
-    fixtures = ['tests/forum.json']
+    fixtures = ["tests/forum.json"]
 
     def test_str(self):
         topic = Topic.objects.get(title="fix me beautifull")

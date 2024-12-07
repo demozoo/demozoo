@@ -47,10 +47,14 @@ from productions.models import Screenshot
 
 
 def by_name(request):
-    parties = Party.objects.order_by('party_series__name', 'start_date_date', 'name').select_related('party_series')
-    return render(request, 'parties/by_name.html', {
-        'parties': parties,
-    })
+    parties = Party.objects.order_by("party_series__name", "start_date_date", "name").select_related("party_series")
+    return render(
+        request,
+        "parties/by_name.html",
+        {
+            "parties": parties,
+        },
+    )
 
 
 def by_date(request, year=None):
@@ -59,55 +63,49 @@ def by_date(request, year=None):
     except TypeError:
         year = datetime.date.today().year
 
-    years = Party.objects.dates('start_date_date', 'year') | Party.objects.dates('end_date_date', 'year')
+    years = Party.objects.dates("start_date_date", "year") | Party.objects.dates("end_date_date", "year")
 
-    parties = Party.objects.filter(
-        start_date_date__year__lte=year, end_date_date__year__gte=year
-    ).order_by('start_date_date', 'end_date_date', 'name')
+    parties = Party.objects.filter(start_date_date__year__lte=year, end_date_date__year__gte=year).order_by(
+        "start_date_date", "end_date_date", "name"
+    )
 
-    return render(request, 'parties/by_date.html', {
-        'selected_year': year,
-        'years': years,
-        'parties': parties,
-    })
+    return render(
+        request,
+        "parties/by_date.html",
+        {
+            "selected_year": year,
+            "years": years,
+            "parties": parties,
+        },
+    )
 
 
 def show(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
     competitions = party.get_competitions_with_prefetched_results()
-    competitions_with_placings = [
-        (competition, competition.placings.all())
-        for competition in competitions
-    ]
-    entry_production_ids = [
-        placing.production_id
-        for _, placings in competitions_with_placings
-        for placing in placings
-    ]
+    competitions_with_placings = [(competition, competition.placings.all()) for competition in competitions]
+    entry_production_ids = [placing.production_id for _, placings in competitions_with_placings for placing in placings]
     screenshot_map = Screenshot.select_for_production_ids(entry_production_ids)
     competitions_with_placings_and_screenshots = [
-        (
-            competition,
-            [(placing, screenshot_map.get(placing.production_id)) for placing in placings]
-        )
+        (competition, [(placing, screenshot_map.get(placing.production_id)) for placing in placings])
         for competition, placings in competitions_with_placings
     ]
 
-    invitations = party.invitations.order_by('release_date_date').prefetch_related(
-        'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+    invitations = party.invitations.order_by("release_date_date").prefetch_related(
+        "author_nicks__releaser", "author_affiliation_nicks__releaser", "platforms", "types"
     )
 
     releases = party.releases.prefetch_related(
-        'author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types'
+        "author_nicks__releaser", "author_affiliation_nicks__releaser", "platforms", "types"
     )
 
-    organisers = party.organisers.select_related('releaser').order_by('-releaser__is_group', Lower('releaser__name'))
+    organisers = party.organisers.select_related("releaser").order_by("-releaser__is_group", Lower("releaser__name"))
 
-    external_links = sorted(party.active_external_links.select_related('party'), key=lambda obj: obj.sort_key)
+    external_links = sorted(party.active_external_links.select_related("party"), key=lambda obj: obj.sort_key)
 
-    tournaments = party.tournaments.order_by('name').prefetch_related(
-        'phases__entries__nick__releaser', 'phases__staff__nick__releaser'
+    tournaments = party.tournaments.order_by("name").prefetch_related(
+        "phases__entries__nick__releaser", "phases__staff__nick__releaser"
     )
 
     if request.user.is_authenticated:
@@ -116,60 +114,76 @@ def show(request, party_id):
     else:
         comment_form = None
 
-    return render(request, 'parties/show.html', {
-        'party': party,
-        'competitions_with_placings_and_screenshots': competitions_with_placings_and_screenshots,
-        'tournaments': tournaments,
-        'results_files': party.results_files.all(),
-        'invitations': invitations,
-        'releases': releases,
-        'organisers': organisers,
-        'editing_organisers': (request.GET.get('editing') == 'organisers'),
-        'parties_in_series': (
-            party.party_series.parties.order_by('start_date_date', 'name').select_related('party_series')
-        ),
-        'external_links': external_links,
-        'comment_form': comment_form,
-        'prompt_to_edit': settings.SITE_IS_WRITEABLE,
-        'can_edit': settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
-    })
+    return render(
+        request,
+        "parties/show.html",
+        {
+            "party": party,
+            "competitions_with_placings_and_screenshots": competitions_with_placings_and_screenshots,
+            "tournaments": tournaments,
+            "results_files": party.results_files.all(),
+            "invitations": invitations,
+            "releases": releases,
+            "organisers": organisers,
+            "editing_organisers": (request.GET.get("editing") == "organisers"),
+            "parties_in_series": (
+                party.party_series.parties.order_by("start_date_date", "name").select_related("party_series")
+            ),
+            "external_links": external_links,
+            "comment_form": comment_form,
+            "prompt_to_edit": settings.SITE_IS_WRITEABLE,
+            "can_edit": settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
+        },
+    )
 
 
 def history(request, party_id):
     party = get_object_or_404(Party, id=party_id)
-    return render(request, 'parties/history.html', {
-        'party': party,
-        'edits': Edit.for_model(party, request.user.is_staff),
-    })
+    return render(
+        request,
+        "parties/history.html",
+        {
+            "party": party,
+            "edits": Edit.for_model(party, request.user.is_staff),
+        },
+    )
 
 
 def show_series(request, party_series_id):
     party_series = get_object_or_404(PartySeries, id=party_series_id)
     external_links = sorted(
-        party_series.active_external_links.select_related('party_series'),
+        party_series.active_external_links.select_related("party_series"),
         key=lambda obj: obj.sort_key,
     )
-    return render(request, 'parties/show_series.html', {
-        'party_series': party_series,
-        'external_links': external_links,
-        'parties': party_series.parties.order_by('start_date_date', 'name'),
-        'prompt_to_edit': settings.SITE_IS_WRITEABLE,
-        'can_edit': settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
-    })
+    return render(
+        request,
+        "parties/show_series.html",
+        {
+            "party_series": party_series,
+            "external_links": external_links,
+            "parties": party_series.parties.order_by("start_date_date", "name"),
+            "prompt_to_edit": settings.SITE_IS_WRITEABLE,
+            "can_edit": settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
+        },
+    )
 
 
 def series_history(request, party_series_id):
     party_series = get_object_or_404(PartySeries, id=party_series_id)
-    return render(request, 'parties/series_history.html', {
-        'party_series': party_series,
-        'edits': Edit.for_model(party_series, request.user.is_staff),
-    })
+    return render(
+        request,
+        "parties/series_history.html",
+        {
+            "party_series": party_series,
+            "edits": Edit.for_model(party_series, request.user.is_staff),
+        },
+    )
 
 
 @writeable_site_required
 @login_required
 def create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         party = Party()
         form = PartyForm(request.POST, instance=party)
         if form.is_valid():
@@ -177,20 +191,26 @@ def create(request):
             form.log_creation(request.user)
 
             if request_is_ajax(request):
-                return HttpResponse('OK: %s' % party.get_absolute_url(), content_type='text/plain')
+                return HttpResponse("OK: %s" % party.get_absolute_url(), content_type="text/plain")
             else:
-                messages.success(request, 'Party added')
-                return redirect('party', party.id)
+                messages.success(request, "Party added")
+                return redirect("party", party.id)
     else:
-        form = PartyForm(initial={
-            'name': request.GET.get('name'),
-            'party_series_name': request.GET.get('party_series_name'),
-            'scene_org_folder': request.GET.get('scene_org_folder'),
-        })
-    return render(request, 'parties/create.html', {
-        'form': form,
-        'party_series_names': [ps.name for ps in PartySeries.objects.all()],
-    })
+        form = PartyForm(
+            initial={
+                "name": request.GET.get("name"),
+                "party_series_name": request.GET.get("party_series_name"),
+                "scene_org_folder": request.GET.get("scene_org_folder"),
+            }
+        )
+    return render(
+        request,
+        "parties/create.html",
+        {
+            "form": form,
+            "party_series_names": [ps.name for ps in PartySeries.objects.all()],
+        },
+    )
 
 
 @writeable_site_required
@@ -199,17 +219,16 @@ def edit(request, party_id):
         # Instead of redirecting back to this edit form after login, redirect to the party page.
         # This is because the edit button pointing here is the only one a non-logged-in user sees,
         # so they may intend to edit something else on the party page.
-        return redirect_to_login(reverse('party', args=[party_id]))
+        return redirect_to_login(reverse("party", args=[party_id]))
 
     party = get_object_or_404(Party, id=party_id)
-    if request.method == 'POST':
-        form = EditPartyForm(request.POST, instance=party, initial={
-            'start_date': party.start_date,
-            'end_date': party.end_date
-        })
+    if request.method == "POST":
+        form = EditPartyForm(
+            request.POST, instance=party, initial={"start_date": party.start_date, "end_date": party.end_date}
+        )
         if form.is_valid():
-            party.start_date = form.cleaned_data['start_date']
-            party.end_date = form.cleaned_data['end_date']
+            party.start_date = form.cleaned_data["start_date"]
+            party.end_date = form.cleaned_data["end_date"]
             form.save()
             form.log_edit(request.user)
 
@@ -218,18 +237,19 @@ def edit(request, party_id):
                 party.party_series.website = party.website
                 party.party_series.save()
 
-            messages.success(request, 'Party updated')
-            return redirect('party', party.id)
+            messages.success(request, "Party updated")
+            return redirect("party", party.id)
     else:
-        form = EditPartyForm(instance=party, initial={
-            'start_date': party.start_date,
-            'end_date': party.end_date
-        })
+        form = EditPartyForm(instance=party, initial={"start_date": party.start_date, "end_date": party.end_date})
 
-    return render(request, 'parties/edit.html', {
-        'party': party,
-        'form': form,
-    })
+    return render(
+        request,
+        "parties/edit.html",
+        {
+            "party": party,
+            "form": form,
+        },
+    )
 
 
 @writeable_site_required
@@ -243,8 +263,12 @@ def edit_notes(request, party_id):
         form.log_edit(request.user)
 
     return simple_ajax_form(
-        request, 'party_edit_notes', party, PartyEditNotesForm,
-        title='Editing notes for %s' % party.name, on_success=success,
+        request,
+        "party_edit_notes",
+        party,
+        PartyEditNotesForm,
+        title="Editing notes for %s" % party.name,
+        on_success=success,
         # update_datestamp = True
     )
 
@@ -254,42 +278,42 @@ def edit_notes(request, party_id):
 def edit_external_links(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         formset = PartyExternalLinkFormSet(request.POST, instance=party)
         if formset.is_valid():
             formset.save_ignoring_uniqueness()
-            formset.log_edit(request.user, 'party_edit_external_links')
+            formset.log_edit(request.user, "party_edit_external_links")
 
             # see if there's anything useful we can extract for the PartySeries record
             try:
-                pouet_party_link = party.external_links.get(link_class='PouetParty')
-                pouet_party_id = pouet_party_link.parameter.split('/')[0]
+                pouet_party_link = party.external_links.get(link_class="PouetParty")
+                pouet_party_id = pouet_party_link.parameter.split("/")[0]
             except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
                 pass
             else:
                 PartySeriesExternalLink.objects.get_or_create(
-                    party_series=party.party_series,
-                    link_class='PouetPartySeries',
-                    parameter=pouet_party_id
+                    party_series=party.party_series, link_class="PouetPartySeries", parameter=pouet_party_id
                 )
 
             # look for a Twitter username which *does not* end in a number -
             # assume that ones with a number are year-specific
-            for link in party.external_links.filter(link_class='TwitterAccount'):
-                if not re.search(r'\d$', link.parameter):
+            for link in party.external_links.filter(link_class="TwitterAccount"):
+                if not re.search(r"\d$", link.parameter):
                     PartySeriesExternalLink.objects.get_or_create(
-                        party_series=party.party_series,
-                        link_class='TwitterAccount',
-                        parameter=link.parameter
+                        party_series=party.party_series, link_class="TwitterAccount", parameter=link.parameter
                     )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyExternalLinkFormSet(instance=party)
-    return render(request, 'parties/edit_external_links.html', {
-        'party': party,
-        'formset': formset,
-    })
+    return render(
+        request,
+        "parties/edit_external_links.html",
+        {
+            "party": party,
+            "formset": formset,
+        },
+    )
 
 
 @writeable_site_required
@@ -297,19 +321,23 @@ def edit_external_links(request, party_id):
 def edit_series_external_links(request, party_series_id):
     party_series = get_object_or_404(PartySeries, id=party_series_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         formset = PartySeriesExternalLinkFormSet(request.POST, instance=party_series)
         if formset.is_valid():
             formset.save_ignoring_uniqueness()
-            formset.log_edit(request.user, 'party_series_edit_external_links')
+            formset.log_edit(request.user, "party_series_edit_external_links")
 
             return HttpResponseRedirect(party_series.get_absolute_url())
     else:
         formset = PartySeriesExternalLinkFormSet(instance=party_series)
-    return render(request, 'parties/edit_series_external_links.html', {
-        'party_series': party_series,
-        'formset': formset,
-    })
+    return render(
+        request,
+        "parties/edit_series_external_links.html",
+        {
+            "party_series": party_series,
+            "formset": formset,
+        },
+    )
 
 
 @writeable_site_required
@@ -323,8 +351,12 @@ def edit_series_notes(request, party_series_id):
         form.log_edit(request.user)
 
     return simple_ajax_form(
-        request, 'party_edit_series_notes', party_series, PartySeriesEditNotesForm,
-        title='Editing notes for %s' % party_series.name, on_success=success
+        request,
+        "party_edit_series_notes",
+        party_series,
+        PartySeriesEditNotesForm,
+        title="Editing notes for %s" % party_series.name,
+        on_success=success,
         # update_datestamp = True
     )
 
@@ -335,7 +367,7 @@ def edit_series(request, party_series_id):
         # Instead of redirecting back to this edit form after login, redirect to the party series page.
         # This is because the edit button pointing here is the only one a non-logged-in user sees,
         # so they may intend to edit something else on the party series page.
-        return redirect_to_login(reverse('party_series', args=[party_series_id]))
+        return redirect_to_login(reverse("party_series", args=[party_series_id]))
 
     party_series = get_object_or_404(PartySeries, id=party_series_id)
 
@@ -343,8 +375,12 @@ def edit_series(request, party_series_id):
         form.log_edit(request.user)
 
     return simple_ajax_form(
-        request, 'party_edit_series', party_series, EditPartySeriesForm,
-        title='Editing party: %s' % party_series.name, on_success=success
+        request,
+        "party_edit_series",
+        party_series,
+        EditPartySeriesForm,
+        title="Editing party: %s" % party_series.name,
+        on_success=success,
         # update_datestamp = True
     )
 
@@ -354,50 +390,62 @@ def edit_series(request, party_series_id):
 def add_competition(request, party_id):
     party = get_object_or_404(Party, id=party_id)
     competition = Competition(party=party)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CompetitionForm(request.POST, instance=competition)
         if form.is_valid():
-            competition.shown_date = form.cleaned_data['shown_date']
+            competition.shown_date = form.cleaned_data["shown_date"]
             form.save()
             form.log_creation(request.user)
             # TODO: party updated_at datestamps
             # party.updated_at = datetime.datetime.now()
             # party.save()
 
-            return redirect('competition_edit', competition.id)
+            return redirect("competition_edit", competition.id)
     else:
-        form = CompetitionForm(instance=competition, initial={
-            'shown_date': party.default_competition_date(),
-        })
-    return render(request, 'parties/add_competition.html', {
-        'party': party,
-        'form': form,
-    })
+        form = CompetitionForm(
+            instance=competition,
+            initial={
+                "shown_date": party.default_competition_date(),
+            },
+        )
+    return render(
+        request,
+        "parties/add_competition.html",
+        {
+            "party": party,
+            "form": form,
+        },
+    )
 
 
 def results_file(request, party_id, file_id):
     party = get_object_or_404(Party, id=party_id)
     results_file = get_object_or_404(ResultsFile, party=party, id=file_id)
     fix_encoding_url = (
-        reverse('maintenance:fix_results_file_encoding', args=(file_id, ))
-        + '?' + urlencode({'return_to': reverse('party_results_file', args=(party_id, file_id))})
+        reverse("maintenance:fix_results_file_encoding", args=(file_id,))
+        + "?"
+        + urlencode({"return_to": reverse("party_results_file", args=(party_id, file_id))})
     )
-    return render(request, 'parties/results_file.html', {
-        'party': party,
-        'results_file': results_file,
-        'fix_encoding_url': fix_encoding_url,
-    })
+    return render(
+        request,
+        "parties/results_file.html",
+        {
+            "party": party,
+            "results_file": results_file,
+            "fix_encoding_url": fix_encoding_url,
+        },
+    )
 
 
 def autocomplete(request):
-    query = request.GET.get('term')
+    query = request.GET.get("term")
     parties = Party.objects.filter(name__istartswith=query)
     parties = parties[:10]
 
     party_data = [
         {
-            'id': party.id,
-            'value': party.name,
+            "id": party.id,
+            "value": party.name,
         }
         for party in parties
     ]
@@ -408,101 +456,111 @@ def autocomplete(request):
 @login_required
 def edit_invitations(request, party_id):
     party = get_object_or_404(Party, id=party_id)
-    initial_forms = [
-        {'production': production}
-        for production in party.invitations.all()
-    ]
+    initial_forms = [{"production": production} for production in party.invitations.all()]
 
-    if request.method == 'POST':
+    if request.method == "POST":
         formset = PartyInvitationFormset(request.POST, initial=initial_forms)
         if formset.is_valid():
             invitations = [
-                prod_form.cleaned_data['production'].commit()
+                prod_form.cleaned_data["production"].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms and 'production' in prod_form.cleaned_data
+                if prod_form not in formset.deleted_forms and "production" in prod_form.cleaned_data
             ]
             party.invitations.set(invitations)
 
             if formset.has_changed():
-                invitation_titles = [prod.title for prod in invitations] or ['none']
+                invitation_titles = [prod.title for prod in invitations] or ["none"]
                 invitation_titles = ", ".join(invitation_titles)
                 Edit.objects.create(
-                    action_type='edit_party_invitations', focus=party,
-                    description=u"Set invitations to %s" % invitation_titles, user=request.user
+                    action_type="edit_party_invitations",
+                    focus=party,
+                    description="Set invitations to %s" % invitation_titles,
+                    user=request.user,
                 )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyInvitationFormset(initial=initial_forms)
-    return render(request, 'parties/edit_invitations.html', {
-        'party': party,
-        'formset': formset,
-    })
+    return render(
+        request,
+        "parties/edit_invitations.html",
+        {
+            "party": party,
+            "formset": formset,
+        },
+    )
 
 
 @writeable_site_required
 @login_required
 def edit_releases(request, party_id):
     party = get_object_or_404(Party, id=party_id)
-    initial_forms = [
-        {'production': production}
-        for production in party.releases.all()
-    ]
+    initial_forms = [{"production": production} for production in party.releases.all()]
 
-    if request.method == 'POST':
+    if request.method == "POST":
         formset = PartyReleaseFormset(request.POST, initial=initial_forms)
         if formset.is_valid():
             releases = [
-                prod_form.cleaned_data['production'].commit()
+                prod_form.cleaned_data["production"].commit()
                 for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms and 'production' in prod_form.cleaned_data
+                if prod_form not in formset.deleted_forms and "production" in prod_form.cleaned_data
             ]
             party.releases.set(releases)
 
             if formset.has_changed():
-                release_titles = [prod.title for prod in releases] or ['none']
+                release_titles = [prod.title for prod in releases] or ["none"]
                 release_titles = ", ".join(release_titles)
                 Edit.objects.create(
-                    action_type='edit_party_releases', focus=party,
-                    description=u"Set releases to %s" % release_titles, user=request.user
+                    action_type="edit_party_releases",
+                    focus=party,
+                    description="Set releases to %s" % release_titles,
+                    user=request.user,
                 )
 
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyReleaseFormset(initial=initial_forms)
-    return render(request, 'parties/edit_releases.html', {
-        'party': party,
-        'formset': formset,
-    })
+    return render(
+        request,
+        "parties/edit_releases.html",
+        {
+            "party": party,
+            "formset": formset,
+        },
+    )
 
 
 @writeable_site_required
 @login_required
 def edit_competition(request, party_id, competition_id):
-    return redirect('competition_edit', competition_id)
+    return redirect("competition_edit", competition_id)
 
 
 @writeable_site_required
 @login_required
 def edit_share_image(request, party_id):
     if not request.user.is_staff:
-        return redirect('home')
+        return redirect("home")
 
     party = get_object_or_404(Party, id=party_id)
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PartyShareImageForm(request.POST, request.FILES, instance=party)
         if form.is_valid():
             form.save()
 
-            messages.success(request, 'Social share image updated')
-            return redirect('party', party.id)
+            messages.success(request, "Social share image updated")
+            return redirect("party", party.id)
     else:
         form = PartyShareImageForm(instance=party)
 
-    return render(request, 'parties/edit_share_image.html', {
-        'party': party,
-        'form': form,
-    })
+    return render(
+        request,
+        "parties/edit_share_image.html",
+        {
+            "party": party,
+            "form": form,
+        },
+    )
 
 
 @writeable_site_required
@@ -510,37 +568,41 @@ def edit_share_image(request, party_id):
 def add_organiser(request, party_id):
     party = get_object_or_404(Party, id=party_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PartyOrganiserForm(request.POST)
         if form.is_valid():
-            releaser = form.cleaned_data['releaser_nick'].commit().releaser
+            releaser = form.cleaned_data["releaser_nick"].commit().releaser
             if releaser.locked and not request.user.is_staff:
                 messages.error(
                     request,
                     format_html(
                         "The scener profile for {} is protected and cannot be added as an organiser. "
                         'If you wish to add this organiser, <a href="/forums/3/">let us know in this thread</a>.',
-                        releaser.name
-                    )
+                        releaser.name,
+                    ),
                 )
             else:
-                organiser = Organiser(
-                    releaser=releaser,
-                    party=party,
-                    role=form.cleaned_data['role'])
+                organiser = Organiser(releaser=releaser, party=party, role=form.cleaned_data["role"])
                 organiser.save()
-                description = u"Added %s as organiser of %s" % (releaser.name, party.name)
+                description = "Added %s as organiser of %s" % (releaser.name, party.name)
                 Edit.objects.create(
-                    action_type='add_party_organiser', focus=releaser, focus2=party,
-                    description=description, user=request.user
+                    action_type="add_party_organiser",
+                    focus=releaser,
+                    focus2=party,
+                    description=description,
+                    user=request.user,
                 )
             return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm()
-    return render(request, 'parties/add_organiser.html', {
-        'party': party,
-        'form': form,
-    })
+    return render(
+        request,
+        "parties/add_organiser.html",
+        {
+            "party": party,
+            "form": form,
+        },
+    )
 
 
 @writeable_site_required
@@ -549,50 +611,63 @@ def edit_organiser(request, party_id, organiser_id):
     party = get_object_or_404(Party, id=party_id)
     organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         if organiser.releaser.locked and not request.user.is_staff:
             raise PermissionDenied
         else:
-            form = PartyOrganiserForm(request.POST, initial={
-                'releaser_nick': organiser.releaser.primary_nick,
-                'role': organiser.role,
-            })
+            form = PartyOrganiserForm(
+                request.POST,
+                initial={
+                    "releaser_nick": organiser.releaser.primary_nick,
+                    "role": organiser.role,
+                },
+            )
             if form.is_valid():
-                releaser = form.cleaned_data['releaser_nick'].commit().releaser
+                releaser = form.cleaned_data["releaser_nick"].commit().releaser
                 if releaser.locked and not request.user.is_staff:
                     messages.error(
                         request,
                         format_html(
                             "The scener profile for {} is protected and cannot be added as an organiser. "
                             'If you wish to add this organiser, <a href="/forums/3/">let us know in this thread</a>.',
-                            releaser.name
-                        )
+                            releaser.name,
+                        ),
                     )
                     return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
 
                 organiser.releaser = releaser
-                organiser.role = form.cleaned_data['role']
+                organiser.role = form.cleaned_data["role"]
                 organiser.save()
                 form.log_edit(request.user, releaser, party)
 
                 return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
-        form = PartyOrganiserForm(initial={
-            'releaser_nick': organiser.releaser.primary_nick,
-            'role': organiser.role,
-        })
+        form = PartyOrganiserForm(
+            initial={
+                "releaser_nick": organiser.releaser.primary_nick,
+                "role": organiser.role,
+            }
+        )
 
     if organiser.releaser.locked and not request.user.is_staff:
-        return render(request, 'parties/edit_organiser_protected.html', {
-            'party': party,
-            'organiser': organiser,
-        })
+        return render(
+            request,
+            "parties/edit_organiser_protected.html",
+            {
+                "party": party,
+                "organiser": organiser,
+            },
+        )
     else:
-        return render(request, 'parties/edit_organiser.html', {
-            'party': party,
-            'organiser': organiser,
-            'form': form,
-        })
+        return render(
+            request,
+            "parties/edit_organiser.html",
+            {
+                "party": party,
+                "organiser": organiser,
+                "form": form,
+            },
+        )
 
 
 class RemoveOrganiserView(AjaxConfirmationView):
@@ -606,11 +681,12 @@ class RemoveOrganiserView(AjaxConfirmationView):
         return self.party.get_absolute_url() + "?editing=organisers"
 
     def get_action_url(self):
-        return reverse('party_remove_organiser', args=[self.party.id, self.organiser.id])
+        return reverse("party_remove_organiser", args=[self.party.id, self.organiser.id])
 
     def get_message(self):
         return "Are you sure you want to remove %s as an organiser of %s?" % (
-            self.organiser.releaser.name, self.party.name
+            self.organiser.releaser.name,
+            self.party.name,
         )
 
     def get_html_title(self):
@@ -618,8 +694,11 @@ class RemoveOrganiserView(AjaxConfirmationView):
 
     def perform_action(self):
         self.organiser.delete()
-        description = u"Removed %s as organiser of %s" % (self.organiser.releaser.name, self.party.name)
+        description = "Removed %s as organiser of %s" % (self.organiser.releaser.name, self.party.name)
         Edit.objects.create(
-            action_type='remove_party_organiser', focus=self.organiser.releaser, focus2=self.party,
-            description=description, user=self.request.user
+            action_type="remove_party_organiser",
+            focus=self.organiser.releaser,
+            focus2=self.party,
+            description=description,
+            user=self.request.user,
         )

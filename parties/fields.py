@@ -8,11 +8,11 @@ from parties.models import Party
 
 # a form field for selecting a party, e.g. in the 'invitation for...' field on a production form
 
+
 # An object which encapsulates the state of a PartyWidget as derived from its posted data;
 # this is what PartyWidget returns from value_from_datadict
-class PartyLookup():
+class PartyLookup:
     def __init__(self, search_term=None, party_id=None, redisplay=False):
-
         self.search_term = search_term  # the party name being looked up
         self.party_id = party_id  # the party ID previously chosen (cached in a hidden field)
 
@@ -38,7 +38,7 @@ class PartyLookup():
             if not self.search_term:
                 self.is_empty = True
             else:
-                if self.party_id is not None and self.party_id != '':
+                if self.party_id is not None and self.party_id != "":
                     try:
                         self.party = Party.objects.get(id=self.party_id)
                     except Party.DoesNotExist:
@@ -88,32 +88,28 @@ class PartyLookup():
 
 class PartyWidget(forms.Widget):
     def __init__(self, attrs=None):
-        self.search_widget = forms.TextInput(attrs={'class': 'party_field_search'})
-        self.lookup_widget = SubmitButtonInput(button_text='Find party', attrs={'class': 'party_field_lookup'})
-        self.party_id_widget = forms.HiddenInput(attrs={'class': 'party_field_party_id'})
+        self.search_widget = forms.TextInput(attrs={"class": "party_field_search"})
+        self.lookup_widget = SubmitButtonInput(button_text="Find party", attrs={"class": "party_field_lookup"})
+        self.party_id_widget = forms.HiddenInput(attrs={"class": "party_field_party_id"})
         super().__init__(attrs=attrs)
 
     def render(self, name, value, attrs=None, renderer=None):
         party_lookup = PartyLookup.from_value(value)
 
         output = [
-            self.search_widget.render(
-                name + '_search', party_lookup.search_term, attrs=attrs, renderer=None
-            ),
-            self.lookup_widget.render(name + '_lookup', None, attrs=attrs, renderer=None),
-            self.party_id_widget.render(
-                name + '_party_id', party_lookup.party_id, attrs=attrs, renderer=None
-            ),
+            self.search_widget.render(name + "_search", party_lookup.search_term, attrs=attrs, renderer=None),
+            self.lookup_widget.render(name + "_lookup", None, attrs=attrs, renderer=None),
+            self.party_id_widget.render(name + "_party_id", party_lookup.party_id, attrs=attrs, renderer=None),
             '<div class="help_text">(if the party doesn\'t exist yet, '
-            '<a href="/parties/new/" target="_blank">create it first</a>!)</div>'
+            '<a href="/parties/new/" target="_blank">create it first</a>!)</div>',
         ]
 
-        return mark_safe(u'<div class="party_field">' + u''.join(output) + u'</div>')
+        return mark_safe('<div class="party_field">' + "".join(output) + "</div>")
 
     def value_from_datadict(self, data, files, name):
-        search_term = self.search_widget.value_from_datadict(data, files, name + '_search')
-        redisplay = self.lookup_widget.value_from_datadict(data, files, name + '_lookup')
-        party_id = self.party_id_widget.value_from_datadict(data, files, name + '_party_id')
+        search_term = self.search_widget.value_from_datadict(data, files, name + "_search")
+        redisplay = self.lookup_widget.value_from_datadict(data, files, name + "_lookup")
+        party_id = self.party_id_widget.value_from_datadict(data, files, name + "_party_id")
 
         party_lookup = PartyLookup(search_term=search_term, redisplay=redisplay, party_id=party_id)
 

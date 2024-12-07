@@ -42,8 +42,8 @@ import re
 import markdown
 
 
-reflink_re = re.compile(r'^\s*\[[^\[\]]+\]:.+$')
-link_re = re.compile(r'(\s+\(?|^)((http|ftp|https)://[-\w\#$%&~/.;:=,?@+]+)', re.IGNORECASE)
+reflink_re = re.compile(r"^\s*\[[^\[\]]+\]:.+$")
+link_re = re.compile(r"(\s+\(?|^)((http|ftp|https)://[-\w\#$%&~/.;:=,?@+]+)", re.IGNORECASE)
 
 
 class AutoLinkPreprocessor(markdown.preprocessors.Preprocessor):
@@ -59,4 +59,4 @@ class AutoLinkPreprocessor(markdown.preprocessors.Preprocessor):
 
 class AutoLinkExtension(markdown.Extension):
     def extendMarkdown(self, md):
-        md.preprocessors.register(AutoLinkPreprocessor(md), 'autolink', 40)
+        md.preprocessors.register(AutoLinkPreprocessor(md), "autolink", 40)

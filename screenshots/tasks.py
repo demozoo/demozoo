@@ -21,29 +21,29 @@ from screenshots.models import USABLE_IMAGE_FILE_EXTENSIONS, PILConvertibleImage
 from screenshots.processing import select_screenshot_file, upload_to_s3
 
 
-upload_dir = os.path.join(settings.MEDIA_ROOT, 'screenshot_uploads')
+upload_dir = os.path.join(settings.MEDIA_ROOT, "screenshot_uploads")
 
 
 def create_basename(screenshot_id):
     u = uuid.uuid4().hex
-    return u[0:2] + '/' + u[2:4] + '/' + u[4:8] + '.' + str(screenshot_id) + '.'
+    return u[0:2] + "/" + u[2:4] + "/" + u[4:8] + "." + str(screenshot_id) + "."
 
 
 def upload_original(img, screenshot, basename):
     orig, orig_size, orig_format = img.create_original()
-    screenshot.original_url = upload_to_s3(orig, 'screens/o/' + basename + orig_format)
+    screenshot.original_url = upload_to_s3(orig, "screens/o/" + basename + orig_format)
     screenshot.original_width, screenshot.original_height = orig_size
 
 
 def upload_standard(img, screenshot, basename):
     standard, standard_size, standard_format = img.create_thumbnail((400, 300))
-    screenshot.standard_url = upload_to_s3(standard, 'screens/s/' + basename + standard_format)
+    screenshot.standard_url = upload_to_s3(standard, "screens/s/" + basename + standard_format)
     screenshot.standard_width, screenshot.standard_height = standard_size
 
 
 def upload_thumb(img, screenshot, basename):
     thumb, thumb_size, thumb_format = img.create_thumbnail((200, 150))
-    screenshot.thumbnail_url = upload_to_s3(thumb, 'screens/t/' + basename + thumb_format)
+    screenshot.thumbnail_url = upload_to_s3(thumb, "screens/t/" + basename + thumb_format)
     screenshot.thumbnail_width, screenshot.thumbnail_height = thumb_size
 
 
@@ -51,7 +51,7 @@ def upload_thumb(img, screenshot, basename):
 def create_screenshot_versions_from_local_file(screenshot_id, filename):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
-        f = open(filename, 'rb')
+        f = open(filename, "rb")
         img = PILConvertibleImage(f, name_hint=filename)
 
         basename = create_basename(screenshot_id)
@@ -73,7 +73,7 @@ def create_screenshot_versions_from_local_file(screenshot_id, filename):
 
 
 # token rate limit so that new uploads from local files get priority
-@shared_task(rate_limit='1/s', ignore_result=True)
+@shared_task(rate_limit="1/s", ignore_result=True)
 def rebuild_screenshot(screenshot_id):
     try:
         screenshot = Screenshot.objects.get(id=screenshot_id)
@@ -81,7 +81,7 @@ def rebuild_screenshot(screenshot_id):
         # read into a BytesIO buffer so that PIL can seek on it (which isn't possible for urllib responses) -
         # see http://mail.python.org/pipermail/image-sig/2004-April/002729.html
         buf = io.BytesIO(f.read())
-        img = PILConvertibleImage(buf, screenshot.original_url.split('/')[-1])
+        img = PILConvertibleImage(buf, screenshot.original_url.split("/")[-1])
 
         basename = create_basename(screenshot_id)
         upload_standard(img, screenshot, basename)
@@ -99,7 +99,7 @@ def rebuild_screenshot(screenshot_id):
         pass
 
 
-@shared_task(rate_limit='6/m', ignore_result=True)
+@shared_task(rate_limit="6/m", ignore_result=True)
 def create_screenshot_from_production_link(production_link_id):
     try:
         prod_link = ProductionLink.objects.get(id=production_link_id)
@@ -135,7 +135,7 @@ def create_screenshot_from_production_link(production_link_id):
                 prod_link.is_unresolved_for_screenshotting = True
             prod_link.save()
 
-        image_extension = prod_link.file_for_screenshot.split('.')[-1].lower()
+        image_extension = prod_link.file_for_screenshot.split(".")[-1].lower()
         if image_extension in USABLE_IMAGE_FILE_EXTENSIONS:
             z = None
             try:
@@ -143,9 +143,7 @@ def create_screenshot_from_production_link(production_link_id):
                 # decode the filename as stored in the db
                 filename = unpack_db_zip_filename(prod_link.file_for_screenshot)
 
-                member_buf = io.BytesIO(
-                    z.read(filename)
-                )
+                member_buf = io.BytesIO(z.read(filename))
             except zipfile.BadZipfile:
                 prod_link.has_bad_image = True
                 prod_link.save()
@@ -164,14 +162,14 @@ def create_screenshot_from_production_link(production_link_id):
             return
     else:
         try:
-            img = PILConvertibleImage(blob.as_io_buffer(), name_hint=url.split('/')[-1])
+            img = PILConvertibleImage(blob.as_io_buffer(), name_hint=url.split("/")[-1])
         except IOError:
             prod_link.has_bad_image = True
             prod_link.save()
             return
 
     screenshot = Screenshot(production_id=production_id)
-    basename = sha1[0:2] + '/' + sha1[2:4] + '/' + sha1[4:8] + '.pl' + str(production_link_id) + '.'
+    basename = sha1[0:2] + "/" + sha1[2:4] + "/" + sha1[4:8] + ".pl" + str(production_link_id) + "."
     try:
         upload_standard(img, screenshot, basename)
         upload_thumb(img, screenshot, basename)
@@ -188,15 +186,15 @@ def create_screenshot_from_production_link(production_link_id):
 
 def capture_upload_for_processing(uploaded_file, screenshot_id):
     """
-        Save an UploadedFile to our holding area on the local filesystem and schedule
-        for screenshot processing
+    Save an UploadedFile to our holding area on the local filesystem and schedule
+    for screenshot processing
     """
-    clean_filename = re.sub(r'[^A-Za-z0-9\_\.\-]', '_', uploaded_file.name)
+    clean_filename = re.sub(r"[^A-Za-z0-9\_\.\-]", "_", uploaded_file.name)
     local_filename = uuid.uuid4().hex[0:16] + clean_filename
     pathlib.Path(upload_dir).mkdir(parents=True, exist_ok=True)
     path = os.path.join(upload_dir, local_filename)
 
-    destination = open(path, 'wb')
+    destination = open(path, "wb")
     for chunk in uploaded_file.chunks():
         destination.write(chunk)
     destination.close()

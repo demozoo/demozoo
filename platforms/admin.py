@@ -7,4 +7,4 @@ class PlatformAliasInline(admin.StackedInline):
     model = PlatformAlias
 
 
-admin.site.register(Platform, inlines=[PlatformAliasInline], search_fields=['name'])
+admin.site.register(Platform, inlines=[PlatformAliasInline], search_fields=["name"])

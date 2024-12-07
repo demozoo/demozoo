@@ -13,11 +13,10 @@ from productions.models import Production, ProductionLink
 def groups(request):
     # get list of releasers who have Pouet.GroupMatchInfo data
     groups = (
-        GroupMatchInfo.objects.select_related('releaser').order_by('releaser__name')
-        .prefetch_related('releaser__nicks')
+        GroupMatchInfo.objects.select_related("releaser").order_by("releaser__name").prefetch_related("releaser__nicks")
     )
     # mode = matchable, pouet_unmatched or all
-    mode = request.GET.get('mode', 'matchable')
+    mode = request.GET.get("mode", "matchable")
 
     if mode == "matchable":
         # filter to just the ones which have unmatched entries on both sides
@@ -26,10 +25,14 @@ def groups(request):
         # filter to the ones which have unmatched entries on Pouet
         groups = groups.filter(unmatched_pouet_production_count__gt=0)
 
-    return render(request, 'pouet/groups.html', {
-        'groups': groups,
-        'mode': mode,
-    })
+    return render(
+        request,
+        "pouet/groups.html",
+        {
+            "groups": groups,
+            "mode": mode,
+        },
+    )
 
 
 @login_required
@@ -38,31 +41,37 @@ def match_group(request, releaser_id):
 
     unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = get_match_data(releaser)
 
-    return render(request, 'pouet/match_group.html', {
-        'releaser': releaser,
-        'unmatched_demozoo_prods': unmatched_demozoo_prods,
-        'unmatched_pouet_prods': unmatched_pouet_prods,
-        'matched_prods': matched_prods,
-    })
+    return render(
+        request,
+        "pouet/match_group.html",
+        {
+            "releaser": releaser,
+            "unmatched_demozoo_prods": unmatched_demozoo_prods,
+            "unmatched_pouet_prods": unmatched_pouet_prods,
+            "matched_prods": matched_prods,
+        },
+    )
 
 
 @writeable_site_required
 @login_required
 def production_link(request):
-    production = get_object_or_404(Production, id=request.POST['demozoo_id'])
-    pouet_id = request.POST['pouet_id']
+    production = get_object_or_404(Production, id=request.POST["demozoo_id"])
+    pouet_id = request.POST["pouet_id"]
 
     (link, created) = ProductionLink.objects.get_or_create(
-        link_class='PouetProduction',
+        link_class="PouetProduction",
         parameter=pouet_id,
         production=production,
         is_download_link=False,
-        source='match',
+        source="match",
     )
     if created:
         Edit.objects.create(
-            action_type='production_add_external_link', focus=production,
-            description=(u"Added Pouet link to ID %s" % pouet_id), user=request.user
+            action_type="production_add_external_link",
+            focus=production,
+            description=("Added Pouet link to ID %s" % pouet_id),
+            user=request.user,
         )
 
     return HttpResponse("OK", content_type="text/plain")
@@ -71,17 +80,16 @@ def production_link(request):
 @writeable_site_required
 @login_required
 def production_unlink(request):
-    production = get_object_or_404(Production, id=request.POST['demozoo_id'])
-    pouet_id = request.POST['pouet_id']
+    production = get_object_or_404(Production, id=request.POST["demozoo_id"])
+    pouet_id = request.POST["pouet_id"]
 
-    links = ProductionLink.objects.filter(
-        link_class='PouetProduction',
-        parameter=pouet_id,
-        production=production)
+    links = ProductionLink.objects.filter(link_class="PouetProduction", parameter=pouet_id, production=production)
     if links:
         Edit.objects.create(
-            action_type='production_delete_external_link', focus=production,
-            description=(u"Deleted Pouet link to ID %s" % pouet_id), user=request.user
+            action_type="production_delete_external_link",
+            focus=production,
+            description=("Deleted Pouet link to ID %s" % pouet_id),
+            user=request.user,
         )
         links.delete()
 

@@ -4,7 +4,7 @@ from pouet.models import Production
 
 
 class TestModels(TestCase):
-    fixtures = ['tests/pouet.json']
+    fixtures = ["tests/pouet.json"]
 
     def test_release_date(self):
         pondlife = Production.objects.get(name="Pondlife")

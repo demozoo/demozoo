@@ -29,7 +29,7 @@ class Download(ExternalLink):
         bucket = open_bucket()
         f = BytesIO()
         bucket.download_fileobj(self.mirror_s3_key, f)
-        filename = self.mirror_s3_key.split('/')[-1]
+        filename = self.mirror_s3_key.split("/")[-1]
         return DownloadBlob(filename, f.getvalue())
 
 
@@ -47,28 +47,26 @@ class ArchiveMember(models.Model):
         download = Download.objects.filter(sha1=self.archive_sha1).first()
         blob = download.fetch_from_s3()
         z = blob.as_zipfile()
-        member_buf = BytesIO(
-            z.read(unpack_db_zip_filename(self.filename))
-        )
+        member_buf = BytesIO(z.read(unpack_db_zip_filename(self.filename)))
         z.close()
         return member_buf
 
     @property
     def file_extension(self):
-        extension = self.filename.split('.')[-1]
+        extension = self.filename.split(".")[-1]
         if extension == self.filename:
             return None
         else:
             return extension.lower()
 
     def guess_mime_type(self):
-        MIME_TYPE_BY_EXTENSION = {'png': 'image/png', 'jpg': 'image/jpeg', 'gif': 'image/gif'}
-        return MIME_TYPE_BY_EXTENSION.get(self.file_extension, 'application/octet-stream')
+        MIME_TYPE_BY_EXTENSION = {"png": "image/png", "jpg": "image/jpeg", "gif": "image/gif"}
+        return MIME_TYPE_BY_EXTENSION.get(self.file_extension, "application/octet-stream")
 
     class Meta:
-        ordering = ['filename']
+        ordering = ["filename"]
         unique_together = [
-            ('archive_sha1', 'filename', 'file_size'),
+            ("archive_sha1", "filename", "file_size"),
         ]
 
 
@@ -93,4 +91,4 @@ class DownloadBlob(object):
         return BytesIO(self.file_content)
 
     def as_zipfile(self):
-        return zipfile.ZipFile(self.as_io_buffer(), 'r')
+        return zipfile.ZipFile(self.as_io_buffer(), "r")

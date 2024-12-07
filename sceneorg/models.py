@@ -11,9 +11,9 @@ class Directory(models.Model):
     last_seen_at = models.DateTimeField()
     last_spidered_at = models.DateTimeField(null=True, blank=True)
     parent = models.ForeignKey(
-        'Directory', related_name='subdirectories', null=True, blank=True, on_delete=models.CASCADE
+        "Directory", related_name="subdirectories", null=True, blank=True, on_delete=models.CASCADE
     )
-    competitions = models.ManyToManyField('parties.Competition', related_name="sceneorg_directories")
+    competitions = models.ManyToManyField("parties.Competition", related_name="sceneorg_directories")
 
     def mark_deleted(self):
         for dir in self.subdirectories.all():
@@ -30,14 +30,14 @@ class Directory(models.Model):
         return "https://files.scene.org/browse%s" % urllib.parse.quote(self.path.encode("utf-8"))
 
     def new_files_url(self, days):
-        return (
-            "https://www.scene.org/newfiles.php?dayint=%s&dir=%s"
-            % (days, urllib.parse.quote(self.path.encode("utf-8")))
+        return "https://www.scene.org/newfiles.php?dayint=%s&dir=%s" % (
+            days,
+            urllib.parse.quote(self.path.encode("utf-8")),
         )
 
     @staticmethod
     def parties_root():
-        return Directory.objects.get(path='/parties/')
+        return Directory.objects.get(path="/parties/")
 
     @staticmethod
     def party_years():
@@ -57,18 +57,18 @@ class File(models.Model):
     is_deleted = models.BooleanField(default=False)
     first_seen_at = models.DateTimeField(null=True, auto_now_add=True)
     last_seen_at = models.DateTimeField()
-    directory = models.ForeignKey(Directory, related_name='files', on_delete=models.CASCADE)
+    directory = models.ForeignKey(Directory, related_name="files", on_delete=models.CASCADE)
     size = models.BigIntegerField(null=True)
 
     def __str__(self):
         return self.path
 
     def filename(self):
-        return self.path.split('/')[-1]
+        return self.path.split("/")[-1]
 
     def fetched_data(self):
         # f = urllib.request.urlopen('http://http.de.scene.org/pub' + self.path)
-        f = urllib.request.urlopen('ftp://ftp.scene.org/pub' + self.path)
+        f = urllib.request.urlopen("ftp://ftp.scene.org/pub" + self.path)
         file_content = f.read(65537)
         f.close()
         if len(file_content) > 65536:

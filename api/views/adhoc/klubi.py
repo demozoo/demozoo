@@ -14,14 +14,24 @@ def demoshow(request):
 
     (start_date, end_date) = get_month_parameter(request)
 
-    prods = Production.objects.filter(
-        supertype='production',
-        release_date_date__gte=start_date, release_date_date__lt=end_date,
-    ).exclude(release_date_precision='y').prefetch_related(
-        'types', 'platforms',
-        'author_nicks', 'author_affiliation_nicks', 'links',
-        'competition_placings__competition__party', 'release_parties',
-    ).order_by('release_date_date')
+    prods = (
+        Production.objects.filter(
+            supertype="production",
+            release_date_date__gte=start_date,
+            release_date_date__lt=end_date,
+        )
+        .exclude(release_date_precision="y")
+        .prefetch_related(
+            "types",
+            "platforms",
+            "author_nicks",
+            "author_affiliation_nicks",
+            "links",
+            "competition_placings__competition__party",
+            "release_parties",
+        )
+        .order_by("release_date_date")
+    )
 
     # put videos (wilds) into a separate list after the main one
     exe_prods = []
@@ -34,8 +44,9 @@ def demoshow(request):
 
         # strip out types that are not really suitable for a demo show
         interesting_types = [
-            typ for typ in prod.types.all()
-            if typ.name not in ('Diskmagazine', 'Tool', 'Game', 'Video', 'Pack', 'Musicdisk', 'Chip Music Pack')
+            typ
+            for typ in prod.types.all()
+            if typ.name not in ("Diskmagazine", "Tool", "Game", "Video", "Pack", "Musicdisk", "Chip Music Pack")
         ]
 
         if len(interesting_types) == 0:
@@ -43,29 +54,41 @@ def demoshow(request):
 
         exe_prods.append(prod)
 
-    response = HttpResponse(content_type='text/plain;charset=utf-8')
+    response = HttpResponse(content_type="text/plain;charset=utf-8")
     csvfile = csv.writer(response)
-    csvfile.writerow([
-        'Demozoo URL', 'Title', 'By', 'Release date', 'Party', 'Type', 'Platform',
-        'Download URL', 'Video URL', 'Pouet URL',
-    ])
+    csvfile.writerow(
+        [
+            "Demozoo URL",
+            "Title",
+            "By",
+            "Release date",
+            "Party",
+            "Type",
+            "Platform",
+            "Download URL",
+            "Video URL",
+            "Pouet URL",
+        ]
+    )
     for prod in exe_prods:
         platforms = sorted(prod.platforms.all(), key=lambda p: p.name)
         prod_types = sorted(prod.types.all(), key=lambda t: t.name)
-        csvfile.writerow([
-            (u'http://demozoo.org' + prod.get_absolute_url()).encode('utf-8'),
-            prod.title.encode('utf-8'),
-            prod.byline_string.encode('utf-8'),
-            prod.release_date,
-            ', '.join(
-                [placing.competition.party.name for placing in prod.competition_placings.all()]
-                + [party.name for party in prod.release_parties.all()]
-            ).encode('utf-8'),
-            ', '.join([typ.name for typ in prod_types]).encode('utf-8'),
-            ', '.join([platform.name for platform in platforms]).encode('utf-8'),
-            ' / '.join([link.download_url for link in prod.links.all() if link.is_download_link]),
-            ' / '.join([link.url for link in prod.links.all() if link.is_streaming_video]),
-            ' / '.join([link.url for link in prod.links.all() if link.link_class == 'PouetProduction']),
-        ])
+        csvfile.writerow(
+            [
+                ("http://demozoo.org" + prod.get_absolute_url()).encode("utf-8"),
+                prod.title.encode("utf-8"),
+                prod.byline_string.encode("utf-8"),
+                prod.release_date,
+                ", ".join(
+                    [placing.competition.party.name for placing in prod.competition_placings.all()]
+                    + [party.name for party in prod.release_parties.all()]
+                ).encode("utf-8"),
+                ", ".join([typ.name for typ in prod_types]).encode("utf-8"),
+                ", ".join([platform.name for platform in platforms]).encode("utf-8"),
+                " / ".join([link.download_url for link in prod.links.all() if link.is_download_link]),
+                " / ".join([link.url for link in prod.links.all() if link.is_streaming_video]),
+                " / ".join([link.url for link in prod.links.all() if link.link_class == "PouetProduction"]),
+            ]
+        )
 
     return response

@@ -8,12 +8,12 @@ import warnings
 from django.core.management import execute_from_command_line
 
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'demozoo.settings.test'
+os.environ["DJANGO_SETTINGS_MODULE"] = "demozoo.settings.test"
 
 
 def make_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--deprecation', choices=['all', 'imminent', 'none'], default='imminent')
+    parser.add_argument("--deprecation", choices=["all", "imminent", "none"], default="imminent")
     return parser
 
 
@@ -23,19 +23,19 @@ def parse_args(args=None):
 
 def runtests():
     args, rest = parse_args()
-    if args.deprecation == 'all':
+    if args.deprecation == "all":
         # Show all deprecation warnings
-        warnings.simplefilter('default', DeprecationWarning)
-        warnings.simplefilter('default', PendingDeprecationWarning)
-    elif args.deprecation == 'imminent':
+        warnings.simplefilter("default", DeprecationWarning)
+        warnings.simplefilter("default", PendingDeprecationWarning)
+    elif args.deprecation == "imminent":
         # Show only imminent deprecation warnings
-        warnings.filterwarnings('default', category=DeprecationWarning)
+        warnings.filterwarnings("default", category=DeprecationWarning)
     else:
         # Deprecation warnings are ignored by default
         pass
 
-    execute_from_command_line([sys.argv[0], 'test'] + rest)
+    execute_from_command_line([sys.argv[0], "test"] + rest)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runtests()

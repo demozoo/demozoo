@@ -6,7 +6,10 @@ from common.utils.files import random_path
 
 class Banner(models.Model):
     banner_image = models.ForeignKey(
-        'BannerImage', null=True, blank=True, related_name='+',
+        "BannerImage",
+        null=True,
+        blank=True,
+        related_name="+",
         on_delete=models.SET_NULL,  # don't want deletion to cascade to the banner if image is deleted
     )
     title = models.CharField(max_length=255)
@@ -14,11 +17,10 @@ class Banner(models.Model):
     url = models.CharField(max_length=255, verbose_name="URL")
     hide_text = models.BooleanField(
         default=False,
-        help_text="Instead of displaying text, use it as fallback text for people who can't see the image"
+        help_text="Instead of displaying text, use it as fallback text for people who can't see the image",
     )
     small_print = models.TextField(
-        blank=True,
-        help_text="Shown below the banner, for picture credits etc. Markdown supported"
+        blank=True, help_text="Shown below the banner, for picture credits etc. Markdown supported"
     )
 
     show_for_anonymous_users = models.BooleanField(default=True)
@@ -31,14 +33,16 @@ class Banner(models.Model):
 
 
 def banner_image_upload_to(i, f):
-    return random_path('homepage_banners', f)
+    return random_path("homepage_banners", f)
 
 
 class BannerImage(models.Model):
     image = models.ImageField(
         upload_to=banner_image_upload_to,
-        width_field='image_width', height_field='image_height',
-        help_text='Will be cropped to 2.5 : 1 aspect ratio. Recommended size: 832x333')
+        width_field="image_width",
+        height_field="image_height",
+        help_text="Will be cropped to 2.5 : 1 aspect ratio. Recommended size: 832x333",
+    )
     image_width = models.IntegerField(editable=False)
     image_height = models.IntegerField(editable=False)
     image_url = models.CharField(max_length=255, blank=True, editable=False)
@@ -55,6 +59,7 @@ class BannerImage(models.Model):
     # method for displaying image in admin listings
     def image_tag(self):
         return '<img src="%s" width="400" alt="" />' % self.image_url
+
     image_tag.allow_tags = True
 
     def __str__(self):
@@ -65,7 +70,10 @@ class NewsStory(models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
     image = models.ForeignKey(
-        'NewsImage', null=True, blank=True, related_name='+',
+        "NewsImage",
+        null=True,
+        blank=True,
+        related_name="+",
         on_delete=models.SET_NULL,  # don't want deletion to cascade to the news story if image is deleted
     )
     is_public = models.BooleanField(blank=True, default=True)
@@ -76,21 +84,23 @@ class NewsStory(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return "%s#news-%d" % (reverse('news_story', args=[str(self.id)]), self.id)
+        return "%s#news-%d" % (reverse("news_story", args=[str(self.id)]), self.id)
 
     class Meta:
-        verbose_name_plural = 'News stories'
+        verbose_name_plural = "News stories"
 
 
 def news_image_upload_to(i, f):
-    return random_path('news_images', f)
+    return random_path("news_images", f)
 
 
 class NewsImage(models.Model):
     image = models.ImageField(
         upload_to=news_image_upload_to,
-        width_field='image_width', height_field='image_height',
-        help_text='Recommended size: 100x100')
+        width_field="image_width",
+        height_field="image_height",
+        help_text="Recommended size: 100x100",
+    )
     image_width = models.IntegerField(editable=False)
     image_height = models.IntegerField(editable=False)
     image_url = models.CharField(max_length=255, blank=True, editable=False)
@@ -107,6 +117,7 @@ class NewsImage(models.Model):
     # method for displaying image in admin listings
     def image_tag(self):
         return '<img src="%s" width="100" alt="" />' % self.image_url
+
     image_tag.allow_tags = True
 
     def __str__(self):

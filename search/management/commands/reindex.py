@@ -15,15 +15,15 @@ class Command(BaseCommand):
         BATCH_SIZE = 1000
 
         for klass, qs in [
-            (BBS, BBS.objects.order_by('pk').defer('search_document')),
-            (Party, Party.objects.order_by('pk').defer('search_document')),
-            (Releaser, Releaser.objects.order_by('pk').prefetch_related('nicks__variants').defer('search_document')),
-            (Production, Production.objects.order_by('pk').prefetch_related('tags').defer('search_document'))
+            (BBS, BBS.objects.order_by("pk").defer("search_document")),
+            (Party, Party.objects.order_by("pk").defer("search_document")),
+            (Releaser, Releaser.objects.order_by("pk").prefetch_related("nicks__variants").defer("search_document")),
+            (Production, Production.objects.order_by("pk").prefetch_related("tags").defer("search_document")),
         ]:
             i = 0
             while True:
                 with transaction.atomic():
-                    batch = qs[i:(i + BATCH_SIZE)]
+                    batch = qs[i : (i + BATCH_SIZE)]
 
                     for obj in batch:
                         index(obj)

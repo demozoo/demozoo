@@ -23,45 +23,43 @@ class AddCommentView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        self.form = CommentForm(instance=self.comment, prefix='comment')
+        self.form = CommentForm(instance=self.comment, prefix="comment")
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        self.form = CommentForm(request.POST, instance=self.comment, prefix='comment')
+        self.form = CommentForm(request.POST, instance=self.comment, prefix="comment")
         if self.form.is_valid():
             self.form.save()
-            return redirect(
-                self.commentable.get_absolute_url() + ('#comment-%d' % self.comment.id)
-            )
+            return redirect(self.commentable.get_absolute_url() + ("#comment-%d" % self.comment.id))
         else:
             context = self.get_context_data()
             return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['commentable'] = self.commentable
-        context['commentable_name'] = str(self.commentable)
-        context['comment_form'] = self.form
-        context['submit_action'] = self.submit_action
+        context["commentable"] = self.commentable
+        context["commentable_name"] = str(self.commentable)
+        context["comment_form"] = self.form
+        context["submit_action"] = self.submit_action
         return context
 
-    template_name = 'comments/add_comment.html'
+    template_name = "comments/add_comment.html"
 
 
 class AddProductionCommentView(AddCommentView):
     commentable_model = Production
-    submit_action = 'add_production_comment'
+    submit_action = "add_production_comment"
 
 
 class AddPartyCommentView(AddCommentView):
     commentable_model = Party
-    submit_action = 'add_party_comment'
+    submit_action = "add_party_comment"
 
 
 class AddBBSCommentView(AddCommentView):
     commentable_model = BBS
-    submit_action = 'add_bbs_comment'
+    submit_action = "add_bbs_comment"
 
 
 class EditCommentView(TemplateView):
@@ -83,12 +81,12 @@ class EditCommentView(TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        self.form = CommentForm(instance=self.comment, prefix='comment')
+        self.form = CommentForm(instance=self.comment, prefix="comment")
         context = self.get_context_data()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        self.form = CommentForm(request.POST, instance=self.comment, prefix='comment')
+        self.form = CommentForm(request.POST, instance=self.comment, prefix="comment")
         if self.form.is_valid():
             self.form.save()
             return redirect(self.comment.get_absolute_url())
@@ -98,29 +96,29 @@ class EditCommentView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['commentable'] = self.commentable
-        context['commentable_name'] = str(self.commentable)
-        context['comment'] = self.comment
-        context['comment_form'] = self.form
-        context['submit_action'] = self.submit_action
+        context["commentable"] = self.commentable
+        context["commentable_name"] = str(self.commentable)
+        context["comment"] = self.comment
+        context["comment_form"] = self.form
+        context["submit_action"] = self.submit_action
         return context
 
-    template_name = 'comments/edit_comment.html'
+    template_name = "comments/edit_comment.html"
 
 
 class EditProductionCommentView(EditCommentView):
     commentable_model = Production
-    submit_action = 'edit_production_comment'
+    submit_action = "edit_production_comment"
 
 
 class EditPartyCommentView(EditCommentView):
     commentable_model = Party
-    submit_action = 'edit_party_comment'
+    submit_action = "edit_party_comment"
 
 
 class EditBBSCommentView(EditCommentView):
     commentable_model = BBS
-    submit_action = 'edit_bbs_comment'
+    submit_action = "edit_bbs_comment"
 
 
 class DeleteCommentView(AjaxConfirmationView):
@@ -153,14 +151,14 @@ class DeleteCommentView(AjaxConfirmationView):
 
 class DeleteProductionCommentView(DeleteCommentView):
     commentable_model = Production
-    action_url_path = 'delete_production_comment'
+    action_url_path = "delete_production_comment"
 
 
 class DeletePartyCommentView(DeleteCommentView):
     commentable_model = Party
-    action_url_path = 'delete_party_comment'
+    action_url_path = "delete_party_comment"
 
 
 class DeleteBBSCommentView(DeleteCommentView):
     commentable_model = BBS
-    action_url_path = 'delete_bbs_comment'
+    action_url_path = "delete_bbs_comment"

@@ -36,37 +36,19 @@ class TestReleaser(TestCase):
         self.assertEqual(str(self.gasman), "Gasman")
 
     def test_search_template(self):
-        self.assertEqual(
-            self.gasman.search_result_template(),
-            'search/results/scener.html'
-        )
+        self.assertEqual(self.gasman.search_result_template(), "search/results/scener.html")
 
-        self.assertEqual(
-            self.hooy_program.search_result_template(),
-            'search/results/group.html'
-        )
+        self.assertEqual(self.hooy_program.search_result_template(), "search/results/group.html")
 
     def test_url(self):
-        self.assertEqual(
-            self.gasman.get_absolute_url(),
-            '/sceners/%d/' % self.gasman.id
-        )
+        self.assertEqual(self.gasman.get_absolute_url(), "/sceners/%d/" % self.gasman.id)
 
-        self.assertEqual(
-            self.hooy_program.get_absolute_url(),
-            '/groups/%d/' % self.hooy_program.id
-        )
+        self.assertEqual(self.hooy_program.get_absolute_url(), "/groups/%d/" % self.hooy_program.id)
 
     def test_history_url(self):
-        self.assertEqual(
-            self.gasman.get_history_url(),
-            '/sceners/%d/history/' % self.gasman.id
-        )
+        self.assertEqual(self.gasman.get_history_url(), "/sceners/%d/history/" % self.gasman.id)
 
-        self.assertEqual(
-            self.hooy_program.get_history_url(),
-            '/groups/%d/history/' % self.hooy_program.id
-        )
+        self.assertEqual(self.hooy_program.get_history_url(), "/groups/%d/history/" % self.hooy_program.id)
 
     def test_asciified_location(self):
         self.assertEqual(self.gasman.asciified_location, "Arhus, Denmark")
@@ -76,7 +58,7 @@ class TestReleaser(TestCase):
 
 
 class TestRealName(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_full_name(self):
         gasman = Releaser(name="Gasman", first_name="Matt", surname="Westcott")
@@ -100,7 +82,7 @@ class TestRealName(TestCase):
 
 
 class TestReleaserProductions(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_get_productions(self):
         gasman = Releaser.objects.get(name="Gasman")
@@ -124,38 +106,27 @@ class TestReleaserProductions(TestCase):
         fakeprod.author_nicks.add(fakescener.nicks.first())
         fakeprod.author_affiliation_nicks.add(raww_arse.nicks.first())
 
-        raww_arse_member_prods = sorted(
-            [prod.title for prod in raww_arse.member_productions()]
-        )
+        raww_arse_member_prods = sorted([prod.title for prod in raww_arse.member_productions()])
 
         # "Fakeprod" should be returned because it is authored by "Fakescener / Raww Arse",
         #     even though Fakescener is not actually a member of Raww Arse
         # "Madrielle" should be returned because it is authored by "Gasman / Raww Arse"
         # "Laesq24 Giftro" should be returned because it is by Papaya Dezign,
         #     a subgroup of Raww Arse, even though the byline doesn't mention Raww Arse
-        self.assertEqual(
-            raww_arse_member_prods,
-            ["Fakeprod", "Laesq24 Giftro", "Madrielle"]
-        )
+        self.assertEqual(raww_arse_member_prods, ["Fakeprod", "Laesq24 Giftro", "Madrielle"])
 
 
 class TestReleaserCredits(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_get_credits(self):
         gasman = Releaser.objects.get(name="Gasman")
-        gasman_credits = sorted([
-            (credit.production.title, credit.category)
-            for credit in gasman.credits()
-        ])
-        self.assertEqual(
-            gasman_credits,
-            [("Pondlife", "Code")]
-        )
+        gasman_credits = sorted([(credit.production.title, credit.category) for credit in gasman.credits()])
+        self.assertEqual(gasman_credits, [("Pondlife", "Code")])
 
 
 class TestReleaserGroups(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_get_groups(self):
         yerzmyey = Releaser.objects.get(name="Yerzmyey")
@@ -170,7 +141,7 @@ class TestReleaserGroups(TestCase):
             self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
 
     def test_current_groups_should_use_prefetch_cache(self):
-        yerzmyey = Releaser.objects.filter(name="Yerzmyey").prefetch_related('group_memberships__group').first()
+        yerzmyey = Releaser.objects.filter(name="Yerzmyey").prefetch_related("group_memberships__group").first()
         with self.assertNumQueries(0):
             yerzmyey_groups = sorted([group.name for group in yerzmyey.current_groups()])
             self.assertEqual(yerzmyey_groups, ["Hooy-Program"])
@@ -180,14 +151,11 @@ class TestReleaserGroups(TestCase):
         raww_arse = Releaser.objects.get(name="Raww Arse")
         with self.assertNumQueries(1):
             raww_arse_members = sorted([member.name for member in raww_arse.members()])
-            self.assertEqual(
-                raww_arse_members,
-                ["Gasman", "LaesQ", "Papaya Dezign", "Yerzmyey"]
-            )
+            self.assertEqual(raww_arse_members, ["Gasman", "LaesQ", "Papaya Dezign", "Yerzmyey"])
 
 
 class TestReleaserString(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_name_with_affiliations(self):
         yerzmyey = Releaser.objects.get(name="Yerzmyey")
@@ -205,29 +173,29 @@ class TestReleaserString(TestCase):
 
 
 class TestReleaserNicks(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_get_primary_nick(self):
         gasman = Releaser.objects.get(name="Gasman")
         self.assertEqual(gasman.primary_nick, Nick.objects.get(name="Gasman"))
 
     def test_primary_nick_should_use_prefetch_cache(self):
-        gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks').first()
+        gasman = Releaser.objects.filter(name="Gasman").prefetch_related("nicks").first()
         with self.assertNumQueries(0):
             self.assertEqual(gasman.primary_nick.name, "Gasman")
 
     def test_bad_primary_nick(self):
-        gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks').first()
-        gasman.name = 'not gasman'
+        gasman = Releaser.objects.filter(name="Gasman").prefetch_related("nicks").first()
+        gasman.name = "not gasman"
         with self.assertRaises(Nick.DoesNotExist):
             gasman.primary_nick
 
     def test_multiple_primary_nicks(self):
         Nick.objects.create(releaser=Releaser.objects.get(name="Gasman"), name="not gasman")
-        gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks').first()
+        gasman = Releaser.objects.filter(name="Gasman").prefetch_related("nicks").first()
         for nick in gasman.nicks.all():
-            if nick.name == 'not gasman':
-                nick.name = 'Gasman'
+            if nick.name == "not gasman":
+                nick.name = "Gasman"
 
         with self.assertRaises(Nick.MultipleObjectsReturned):
             gasman.primary_nick
@@ -249,7 +217,7 @@ class TestReleaserNicks(TestCase):
         self.assertEqual(gasman.all_names_string, "Gasman, Shingebis")
 
     def test_all_names_string_prefetched(self):
-        gasman = Releaser.objects.filter(name="Gasman").prefetch_related('nicks__variants').first()
+        gasman = Releaser.objects.filter(name="Gasman").prefetch_related("nicks__variants").first()
         with self.assertNumQueries(0):
             self.assertEqual(gasman.all_names_string, "Gasman, Shingebis")
 
@@ -290,16 +258,16 @@ class TestReleaserNicks(TestCase):
 
 
 class TestMembership(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_string_representation(self):
-        membership = Membership.objects.get(member__name='Gasman', group__name='Hooy-Program')
+        membership = Membership.objects.get(member__name="Gasman", group__name="Hooy-Program")
         self.assertEqual(str(membership), "Gasman / Hooy-Program")
 
 
 class TestAccountProfile(TestCase):
     def test_string_representation(self):
-        user = User.objects.create_user(username='testuser', password='12345')
+        user = User.objects.create_user(username="testuser", password="12345")
         profile = AccountProfile(user=user)
         self.assertEqual(str(profile), "testuser")
 
@@ -323,7 +291,7 @@ class TestCaptchaQuestion(TestCase):
 
 class TestTagDescription(TestCase):
     def test_string_representation(self):
-        tag = Tag.objects.create(name='cowbell')
+        tag = Tag.objects.create(name="cowbell")
         desc = TagDescription(tag=tag, description="For soundtracks with cowbell in them")
         self.assertEqual(str(desc), "cowbell")
 

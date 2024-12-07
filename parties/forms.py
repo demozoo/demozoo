@@ -15,22 +15,22 @@ from productions.models import ProductionType
 
 
 class PartyForm(ModelFormWithLocation):
-    name = forms.CharField(label='Party name', help_text="e.g. Revision 2011", max_length=255)
-    party_series_name = forms.CharField(label='Party series', help_text="e.g. Revision", max_length=255)
+    name = forms.CharField(label="Party name", help_text="e.g. Revision 2011", max_length=255)
+    party_series_name = forms.CharField(label="Party series", help_text="e.g. Revision", max_length=255)
     start_date = FuzzyDateField(help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
     end_date = FuzzyDateField(help_text='(As accurately as you know it - e.g. "1996", "Mar 2010")')
     scene_org_folder = forms.CharField(required=False, widget=forms.HiddenInput, max_length=4096)
 
     def save(self, commit=True):
         try:
-            self.instance.party_series = PartySeries.objects.get(name=self.cleaned_data['party_series_name'])
+            self.instance.party_series = PartySeries.objects.get(name=self.cleaned_data["party_series_name"])
         except PartySeries.DoesNotExist:
-            ps = PartySeries(name=self.cleaned_data['party_series_name'])
+            ps = PartySeries(name=self.cleaned_data["party_series_name"])
             ps.save()
             self.instance.party_series = ps
 
-        self.instance.start_date = self.cleaned_data['start_date']
-        self.instance.end_date = self.cleaned_data['end_date']
+        self.instance.start_date = self.cleaned_data["start_date"]
+        self.instance.end_date = self.cleaned_data["end_date"]
 
         # populate website field from party_series if not already specified
         if self.instance.party_series.website and not self.instance.website:
@@ -46,50 +46,62 @@ class PartyForm(ModelFormWithLocation):
             # create a Pouet link if we already know the Pouet party id from the party series record
             if self.instance.start_date:
                 try:
-                    pouet_party_id = (
-                        self.instance.party_series.external_links.get(link_class='PouetPartySeries').parameter
-                    )
+                    pouet_party_id = self.instance.party_series.external_links.get(
+                        link_class="PouetPartySeries"
+                    ).parameter
                 except (PartySeriesExternalLink.DoesNotExist, PartySeriesExternalLink.MultipleObjectsReturned):
                     pass
                 else:
                     PartyExternalLink.objects.create(
-                        link_class='PouetParty',
+                        link_class="PouetParty",
                         parameter="%s/%s" % (pouet_party_id, self.instance.start_date.date.year),
-                        party=self.instance
+                        party=self.instance,
                     )
 
             # Copy social media links from the party series record
             copiable_link_classes = [
-                'TwitterAccount', 'YoutubeUser', 'YoutubeChannel', 'TwitchChannel', 'MastodonAccount',
-                'FacebookPage', 'InstagramAccount', 'TikTokUser',
+                "TwitterAccount",
+                "YoutubeUser",
+                "YoutubeChannel",
+                "TwitchChannel",
+                "MastodonAccount",
+                "FacebookPage",
+                "InstagramAccount",
+                "TikTokUser",
             ]
             for link in self.instance.party_series.external_links.filter(link_class__in=copiable_link_classes):
                 PartyExternalLink.objects.create(
-                    link_class=link.link_class,
-                    parameter=link.parameter,
-                    party=self.instance
+                    link_class=link.link_class, parameter=link.parameter, party=self.instance
                 )
 
             # create a scene.org external link if folder path is passed in
-            if self.cleaned_data['scene_org_folder']:
+            if self.cleaned_data["scene_org_folder"]:
                 PartyExternalLink.objects.create(
-                    party=self.instance,
-                    parameter=self.cleaned_data['scene_org_folder'],
-                    link_class='SceneOrgFolder')
+                    party=self.instance, parameter=self.cleaned_data["scene_org_folder"], link_class="SceneOrgFolder"
+                )
 
         return self.instance
 
     def log_creation(self, user):
         Edit.objects.create(
-            action_type='create_party', focus=self.instance,
-            description=(u"Added party '%s'" % self.instance.name), user=user
+            action_type="create_party",
+            focus=self.instance,
+            description=("Added party '%s'" % self.instance.name),
+            user=user,
         )
 
     class Meta:
         model = Party
         fields = (
-            'name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled',
-            'website', 'party_series_name',
+            "name",
+            "start_date",
+            "end_date",
+            "tagline",
+            "location",
+            "is_online",
+            "is_cancelled",
+            "website",
+            "party_series_name",
         )
 
 
@@ -101,48 +113,42 @@ class EditPartyForm(ModelFormWithLocation):
     def changed_data_description(self):
         descriptions = []
         changed_fields = self.changed_data
-        if 'name' in changed_fields:
-            descriptions.append(u"name to '%s'" % self.cleaned_data['name'])
-        if 'start_date' in changed_fields:
-            descriptions.append(u"start date to %s" % self.cleaned_data['start_date'])
-        if 'end_date' in changed_fields:
-            descriptions.append(u"end date to %s" % self.cleaned_data['end_date'])
-        if 'tagline' in changed_fields:
-            descriptions.append(u"tagline to '%s'" % self.cleaned_data['tagline'])
-        if 'location' in changed_fields:
-            descriptions.append(u"location to %s" % self.cleaned_data['location'])
-        if 'is_online' in changed_fields:
-            descriptions.append(u"online to %s" % self.cleaned_data['is_online'])
-        if 'is_cancelled' in changed_fields:
-            descriptions.append(u"cancelled to %s" % self.cleaned_data['is_cancelled'])
-        if 'website' in changed_fields:
-            descriptions.append(u"website to %s" % self.cleaned_data['website'])
+        if "name" in changed_fields:
+            descriptions.append("name to '%s'" % self.cleaned_data["name"])
+        if "start_date" in changed_fields:
+            descriptions.append("start date to %s" % self.cleaned_data["start_date"])
+        if "end_date" in changed_fields:
+            descriptions.append("end date to %s" % self.cleaned_data["end_date"])
+        if "tagline" in changed_fields:
+            descriptions.append("tagline to '%s'" % self.cleaned_data["tagline"])
+        if "location" in changed_fields:
+            descriptions.append("location to %s" % self.cleaned_data["location"])
+        if "is_online" in changed_fields:
+            descriptions.append("online to %s" % self.cleaned_data["is_online"])
+        if "is_cancelled" in changed_fields:
+            descriptions.append("cancelled to %s" % self.cleaned_data["is_cancelled"])
+        if "website" in changed_fields:
+            descriptions.append("website to %s" % self.cleaned_data["website"])
         if descriptions:
-            return u"Set %s" % (u", ".join(descriptions))
+            return "Set %s" % (", ".join(descriptions))
 
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(
-                action_type='edit_party', focus=self.instance,
-                description=description, user=user
-            )
+            Edit.objects.create(action_type="edit_party", focus=self.instance, description=description, user=user)
 
     class Meta:
         model = Party
-        fields = ('name', 'start_date', 'end_date', 'tagline', 'location', 'is_online', 'is_cancelled', 'website')
+        fields = ("name", "start_date", "end_date", "tagline", "location", "is_online", "is_cancelled", "website")
 
 
 class PartyEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
-        Edit.objects.create(
-            action_type='edit_party_notes', focus=self.instance,
-            description="Edited notes", user=user
-        )
+        Edit.objects.create(action_type="edit_party_notes", focus=self.instance, description="Edited notes", user=user)
 
     class Meta:
         model = Party
-        fields = ['notes']
+        fields = ["notes"]
 
 
 class EditPartySeriesForm(forms.ModelForm):
@@ -150,36 +156,32 @@ class EditPartySeriesForm(forms.ModelForm):
     def changed_data_description(self):
         descriptions = []
         changed_fields = self.changed_data
-        if 'name' in changed_fields:
-            descriptions.append(u"name to '%s'" % self.cleaned_data['name'])
-        if 'website' in changed_fields:
-            descriptions.append(u"website to %s" % self.cleaned_data['website'])
+        if "name" in changed_fields:
+            descriptions.append("name to '%s'" % self.cleaned_data["name"])
+        if "website" in changed_fields:
+            descriptions.append("website to %s" % self.cleaned_data["website"])
         if descriptions:
-            return u"Set %s" % (u", ".join(descriptions))
+            return "Set %s" % (", ".join(descriptions))
 
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(
-                action_type='edit_party', focus=self.instance,
-                description=description, user=user
-            )
+            Edit.objects.create(action_type="edit_party", focus=self.instance, description=description, user=user)
 
     class Meta:
         model = PartySeries
-        fields = ('name', 'website')
+        fields = ("name", "website")
 
 
 class PartySeriesEditNotesForm(forms.ModelForm):
     def log_edit(self, user):
         Edit.objects.create(
-            action_type='edit_party_series_notes', focus=self.instance,
-            description="Edited notes", user=user
+            action_type="edit_party_series_notes", focus=self.instance, description="Edited notes", user=user
         )
 
     class Meta:
         model = PartySeries
-        fields = ['notes']
+        fields = ["notes"]
 
 
 class CompetitionForm(forms.ModelForm):
@@ -189,59 +191,57 @@ class CompetitionForm(forms.ModelForm):
 
     def log_creation(self, user):
         Edit.objects.create(
-            action_type='create_competiton', focus=self.instance, focus2=self.instance.party,
-            description=(u"Added competition %s" % self.instance.name), user=user
+            action_type="create_competiton",
+            focus=self.instance,
+            focus2=self.instance.party,
+            description=("Added competition %s" % self.instance.name),
+            user=user,
         )
 
     @property
     def changed_data_description(self):
         descriptions = []
         changed_fields = self.changed_data
-        if 'name' in changed_fields:
-            descriptions.append(u"name to %s" % self.cleaned_data['name'])
-        if 'shown_date' in changed_fields:
-            descriptions.append(u"date to %s" % self.cleaned_data['shown_date'])
-        if 'platform' in changed_fields:
-            descriptions.append(u"platform to %s" % self.cleaned_data['platform'])
-        if 'production_type' in changed_fields:
-            descriptions.append(u"production type to %s" % self.cleaned_data['production_type'])
+        if "name" in changed_fields:
+            descriptions.append("name to %s" % self.cleaned_data["name"])
+        if "shown_date" in changed_fields:
+            descriptions.append("date to %s" % self.cleaned_data["shown_date"])
+        if "platform" in changed_fields:
+            descriptions.append("platform to %s" % self.cleaned_data["platform"])
+        if "production_type" in changed_fields:
+            descriptions.append("production type to %s" % self.cleaned_data["production_type"])
         if descriptions:
-            return u"Set %s" % (u", ".join(descriptions))
+            return "Set %s" % (", ".join(descriptions))
 
     def log_edit(self, user):
         description = self.changed_data_description
         if description:
-            Edit.objects.create(
-                action_type='edit_competition', focus=self.instance,
-                description=description, user=user
-            )
+            Edit.objects.create(action_type="edit_competition", focus=self.instance, description=description, user=user)
 
     class Meta:
         model = Competition
-        fields = ('name', 'shown_date', 'platform', 'production_type')
+        fields = ("name", "shown_date", "platform", "production_type")
 
 
 class PartyExternalLinkForm(ExternalLinkForm):
     class Meta:
         model = PartyExternalLink
-        exclude = ['parameter', 'link_class', 'party']
+        exclude = ["parameter", "link_class", "party"]
 
 
 PartyExternalLinkFormSet = inlineformset_factory(
-    Party, PartyExternalLink,
-    form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet
+    Party, PartyExternalLink, form=PartyExternalLinkForm, formset=BaseExternalLinkFormSet
 )
 
 
 class PartySeriesExternalLinkForm(ExternalLinkForm):
     class Meta:
         model = PartySeriesExternalLink
-        exclude = ['parameter', 'link_class', 'party_series']
+        exclude = ["parameter", "link_class", "party_series"]
 
 
 PartySeriesExternalLinkFormSet = inlineformset_factory(
-    PartySeries, PartySeriesExternalLink,
-    form=PartySeriesExternalLinkForm, formset=BaseExternalLinkFormSet
+    PartySeries, PartySeriesExternalLink, form=PartySeriesExternalLinkForm, formset=BaseExternalLinkFormSet
 )
 
 
@@ -262,41 +262,37 @@ PartyReleaseFormset = formset_factory(PartyReleaseForm, can_delete=True, extra=1
 class PartyShareImageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['share_screenshot'] = forms.ModelChoiceField(
-            required=False, queryset=self.instance.get_screenshots(), widget=forms.RadioSelect,
-            empty_label=None
+        self.fields["share_screenshot"] = forms.ModelChoiceField(
+            required=False, queryset=self.instance.get_screenshots(), widget=forms.RadioSelect, empty_label=None
         )
 
     def options_with_screenshots(self):
-        screenshots_by_id = {
-            s.id: s for s in self['share_screenshot'].field.queryset
-        }
-        return [
-            (screenshots_by_id[option.data['value'].value], option)
-            for option in list(self['share_screenshot'])
-        ]
+        screenshots_by_id = {s.id: s for s in self["share_screenshot"].field.queryset}
+        return [(screenshots_by_id[option.data["value"].value], option) for option in list(self["share_screenshot"])]
 
     class Meta:
         model = Party
-        fields = ['share_image_file', 'share_screenshot']
+        fields = ["share_image_file", "share_screenshot"]
 
 
 class PartyOrganiserForm(forms.Form):
-    releaser_nick = NickField(label='Organiser')
-    role = forms.CharField(required=False, label='Role', max_length=50)
+    releaser_nick = NickField(label="Organiser")
+    role = forms.CharField(required=False, label="Role", max_length=50)
 
     def log_edit(self, user, releaser, party):
         # build up log description
         descriptions = []
         changed_fields = self.changed_data
-        if 'releaser_nick' in changed_fields:
-            descriptions.append(u"changed organiser to %s" % releaser)
-        if 'role' in changed_fields:
-            descriptions.append("changed role to %s" % (self.cleaned_data['role'] or 'none'))
+        if "releaser_nick" in changed_fields:
+            descriptions.append("changed organiser to %s" % releaser)
+        if "role" in changed_fields:
+            descriptions.append("changed role to %s" % (self.cleaned_data["role"] or "none"))
         if descriptions:
-            description_list = u", ".join(descriptions)
+            description_list = ", ".join(descriptions)
             Edit.objects.create(
-                action_type='edit_party_organiser', focus=releaser, focus2=party,
-                description=u"Updated %s as organiser of %s: %s" % (releaser, party, description_list),
-                user=user
+                action_type="edit_party_organiser",
+                focus=releaser,
+                focus2=party,
+                description="Updated %s as organiser of %s: %s" % (releaser, party, description_list),
+                user=user,
             )
