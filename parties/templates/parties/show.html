@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags compress safe_markdown %}
+{% load demoscene_tags production_tags ui_tags compress safe_markdown %}
 
 {% block html_title %}{{ party.name }} - Demozoo{% endblock %}
 
@@ -159,7 +159,7 @@
                     {% for organiser in orga_list %}
                         <li class="scener">
                             <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                            {% releaser_flag organiser.releaser %}
+                            {% location_flag organiser.releaser %}
                             {% if organiser.role %}({{ organiser.role}}){% endif %}
                             {% if can_edit %}
                                 <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="open_in_lightbox edit_organiser">

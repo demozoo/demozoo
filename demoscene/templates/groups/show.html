@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags releaser_tags compress safe_markdown %}
+{% load demoscene_tags production_tags releaser_tags ui_tags compress safe_markdown %}
 
 {% block html_title %}{{ group.name }} - Demozoo{% endblock %}
 
@@ -114,7 +114,7 @@
                     {% for membership in supergroupships %}
                         <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
                             <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
-                            {% releaser_flag membership.group %}
+                            {% location_flag membership.group %}
                         </li>
                     {% endfor %}
                 </ul>
@@ -128,7 +128,7 @@
                 {% for membership in memberships %}
                     <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
                         <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-                        {% releaser_flag membership.member %}
+                        {% location_flag membership.member %}
                         {% if can_edit %}
                             <a href="{% url 'group_edit_membership' group.id membership.id %}" class="open_in_lightbox edit_membership">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
@@ -149,7 +149,7 @@
                 {% for membership in subgroupships %}
                     <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
                         <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
-                        {% releaser_flag membership.member %}
+                        {% location_flag membership.member %}
                         {% if can_edit %}
                             <a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="open_in_lightbox edit_subgroup">
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
@@ -171,7 +171,7 @@
                     {% for affiliation in bbs_affiliations %}
                         <li class="bbs">
                             <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
-                            {% releaser_flag affiliation.bbs %}
+                            {% location_flag affiliation.bbs %}
                             {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
                         </li>
                     {% endfor %}

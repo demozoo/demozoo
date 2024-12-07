@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags releaser_tags compress safe_markdown %}
+{% load demoscene_tags production_tags releaser_tags ui_tags compress safe_markdown %}
 
 {% block html_title %}{{ bbs.name }} - Demozoo{% endblock %}
 
@@ -94,7 +94,7 @@
                 {% for operator in staff %}
                     <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
                         <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
-                        {% releaser_flag operator.releaser %}
+                        {% location_flag operator.releaser %}
                         - {{ operator.get_role_display }}
                         {% if can_edit %}
                             <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="open_in_lightbox edit_operator">

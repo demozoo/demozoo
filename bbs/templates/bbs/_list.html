@@ -1,4 +1,4 @@
-{% load demoscene_tags %}
+{% load ui_tags %}
 
 <ul class="list list--results">
     {% for bbs in bbses %}
@@ -11,7 +11,7 @@
                 </div>
                 <div>
                     <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
-                    {% releaser_flag bbs %}
+                    {% location_flag bbs %}
                 </div>
             </div>
         </li>
