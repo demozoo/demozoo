@@ -16,7 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
-from common.models import Lockable, PrefetchSnoopingMixin
+from common.models import LocationMixin, Lockable, PrefetchSnoopingMixin
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
 
@@ -28,18 +28,12 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(PrefetchSnoopingMixin, Lockable):
+class Releaser(LocationMixin, PrefetchSnoopingMixin, Lockable):
     name = models.CharField(max_length=255)
     is_group = models.BooleanField(db_index=True)
     notes = models.TextField(blank=True)
 
     demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
-
-    location = models.CharField(max_length=255, blank=True)
-    country_code = models.CharField(max_length=5, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
-    geonames_id = models.BigIntegerField(null=True, blank=True)
 
     first_name = models.CharField(max_length=255, blank=True)
     surname = models.CharField(max_length=255, blank=True)
@@ -223,10 +217,6 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
     @property
     def asciified_all_names_string(self):
         return unidecode(self.all_names_string)
-
-    @property
-    def asciified_location(self):
-        return self.location and unidecode(self.location)
 
     # Determine whether or not this releaser is referenced in any external records (credits, authorships etc)
     # that should prevent its deletion

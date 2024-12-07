@@ -6,24 +6,16 @@ from taggit.managers import TaggableManager
 from unidecode import unidecode
 
 from comments.models import Commentable
+from common.models import LocationMixin
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
 from demoscene.models import ExternalLink, TextFile
 
 
-class BBS(Commentable):
+class BBS(LocationMixin, Commentable):
     name = models.CharField(max_length=255)
-
-    location = models.CharField(max_length=255, blank=True)
-    country_code = models.CharField(max_length=5, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
-    geonames_id = models.BigIntegerField(null=True, blank=True)
-
     notes = models.TextField(blank=True)
-
     bbstros = models.ManyToManyField("productions.Production", related_name="bbses", blank=True)
-
     tags = TaggableManager(blank=True)
 
     created_at = models.DateTimeField(null=True, auto_now_add=True)
@@ -82,10 +74,6 @@ class BBS(Commentable):
     @property
     def asciified_name(self):
         return unidecode(self.name)
-
-    @property
-    def asciified_location(self):
-        return self.location and unidecode(self.location)
 
     @property
     def all_names_string(self):
