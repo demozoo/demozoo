@@ -3,8 +3,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 
 from demoscene.forms.releaser import (
-    CreateGroupForm, CreateScenerForm, GroupNickForm, ReleaserEditNotesForm, ReleaserExternalLinkForm,
-    ScenerEditLocationForm, ScenerEditRealNameForm, ScenerNickForm
+    CreateGroupForm,
+    CreateScenerForm,
+    GroupNickForm,
+    ReleaserEditNotesForm,
+    ReleaserExternalLinkForm,
+    ScenerEditLocationForm,
+    ScenerEditRealNameForm,
+    ScenerNickForm,
 )
 from demoscene.models import Edit, Nick, Releaser, ReleaserExternalLink
 

@@ -10,7 +10,10 @@ from celery import shared_task
 from django.conf import settings
 
 from mirror.actions import (
-    fetch_link, find_screenshottable_graphics, find_zipped_screenshottable_graphics, unpack_db_zip_filename
+    fetch_link,
+    find_screenshottable_graphics,
+    find_zipped_screenshottable_graphics,
+    unpack_db_zip_filename,
 )
 from mirror.models import ArchiveMember
 from productions.models import ProductionLink, Screenshot

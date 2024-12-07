@@ -13,15 +13,27 @@ from django.urls import reverse
 from taggit.models import Tag
 
 from bbs.forms import (
-    AffiliationForm, AlternativeNameFormSet, BBSEditNotesForm, BBSExternalLinkFormSet, BBSForm, BBSTagsForm,
-    BBSTextAdFormset, BBStroFormset, OperatorForm
+    AffiliationForm,
+    AlternativeNameFormSet,
+    BBSEditNotesForm,
+    BBSExternalLinkFormSet,
+    BBSForm,
+    BBSTagsForm,
+    BBSTextAdFormset,
+    BBStroFormset,
+    OperatorForm,
 )
 from bbs.models import BBS, Affiliation, Operator, TextAd
 from comments.forms import CommentForm
 from comments.models import Comment
 from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
-    AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+    AddTagView,
+    AjaxConfirmationView,
+    EditTagsView,
+    EditTextFilesView,
+    RemoveTagView,
+    writeable_site_required,
 )
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form

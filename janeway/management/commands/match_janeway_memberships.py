@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from demoscene.models import Edit
+from demoscene.models import Edit, ReleaserExternalLink
 from demoscene.models import Membership as DZMembership
-from demoscene.models import ReleaserExternalLink
 from janeway.models import Membership
 
 

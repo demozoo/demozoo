@@ -19,17 +19,33 @@ from common.utils.ajax import request_is_ajax
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
-    AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+    AddTagView,
+    AjaxConfirmationView,
+    EditTagsView,
+    EditTextFilesView,
+    RemoveTagView,
+    writeable_site_required,
 )
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
 from productions.carousel import Carousel
 from productions.forms import (
-    CreateProductionForm, GraphicsEditCoreDetailsForm, MusicEditCoreDetailsForm, PackMemberFormset, ProductionBlurbForm,
-    ProductionCreditedNickForm, ProductionDownloadLinkFormSet, ProductionEditCoreDetailsForm, ProductionEditNotesForm,
-    ProductionExternalLinkFormSet, ProductionIndexFilterForm, ProductionInfoFileFormset,
-    ProductionInvitationPartyFormset, ProductionSoundtrackLinkFormset, ProductionTagsForm
+    CreateProductionForm,
+    GraphicsEditCoreDetailsForm,
+    MusicEditCoreDetailsForm,
+    PackMemberFormset,
+    ProductionBlurbForm,
+    ProductionCreditedNickForm,
+    ProductionDownloadLinkFormSet,
+    ProductionEditCoreDetailsForm,
+    ProductionEditNotesForm,
+    ProductionExternalLinkFormSet,
+    ProductionIndexFilterForm,
+    ProductionInfoFileFormset,
+    ProductionInvitationPartyFormset,
+    ProductionSoundtrackLinkFormset,
+    ProductionTagsForm,
 )
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, Screenshot
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
