@@ -1,12 +1,11 @@
 from django import template
-from django.conf import settings
 from django.template.defaultfilters import date as date_format
 from django.utils.html import format_html
 
 from bbs.models import BBS
 from demoscene.models import Edit, Nick, Releaser
 from parties.models import Party
-from productions.models import Production, Screenshot
+from productions.models import Production
 
 
 register = template.Library()
@@ -130,21 +129,4 @@ def site_stats():
         "group_count": Releaser.objects.filter(is_group=True).count(),
         "party_count": Party.objects.count(),
         "bbs_count": BBS.objects.count(),
-    }
-
-
-@register.inclusion_tag("tags/production_listing.html")
-def production_listing(productions, show_screenshots=False, show_prod_types=False, mark_excludable=False):
-    if show_screenshots:
-        screenshots = Screenshot.select_for_production_ids([prod.id for prod in productions])
-    else:
-        screenshots = {}
-
-    productions_and_screenshots = [(production, screenshots.get(production.id)) for production in productions]
-    return {
-        "productions_and_screenshots": productions_and_screenshots,
-        "show_screenshots": show_screenshots,
-        "show_prod_types": show_prod_types,
-        "mark_excludable": mark_excludable,
-        "site_is_writeable": settings.SITE_IS_WRITEABLE,
     }
