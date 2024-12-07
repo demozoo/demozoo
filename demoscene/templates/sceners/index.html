@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags releaser_tags laces %}
+{% load releaser_tags ui_tags laces %}
 
 {% block html_title %}Sceners - Demozoo{% endblock %}
 
@@ -17,7 +17,7 @@
             <li class="scener">
                 {% scener_with_affiliations nick %}
                 {% nick_variants nick %}
-                {% releaser_flag nick.releaser %}
+                {% location_flag nick.releaser %}
             </li>
         {% endfor %}
     </ul>

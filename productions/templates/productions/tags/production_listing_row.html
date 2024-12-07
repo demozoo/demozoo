@@ -1,4 +1,4 @@
-{% load demoscene_tags production_tags %}
+{% load demoscene_tags production_tags ui_tags %}
 
 <tr {% if mark_excludable and site_is_writeable %}class="excludable" data-record-id="{{ production.id }}"{% endif %}>
     {% block cells %}

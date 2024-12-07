@@ -11,16 +11,6 @@ from productions.models import Production
 register = template.Library()
 
 
-@register.inclusion_tag("tags/icon.html")
-def icon(icon):
-    return {"icon": icon}
-
-
-@register.inclusion_tag("tags/releaser_flag.html")
-def releaser_flag(releaser):
-    return {"releaser": releaser}
-
-
 @register.simple_tag
 def field_label(field):
     return format_html('<label for="{0}" class="field_label">{1}</label>', field.id_for_label, field.label)

@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load demoscene_tags releaser_tags %}
+{% load releaser_tags ui_tags %}
 
 {% block html_title %}{{ title }}{% endblock %}
 
@@ -17,7 +17,7 @@
                     {% for releaser in name.list %}
                         <li class="scener">
                             {% scener_with_affiliations releaser %}
-                            {% releaser_flag releaser %}
+                            {% location_flag releaser %}
                             ({{ releaser.real_name }})
                         </li>
                     {% endfor %}
