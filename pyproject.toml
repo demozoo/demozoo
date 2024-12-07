@@ -1,0 +1,9 @@
+[tool.ruff]
+line-length = 120
+extend-exclude = ["__pycache__", "migrations", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
