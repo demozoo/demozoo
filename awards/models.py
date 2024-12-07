@@ -163,7 +163,11 @@ class Category(models.Model):
     event = models.ForeignKey(Event, related_name='categories', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     position = models.IntegerField(null=True, blank=True)
-    slug = models.SlugField(blank=True, max_length=255, help_text="If set, enables a candidates listing page at /awards/[slug]/[category]/")
+    slug = models.SlugField(
+        blank=True,
+        max_length=255,
+        help_text="If set, enables a candidates listing page at /awards/[slug]/[category]/"
+    )
     platforms = models.ManyToManyField(
         Platform, blank=True,
         help_text="If set, the candidates listing is filtered by these platforms"

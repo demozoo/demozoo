@@ -48,7 +48,7 @@ def find_nick_from_handle_data(handle_data, stdout=sys.stdout):
     try:
         nick = Nick.objects.get(
             releaser_id=handle_data['demozoo_id'],
-            variants__name__iexact = handle_data['name']
+            variants__name__iexact=handle_data['name']
         )
     except Nick.DoesNotExist:
         print(

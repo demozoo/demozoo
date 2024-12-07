@@ -46,7 +46,9 @@ class PartyForm(ModelFormWithLocation):
             # create a Pouet link if we already know the Pouet party id from the party series record
             if self.instance.start_date:
                 try:
-                    pouet_party_id = self.instance.party_series.external_links.get(link_class='PouetPartySeries').parameter
+                    pouet_party_id = (
+                        self.instance.party_series.external_links.get(link_class='PouetPartySeries').parameter
+                    )
                 except (PartySeriesExternalLink.DoesNotExist, PartySeriesExternalLink.MultipleObjectsReturned):
                     pass
                 else:

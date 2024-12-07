@@ -39,7 +39,10 @@ def signup(request):
         messages.error(request, "Your account was disabled.")
         return redirect('home')
     elif is_registration_banned(request):
-        messages.error(request, "Due to a large number of sockpuppet accounts, new registrations from this location are blocked.")
+        messages.error(
+            request,
+            "Due to a large number of sockpuppet accounts, new registrations from this location are blocked.",
+        )
         return redirect('home')
 
     if request.method == 'POST':

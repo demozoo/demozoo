@@ -34,7 +34,6 @@ def recommended_production_listing(
     }
 
 
-
 register.inclusion_tag(
     'awards/_recommendation_summary_listing.html', name='recommendation_summary_listing'
 )(production_listing)

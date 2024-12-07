@@ -26,5 +26,3 @@ class TestPartyField(TestCase):
 
         form = PartyForm({'party_search': '', 'party_party_id': ''})
         self.assertTrue(form.is_valid())
-
-

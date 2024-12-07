@@ -234,7 +234,9 @@ class Carousel(object):
             # always show the 'add screenshot' / 'add artwork' button, except for the special case
             # that supertype is graphics or production and there are no carousel slides -
             # in which case the 'add a screenshot' call-to-action will be in the carousel area instead
-            show_add_screenshot_link = self.user.is_authenticated and (self.slides or self.production.supertype == 'music')
+            show_add_screenshot_link = self.user.is_authenticated and (
+                self.slides or self.production.supertype == 'music'
+            )
             show_manage_screenshots_link = screenshots and self.user.is_staff
         else:
             show_add_screenshot_link = False

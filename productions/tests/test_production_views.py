@@ -1817,7 +1817,10 @@ class TestAutocomplete(TestCase):
         self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")
 
     def test_get_with_url(self):
-        response = self.client.get('/productions/autocomplete/', {'term': 'https://demozoo.org/music/5/', 'supertype': 'music'})
+        response = self.client.get(
+            '/productions/autocomplete/',
+            {'term': 'https://demozoo.org/music/5/', 'supertype': 'music'}
+        )
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.content)
         self.assertEqual(response_json[0]['title'], "Cybernoid's Revenge")

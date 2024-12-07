@@ -53,10 +53,10 @@ ASTRAL_BLUR = {
     "addedUser": "1",
     "addedDate": "2000-04-23 10:44:48",
     "releaseDate": "1997-03-15",
-    "voteup":"80",
-    "votepig":"18",
-    "votedown":"5",
-    "voteavg":"0.73",
+    "voteup": "80",
+    "votepig": "18",
+    "votedown": "5",
+    "voteavg": "0.73",
     "party_compo": "95",
     "party_place": "3",
     "party_year": "1997",
@@ -252,11 +252,11 @@ class TestFetchPouetData(TestCase):
 
         the_gathering = Party.objects.create(name="The Gathering", pouet_id=43)
         astral_blur_pouet.competition_placings.create(
-            production = astral_blur_pouet,
-            party = the_gathering,
-            competition_type = compo_type,
-            ranking = 3,
-            year = 1997
+            production=astral_blur_pouet,
+            party=the_gathering,
+            competition_type=compo_type,
+            ranking=3,
+            year=1997
         )
         self.assertEqual(astral_blur_pouet.competition_placings.count(), 1)
         self.assertEqual(
@@ -291,11 +291,11 @@ class TestFetchPouetData(TestCase):
 
         the_gathering = Party.objects.create(name="The Gathering", pouet_id=43)
         astral_blur_pouet.competition_placings.create(
-            production = astral_blur_pouet,
-            party = the_gathering,
-            competition_type = compo_type,
-            ranking = None,
-            year = 1997
+            production=astral_blur_pouet,
+            party=the_gathering,
+            competition_type=compo_type,
+            ranking=None,
+            year=1997
         )
         self.assertEqual(astral_blur_pouet.competition_placings.count(), 1)
         self.assertIsNone(

@@ -179,5 +179,8 @@ def candidates(request, event_slug, category_slug):
         'event': event,
         'category': category,
         'production_page': production_page,
-        'pagination_controls': PaginationControls(production_page, reverse('awards_candidates', args=[event_slug, category_slug])),
+        'pagination_controls': PaginationControls(
+            production_page,
+            reverse('awards_candidates', args=[event_slug, category_slug])
+        ),
     })

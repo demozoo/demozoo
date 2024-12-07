@@ -1305,6 +1305,7 @@ TOR_ENDPOINT_IPS = set("""
     199.249.230.179
 """.split())
 
+
 LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set([
     '81.234.236.23', '81.230.148.230',  # .se
     '86.143.83.97',  # .uk
@@ -1313,6 +1314,7 @@ LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set([
 REGISTRATION_BANNED_IPS = set([
     '109.196.230.41',  # .pl
 ])
+
 
 def is_login_banned(request):
     return request.META['REMOTE_ADDR'] in LOGIN_BANNED_IPS

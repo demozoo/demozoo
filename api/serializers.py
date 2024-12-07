@@ -20,7 +20,7 @@ class OutputFieldsMixin:
     def get_fields(self):
         fields = super().get_fields()
         if self._output_fields is not None:
-            fields = {k: v for k,v in fields.items() if k in self._output_fields}
+            fields = {k: v for k, v in fields.items() if k in self._output_fields}
         return fields
 
 
@@ -61,12 +61,6 @@ class AuthorNickSerializer(serializers.ModelSerializer):
         fields = ['name', 'abbreviation', 'releaser']
 
 
-class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Party
-        fields = ['url', 'id', 'name']
-
-
 class PartySeriesSummarySerializer(serializers.HyperlinkedModelSerializer):
     demozoo_url = serializers.SerializerMethodField(read_only=True)
 
@@ -97,6 +91,7 @@ class PartySummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Party
         fields = PARTY_LISTING_FIELDS
+
 
 # Listing serialisers
 
@@ -167,11 +162,15 @@ class ReleaserSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerializ
 
     def get_members(self, releaser):
         member_memberships = releaser.member_memberships.filter(member__is_group=False).select_related('member')
-        return ReleaserSerializer.MemberMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
+        return ReleaserSerializer.MemberMembershipSerializer(
+            instance=member_memberships, many=True, context=self.context
+        ).data
 
     def get_subgroups(self, releaser):
         member_memberships = releaser.member_memberships.filter(member__is_group=True).select_related('member')
-        return ReleaserSerializer.SubgroupMembershipSerializer(instance=member_memberships, many=True, context=self.context).data
+        return ReleaserSerializer.SubgroupMembershipSerializer(
+            instance=member_memberships, many=True, context=self.context
+        ).data
 
     class Meta:
         model = Releaser

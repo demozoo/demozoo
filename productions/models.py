@@ -53,7 +53,6 @@ class ProductionType(MP_Node):
     def get_base_music_type():
         return ProductionType.objects.get(internal_name='music')
 
-
     @staticmethod
     @lru_cache
     def get_base_graphics_type():

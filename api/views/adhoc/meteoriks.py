@@ -118,7 +118,10 @@ def candidates(request, year):
                 pouet_platform_category.add('midschool')
             elif set(pouet_platform_names) == {'Acorn', 'Raspberry Pi'}:  # pragma: no cover
                 pouet_platform_category.add('midschool')
-            elif set(pouet_platform_names) == {'Gameboy', 'SNES/Super Famicom'} and pouet_prod.name == 'EsGeBe Bounce':  # pragma: no cover
+            elif (
+                set(pouet_platform_names) == {'Gameboy', 'SNES/Super Famicom'}
+                and pouet_prod.name == 'EsGeBe Bounce'
+            ):  # pragma: no cover
                 pouet_platform_category.add('midschool')
             elif pouet_prod.pouet_id in (94983, 94385, 94814):  # pragma: no cover
                 # TIC-80 prods with spurious windows / linux platforms assigned
@@ -151,7 +154,9 @@ def candidates(request, year):
             elif pouet_platform_category == {'highend'}:  # pragma: no cover
                 if any(
                     intro_category in pouet_prodtype_names
-                    for intro_category in ['64k', '4k', '16k', '40k', '32k', '8k', '256b', '128b', '512b', '1k', '32b', '64b']
+                    for intro_category in [
+                        '64k', '4k', '16k', '40k', '32k', '8k', '256b', '128b', '512b', '1k', '32b', '64b'
+                    ]
                 ):
                     pouet_derived_category = "High-End Intro"
                 else:
@@ -215,7 +220,11 @@ def candidates(request, year):
             elif dz_platform_category == {'highend'}:  # pragma: no cover
                 if any(
                     intro_category in dz_prodtype_names
-                    for intro_category in ['64K Intro', '40k Intro', '32K Intro', '16K Intro', '4K Intro', '2K Intro', '1K Intro', '512b Intro', '256b Intro', '128b Intro', '64b Intro', '8K Intro', '8b intro', '32b Intro', '16b intro']
+                    for intro_category in [
+                        '64K Intro', '40k Intro', '32K Intro', '16K Intro', '4K Intro', '2K Intro', '1K Intro',
+                        '512b Intro', '256b Intro', '128b Intro', '64b Intro', '8K Intro', '8b intro', '32b Intro',
+                        '16b intro',
+                    ]
                 ):
                     dz_derived_category = "High-End Intro"
                 else:
@@ -231,7 +240,10 @@ def candidates(request, year):
             if pouet_derived_category == "Executable GFX":  # pragma: no cover
                 # trust Pouet if it says a prod is exe gfx
                 pass
-            elif dz_derived_category and pouet_derived_category and dz_derived_category != pouet_derived_category:  # pragma: no cover
+            elif (
+                dz_derived_category and pouet_derived_category
+                and dz_derived_category != pouet_derived_category
+            ):  # pragma: no cover
                 raise Exception("mismatched categories for %s" % dz_prod.title)
             csvfile.writerow([
                 pouet_derived_category or dz_derived_category,
