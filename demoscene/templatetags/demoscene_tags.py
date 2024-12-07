@@ -47,15 +47,6 @@ def releaser_flag(releaser):
     return {"releaser": releaser}
 
 
-@register.inclusion_tag("tags/byline.html")
-def byline(production):
-    return {
-        "unparsed_byline": production.unparsed_byline,
-        "authors": [(nick, nick.releaser) for nick in production.author_nicks_with_authors()],
-        "affiliations": [(nick, nick.releaser) for nick in production.author_affiliation_nicks_with_groups()],
-    }
-
-
 @register.simple_tag
 def field_label(field):
     return format_html('<label for="{0}" class="field_label">{1}</label>', field.id_for_label, field.label)
