@@ -16,9 +16,9 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
+from common.models import Lockable, PrefetchSnoopingMixin
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
-from common.models import Lockable, PrefetchSnoopingMixin
 
 
 DATE_PRECISION_CHOICES = [

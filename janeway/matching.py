@@ -2,8 +2,8 @@ from collections import defaultdict
 
 from django.db.models import Q
 
-from demoscene.models import Releaser, ReleaserExternalLink
 from common.utils.text import generate_search_title, strip_music_extensions
+from demoscene.models import Releaser, ReleaserExternalLink
 from janeway.importing import import_release
 from janeway.models import AuthorMatchInfo
 from janeway.models import Release as JanewayRelease

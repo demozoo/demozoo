@@ -1,5 +1,6 @@
 import re
 import sys
+
 from django.db import IntegrityError, transaction
 
 from demoscene.models import Nick, Releaser

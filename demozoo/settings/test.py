@@ -6,8 +6,8 @@ import urllib.request
 
 from PIL import Image
 
-from .base import FILEROOT
 from .base import *  # noqa
+from .base import FILEROOT
 
 
 SECRET_KEY = 'BOOOOM'

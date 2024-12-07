@@ -1,11 +1,11 @@
 import datetime
 from io import BytesIO
+from unittest.mock import patch
 
 from django.core.files import File
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase
 from django.test.utils import captured_stdout
-from unittest.mock import patch
 
 from demoscene.models import Nick, NickVariant, Releaser
 from demoscene.tasks import add_sceneorg_results_file_to_party

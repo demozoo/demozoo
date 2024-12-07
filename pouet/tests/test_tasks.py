@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 from freezegun import freeze_time
-from unittest.mock import patch
 
 from demoscene.models import Releaser
 from pouet.models import Group as PouetGroup

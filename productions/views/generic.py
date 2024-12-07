@@ -12,7 +12,7 @@ from django.views import View
 from awards.models import Event
 from comments.forms import CommentForm
 from comments.models import Comment
-from common.utils.pagination import extract_query_params, PaginationControls
+from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page

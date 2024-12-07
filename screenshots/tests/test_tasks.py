@@ -1,9 +1,9 @@
 import os.path
 import shutil
+from unittest.mock import patch
 
 from django.conf import settings
 from django.test import TestCase
-from unittest.mock import patch
 from PIL import Image
 
 from mirror.actions import upload_dir

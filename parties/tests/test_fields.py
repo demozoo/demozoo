@@ -1,5 +1,5 @@
-from django.core.exceptions import ValidationError
 from django import forms
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from parties.fields import PartyField, PartyLookup

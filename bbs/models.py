@@ -6,9 +6,9 @@ from taggit.managers import TaggableManager
 from unidecode import unidecode
 
 from comments.models import Commentable
-from demoscene.models import ExternalLink, TextFile
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
+from demoscene.models import ExternalLink, TextFile
 
 
 class BBS(Commentable):

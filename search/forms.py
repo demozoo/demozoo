@@ -9,9 +9,9 @@ from django.db.models import F, Func, Q
 from unidecode import unidecode
 
 from bbs.models import BBS
-from demoscene.models import Releaser
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title
+from demoscene.models import Releaser
 from parties.models import Party
 from platforms.models import Platform
 from productions.models import Production, ProductionType, Screenshot

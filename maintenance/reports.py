@@ -2,10 +2,10 @@ import redis
 from django.conf import settings
 from django.db.models import Q
 
+from common.utils import groklinks
 from maintenance.models import Exclusion
 from pouet.matching import get_pouetable_prod_types
 from productions.models import Production, ProductionLink
-from common.utils import groklinks
 
 
 def write_set(pipe, key, values):

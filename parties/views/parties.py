@@ -3,10 +3,10 @@ import json
 import re
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,14 +16,14 @@ from django.utils.html import format_html
 
 from comments.forms import CommentForm
 from comments.models import Comment
+from common.utils.ajax import request_is_ajax
 from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
-from common.utils.ajax import request_is_ajax
 from parties.forms import (
     CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
-    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesExternalLinkFormSet,
-    PartySeriesEditNotesForm, PartyShareImageForm
+    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm,
+    PartySeriesExternalLinkFormSet, PartyShareImageForm
 )
 from parties.models import (
     Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile

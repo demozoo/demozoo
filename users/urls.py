@@ -1,9 +1,9 @@
 from django.contrib.auth import views as auth_views
 from django.urls import re_path
 
-from users.views import users as users_views
 from users.views import accounts as account_views
 from users.views import sceneid as sceneid_views
+from users.views import users as users_views
 
 
 urlpatterns = [

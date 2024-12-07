@@ -11,11 +11,11 @@ from django.urls import reverse
 from unidecode import unidecode
 
 from comments.models import Commentable
-from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, TextFile
 from common.utils import groklinks
 from common.utils.files import random_path
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title, strip_markup
+from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, TextFile
 from productions.models import Production, Screenshot
 
 
