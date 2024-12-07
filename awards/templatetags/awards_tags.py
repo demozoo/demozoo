@@ -1,8 +1,8 @@
 from django import template
 from django.conf import settings
 
-from demoscene.templatetags.demoscene_tags import production_listing
 from productions.models import Screenshot
+from productions.templatetags.production_tags import production_listing
 
 
 register = template.Library()
