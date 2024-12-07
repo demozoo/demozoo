@@ -45,7 +45,7 @@ class Carousel(object):
     @cached_property
     def screenshots(self):
         """Return a queryset of this production's screenshots, including not-yet-processed ones"""
-        return self.production.screenshots.order_by('id')
+        return self.production.screenshots.order_by("id")
 
     @cached_property
     def processed_screenshots(self):
@@ -56,15 +56,15 @@ class Carousel(object):
         """Return a list of screenshot slides (including processed ones)"""
         return [
             {
-                'type': 'screenshot',
-                'id': 'screenshot-%d' % screenshot.id,
-                'is_processing': not screenshot.original_url,
-                'data': {
-                    'original_url': screenshot.original_url,
-                    'standard_url': screenshot.standard_url,
-                    'standard_width': screenshot.standard_width,
-                    'standard_height': screenshot.standard_height,
-                }
+                "type": "screenshot",
+                "id": "screenshot-%d" % screenshot.id,
+                "is_processing": not screenshot.original_url,
+                "data": {
+                    "original_url": screenshot.original_url,
+                    "standard_url": screenshot.standard_url,
+                    "standard_width": screenshot.standard_width,
+                    "standard_height": screenshot.standard_height,
+                },
             }
             for screenshot in self.screenshots
         ]
@@ -72,7 +72,7 @@ class Carousel(object):
     @cached_property
     def videos(self):
         """Return a queryset of external links that are embeddable as videos"""
-        return self.production.links.filter(link_class__in=['YoutubeVideo', 'VimeoVideo']).exclude(thumbnail_url='')
+        return self.production.links.filter(link_class__in=["YoutubeVideo", "VimeoVideo"]).exclude(thumbnail_url="")
 
     def can_make_mosaic(self):
         """Do we have enough screenshots to form a mosaic?"""
@@ -82,29 +82,24 @@ class Carousel(object):
         """Return the data dictionary for a mosaic (either as a standalone slide or video background)"""
         return [
             {
-                'original_url': screenshot.original_url,
-                'standard_url': screenshot.standard_url,
-                'standard_width': screenshot.standard_width,
-                'standard_height': screenshot.standard_height,
-                'id': 'screenshot-%d' % screenshot.id,
+                "original_url": screenshot.original_url,
+                "standard_url": screenshot.standard_url,
+                "standard_width": screenshot.standard_width,
+                "standard_height": screenshot.standard_height,
+                "id": "screenshot-%d" % screenshot.id,
             }
             for screenshot in random.sample(self.processed_screenshots, 4)
         ]
 
     def get_mosaic_slide(self):
         """Return the data for a standalone mosaic slide"""
-        return {
-            'type': 'mosaic',
-            'id': 'mosaic',
-            'is_processing': False,
-            'data': self.get_mosaic_data()
-        }
+        return {"type": "mosaic", "id": "mosaic", "is_processing": False, "data": self.get_mosaic_data()}
 
     def get_slide_background_data(self):
         """Return background image data for a video slide"""
         data = {}
         if self.can_make_mosaic():
-            data['mosaic'] = self.get_mosaic_data()
+            data["mosaic"] = self.get_mosaic_data()
         else:
             thumbnail_url = None
             # Use a single screenshot as the background - preferably one of ours, if we have one
@@ -125,13 +120,13 @@ class Carousel(object):
                 # resize to 400x300 max
                 if thumbnail_width > 400 or thumbnail_height > 300:
                     scale_factor = min(400.0 / thumbnail_width, 300.0 / thumbnail_height)
-                    data['thumbnail_width'] = round(thumbnail_width * scale_factor)
-                    data['thumbnail_height'] = round(thumbnail_height * scale_factor)
+                    data["thumbnail_width"] = round(thumbnail_width * scale_factor)
+                    data["thumbnail_height"] = round(thumbnail_height * scale_factor)
                 else:
-                    data['thumbnail_width'] = thumbnail_width
-                    data['thumbnail_height'] = thumbnail_height
+                    data["thumbnail_width"] = thumbnail_width
+                    data["thumbnail_height"] = thumbnail_height
 
-                data['thumbnail_url'] = thumbnail_url
+                data["thumbnail_url"] = thumbnail_url
 
         return data
 
@@ -139,11 +134,11 @@ class Carousel(object):
         """Return the data for a video slide"""
         video = self.videos[0]
         video_data = {
-            'url': str(video.link),
-            'video_width': video.video_width,
-            'video_height': video.video_height,
-            'embed_code': video.link.get_embed_html(video.video_width, video.video_height, autoplay=True),
-            'embed_code_without_autoplay': (
+            "url": str(video.link),
+            "video_width": video.video_width,
+            "video_height": video.video_height,
+            "embed_code": video.link.get_embed_html(video.video_width, video.video_height, autoplay=True),
+            "embed_code_without_autoplay": (
                 video.link.get_embed_html(video.video_width, video.video_height, autoplay=False)
             ),
         }
@@ -151,10 +146,10 @@ class Carousel(object):
         video_data.update(self.get_slide_background_data())
 
         return {
-            'type': 'video',
-            'id': 'video-%d' % video.id,
-            'is_processing': False,
-            'data': video_data,
+            "type": "video",
+            "id": "video-%d" % video.id,
+            "is_processing": False,
+            "data": video_data,
         }
 
     def fetch_launchable_data(self):
@@ -168,25 +163,22 @@ class Carousel(object):
         slides = []
         for track in self.audio_tracks:
             track_data = {
-                'url': track['url'],
-                'player': track['player'],
-                'playerOpts': track['playerOpts'],
+                "url": track["url"],
+                "player": track["player"],
+                "playerOpts": track["playerOpts"],
             }
 
             if len(self.processed_screenshots) >= 1:
                 artwork = random.choice(self.processed_screenshots)
-                track_data['image'] = {
-                    'url': artwork.standard_url,
-                    'width': artwork.standard_width,
-                    'height': artwork.standard_height
+                track_data["image"] = {
+                    "url": artwork.standard_url,
+                    "width": artwork.standard_width,
+                    "height": artwork.standard_height,
                 }
 
-            slides.append({
-                'type': 'cowbell-audio',
-                'id': 'cowbell-%s' % track['id'],
-                'is_processing': False,
-                'data': track_data
-            })
+            slides.append(
+                {"type": "cowbell-audio", "id": "cowbell-%s" % track["id"], "is_processing": False, "data": track_data}
+            )
 
         return slides
 
@@ -194,16 +186,16 @@ class Carousel(object):
         slides = []
         for emu_config in self.emu_configs:
             slide = {
-                'type': 'emulator',
-                'id': 'emulator-%s' % emu_config.id,
-                'is_processing': False,
-                'data': {
-                    'emulator': emu_config.emulator,
-                    'launchUrl': emu_config.launch_url,
-                    'configuration': json.loads(emu_config.configuration or 'null'),
+                "type": "emulator",
+                "id": "emulator-%s" % emu_config.id,
+                "is_processing": False,
+                "data": {
+                    "emulator": emu_config.emulator,
+                    "launchUrl": emu_config.launch_url,
+                    "configuration": json.loads(emu_config.configuration or "null"),
                 },
             }
-            slide['data'].update(self.get_slide_background_data())
+            slide["data"].update(self.get_slide_background_data())
             slides.append(slide)
         return slides
 
@@ -211,14 +203,14 @@ class Carousel(object):
         return json.dumps(self.slides)
 
     def render(self):
-        screenshots = [i for i in self.slides if i['type'] == 'screenshot']
+        screenshots = [i for i in self.slides if i["type"] == "screenshot"]
         if screenshots:
             initial_screenshot = screenshots[0]
         else:
             initial_screenshot = None
 
         # for supertype = music, button labels should refer to "artwork" rather than screenshots
-        if self.production.supertype == 'music':
+        if self.production.supertype == "music":
             add_screenshot_label = "Add artwork"
             all_screenshots_label = "All artwork"
             manage_screenshots_label = "Manage artwork"
@@ -235,27 +227,25 @@ class Carousel(object):
             # that supertype is graphics or production and there are no carousel slides -
             # in which case the 'add a screenshot' call-to-action will be in the carousel area instead
             show_add_screenshot_link = self.user.is_authenticated and (
-                self.slides or self.production.supertype == 'music'
+                self.slides or self.production.supertype == "music"
             )
             show_manage_screenshots_link = screenshots and self.user.is_staff
         else:
             show_add_screenshot_link = False
             show_manage_screenshots_link = False
 
-        return render_to_string('productions/includes/carousel.html', {
-            'production': self.production,
-            'prompt_to_edit': prompt_to_edit,
-
-            'initial_screenshot': initial_screenshot,
-
-            'show_all_screenshots_link': show_all_screenshots_link,
-            'all_screenshots_label': all_screenshots_label,
-
-            'show_add_screenshot_link': show_add_screenshot_link,
-            'add_screenshot_label': add_screenshot_label,
-
-            'show_manage_screenshots_link': show_manage_screenshots_link,
-            'manage_screenshots_label': manage_screenshots_label,
-
-            'carousel_data': self.get_slides_json(),
-        })
+        return render_to_string(
+            "productions/includes/carousel.html",
+            {
+                "production": self.production,
+                "prompt_to_edit": prompt_to_edit,
+                "initial_screenshot": initial_screenshot,
+                "show_all_screenshots_link": show_all_screenshots_link,
+                "all_screenshots_label": all_screenshots_label,
+                "show_add_screenshot_link": show_add_screenshot_link,
+                "add_screenshot_label": add_screenshot_label,
+                "show_manage_screenshots_link": show_manage_screenshots_link,
+                "manage_screenshots_label": manage_screenshots_label,
+                "carousel_data": self.get_slides_json(),
+            },
+        )

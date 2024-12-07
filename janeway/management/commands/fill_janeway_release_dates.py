@@ -5,6 +5,7 @@ from productions.models import Production
 
 class Command(BaseCommand):
     """Fill in release dates from Janeway on productions that don't have one listed"""
+
     def handle(self, *args, **kwargs):
         prods = Production.objects.raw("""
             SELECT productions_production.id, janeway_release.release_date_date, janeway_release.release_date_precision
@@ -21,8 +22,8 @@ class Command(BaseCommand):
         """)
 
         index = -1
-        for (index, prod) in enumerate(prods):
-            if (index % 100 == 0):
+        for index, prod in enumerate(prods):
+            if index % 100 == 0:
                 print("added %d release dates" % index)
 
             Production.objects.filter(id=prod.id).update(

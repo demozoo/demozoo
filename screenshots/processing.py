@@ -5,25 +5,25 @@ from django.core.files.storage import DefaultStorage
 
 def get_thumbnail_sizing_params(original_size, target_size):
     """
-        Given the dimensions of a source image, return a (crop_params, resize_params) tuple that
-        specifies how the image should be cropped and resized to generate a thumbnail to fit
-        within target_size.
-        crop_params = (left, upper, right, lower) or None for no cropping
-        resize_params = (width, height) or None for no resizing
+    Given the dimensions of a source image, return a (crop_params, resize_params) tuple that
+    specifies how the image should be cropped and resized to generate a thumbnail to fit
+    within target_size.
+    crop_params = (left, upper, right, lower) or None for no cropping
+    resize_params = (width, height) or None for no resizing
 
-        The rules applied are:
-        * all resize operations preserve aspect ratio
-        * an image smaller than target_size is left unchanged
-        * an image with an aspect ratio more than twice as wide as target_size is resized to half
-            the target height (or left at original size if it's already this short or shorter), and
-            cropped centrally to fit target width.
-        * an image with an aspect ratio between 1 and 2 times as wide as target_size is resized to
-            fit target width
-        * an image with an aspect ratio between 1 and 3 times as tall as target_size is resized to
-            fit target height
-        * an image with an aspect ratio more than three times as tall as target_size is resized to
-            one third of the target width (or left at original size if it's already this narrow or
-            narrower), and cropped to the top to fit target height.
+    The rules applied are:
+    * all resize operations preserve aspect ratio
+    * an image smaller than target_size is left unchanged
+    * an image with an aspect ratio more than twice as wide as target_size is resized to half
+        the target height (or left at original size if it's already this short or shorter), and
+        cropped centrally to fit target width.
+    * an image with an aspect ratio between 1 and 2 times as wide as target_size is resized to
+        fit target width
+    * an image with an aspect ratio between 1 and 3 times as tall as target_size is resized to
+        fit target height
+    * an image with an aspect ratio more than three times as tall as target_size is resized to
+        one third of the target width (or left at original size if it's already this narrow or
+        narrower), and cropped to the top to fit target height.
     """
     orig_width, orig_height = original_size
     target_width, target_height = target_size
@@ -83,8 +83,8 @@ def get_thumbnail_sizing_params(original_size, target_size):
 
 def upload_to_s3(fp, key_name):
     """
-        Upload the contents of file handle 'fp' to the S3 bucket specified by AWS_STORAGE_BUCKET_NAME,
-        under the given filename. Return the public URL.
+    Upload the contents of file handle 'fp' to the S3 bucket specified by AWS_STORAGE_BUCKET_NAME,
+    under the given filename. Return the public URL.
     """
     storage = DefaultStorage()
     saved_name = storage.save(key_name, fp)
@@ -94,11 +94,23 @@ def upload_to_s3(fp, key_name):
 # successively more aggressive rules for what files we should ignore in an archive
 # when looking for screenshots - break out as soon as we have exactly one file remaining
 IGNORED_ARCHIVE_MEMBER_RULES = [
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$', re.I),
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$', re.I),  # noqa
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$', re.I),  # noqa
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$', re.I),  # noqa
-    re.compile(r'(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$', re.I),  # noqa
+    re.compile(r"(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz)$", re.I),
+    re.compile(
+        r"(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+)$",
+        re.I,
+    ),  # noqa
+    re.compile(
+        r"(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+)$",
+        re.I,
+    ),  # noqa
+    re.compile(
+        r"(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage\s*\d+\.\w+|.*steps?\s*\d+\.\w+|.*wip\s*\d+\.\w+|.*vaihe\s*\d+\.\w+|.*phase\s*\d+\.\w+|.*unsigned\.\w+|.*nosig\.\w+)$",
+        re.I,
+    ),  # noqa
+    re.compile(
+        r"(__MACOSX.*|thumbs.db|.*\/thumbs.db|scene\.org|.*\.txt|.*\.nfo|.*\.diz|.*stage.*|.*step.*|.*wip.*|.*vaihe.*|.*phase.*|.*unsigned.*|.*nosig.*|.*wire.*|.*malla.*|.*preview.*|.*work.*)$",
+        re.I,
+    ),  # noqa
 ]
 
 

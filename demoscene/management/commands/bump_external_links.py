@@ -11,10 +11,10 @@ from productions.models import ProductionLink
 
 
 external_link_models = [
-    (PartyExternalLink, 'party_id'),
-    (ReleaserExternalLink, 'releaser_id'),
-    (ProductionLink, 'production_id'),
-    (BBSExternalLink, 'bbs_id'),
+    (PartyExternalLink, "party_id"),
+    (ReleaserExternalLink, "releaser_id"),
+    (ProductionLink, "production_id"),
+    (BBSExternalLink, "bbs_id"),
 ]
 
 
@@ -22,10 +22,10 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         for model, fk_name in external_link_models:
             for link in model.objects.filter(
-                link_class__in=['BaseUrl', 'UntergrundFile', 'SceneOrgFile', 'ZxArtPicture', 'ZxArtMusic']
+                link_class__in=["BaseUrl", "UntergrundFile", "SceneOrgFile", "ZxArtPicture", "ZxArtMusic"]
             ):
                 original_link_class = link.link_class
-                if link.link_class == 'SceneOrgFile':
+                if link.link_class == "SceneOrgFile":
                     link.url = link.link.nl_url
                 else:
                     link.url = link.url

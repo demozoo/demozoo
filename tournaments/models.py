@@ -16,13 +16,11 @@ from screenshots.tasks import create_basename
 
 class Tournament(models.Model):
     source_file_name = models.CharField(max_length=255, unique=True)
-    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name='tournaments')
+    party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="tournaments")
     name = models.CharField(max_length=255)
 
     class Meta:
-        unique_together = [
-            ('party', 'name')
-        ]
+        unique_together = [("party", "name")]
 
     def __str__(self) -> str:
         return "%s at %s" % (self.name, self.party.name)
@@ -32,12 +30,12 @@ class Tournament(models.Model):
 
     @property
     def livecode_url(self):
-        html_file_name = re.sub(r'\.json$', '.html', self.source_file_name)
-        return 'https://livecode.demozoo.org/event/%s#mc' % html_file_name
+        html_file_name = re.sub(r"\.json$", ".html", self.source_file_name)
+        return "https://livecode.demozoo.org/event/%s#mc" % html_file_name
 
 
 class TournamentExternalLink(ExternalLink):
-    tournament = models.ForeignKey(Tournament, related_name='external_links', on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, related_name="external_links", on_delete=models.CASCADE)
     link_types = groklinks.TOURNAMENT_LINK_TYPES
 
     @property
@@ -45,14 +43,12 @@ class TournamentExternalLink(ExternalLink):
         return "%s %s" % (self.tournament.party.name, self.tournament.name)
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'tournament'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "tournament"),)
+        ordering = ["link_class"]
 
 
 class Phase(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='phases')
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="phases")
     name = models.CharField(max_length=255, blank=True)
     position = models.IntegerField()
 
@@ -65,7 +61,7 @@ class Phase(models.Model):
         return any(entry.score for entry in self.entries.all())
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     def __str__(self) -> str:
         return self.name
@@ -79,7 +75,7 @@ class Phase(models.Model):
 
 
 class PhaseExternalLink(ExternalLink):
-    phase = models.ForeignKey(Phase, related_name='external_links', on_delete=models.CASCADE)
+    phase = models.ForeignKey(Phase, related_name="external_links", on_delete=models.CASCADE)
     link_types = groklinks.TOURNAMENT_LINK_TYPES
 
     @property
@@ -87,17 +83,13 @@ class PhaseExternalLink(ExternalLink):
         return self.phase.party_scoped_name
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'phase'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "phase"),)
+        ordering = ["link_class"]
 
 
 class Entry(ThumbnailMixin, models.Model):
-    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='entries')
-    nick = models.ForeignKey(
-        Nick, blank=True, null=True, on_delete=models.CASCADE, related_name='tournament_entries'
-    )
+    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name="entries")
+    nick = models.ForeignKey(Nick, blank=True, null=True, on_delete=models.CASCADE, related_name="tournament_entries")
     name = models.CharField(max_length=255, blank=True, help_text="Only if nick is empty")
     ranking = models.CharField(max_length=32, blank=True)
     position = models.IntegerField()
@@ -110,7 +102,7 @@ class Entry(ThumbnailMixin, models.Model):
     original_image_sha1 = models.CharField(max_length=40, blank=True, editable=False)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
     @property
     def author_name(self):
@@ -120,7 +112,7 @@ class Entry(ThumbnailMixin, models.Model):
         return self.author_name
 
     def set_screenshot(self, filename):
-        f = open(filename, 'rb')
+        f = open(filename, "rb")
         sha1 = hashlib.sha1(f.read()).hexdigest()
         if sha1 == self.original_image_sha1:
             f.close()
@@ -131,7 +123,7 @@ class Entry(ThumbnailMixin, models.Model):
         img = PILConvertibleImage(f, name_hint=filename)
         thumb, thumb_size, thumb_format = img.create_thumbnail((200, 150))
         basename = create_basename(self.id)
-        self.thumbnail_url = upload_to_s3(thumb, 'tournament_screens/t/' + basename + thumb_format)
+        self.thumbnail_url = upload_to_s3(thumb, "tournament_screens/t/" + basename + thumb_format)
         self.thumbnail_width, self.thumbnail_height = thumb_size
         f.close()
         return True
@@ -139,7 +131,7 @@ class Entry(ThumbnailMixin, models.Model):
     @property
     def source_code_url(self):
         if self.source_file:
-            if self.source_file.startswith('/'):
+            if self.source_file.startswith("/"):
                 return "https://livecode.demozoo.org%s" % self.source_file
             else:
                 return self.source_file
@@ -147,13 +139,9 @@ class Entry(ThumbnailMixin, models.Model):
     @property
     def party_scoped_name(self):
         if self.phase.name:
-            return "%s's %s %s entry" % (
-                self.author_name, self.phase.tournament.name, self.phase.name
-            )
+            return "%s's %s %s entry" % (self.author_name, self.phase.tournament.name, self.phase.name)
         else:
-            return "%s's %s entry" % (
-                self.author_name, self.phase.tournament.name
-            )
+            return "%s's %s entry" % (self.author_name, self.phase.tournament.name)
 
     @staticmethod
     def select_screenshots_for_releaser_id(releaser_id):
@@ -163,29 +151,26 @@ class Entry(ThumbnailMixin, models.Model):
         entry with a screenshot in that tournament.
         """
         tournament_and_entry_ids = (
-            Entry.objects.exclude(thumbnail_url='')
+            Entry.objects.exclude(thumbnail_url="")
             .filter(nick__releaser_id=releaser_id)
-            .select_related('phase')
-            .values_list('phase__tournament_id', 'id')
+            .select_related("phase")
+            .values_list("phase__tournament_id", "id")
         )
 
         entries_by_tournament_id = defaultdict(list)
-        for (tournament_id, entry_id) in tournament_and_entry_ids:
+        for tournament_id, entry_id in tournament_and_entry_ids:
             entries_by_tournament_id[tournament_id].append(entry_id)
 
-        chosen_entry_ids = [
-            random.choice(entry_id_set)
-            for entry_id_set in entries_by_tournament_id.values()
-        ]
+        chosen_entry_ids = [random.choice(entry_id_set) for entry_id_set in entries_by_tournament_id.values()]
 
         return {
             entry.phase.tournament_id: entry
-            for entry in Entry.objects.filter(id__in=chosen_entry_ids).select_related('phase')
+            for entry in Entry.objects.filter(id__in=chosen_entry_ids).select_related("phase")
         }
 
 
 class EntryExternalLink(ExternalLink):
-    entry = models.ForeignKey(Entry, related_name='external_links', on_delete=models.CASCADE)
+    entry = models.ForeignKey(Entry, related_name="external_links", on_delete=models.CASCADE)
     link_types = groklinks.TOURNAMENT_LINK_TYPES
 
     @property
@@ -193,27 +178,23 @@ class EntryExternalLink(ExternalLink):
         return self.entry.party_scoped_name
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'entry'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "entry"),)
+        ordering = ["link_class"]
 
 
 ROLES = [
-    ('commentary', 'Commentary'),
-    ('dj_set', 'DJ set'),
-    ('live_music', 'Live music'),
-    ('vj', 'VJ'),
+    ("commentary", "Commentary"),
+    ("dj_set", "DJ set"),
+    ("live_music", "Live music"),
+    ("vj", "VJ"),
 ]
 
 
 class PhaseStaffMember(models.Model):
-    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='staff')
-    nick = models.ForeignKey(
-        Nick, blank=True, null=True, on_delete=models.CASCADE, related_name='tournament_staff'
-    )
+    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name="staff")
+    nick = models.ForeignKey(Nick, blank=True, null=True, on_delete=models.CASCADE, related_name="tournament_staff")
     name = models.CharField(max_length=255, blank=True, help_text="Only if nick is empty")
     role = models.CharField(max_length=50, choices=ROLES)
 
     class Meta:
-        ordering = ['role']
+        ordering = ["role"]

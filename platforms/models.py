@@ -7,11 +7,11 @@ from demoscene.models import Releaser
 
 
 def photo_original_upload_to(i, f):
-    return random_path('platform_photos/original', f)
+    return random_path("platform_photos/original", f)
 
 
 def thumbnail_upload_to(i, f):
-    return random_path('platform_photos/thumb', f)
+    return random_path("platform_photos/thumb", f)
 
 
 class Platform(ModelWithThumbnails):
@@ -19,17 +19,24 @@ class Platform(ModelWithThumbnails):
     intro_text = models.TextField(blank=True)
 
     photo = models.ImageField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         upload_to=photo_original_upload_to,
-        width_field='photo_width', height_field='photo_height')
+        width_field="photo_width",
+        height_field="photo_height",
+    )
     photo_width = models.IntegerField(null=True, blank=True, editable=False)
     photo_height = models.IntegerField(null=True, blank=True, editable=False)
     photo_url = models.CharField(max_length=255, blank=True, editable=False)
 
     thumbnail = models.ImageField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         upload_to=thumbnail_upload_to,
-        editable=False, width_field='thumbnail_width', height_field='thumbnail_height')
+        editable=False,
+        width_field="thumbnail_width",
+        height_field="thumbnail_height",
+    )
     thumbnail_width = models.IntegerField(null=True, blank=True, editable=False)
     thumbnail_height = models.IntegerField(null=True, blank=True, editable=False)
     thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
@@ -51,7 +58,8 @@ class Platform(ModelWithThumbnails):
         return self.name
 
     def random_active_groups(self):
-        return Releaser.objects.raw('''
+        return Releaser.objects.raw(
+            """
             SELECT * FROM (
                 SELECT group_id AS id, group_name AS title, MAX(release_date) FROM (
 
@@ -113,14 +121,16 @@ class Platform(ModelWithThumbnails):
             ) AS topgroups
             ORDER BY RANDOM()
             LIMIT 10;
-        ''', (self.id, self.id))
+        """,
+            (self.id, self.id),
+        )
 
     class Meta:
-        ordering = [Lower('name')]
+        ordering = [Lower("name")]
 
 
 class PlatformAlias(models.Model):
-    platform = models.ForeignKey(Platform, related_name='aliases', on_delete=models.CASCADE)
+    platform = models.ForeignKey(Platform, related_name="aliases", on_delete=models.CASCADE)
     name = models.CharField(
         max_length=255, help_text="Alternative name to be recognised in search filters such as platform:c64"
     )

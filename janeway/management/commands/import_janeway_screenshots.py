@@ -6,6 +6,7 @@ from janeway.tasks import import_screenshot
 
 class Command(BaseCommand):
     """Import screenshots from Janeway"""
+
     def handle(self, *args, **kwargs):
         screenshots = JanewayScreenshot.objects.raw("""
             SELECT janeway_screenshot.*, productions_productionlink.production_id
@@ -21,8 +22,8 @@ class Command(BaseCommand):
             WHERE productions_screenshot IS NULL
         """)
 
-        for (index, screenshot) in enumerate(screenshots):
-            if (index % 100 == 0):
+        for index, screenshot in enumerate(screenshots):
+            if index % 100 == 0:
                 print("queued %d screenshot fetches" % index)
 
             import_screenshot.delay(screenshot.production_id, screenshot.janeway_id, screenshot.url, screenshot.suffix)

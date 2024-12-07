@@ -9,14 +9,16 @@ from productions.models import Production, ProductionLink, ProductionType
 
 
 def get_pouetable_prod_types():
-    music_prod_type = ProductionType.objects.get(internal_name='music')
-    gfx_prod_type = ProductionType.objects.get(internal_name='graphics')
-    exe_gfx_prod_type = ProductionType.objects.get(internal_name='exe-graphics')
+    music_prod_type = ProductionType.objects.get(internal_name="music")
+    gfx_prod_type = ProductionType.objects.get(internal_name="graphics")
+    exe_gfx_prod_type = ProductionType.objects.get(internal_name="exe-graphics")
 
-    return list(ProductionType.objects.exclude(
-        Q(path__startswith=music_prod_type.path) |
-        (Q(path__startswith=gfx_prod_type.path) & ~Q(path__startswith=exe_gfx_prod_type.path))
-    ).values_list('id', flat=True))
+    return list(
+        ProductionType.objects.exclude(
+            Q(path__startswith=music_prod_type.path)
+            | (Q(path__startswith=gfx_prod_type.path) & ~Q(path__startswith=exe_gfx_prod_type.path))
+        ).values_list("id", flat=True)
+    )
 
 
 def get_match_data(releaser, pouetable_prod_types=None):
@@ -25,11 +27,12 @@ def get_match_data(releaser, pouetable_prod_types=None):
 
     releaser_pouet_ids = [
         int(param)
-        for param in releaser.external_links.filter(link_class='PouetGroup').values_list('parameter', flat=True)
+        for param in releaser.external_links.filter(link_class="PouetGroup").values_list("parameter", flat=True)
     ]
 
-    nick_ids = list(releaser.nicks.values_list('id', flat=True))
-    dz_prod_candidates_query = Production.objects.raw("""
+    nick_ids = list(releaser.nicks.values_list("id", flat=True))
+    dz_prod_candidates_query = Production.objects.raw(
+        """
         SELECT DISTINCT
             "productions_production"."id", "productions_production"."title",
             "productions_production"."supertype", "productions_production"."sortable_title"
@@ -50,26 +53,31 @@ def get_match_data(releaser, pouetable_prod_types=None):
             AND "productions_production_types"."productiontype_id" = ANY(%s)
         ORDER BY
             productions_production.sortable_title
-    """, [nick_ids, nick_ids, pouetable_prod_types])
+    """,
+        [nick_ids, nick_ids, pouetable_prod_types],
+    )
     dz_prod_candidates = list(dz_prod_candidates_query)
 
     pouet_prod_candidates = list(
-        PouetProduction.objects.filter(groups__pouet_id__in=releaser_pouet_ids).order_by(Lower('name'))
+        PouetProduction.objects.filter(groups__pouet_id__in=releaser_pouet_ids).order_by(Lower("name"))
     )
 
-    matched_links = list(ProductionLink.objects.filter(
-        Q(link_class='PouetProduction') &
-        (
-            Q(production__id__in=[prod.id for prod in dz_prod_candidates]) |
-            Q(parameter__in=[prod.pouet_id for prod in pouet_prod_candidates])
+    matched_links = list(
+        ProductionLink.objects.filter(
+            Q(link_class="PouetProduction")
+            & (
+                Q(production__id__in=[prod.id for prod in dz_prod_candidates])
+                | Q(parameter__in=[prod.pouet_id for prod in pouet_prod_candidates])
+            )
         )
-    ).select_related('production').order_by('production__title'))
+        .select_related("production")
+        .order_by("production__title")
+    )
     matched_pouet_ids = {int(link.parameter) for link in matched_links}
     matched_dz_ids = {link.production_id for link in matched_links}
 
     matched_pouet_prod_names_by_id = {
-        prod.pouet_id: prod.name
-        for prod in PouetProduction.objects.filter(pouet_id__in=matched_pouet_ids)
+        prod.pouet_id: prod.name for prod in PouetProduction.objects.filter(pouet_id__in=matched_pouet_ids)
     }
 
     matched_prods = [
@@ -87,8 +95,7 @@ def get_match_data(releaser, pouetable_prod_types=None):
     ]
 
     unmatched_demozoo_prods = [
-        (prod.id, prod.title, prod.get_absolute_url()) for prod in dz_prod_candidates
-        if prod.id not in matched_dz_ids
+        (prod.id, prod.title, prod.get_absolute_url()) for prod in dz_prod_candidates if prod.id not in matched_dz_ids
     ]
 
     unmatched_pouet_prods = [
@@ -101,8 +108,8 @@ def get_match_data(releaser, pouetable_prod_types=None):
 
 
 def automatch_productions(releaser, pouetable_prod_types=None):
-    unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = (
-        get_match_data(releaser, pouetable_prod_types=pouetable_prod_types)
+    unmatched_demozoo_prods, unmatched_pouet_prods, matched_prods = get_match_data(
+        releaser, pouetable_prod_types=pouetable_prod_types
     )
 
     matched_production_count = len(matched_prods)
@@ -123,19 +130,20 @@ def automatch_productions(releaser, pouetable_prod_types=None):
         if len(demozoo_ids) == 1 and len(pouet_ids) == 1:
             ProductionLink.objects.create(
                 production_id=demozoo_ids[0],
-                link_class='PouetProduction',
+                link_class="PouetProduction",
                 parameter=pouet_ids[0],
                 is_download_link=False,
-                source='auto',
+                source="auto",
             )
             matched_production_count += 1
             unmatched_demozoo_production_count -= 1
             unmatched_pouet_production_count -= 1
 
     GroupMatchInfo.objects.update_or_create(
-        releaser_id=releaser.id, defaults={
-            'matched_production_count': matched_production_count,
-            'unmatched_demozoo_production_count': unmatched_demozoo_production_count,
-            'unmatched_pouet_production_count': unmatched_pouet_production_count,
-        }
+        releaser_id=releaser.id,
+        defaults={
+            "matched_production_count": matched_production_count,
+            "unmatched_demozoo_production_count": unmatched_demozoo_production_count,
+            "unmatched_pouet_production_count": unmatched_pouet_production_count,
+        },
     )

@@ -10,28 +10,26 @@ class CategoryInline(admin.TabularInline):
 
 class JurorInline(admin.TabularInline):
     model = Juror
-    raw_id_fields = ['user']
+    raw_id_fields = ["user"]
 
 
 class NominationInline(admin.TabularInline):
     model = Nomination
-    raw_id_fields = ['production']
+    raw_id_fields = ["production"]
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['event', 'name', 'nomination_count']
-    list_display_links = ['name']
-    ordering = ['event', 'name']
-    fields = ['name']
+    list_display = ["event", "name", "nomination_count"]
+    list_display_links = ["name"]
+    ordering = ["event", "name"]
+    fields = ["name"]
     inlines = [NominationInline]
 
     def nomination_count(self, obj):
         return obj.num_nominations
 
     def get_queryset(self, request):
-        return super().get_queryset(request).annotate(
-            num_nominations=models.Count('nominations')
-        )
+        return super().get_queryset(request).annotate(num_nominations=models.Count("nominations"))
 
 
 admin.site.register(EventSeries)

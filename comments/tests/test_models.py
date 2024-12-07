@@ -5,16 +5,12 @@ from .utils import CommentTestCase
 
 class TestCommentModel(CommentTestCase):
     def test_production_comment_url(self):
-        expected_url = '/productions/%d/#comment-%d' % (
-            self.production.id, self.production_comment.id
-        )
+        expected_url = "/productions/%d/#comment-%d" % (self.production.id, self.production_comment.id)
 
         self.assertEqual(self.production_comment.get_absolute_url(), expected_url)
 
     def test_party_comment_url(self):
-        expected_url = '/parties/%d/#comment-%d' % (
-            self.party.id, self.party_comment.id
-        )
+        expected_url = "/parties/%d/#comment-%d" % (self.party.id, self.party_comment.id)
 
         self.assertEqual(self.party_comment.get_absolute_url(), expected_url)
 

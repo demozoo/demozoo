@@ -22,9 +22,9 @@ from common.utils.text import generate_search_title, strip_markup
 
 
 DATE_PRECISION_CHOICES = [
-    ('d', 'Day'),
-    ('m', 'Month'),
-    ('y', 'Year'),
+    ("d", "Day"),
+    ("m", "Month"),
+    ("y", "Year"),
 ]
 
 
@@ -33,7 +33,7 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
     is_group = models.BooleanField(db_index=True)
     notes = models.TextField(blank=True)
 
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
 
     location = models.CharField(max_length=255, blank=True)
     country_code = models.CharField(max_length=5, blank=True)
@@ -44,8 +44,10 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
     first_name = models.CharField(max_length=255, blank=True)
     surname = models.CharField(max_length=255, blank=True)
     real_name_note = models.TextField(
-        default='', blank=True, verbose_name='Permission note',
-        help_text="Details of any correspondence / decision about whether this name should be public"
+        default="",
+        blank=True,
+        verbose_name="Permission note",
+        help_text="Details of any correspondence / decision about whether this name should be public",
     )
 
     hide_from_search_engines = models.BooleanField(default=False)
@@ -73,22 +75,23 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
         return self.name
 
     def search_result_template(self):
-        return 'search/results/group.html' if self.is_group else 'search/results/scener.html'
+        return "search/results/group.html" if self.is_group else "search/results/scener.html"
 
     def get_absolute_url(self):
         if self.is_group:
-            return reverse('group', args=[str(self.id)])
+            return reverse("group", args=[str(self.id)])
         else:
-            return reverse('scener', args=[str(self.id)])
+            return reverse("scener", args=[str(self.id)])
 
     def get_history_url(self):
         if self.is_group:
-            return reverse('group_history', args=[str(self.id)])
+            return reverse("group_history", args=[str(self.id)])
         else:
-            return reverse('scener_history', args=[str(self.id)])
+            return reverse("scener_history", args=[str(self.id)])
 
     def productions(self):
         from productions.models import Production
+
         return Production.objects.filter(author_nicks__in=list(self.nicks.all()))
 
     def member_productions(self):
@@ -98,62 +101,57 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
         from productions.models import Production
 
         subgroup_nick_ids = list(
-            Nick.objects.filter(
-                releaser__is_group=True, releaser__group_memberships__group=self
-            ).values_list('id', flat=True)
+            Nick.objects.filter(releaser__is_group=True, releaser__group_memberships__group=self).values_list(
+                "id", flat=True
+            )
         )
         subgroup_prod_ids = set(
-            Production.objects.filter(
-                author_nicks__in=subgroup_nick_ids
-            ).values_list('id', flat=True)
+            Production.objects.filter(author_nicks__in=subgroup_nick_ids).values_list("id", flat=True)
         )
         affiliation_prod_ids = set(
-            Production.objects.filter(
-                author_affiliation_nicks__in=list(self.nicks.all())
-            ).values_list('id', flat=True)
+            Production.objects.filter(author_affiliation_nicks__in=list(self.nicks.all())).values_list("id", flat=True)
         )
 
-        return Production.objects.filter(
-            id__in=(subgroup_prod_ids | affiliation_prod_ids)
-        )
+        return Production.objects.filter(id__in=(subgroup_prod_ids | affiliation_prod_ids))
 
     def credits(self):
         from productions.models import Credit
-        return Credit.objects.select_related('nick').filter(nick__releaser=self)
+
+        return Credit.objects.select_related("nick").filter(nick__releaser=self)
 
     def get_tournament_participations(self):
         from tournaments.models import Tournament
-        return Tournament.objects.filter(
-            phases__entries__nick__releaser_id=self.id
-        ).distinct().order_by('-party__start_date_date')
+
+        return (
+            Tournament.objects.filter(phases__entries__nick__releaser_id=self.id)
+            .distinct()
+            .order_by("-party__start_date_date")
+        )
 
     def groups(self):
         return [
-            membership.group
-            for membership in self.group_memberships.select_related('group').order_by('group__name')
+            membership.group for membership in self.group_memberships.select_related("group").order_by("group__name")
         ]
 
     def current_groups(self, prefetch_nicks=False):
-        if self.has_prefetched('group_memberships'):
+        if self.has_prefetched("group_memberships"):
             # do the is_current filter in Python to avoid another SQL query
-            return [
-                membership.group
-                for membership in self.group_memberships.all()
-                if membership.is_current
-            ]
+            return [membership.group for membership in self.group_memberships.all() if membership.is_current]
         else:
             current_memberships = (
-                self.group_memberships.filter(is_current=True).select_related('group')
-                    .only('member', 'group', 'is_current', 'group__name').order_by('group__name')
+                self.group_memberships.filter(is_current=True)
+                .select_related("group")
+                .only("member", "group", "is_current", "group__name")
+                .order_by("group__name")
             )
             if prefetch_nicks:
-                current_memberships = current_memberships.prefetch_related('group__nicks')
+                current_memberships = current_memberships.prefetch_related("group__nicks")
             return [membership.group for membership in current_memberships]
 
     def members(self):
         return [
             membership.member
-            for membership in self.member_memberships.select_related('member').order_by('member__name')
+            for membership in self.member_memberships.select_related("member").order_by("member__name")
         ]
 
     @property
@@ -170,13 +168,13 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
             else:
                 # use full group names - not too long
                 group_names = [group.name for group in groups]
-            return "%s / %s" % (self.name, ' ^ '.join(group_names))
+            return "%s / %s" % (self.name, " ^ ".join(group_names))
         else:
             return self.name
 
     @property
     def primary_nick(self):
-        if self.has_prefetched('nicks'):
+        if self.has_prefetched("nicks"):
             # filter the nicks list in Python to avoid another SQL query
             matching_nicks = [n for n in self.nicks.all() if n.name == self.name]
             if not matching_nicks:
@@ -216,15 +214,11 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
 
     @property
     def all_names_string(self):
-        if self.has_prefetched('nicks'):
-            all_names = [
-                nv.name
-                for nick in self.nicks.all()
-                for nv in nick.variants.all()
-            ]
+        if self.has_prefetched("nicks"):
+            all_names = [nv.name for nick in self.nicks.all() for nv in nick.variants.all()]
         else:
             all_names = [nv.name for nv in NickVariant.objects.filter(nick__releaser=self)]
-        return ', '.join(all_names)
+        return ", ".join(all_names)
 
     @property
     def asciified_all_names_string(self):
@@ -246,11 +240,11 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
         )
 
     def can_be_converted_to_group(self):
-        return (not self.first_name and not self.surname and not self.location)
+        return not self.first_name and not self.surname and not self.location
 
     def can_be_converted_to_scener(self):
         # don't allow converting a group to scener if it has members or member productions
-        return (not self.members() and not self.member_productions())
+        return not self.members() and not self.member_productions()
 
     @property
     def plaintext_notes(self):
@@ -258,31 +252,31 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
 
     def index_components(self):
         return {
-            'A': self.asciified_all_names_string,
-            'B': self.asciified_real_name,
-            'C': self.asciified_location + ' ' + self.plaintext_notes,
+            "A": self.asciified_all_names_string,
+            "B": self.asciified_real_name,
+            "C": self.asciified_location + " " + self.plaintext_notes,
         }
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
         indexes = [
-            GinIndex(fields=['search_document']),
+            GinIndex(fields=["search_document"]),
         ]
-        permissions = (
-            ("change_releaser_real_names", "Can change non-public real names"),
-        )
+        permissions = (("change_releaser_real_names", "Can change non-public real names"),)
 
 
 class Nick(PrefetchSnoopingMixin, models.Model):
-    releaser = models.ForeignKey(Releaser, related_name='nicks', on_delete=models.CASCADE)
+    releaser = models.ForeignKey(Releaser, related_name="nicks", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     abbreviation = models.CharField(
-        max_length=255, blank=True,
-        help_text="(optional - only if there's one that's actively being used. Don't just make one up!)"
+        max_length=255,
+        blank=True,
+        help_text="(optional - only if there's one that's actively being used. Don't just make one up!)",
     )
     differentiator = models.CharField(
-        max_length=32, blank=True,
-        help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country"
+        max_length=32,
+        blank=True,
+        help_text="hint text to distinguish from other groups/sceners with the same name - e.g. platform or country",
     )
 
     def __init__(self, *args, **kwargs):
@@ -295,11 +289,11 @@ class Nick(PrefetchSnoopingMixin, models.Model):
 
     @staticmethod
     def from_id_and_name(id, name):
-        if id == 'newgroup':
+        if id == "newgroup":
             releaser = Releaser(name=name, is_group=True, updated_at=datetime.datetime.now())
             releaser.save()
             return releaser.primary_nick
-        elif id == 'newscener':
+        elif id == "newscener":
             releaser = Releaser(name=name, is_group=False, updated_at=datetime.datetime.now())
             releaser.save()
             return releaser.primary_nick
@@ -321,11 +315,12 @@ class Nick(PrefetchSnoopingMixin, models.Model):
     def set_nick_variant_list(self, new_list):
         self._nick_variant_list = new_list
         self._has_written_nick_variant_list = True
+
     nick_variant_list = property(get_nick_variant_list, set_nick_variant_list)
 
     @property
     def nick_variant_and_abbreviation_list(self):
-        if self.has_prefetched('variants'):
+        if self.has_prefetched("variants"):
             variant_names = [variant.name for variant in self.variants.all() if variant.name != self.name]
         else:
             variant_names = [variant.name for variant in self.variants.exclude(name=self.name)]
@@ -344,7 +339,7 @@ class Nick(PrefetchSnoopingMixin, models.Model):
             if not self._has_written_nick_variant_list:
                 # force writing a nick variant list containing just the primary nick (and abbreviation if specified)
                 self._has_written_nick_variant_list = True
-                self._nick_variant_list = ''
+                self._nick_variant_list = ""
 
         if self._has_written_nick_variant_list:
             # update the nick variant list
@@ -374,16 +369,13 @@ class Nick(PrefetchSnoopingMixin, models.Model):
             else:
                 # use full group names - not too long
                 group_names = [group.name for group in groups]
-            return "%s / %s" % (self.name, ' ^ '.join(group_names))
+            return "%s / %s" % (self.name, " ^ ".join(group_names))
         else:
             return self.name
 
     # Determine whether or not this nick is referenced in any external records (credits, authorships etc)
     def is_referenced(self):
-        return (
-            self.credits.count()
-            or self.productions.count()
-            or self.member_productions.count())
+        return self.credits.count() or self.productions.count() or self.member_productions.count()
 
     # Reassign credits/productions that reference this nick to use the releaser's primary nick instead,
     # then delete this nick
@@ -393,33 +385,31 @@ class Nick(PrefetchSnoopingMixin, models.Model):
             raise Exception("attempted to delete a releaser's primary nick through reassign_references_and_delete!")
 
         from django.db import connection
+
         with transaction.atomic():
             cursor = connection.cursor()
-            cursor.execute(
-                "UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s",
-                [primary_nick.id, self.id]
-            )
+            cursor.execute("UPDATE productions_credit SET nick_id = %s WHERE nick_id = %s", [primary_nick.id, self.id])
             cursor.execute(
                 "UPDATE productions_production_author_nicks SET nick_id = %s WHERE nick_id = %s",
-                [primary_nick.id, self.id]
+                [primary_nick.id, self.id],
             )
             cursor.execute(
                 "UPDATE productions_production_author_affiliation_nicks SET nick_id = %s WHERE nick_id = %s",
-                [primary_nick.id, self.id]
+                [primary_nick.id, self.id],
             )
 
         self.delete()
 
     def is_primary_nick(self):
-        return (self.releaser.name == self.name)
+        return self.releaser.name == self.name
 
     class Meta:
         unique_together = ("releaser", "name")
-        ordering = ['name']
+        ordering = ["name"]
 
 
 class NickVariant(models.Model):
-    nick = models.ForeignKey(Nick, related_name='variants', on_delete=models.CASCADE)
+    nick = models.ForeignKey(Nick, related_name="variants", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     search_title = models.CharField(max_length=255, blank=True, null=True, db_index=True)
 
@@ -443,7 +433,7 @@ class NickVariant(models.Model):
 
         exact_matches = NickVariant.autocompletion_search(initial_query.strip(), exact=True, limit=1, **kwargs)
         if exact_matches:
-            return ''  # if an exact match exists, there's nothing to autocomplete
+            return ""  # if an exact match exists, there's nothing to autocomplete
 
         # look for prefixes instead
         lstripped_query = initial_query.lstrip()
@@ -453,20 +443,20 @@ class NickVariant(models.Model):
             # return just the suffix to add; the caller will append this to the original query,
             # thus preserving capitalisation in exactly the way that iTunes doesn't.
             # (Ha, I rule.)
-            return result[len(lstripped_query):]
+            return result[len(lstripped_query) :]
         except IndexError:  # no autocompletions available
-            return ''
+            return ""
 
     @staticmethod
     def autocompletion_search(query, **kwargs):
-        limit = kwargs.get('limit')
-        exact = kwargs.get('exact', False)
-        groups_only = kwargs.get('groups_only', False)
-        sceners_only = kwargs.get('sceners_only', False)
+        limit = kwargs.get("limit")
+        exact = kwargs.get("exact", False)
+        groups_only = kwargs.get("groups_only", False)
+        sceners_only = kwargs.get("sceners_only", False)
 
-        group_ids = kwargs.get('group_ids', [])
-        group_names = [name.lower() for name in kwargs.get('group_names', [])]
-        member_names = [name.lower() for name in kwargs.get('member_names', [])]
+        group_ids = kwargs.get("group_ids", [])
+        group_names = [name.lower() for name in kwargs.get("group_names", [])]
+        member_names = [name.lower() for name in kwargs.get("member_names", [])]
 
         if query:
             if exact:
@@ -484,18 +474,26 @@ class NickVariant(models.Model):
 
             if group_ids:
                 # Add a 'score' field that prioritises releasers that are members of any of the specified groups
-                select = SortedDict([
-                    ('score', '''
+                select = SortedDict(
+                    [
+                        (
+                            "score",
+                            """
                         SELECT COUNT(*) FROM demoscene_membership
                         WHERE demoscene_membership.member_id = demoscene_releaser.id
                         AND demoscene_membership.group_id = ANY(%s)
-                    '''),
-                ])
+                    """,
+                        ),
+                    ]
+                )
                 select_params = [list(group_ids)]
             elif group_names:
                 # Add a 'score' field that prioritises releasers that are members of a group with one of the given names
-                select = SortedDict([
-                    ('score', '''
+                select = SortedDict(
+                    [
+                        (
+                            "score",
+                            """
                         SELECT COUNT(*) FROM demoscene_membership
                         INNER JOIN demoscene_releaser AS demogroup ON (demoscene_membership.group_id = demogroup.id)
                         INNER JOIN demoscene_nick AS group_nick ON (demogroup.id = group_nick.releaser_id)
@@ -504,13 +502,18 @@ class NickVariant(models.Model):
                         )
                         WHERE demoscene_membership.member_id = demoscene_releaser.id
                         AND LOWER(group_nickvariant.name) = ANY(%s)
-                    '''),
-                ])
+                    """,
+                        ),
+                    ]
+                )
                 select_params = [list(group_names)]
             elif member_names:
                 # Add a 'score' field that prioritises groups that have members with one of the given names
-                select = SortedDict([
-                    ('score', '''
+                select = SortedDict(
+                    [
+                        (
+                            "score",
+                            """
                         SELECT COUNT(*) FROM demoscene_membership
                         INNER JOIN demoscene_releaser AS member ON (demoscene_membership.member_id = member.id)
                         INNER JOIN demoscene_nick AS member_nick ON (member.id = member_nick.releaser_id)
@@ -519,40 +522,49 @@ class NickVariant(models.Model):
                         )
                         WHERE demoscene_membership.group_id = demoscene_releaser.id
                         AND LOWER(member_nickvariant.name) = ANY (%s)
-                    '''),
-                ])
+                    """,
+                        ),
+                    ]
+                )
                 select_params = [list(member_names)]
             else:
-                select = SortedDict([
-                    ('score', '0'),
-                ])
+                select = SortedDict(
+                    [
+                        ("score", "0"),
+                    ]
+                )
                 select_params = []
 
             # Add an 'is_exact_match' column to the results - true if the query matches the result exactly
-            select['is_exact_match'] = '''
+            select["is_exact_match"] = """
                 CASE WHEN LOWER(demoscene_nickvariant.name) = LOWER(%s) THEN 1 ELSE 0 END
-            '''
+            """
             select_params.append(query)
 
             # Add an 'is_primary_nickvariant' column to the results -
             # true if the matched nick variant is the nick's primary one
-            select['is_primary_nickvariant'] = '''
+            select["is_primary_nickvariant"] = """
                 CASE WHEN demoscene_nick.name = demoscene_nickvariant.name THEN 1 ELSE 0 END
-            '''
+            """
 
             nick_variants = nick_variants.extra(
                 select=select,
                 select_params=select_params,
-                order_by=('-score', '-is_exact_match', '-is_primary_nickvariant', 'name')
+                order_by=("-score", "-is_exact_match", "-is_primary_nickvariant", "name"),
             )
 
             if limit:
                 nick_variants = nick_variants[:limit]
 
-            nick_variants = nick_variants.select_related('nick', 'nick__releaser')
+            nick_variants = nick_variants.select_related("nick", "nick__releaser")
             nick_variants = nick_variants.only(
-                'id', 'name', 'nick__id', 'nick__name', 'nick__differentiator',
-                'nick__releaser__is_group', 'nick__releaser__country_code'
+                "id",
+                "name",
+                "nick__id",
+                "nick__name",
+                "nick__differentiator",
+                "nick__releaser__is_group",
+                "nick__releaser__country_code",
             )
         else:
             nick_variants = NickVariant.objects.none()
@@ -560,13 +572,13 @@ class NickVariant(models.Model):
         return nick_variants
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
 
 class Membership(models.Model):
-    member = models.ForeignKey(Releaser, related_name='group_memberships', on_delete=models.CASCADE)
+    member = models.ForeignKey(Releaser, related_name="group_memberships", on_delete=models.CASCADE)
     group = models.ForeignKey(
-        Releaser, limit_choices_to={'is_group': True}, related_name='member_memberships', on_delete=models.CASCADE
+        Releaser, limit_choices_to={"is_group": True}, related_name="member_memberships", on_delete=models.CASCADE
     )
     is_current = models.BooleanField(default=True)
     data_source = models.CharField(max_length=32, blank=True, null=True)
@@ -577,7 +589,7 @@ class Membership(models.Model):
 
 class AccountProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
 
     def __str__(self):
         try:
@@ -586,7 +598,7 @@ class AccountProfile(models.Model):
             return "(AccountProfile)"
 
     class Meta:
-        ordering = ['user__username']
+        ordering = ["user__username"]
 
 
 class ExternalLink(models.Model):
@@ -611,6 +623,7 @@ class ExternalLink(models.Model):
         else:
             self.link_class = None
             self.parameter = None
+
     url = property(_get_url, _set_url)
 
     def html_link(self):
@@ -628,19 +641,21 @@ class ExternalLink(models.Model):
 
     @property
     def sort_key(self):
-        return '0000' if self.link_class == 'BaseUrl' else self.link_class
+        return "0000" if self.link_class == "BaseUrl" else self.link_class
 
     class Meta:
         abstract = True
-        ordering = ['link_class']
+        ordering = ["link_class"]
 
 
 class ReleaserExternalLink(ExternalLink):
-    releaser = models.ForeignKey(Releaser, related_name='external_links', on_delete=models.CASCADE)
+    releaser = models.ForeignKey(Releaser, related_name="external_links", on_delete=models.CASCADE)
     link_types = groklinks.RELEASER_LINK_TYPES
     source = models.CharField(
-        max_length=32, blank=True, editable=False,
-        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+        max_length=32,
+        blank=True,
+        editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto",
     )
 
     @property
@@ -648,27 +663,25 @@ class ReleaserExternalLink(ExternalLink):
         return self.releaser.name
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'releaser'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "releaser"),)
+        ordering = ["link_class"]
 
 
 class Edit(models.Model):
     action_type = models.CharField(max_length=100)
 
-    focus_content_type = models.ForeignKey(ContentType, related_name='edits', on_delete=models.CASCADE)
+    focus_content_type = models.ForeignKey(ContentType, related_name="edits", on_delete=models.CASCADE)
     focus_object_id = models.PositiveIntegerField()
-    focus = GenericForeignKey('focus_content_type', 'focus_object_id')
+    focus = GenericForeignKey("focus_content_type", "focus_object_id")
 
     focus2_content_type = models.ForeignKey(
-        ContentType, null=True, blank=True, related_name='edits_as_focus2', on_delete=models.CASCADE
+        ContentType, null=True, blank=True, related_name="edits_as_focus2", on_delete=models.CASCADE
     )
     focus2_object_id = models.PositiveIntegerField(null=True, blank=True)
-    focus2 = GenericForeignKey('focus2_content_type', 'focus2_object_id')
+    focus2 = GenericForeignKey("focus2_content_type", "focus2_object_id")
 
     description = models.TextField()
-    user = models.ForeignKey(User, related_name='edits', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="edits", on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     admin_only = models.BooleanField(default=False)
@@ -679,16 +692,25 @@ class Edit(models.Model):
         edits = Edit.objects.all()
         if not is_admin:
             edits = edits.filter(admin_only=False)
-        edits = edits.extra(where=["""(
+        edits = (
+            edits.extra(
+                where=[
+                    """(
             (focus_content_type_id = %s AND focus_object_id = %s)
             OR (focus2_content_type_id = %s AND focus2_object_id = %s)
-        )"""], params=[model_type.id, model.id, model_type.id, model.id]).order_by('-timestamp').select_related('user')
+        )"""
+                ],
+                params=[model_type.id, model.id, model_type.id, model.id],
+            )
+            .order_by("-timestamp")
+            .select_related("user")
+        )
         return edits
 
     class Meta:
         indexes = [
-            models.Index(fields=['focus_content_type', 'focus_object_id']),
-            models.Index(fields=['focus2_content_type', 'focus2_object_id']),
+            models.Index(fields=["focus_content_type", "focus_object_id"]),
+            models.Index(fields=["focus2_content_type", "focus2_object_id"]),
         ]
 
 
@@ -701,7 +723,7 @@ class CaptchaQuestion(models.Model):
     )
     answer = models.CharField(
         max_length=255,
-        help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)"
+        help_text="Answers are not case sensitive (the correct answer will be accepted regardless of capitalisation)",
     )
 
     def __str__(self):
@@ -709,7 +731,7 @@ class CaptchaQuestion(models.Model):
 
 
 class TagDescription(models.Model):
-    tag = models.OneToOneField('taggit.Tag', primary_key=True, related_name='description', on_delete=models.CASCADE)
+    tag = models.OneToOneField("taggit.Tag", primary_key=True, related_name="description", on_delete=models.CASCADE)
     description = models.TextField(
         help_text=(
             "HTML is allowed. Keep this to a couple of sentences at most - "
@@ -775,9 +797,9 @@ class TextFile(models.Model):
         # Try to decode the data using several candidate encodings, least permissive first.
         # Accept the first one that doesn't break.
         if fuzzy:
-            candidate_encodings = ['ascii', 'utf-8', 'cp437', 'windows-1252', 'iso-8859-1']
+            candidate_encodings = ["ascii", "utf-8", "cp437", "windows-1252", "iso-8859-1"]
         else:
-            candidate_encodings = ['ascii', 'utf-8']
+            candidate_encodings = ["ascii", "utf-8"]
 
         for encoding in candidate_encodings:
             try:
@@ -795,7 +817,7 @@ class TextFile(models.Model):
 
     def is_ansi(self):
         """whether this file contains ANSI escape codes"""
-        return b'\x1b[' in self.data
+        return b"\x1b[" in self.data
 
     @property
     def text(self):

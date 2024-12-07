@@ -22,7 +22,7 @@ class BBS(Commentable):
 
     notes = models.TextField(blank=True)
 
-    bbstros = models.ManyToManyField('productions.Production', related_name='bbses', blank=True)
+    bbstros = models.ManyToManyField("productions.Production", related_name="bbses", blank=True)
 
     tags = TaggableManager(blank=True)
 
@@ -32,7 +32,7 @@ class BBS(Commentable):
     search_title = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
     search_document = SearchVectorField(null=True, editable=False)
 
-    search_result_template = 'search/results/bbs.html'
+    search_result_template = "search/results/bbs.html"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -67,10 +67,10 @@ class BBS(Commentable):
         return self.external_links.exclude(link_class__in=groklinks.ARCHIVED_LINK_TYPES)
 
     def get_absolute_url(self):
-        return reverse('bbs', args=[self.id])
+        return reverse("bbs", args=[self.id])
 
     def get_history_url(self):
-        return reverse('bbs_history', args=[self.id])
+        return reverse("bbs_history", args=[self.id])
 
     def is_referenced(self):
         """
@@ -90,7 +90,7 @@ class BBS(Commentable):
     @property
     def all_names_string(self):
         all_names = [name.name for name in self.names.all()]
-        return ', '.join(all_names)
+        return ", ".join(all_names)
 
     @property
     def asciified_all_names_string(self):
@@ -102,25 +102,25 @@ class BBS(Commentable):
 
     @property
     def tags_string(self):
-        return ', '.join([tag.name for tag in self.tags.all()])
+        return ", ".join([tag.name for tag in self.tags.all()])
 
     def index_components(self):
         return {
-            'A': self.asciified_all_names_string,
-            'B': self.tags_string,
-            'C': self.asciified_location + ' ' + self.plaintext_notes,
+            "A": self.asciified_all_names_string,
+            "B": self.tags_string,
+            "C": self.asciified_location + " " + self.plaintext_notes,
         }
 
     class Meta:
-        ordering = ['name']
-        verbose_name_plural = 'BBSes'
+        ordering = ["name"]
+        verbose_name_plural = "BBSes"
         indexes = [
-            GinIndex(fields=['search_document']),
+            GinIndex(fields=["search_document"]),
         ]
 
 
 class Name(models.Model):
-    bbs = models.ForeignKey(BBS, related_name='names', on_delete=models.CASCADE)
+    bbs = models.ForeignKey(BBS, related_name="names", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
     def __init__(self, *args, **kwargs):
@@ -141,22 +141,22 @@ class Name(models.Model):
             super().save(*args, **kwargs)  # Call the original save() method
 
     def is_primary_name(self):
-        return (self.bbs.name == self.name)
+        return self.bbs.name == self.name
 
     class Meta:
         unique_together = ("bbs", "name")
-        ordering = ['name']
+        ordering = ["name"]
 
 
 OPERATOR_TYPES = [
-    ('sysop', 'Sysop'),
-    ('co-sysop', 'Co-Sysop'),
+    ("sysop", "Sysop"),
+    ("co-sysop", "Co-Sysop"),
 ]
 
 
 class Operator(models.Model):
-    bbs = models.ForeignKey(BBS, related_name='staff', on_delete=models.CASCADE)
-    releaser = models.ForeignKey('demoscene.Releaser', related_name='bbses_operated', on_delete=models.CASCADE)
+    bbs = models.ForeignKey(BBS, related_name="staff", on_delete=models.CASCADE)
+    releaser = models.ForeignKey("demoscene.Releaser", related_name="bbses_operated", on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=OPERATOR_TYPES)
     is_current = models.BooleanField(default=True)
 
@@ -165,17 +165,17 @@ class Operator(models.Model):
 
 
 AFFILIATION_TYPES = [
-    ('010-whq', 'WHQ'),
-    ('015-ehq', 'EHQ'),
-    ('020-hq', 'HQ'),
-    ('030-memberboard', 'Memberboard'),
-    ('040-distsite', 'Distsite'),
+    ("010-whq", "WHQ"),
+    ("015-ehq", "EHQ"),
+    ("020-hq", "HQ"),
+    ("030-memberboard", "Memberboard"),
+    ("040-distsite", "Distsite"),
 ]
 
 
 class Affiliation(models.Model):
-    bbs = models.ForeignKey(BBS, related_name='affiliations', on_delete=models.CASCADE)
-    group = models.ForeignKey('demoscene.Releaser', related_name='bbs_affiliations', on_delete=models.CASCADE)
+    bbs = models.ForeignKey(BBS, related_name="affiliations", on_delete=models.CASCADE)
+    group = models.ForeignKey("demoscene.Releaser", related_name="bbs_affiliations", on_delete=models.CASCADE)
     role = models.CharField(max_length=50, choices=AFFILIATION_TYPES, blank=True)
 
     def __str__(self):
@@ -186,16 +186,18 @@ class Affiliation(models.Model):
 
 
 class TextAd(TextFile):
-    bbs = models.ForeignKey(BBS, related_name='text_ads', on_delete=models.CASCADE)
-    file = models.FileField(upload_to='bbs_ads', blank=True)
+    bbs = models.ForeignKey(BBS, related_name="text_ads", on_delete=models.CASCADE)
+    file = models.FileField(upload_to="bbs_ads", blank=True)
 
 
 class BBSExternalLink(ExternalLink):
-    bbs = models.ForeignKey(BBS, related_name='external_links', on_delete=models.CASCADE)
+    bbs = models.ForeignKey(BBS, related_name="external_links", on_delete=models.CASCADE)
     link_types = groklinks.BBS_LINK_TYPES
     source = models.CharField(
-        max_length=32, blank=True, editable=False,
-        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+        max_length=32,
+        blank=True,
+        editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto",
     )
 
     @property
@@ -203,7 +205,5 @@ class BBSExternalLink(ExternalLink):
         return self.bbs.name
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'bbs'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "bbs"),)
+        ordering = ["link_class"]

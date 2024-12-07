@@ -26,24 +26,24 @@ from screenshots.models import ThumbnailMixin
 
 
 SUPERTYPE_CHOICES = (
-    ('production', _('Production')),
-    ('graphics', _('Graphics')),
-    ('music', _('Music')),
+    ("production", _("Production")),
+    ("graphics", _("Graphics")),
+    ("music", _("Music")),
 )
 
 
 class ProductionType(MP_Node):
     name = models.CharField(max_length=255)
     position = models.IntegerField(
-        default=0,
-        help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)"
+        default=0, help_text="Position in which this should be ordered underneath its parent type (if not alphabetical)"
     )
     internal_name = models.CharField(
-        blank=True, max_length=32,
-        help_text="Used to identify this prod type for special treatment in code - leave this alone!"
+        blank=True,
+        max_length=32,
+        help_text="Used to identify this prod type for special treatment in code - leave this alone!",
     )
 
-    node_order_by = ['position', 'name']
+    node_order_by = ["position", "name"]
 
     def __str__(self):
         return self.name
@@ -51,12 +51,12 @@ class ProductionType(MP_Node):
     @staticmethod
     @lru_cache
     def get_base_music_type():
-        return ProductionType.objects.get(internal_name='music')
+        return ProductionType.objects.get(internal_name="music")
 
     @staticmethod
     @lru_cache
     def get_base_graphics_type():
-        return ProductionType.objects.get(internal_name='graphics')
+        return ProductionType.objects.get(internal_name="graphics")
 
     @staticmethod
     def music_types():
@@ -78,9 +78,9 @@ class ProductionType(MP_Node):
 
         tree = ProductionType.get_tree()
         music_types = ProductionType.music_types()
-        tree = tree.exclude(id__in=music_types.values('pk'))
+        tree = tree.exclude(id__in=music_types.values("pk"))
         graphic_types = ProductionType.graphic_types()
-        tree = tree.exclude(id__in=graphic_types.values('pk'))
+        tree = tree.exclude(id__in=graphic_types.values("pk"))
 
         return tree
 
@@ -88,43 +88,43 @@ class ProductionType(MP_Node):
     def supertype(self):
         try:
             if self.path.startswith(ProductionType.get_base_music_type().path):
-                return 'music'
+                return "music"
         except ProductionType.DoesNotExist:
             pass
 
         try:
             if self.path.startswith(ProductionType.get_base_graphics_type().path):
-                return 'graphics'
+                return "graphics"
         except ProductionType.DoesNotExist:
             pass
 
-        return 'production'
+        return "production"
 
     @property
     def listing_url(self):
-        if self.supertype == 'music':
-            url_name = 'musics'
-        elif self.supertype == 'graphics':
-            url_name = 'graphics'
+        if self.supertype == "music":
+            url_name = "musics"
+        elif self.supertype == "graphics":
+            url_name = "graphics"
         else:
-            url_name = 'productions'
+            url_name = "productions"
 
-        return reverse(url_name) + '?production_type=%s' % self.id
+        return reverse(url_name) + "?production_type=%s" % self.id
 
 
 class Production(PrefetchSnoopingMixin, Commentable, Lockable):
     title = models.CharField(max_length=255)
-    platforms = models.ManyToManyField('platforms.Platform', related_name='productions', blank=True)
+    platforms = models.ManyToManyField("platforms.Platform", related_name="productions", blank=True)
     supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
-    types = models.ManyToManyField('ProductionType', related_name='productions')
-    author_nicks = models.ManyToManyField('demoscene.Nick', related_name='productions', blank=True)
-    author_affiliation_nicks = models.ManyToManyField('demoscene.Nick', related_name='member_productions', blank=True)
+    types = models.ManyToManyField("ProductionType", related_name="productions")
+    author_nicks = models.ManyToManyField("demoscene.Nick", related_name="productions", blank=True)
+    author_affiliation_nicks = models.ManyToManyField("demoscene.Nick", related_name="member_productions", blank=True)
     notes = models.TextField(blank=True)
     release_date_date = models.DateField(null=True, blank=True)
     release_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
 
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
-    scene_org_id = models.IntegerField(null=True, blank=True, verbose_name='scene.org ID')
+    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
+    scene_org_id = models.IntegerField(null=True, blank=True, verbose_name="scene.org ID")
 
     data_source = models.CharField(max_length=32, blank=True, null=True)
     unparsed_byline = models.CharField(max_length=255, blank=True, null=True)
@@ -132,7 +132,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         default=True,
         help_text=(
             "True if this production has been updated through its own forms, as opposed to just compo results tables"
-        )
+        ),
     )
     has_screenshot = models.BooleanField(
         default=False, editable=False, help_text="True if this prod has at least one (processed) screenshot"
@@ -142,7 +142,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         help_text=(
             "Whether the notes field for this production will be indexed. "
             "(Untick this to avoid false matches in search results e.g. 'this demo was not by Magic / Nah-Kolor')"
-        )
+        ),
     )
     hide_from_search_engines = models.BooleanField(default=False)
 
@@ -156,21 +156,21 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
 
     search_document = SearchVectorField(null=True, editable=False)
 
-    search_result_template = 'search/results/production.html'
+    search_result_template = "search/results/production.html"
 
     # do the equivalent of self.author_nicks.select_related('releaser'), unless that would be
     # less efficient because we've already got the author_nicks relation cached from a prefetch_related
     def author_nicks_with_authors(self):
-        if self.has_prefetched('author_nicks'):
+        if self.has_prefetched("author_nicks"):
             return self.author_nicks.all()
         else:
-            return self.author_nicks.select_related('releaser')
+            return self.author_nicks.select_related("releaser")
 
     def author_affiliation_nicks_with_groups(self):
-        if self.has_prefetched('author_affiliation_nicks'):
+        if self.has_prefetched("author_affiliation_nicks"):
             return self.author_affiliation_nicks.all()
         else:
-            return self.author_affiliation_nicks.select_related('releaser')
+            return self.author_affiliation_nicks.select_related("releaser")
 
     def save(self, *args, **kwargs):
         if self.id and not self.supertype:
@@ -197,6 +197,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
 
     def byline_search(self):
         from productions.fields.byline_search import BylineSearch
+
         if self.unparsed_byline:
             return BylineSearch(self.unparsed_byline)
         else:
@@ -207,6 +208,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
 
     def _set_byline_string(self, byline_string):
         from productions.fields.byline_search import BylineSearch
+
         byline_search = BylineSearch(byline_string)
 
         if all(byline_search.author_nick_selections) and all(byline_search.affiliation_nick_selections):
@@ -219,6 +221,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
             self.author_nicks.clear()
             self.author_affiliation_nicks.clear()
             self.save()
+
     byline_string = property(_get_byline_string, _set_byline_string)
 
     @property
@@ -234,7 +237,7 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         try:
             prod_type = self.types.all()[0]
         except IndexError:
-            return 'production'
+            return "production"
 
         return prod_type.supertype
 
@@ -242,11 +245,11 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
     @staticmethod
     def list_to_name(platforms):
         if len(platforms) == 0:
-            return ''
+            return ""
         elif len(platforms) == 1:
             return platforms[0].name
         else:
-            return '(multiple)'
+            return "(multiple)"
 
     @property
     def platform_name(self):
@@ -283,52 +286,50 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         return description
 
     def get_absolute_url(self):
-        if self.supertype == 'music':
-            return reverse('music', args=[str(self.id)])
-        elif self.supertype == 'graphics':
-            return reverse('graphic', args=[str(self.id)])
+        if self.supertype == "music":
+            return reverse("music", args=[str(self.id)])
+        elif self.supertype == "graphics":
+            return reverse("graphic", args=[str(self.id)])
         else:
-            return reverse('production', args=[str(self.id)])
+            return reverse("production", args=[str(self.id)])
 
     def get_edit_core_details_url(self):
-        if self.supertype == 'music':
-            return reverse('music_edit_core_details', args=[str(self.id)])
-        elif self.supertype == 'graphics':
-            return reverse('graphics_edit_core_details', args=[str(self.id)])
+        if self.supertype == "music":
+            return reverse("music_edit_core_details", args=[str(self.id)])
+        elif self.supertype == "graphics":
+            return reverse("graphics_edit_core_details", args=[str(self.id)])
         else:
-            return reverse('production_edit_core_details', args=[str(self.id)])
+            return reverse("production_edit_core_details", args=[str(self.id)])
 
     def get_history_url(self):
-        if self.supertype == 'music':
-            return reverse('music_history', args=[str(self.id)])
-        elif self.supertype == 'graphics':
-            return reverse('graphics_history', args=[str(self.id)])
+        if self.supertype == "music":
+            return reverse("music_history", args=[str(self.id)])
+        elif self.supertype == "graphics":
+            return reverse("graphics_history", args=[str(self.id)])
         else:
-            return reverse('production_history', args=[str(self.id)])
+            return reverse("production_history", args=[str(self.id)])
 
     def get_all_screenshots_url(self):
         return reverse(
-            'production_artwork' if self.supertype == 'music' else 'production_screenshots',
-            args=[str(self.id)]
+            "production_artwork" if self.supertype == "music" else "production_screenshots", args=[str(self.id)]
         )
 
     def get_add_screenshot_url(self):
         return reverse(
-            'production_add_artwork' if self.supertype == 'music' else 'production_add_screenshot',
-            args=[str(self.id)]
+            "production_add_artwork" if self.supertype == "music" else "production_add_screenshot", args=[str(self.id)]
         )
 
     def get_edit_screenshots_url(self):
         return reverse(
-            'production_edit_artwork' if self.supertype == 'music' else 'production_edit_screenshots',
-            args=[str(self.id)]
+            "production_edit_artwork" if self.supertype == "music" else "production_edit_screenshots",
+            args=[str(self.id)],
         )
 
     def can_have_soundtracks(self):
-        return (self.supertype == 'production')
+        return self.supertype == "production"
 
     def can_have_pack_members(self):
-        return any([typ.internal_name in ('pack', 'artpack') for typ in self.types.all()])
+        return any([typ.internal_name in ("pack", "artpack") for typ in self.types.all()])
 
     def _get_release_date(self):
         if self.release_date_date and self.release_date_precision:
@@ -342,7 +343,8 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
             self.release_date_precision = fuzzy_date.precision
         else:
             self.release_date_date = None
-            self.release_date_precision = ''
+            self.release_date_precision = ""
+
     release_date = property(_get_release_date, _set_release_date)
 
     # whether this production is regarded as 'stable' in competition results editing;
@@ -357,28 +359,30 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
 
     @property
     def indexed_notes(self):
-        return self.plaintext_notes if self.include_notes_in_search else ''
+        return self.plaintext_notes if self.include_notes_in_search else ""
 
     @property
     def tags_string(self):
-        return ', '.join([tag.name for tag in self.tags.all()])
+        return ", ".join([tag.name for tag in self.tags.all()])
 
     def credits_for_listing(self):
-        return self.credits.select_related('nick__releaser').extra(
-            select={'category_order': "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"}
-        ).order_by('nick__name', 'category_order')
+        return (
+            self.credits.select_related("nick__releaser")
+            .extra(select={"category_order": "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"})
+            .order_by("nick__name", "category_order")
+        )
 
     @property
     def platforms_and_types_list(self):
-        if self.has_prefetched('platforms'):
-            platforms = ', '.join(sorted([platform.name for platform in self.platforms.all()]))
+        if self.has_prefetched("platforms"):
+            platforms = ", ".join(sorted([platform.name for platform in self.platforms.all()]))
         else:
-            platforms = ', '.join([platform.name for platform in self.platforms.order_by('name')])
+            platforms = ", ".join([platform.name for platform in self.platforms.order_by("name")])
 
-        if self.has_prefetched('types'):
-            prod_types = ', '.join(sorted([typ.name for typ in self.types.all()]))
+        if self.has_prefetched("types"):
+            prod_types = ", ".join(sorted([typ.name for typ in self.types.all()]))
         else:
-            prod_types = ', '.join([typ.name for typ in self.types.order_by('name')])
+            prod_types = ", ".join([typ.name for typ in self.types.order_by("name")])
         if platforms and prod_types:
             return "%s - %s" % (platforms, prod_types)
         else:
@@ -390,12 +394,12 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
         if there are multiples."""
         try:
             return ReleaserExternalLink.objects.get(
-                releaser__nicks__productions=self, link_class='TwitterAccount'
+                releaser__nicks__productions=self, link_class="TwitterAccount"
             ).parameter
         except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
             try:
                 return ReleaserExternalLink.objects.get(
-                    releaser__nicks__member_productions=self, link_class='TwitterAccount'
+                    releaser__nicks__member_productions=self, link_class="TwitterAccount"
                 ).parameter
             except (ReleaserExternalLink.MultipleObjectsReturned, ReleaserExternalLink.DoesNotExist):
                 return None
@@ -411,20 +415,20 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
 
     def index_components(self):
         return {
-            'A': self.asciified_title,
-            'B': self.tags_string,
-            'C': self.indexed_notes,
+            "A": self.asciified_title,
+            "B": self.tags_string,
+            "C": self.indexed_notes,
             # Index byline with lowest weighting, so that prods still show up
             # in a search for "square still", but are ranked below the group page
             # in a search for just "still"
-            'D': self.byline_string,
+            "D": self.byline_string,
         }
 
     class Meta:
-        ordering = ['sortable_title']
+        ordering = ["sortable_title"]
         indexes = [
-            GinIndex(fields=['search_document']),
-            models.Index(fields=['release_date_date', 'created_at']),
+            GinIndex(fields=["search_document"]),
+            models.Index(fields=["release_date_date", "created_at"]),
         ]
 
 
@@ -435,9 +439,9 @@ class Byline(object):
         self.affiliation_nicks = affiliations
 
     def __str__(self):
-        authors_string = ' + '.join([nick.name for nick in self.author_nicks])
+        authors_string = " + ".join([nick.name for nick in self.author_nicks])
         if self.affiliation_nicks:
-            affiliations_string = ' ^ '.join([nick.name for nick in self.affiliation_nicks])
+            affiliations_string = " ^ ".join([nick.name for nick in self.affiliation_nicks])
             return "%s / %s" % (authors_string, affiliations_string)
         else:
             return authors_string
@@ -473,26 +477,20 @@ class Byline(object):
 
 
 class ProductionDemozoo0Platform(models.Model):
-    production = models.ForeignKey(Production, related_name='demozoo0_platforms', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="demozoo0_platforms", on_delete=models.CASCADE)
     platform = models.CharField(max_length=64)
 
 
 class ProductionBlurb(models.Model):
-    production = models.ForeignKey(Production, related_name='blurbs', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="blurbs", on_delete=models.CASCADE)
     body = models.TextField(help_text="A tweet-sized description of this demo, to promote it on listing pages")
 
 
 class Credit(models.Model):
-    CATEGORIES = [
-        ('Code', 'Code'),
-        ('Graphics', 'Graphics'),
-        ('Music', 'Music'),
-        ('Text', 'Text'),
-        ('Other', 'Other')
-    ]
+    CATEGORIES = [("Code", "Code"), ("Graphics", "Graphics"), ("Music", "Music"), ("Text", "Text"), ("Other", "Other")]
 
-    production = models.ForeignKey(Production, related_name='credits', on_delete=models.CASCADE)
-    nick = models.ForeignKey(Nick, related_name='credits', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="credits", on_delete=models.CASCADE)
+    nick = models.ForeignKey(Nick, related_name="credits", on_delete=models.CASCADE)
     category = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
     role = models.CharField(max_length=255, blank=True)
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
@@ -510,19 +508,21 @@ class Credit(models.Model):
                 self.production_id and self.production.title,
                 self.nick_id and self.nick.name,
                 self.category,
-                self.role)
+                self.role,
+            )
         else:
             return "%s: %s - %s" % (
                 self.production_id and self.production.title,
                 self.nick_id and self.nick.name,
-                self.category)
+                self.category,
+            )
 
     class Meta:
-        ordering = ['production__title']
+        ordering = ["production__title"]
 
 
 class Screenshot(ThumbnailMixin, models.Model):
-    production = models.ForeignKey(Production, related_name='screenshots', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="screenshots", on_delete=models.CASCADE)
     original_url = models.CharField(max_length=255, blank=True)
     original_width = models.IntegerField(editable=False, null=True, blank=True)
     original_height = models.IntegerField(editable=False, null=True, blank=True)
@@ -544,13 +544,13 @@ class Screenshot(ThumbnailMixin, models.Model):
         # Mark the corresponding production as having a screenshot
         if self.thumbnail_url:
             self.production.has_screenshot = True
-            self.production.save(update_fields=['has_screenshot'])
+            self.production.save(update_fields=["has_screenshot"])
 
         # if any production links for this production have is_unresolved_for_screenshotting=True,
         # reset that flag since we no longer need a screenshot
-        self.production.links.filter(
-            is_unresolved_for_screenshotting=True
-        ).update(is_unresolved_for_screenshotting=False)
+        self.production.links.filter(is_unresolved_for_screenshotting=True).update(
+            is_unresolved_for_screenshotting=False
+        )
 
     def __str__(self):
         return "%s - %s" % (self.production.title, self.original_url)
@@ -561,19 +561,18 @@ class Screenshot(ThumbnailMixin, models.Model):
         Given a list of production ids, return a dict mapping production id to a random
         screenshot for each production in the list that has screenshots
         """
-        prod_and_screenshot_ids = Screenshot.objects.filter(
-            production_id__in=production_ids
-        ).exclude(
-            thumbnail_url=''
-        ).values_list('production_id', 'id')
+        prod_and_screenshot_ids = (
+            Screenshot.objects.filter(production_id__in=production_ids)
+            .exclude(thumbnail_url="")
+            .values_list("production_id", "id")
+        )
 
         screenshots_by_prod_id = defaultdict(list)
-        for (prod_id, screenshot_id) in prod_and_screenshot_ids:
+        for prod_id, screenshot_id in prod_and_screenshot_ids:
             screenshots_by_prod_id[prod_id].append(screenshot_id)
 
         chosen_screenshot_ids = [
-            random.choice(screenshot_id_set)
-            for screenshot_id_set in screenshots_by_prod_id.values()
+            random.choice(screenshot_id_set) for screenshot_id_set in screenshots_by_prod_id.values()
         ]
 
         return {
@@ -584,19 +583,21 @@ class Screenshot(ThumbnailMixin, models.Model):
 
 @receiver(post_delete, sender=Screenshot)
 def update_prod_screenshot_data_on_delete(sender, **kwargs):
-    production = kwargs['instance'].production
+    production = kwargs["instance"].production
     # look for remaining screenshots
-    screenshots = production.screenshots.exclude(original_url='')
+    screenshots = production.screenshots.exclude(original_url="")
 
     production.has_screenshot = bool(screenshots)
-    production.save(update_fields=['has_screenshot'])
+    production.save(update_fields=["has_screenshot"])
 
 
 class SoundtrackLink(models.Model):
-    production = models.ForeignKey(Production, related_name='soundtrack_links', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="soundtrack_links", on_delete=models.CASCADE)
     soundtrack = models.ForeignKey(
-        Production, limit_choices_to={'supertype': 'music'}, related_name='appearances_as_soundtrack',
-        on_delete=models.CASCADE
+        Production,
+        limit_choices_to={"supertype": "music"},
+        related_name="appearances_as_soundtrack",
+        on_delete=models.CASCADE,
     )
     position = models.IntegerField()
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
@@ -605,12 +606,12 @@ class SoundtrackLink(models.Model):
         return "%s on %s" % (self.soundtrack, self.production)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
 
 class PackMember(models.Model):
-    pack = models.ForeignKey(Production, related_name='pack_members', on_delete=models.CASCADE)
-    member = models.ForeignKey(Production, related_name='packed_in', on_delete=models.CASCADE)
+    pack = models.ForeignKey(Production, related_name="pack_members", on_delete=models.CASCADE)
+    member = models.ForeignKey(Production, related_name="packed_in", on_delete=models.CASCADE)
     position = models.IntegerField()
     data_source = models.CharField(max_length=32, blank=True, null=True, editable=False)
 
@@ -618,36 +619,39 @@ class PackMember(models.Model):
         return "%s packed in %s" % (self.member, self.pack)
 
     class Meta:
-        ordering = ['position']
+        ordering = ["position"]
 
 
 class ProductionLink(ExternalLink):
-    production = models.ForeignKey(Production, related_name='links', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="links", on_delete=models.CASCADE)
     is_download_link = models.BooleanField()
     description = models.CharField(max_length=255, blank=True)
-    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name='Demozoo v0 ID')
+    demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
     file_for_screenshot = models.CharField(
-        max_length=255, blank=True,
+        max_length=255,
+        blank=True,
         help_text=(
-            'The file within this archive which has been identified as most suitable for generating a screenshot from'
-        )
+            "The file within this archive which has been identified as most suitable for generating a screenshot from"
+        ),
     )
     is_unresolved_for_screenshotting = models.BooleanField(
         default=False,
         help_text=(
             "Indicates that we've tried and failed to identify the most suitable file in this archive "
             "to generate a screenshot from"
-        )
+        ),
     )
     has_bad_image = models.BooleanField(
         default=False,
         help_text=(
             "Indicates that an attempt to create a screenshot from this link has failed at the image processing stage"
-        )
+        ),
     )
     source = models.CharField(
-        max_length=32, blank=True, editable=False,
-        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto"
+        max_length=32,
+        blank=True,
+        editable=False,
+        help_text="Identifier to indicate where this link came from - e.g. manual (entered via form), match, auto",
     )
 
     thumbnail_url = models.CharField(max_length=255, blank=True, editable=False)
@@ -682,7 +686,7 @@ class ProductionLink(ExternalLink):
 
         if self._original_link_class != self.link_class or self._original_parameter != self.parameter:
             # link has changed - remove old embed data
-            self.thumbnail_url = ''
+            self.thumbnail_url = ""
             self.thumbnail_width = None
             self.thumbnail_height = None
             self.video_width = None
@@ -700,6 +704,7 @@ class ProductionLink(ExternalLink):
 
         if should_fetch_embed_data:
             from productions.tasks import fetch_production_link_embed_data
+
             fetch_production_link_embed_data.delay(self.pk)
 
     @property
@@ -717,8 +722,8 @@ class ProductionLink(ExternalLink):
         return self.link.download_url
 
     def download_file_extension(self):
-        filename = self.download_url.split('/')[-1]
-        extension = filename.split('.')[-1]
+        filename = self.download_url.split("/")[-1]
+        extension = filename.split(".")[-1]
         if filename == extension:
             # filename has no extension
             return None
@@ -726,27 +731,30 @@ class ProductionLink(ExternalLink):
             return extension.lower()
 
     def is_zip_file(self):
-        return self.download_file_extension() == 'zip'
+        return self.download_file_extension() == "zip"
 
     @property
     def is_streaming_video(self):
-        return getattr(self.link, 'is_streaming_video', False)
+        return getattr(self.link, "is_streaming_video", False)
 
     def fetch_embed_data(self):
         embed_data = self.link.get_embed_data()
         if embed_data is not None:
-            self.thumbnail_url = embed_data['thumbnail_url']
-            self.thumbnail_width = embed_data['thumbnail_width']
-            self.thumbnail_height = embed_data['thumbnail_height']
-            self.video_width = embed_data['video_width']
-            self.video_height = embed_data['video_height']
+            self.thumbnail_url = embed_data["thumbnail_url"]
+            self.thumbnail_width = embed_data["thumbnail_width"]
+            self.thumbnail_height = embed_data["thumbnail_height"]
+            self.video_width = embed_data["video_width"]
+            self.video_height = embed_data["video_height"]
             self.embed_data_last_fetch_time = datetime.datetime.now()
             self.save()
 
     def last_successful_download(self):
-        return Download.objects.filter(
-            link_class=self.link_class, parameter=self.parameter
-        ).exclude(sha1='').order_by('-downloaded_at').first()
+        return (
+            Download.objects.filter(link_class=self.link_class, parameter=self.parameter)
+            .exclude(sha1="")
+            .order_by("-downloaded_at")
+            .first()
+        )
 
     def archive_members(self):
         download = self.last_successful_download()
@@ -757,56 +765,56 @@ class ProductionLink(ExternalLink):
 
     def is_believed_downloadable(self):
         # mirrored files are always downloadable
-        mirrored_downloads = Download.objects.filter(
-            link_class=self.link_class, parameter=self.parameter
-        ).exclude(mirror_s3_key='')
+        mirrored_downloads = Download.objects.filter(link_class=self.link_class, parameter=self.parameter).exclude(
+            mirror_s3_key=""
+        )
         if mirrored_downloads.exists():
             return True
 
-        last_download = Download.objects.filter(
-            link_class=self.link_class, parameter=self.parameter
-        ).order_by('-downloaded_at').first()
+        last_download = (
+            Download.objects.filter(link_class=self.link_class, parameter=self.parameter)
+            .order_by("-downloaded_at")
+            .first()
+        )
         if last_download is None:
             # no previous downloads, so assume good
             return True
 
         # if we got a FileTooBig response last time, assume it'll never be downloadable
-        if last_download.error_type == 'FileTooBig':
+        if last_download.error_type == "FileTooBig":
             return False
 
         # if we got an error last time, and that was less than a month ago, don't retry
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
-        if last_download.error_type != '' and last_download.downloaded_at > last_month:
+        if last_download.error_type != "" and last_download.downloaded_at > last_month:
             return False
 
         return True
 
     class Meta:
-        unique_together = (
-            ('link_class', 'parameter', 'production', 'is_download_link'),
-        )
-        ordering = ['link_class']
+        unique_together = (("link_class", "parameter", "production", "is_download_link"),)
+        ordering = ["link_class"]
         indexes = [
-            models.Index(fields=['link_class', 'parameter']),
+            models.Index(fields=["link_class", "parameter"]),
         ]
 
 
 class InfoFile(TextFile):
-    production = models.ForeignKey(Production, related_name='info_files', on_delete=models.CASCADE)
-    file = models.FileField(upload_to='nfo', blank=True)
+    production = models.ForeignKey(Production, related_name="info_files", on_delete=models.CASCADE)
+    file = models.FileField(upload_to="nfo", blank=True)
 
     class Meta:
-        verbose_name = 'info file'
-        verbose_name_plural = 'info files'
+        verbose_name = "info file"
+        verbose_name_plural = "info files"
 
 
 EMULATOR_CHOICES = [
-    ('jsspeccy', 'JSSpeccy'),
+    ("jsspeccy", "JSSpeccy"),
 ]
 
 
 class EmulatorConfig(models.Model):
-    production = models.ForeignKey(Production, related_name='emulator_configs', on_delete=models.CASCADE)
+    production = models.ForeignKey(Production, related_name="emulator_configs", on_delete=models.CASCADE)
     emulator = models.CharField(max_length=30, choices=EMULATOR_CHOICES)
     launch_url = models.URLField(max_length=4096)
     configuration = models.TextField(blank=True)
@@ -816,9 +824,11 @@ class EmulatorConfig(models.Model):
 
     @property
     def media(self):
-        if self.emulator == 'jsspeccy':
-            return Media(js=[
-                'productions/js/jsspeccy/jsspeccy.js',
-            ])
+        if self.emulator == "jsspeccy":
+            return Media(
+                js=[
+                    "productions/js/jsspeccy/jsspeccy.js",
+                ]
+            )
         else:
             return Media()

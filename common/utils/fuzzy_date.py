@@ -18,57 +18,57 @@ MONTH_REGEX = re.compile(
 class FuzzyDate(object):
     def __init__(self, date, precision):
         self.date = date
-        if precision == 'd' or precision == 'day':
-            self.precision = 'd'
-        elif precision == 'm' or precision == 'month':
-            self.precision = 'm'
-        elif precision == 'y' or precision == 'year':
-            self.precision = 'y'
+        if precision == "d" or precision == "day":
+            self.precision = "d"
+        elif precision == "m" or precision == "month":
+            self.precision = "m"
+        elif precision == "y" or precision == "year":
+            self.precision = "y"
         else:
-            raise KeyError('Unknown precision type: %s' % precision)
+            raise KeyError("Unknown precision type: %s" % precision)
 
     def __str__(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.strftime("%Y")
-        elif self.precision == 'm':
+        elif self.precision == "m":
             return self.date.strftime("%B %Y")
         else:
             return self.date.strftime("%e %B %Y")
 
     def short_format(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.strftime("%Y")
         else:
             return self.date.strftime("%b %Y")
 
     def explicit_format(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.strftime("? %Y")
-        elif self.precision == 'm':
+        elif self.precision == "m":
             return self.date.strftime("? %B %Y")
         else:
             return self.date.strftime("%e %B %Y")
 
     def numeric_format(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.strftime("%Y")
-        elif self.precision == 'm':
+        elif self.precision == "m":
             return self.date.strftime("%Y-%m")
         else:
             return self.date.strftime("%Y-%m-%d")
 
     def date_range_start(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.replace(month=1, day=1)
-        elif self.precision == 'm':
+        elif self.precision == "m":
             return self.date.replace(day=1)
         else:
             return self.date
 
     def date_range_end(self):
-        if self.precision == 'y':
+        if self.precision == "y":
             return self.date.replace(month=12, day=31)
-        elif self.precision == 'm':
+        elif self.precision == "m":
             weekday, last_day = calendar.monthrange(self.date.year, self.date.month)
             return self.date.replace(day=last_day)
         else:
@@ -81,15 +81,14 @@ class FuzzyDate(object):
     def agrees_with(self, other):
         if other is None:
             return True
-        elif self.precision == 'd' and other.precision == 'd':
+        elif self.precision == "d" and other.precision == "d":
             return (
                 self.date.year == other.date.year
                 and self.date.month == other.date.month
-                and self.date.day == other.date.day)
-        elif self.precision in ['d', 'm'] and other.precision in ['d', 'm']:
-            return (
-                self.date.year == other.date.year
-                and self.date.month == other.date.month)
+                and self.date.day == other.date.day
+            )
+        elif self.precision in ["d", "m"] and other.precision in ["d", "m"]:
+            return self.date.year == other.date.year and self.date.month == other.date.month
         else:
             return self.date.year == other.date.year
 
@@ -98,16 +97,16 @@ class FuzzyDate(object):
             return False
         if self.precision != other.precision:
             return False
-        if self.precision == 'd':
+        if self.precision == "d":
             return (
                 self.date.year == other.date.year
                 and self.date.month == other.date.month
                 and self.date.day == other.date.day
             )
-        elif self.precision == 'm':
-            return (self.date.year == other.date.year and self.date.month == other.date.month)
+        elif self.precision == "m":
+            return self.date.year == other.date.year and self.date.month == other.date.month
         else:  # self.precision == 'y':
-            return (self.date.year == other.date.year)
+            return self.date.year == other.date.year
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -122,8 +121,8 @@ class FuzzyDate(object):
         # allowing 'February' as a valid synonym for February of this year
         date = europarse.parser.parse(str, dayfirst=True, default=this_year).date()
         if YEAR_REGEX.match(str):
-            return FuzzyDate(date, 'y')
+            return FuzzyDate(date, "y")
         elif MONTH_REGEX.match(str):
-            return FuzzyDate(date, 'm')
+            return FuzzyDate(date, "m")
         else:
-            return FuzzyDate(date, 'd')
+            return FuzzyDate(date, "d")

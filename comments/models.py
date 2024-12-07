@@ -7,10 +7,10 @@ from django.db import models
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    commentable = GenericForeignKey('content_type', 'object_id')
+    commentable = GenericForeignKey("content_type", "object_id")
 
     body = models.TextField()
     created_at = models.DateTimeField()
@@ -24,14 +24,14 @@ class Comment(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return self.commentable.get_absolute_url() + ('#comment-%d' % self.id)
+        return self.commentable.get_absolute_url() + ("#comment-%d" % self.id)
 
 
 class Commentable(models.Model):
     comments = GenericRelation(Comment)
 
     def get_comments(self):
-        return self.comments.select_related('user').order_by('created_at')
+        return self.comments.select_related("user").order_by("created_at")
 
     class Meta:
         abstract = True

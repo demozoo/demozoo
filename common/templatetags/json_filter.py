@@ -10,4 +10,4 @@ def jsonify(object):
     return json.dumps(object)
 
 
-register.filter('json', jsonify)
+register.filter("json", jsonify)

@@ -6,6 +6,7 @@ from janeway.models import Author
 
 class Command(BaseCommand):
     """Import authors from Janeway that don't correspond to any known Demozoo entries"""
+
     def handle(self, *args, **kwargs):
         creation_count = 0
 
@@ -27,8 +28,8 @@ class Command(BaseCommand):
             )
         """)
 
-        for (index, author) in enumerate(authors):
-            if (index % 100 == 0):
+        for index, author in enumerate(authors):
+            if index % 100 == 0:
                 print("processed %d authors" % index)
 
             import_author(author)

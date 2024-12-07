@@ -26,21 +26,21 @@ class FilteredProdutionsReport(object):
         # use master_list_key as a prefix for the final filtered list
         filtered_result_key = cls.master_list_key
         if platform_ids:
-            id_list = ','.join([str(id) for id in platform_ids])
-            platforms_filter_key = 'demozoo:productions:by_platforms:%s' % id_list
+            id_list = ",".join([str(id) for id in platform_ids])
+            platforms_filter_key = "demozoo:productions:by_platforms:%s" % id_list
             used_keys.append(platforms_filter_key)
-            filtered_result_key += ':by_platforms:%s' % id_list
+            filtered_result_key += ":by_platforms:%s" % id_list
 
         if production_type_ids:
-            id_list = ','.join([str(id) for id in production_type_ids])
-            prod_types_filter_key = 'demozoo:productions:by_types:%s' % id_list
+            id_list = ",".join([str(id) for id in production_type_ids])
+            prod_types_filter_key = "demozoo:productions:by_types:%s" % id_list
             used_keys.append(prod_types_filter_key)
-            filtered_result_key += ':by_types:%s' % id_list
+            filtered_result_key += ":by_types:%s" % id_list
 
         if release_year is not None:
-            release_year_filter_key = 'demozoo:productions:by_release_year:%d' % release_year
+            release_year_filter_key = "demozoo:productions:by_release_year:%d" % release_year
             used_keys.append(release_year_filter_key)
-            filtered_result_key += ':by_release_year:%d' % release_year
+            filtered_result_key += ":by_release_year:%d" % release_year
 
         if platform_ids or production_type_ids or (release_year is not None):
             used_keys.append(filtered_result_key)
@@ -65,26 +65,18 @@ class FilteredProdutionsReport(object):
                 write_set(pipe, cls.master_list_key, cls.get_master_list())
 
             if must_update_platforms_filter:
-                production_ids = (
-                    Production.objects
-                    .filter(platforms__id__in=platform_ids)
-                    .values_list('id', flat=True)
-                )
+                production_ids = Production.objects.filter(platforms__id__in=platform_ids).values_list("id", flat=True)
                 write_set(pipe, platforms_filter_key, production_ids)
 
             if must_update_prod_types_filter:
-                production_ids = (
-                    Production.objects
-                    .filter(types__id__in=production_type_ids)
-                    .values_list('id', flat=True)
+                production_ids = Production.objects.filter(types__id__in=production_type_ids).values_list(
+                    "id", flat=True
                 )
                 write_set(pipe, prod_types_filter_key, production_ids)
 
             if must_update_release_year_filter:
-                production_ids = (
-                    Production.objects
-                    .filter(release_date_date__year=release_year)
-                    .values_list('id', flat=True)
+                production_ids = Production.objects.filter(release_date_date__year=release_year).values_list(
+                    "id", flat=True
                 )
                 write_set(pipe, release_year_filter_key, production_ids)
 
@@ -112,127 +104,118 @@ class FilteredProdutionsReport(object):
 
         productions = (
             Production.objects.filter(id__in=production_ids)
-            .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
-            .defer('notes')
+            .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser", "platforms", "types")
+            .defer("notes")
         )
 
         return (productions, count)
 
 
 class ProductionsWithoutExternalLinks(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_external_links'
+    master_list_key = "demozoo:productions:without_external_links"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = (
-            Exclusion.objects.filter(report_name='prods_without_external_links').values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_external_links").values_list(
+            "record_id", flat=True
         )
 
         return (
-            Production.objects
-            .exclude(links__link_class__in=groklinks.PRODUCTION_EXTERNAL_LINK_TYPES)
+            Production.objects.exclude(links__link_class__in=groklinks.PRODUCTION_EXTERNAL_LINK_TYPES)
             .exclude(id__in=excluded_ids)
-            .values_list('id', flat=True)
+            .values_list("id", flat=True)
         )
 
 
 class ProductionsWithoutReleaseDate(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_release_date'
+    master_list_key = "demozoo:productions:without_release_date"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = (
-            Exclusion.objects.filter(report_name='prods_without_release_date').values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_release_date").values_list(
+            "record_id", flat=True
         )
 
         return (
-            Production.objects
-            .filter(release_date_date=None)
-            .exclude(id__in=excluded_ids)
-            .values_list('id', flat=True)
+            Production.objects.filter(release_date_date=None).exclude(id__in=excluded_ids).values_list("id", flat=True)
         )
 
 
 class ProductionsWithoutScreenshotsReport(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_screenshots'
+    master_list_key = "demozoo:productions:without_screenshots"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = (
-            Exclusion.objects.filter(report_name='prods_without_screenshots').values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_screenshots").values_list(
+            "record_id", flat=True
         )
 
         return (
-            Production.objects
-            .filter(has_screenshot=False)
+            Production.objects.filter(has_screenshot=False)
             .filter(links__is_download_link=True)
-            .exclude(supertype='music')
-            .exclude(tags__name__in=['lost', 'corrupted-file'])
+            .exclude(supertype="music")
+            .exclude(tags__name__in=["lost", "corrupted-file"])
             .exclude(id__in=excluded_ids)
-            .values_list('id', flat=True)
+            .values_list("id", flat=True)
         )
 
 
 class ProductionsWithoutVideosReport(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_videos'
+    master_list_key = "demozoo:productions:without_videos"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = Exclusion.objects.filter(report_name='prods_without_videos').values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_videos").values_list("record_id", flat=True)
 
         return (
-            Production.objects
-            .exclude(links__link_class__in=['YoutubeVideo', 'VimeoVideo'])
+            Production.objects.exclude(links__link_class__in=["YoutubeVideo", "VimeoVideo"])
             .filter(links__is_download_link=True)
-            .exclude(supertype__in=['music', 'graphics'])
-            .exclude(tags__name__in=['lost', 'corrupted-file'])
+            .exclude(supertype__in=["music", "graphics"])
+            .exclude(tags__name__in=["lost", "corrupted-file"])
             .exclude(id__in=excluded_ids)
-            .values_list('id', flat=True)
+            .values_list("id", flat=True)
         )
 
 
 class ProductionsWithoutPouetLinksReport(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_pouet_links'
+    master_list_key = "demozoo:productions:without_pouet_links"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = Exclusion.objects.filter(
-            report_name='prods_without_pouet_links'
-        ).values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_pouet_links").values_list(
+            "record_id", flat=True
+        )
 
         return (
-            Production.objects
-            .exclude(links__link_class='PouetProduction')
+            Production.objects.exclude(links__link_class="PouetProduction")
             .filter(types__in=get_pouetable_prod_types())
             .exclude(id__in=excluded_ids)
-            .values_list('id', flat=True)
+            .values_list("id", flat=True)
         )
 
 
 class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
-    master_list_key = 'demozoo:productions:without_credits'
+    master_list_key = "demozoo:productions:without_credits"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = Exclusion.objects.filter(report_name='prods_without_credits').values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="prods_without_credits").values_list("record_id", flat=True)
 
         # productions which are authored (or co-authored) by a group, but have no individual credits
 
         return (
-            Production.objects
-            .filter(author_nicks__releaser__is_group=True)
+            Production.objects.filter(author_nicks__releaser__is_group=True)
             .filter(credits__isnull=True)
             .filter(links__is_download_link=True)
             .exclude(id__in=excluded_ids)
-            .exclude(tags__name__in=['lost', 'corrupted-file'])
-            .values_list('id', flat=True)
+            .exclude(tags__name__in=["lost", "corrupted-file"])
+            .values_list("id", flat=True)
         )
 
 
 class RandomisedProductionsReport(object):
     @classmethod
     def run(cls, limit=100):
-
         def _transaction(pipe):
             must_update_master_list = not pipe.exists(cls.master_list_key)
 
@@ -251,33 +234,32 @@ class RandomisedProductionsReport(object):
 
         productions = (
             Production.objects.filter(id__in=production_ids)
-            .prefetch_related('author_nicks__releaser', 'author_affiliation_nicks__releaser', 'platforms', 'types')
-            .defer('notes')
+            .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser", "platforms", "types")
+            .defer("notes")
         )
 
         return (productions, count)
 
 
 class TrackedMusicWithoutPlayableLinksReport(RandomisedProductionsReport):
-    master_list_key = 'demozoo:productions:tracked_music_without_playable_links'
+    master_list_key = "demozoo:productions:tracked_music_without_playable_links"
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = (
-            Exclusion.objects.filter(report_name='tracked_music_without_playable_links')
-            .values_list('record_id', flat=True)
+        excluded_ids = Exclusion.objects.filter(report_name="tracked_music_without_playable_links").values_list(
+            "record_id", flat=True
         )
         prod_ids_with_playable_links = ProductionLink.objects.filter(
-            Q(link_class__in=['ModlandFile', 'ModarchiveModule']) |
-            Q(link_class='BaseUrl', parameter__startswith='https://media.demozoo.org/')
-        ).values_list('production_id', flat=True)
+            Q(link_class__in=["ModlandFile", "ModarchiveModule"])
+            | Q(link_class="BaseUrl", parameter__startswith="https://media.demozoo.org/")
+        ).values_list("production_id", flat=True)
 
         return (
-            Production.objects.filter(supertype='music', types__internal_name='tracked-music')
+            Production.objects.filter(supertype="music", types__internal_name="tracked-music")
             .filter(platforms__isnull=True)
             .filter(links__is_download_link=True)
             .exclude(id__in=prod_ids_with_playable_links)
             .exclude(id__in=excluded_ids)
-            .exclude(tags__name__in=['lost', 'corrupted-file'])
-            .values_list('id', flat=True)
+            .exclude(tags__name__in=["lost", "corrupted-file"])
+            .values_list("id", flat=True)
         )

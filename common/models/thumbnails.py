@@ -9,7 +9,7 @@ from PIL import Image
 class ModelWithThumbnails(models.Model):
     class Meta:
         abstract = True
-        app_label = 'demoscene'
+        app_label = "demoscene"
 
     @staticmethod
     def generate_thumbnail(original_field, thumbnail_field, size, crop=False):
@@ -28,8 +28,8 @@ class ModelWithThumbnails(models.Model):
         original_filename = os.path.basename(original_field.name)
         original_filename_root, original_filename_ext = os.path.splitext(original_filename)
 
-        if image.mode not in ('L', 'RGB'):
-            image = image.convert('RGB')
+        if image.mode not in ("L", "RGB"):
+            image = image.convert("RGB")
 
         if crop:
             width, height = image.size
@@ -46,28 +46,24 @@ class ModelWithThumbnails(models.Model):
                     int((width - cropped_width) / 2),
                     int((height - cropped_height) / 2),
                     int(width - (width - cropped_width) / 2),
-                    int(height - (height - cropped_height) / 2)
+                    int(height - (height - cropped_height) / 2),
                 )
             )
         image.thumbnail(size, Image.LANCZOS)
 
         # save the thumbnail to memory
         temp_handle = io.BytesIO()
-        if original_format == 'JPEG':
-            image.save(temp_handle, 'jpeg')
-            new_filename = original_filename_root + '.jpg'
-            new_content_type = 'image/jpeg'
+        if original_format == "JPEG":
+            image.save(temp_handle, "jpeg")
+            new_filename = original_filename_root + ".jpg"
+            new_content_type = "image/jpeg"
         else:
-            image.save(temp_handle, 'png')
-            new_filename = original_filename_root + '.png'
-            new_content_type = 'image/png'
+            image.save(temp_handle, "png")
+            new_filename = original_filename_root + ".png"
+            new_content_type = "image/png"
         temp_handle.seek(0)  # rewind the file
         original_field.seek(0)
 
         # save to the thumbnail field
-        suf = SimpleUploadedFile(
-            new_filename,
-            temp_handle.read(),
-            content_type=new_content_type
-        )
+        suf = SimpleUploadedFile(new_filename, temp_handle.read(), content_type=new_content_type)
         thumbnail_field.save(suf.name, suf, save=False)

@@ -11,9 +11,5 @@ def index(instance):
 
     search_vectors = []
     for weight, text in components.items():
-        search_vectors.append(
-            SearchVector(Value(text, output_field=TextField()), weight=weight)
-        )
-    instance.__class__.objects.filter(pk=pk).update(
-        search_document=reduce(operator.add, search_vectors)
-    )
+        search_vectors.append(SearchVector(Value(text, output_field=TextField()), weight=weight))
+    instance.__class__.objects.filter(pk=pk).update(search_document=reduce(operator.add, search_vectors))

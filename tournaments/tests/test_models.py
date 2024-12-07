@@ -4,7 +4,7 @@ from tournaments.models import Tournament
 
 
 class TestModels(TestCase):
-    fixtures = ['tests/gasman.json']
+    fixtures = ["tests/gasman.json"]
 
     def test_string(self):
         tournament = Tournament.objects.get(name="Shader Showdown", party__name="Forever 2e3")

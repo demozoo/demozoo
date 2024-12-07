@@ -7,10 +7,10 @@ from common.utils.fuzzy_date import FuzzyDate
 
 
 class FuzzyDateField(forms.Field):
-    widget = forms.DateInput(format='%e %b %Y', attrs={'class': 'date'})
+    widget = forms.DateInput(format="%e %b %Y", attrs={"class": "date"})
 
     default_error_messages = {
-        'invalid': _('Enter a valid date.'),
+        "invalid": _("Enter a valid date."),
     }
 
     def to_python(self, value):
@@ -25,10 +25,10 @@ class FuzzyDateField(forms.Field):
         try:
             result = FuzzyDate.parse(value)
         except ValueError:
-            raise ValidationError(self.error_messages['invalid'])
+            raise ValidationError(self.error_messages["invalid"])
 
         if result.date.year < 1900:
-            raise ValidationError(self.error_messages['invalid'])
+            raise ValidationError(self.error_messages["invalid"])
 
         return result
 

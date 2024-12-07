@@ -12,30 +12,106 @@ from screenshots.processing import get_thumbnail_sizing_params
 # generic extensions, like .max, and that's likely to introduce false positives
 # when looking for possible image files in zipfiles)
 USABLE_IMAGE_FILE_EXTENSIONS = [
-    'bmp', 'gif', 'iff', 'iff24', 'ilbm', 'jpe', 'jpg', 'jpeg', 'lbm', 'pcx',
-    'png', 'tga', 'tif', 'tiff', 'xbm', 'xpm',
-    'msp', 'neo', 'pac', 'pc1', 'pc2', 'pc3', 'pi1', 'pi2', 'pi3', 'rgb', 'scr',
-    'tny', 'tn1', 'tn2', 'tn3',
+    "bmp",
+    "gif",
+    "iff",
+    "iff24",
+    "ilbm",
+    "jpe",
+    "jpg",
+    "jpeg",
+    "lbm",
+    "pcx",
+    "png",
+    "tga",
+    "tif",
+    "tiff",
+    "xbm",
+    "xpm",
+    "msp",
+    "neo",
+    "pac",
+    "pc1",
+    "pc2",
+    "pc3",
+    "pi1",
+    "pi2",
+    "pi3",
+    "rgb",
+    "scr",
+    "tny",
+    "tn1",
+    "tn2",
+    "tn3",
 ]
 # image formats that we recognise as images, even if we can't convert them
 IMAGE_FILE_EXTENSIONS = [
-    'bmp', 'ce', 'ce1', 'ce2', 'dcx', 'dib', 'eps', 'fpx', 'gif', 'ic1',
-    'ic2', 'ic3', 'ico', 'iff', 'iff24', 'ilbm', 'jng', 'jpe', 'jpg', 'jpeg', 'lbm', 'msp', 'neo',
-    'pac', 'pbm', 'pc1', 'pc2', 'pc3', 'pcd', 'pcx', 'pgm', 'pi1', 'pi2',
-    'pi3', 'png', 'ppm', 'psd', 'rgb', 'rle', 'scr', 'sgi', 'svg', 'tga',
-    'tif', 'tiff', 'tny', 'tn1', 'tn2', 'tn3', 'wmf', 'xbm', 'xcf', 'xpm',
+    "bmp",
+    "ce",
+    "ce1",
+    "ce2",
+    "dcx",
+    "dib",
+    "eps",
+    "fpx",
+    "gif",
+    "ic1",
+    "ic2",
+    "ic3",
+    "ico",
+    "iff",
+    "iff24",
+    "ilbm",
+    "jng",
+    "jpe",
+    "jpg",
+    "jpeg",
+    "lbm",
+    "msp",
+    "neo",
+    "pac",
+    "pbm",
+    "pc1",
+    "pc2",
+    "pc3",
+    "pcd",
+    "pcx",
+    "pgm",
+    "pi1",
+    "pi2",
+    "pi3",
+    "png",
+    "ppm",
+    "psd",
+    "rgb",
+    "rle",
+    "scr",
+    "sgi",
+    "svg",
+    "tga",
+    "tif",
+    "tiff",
+    "tny",
+    "tn1",
+    "tn2",
+    "tn3",
+    "wmf",
+    "xbm",
+    "xcf",
+    "xpm",
 ]
 
-PIL_READABLE_FORMATS = ['BMP', 'GIF', 'ICO', 'JPEG', 'PCD', 'PCX', 'PNG', 'PPM', 'PSD', 'TGA', 'TIFF', 'XBM', 'XPM']
-WEB_USABLE_FORMATS = ['PNG', 'JPEG', 'GIF']
-EXTENSIONS_BY_FORMAT = {'PNG': 'png', 'JPEG': 'jpg', 'GIF': 'gif'}
+PIL_READABLE_FORMATS = ["BMP", "GIF", "ICO", "JPEG", "PCD", "PCX", "PNG", "PPM", "PSD", "TGA", "TIFF", "XBM", "XPM"]
+WEB_USABLE_FORMATS = ["PNG", "JPEG", "GIF"]
+EXTENSIONS_BY_FORMAT = {"PNG": "png", "JPEG": "jpg", "GIF": "gif"}
 
 
 class PILConvertibleImage(object):
     """
-        represents an image which can be converted to an 'original' or a thumbnail
-        using PIL.
+    represents an image which can be converted to an 'original' or a thumbnail
+    using PIL.
     """
+
     def __init__(self, source_file, name_hint=""):
         # we will retain the original file object if AND ONLY IF it is directly readable by PIL,
         # so that it can be returned as-is for use as the original rendition in the case of web-usable formats
@@ -60,8 +136,8 @@ class PILConvertibleImage(object):
 
     def create_original(self):
         """
-            return a file object for an image of the same dimensions as the original, in a
-            web-usable format, along with a tuple of its dimensions and the appropriate file extension
+        return a file object for an image of the same dimensions as the original, in a
+        web-usable format, along with a tuple of its dimensions and the appropriate file extension
         """
         if self.image.format in WEB_USABLE_FORMATS and self.file is not None:
             # just return the original file object, since it's already usable in that format
@@ -72,12 +148,12 @@ class PILConvertibleImage(object):
             # JPG and potentially losing more fidelity may not me ideal.)
             output = io.BytesIO()
             img = self.image
-            if img.mode == 'RGBX':  # pragma: no cover
+            if img.mode == "RGBX":  # pragma: no cover
                 # image is padded RGB (as seen in certain .tif files) which can't be written as PNG.
                 # Possibly doesn't happen any more as of Pillow 10.4.0...
-                img = img.convert('RGB')
-            img.save(output, format='PNG', optimize=True)
-            return output, img.size, 'png'
+                img = img.convert("RGB")
+            img.save(output, format="PNG", optimize=True)
+            return output, img.size, "png"
 
     def create_thumbnail(self, target_size):
         img = self.image
@@ -94,32 +170,32 @@ class PILConvertibleImage(object):
 
         if resize_params:
             # must ensure image is non-paletted for a high-quality resize
-            if img.mode in ['1', 'P']:
-                img = img.convert('RGB')
+            if img.mode in ["1", "P"]:
+                img = img.convert("RGB")
             img = img.resize(resize_params, Image.Resampling.LANCZOS)
 
         output = io.BytesIO()
         if has_limited_palette:
-            if img.mode not in ['1', 'P']:
+            if img.mode not in ["1", "P"]:
                 # img.convert with palette=Image.Palette.ADAPTIVE will apparently only work on
                 # 'L' or 'RGB' images, not RGBA for example. So, need to pre-convert to RGB...
-                img = img.convert('RGB')
-                img = img.convert('P', palette=Image.Palette.ADAPTIVE, colors=256)
-            img.save(output, format='PNG', optimize=True)
-            return output, img.size, 'png'
+                img = img.convert("RGB")
+                img = img.convert("P", palette=Image.Palette.ADAPTIVE, colors=256)
+            img.save(output, format="PNG", optimize=True)
+            return output, img.size, "png"
         else:
-            if img.mode == 'RGBA':
+            if img.mode == "RGBA":
                 # saving RGBA images as JPEG will fail
-                img = img.convert('RGB')
+                img = img.convert("RGB")
 
             try:
-                img.save(output, format='JPEG', optimize=True, quality=90)
+                img.save(output, format="JPEG", optimize=True, quality=90)
             except IOError:  # pragma: no cover
                 # optimize option can fail with quality > 85 -
                 # see http://mail.python.org/pipermail/image-sig/2006-April/003858.html
                 # ...so try without optimize
-                img.save(output, format='JPEG', quality=90)
-            return output, img.size, 'jpg'
+                img.save(output, format="JPEG", quality=90)
+            return output, img.size, "jpg"
 
 
 class ThumbnailMixin(models.Model):
