@@ -58,7 +58,11 @@ class SimpleTest(TestCase):
             'with a <a href="http://example.com/">link</a> in it<br>\n'
             'and a <a>line</a> break <a href="ftp://ftp.scene.org/pub/">ftp://ftp.scene.org/pub/</a>'
         )
-        self.assertContains(response, """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""", html=True)
+        self.assertContains(
+            response,
+            """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""",
+            html=True
+        )
 
         self.assertNotContains(response, 'Secret news item')
 
@@ -67,7 +71,11 @@ class SimpleTest(TestCase):
         # we stop showing parties from last month after the 15th
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""", html=True)
+        self.assertNotContains(
+            response,
+            """<a href="/parties/1/" class="past" title="17th - 19th March 2000">Forever 2e3</a>""",
+            html=True
+        )
 
     def test_fetch_homepage_as_superuser(self):
         User.objects.create_superuser(username='testsuperuser', email='testsuperuser@example.com', password='12345')

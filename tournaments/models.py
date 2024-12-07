@@ -183,6 +183,7 @@ class Entry(ThumbnailMixin, models.Model):
             for entry in Entry.objects.filter(id__in=chosen_entry_ids).select_related('phase')
         }
 
+
 class EntryExternalLink(ExternalLink):
     entry = models.ForeignKey(Entry, related_name='external_links', on_delete=models.CASCADE)
     link_types = groklinks.TOURNAMENT_LINK_TYPES

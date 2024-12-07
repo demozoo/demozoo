@@ -136,5 +136,3 @@ class NickSearch():
                 'name': self.search_term,
             }
         }
-
-

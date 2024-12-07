@@ -18,7 +18,9 @@ from taggit.models import Tag
 from common.utils.ajax import request_is_ajax
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import extract_query_params, PaginationControls
-from common.views import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+from common.views import (
+    AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+)
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
 from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form

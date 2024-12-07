@@ -6,6 +6,7 @@ import urllib.request
 
 from PIL import Image
 
+from .base import FILEROOT
 from .base import *  # noqa
 
 
@@ -15,7 +16,7 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',  # don't use the intentionally slow default password hasher
 )
 
-MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')  # noqa
+MEDIA_ROOT = os.path.join(FILEROOT, 'test_media')
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/2')
 

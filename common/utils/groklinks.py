@@ -1259,12 +1259,12 @@ class C64chParty(UrlPattern):
 
 class C64chGroup(UrlPattern):
     site = c64ch
-    pattern = '/groups/<int>'    
+    pattern = '/groups/<int>'
 
 
 class C64chScener(UrlPattern):
     site = c64ch
-    pattern = '/sceners/<int>'        
+    pattern = '/sceners/<int>'
 
 
 discogs = Site("Discogs", url='https://www.discogs.com/')
@@ -1600,7 +1600,7 @@ class Plus4WorldMember(UrlPattern):
 class Plus4WorldProfile(UrlPattern):
     site = plus4world
     pattern = "/profile/<slug>"
-    
+
 
 class Plus4WorldCompo(UrlPattern):
     site = plus4world
@@ -1847,7 +1847,9 @@ class SpectrumComputingRelease(AbstractBaseUrl):
         ),
     ]
 
+
 livecode = Site("Livecode", url="https://livecode.demozoo.org/")
+
 
 class LivecodeDemozooEvent(UrlPattern):
     site = livecode

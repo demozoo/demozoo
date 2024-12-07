@@ -26,8 +26,7 @@ from parties.forms import (
     PartySeriesEditNotesForm, PartyShareImageForm
 )
 from parties.models import (
-    Competition, CompetitionPlacing, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink,
-    ResultsFile
+    Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile
 )
 from productions.models import Screenshot
 

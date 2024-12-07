@@ -220,7 +220,6 @@ class TestMeteoriks(TestCase):
         the_loop.types.add(ProductionType.objects.get(name='Demo'))
         the_loop.platforms.add(Platform.objects.get(name='ZX Spectrum'))
 
-
     def test_meteoriks_candidates(self):
         response = self.client.get('/api/adhoc/meteoriks/candidates/2001/')
         self.assertEqual(response.status_code, 403)

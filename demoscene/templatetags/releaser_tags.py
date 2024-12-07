@@ -14,6 +14,7 @@ register = template.Library()
 
 class ProductionCredit:
     credit_type = 'production'
+
     def __init__(self, production, nick=None, roles=None, screenshot=None):
         self.production = production
         self.date = production.release_date_date
@@ -24,6 +25,7 @@ class ProductionCredit:
 
 class TournamentCredit:
     credit_type = 'tournament'
+
     def __init__(self, tournament, screenshot=None):
         self.tournament = tournament
         self.date = tournament.party.start_date_date

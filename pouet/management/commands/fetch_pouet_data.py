@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 
 from demoscene.models import Releaser
 from pouet.matching import automatch_productions, get_pouetable_prod_types
-from pouet.models import CompetitionPlacing, CompetitionType, Group, GroupMatchInfo, Party, Platform, Production, ProductionType
+from pouet.models import CompetitionType, Group, GroupMatchInfo, Party, Platform, Production, ProductionType
 
 
 class Command(BaseCommand):
@@ -174,7 +174,10 @@ class Command(BaseCommand):
                         compo_type_id = compo_type.id
 
                     placing, created = prod.competition_placings.get_or_create(
-                        party=party, year=placing_data['year'], competition_type_id=compo_type_id, ranking=placing_data['ranking']
+                        party=party,
+                        year=placing_data['year'],
+                        competition_type_id=compo_type_id,
+                        ranking=placing_data['ranking'],
                     )
                     if not created:
                         try:

@@ -48,7 +48,9 @@ class ProductionFilter(filters.FilterSet):
     )
     author = filters.NumberFilter(method='filter_author', label="Author ID")
     has_screenshot = filters.BooleanFilter()
-    competition_placing_min = filters.NumberFilter(method='filter_competition_placing_min', label="Minimum competition placing")
+    competition_placing_min = filters.NumberFilter(
+        method='filter_competition_placing_min', label="Minimum competition placing"
+    )
 
     def filter_author(self, queryset, name, value):
         return queryset.filter(

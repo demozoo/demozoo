@@ -124,7 +124,9 @@ class ProductionsWithoutExternalLinks(FilteredProdutionsReport):
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = Exclusion.objects.filter(report_name='prods_without_external_links').values_list('record_id', flat=True)
+        excluded_ids = (
+            Exclusion.objects.filter(report_name='prods_without_external_links').values_list('record_id', flat=True)
+        )
 
         return (
             Production.objects
@@ -139,7 +141,9 @@ class ProductionsWithoutReleaseDate(FilteredProdutionsReport):
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = Exclusion.objects.filter(report_name='prods_without_release_date').values_list('record_id', flat=True)
+        excluded_ids = (
+            Exclusion.objects.filter(report_name='prods_without_release_date').values_list('record_id', flat=True)
+        )
 
         return (
             Production.objects

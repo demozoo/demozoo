@@ -72,7 +72,6 @@ class TestModels(TestCase):
         user = User.objects.create_user(username='testuser', password='12345')
         pondlife = Production.objects.get(title="Pondlife")
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
-        best_highend = Category.objects.get(name="Best High-End Demo")
         best_lowend = Category.objects.get(name="Best Low-End Production")
         outstanding_concept = Category.objects.get(name="Outstanding Concept")
 
@@ -179,7 +178,8 @@ class TestRecommendations(TestCase):
         )
         self.assertContains(
             response,
-            f"""<input class="award-recommendation__checkbox" id="award_recommendation_category_{outstanding_concept.pk}" """
+            f"""<input class="award-recommendation__checkbox" """
+            f"""id="award_recommendation_category_{outstanding_concept.pk}" """
             f"""name="category_id" value="{outstanding_concept.pk}" type="checkbox">""",
             html=True
         )

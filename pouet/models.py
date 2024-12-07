@@ -57,7 +57,9 @@ class Production(models.Model):
 class CompetitionPlacing(models.Model):
     production = models.ForeignKey(Production, related_name='competition_placings', on_delete=models.CASCADE)
     party = models.ForeignKey(Party, related_name='competition_placings', on_delete=models.CASCADE)
-    competition_type = models.ForeignKey(CompetitionType, null=True, blank=True, related_name='+', on_delete=models.CASCADE)
+    competition_type = models.ForeignKey(
+        CompetitionType, null=True, blank=True, related_name='+', on_delete=models.CASCADE
+    )
     ranking = models.IntegerField(null=True, blank=True)
     year = models.IntegerField()
 

@@ -20,7 +20,9 @@ from bbs.models import BBS, Affiliation, Operator, TextAd
 from comments.forms import CommentForm
 from comments.models import Comment
 from common.utils.pagination import PaginationControls, extract_query_params
-from common.views import AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+from common.views import (
+    AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
+)
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page, simple_ajax_form
 from search.indexing import index as search_index

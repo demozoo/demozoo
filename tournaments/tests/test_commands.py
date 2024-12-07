@@ -96,7 +96,10 @@ class TestFetchTournaments(MediaTestMixin, TestCase):
         phase = tournament.phases.first()
         self.assertEqual(phase.name, "Final")
         entry = phase.entries.get(nick__name='Gasman')
-        self.assertEqual(entry.source_file, 'https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl')
+        self.assertEqual(
+            entry.source_file,
+            'https://files.scene.org/view/parties/2011/revision11/shadershowdown/03-gasman.glsl'
+        )
 
         party = Party.objects.get(name="Forever 2e3")
         self.assertEqual(party.tournaments.count(), 1)

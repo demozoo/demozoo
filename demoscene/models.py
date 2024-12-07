@@ -11,7 +11,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models, transaction
-from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -144,7 +143,8 @@ class Releaser(PrefetchSnoopingMixin, Lockable):
             ]
         else:
             current_memberships = (
-                self.group_memberships.filter(is_current=True).select_related('group').only('member', 'group', 'is_current', 'group__name').order_by('group__name')
+                self.group_memberships.filter(is_current=True).select_related('group')
+                    .only('member', 'group', 'is_current', 'group__name').order_by('group__name')
             )
             if prefetch_nicks:
                 current_memberships = current_memberships.prefetch_related('group__nicks')
@@ -313,7 +313,9 @@ class Nick(PrefetchSnoopingMixin, models.Model):
             if self.pk is None:
                 return ""
             else:
-                variant_names = [variant.name for variant in self.variants.exclude(name__in=[self.name, self.abbreviation])]
+                variant_names = [
+                    variant.name for variant in self.variants.exclude(name__in=[self.name, self.abbreviation])
+                ]
                 return ", ".join(variant_names)
 
     def set_nick_variant_list(self, new_list):
