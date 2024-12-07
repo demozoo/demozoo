@@ -17,7 +17,7 @@ from taggit.models import Tag
 
 from common.utils.ajax import request_is_ajax
 from common.utils.modal_workflow import render_modal_workflow
-from common.utils.pagination import extract_query_params, PaginationControls
+from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView, AjaxConfirmationView, EditTagsView, EditTextFilesView, RemoveTagView, writeable_site_required
 )

@@ -1,8 +1,8 @@
 import gzip
 from io import BytesIO
+from unittest.mock import patch
 
 from django.test import TestCase
-from unittest.mock import patch
 
 from sceneorg.dirparser import parse_all_dirs
 

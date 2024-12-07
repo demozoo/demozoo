@@ -1,7 +1,7 @@
 import re
 import unicodedata
-import markdown
 
+import markdown
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 

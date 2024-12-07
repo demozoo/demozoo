@@ -10,9 +10,9 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from awards.models import Event, Nomination, Recommendation
-from demoscene.shortcuts import get_page
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required
+from demoscene.shortcuts import get_page
 from productions.models import Production, Screenshot
 
 

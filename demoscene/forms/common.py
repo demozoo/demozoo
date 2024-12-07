@@ -2,9 +2,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet, modelformset_factory
 
-from demoscene.models import BlacklistedTag, Edit
 from common.utils.groklinks import ARCHIVED_LINK_TYPES
 from common.utils.text import slugify_tag
+from demoscene.models import BlacklistedTag, Edit
 from productions.models import Credit
 
 

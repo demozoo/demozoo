@@ -1,9 +1,9 @@
 from django.db import models
 from django.db.models.functions import Lower
 
-from demoscene.models import Releaser
 from common.models import ModelWithThumbnails
 from common.utils.files import random_path
+from demoscene.models import Releaser
 
 
 def photo_original_upload_to(i, f):

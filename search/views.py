@@ -3,8 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from bbs.models import BBS
-from demoscene.models import Releaser
 from common.utils.text import generate_search_title
+from demoscene.models import Releaser
 from parties.models import Party
 from productions.models import Production, Screenshot
 from search.forms import SearchForm

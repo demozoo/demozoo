@@ -5,8 +5,8 @@ from io import BytesIO
 from django.db import models
 from django.utils.functional import cached_property
 
-from demoscene.models import ExternalLink
 from common.utils.groklinks import PRODUCTION_LINK_TYPES
+from demoscene.models import ExternalLink
 
 
 class Download(ExternalLink):

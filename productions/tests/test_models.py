@@ -1,8 +1,8 @@
 import datetime
+from unittest.mock import patch
 
 from django.test import TestCase
 from freezegun import freeze_time
-from unittest.mock import patch
 
 from demoscene.models import Nick
 from mirror.models import Download

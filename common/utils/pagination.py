@@ -1,5 +1,4 @@
 from django.http import QueryDict
-
 from laces.components import Component
 
 

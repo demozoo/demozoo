@@ -6,8 +6,8 @@ from collections import defaultdict
 from django.db import models
 from django.utils.functional import cached_property
 
-from demoscene.models import ExternalLink, Nick
 from common.utils import groklinks
+from demoscene.models import ExternalLink, Nick
 from parties.models import Party
 from screenshots.models import PILConvertibleImage, ThumbnailMixin
 from screenshots.processing import upload_to_s3

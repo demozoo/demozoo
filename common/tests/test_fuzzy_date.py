@@ -4,8 +4,8 @@ from django import forms
 from django.test import TestCase
 from freezegun import freeze_time
 
-from common.utils.fuzzy_date import FuzzyDate
 from common.fields import FuzzyDateField
+from common.utils.fuzzy_date import FuzzyDate
 
 
 class TestFuzzyDate(TestCase):

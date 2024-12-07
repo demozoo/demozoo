@@ -1,6 +1,7 @@
 import json
 import os
 from io import BytesIO
+from unittest.mock import patch
 
 import PIL.Image
 from django.contrib.auth.models import User
@@ -8,7 +9,6 @@ from django.core.files import File
 from django.core.files.images import ImageFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
-from unittest.mock import patch
 
 from awards.models import Event, Nomination
 from demoscene.models import BlacklistedTag, Edit, Nick, Releaser

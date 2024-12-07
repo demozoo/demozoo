@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from demoscene.shortcuts import get_page
 from common.utils.pagination import PaginationControls
+from demoscene.shortcuts import get_page
 
 
 def index(request):

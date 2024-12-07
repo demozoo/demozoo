@@ -1,7 +1,7 @@
 from django.db import models
 
-from demoscene.models import DATE_PRECISION_CHOICES
 from common.utils.fuzzy_date import FuzzyDate
+from demoscene.models import DATE_PRECISION_CHOICES
 
 
 class Group(models.Model):

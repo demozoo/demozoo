@@ -3,8 +3,8 @@ import itertools
 from django.db import transaction
 from django.db.models import Max
 
-from demoscene.models import Releaser, ReleaserExternalLink
 from common.utils.text import strip_music_extensions
+from demoscene.models import Releaser, ReleaserExternalLink
 from platforms.models import Platform
 from productions.models import Production, ProductionLink, ProductionType
 

@@ -1,13 +1,13 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from django.conf import settings
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import captured_stdout
-from unittest.mock import patch
 
-from demoscene.tests.utils import MediaTestMixin
 from demoscene.models import Nick
+from demoscene.tests.utils import MediaTestMixin
 from parties.models import Party
 
 

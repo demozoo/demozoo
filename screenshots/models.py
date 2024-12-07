@@ -1,7 +1,6 @@
 import io
 
 from django.db import models
-
 from PIL import Image, ImageOps
 from recoil import RecoilImage
 
