@@ -2,6 +2,7 @@ from itertools import groupby
 
 from django import template
 
+from demoscene.models import Nick
 from productions.models import Screenshot
 from tournaments.models import Entry as TournamentEntry
 
@@ -108,4 +109,21 @@ def nick_variants(nick):
     return {
         "differentiator": nick.differentiator,
         "variants": nick.nick_variant_and_abbreviation_list,
+    }
+
+
+@register.inclusion_tag("releasers/tags/scener_with_affiliations.html")
+def scener_with_affiliations(releaser_or_nick):
+    if isinstance(releaser_or_nick, Nick):
+        releaser = releaser_or_nick.releaser
+    else:  # assume a Releaser
+        releaser = releaser_or_nick
+    groups = releaser.current_groups()
+
+    return {
+        "name": releaser_or_nick.name,
+        "releaser": releaser,
+        "groups": groups,
+        # use abbreviations for groups if total length of names is 20 or more chars
+        "abbreviate_groups": (sum([len(group.name) for group in groups]) >= 20),
     }
