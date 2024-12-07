@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load demoscene_tags %}
+{% load demoscene_tags releaser_tags %}
 
 {% block html_title %}{{ title }}{% endblock %}
 
@@ -8,7 +8,7 @@
 {% block base_main %}
     <div id="main_column">
         <h1>{{ title }}</h1>
-        
+
         {% regroup releasers by surname as name_list %}
         <div class="panel report">
             {% for name in name_list %}
