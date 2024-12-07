@@ -11,6 +11,7 @@ from django.urls import reverse
 from unidecode import unidecode
 
 from comments.models import Commentable
+from common.models import LocationMixin
 from common.utils import groklinks
 from common.utils.files import random_path
 from common.utils.fuzzy_date import FuzzyDate
@@ -63,7 +64,7 @@ def party_share_image_upload_to(i, f):
     return random_path("party_share_images", f)
 
 
-class Party(Commentable):
+class Party(LocationMixin, Commentable):
     party_series = models.ForeignKey(PartySeries, related_name="parties", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
     tagline = models.CharField(max_length=255, blank=True)
@@ -74,11 +75,6 @@ class Party(Commentable):
 
     is_online = models.BooleanField(default=False)
     is_cancelled = models.BooleanField(default=False)
-    location = models.CharField(max_length=255, blank=True)
-    country_code = models.CharField(max_length=5, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
-    geonames_id = models.BigIntegerField(null=True, blank=True)
 
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
@@ -148,10 +144,6 @@ class Party(Commentable):
     @property
     def asciified_name(self):
         return unidecode(self.name)
-
-    @property
-    def asciified_location(self):
-        return self.location and unidecode(self.location)
 
     def _get_start_date(self):
         return FuzzyDate(self.start_date_date, self.start_date_precision)
