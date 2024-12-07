@@ -11,14 +11,6 @@ from productions.models import Production
 register = template.Library()
 
 
-@register.inclusion_tag("tags/nick_variants.html")
-def nick_variants(nick):
-    return {
-        "differentiator": nick.differentiator,
-        "variants": nick.nick_variant_and_abbreviation_list,
-    }
-
-
 @register.inclusion_tag("tags/scener_with_affiliations.html")
 def scener_with_affiliations(releaser_or_nick):
     if isinstance(releaser_or_nick, Nick):
