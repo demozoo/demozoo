@@ -13,7 +13,13 @@ from productions.fields.byline_field import BylineField
 from productions.fields.production_field import ProductionField
 from productions.fields.production_type_field import ProductionTypeChoiceField, ProductionTypeMultipleChoiceField
 from productions.models import (
-    InfoFile, PackMember, Production, ProductionBlurb, ProductionLink, ProductionType, SoundtrackLink
+    InfoFile,
+    PackMember,
+    Production,
+    ProductionBlurb,
+    ProductionLink,
+    ProductionType,
+    SoundtrackLink,
 )
 
 

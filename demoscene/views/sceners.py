@@ -11,7 +11,10 @@ from django.urls import reverse
 from common.utils.pagination import PaginationControls
 from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.forms.releaser import (
-    CreateScenerForm, ScenerEditLocationForm, ScenerEditRealNameForm, ScenerMembershipForm
+    CreateScenerForm,
+    ScenerEditLocationForm,
+    ScenerEditRealNameForm,
+    ScenerMembershipForm,
 )
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page, simple_ajax_form

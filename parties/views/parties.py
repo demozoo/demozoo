@@ -21,12 +21,27 @@ from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
 from parties.forms import (
-    CompetitionForm, EditPartyForm, EditPartySeriesForm, PartyEditNotesForm, PartyExternalLinkFormSet, PartyForm,
-    PartyInvitationFormset, PartyOrganiserForm, PartyReleaseFormset, PartySeriesEditNotesForm,
-    PartySeriesExternalLinkFormSet, PartyShareImageForm
+    CompetitionForm,
+    EditPartyForm,
+    EditPartySeriesForm,
+    PartyEditNotesForm,
+    PartyExternalLinkFormSet,
+    PartyForm,
+    PartyInvitationFormset,
+    PartyOrganiserForm,
+    PartyReleaseFormset,
+    PartySeriesEditNotesForm,
+    PartySeriesExternalLinkFormSet,
+    PartyShareImageForm,
 )
 from parties.models import (
-    Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile
+    Competition,
+    Organiser,
+    Party,
+    PartyExternalLink,
+    PartySeries,
+    PartySeriesExternalLink,
+    ResultsFile,
 )
 from productions.models import Screenshot
 

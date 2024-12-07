@@ -11,7 +11,13 @@ from freezegun import freeze_time
 from demoscene.models import Edit, Releaser
 from demoscene.tests.utils import MediaTestMixin
 from parties.models import (
-    Competition, Organiser, Party, PartyExternalLink, PartySeries, PartySeriesExternalLink, ResultsFile
+    Competition,
+    Organiser,
+    Party,
+    PartyExternalLink,
+    PartySeries,
+    PartySeriesExternalLink,
+    ResultsFile,
 )
 from productions.models import Production
 

@@ -10,9 +10,14 @@ from ..fields.byline_field import BylineLookup
 from ..fields.byline_search import BylineSearch
 from ..fields.production_field import ProductionField, ProductionSelection
 from ..forms import (
-    PackMemberFormset, ProductionCreditedNickForm, ProductionDownloadLinkForm, ProductionEditCoreDetailsForm,
-    ProductionExternalLinkForm, ProductionExternalLinkFormSet, ProductionIndexFilterForm,
-    ProductionSoundtrackLinkFormset
+    PackMemberFormset,
+    ProductionCreditedNickForm,
+    ProductionDownloadLinkForm,
+    ProductionEditCoreDetailsForm,
+    ProductionExternalLinkForm,
+    ProductionExternalLinkFormSet,
+    ProductionIndexFilterForm,
+    ProductionSoundtrackLinkFormset,
 )
 from ..models import Production, ProductionLink, ProductionType
 

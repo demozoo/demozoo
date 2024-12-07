@@ -1,7 +1,14 @@
 from django.contrib import admin
 
 from demoscene.models import (
-    AccountProfile, BlacklistedTag, CaptchaQuestion, Membership, Nick, NickVariant, Releaser, TagDescription
+    AccountProfile,
+    BlacklistedTag,
+    CaptchaQuestion,
+    Membership,
+    Nick,
+    NickVariant,
+    Releaser,
+    TagDescription,
 )
 
 

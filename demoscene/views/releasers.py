@@ -11,7 +11,11 @@ from django.urls import reverse
 from common.views import AjaxConfirmationView, writeable_site_required
 from demoscene.forms.common import CreditFormSet
 from demoscene.forms.releaser import (
-    GroupNickForm, ReleaserCreditForm, ReleaserEditNotesForm, ReleaserExternalLinkFormSet, ScenerNickForm
+    GroupNickForm,
+    ReleaserCreditForm,
+    ReleaserEditNotesForm,
+    ReleaserExternalLinkFormSet,
+    ScenerNickForm,
 )
 from demoscene.models import Edit, Nick, Releaser
 from demoscene.shortcuts import simple_ajax_form
