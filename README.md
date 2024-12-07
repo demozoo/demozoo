@@ -75,6 +75,50 @@ All account passwords in the public database export are blanked, so you'll need 
 
 and enter the account details when prompted.
 
+## Other common tasks
+
+Rebuild front-end assets (CSS, SVG icons):
+
+```shell
+npm run build
+```
+
+Set up a watcher to auto-rebuild front-end assets when source files change:
+
+```shell
+npm run watch
+```
+
+Run the test suite:
+
+```shell
+make test
+```
+
+Generate a test coverage report:
+
+```shell
+make coverage
+```
+
+Run the linter to check for code style / formatting issues:
+
+```shell
+make lint
+```
+
+Run the code formatter:
+
+```shell
+make format
+```
+
+Install pre-commit hooks to apply formatting and linting automatically before commits:
+
+```shell
+pre-commit install
+```
+
 ## Batteries not included
 
 The procedure above gives you a basic working Demozoo installation, but several features are unavailable due to needing additional configuration:
