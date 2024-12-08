@@ -43,7 +43,7 @@
 
     .staff_panel {
         &.hide_edit_controls {
-            .edit_operator, .add_operator {
+            .edit_operator, .listing_actions {
                 display: none;
             }
         }
@@ -91,7 +91,7 @@
 
     .affiliations_panel {
         &.hide_edit_controls {
-            .edit_affiliation, .add_affiliation {
+            .edit_affiliation, .listing_actions {
                 display: none;
             }
         }

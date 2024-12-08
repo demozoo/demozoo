@@ -172,9 +172,9 @@
             {% endif %}
         {% endfor %}
         {% if can_edit %}
-            <div class="add_organiser">
-                <a href="{% url 'party_add_organiser' party.id %}" class="action_button icon-add" data-lightbox>Add organiser</a>
-            </div>
+            <ul class="listing_actions">
+                <li><a href="{% url 'party_add_organiser' party.id %}" class="action_button icon-add" data-lightbox>Add organiser</a></li>
+            </ul>
         {% endif %}
     </div>
 

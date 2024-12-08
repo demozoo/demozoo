@@ -105,7 +105,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon-add add_operator" data-lightbox>Add staff member</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon-add" data-lightbox>Add staff member</a></li>
+                </ul>
             {% endif %}
         </div>
 
@@ -126,7 +128,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon-add add_affiliation" data-lightbox>Add group</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon-add" data-lightbox>Add group</a></li>
+                </ul>
             {% endif %}
         </div>
     </div>

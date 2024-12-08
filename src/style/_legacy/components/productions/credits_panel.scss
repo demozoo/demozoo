@@ -23,7 +23,7 @@
 
 /* hide edit controls whenever javascript adds the hide_edit_controls class */
 .credits_panel.hide_edit_controls {
-    a.edit_credit, a.add_credit {
+    a.edit_credit, .listing_actions {
         display: none;
     }
 }

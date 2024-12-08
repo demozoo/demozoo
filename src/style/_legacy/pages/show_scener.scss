@@ -28,7 +28,7 @@
         &.hide_edit_controls {
 
             .edit_nick,
-            .add_nick {
+            .listing_actions {
                 display: none;
             }
         }
@@ -43,7 +43,7 @@
 
         &.hide_edit_controls {
 
-            .edit_membership, .add_group {
+            .edit_membership, .listing_actions {
                 display: none;
             }
         }

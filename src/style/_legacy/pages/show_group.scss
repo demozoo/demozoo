@@ -30,7 +30,7 @@
         padding-bottom: 8px;
 
         &.hide_edit_controls {
-            .edit_nick, .add_nick {
+            .edit_nick, .listing_actions {
                 display: none;
             }
         }
@@ -38,7 +38,7 @@
 
     .members_panel {
         &.hide_edit_controls {
-            .edit_membership, .add_member {
+            .edit_membership, .listing_actions {
                 display: none;
             }
         }
@@ -54,7 +54,7 @@
 
     .subgroups_panel {
         &.hide_edit_controls {
-            .edit_subgroup, .add_subgroup {
+            .edit_subgroup, .listing_actions {
                 display: none;
             }
         }

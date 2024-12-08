@@ -5,7 +5,20 @@ ul.actions {
     li {
         display: inline-block;
 
-        a.action_button {
+        a.action_button, button.action_button {
+            margin-left: 4px;
+        }
+    }
+}
+
+ul.listing_actions {
+    float: left;
+    margin-bottom: 16px;
+
+    li {
+        display: inline;
+
+        a.action_button, button.action_button {
             margin-left: 4px;
         }
     }
@@ -18,7 +31,7 @@ ul.maintenance_actions {
     li {
         display: inline;
 
-        a.action_button {
+        a.action_button, button.action_button {
             margin-left: 4px;
         }
     }

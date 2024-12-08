@@ -65,7 +65,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon-add add_nick" data-lightbox>Add another name</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon-add" data-lightbox>Add another name</a></li>
+                </ul>
             {% endif %}
         </div>
     {% endif %}
@@ -155,7 +157,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'scener_add_group' scener.id %}" class="action_button icon-add add_group" data-lightbox>Add group</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'scener_add_group' scener.id %}" class="action_button icon-add" data-lightbox>Add group</a></li>
+                </ul>
             {% endif %}
         </div>
     </div>
