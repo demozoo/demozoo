@@ -50,7 +50,7 @@
         {% for blurb in blurbs %}
             <div class="blurb">
                 <ul class="actions">
-                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit" data-lightbox>Edit</a></li>
+                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon-edit" data-lightbox>Edit</a></li>
                 </ul>
                 <p>{{ blurb.body }}</p>
             </div>
@@ -126,7 +126,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk" data-lightbox title="Edit pack contents" rel="nofollow">Edit</a>
+                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit pack contents" rel="nofollow">Edit</a>
                         </li>
                     </ul>
                 {% endif %}
@@ -156,7 +156,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk" data-lightbox title="Edit soundtrack details" rel="nofollow">Edit</a>
+                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit soundtrack details" rel="nofollow">Edit</a>
                         </li>
                     </ul>
                 {% endif %}
@@ -173,7 +173,7 @@
 
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
-            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete" data-lightbox>Delete production</a></li>
+            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon-delete" data-lightbox>Delete production</a></li>
         </ul>
     {% endif %}
 {% endblock %}

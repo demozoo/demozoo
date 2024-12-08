@@ -9,16 +9,16 @@ function initEditChunkHover(context) {
 function initEditToggle(elem) {
     var panel = $(elem);
     var actions = $('<ul class="actions"></ul>');
-    var editButton = $('<a href="javascript:void(0);" class="action_button icon edit_chunk"></a>');
+    var editButton = $('<a href="javascript:void(0);" class="action_button edit_chunk"></a>');
 
     function updateEditButtonState() {
         if (panel.hasClass('editing')) {
             panel.removeClass('hide_edit_controls');
-            editButton.removeClass('edit').addClass('done').text('Done');
+            editButton.removeClass('icon-edit').addClass('icon-done').text('Done');
             panel.trigger('panelEditEnable')
         } else {
             panel.addClass('hide_edit_controls');
-            editButton.removeClass('done').addClass('edit').text('Edit');
+            editButton.removeClass('icon-done').addClass('icon-edit').text('Edit');
             panel.trigger('panelEditDisable')
         }
     }

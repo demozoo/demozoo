@@ -19,7 +19,7 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon edit edit_chunk" data-lightbox title="Edit party details">Edit</a>
+                    <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit party details">Edit</a>
                 </li>
             </ul>
         {% endif %}
@@ -42,7 +42,7 @@
             {% if can_edit %}
                 <ul class="actions">
                     <li>
-                        <a href="{% url 'party_edit_series_external_links' party_series.id %}" class="action_button icon edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links">Edit</a>
+                        <a href="{% url 'party_edit_series_external_links' party_series.id %}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links">Edit</a>
                     </li>
                 </ul>
             {% endif %}
@@ -59,7 +59,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk" data-lightbox href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
+                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -70,7 +70,7 @@
 
     {% if can_edit %}
         <ul class="actions">
-            <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon add" data-lightbox>New party edition</a></li>
+            <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon-add" data-lightbox>New party edition</a></li>
         </ul>
     {% endif %}
     <div style="clear: both;"></div>
