@@ -93,11 +93,11 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'edit_party' party.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit party details">Edit</a>
+                    <a href="{{ party.urls.edit }}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit party details">Edit</a>
                 </li>
                 {% if request.user.is_staff %}
                     <li>
-                        <a href="{% url 'party_edit_share_image' party.id %}" class="action_button icon-picture_edit">Edit social share image</a>
+                        <a href="{{ party.urls.edit_share_image }}" class="action_button icon-picture_edit">Edit social share image</a>
                     </li>
                 {% endif %}
             </ul>
@@ -173,7 +173,7 @@
         {% endfor %}
         {% if can_edit %}
             <ul class="listing_actions">
-                <li><a href="{% url 'party_add_organiser' party.id %}" class="action_button icon-add" data-lightbox>Add organiser</a></li>
+                <li><a href="{{ party.urls.add_organiser }}" class="action_button icon-add" data-lightbox>Add organiser</a></li>
             </ul>
         {% endif %}
     </div>
@@ -195,7 +195,7 @@
             {% if can_edit %}
                 <ul class="actions">
                     <li>
-                        <a href="{% url 'party_edit_external_links' party.id %}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links">Edit</a>
+                        <a href="{{ party.urls.edit_external_links }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links">Edit</a>
                     </li>
                 </ul>
             {% endif %}
@@ -231,7 +231,7 @@
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
                     <li>
-                        <a class="action_button icon-edit edit_chunk" data-lightbox href="{% url 'party_edit_notes' party.id %}">Edit notes</a>
+                        <a class="action_button icon-edit edit_chunk" data-lightbox href="{{ party.urls.edit_notes }}">Edit notes</a>
                     </li>
                 </ul>
             {% endif %}
@@ -248,7 +248,7 @@
             </h3>
             {% if can_edit %}
                 <ul class="actions">
-                    <li><a href="{% url 'party_edit_invitations' party.id %}" class="action_button icon-edit edit_chunk" data-lightbox>Edit invitations</a></li>
+                    <li><a href="{{ party.urls.edit_invitations }}" class="action_button icon-edit edit_chunk" data-lightbox>Edit invitations</a></li>
                 </ul>
             {% endif %}
 
@@ -263,7 +263,7 @@
             <h3 class="panel__title">Releases</h3>
             {% if can_edit %}
                 <ul class="actions">
-                    <li><a href="{% url 'party_edit_releases' party.id %}" class="action_button icon-edit edit_chunk" data-lightbox>Edit releases</a></li>
+                    <li><a href="{{ party.urls.edit_releases }}" class="action_button icon-edit edit_chunk" data-lightbox>Edit releases</a></li>
                 </ul>
             {% endif %}
 
@@ -367,7 +367,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a class="action_button icon-add" data-lightbox href="{% url 'party_add_competition' party.id %}">Add competition</a>
+                            <a class="action_button icon-add" data-lightbox href="{{ party.urls.add_competition }}">Add competition</a>
                         </li>
                     </ul>
                 {% endif %}

@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.db.models import Prefetch
 from django.urls import reverse
+from django.utils.functional import cached_property
 from unidecode import unidecode
 
 from comments.models import Commentable
@@ -64,6 +65,25 @@ def party_share_image_upload_to(i, f):
     return random_path("party_share_images", f)
 
 
+class PartyUrls:
+    routes = {
+        "edit": "edit_party",
+        "edit_notes": "party_edit_notes",
+        "edit_external_links": "party_edit_external_links",
+        "edit_invitations": "party_edit_invitations",
+        "edit_releases": "party_edit_releases",
+        "edit_share_image": "party_edit_share_image",
+        "add_competition": "party_add_competition",
+        "add_organiser": "party_add_organiser",
+    }
+
+    def __init__(self, pk):
+        self.pk = pk
+
+    def __getitem__(self, key):
+        return reverse(self.routes[key], args=[self.pk])
+
+
 class Party(LocationMixin, Commentable):
     party_series = models.ForeignKey(PartySeries, related_name="parties", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
@@ -107,6 +127,10 @@ class Party(LocationMixin, Commentable):
     search_document = SearchVectorField(null=True, editable=False)
 
     search_result_template = "search/results/party.html"
+
+    @cached_property
+    def urls(self):
+        return PartyUrls(self.pk)
 
     def __str__(self):
         return self.name
