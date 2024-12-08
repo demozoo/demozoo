@@ -9,7 +9,7 @@ function initEditChunkHover(context) {
 function initEditToggle(elem) {
     var panel = $(elem);
     var actions = $('<ul class="actions"></ul>');
-    var editButton = $('<a href="javascript:void(0);" class="action_button edit_chunk"></a>');
+    var editButton = $('<button class="action_button edit_chunk"></button>');
 
     function updateEditButtonState() {
         if (panel.hasClass('editing')) {
