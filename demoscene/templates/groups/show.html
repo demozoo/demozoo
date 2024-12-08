@@ -32,7 +32,7 @@
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        <a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit name" rel="nofollow">Edit</a>
+                        <a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
                     </li>
                 {% endif %}
             </ul>
@@ -82,7 +82,7 @@
         {% if can_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
+                    <a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
                 </li>
             </ul>
         {% endif %}

@@ -61,7 +61,7 @@
             {% if can_edit %}
                 <ul class="actions">
                     <li>
-                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox focus_empty_input" title="Edit external links" rel="nofollow">Edit</a>
+                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
                     </li>
                 </ul>
             {% endif %}
