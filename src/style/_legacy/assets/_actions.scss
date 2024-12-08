@@ -1,6 +1,7 @@
 /* Action buttons bar */
 ul.actions {
     float: right;
+    line-height: 32px;
 
     li {
         display: inline-block;
@@ -13,6 +14,7 @@ ul.actions {
 
 ul.listing_actions {
     float: left;
+    line-height: 32px;
     margin-bottom: 16px;
 
     li {
@@ -26,6 +28,7 @@ ul.listing_actions {
 
 ul.maintenance_actions {
     clear: both;
+    line-height: 32px;
     padding-top: 16px;
 
     li {
