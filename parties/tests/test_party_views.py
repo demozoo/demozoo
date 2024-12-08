@@ -497,7 +497,7 @@ class TestAddCompetition(TestCase):
         )
         self.assertRedirects(
             response,
-            "/competitions/%d/edit" % Competition.objects.get(party__name="Forever 2e3", name="ZX Graphics").id,
+            "/competitions/%d/edit/" % Competition.objects.get(party__name="Forever 2e3", name="ZX Graphics").id,
         )
 
 
@@ -674,7 +674,7 @@ class TestEditCompetition(TestCase):
         party = Party.objects.get(name="Forever 2e3")
         competition = Competition.objects.get(party=party, name="ZX 1K Intro")
         response = self.client.get("/parties/%d/edit_competition/%d/" % (party.id, competition.id))
-        self.assertRedirects(response, "/competitions/%d/edit" % competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % competition.id)
 
 
 class TestEditShareImage(MediaTestMixin, TestCase):

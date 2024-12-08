@@ -83,7 +83,7 @@ def apply_order(queryset, order, asc):
 class ShowView(View):
     # subclasses provide supertype
 
-    def get(self, request, production_id, edit_mode=False):
+    def get(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
         if self.production.supertype != self.supertype:
             return HttpResponseRedirect(self.production.get_absolute_url())
