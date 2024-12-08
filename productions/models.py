@@ -16,7 +16,7 @@ from treebeard.mp_tree import MP_Node
 from unidecode import unidecode
 
 from comments.models import Commentable
-from common.models import Lockable, PrefetchSnoopingMixin
+from common.models import Lockable, PrefetchSnoopingMixin, URLMixin
 from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.text import generate_search_title, generate_sort_key, strip_markup
@@ -112,7 +112,7 @@ class ProductionType(MP_Node):
         return reverse(url_name) + "?production_type=%s" % self.id
 
 
-class Production(PrefetchSnoopingMixin, Commentable, Lockable):
+class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
     title = models.CharField(max_length=255)
     platforms = models.ManyToManyField("platforms.Platform", related_name="productions", blank=True)
     supertype = models.CharField(max_length=32, choices=SUPERTYPE_CHOICES, db_index=True)
@@ -157,6 +157,51 @@ class Production(PrefetchSnoopingMixin, Commentable, Lockable):
     search_document = SearchVectorField(null=True, editable=False)
 
     search_result_template = "search/results/production.html"
+
+    @property
+    def url_routes(self):
+        routes = {
+            "add_credit": "production_add_credit",
+            "edit_notes": "production_edit_notes",
+            "edit_external_links": "production_edit_external_links",
+            "edit_download_links": "production_edit_download_links",
+            "edit_soundtracks": "production_edit_soundtracks",
+            "edit_pack_contents": "production_edit_pack_contents",
+            "delete": "delete_production",
+            "add_blurb": "production_add_blurb",
+            "edit_info_files": "production_edit_info_files",
+            "lock": "lock_production",
+            "protected": "production_protected",
+        }
+        if self.supertype == "music":
+            routes.update(
+                {
+                    "edit_core_details": "music_edit_core_details",
+                    "screenshots": "production_artwork",
+                    "add_screenshot": "production_add_artwork",
+                    "edit_screenshots": "production_edit_artwork",
+                }
+            )
+        elif self.supertype == "graphics":
+            routes.update(
+                {
+                    "edit_core_details": "graphics_edit_core_details",
+                    "screenshots": "production_screenshots",
+                    "add_screenshot": "production_add_screenshot",
+                    "edit_screenshots": "production_edit_screenshots",
+                }
+            )
+        else:
+            routes.update(
+                {
+                    "edit_core_details": "production_edit_core_details",
+                    "screenshots": "production_screenshots",
+                    "add_screenshot": "production_add_screenshot",
+                    "edit_screenshots": "production_edit_screenshots",
+                }
+            )
+
+        return routes
 
     # do the equivalent of self.author_nicks.select_related('releaser'), unless that would be
     # less efficient because we've already got the author_nicks relation cached from a prefetch_related
