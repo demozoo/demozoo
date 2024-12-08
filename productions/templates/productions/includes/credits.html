@@ -21,7 +21,7 @@
     </ul>
     {% if can_edit %}
         <ul class="listing_actions">
-            <li><a href="{% url 'production_add_credit' production.id %}" class="action_button icon-add add_credit">Add credit</a></li>
+            <li><a href="{{ production.urls.add_credit }}" class="action_button icon-add add_credit">Add credit</a></li>
         </ul>
     {% endif %}
 </div>

@@ -3,7 +3,7 @@
     {% if can_edit %}
         <ul class="actions">
             <li>
-                <a href="{% url 'production_edit_info_files' production.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit info files" rel="nofollow">Edit</a>
+                <a href="{{ production.urls.edit_info_files }}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit info files" rel="nofollow">Edit</a>
             </li>
         </ul>
     {% endif %}

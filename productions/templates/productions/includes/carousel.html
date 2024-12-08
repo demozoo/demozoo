@@ -31,17 +31,17 @@
         <ul class="actions">
             {% if show_all_screenshots_link %}
                 <li class="all_screenshots">
-                    <a class="action_button" href="{{ production.get_all_screenshots_url }}">{{ all_screenshots_label }}</a>
+                    <a class="action_button" href="{{ production.urls.screenshots }}">{{ all_screenshots_label }}</a>
                 </li>
             {% endif %}
             {% if show_add_screenshot_link %}
                 <li>
-                    <a href="{{ production.get_add_screenshot_url }}" class="action_button icon-add" data-lightbox rel="nofollow">{{ add_screenshot_label }}</a>
+                    <a href="{{ production.urls.add_screenshot }}" class="action_button icon-add" data-lightbox rel="nofollow">{{ add_screenshot_label }}</a>
                 </li>
             {% endif %}
             {% if show_manage_screenshots_link %}
                 <li>
-                    <a href="{{ production.get_edit_screenshots_url }}" class="action_button icon-edit" rel="nofollow">{{ manage_screenshots_label }}</a>
+                    <a href="{{ production.urls.edit_screenshots }}" class="action_button icon-edit" rel="nofollow">{{ manage_screenshots_label }}</a>
                 </li>
             {% endif %}
         </ul>
