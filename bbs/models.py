@@ -6,13 +6,13 @@ from taggit.managers import TaggableManager
 from unidecode import unidecode
 
 from comments.models import Commentable
-from common.models import LocationMixin
+from common.models import LocationMixin, URLMixin
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
 from demoscene.models import ExternalLink, TextFile
 
 
-class BBS(LocationMixin, Commentable):
+class BBS(URLMixin, LocationMixin, Commentable):
     name = models.CharField(max_length=255)
     notes = models.TextField(blank=True)
     bbstros = models.ManyToManyField("productions.Production", related_name="bbses", blank=True)
@@ -25,6 +25,18 @@ class BBS(LocationMixin, Commentable):
     search_document = SearchVectorField(null=True, editable=False)
 
     search_result_template = "search/results/bbs.html"
+
+    url_routes = {
+        "edit": "edit_bbs",
+        "edit_notes": "bbs_edit_notes",
+        "edit_bbstros": "bbs_edit_bbstros",
+        "edit_tags": "bbs_edit_tags",
+        "edit_external_links": "bbs_edit_external_links",
+        "add_operator": "bbs_add_operator",
+        "add_affiliation": "bbs_add_affiliation",
+        "edit_text_ads": "bbs_edit_text_ads",
+        "delete": "delete_bbs",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
