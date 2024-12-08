@@ -5,7 +5,7 @@ function htmlEncode(str) {
 function applyGlobalBehaviours(context) {
     $('ul.messages li', context).animate({'backgroundColor': 'white'}, 5000);
 
-    $('a.open_in_lightbox', context).click(function(e) {
+    $('a[data-lightbox]', context).click(function(e) {
         if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.which === 2) {
             /* probably means they want to open it in a new window, so let them... */
             return true;
@@ -15,7 +15,7 @@ function applyGlobalBehaviours(context) {
         return false;
     });
 
-    $('form.open_in_lightbox', context).submit(function() {
+    $('form[data-lightbox]', context).submit(function() {
         /* only use this for forms with method="get"! */
         Lightbox.openUrl(this.action + '?' + $(this).serialize(), applyGlobalBehaviours);
         return false;

@@ -23,7 +23,7 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'edit_bbs' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" rel="nofollow">Edit</a>
+                    <a href="{% url 'edit_bbs' bbs.id %}" class="action_button icon edit edit_chunk" data-lightbox rel="nofollow">Edit</a>
                 </li>
             </ul>
         {% endif %}
@@ -61,7 +61,7 @@
             {% if can_edit %}
                 <ul class="actions">
                     <li>
-                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                        <a href="{% url 'bbs_edit_external_links' bbs.id %}" class="action_button icon edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
                     </li>
                 </ul>
             {% endif %}
@@ -77,7 +77,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'bbs_edit_notes' bbs.id %}">Edit notes</a></li>
+                    <li><a class="action_button icon edit edit_chunk" data-lightbox href="{% url 'bbs_edit_notes' bbs.id %}">Edit notes</a></li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -97,7 +97,7 @@
                         {% location_flag operator.releaser %}
                         - {{ operator.get_role_display }}
                         {% if can_edit %}
-                            <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="open_in_lightbox edit_operator">
+                            <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="edit_operator" data-lightbox>
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit staff member" title="Edit staff member" />
                             </a>
                         {% endif %}
@@ -105,7 +105,7 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon add open_in_lightbox add_operator">Add staff member</a>
+                <a href="{% url 'bbs_add_operator' bbs.id %}" class="action_button icon add add_operator" data-lightbox>Add staff member</a>
             {% endif %}
         </div>
 
@@ -118,7 +118,7 @@
                         <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
                         {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
                         {% if can_edit %}
-                            <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="open_in_lightbox edit_affiliation">
+                            <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="edit_affiliation" data-lightbox>
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
                             </a>
                         {% endif %}
@@ -126,7 +126,7 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon add open_in_lightbox add_affiliation">Add group</a>
+                <a href="{% url 'bbs_add_affiliation' bbs.id %}" class="action_button icon add add_affiliation" data-lightbox>Add group</a>
             {% endif %}
         </div>
     </div>
@@ -145,7 +145,7 @@
                 </h3>
                 {% if can_edit %}
                     <ul class="actions">
-                        <li><a href="{% url 'bbs_edit_bbstros' bbs.id %}" class="action_button icon edit edit_chunk open_in_lightbox">Edit production list</a></li>
+                        <li><a href="{% url 'bbs_edit_bbstros' bbs.id %}" class="action_button icon edit edit_chunk" data-lightbox>Edit production list</a></li>
                     </ul>
                 {% endif %}
 
@@ -163,7 +163,7 @@
     {% if request.user.is_staff and site_is_writeable %}
     <ul class="maintenance_actions">
         {% if not bbs.is_referenced %}
-            <li><a href="{% url 'delete_bbs' bbs.id %}" class="action_button icon delete open_in_lightbox">Delete BBS</a></li>
+            <li><a href="{% url 'delete_bbs' bbs.id %}" class="action_button icon delete" data-lightbox>Delete BBS</a></li>
         {% endif %}
     </ul>
     {% endif %}

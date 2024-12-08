@@ -15,7 +15,7 @@
             {% for pic in screenshots %}
                 <li>
                     {% thumbnail pic %}
-                    <a href="{% url delete_url_name production.id pic.id %}" class="open_in_lightbox">
+                    <a href="{% url delete_url_name production.id pic.id %}" data-lightbox>
                         <img src="/static/images/icons/delete.png" width="16" height="16" />
                     </a>
                 </li>

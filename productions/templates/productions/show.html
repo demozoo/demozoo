@@ -50,7 +50,7 @@
         {% for blurb in blurbs %}
             <div class="blurb">
                 <ul class="actions">
-                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit open_in_lightbox">Edit</a></li>
+                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon edit" data-lightbox>Edit</a></li>
                 </ul>
                 <p>{{ blurb.body }}</p>
             </div>
@@ -90,20 +90,20 @@
                     <div class="tell_us_something">
                         <div class="tell_us_something_title">Add other information</div>
                         <ul class="tell_us_something_options">
-                            <li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox" data-focus="empty">Add a download link</a></li>
-                            <li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox" data-focus="empty">Add an external site link</a></li>
+                            <li><a href="{% url 'production_edit_download_links' production.id %}" data-lightbox data-focus="empty">Add a download link</a></li>
+                            <li><a href="{% url 'production_edit_external_links' production.id %}" data-lightbox data-focus="empty">Add an external site link</a></li>
                             {% if production.supertype == 'music' %}
-                                <li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add artwork</a></li>
+                                <li><a href="{{ production.get_add_screenshot_url }}" data-lightbox>Add artwork</a></li>
                             {% else %}
-                                <li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add a screenshot</a></li>
+                                <li><a href="{{ production.get_add_screenshot_url }}" data-lightbox>Add a screenshot</a></li>
                             {% endif %}
                             <li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
-                            <li><a href="{% url 'production_edit_info_files' production.id %}" class="open_in_lightbox">Add an info file</a></li>
+                            <li><a href="{% url 'production_edit_info_files' production.id %}" data-lightbox>Add an info file</a></li>
                             {% if production.can_have_soundtracks %}
-                                <li><a href="{% url 'production_edit_soundtracks' production.id %}" class="open_in_lightbox">Add a soundtrack listing</a></li>
+                                <li><a href="{% url 'production_edit_soundtracks' production.id %}" data-lightbox>Add a soundtrack listing</a></li>
                             {% endif %}
                             {% if request.user.is_staff and not blurbs %}
-                                <li><a href="{% url 'production_add_blurb' production.id %}" class="open_in_lightbox">Add a 'blurb'</a></li>
+                                <li><a href="{% url 'production_add_blurb' production.id %}" data-lightbox>Add a 'blurb'</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -126,7 +126,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit pack contents" rel="nofollow">Edit</a>
+                            <a href="{% url 'production_edit_pack_contents' production.id %}" class="action_button icon edit edit_chunk" data-lightbox title="Edit pack contents" rel="nofollow">Edit</a>
                         </li>
                     </ul>
                 {% endif %}
@@ -156,7 +156,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk open_in_lightbox" title="Edit soundtrack details" rel="nofollow">Edit</a>
+                            <a href="{% url 'production_edit_soundtracks' production.id %}" class="action_button icon edit edit_chunk" data-lightbox title="Edit soundtrack details" rel="nofollow">Edit</a>
                         </li>
                     </ul>
                 {% endif %}
@@ -173,7 +173,7 @@
 
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
-            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete open_in_lightbox">Delete production</a></li>
+            <li><a href="{% url 'delete_production' production.id %}" class="action_button icon delete" data-lightbox>Delete production</a></li>
         </ul>
     {% endif %}
 {% endblock %}

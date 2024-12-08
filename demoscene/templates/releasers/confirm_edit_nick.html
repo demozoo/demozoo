@@ -15,7 +15,7 @@
         that needs to be made here:
         <ul class="nick_change_options">
             <li>
-                <form action="{% url 'releaser_edit_nick' releaser.id releaser.primary_nick.id %}" method="get" class="open_in_lightbox">
+                <form action="{% url 'releaser_edit_nick' releaser.id releaser.primary_nick.id %}" method="get" data-lightbox>
                     <strong>There's a mistake in the name:</strong>
                     <input type="submit" value="Fix it" />
                     <div class="help_text">(we'll fix the incorrect name wherever it's used on the site)</div>
@@ -40,14 +40,14 @@
                 {% endif %}
             {% endwith %}
             <li>
-                <form action="{% url 'releaser_add_nick' releaser.id %}" method="get" class="open_in_lightbox">
+                <form action="{% url 'releaser_add_nick' releaser.id %}" method="get" data-lightbox>
                     <strong>They have a new name that isn't listed here yet:</strong>
                     <input type="submit" value="Add it" />
                     <div class="help_text">(any existing prods / credits will be kept under the existing name)</div>
                 </form>
             </li>
             <li>
-                <form action="{% url 'releaser_edit_nick' releaser.id releaser.primary_nick.id %}" method="get" class="open_in_lightbox">
+                <form action="{% url 'releaser_edit_nick' releaser.id releaser.primary_nick.id %}" method="get" data-lightbox>
                     <strong>There's an abbreviation/alternative spelling for the name '{{ releaser.name }}':</strong>
                     <input type="submit" value="Add it" />
                     <div class="help_text">(this will help us to match prods to the right {% if releaser.is_group %}group{% else %}person{% endif %} when they're released under that spelling)</div>
