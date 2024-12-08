@@ -1,12 +1,12 @@
-from django.urls import re_path
+from django.urls import path
 
 from awards.views import candidates, recommend, remove_recommendation, report, show
 
 
 urlpatterns = [
-    re_path(r"^([\w\-]+)/recommend/(\d+)/$", recommend, {}, "awards_recommend"),
-    re_path(r"^([\w\-]+)/$", show, {}, "award"),
-    re_path(r"^remove_recommendation/(\d+)/$", remove_recommendation, {}, "awards_remove_recommendation"),
-    re_path(r"^([\w\-]+)/report/(\d+)/$", report, {}, "awards_report"),
-    re_path(r"^([\w\-]+)/([\w\-]+)/$", candidates, {}, "awards_candidates"),
+    path("<slug:event_slug>/recommend/<int:production_id>/", recommend, {}, "awards_recommend"),
+    path("<slug:event_slug>/", show, {}, "award"),
+    path("remove_recommendation/<int:recommendation_id>/", remove_recommendation, {}, "awards_remove_recommendation"),
+    path("<slug:event_slug>/report/<int:category_id>/", report, {}, "awards_report"),
+    path("<slug:event_slug>/<slug:category_slug>/", candidates, {}, "awards_candidates"),
 ]

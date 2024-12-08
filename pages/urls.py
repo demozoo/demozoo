@@ -1,8 +1,8 @@
-from django.urls import re_path
+from django.urls import path
 
 from pages import views as pages_views
 
 
 urlpatterns = [
-    re_path(r"^(.+)/$", pages_views.page, {}, "page"),
+    path("<str:slug>/", pages_views.page, {}, "page"),
 ]
