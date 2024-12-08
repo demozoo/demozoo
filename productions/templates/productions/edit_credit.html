@@ -27,8 +27,7 @@
         </div>
     </form>
 
-    {% comment %} FIXME: a 'delete' button under the submit button is just ICK. {% endcomment %}
-    <p>
-        <a href="{% url 'production_delete_credit' production.id nick.id %}" class="action_button icon-delete delete_credit">Delete credit</a>
-    </p>
+    <ul class="actions">
+        <li><a href="{% url 'production_delete_credit' production.id nick.id %}" class="action_button icon-delete delete_credit">Delete credit</a></li>
+    </ul>
 {% endblock %}

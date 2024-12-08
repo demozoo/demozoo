@@ -20,6 +20,8 @@
         {% endfor %}
     </ul>
     {% if can_edit %}
-        <a href="{% url 'production_add_credit' production.id %}" class="action_button icon-add add_credit">Add credit</a>
+        <ul class="listing_actions">
+            <li><a href="{% url 'production_add_credit' production.id %}" class="action_button icon-add add_credit">Add credit</a></li>
+        </ul>
     {% endif %}
 </div>

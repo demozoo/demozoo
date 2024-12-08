@@ -71,7 +71,9 @@
                     {% endfor %}
                 </ul>
                 {% if can_edit %}
-                    <a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon-add add_nick" data-lightbox>Add another name</a>
+                    <ul class="listing_actions">
+                        <li><a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon-add" data-lightbox>Add another name</a></li>
+                    </ul>
                 {% endif %}
             </div>
         {% endif %}
@@ -138,7 +140,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'group_add_member' group.id %}" class="action_button icon-add add_member" data-lightbox>Add member</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'group_add_member' group.id %}" class="action_button icon-add" data-lightbox>Add member</a></li>
+                </ul>
             {% endif %}
         </div>
 
@@ -159,7 +163,9 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon-add add_subgroup" data-lightbox>Add subgroup</a>
+                <ul class="listing_actions">
+                    <li><a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon-add" data-lightbox>Add subgroup</a></li>
+                </ul>
             {% endif %}
         </div>
 
