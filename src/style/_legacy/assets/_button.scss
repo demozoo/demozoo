@@ -76,53 +76,80 @@ a.action_button {
         background-color: #ccc;
     }
 
-    &.icon {
+    &.icon-add {
         padding-left: 24px;
         background-position: 4px center;
         background-repeat: no-repeat;
-    }
-
-    &.add {
         background-image: url('/static/images/icons/add.png');
     }
 
-    &.edit {
+    &.icon-edit {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/edit.png');
     }
 
-    &.picture_edit {
+    &.icon-picture_edit {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/picture_edit.png');
     }
 
-    &.done {
+    &.icon-done {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/tick.png');
     }
 
-    &.import_table {
+    &.icon-import_table {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/table_go.png');
     }
 
-    &.delete {
+    &.icon-delete {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/delete.png');
     }
 
-    &.switch {
+    &.icon-switch {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/arrow_refresh.png');
     }
 
-    &.back {
+    &.icon-back {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/back.png');
     }
 
-    &.locked {
+    &.icon-locked {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/lock.png');
     }
 
-    &.unlocked {
+    &.icon-unlocked {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/lock_open.png');
     }
 
-    &.spanner {
+    &.icon-spanner {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
         background-image: url('/static/images/icons/wrench.png');
     }
 }

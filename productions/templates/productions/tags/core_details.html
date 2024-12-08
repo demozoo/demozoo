@@ -4,16 +4,16 @@
     {% if show_edit_button or show_back_button or show_lock_button or show_locked_button %}
         <ul class="actions">
             {% if show_lock_button %}
-                <li><a class="action_button icon unlocked edit_chunk" data-lightbox href="{% url 'lock_production' production.id %}" title="Lock this production">Unlocked</a></li>
+                <li><a class="action_button icon-unlocked edit_chunk" data-lightbox href="{% url 'lock_production' production.id %}" title="Lock this production">Unlocked</a></li>
             {% endif %}
             {% if show_locked_button %}
-                <li><a class="action_button icon locked edit_chunk" data-lightbox href="{% url 'production_protected' production.id %}" rel="nofollow">Protected</a></li>
+                <li><a class="action_button icon-locked edit_chunk" data-lightbox href="{% url 'production_protected' production.id %}" rel="nofollow">Protected</a></li>
             {% endif %}
             {% if show_edit_button %}
-                <li><a class="action_button icon edit edit_chunk" data-lightbox href="{{ production.get_edit_core_details_url }}" title="Edit production details" rel="nofollow">Edit</a></li>
+                <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{{ production.get_edit_core_details_url }}" title="Edit production details" rel="nofollow">Edit</a></li>
             {% endif %}
             {% if show_back_button %}
-                <li><a class="action_button icon back" href="{{ production.get_absolute_url }}">Back to production</a></li>
+                <li><a class="action_button icon-back" href="{{ production.get_absolute_url }}">Back to production</a></li>
             {% endif %}
         </ul>
     {% endif %}
