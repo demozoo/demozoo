@@ -34,101 +34,102 @@ class TestReports(TestCase):
         r = redis.StrictRedis.from_url(settings.REDIS_URL)
         r.flushdb()
 
-        response = self.client.get("/maintenance/prods_without_screenshots")
+        response = self.client.get("/maintenance/prods_without_screenshots/")
         self.assertEqual(response.status_code, 200)
 
         zx = Platform.objects.get(name="ZX Spectrum")
         demo = ProductionType.objects.get(name="Demo")
         response = self.client.get(
-            "/maintenance/prods_without_screenshots?platform=%d&production_type=%d&release_year=2000" % (zx.id, demo.id)
+            "/maintenance/prods_without_screenshots/?platform=%d&production_type=%d&release_year=2000"
+            % (zx.id, demo.id)
         )
         self.assertEqual(response.status_code, 200)
 
         # test with invalid filter form
-        response = self.client.get("/maintenance/prods_without_screenshots?platform=999")
+        response = self.client.get("/maintenance/prods_without_screenshots/?platform=999")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_videos(self):
-        response = self.client.get("/maintenance/prods_without_videos")
+        response = self.client.get("/maintenance/prods_without_videos/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_pouet_links(self):
-        response = self.client.get("/maintenance/prods_without_pouet_links")
+        response = self.client.get("/maintenance/prods_without_pouet_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_credits(self):
-        response = self.client.get("/maintenance/prods_without_credits")
+        response = self.client.get("/maintenance/prods_without_credits/")
         self.assertEqual(response.status_code, 200)
 
     def test_tracked_music_without_playable_links(self):
-        response = self.client.get("/maintenance/tracked_music_without_playable_links")
+        response = self.client.get("/maintenance/tracked_music_without_playable_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_external_links(self):
-        response = self.client.get("/maintenance/prods_without_external_links")
+        response = self.client.get("/maintenance/prods_without_external_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_staff_only_report(self):
         User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
-        response = self.client.get("/maintenance/prods_without_external_links")
+        response = self.client.get("/maintenance/prods_without_external_links/")
         self.assertRedirects(response, "/")
 
     def test_prods_without_release_date(self):
-        response = self.client.get("/maintenance/prods_without_release_date")
+        response = self.client.get("/maintenance/prods_without_release_date/")
         self.assertEqual(response.status_code, 200)
 
     def test_sceneorg_download_links_with_unicode(self):
-        response = self.client.get("/maintenance/sceneorg_download_links_with_unicode")
+        response = self.client.get("/maintenance/sceneorg_download_links_with_unicode/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_platforms(self):
-        response = self.client.get("/maintenance/prods_without_platforms")
+        response = self.client.get("/maintenance/prods_without_platforms/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_platforms_excluding_lost(self):
-        response = self.client.get("/maintenance/prods_without_platforms_excluding_lost")
+        response = self.client.get("/maintenance/prods_without_platforms_excluding_lost/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_platforms_with_downloads(self):
-        response = self.client.get("/maintenance/prods_without_platforms_with_downloads")
+        response = self.client.get("/maintenance/prods_without_platforms_with_downloads/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_without_release_date_with_placement(self):
         Production.objects.filter(title="Madrielle").update(release_date_date=None, release_date_precision="")
-        response = self.client.get("/maintenance/prods_without_release_date_with_placement")
+        response = self.client.get("/maintenance/prods_without_release_date_with_placement/")
         self.assertEqual(response.status_code, 200)
 
     def test_prod_soundtracks_without_release_date(self):
         Production.objects.filter(title="Cybernoid's Revenge").update(release_date_date=None, release_date_precision="")
-        response = self.client.get("/maintenance/prod_soundtracks_without_release_date")
+        response = self.client.get("/maintenance/prod_soundtracks_without_release_date/")
         self.assertEqual(response.status_code, 200)
 
     def test_group_nicks_with_brackets(self):
-        response = self.client.get("/maintenance/group_nicks_with_brackets")
+        response = self.client.get("/maintenance/group_nicks_with_brackets/")
         self.assertEqual(response.status_code, 200)
 
     def test_ambiguous_groups_with_no_differentiators(self):
-        response = self.client.get("/maintenance/ambiguous_groups_with_no_differentiators")
+        response = self.client.get("/maintenance/ambiguous_groups_with_no_differentiators/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_with_release_date_outside_party(self):
         Production.objects.filter(title="Madrielle").update(
             release_date_date=datetime.date(2001, 1, 1), release_date_precision="d"
         )
-        response = self.client.get("/maintenance/prods_with_release_date_outside_party")
+        response = self.client.get("/maintenance/prods_with_release_date_outside_party/")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_with_same_named_credits(self):
-        response = self.client.get("/maintenance/prods_with_same_named_credits")
+        response = self.client.get("/maintenance/prods_with_same_named_credits/")
         self.assertEqual(response.status_code, 200)
 
     def test_same_named_prods_by_same_releaser(self):
-        response = self.client.get("/maintenance/same_named_prods_by_same_releaser")
+        response = self.client.get("/maintenance/same_named_prods_by_same_releaser/")
         self.assertEqual(response.status_code, 200)
 
     def test_same_named_prods_without_special_chars(self):
-        response = self.client.get("/maintenance/same_named_prods_without_special_chars")
+        response = self.client.get("/maintenance/same_named_prods_without_special_chars/")
         self.assertEqual(response.status_code, 200)
 
     def test_duplicate_external_links(self):
@@ -137,52 +138,52 @@ class TestReports(TestCase):
 
         Releaser.objects.get(name="Gasman").external_links.create(link_class="PouetGroup", parameter="123")
         Releaser.objects.get(name="Raww Arse").external_links.create(link_class="PouetGroup", parameter="123")
-        response = self.client.get("/maintenance/duplicate_external_links")
+        response = self.client.get("/maintenance/duplicate_external_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_duplicate_releaser_kestra_links(self):
-        response = self.client.get("/maintenance/duplicate_releaser_kestra_links")
+        response = self.client.get("/maintenance/duplicate_releaser_kestra_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_matching_real_names(self):
-        response = self.client.get("/maintenance/matching_real_names")
+        response = self.client.get("/maintenance/matching_real_names/")
         self.assertEqual(response.status_code, 200)
 
     def test_matching_surnames(self):
-        response = self.client.get("/maintenance/matching_surnames")
+        response = self.client.get("/maintenance/matching_surnames/")
         self.assertEqual(response.status_code, 200)
 
     def test_implied_memberships(self):
-        response = self.client.get("/maintenance/implied_memberships")
+        response = self.client.get("/maintenance/implied_memberships/")
         self.assertEqual(response.status_code, 200)
 
     def test_groups_with_same_named_members(self):
-        response = self.client.get("/maintenance/groups_with_same_named_members")
+        response = self.client.get("/maintenance/groups_with_same_named_members/")
         self.assertEqual(response.status_code, 200)
 
     def test_releasers_with_same_named_groups(self):
-        response = self.client.get("/maintenance/releasers_with_same_named_groups")
+        response = self.client.get("/maintenance/releasers_with_same_named_groups/")
         self.assertEqual(response.status_code, 200)
 
     def test_sceneorg_party_dirs_with_no_party(self):
         Directory.objects.create(path="/parties/", last_seen_at=datetime.datetime(2019, 1, 1))
-        response = self.client.get("/maintenance/sceneorg_party_dirs_with_no_party")
+        response = self.client.get("/maintenance/sceneorg_party_dirs_with_no_party/")
         self.assertEqual(response.status_code, 200)
 
     def test_parties_with_incomplete_dates(self):
-        response = self.client.get("/maintenance/parties_with_incomplete_dates")
+        response = self.client.get("/maintenance/parties_with_incomplete_dates/")
         self.assertEqual(response.status_code, 200)
 
     def test_parties_with_no_location(self):
-        response = self.client.get("/maintenance/parties_with_no_location")
+        response = self.client.get("/maintenance/parties_with_no_location/")
         self.assertEqual(response.status_code, 200)
 
     def test_empty_releasers(self):
-        response = self.client.get("/maintenance/empty_releasers")
+        response = self.client.get("/maintenance/empty_releasers/")
         self.assertEqual(response.status_code, 200)
 
     def test_empty_competitions(self):
-        response = self.client.get("/maintenance/empty_competitions")
+        response = self.client.get("/maintenance/empty_competitions/")
         self.assertEqual(response.status_code, 200)
 
     def test_unresolved_screenshots(self):
@@ -192,61 +193,61 @@ class TestReports(TestCase):
             is_download_link=True,
             is_unresolved_for_screenshotting=True,
         )
-        response = self.client.get("/maintenance/unresolved_screenshots")
+        response = self.client.get("/maintenance/unresolved_screenshots/")
         self.assertEqual(response.status_code, 200)
 
     def test_public_real_names(self):
-        response = self.client.get("/maintenance/public_real_names")
+        response = self.client.get("/maintenance/public_real_names/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get("/maintenance/public_real_names?without_note=1")
+        response = self.client.get("/maintenance/public_real_names/?without_note=1")
         self.assertEqual(response.status_code, 200)
 
     def test_prods_with_blurbs(self):
-        response = self.client.get("/maintenance/prods_with_blurbs")
+        response = self.client.get("/maintenance/prods_with_blurbs/")
         self.assertEqual(response.status_code, 200)
 
     def test_prod_comments(self):
-        response = self.client.get("/maintenance/prod_comments")
+        response = self.client.get("/maintenance/prod_comments/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get("/maintenance/prod_comments?page=amigaaaa")
+        response = self.client.get("/maintenance/prod_comments/?page=amigaaaa")
         self.assertEqual(response.status_code, 200)
 
     def test_credits_to_move_to_text(self):
-        response = self.client.get("/maintenance/credits_to_move_to_text")
+        response = self.client.get("/maintenance/credits_to_move_to_text/")
         self.assertEqual(response.status_code, 200)
 
     def test_results_with_no_encoding(self):
-        response = self.client.get("/maintenance/results_with_no_encoding")
+        response = self.client.get("/maintenance/results_with_no_encoding/")
         self.assertEqual(response.status_code, 200)
 
     def test_prod_infos_with_no_encoding(self):
-        response = self.client.get("/maintenance/prod_infos_with_no_encoding")
+        response = self.client.get("/maintenance/prod_infos_with_no_encoding/")
         self.assertEqual(response.status_code, 200)
 
     def test_prod_infos_with_no_encoding_pagination(self):
-        response = self.client.get("/maintenance/prod_infos_with_no_encoding?page=purple")
+        response = self.client.get("/maintenance/prod_infos_with_no_encoding/?page=purple")
         self.assertEqual(response.status_code, 200)
 
     def test_bbs_text_ads_with_no_encoding(self):
-        response = self.client.get("/maintenance/bbs_text_ads_with_no_encoding")
+        response = self.client.get("/maintenance/bbs_text_ads_with_no_encoding/")
         self.assertEqual(response.status_code, 200)
 
     def test_bbs_text_ads_with_no_encoding_pagination(self):
-        response = self.client.get("/maintenance/bbs_text_ads_with_no_encoding?page=aquamarine")
+        response = self.client.get("/maintenance/bbs_text_ads_with_no_encoding/?page=aquamarine")
         self.assertEqual(response.status_code, 200)
 
     def test_tiny_intros_without_download_links(self):
-        response = self.client.get("/maintenance/tiny_intros_without_download_links")
+        response = self.client.get("/maintenance/tiny_intros_without_download_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_bbstros_without_linked_bbses(self):
-        response = self.client.get("/maintenance/bbstros_without_linked_bbses")
+        response = self.client.get("/maintenance/bbstros_without_linked_bbses/")
         self.assertEqual(response.status_code, 200)
 
     def test_janeway_unique_author_name_matches(self):
-        response = self.client.get("/maintenance/janeway_unique_author_name_matches")
+        response = self.client.get("/maintenance/janeway_unique_author_name_matches/")
         self.assertEqual(response.status_code, 200)
 
     def test_fix_release_dates_nonadmin(self):
@@ -255,7 +256,7 @@ class TestReports(TestCase):
 
         madrielle = Production.objects.get(title="Madrielle")
         response = self.client.post(
-            "/maintenance/fix_release_dates",
+            "/maintenance/fix_release_dates/",
             {
                 "production_id": madrielle.id,
                 ("production_%d_release_date_date" % madrielle.id): "2000-01-01",
@@ -268,7 +269,7 @@ class TestReports(TestCase):
     def test_fix_release_dates(self):
         madrielle = Production.objects.get(title="Madrielle")
         response = self.client.post(
-            "/maintenance/fix_release_dates",
+            "/maintenance/fix_release_dates/",
             {
                 "production_id": madrielle.id,
                 ("production_%d_release_date_date" % madrielle.id): "2000-01-01",
@@ -283,12 +284,12 @@ class TestReports(TestCase):
         User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
 
-        response = self.client.post("/maintenance/exclude", {"report_name": "streets_with_no_names", "record_id": 22})
+        response = self.client.post("/maintenance/exclude/", {"report_name": "streets_with_no_names", "record_id": 22})
         self.assertRedirects(response, "/")
         self.assertFalse(Exclusion.objects.filter(report_name="streets_with_no_names").exists())
 
     def test_exclude(self):
-        response = self.client.post("/maintenance/exclude", {"report_name": "streets_with_no_names", "record_id": 22})
+        response = self.client.post("/maintenance/exclude/", {"report_name": "streets_with_no_names", "record_id": 22})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Exclusion.objects.filter(report_name="streets_with_no_names").exists())
 
@@ -300,7 +301,7 @@ class TestReports(TestCase):
         papaya_dezign = Releaser.objects.get(name="Papaya Dezign")
 
         response = self.client.post(
-            "/maintenance/add_membership", {"member_id": gasman.id, "group_id": papaya_dezign.id}
+            "/maintenance/add_membership/", {"member_id": gasman.id, "group_id": papaya_dezign.id}
         )
         self.assertRedirects(response, "/")
         self.assertFalse(gasman.group_memberships.filter(group=papaya_dezign).exists())
@@ -310,7 +311,7 @@ class TestReports(TestCase):
         papaya_dezign = Releaser.objects.get(name="Papaya Dezign")
 
         response = self.client.post(
-            "/maintenance/add_membership", {"member_id": gasman.id, "group_id": papaya_dezign.id}
+            "/maintenance/add_membership/", {"member_id": gasman.id, "group_id": papaya_dezign.id}
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(gasman.group_memberships.filter(group=papaya_dezign).exists())
@@ -322,7 +323,7 @@ class TestReports(TestCase):
         forever = Party.objects.get(name="Forever 2e3")
 
         response = self.client.post(
-            "/maintenance/add_sceneorg_link_to_party", {"party_id": forever.id, "path": "/parties/2000/forever2000/"}
+            "/maintenance/add_sceneorg_link_to_party/", {"party_id": forever.id, "path": "/parties/2000/forever2000/"}
         )
         self.assertRedirects(response, "/")
         self.assertFalse(forever.external_links.filter(link_class="SceneOrgFolder").exists())
@@ -331,7 +332,7 @@ class TestReports(TestCase):
         forever = Party.objects.get(name="Forever 2e3")
 
         response = self.client.post(
-            "/maintenance/add_sceneorg_link_to_party", {"party_id": forever.id, "path": "/parties/2000/forever2000/"}
+            "/maintenance/add_sceneorg_link_to_party/", {"party_id": forever.id, "path": "/parties/2000/forever2000/"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(forever.external_links.filter(link_class="SceneOrgFolder").exists())
@@ -439,7 +440,7 @@ class TestReports(TestCase):
         response = self.client.post(
             "/maintenance/result_file_encoding/%d/" % results_file.id, {"encoding": "iso-8859-2"}
         )
-        self.assertRedirects(response, "/maintenance/results_with_no_encoding")
+        self.assertRedirects(response, "/maintenance/results_with_no_encoding/")
         self.assertEqual(ResultsFile.objects.get(id=results_file.id).encoding, "iso-8859-2")
 
     def test_fix_prod_info_file_encoding(self):

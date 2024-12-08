@@ -1,9 +1,9 @@
-from django.urls import re_path
+from django.urls import path
 
 from platforms.views import index, show
 
 
 urlpatterns = [
-    re_path(r"^$", index, {}, "platforms"),
-    re_path(r"^(\d+)/$", show, {}, "platform"),
+    path("", index, {}, "platforms"),
+    path("<int:platform_id>/", show, {}, "platform"),
 ]
