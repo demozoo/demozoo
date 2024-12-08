@@ -16,7 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from unidecode import unidecode
 
-from common.models import LocationMixin, Lockable, PrefetchSnoopingMixin
+from common.models import LocationMixin, Lockable, PrefetchSnoopingMixin, URLMixin
 from common.utils import groklinks
 from common.utils.text import generate_search_title, strip_markup
 
@@ -28,7 +28,7 @@ DATE_PRECISION_CHOICES = [
 ]
 
 
-class Releaser(LocationMixin, PrefetchSnoopingMixin, Lockable):
+class Releaser(URLMixin, LocationMixin, PrefetchSnoopingMixin, Lockable):
     name = models.CharField(max_length=255)
     is_group = models.BooleanField(db_index=True)
     notes = models.TextField(blank=True)
@@ -52,6 +52,24 @@ class Releaser(LocationMixin, PrefetchSnoopingMixin, Lockable):
     updated_at = models.DateTimeField()
 
     search_document = SearchVectorField(null=True, editable=False)
+
+    url_routes = {
+        "add_credit": "releaser_add_credit",
+        "edit_notes": "releaser_edit_notes",
+        "add_nick": "releaser_add_nick",
+        "edit_primary_nick": "releaser_edit_primary_nick",
+        "delete": "delete_releaser",
+        "edit_external_links": "releaser_edit_external_links",
+        "lock": "lock_releaser",
+        "protected": "releaser_protected",
+        "add_member": "group_add_member",
+        "add_subgroup": "group_add_subgroup",
+        "convert_to_scener": "group_convert_to_scener",
+        "add_group": "scener_add_group",
+        "edit_location": "scener_edit_location",
+        "edit_real_name": "scener_edit_real_name",
+        "convert_to_group": "scener_convert_to_group",
+    }
 
     def save(self, *args, **kwargs):
         # auto-populate updated_at; this will only happen on creation
