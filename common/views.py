@@ -114,6 +114,8 @@ class AjaxConfirmationView(View):
 
 
 class EditTextFilesView(View):
+    pk_url_kwarg = "subject_id"
+
     def can_edit(self, subject):  # pragma: no cover
         return True
 
@@ -122,8 +124,8 @@ class EditTextFilesView(View):
 
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
-    def dispatch(self, request, subject_id):
-        self.subject = get_object_or_404(self.subject_model, id=subject_id)
+    def dispatch(self, request, *args, **kwargs):
+        self.subject = get_object_or_404(self.subject_model, id=kwargs[self.pk_url_kwarg])
         if not self.can_edit(self.subject):
             raise PermissionDenied
 
@@ -194,13 +196,15 @@ class EditTextFilesView(View):
 
 
 class EditTagsView(View):
+    pk_url_kwarg = "subject_id"
+
     def can_edit(self, subject):  # pragma: no cover
         return True
 
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
-    def dispatch(self, request, subject_id):
-        subject = get_object_or_404(self.subject_model, id=subject_id)
+    def dispatch(self, request, *args, **kwargs):
+        subject = get_object_or_404(self.subject_model, id=kwargs[self.pk_url_kwarg])
         if not self.can_edit(subject):
             raise PermissionDenied
         old_tags = set(subject.tags.names())
@@ -222,15 +226,17 @@ class EditTagsView(View):
 
 
 class AddTagView(View):
+    pk_url_kwarg = "subject_id"
+
     def can_edit(self, subject):  # pragma: no cover
         return True
 
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
-    def post(self, request, subject_id):
+    def post(self, request, *args, **kwargs):
         # Only used in AJAX calls.
 
-        subject = get_object_or_404(self.subject_model, id=subject_id)
+        subject = get_object_or_404(self.subject_model, id=kwargs[self.pk_url_kwarg])
         if not self.can_edit(subject):
             raise PermissionDenied
         tag_name = slugify_tag(request.POST.get("tag_name"))
@@ -266,15 +272,17 @@ class AddTagView(View):
 
 
 class RemoveTagView(View):
+    pk_url_kwarg = "subject_id"
+
     def can_edit(self, subject):  # pragma: no cover
         return True
 
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
-    def post(self, request, subject_id):
+    def post(self, request, *args, **kwargs):
         # Only used in AJAX calls.
 
-        subject = get_object_or_404(self.subject_model, id=subject_id)
+        subject = get_object_or_404(self.subject_model, id=kwargs[self.pk_url_kwarg])
         if not self.can_edit(subject):
             raise PermissionDenied
         if request.method == "POST":

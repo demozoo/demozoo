@@ -898,6 +898,7 @@ def edit_pack_contents(request, production_id):
 
 class ProductionEditTagsView(EditTagsView):
     subject_model = Production
+    pk_url_kwarg = "production_id"
     form_class = ProductionTagsForm
     action_type = "production_edit_tags"
 
@@ -907,6 +908,7 @@ class ProductionEditTagsView(EditTagsView):
 
 class ProductionAddTagView(AddTagView):
     subject_model = Production
+    pk_url_kwarg = "production_id"
     action_type = "production_add_tag"
     template_name = "productions/includes/tags_list.html"
 
@@ -916,6 +918,7 @@ class ProductionAddTagView(AddTagView):
 
 class ProductionRemoveTagView(RemoveTagView):
     subject_model = Production
+    pk_url_kwarg = "production_id"
     action_type = "production_remove_tag"
     template_name = "productions/includes/tags_list.html"
 
@@ -1091,6 +1094,7 @@ def carousel(request, production_id):
 
 class EditInfoFilesView(EditTextFilesView):
     subject_model = Production
+    pk_url_kwarg = "production_id"
     formset_class = ProductionInfoFileFormset
     relation_name = "info_files"
     upload_field_name = "info_file"

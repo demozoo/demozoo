@@ -1,28 +1,35 @@
-from django.urls import re_path
+from django.urls import path
 
 from bbs import views
 
 
 urlpatterns = [
-    re_path(r"^$", views.index, {}, "bbses"),
-    re_path(r"^tagged/([^\/]+)/$", views.tagged, {}, "bbses_tagged"),
-    re_path(r"^(\d+)/$", views.show, {}, "bbs"),
-    re_path(r"^new/$", views.create, {}, "new_bbs"),
-    re_path(r"^(\d+)/edit/$", views.edit, {}, "edit_bbs"),
-    re_path(r"^(\d+)/edit_notes/$", views.edit_notes, {}, "bbs_edit_notes"),
-    re_path(r"^(\d+)/delete/$", views.DeleteBBSView.as_view(), {}, "delete_bbs"),
-    re_path(r"^(\d+)/edit_bbstros/$", views.edit_bbstros, {}, "bbs_edit_bbstros"),
-    re_path(r"^(\d+)/history/$", views.history, {}, "bbs_history"),
-    re_path(r"^(\d+)/add_operator/$", views.add_operator, {}, "bbs_add_operator"),
-    re_path(r"^(\d+)/edit_operator/(\d+)/$", views.edit_operator, {}, "bbs_edit_operator"),
-    re_path(r"^(\d+)/remove_operator/(\d+)/$", views.RemoveOperatorView.as_view(), {}, "bbs_remove_operator"),
-    re_path(r"^(\d+)/add_affiliation/$", views.add_affiliation, {}, "bbs_add_affiliation"),
-    re_path(r"^(\d+)/edit_affiliation/(\d+)/$", views.edit_affiliation, {}, "bbs_edit_affiliation"),
-    re_path(r"^(\d+)/remove_affiliation/(\d+)/$", views.RemoveAffiliationView.as_view(), {}, "bbs_remove_affiliation"),
-    re_path(r"^(\d+)/edit_text_ads/$", views.EditTextAdsView.as_view(), {}, "bbs_edit_text_ads"),
-    re_path(r"^(\d+)/text_ad/(\d+)/$", views.text_ad, {}, "bbs_text_ad"),
-    re_path(r"^(\d+)/edit_tags/$", views.BBSEditTagsView.as_view(), {}, "bbs_edit_tags"),
-    re_path(r"^(\d+)/add_tag/$", views.BBSAddTagView.as_view(), {}, "bbs_add_tag"),
-    re_path(r"^(\d+)/remove_tag/$", views.BBSRemoveTagView.as_view(), {}, "bbs_remove_tag"),
-    re_path(r"^(\d+)/edit_external_links/$", views.edit_external_links, {}, "bbs_edit_external_links"),
+    path("", views.index, {}, "bbses"),
+    path("tagged/<str:tag_name>/", views.tagged, {}, "bbses_tagged"),
+    path("<int:bbs_id>/", views.show, {}, "bbs"),
+    path("new/", views.create, {}, "new_bbs"),
+    path("<int:bbs_id>/edit/", views.edit, {}, "edit_bbs"),
+    path("<int:bbs_id>/edit_notes/", views.edit_notes, {}, "bbs_edit_notes"),
+    path("<int:bbs_id>/delete/", views.DeleteBBSView.as_view(), {}, "delete_bbs"),
+    path("<int:bbs_id>/edit_bbstros/", views.edit_bbstros, {}, "bbs_edit_bbstros"),
+    path("<int:bbs_id>/history/", views.history, {}, "bbs_history"),
+    path("<int:bbs_id>/add_operator/", views.add_operator, {}, "bbs_add_operator"),
+    path("<int:bbs_id>/edit_operator/<int:operator_id>/", views.edit_operator, {}, "bbs_edit_operator"),
+    path(
+        "<int:bbs_id>/remove_operator/<int:operator_id>/", views.RemoveOperatorView.as_view(), {}, "bbs_remove_operator"
+    ),
+    path("<int:bbs_id>/add_affiliation/", views.add_affiliation, {}, "bbs_add_affiliation"),
+    path("<int:bbs_id>/edit_affiliation/<int:affiliation_id>/", views.edit_affiliation, {}, "bbs_edit_affiliation"),
+    path(
+        "<int:bbs_id>/remove_affiliation/<int:affiliation_id>/",
+        views.RemoveAffiliationView.as_view(),
+        {},
+        "bbs_remove_affiliation",
+    ),
+    path("<int:bbs_id>/edit_text_ads/", views.EditTextAdsView.as_view(), {}, "bbs_edit_text_ads"),
+    path("<int:bbs_id>/text_ad/<int:file_id>/", views.text_ad, {}, "bbs_text_ad"),
+    path("<int:bbs_id>/edit_tags/", views.BBSEditTagsView.as_view(), {}, "bbs_edit_tags"),
+    path("<int:bbs_id>/add_tag/", views.BBSAddTagView.as_view(), {}, "bbs_add_tag"),
+    path("<int:bbs_id>/remove_tag/", views.BBSRemoveTagView.as_view(), {}, "bbs_remove_tag"),
+    path("<int:bbs_id>/edit_external_links/", views.edit_external_links, {}, "bbs_edit_external_links"),
 ]
