@@ -10,7 +10,7 @@ function applyGlobalBehaviours(context) {
             /* probably means they want to open it in a new window, so let them... */
             return true;
         }
-        var focusEmptyInput = $(this).hasClass('focus_empty_input');
+        var focusEmptyInput = $(this).data('focus') === 'empty';
         Lightbox.openUrl(this.href, applyGlobalBehaviours, {'focusEmptyInput': focusEmptyInput});
         return false;
     });

@@ -90,8 +90,8 @@
                     <div class="tell_us_something">
                         <div class="tell_us_something_title">Add other information</div>
                         <ul class="tell_us_something_options">
-                            <li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox focus_empty_input">Add a download link</a></li>
-                            <li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox focus_empty_input">Add an external site link</a></li>
+                            <li><a href="{% url 'production_edit_download_links' production.id %}" class="open_in_lightbox" data-focus="empty">Add a download link</a></li>
+                            <li><a href="{% url 'production_edit_external_links' production.id %}" class="open_in_lightbox" data-focus="empty">Add an external site link</a></li>
                             {% if production.supertype == 'music' %}
                                 <li><a href="{{ production.get_add_screenshot_url }}" class="open_in_lightbox">Add artwork</a></li>
                             {% else %}
