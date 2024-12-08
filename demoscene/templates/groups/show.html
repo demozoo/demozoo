@@ -25,14 +25,14 @@
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
             <ul class="actions">
                 {% if show_lock_button %}
-                    <li><a class="action_button icon-unlocked edit_chunk" data-lightbox href="{% url 'lock_releaser' group.id %}" title="Lock this group">Unlocked</a></li>
+                    <li><a class="action_button icon-unlocked edit_chunk" data-lightbox href="{{ group.urls.lock }}" title="Lock this group">Unlocked</a></li>
                 {% endif %}
                 {% if show_locked_button %}
-                    <li><a class="action_button icon-locked edit_chunk" data-lightbox href="{% url 'releaser_protected' group.id %}">Protected</a></li>
+                    <li><a class="action_button icon-locked edit_chunk" data-lightbox href="{{ group.urls.protected }}">Protected</a></li>
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        <a href="{% url 'releaser_edit_primary_nick' group.id %}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
+                        <a href="{{ group.urls.edit_primary_nick }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
                     </li>
                 {% endif %}
             </ul>
@@ -72,7 +72,7 @@
                 </ul>
                 {% if can_edit %}
                     <ul class="listing_actions">
-                        <li><a href="{% url 'releaser_add_nick' group.id %}" class="action_button icon-add" data-lightbox>Add another name</a></li>
+                        <li><a href="{{ group.urls.add_nick }}" class="action_button icon-add" data-lightbox>Add another name</a></li>
                     </ul>
                 {% endif %}
             </div>
@@ -84,7 +84,7 @@
         {% if can_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'releaser_edit_external_links' group.id %}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                    <a href="{{ group.urls.edit_external_links }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
                 </li>
             </ul>
         {% endif %}
@@ -99,7 +99,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{% url 'releaser_edit_notes' group.id %}" title="Edit notes">Edit notes</a></li>
+                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{{ group.urls.edit_notes }}" title="Edit notes">Edit notes</a></li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -141,7 +141,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{% url 'group_add_member' group.id %}" class="action_button icon-add" data-lightbox>Add member</a></li>
+                    <li><a href="{{ group.urls.add_member }}" class="action_button icon-add" data-lightbox>Add member</a></li>
                 </ul>
             {% endif %}
         </div>
@@ -164,7 +164,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{% url 'group_add_subgroup' group.id %}" class="action_button icon-add" data-lightbox>Add subgroup</a></li>
+                    <li><a href="{{ group.urls.add_subgroup }}" class="action_button icon-add" data-lightbox>Add subgroup</a></li>
                 </ul>
             {% endif %}
         </div>
@@ -231,10 +231,10 @@
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
             {% if not group.is_referenced %}
-                <li><a href="{% url 'delete_releaser' group.id %}" class="action_button icon-delete" data-lightbox>Delete group</a></li>
+                <li><a href="{{ group.urls.delete }}" class="action_button icon-delete" data-lightbox>Delete group</a></li>
             {% endif %}
             {% if group.can_be_converted_to_scener %}
-                <li><a href="{% url 'group_convert_to_scener' group.id %}" class="action_button icon-switch" data-lightbox>Convert to scener</a></li>
+                <li><a href="{{ group.urls.convert_to_scener }}" class="action_button icon-switch" data-lightbox>Convert to scener</a></li>
             {% endif %}
         </ul>
     {% endif %}
