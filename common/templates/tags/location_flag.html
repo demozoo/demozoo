@@ -1,3 +1,3 @@
-{% if releaser.country_code %}
-<img src="/static/images/icons/flags/{{ releaser.country_code|lower }}.png" alt="({{ releaser.country_code }})" title="{{ releaser.location }}" />
+{% if obj.country_code %}
+<img src="/static/images/icons/flags/{{ obj.country_code|lower }}.png" alt="({{ obj.country_code }})" title="{{ obj.location }}" />
 {% endif %}
