@@ -7,7 +7,7 @@ from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import re_path, reverse
+from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateView
@@ -65,7 +65,7 @@ class Report(TemplateView):
 
     @classmethod
     def get_urlpattern(cls):
-        return re_path("^%s$" % cls.name, cls.as_view(), name=cls.name)
+        return path(f"{cls.name}/", cls.as_view(), name=cls.name)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
