@@ -14,10 +14,12 @@ from productions.models import Production
 
 
 class AddCommentView(TemplateView):
+    pk_url_kwarg = "commentable_id"
+
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        commentable_id = self.args[0]
+        commentable_id = self.kwargs[self.pk_url_kwarg]
         self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
         self.comment = Comment(commentable=self.commentable, user=request.user)
         return super().dispatch(request, *args, **kwargs)
@@ -49,25 +51,30 @@ class AddCommentView(TemplateView):
 
 class AddProductionCommentView(AddCommentView):
     commentable_model = Production
+    pk_url_kwarg = "production_id"
     submit_action = "add_production_comment"
 
 
 class AddPartyCommentView(AddCommentView):
     commentable_model = Party
+    pk_url_kwarg = "party_id"
     submit_action = "add_party_comment"
 
 
 class AddBBSCommentView(AddCommentView):
     commentable_model = BBS
+    pk_url_kwarg = "bbs_id"
     submit_action = "add_bbs_comment"
 
 
 class EditCommentView(TemplateView):
+    pk_url_kwarg = "commentable_id"
+
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        commentable_id = self.args[0]
-        comment_id = self.args[1]
+        commentable_id = self.kwargs[self.pk_url_kwarg]
+        comment_id = self.kwargs["comment_id"]
 
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
         self.commentable = get_object_or_404(self.commentable_model, id=commentable_id)
@@ -108,21 +115,28 @@ class EditCommentView(TemplateView):
 
 class EditProductionCommentView(EditCommentView):
     commentable_model = Production
+    pk_url_kwarg = "production_id"
     submit_action = "edit_production_comment"
 
 
 class EditPartyCommentView(EditCommentView):
     commentable_model = Party
+    pk_url_kwarg = "party_id"
     submit_action = "edit_party_comment"
 
 
 class EditBBSCommentView(EditCommentView):
     commentable_model = BBS
+    pk_url_kwarg = "bbs_id"
     submit_action = "edit_bbs_comment"
 
 
 class DeleteCommentView(AjaxConfirmationView):
-    def get_object(self, request, commentable_id, comment_id):
+    pk_url_kwarg = "commentable_id"
+
+    def get_object(self, request, *args, **kwargs):
+        commentable_id = self.kwargs[self.pk_url_kwarg]
+        comment_id = self.kwargs["comment_id"]
         commentable_type = ContentType.objects.get_for_model(self.commentable_model)
         self.commentable = self.commentable_model.objects.get(id=commentable_id)
         self.comment = Comment.objects.get(id=comment_id, content_type=commentable_type, object_id=commentable_id)
@@ -134,7 +148,10 @@ class DeleteCommentView(AjaxConfirmationView):
         return self.commentable.get_absolute_url()
 
     def get_action_url(self):
-        return reverse(self.action_url_path, args=[self.commentable.id, self.comment.id])
+        return reverse(
+            self.action_url_path,
+            kwargs={self.pk_url_kwarg: self.commentable.id, "comment_id": self.comment.id},
+        )
 
     def is_permitted(self):
         return self.request.user.is_staff
@@ -151,14 +168,17 @@ class DeleteCommentView(AjaxConfirmationView):
 
 class DeleteProductionCommentView(DeleteCommentView):
     commentable_model = Production
+    pk_url_kwarg = "production_id"
     action_url_path = "delete_production_comment"
 
 
 class DeletePartyCommentView(DeleteCommentView):
     commentable_model = Party
+    pk_url_kwarg = "party_id"
     action_url_path = "delete_party_comment"
 
 
 class DeleteBBSCommentView(DeleteCommentView):
     commentable_model = BBS
+    pk_url_kwarg = "bbs_id"
     action_url_path = "delete_bbs_comment"
