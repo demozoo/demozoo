@@ -35,12 +35,12 @@ class TestEditCompetition(TestCase):
         self.competition = Competition.objects.get(party__name="Forever 2e3", name="ZX 1K Intro")
 
     def test_get(self):
-        response = self.client.get("/competitions/%d/edit" % self.competition.id)
+        response = self.client.get("/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
         response = self.client.post(
-            "/competitions/%d/edit" % self.competition.id,
+            "/competitions/%d/edit/" % self.competition.id,
             {
                 "name": "Speccy 1K Intro",
                 "shown_date": "18 march 2000",
@@ -48,12 +48,12 @@ class TestEditCompetition(TestCase):
                 "production_type": ProductionType.objects.get(name="1K Intro").id,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertTrue(Competition.objects.filter(party__name="Forever 2e3", name="Speccy 1K Intro").exists())
 
     def test_post_without_date(self):
         response = self.client.post(
-            "/competitions/%d/edit" % self.competition.id,
+            "/competitions/%d/edit/" % self.competition.id,
             {
                 "name": "Speccy 1K Intro",
                 "shown_date": "",
@@ -61,7 +61,7 @@ class TestEditCompetition(TestCase):
                 "production_type": ProductionType.objects.get(name="1K Intro").id,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertTrue(Competition.objects.filter(party__name="Forever 2e3", name="Speccy 1K Intro").exists())
 
 
@@ -80,16 +80,16 @@ class TestImportResults(TestCase):
     def test_non_superuser(self):
         User.objects.create_user(username="testuser", password="12345")
         self.client.login(username="testuser", password="12345")
-        response = self.client.get("/competitions/%d/import_text" % self.competition.id)
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        response = self.client.get("/competitions/%d/import_text/" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
 
     def test_get(self):
-        response = self.client.get("/competitions/%d/import_text" % self.competition.id)
+        response = self.client.get("/competitions/%d/import_text/" % self.competition.id)
         self.assertEqual(response.status_code, 200)
 
     def test_import_tsv(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "tsv",
                 "results": """
@@ -99,12 +99,12 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
 
     def test_import_pm1(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "pm1",
                 "results": """
@@ -114,12 +114,12 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
 
     def test_import_pm2(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "pm2",
                 "results": """
@@ -130,14 +130,14 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 4)
         self.assertEqual(self.competition.placings.get(position=3).production.title, "Mathricks")
         self.assertEqual(self.competition.placings.get(position=4).production.title, "Uncredited Goose Demo")
 
     def test_import_pm2_with_continuations(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "pm2",
                 "results": """
@@ -148,7 +148,7 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
         self.assertTrue(
             Production.objects.filter(
@@ -158,7 +158,7 @@ class TestImportResults(TestCase):
 
     def test_import_wuhu(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "wuhu",
                 "results": """
@@ -168,12 +168,12 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 3)
 
     def test_import_wuhu_with_split_placing_and_continuations(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "wuhu",
                 "results": """
@@ -189,7 +189,7 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 4)
         self.assertEqual(self.competition.placings.get(production__title="Mathricks").ranking, "2")
         self.assertTrue(
@@ -200,7 +200,7 @@ class TestImportResults(TestCase):
 
     def test_import_broken_wuhu(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "wuhu",
                 "results": """
@@ -210,12 +210,12 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 0)
 
     def test_import_unknown_format(self):
         response = self.client.post(
-            "/competitions/%d/import_text" % self.competition.id,
+            "/competitions/%d/import_text/" % self.competition.id,
             {
                 "format": "goose",
                 "results": """
@@ -225,7 +225,7 @@ class TestImportResults(TestCase):
 """,
             },
         )
-        self.assertRedirects(response, "/competitions/%d/edit" % self.competition.id)
+        self.assertRedirects(response, "/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(self.competition.placings.count(), 0)
 
 
