@@ -546,6 +546,7 @@ class RemoveAffiliationView(AjaxConfirmationView):
 
 class EditTextAdsView(EditTextFilesView):
     subject_model = BBS
+    pk_url_kwarg = "bbs_id"
     formset_class = BBSTextAdFormset
     relation_name = "text_ads"
     upload_field_name = "text_ad"
@@ -575,18 +576,21 @@ def text_ad(request, bbs_id, file_id):
 
 class BBSEditTagsView(EditTagsView):
     subject_model = BBS
+    pk_url_kwarg = "bbs_id"
     form_class = BBSTagsForm
     action_type = "bbs_edit_tags"
 
 
 class BBSAddTagView(AddTagView):
     subject_model = BBS
+    pk_url_kwarg = "bbs_id"
     action_type = "bbs_add_tag"
     template_name = "bbs/_tags_list.html"
 
 
 class BBSRemoveTagView(RemoveTagView):
     subject_model = BBS
+    pk_url_kwarg = "bbs_id"
     action_type = "bbs_remove_tag"
     template_name = "bbs/_tags_list.html"
 

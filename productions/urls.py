@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import path
 
 from productions.views import graphics as graphic_views
 from productions.views import music as music_views
@@ -6,112 +6,160 @@ from productions.views import productions as production_views
 
 
 urlpatterns = [
-    re_path(r"^productions/$", production_views.ProductionIndexView.as_view(), {}, "productions"),
-    re_path(r"^productions/(\d+)/$", production_views.ProductionShowView.as_view(), {}, "production"),
-    re_path(
-        r"^productions/(\d+)/history/$", production_views.ProductionHistoryView.as_view(), {}, "production_history"
+    path("productions/", production_views.ProductionIndexView.as_view(), {}, "productions"),
+    path("productions/<int:production_id>/", production_views.ProductionShowView.as_view(), {}, "production"),
+    path(
+        "productions/<int:production_id>/history/",
+        production_views.ProductionHistoryView.as_view(),
+        {},
+        "production_history",
     ),
-    re_path(r"^productions/(\d+)/carousel/$", production_views.carousel, {}, "production_carousel"),
-    re_path(r"^music/$", music_views.MusicIndexView.as_view(), {}, "musics"),
-    re_path(r"^music/(\d+)/$", music_views.MusicShowView.as_view(), {}, "music"),
-    re_path(r"^music/(\d+)/edit_core_details/$", production_views.edit_core_details, {}, "music_edit_core_details"),
-    re_path(r"^music/new/$", music_views.CreateMusicView.as_view(), {}, "new_music"),
-    re_path(r"^music/(\d+)/history/$", music_views.MusicHistoryView.as_view(), {}, "music_history"),
-    re_path(r"^graphics/$", graphic_views.GraphicsIndexView.as_view(), {}, "graphics"),
-    re_path(r"^graphics/(\d+)/$", graphic_views.GraphicsShowView.as_view(), {}, "graphic"),
-    re_path(
-        r"^graphics/(\d+)/edit_core_details/$", production_views.edit_core_details, {}, "graphics_edit_core_details"
+    path("productions/<int:production_id>/carousel/", production_views.carousel, {}, "production_carousel"),
+    path("music/", music_views.MusicIndexView.as_view(), {}, "musics"),
+    path("music/<int:production_id>/", music_views.MusicShowView.as_view(), {}, "music"),
+    path(
+        "music/<int:production_id>/edit_core_details/",
+        production_views.edit_core_details,
+        {},
+        "music_edit_core_details",
     ),
-    re_path(r"^graphics/new/$", graphic_views.CreateGraphicsView.as_view(), {}, "new_graphics"),
-    re_path(r"^graphics/(\d+)/history/$", graphic_views.GraphicsHistoryView.as_view(), {}, "graphics_history"),
-    re_path(r"^productions/new/$", production_views.CreateProductionView.as_view(), {}, "new_production"),
-    re_path(r"^productions/autocomplete/$", production_views.autocomplete, {}),
-    re_path(r"^productions/autocomplete_tags/$", production_views.autocomplete_tags, {}),
-    re_path(r"^productions/tagged/([^\/]+)/$", production_views.tagged, {}, "productions_tagged"),
-    re_path(
-        r"^productions/(\d+)/edit_core_details/$",
+    path("music/new/", music_views.CreateMusicView.as_view(), {}, "new_music"),
+    path("music/<int:production_id>/history/", music_views.MusicHistoryView.as_view(), {}, "music_history"),
+    path("graphics/", graphic_views.GraphicsIndexView.as_view(), {}, "graphics"),
+    path("graphics/<int:production_id>/", graphic_views.GraphicsShowView.as_view(), {}, "graphic"),
+    path(
+        "graphics/<int:production_id>/edit_core_details/",
+        production_views.edit_core_details,
+        {},
+        "graphics_edit_core_details",
+    ),
+    path("graphics/new/", graphic_views.CreateGraphicsView.as_view(), {}, "new_graphics"),
+    path("graphics/<int:production_id>/history/", graphic_views.GraphicsHistoryView.as_view(), {}, "graphics_history"),
+    path("productions/new/", production_views.CreateProductionView.as_view(), {}, "new_production"),
+    path("productions/autocomplete/", production_views.autocomplete, {}),
+    path("productions/autocomplete_tags/", production_views.autocomplete_tags, {}),
+    path("productions/tagged/<str:tag_name>/", production_views.tagged, {}, "productions_tagged"),
+    path(
+        "productions/<int:production_id>/edit_core_details/",
         production_views.edit_core_details,
         {},
         "production_edit_core_details",
     ),
-    re_path(r"^productions/(\d+)/add_credit/$", production_views.add_credit, {}, "production_add_credit"),
-    re_path(r"^productions/(\d+)/edit_credit/(\d+)/$", production_views.edit_credit, {}, "production_edit_credit"),
-    re_path(
-        r"^productions/(\d+)/delete_credit/(\d+)/$", production_views.delete_credit, {}, "production_delete_credit"
+    path("productions/<int:production_id>/add_credit/", production_views.add_credit, {}, "production_add_credit"),
+    path(
+        "productions/<int:production_id>/edit_credit/<int:nick_id>/",
+        production_views.edit_credit,
+        {},
+        "production_edit_credit",
     ),
-    re_path(r"^productions/(\d+)/edit_notes/$", production_views.edit_notes, {}, "production_edit_notes"),
-    re_path(
-        r"^productions/(\d+)/edit_external_links/$",
+    path(
+        "productions/<int:production_id>/delete_credit/<int:nick_id>/",
+        production_views.delete_credit,
+        {},
+        "production_delete_credit",
+    ),
+    path("productions/<int:production_id>/edit_notes/", production_views.edit_notes, {}, "production_edit_notes"),
+    path(
+        "productions/<int:production_id>/edit_external_links/",
         production_views.edit_external_links,
         {},
         "production_edit_external_links",
     ),
-    re_path(
-        r"^productions/(\d+)/edit_download_links/$",
+    path(
+        "productions/<int:production_id>/edit_download_links/",
         production_views.edit_download_links,
         {},
         "production_edit_download_links",
     ),
-    re_path(r"^productions/(\d+)/add_screenshot/$", production_views.add_screenshot, {}, "production_add_screenshot"),
-    re_path(
-        r"^productions/(\d+)/add_artwork/$",
+    path(
+        "productions/<int:production_id>/add_screenshot/",
+        production_views.add_screenshot,
+        {},
+        "production_add_screenshot",
+    ),
+    path(
+        "productions/<int:production_id>/add_artwork/",
         production_views.add_screenshot,
         {"is_artwork_view": True},
         "production_add_artwork",
     ),
-    re_path(r"^productions/(\d+)/screenshots/$", production_views.screenshots, {}, "production_screenshots"),
-    re_path(r"^productions/(\d+)/artwork/$", production_views.artwork, {}, "production_artwork"),
-    re_path(
-        r"^productions/(\d+)/screenshots/edit/$", production_views.edit_screenshots, {}, "production_edit_screenshots"
+    path("productions/<int:production_id>/screenshots/", production_views.screenshots, {}, "production_screenshots"),
+    path("productions/<int:production_id>/artwork/", production_views.artwork, {}, "production_artwork"),
+    path(
+        "productions/<int:production_id>/screenshots/edit/",
+        production_views.edit_screenshots,
+        {},
+        "production_edit_screenshots",
     ),
-    re_path(r"^productions/(\d+)/artwork/edit/$", production_views.edit_artwork, {}, "production_edit_artwork"),
-    re_path(
-        r"^productions/(\d+)/delete_screenshot/(\d+)/$",
+    path("productions/<int:production_id>/artwork/edit/", production_views.edit_artwork, {}, "production_edit_artwork"),
+    path(
+        "productions/<int:production_id>/delete_screenshot/<int:screenshot_id>/",
         production_views.DeleteScreenshotView.as_view(),
         {},
         "production_delete_screenshot",
     ),
-    re_path(
-        r"^productions/(\d+)/delete_artwork/(\d+)/$",
+    path(
+        "productions/<int:production_id>/delete_artwork/<int:screenshot_id>/",
         production_views.DeleteArtworkView.as_view(),
         {},
         "production_delete_artwork",
     ),
-    re_path(
-        r"^productions/(\d+)/edit_soundtracks/$", production_views.edit_soundtracks, {}, "production_edit_soundtracks"
+    path(
+        "productions/<int:production_id>/edit_soundtracks/",
+        production_views.edit_soundtracks,
+        {},
+        "production_edit_soundtracks",
     ),
-    re_path(
-        r"^productions/(\d+)/edit_pack_contents/$",
+    path(
+        "productions/<int:production_id>/edit_pack_contents/",
         production_views.edit_pack_contents,
         {},
         "production_edit_pack_contents",
     ),
-    re_path(
-        r"^productions/(\d+)/edit_tags/$", production_views.ProductionEditTagsView.as_view(), {}, "production_edit_tags"
+    path(
+        "productions/<int:production_id>/edit_tags/",
+        production_views.ProductionEditTagsView.as_view(),
+        {},
+        "production_edit_tags",
     ),
-    re_path(r"^productions/(\d+)/add_tag/$", production_views.ProductionAddTagView.as_view(), {}, "production_add_tag"),
-    re_path(
-        r"^productions/(\d+)/remove_tag/$",
+    path(
+        "productions/<int:production_id>/add_tag/",
+        production_views.ProductionAddTagView.as_view(),
+        {},
+        "production_add_tag",
+    ),
+    path(
+        "productions/<int:production_id>/remove_tag/",
         production_views.ProductionRemoveTagView.as_view(),
         {},
         "production_remove_tag",
     ),
-    re_path(r"^productions/(\d+)/delete/$", production_views.DeleteProductionView.as_view(), {}, "delete_production"),
-    re_path(r"^productions/(\d+)/add_blurb/$", production_views.add_blurb, {}, "production_add_blurb"),
-    re_path(r"^productions/(\d+)/edit_blurb/(\d+)/$", production_views.edit_blurb, {}, "production_edit_blurb"),
-    re_path(
-        r"^productions/(\d+)/delete_blurb/(\d+)/$",
+    path(
+        "productions/<int:production_id>/delete/",
+        production_views.DeleteProductionView.as_view(),
+        {},
+        "delete_production",
+    ),
+    path("productions/<int:production_id>/add_blurb/", production_views.add_blurb, {}, "production_add_blurb"),
+    path(
+        "productions/<int:production_id>/edit_blurb/<int:blurb_id>/",
+        production_views.edit_blurb,
+        {},
+        "production_edit_blurb",
+    ),
+    path(
+        "productions/<int:production_id>/delete_blurb/<int:blurb_id>/",
         production_views.DeleteBlurbView.as_view(),
         {},
         "production_delete_blurb",
     ),
-    re_path(
-        r"^productions/(\d+)/edit_info/$",
+    path(
+        "productions/<int:production_id>/edit_info/",
         production_views.EditInfoFilesView.as_view(),
         {},
         "production_edit_info_files",
     ),
-    re_path(r"^productions/(\d+)/info/(\d+)/$", production_views.info_file, {}, "production_info_file"),
-    re_path(r"^productions/(\d+)/lock/$", production_views.LockProductionView.as_view(), {}, "lock_production"),
-    re_path(r"^productions/(\d+)/protected/$", production_views.protected, {}, "production_protected"),
+    path("productions/<int:production_id>/info/<int:file_id>/", production_views.info_file, {}, "production_info_file"),
+    path("productions/<int:production_id>/lock/", production_views.LockProductionView.as_view(), {}, "lock_production"),
+    path("productions/<int:production_id>/protected/", production_views.protected, {}, "production_protected"),
 ]
