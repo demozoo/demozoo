@@ -6,7 +6,7 @@
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'new_production' %}" class="action_button icon add open_in_lightbox">New production</a></li>
+            <li><a href="{% url 'new_production' %}" class="action_button icon add" data-lightbox>New production</a></li>
         </ul>
     {% endif %}
 

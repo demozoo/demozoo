@@ -32,6 +32,6 @@
     </form>
 
     <p>
-        <a href="{% url 'group_remove_member' group.id membership.member.id %}" class="open_in_lightbox">Remove from group</a>
+        <a href="{% url 'group_remove_member' group.id membership.member.id %}" data-lightbox>Remove from group</a>
     </p>
 {% endblock %}

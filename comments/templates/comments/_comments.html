@@ -10,8 +10,8 @@
                         <div class="comment" id="comment-{{ comment.id }}">
                             {% if request.user.is_staff and site_is_writeable %}
                                 <div class="admin_controls">
-                                    <a href="{% url edit_action commentable.id comment.id %}" class="open_in_lightbox">Edit</a>
-                                    | <a href="{% url delete_action commentable.id comment.id %}" class="open_in_lightbox">Delete</a>
+                                    <a href="{% url edit_action commentable.id comment.id %}" data-lightbox>Edit</a>
+                                    | <a href="{% url delete_action commentable.id comment.id %}" data-lightbox>Delete</a>
                                 </div>
                             {% endif %}
                             <b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}

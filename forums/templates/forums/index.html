@@ -9,7 +9,7 @@
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'forums_new_topic' %}" class="action_button icon add open_in_lightbox">New topic</a></li>
+            <li><a href="{% url 'forums_new_topic' %}" class="action_button icon add" data-lightbox>New topic</a></li>
         </ul>
     {% endif %}
 

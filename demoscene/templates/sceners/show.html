@@ -25,14 +25,14 @@
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
             <ul class="actions">
                 {% if show_lock_button %}
-                    <li><a class="action_button icon unlocked edit_chunk open_in_lightbox" href="{% url 'lock_releaser' scener.id %}" title="Lock this scener">Unlocked</a></li>
+                    <li><a class="action_button icon unlocked edit_chunk" data-lightbox href="{% url 'lock_releaser' scener.id %}" title="Lock this scener">Unlocked</a></li>
                 {% endif %}
                 {% if show_locked_button %}
-                    <li><a class="action_button icon locked edit_chunk open_in_lightbox" href="{% url 'releaser_protected' scener.id %}">Protected</a></li>
+                    <li><a class="action_button icon locked edit_chunk" data-lightbox href="{% url 'releaser_protected' scener.id %}">Protected</a></li>
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        <a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
+                        <a href="{% url 'releaser_edit_primary_nick' scener.id %}" class="action_button icon edit edit_chunk" data-lightbox data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
                     </li>
                 {% endif %}
             </ul>
@@ -57,7 +57,7 @@
                     <li>
                         <b>{{ nick.name }}</b> {% nick_variants nick %}
                         {% if can_edit %}
-                            <a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="open_in_lightbox edit_nick">
+                            <a href="{% url 'releaser_edit_nick' scener.id nick.id %}" class="edit_nick" data-lightbox>
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
                             </a>
                         {% endif %}
@@ -65,7 +65,7 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon add add_nick open_in_lightbox">Add another name</a>
+                <a href="{% url 'releaser_add_nick' scener.id %}" class="action_button icon add add_nick" data-lightbox>Add another name</a>
             {% endif %}
         </div>
     {% endif %}
@@ -80,7 +80,7 @@
                     <em>not set</em>
                 {% endif %}
                 {% if site_is_writeable %}
-                    <a href="{% url 'scener_edit_real_name' scener.id %}" class="open_in_lightbox" rel="nofollow">
+                    <a href="{% url 'scener_edit_real_name' scener.id %}" data-lightbox rel="nofollow">
                         <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit real name" title="Edit real name" />
                     </a>
                 {% endif %}
@@ -100,7 +100,7 @@
                 {% endif %}
             {% endif %}
             {% if can_edit %}
-                <a href="{% url 'scener_edit_location' scener.id %}" class="open_in_lightbox" rel="nofollow">
+                <a href="{% url 'scener_edit_location' scener.id %}" data-lightbox rel="nofollow">
                     <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit location" title="Edit location" />
                 </a>
             {% endif %}
@@ -114,7 +114,7 @@
         {% if can_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk open_in_lightbox" data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                    <a href="{% url 'releaser_edit_external_links' scener.id %}" class="action_button icon edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
                 </li>
             </ul>
         {% endif %}
@@ -129,7 +129,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon edit edit_chunk open_in_lightbox" href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
+                    <li><a class="action_button icon edit edit_chunk" data-lightbox href="{% url 'releaser_edit_notes' scener.id %}">Edit notes</a></li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -147,7 +147,7 @@
                     <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
                         <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
                         {% if can_edit %}
-                            <a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="open_in_lightbox edit_membership">
+                            <a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="edit_membership" data-lightbox>
                                 <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
                             </a>
                         {% endif %}
@@ -155,7 +155,7 @@
                 {% endfor %}
             </ul>
             {% if can_edit %}
-                <a href="{% url 'scener_add_group' scener.id %}" class="action_button icon add open_in_lightbox add_group">Add group</a>
+                <a href="{% url 'scener_add_group' scener.id %}" class="action_button icon add add_group" data-lightbox>Add group</a>
             {% endif %}
         </div>
     </div>
@@ -211,10 +211,10 @@
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
             {% if not scener.is_referenced %}
-                <li><a href="{% url 'delete_releaser' scener.id %}" class="action_button icon delete open_in_lightbox">Delete scener</a></li>
+                <li><a href="{% url 'delete_releaser' scener.id %}" class="action_button icon delete" data-lightbox>Delete scener</a></li>
             {% endif %}
             {% if scener.can_be_converted_to_group %}
-                <li><a href="{% url 'scener_convert_to_group' scener.id %}" class="action_button icon switch open_in_lightbox">Convert to group</a></li>
+                <li><a href="{% url 'scener_convert_to_group' scener.id %}" class="action_button icon switch" data-lightbox>Convert to group</a></li>
             {% endif %}
         </ul>
     {% endif %}
