@@ -297,9 +297,9 @@
 
                         {% if can_edit %}
                             <ul class="actions">
-                                <li><a class="action_button icon-edit edit_chunk" href="{% url 'competition_edit' compo.id %}">Edit competition</a></li>
+                                <li>{% action_button icon="edit" classname="edit_chunk" url=compo.urls.edit label="Edit competition" %}</li>
                                 {% if request.user.is_staff and not placings %}
-                                    <li><a class="action_button icon-delete" data-lightbox href="{% url 'delete_competition' compo.id %}">Delete competition</a></li>
+                                    <li>{% action_button icon="delete" lightbox=True url=compo.urls.delete label="Delete competition" %}</li>
                                 {% endif %}
                             </ul>
                         {% endif %}

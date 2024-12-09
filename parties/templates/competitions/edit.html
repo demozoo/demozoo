@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load demoscene_tags compress %}
+{% load demoscene_tags ui_tags compress %}
 
 {% block html_title %}Editing {{ competition.party.name }} {{ competition.name }} competition - Demozoo{% endblock %}
 {% block extra_js %}
@@ -37,13 +37,13 @@
 
 {% if is_admin %}
     <ul class="actions">
-        <li><a href="{% url 'competition_import_text' competition.id %}" class="action_button icon-import_table">Import results</a></li>
+        <li>{% action_button url=competition.urls.import_text icon="import_table" label="Import results" %}</li>
     </ul>
 {% endif %}
 
 <h2>{{ competition.party.name }} {{ competition.name }} competition</h2>
 
-<form action="{% url 'competition_edit' competition.id %}" method="post" class="entry_form edit_competition_form">
+<form action="{{ competition.urls.edit }}" method="post" class="entry_form edit_competition_form">
     {% csrf_token %}
     
     {% for field in form.visible_fields %}
