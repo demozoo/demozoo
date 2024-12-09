@@ -341,14 +341,6 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
         else:
             return reverse("production", args=[str(self.id)])
 
-    def get_edit_core_details_url(self):
-        if self.supertype == "music":
-            return reverse("music_edit_core_details", args=[str(self.id)])
-        elif self.supertype == "graphics":
-            return reverse("graphics_edit_core_details", args=[str(self.id)])
-        else:
-            return reverse("production_edit_core_details", args=[str(self.id)])
-
     def can_have_soundtracks(self):
         return self.supertype == "production"
 
