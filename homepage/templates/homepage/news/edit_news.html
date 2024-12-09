@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load compress %}
+{% load ui_tags compress %}
 
 {% block html_title %}Edit news - Demozoo{% endblock %}
 
@@ -16,7 +16,7 @@
 {% block base_main %}
     <ul class="actions">
         <li>
-            <a href="{% url 'delete_news' news_story.id %}" class="action_button icon-delete" data-lightbox title="Delete this news story">Delete</a>
+            {% action_button url=news_story.urls.delete icon="delete" lightbox=True title="Delete this news story" label="Delete" %}
         </li>
     </ul>
     <h1>Edit news item</h1>

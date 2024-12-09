@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+from common.models import URLMixin
 from common.utils.files import random_path
 
 
@@ -66,7 +67,7 @@ class BannerImage(models.Model):
         return self.image.name
 
 
-class NewsStory(models.Model):
+class NewsStory(URLMixin, models.Model):
     title = models.CharField(max_length=255)
     text = models.TextField()
     image = models.ForeignKey(
@@ -79,6 +80,11 @@ class NewsStory(models.Model):
     is_public = models.BooleanField(blank=True, default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    url_routes = {
+        "edit": "edit_news",
+        "delete": "delete_news",
+    }
 
     def __str__(self):
         return self.title
