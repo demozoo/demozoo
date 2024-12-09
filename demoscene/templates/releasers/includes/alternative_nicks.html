@@ -1,0 +1,23 @@
+{% load releaser_tags ui_tags %}
+
+<div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
+    <h3 class="panel__title">Also known as</h3>
+
+    <ul class="nicks">
+        {% for nick in alternative_nicks %}
+            <li>
+                <b>{{ nick.name }}</b> {% nick_variants nick %}
+                {% if can_edit %}
+                    <a href="{% url 'releaser_edit_nick' releaser.id nick.id %}" class="edit_nick" data-lightbox>
+                        <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit name" title="Edit name" />
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <ul class="listing_actions">
+            <li>{% action_button url=releaser.urls.add_nick icon="add" lightbox=True label="Add another name" %}</li>
+        </ul>
+    {% endif %}
+</div>

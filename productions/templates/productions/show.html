@@ -115,7 +115,9 @@
 
     <div style="clear: both;"></div>
 
-    {% include "productions/includes/notes.html" %}
+    {% if production.notes or request.user.is_staff %}
+        {% include "shared/notes.html" with obj=production %}
+    {% endif %}
 
     <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
         {% include "productions/includes/credits.html" %}

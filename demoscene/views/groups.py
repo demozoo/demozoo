@@ -61,6 +61,7 @@ def show(request, group_id):
         "groups/show.html",
         {
             "group": group,
+            "alternative_nicks": group.alternative_nicks.prefetch_related("variants"),
             "editing_nicks": (request.GET.get("editing") == "nicks"),
             "supergroupships": (
                 group.group_memberships.all()

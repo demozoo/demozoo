@@ -59,16 +59,7 @@
     {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}
-        <div class="editable_chunk panel notes_panel">
-            {% if request.user.is_staff and site_is_writeable %}
-                <ul class="actions">
-                    <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=bbs.urls.edit_notes label="Edit notes" %}</li>
-                </ul>
-            {% endif %}
-            <div class="notes">
-                {{ bbs.notes|safe_markdown }}
-            </div>
-        </div>
+        {% include "shared/notes.html" with obj=bbs %}
     {% endif %}
 
     <div id="side_column">
