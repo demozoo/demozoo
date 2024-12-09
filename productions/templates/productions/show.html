@@ -79,7 +79,7 @@
             {% endif %}
 
             {% if external_links %}
-                {% include "productions/includes/external_links.html" %}
+                {% include "shared/external_links.html" with obj=production %}
             {% endif %}
 
             {% include "productions/includes/tags.html" %}

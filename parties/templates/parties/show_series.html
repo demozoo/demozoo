@@ -36,23 +36,7 @@
     </div>
 
     {% if external_links or can_edit %}
-        <div class="panel external_links_panel editable_chunk">
-            <h3 class="panel__title">External links</h3>
-
-            {% if can_edit %}
-                <ul class="actions">
-                    <li>
-                        {% action_button url=party_series.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" label="Edit" %}
-                    </li>
-                </ul>
-            {% endif %}
-
-            <ul class="external_links">
-                {% for link in external_links %}
-                    <li>{{ link.html_link|safe }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% include "shared/external_links.html" with obj=party_series %}
     {% endif %}
 
     {% if party_series.notes or request.user.is_staff %}
