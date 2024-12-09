@@ -19,7 +19,7 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{% url 'party_edit_series' party_series.id %}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit party details">Edit</a>
+                    {% action_button url=party_series.urls.edit icon="edit" classname="edit_chunk" lightbox=True title="Edit party details" label="Edit" %}
                 </li>
             </ul>
         {% endif %}
@@ -42,7 +42,7 @@
             {% if can_edit %}
                 <ul class="actions">
                     <li>
-                        <a href="{% url 'party_edit_series_external_links' party_series.id %}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links">Edit</a>
+                        {% action_button url=party_series.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" label="Edit" %}
                     </li>
                 </ul>
             {% endif %}
@@ -59,7 +59,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{% url 'party_edit_series_notes' party_series.id %}">Edit notes</a></li>
+                    <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=party_series.urls.edit_notes label="Edit notes" %}</li>
                 </ul>
             {% endif %}
             <div class="notes">

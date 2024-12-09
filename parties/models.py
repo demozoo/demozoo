@@ -20,10 +20,16 @@ from demoscene.models import DATE_PRECISION_CHOICES, ExternalLink, Releaser, Tex
 from productions.models import Production, Screenshot
 
 
-class PartySeries(models.Model):
+class PartySeries(URLMixin, models.Model):
     name = models.CharField(max_length=255, unique=True)
     notes = models.TextField(blank=True)
     website = models.URLField(blank=True)
+
+    url_routes = {
+        "edit": "party_edit_series",
+        "edit_notes": "party_edit_series_notes",
+        "edit_external_links": "party_edit_series_external_links",
+    }
 
     def __str__(self):
         return self.name
