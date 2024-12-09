@@ -29,6 +29,7 @@ class PartySeries(URLMixin, models.Model):
         "edit": "party_edit_series",
         "edit_notes": "party_edit_series_notes",
         "edit_external_links": "party_edit_series_external_links",
+        "history": "party_series_history",
     }
 
     def __str__(self):
@@ -36,9 +37,6 @@ class PartySeries(URLMixin, models.Model):
 
     def get_absolute_url(self):
         return reverse("party_series", args=[str(self.id)])
-
-    def get_history_url(self):
-        return reverse("party_series_history", args=[str(self.id)])
 
     @property
     def plaintext_notes(self):
@@ -123,6 +121,7 @@ class Party(URLMixin, LocationMixin, Commentable):
         "edit_share_image": "party_edit_share_image",
         "add_competition": "party_add_competition",
         "add_organiser": "party_add_organiser",
+        "history": "party_history",
     }
 
     def __str__(self):
@@ -146,9 +145,6 @@ class Party(URLMixin, LocationMixin, Commentable):
 
     def get_absolute_url(self):
         return reverse("party", args=[str(self.id)])
-
-    def get_history_url(self):
-        return reverse("party_history", args=[str(self.id)])
 
     @property
     def suffix(self):
@@ -337,6 +333,7 @@ class Competition(URLMixin, models.Model):
         "edit": "competition_edit",
         "import_text": "competition_import_text",
         "delete": "delete_competition",
+        "history": "competition_history",
     }
 
     def results(self):
@@ -366,9 +363,6 @@ class Competition(URLMixin, models.Model):
 
     def get_absolute_url(self):
         return reverse("competition", args=[str(self.id)])
-
-    def get_history_url(self):
-        return reverse("competition_history", args=[str(self.id)])
 
     class Meta:
         ordering = ("party__name", "name")

@@ -46,9 +46,9 @@ class TestReleaser(TestCase):
         self.assertEqual(self.hooy_program.get_absolute_url(), "/groups/%d/" % self.hooy_program.id)
 
     def test_history_url(self):
-        self.assertEqual(self.gasman.get_history_url(), "/sceners/%d/history/" % self.gasman.id)
+        self.assertEqual(self.gasman.urls["history"], "/sceners/%d/history/" % self.gasman.id)
 
-        self.assertEqual(self.hooy_program.get_history_url(), "/groups/%d/history/" % self.hooy_program.id)
+        self.assertEqual(self.hooy_program.urls["history"], "/groups/%d/history/" % self.hooy_program.id)
 
     def test_asciified_location(self):
         self.assertEqual(self.gasman.asciified_location, "Arhus, Denmark")

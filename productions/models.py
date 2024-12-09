@@ -180,6 +180,7 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
                     "screenshots": "production_artwork",
                     "add_screenshot": "production_add_artwork",
                     "edit_screenshots": "production_edit_artwork",
+                    "history": "music_history",
                 }
             )
         elif self.supertype == "graphics":
@@ -189,6 +190,7 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
                     "screenshots": "production_screenshots",
                     "add_screenshot": "production_add_screenshot",
                     "edit_screenshots": "production_edit_screenshots",
+                    "history": "graphics_history",
                 }
             )
         else:
@@ -198,6 +200,7 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
                     "screenshots": "production_screenshots",
                     "add_screenshot": "production_add_screenshot",
                     "edit_screenshots": "production_edit_screenshots",
+                    "history": "production_history",
                 }
             )
 
@@ -345,14 +348,6 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
             return reverse("graphics_edit_core_details", args=[str(self.id)])
         else:
             return reverse("production_edit_core_details", args=[str(self.id)])
-
-    def get_history_url(self):
-        if self.supertype == "music":
-            return reverse("music_history", args=[str(self.id)])
-        elif self.supertype == "graphics":
-            return reverse("graphics_history", args=[str(self.id)])
-        else:
-            return reverse("production_history", args=[str(self.id)])
 
     def can_have_soundtracks(self):
         return self.supertype == "production"

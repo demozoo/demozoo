@@ -159,7 +159,7 @@ class HistoryView(View):
     def get(self, request, production_id):
         production = get_object_or_404(Production, id=production_id)
         if production.supertype != self.supertype:
-            return HttpResponseRedirect(production.get_history_url())
+            return HttpResponseRedirect(production.urls["history"])
         return render(
             request,
             "productions/history.html",

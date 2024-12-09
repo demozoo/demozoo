@@ -36,6 +36,7 @@ class BBS(URLMixin, LocationMixin, Commentable):
         "add_affiliation": "bbs_add_affiliation",
         "edit_text_ads": "bbs_edit_text_ads",
         "delete": "delete_bbs",
+        "history": "bbs_history",
     }
 
     def __init__(self, *args, **kwargs):
@@ -72,9 +73,6 @@ class BBS(URLMixin, LocationMixin, Commentable):
 
     def get_absolute_url(self):
         return reverse("bbs", args=[self.id])
-
-    def get_history_url(self):
-        return reverse("bbs_history", args=[self.id])
 
     def is_referenced(self):
         """
