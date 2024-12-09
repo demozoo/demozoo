@@ -55,22 +55,7 @@
     </div>
 
     {% if external_links or can_edit %}
-        <div class="editable_chunk panel external_links_panel">
-            <h3 class="panel__title">External links</h3>
-
-            {% if can_edit %}
-                <ul class="actions">
-                    <li>
-                        {% action_button url=bbs.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" nofollow=True label="Edit" %}
-                    </li>
-                </ul>
-            {% endif %}
-            <ul class="external_links">
-                {% for link in external_links %}
-                    <li>{{ link.html_link|safe }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% include "shared/external_links.html" with obj=bbs %}
     {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}

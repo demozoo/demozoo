@@ -1,0 +1,24 @@
+{% load ui_tags %}
+
+{% comment %}
+    External links panel
+    obj = the instance that has external links (production, party, bbs etc)
+    external_links = list of link objects
+    can_edit = whether the current user can edit
+{% endcomment %}
+
+<div class="editable_chunk panel external_links_panel">
+    <h3 class="panel__title">External links</h3>
+    {% if can_edit %}
+        <ul class="actions">
+            <li>
+                {% action_button url=obj.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" nofollow=True label="Edit" %}
+            </li>
+        </ul>
+    {% endif %}
+    <ul class="external_links">
+        {% for link in external_links %}
+            <li>{{ link.html_link|safe }}</li>
+        {% endfor %}
+    </ul>
+</div>
