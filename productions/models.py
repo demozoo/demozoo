@@ -354,22 +354,6 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
         else:
             return reverse("production_history", args=[str(self.id)])
 
-    def get_all_screenshots_url(self):
-        return reverse(
-            "production_artwork" if self.supertype == "music" else "production_screenshots", args=[str(self.id)]
-        )
-
-    def get_add_screenshot_url(self):
-        return reverse(
-            "production_add_artwork" if self.supertype == "music" else "production_add_screenshot", args=[str(self.id)]
-        )
-
-    def get_edit_screenshots_url(self):
-        return reverse(
-            "production_edit_artwork" if self.supertype == "music" else "production_edit_screenshots",
-            args=[str(self.id)],
-        )
-
     def can_have_soundtracks(self):
         return self.supertype == "production"
 

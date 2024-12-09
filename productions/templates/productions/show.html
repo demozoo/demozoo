@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags compress %}
+{% load demoscene_tags production_tags ui_tags compress %}
 
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -90,20 +90,20 @@
                     <div class="tell_us_something">
                         <div class="tell_us_something_title">Add other information</div>
                         <ul class="tell_us_something_options">
-                            <li><a href="{% url 'production_edit_download_links' production.id %}" data-lightbox data-focus="empty">Add a download link</a></li>
-                            <li><a href="{% url 'production_edit_external_links' production.id %}" data-lightbox data-focus="empty">Add an external site link</a></li>
-                            {% if production.supertype == 'music' %}
-                                <li><a href="{{ production.get_add_screenshot_url }}" data-lightbox>Add artwork</a></li>
-                            {% else %}
-                                <li><a href="{{ production.get_add_screenshot_url }}" data-lightbox>Add a screenshot</a></li>
-                            {% endif %}
-                            <li><a href="{% url 'production_add_credit' production.id %}" class="add_credit">Add a credit</a></li>
-                            <li><a href="{% url 'production_edit_info_files' production.id %}" data-lightbox>Add an info file</a></li>
+                            <li><a href="{{ production.urls.edit_download_links }}" data-lightbox data-focus="empty">Add a download link</a></li>
+                            <li><a href="{{ production.urls.edit_external_links }}" data-lightbox data-focus="empty">Add an external site link</a></li>
+                            <li>
+                                <a href="{{ production.urls.add_screenshot }}" data-lightbox>
+                                    {% if production.supertype == 'music' %}Add artwork{% else %}Add a screenshot{% endif %}
+                                </a>
+                            </li>
+                            <li><a href="{{ production.urls.add_credit }}" class="add_credit">Add a credit</a></li>
+                            <li><a href="{{ production.urls.edit_info_files }}" data-lightbox>Add an info file</a></li>
                             {% if production.can_have_soundtracks %}
-                                <li><a href="{% url 'production_edit_soundtracks' production.id %}" data-lightbox>Add a soundtrack listing</a></li>
+                                <li><a href="{{ production.urls.edit_soundtracks }}" data-lightbox>Add a soundtrack listing</a></li>
                             {% endif %}
                             {% if request.user.is_staff and not blurbs %}
-                                <li><a href="{% url 'production_add_blurb' production.id %}" data-lightbox>Add a 'blurb'</a></li>
+                                <li><a href="{{ production.urls.add_blurb }}" data-lightbox>Add a 'blurb'</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -126,7 +126,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{{ production.urls.edit_pack_contents }}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit pack contents" rel="nofollow">Edit</a>
+                            {% action_button url=production.urls.edit_pack_contents icon="edit" classname="edit_chunk" lightbox=True title="Edit pack contents" nofollow=True label="Edit" %}
                         </li>
                     </ul>
                 {% endif %}
@@ -156,7 +156,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            <a href="{{ production.urls.edit_soundtracks }}" class="action_button icon-edit edit_chunk" data-lightbox title="Edit soundtrack details" rel="nofollow">Edit</a>
+                            {% action_button url=production.urls.edit_soundtracks icon="edit" classname="edit_chunk" lightbox=True title="Edit soundtrack details" nofollow=True label="Edit" %}
                         </li>
                     </ul>
                 {% endif %}
@@ -173,7 +173,7 @@
 
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
-            <li><a href="{{ production.urls.delete }}" class="action_button icon-delete" data-lightbox>Delete production</a></li>
+            <li>{% action_button url=production.urls.delete icon="delete" lightbox=True label="Delete production" %}</li>
         </ul>
     {% endif %}
 {% endblock %}
