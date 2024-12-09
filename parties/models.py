@@ -325,13 +325,19 @@ class PartyExternalLink(ExternalLink):
         ordering = ["link_class"]
 
 
-class Competition(models.Model):
+class Competition(URLMixin, models.Model):
     party = models.ForeignKey(Party, related_name="competitions", on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     shown_date_date = models.DateField(null=True, blank=True)
     shown_date_precision = models.CharField(max_length=1, blank=True, choices=DATE_PRECISION_CHOICES)
     platform = models.ForeignKey("platforms.Platform", blank=True, null=True, on_delete=models.SET_NULL)
     production_type = models.ForeignKey("productions.ProductionType", blank=True, null=True, on_delete=models.SET_NULL)
+
+    url_routes = {
+        "edit": "competition_edit",
+        "import_text": "competition_import_text",
+        "delete": "delete_competition",
+    }
 
     def results(self):
         return self.placings.order_by("position")
