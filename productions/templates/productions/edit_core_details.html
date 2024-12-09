@@ -16,7 +16,7 @@
 {% block base_main %}
     <h2>Editing {{ production.supertype }}: {{ production.title }}</h2>
 
-    <form action="{{ production.get_edit_core_details_url }}" method="post" class="entry_form production_core_details_form">
+    <form action="{{ production.urls.edit_core_details }}" method="post" class="entry_form production_core_details_form">
         {% csrf_token %}
 
         {% include "shared/form_field.html" with field=form.title %}
