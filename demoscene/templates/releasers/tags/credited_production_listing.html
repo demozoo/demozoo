@@ -5,7 +5,7 @@
     {% if can_edit %}
         <ul class="actions">
             <li>
-                <a href="{% url 'new_production' %}?releaser_id={{ releaser.id }}" class="action_button icon-add edit_chunk" data-lightbox rel="nofollow">Add production</a>
+                {% action_button url=new_production_url icon="add" classname="edit_chunk" lightbox=True nofollow=True label="Add production" %}
             </li>
         </ul>
     {% endif %}

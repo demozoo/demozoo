@@ -1,6 +1,7 @@
 from itertools import groupby
 
 from django import template
+from django.urls import reverse
 
 from demoscene.models import Nick
 from productions.models import Screenshot
@@ -101,6 +102,7 @@ def combined_releases(context, releaser, include_tournaments=False):
         "releaser": releaser,
         "credits": credits,
         "can_edit": context.get("can_edit", False),
+        "new_production_url": f"{reverse('new_production')}?releaser_id={releaser.id}",
     }
 
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress %}
+{% load ui_tags compress %}
 
 
 {% block extra_js %}
@@ -13,7 +13,12 @@
 <section class="sceneorg">
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">{% csrf_token %}<button class="action_button icon-done">All done</button></form></li>
+            <li>
+                <form id="compofolders_done" action="{% url 'sceneorg_compofolders_done' party.id %}" method="post">
+                    {% csrf_token %}
+                    {% action_button icon="done" label="All done" %}
+                </form>
+            </li>
         </ul>
     {% endif %}
 

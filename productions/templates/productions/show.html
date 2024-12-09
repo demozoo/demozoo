@@ -50,7 +50,8 @@
         {% for blurb in blurbs %}
             <div class="blurb">
                 <ul class="actions">
-                    <li><a href="{% url 'production_edit_blurb' production.id blurb.id %}" class="action_button icon-edit" data-lightbox>Edit</a></li>
+                    {% url 'production_edit_blurb' production.id blurb.id as edit_blurb_url %}
+                    <li>{% action_button url=edit_blurb_url icon="edit" lightbox=True label="Edit" %}</li>
                 </ul>
                 <p>{{ blurb.body }}</p>
             </div>
