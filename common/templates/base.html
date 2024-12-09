@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load compress menu static %}
+{% load ui_tags compress menu static %}
 <head>
     <meta charset="utf-8" />
     <meta name="format-detection" content="telephone=no" />
@@ -73,9 +73,7 @@
                             {{ global_search_form.q }}
                             {{ global_search_form.category }}
                             <button type="submit">
-                                <svg class="icon">
-                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--search"></use>
-                                </svg>
+                                {% icon "search" %}
                             </button>
                         </form>
                     {% endblock %}
