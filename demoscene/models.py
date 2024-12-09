@@ -53,23 +53,31 @@ class Releaser(URLMixin, LocationMixin, PrefetchSnoopingMixin, Lockable):
 
     search_document = SearchVectorField(null=True, editable=False)
 
-    url_routes = {
-        "add_credit": "releaser_add_credit",
-        "edit_notes": "releaser_edit_notes",
-        "add_nick": "releaser_add_nick",
-        "edit_primary_nick": "releaser_edit_primary_nick",
-        "delete": "delete_releaser",
-        "edit_external_links": "releaser_edit_external_links",
-        "lock": "lock_releaser",
-        "protected": "releaser_protected",
-        "add_member": "group_add_member",
-        "add_subgroup": "group_add_subgroup",
-        "convert_to_scener": "group_convert_to_scener",
-        "add_group": "scener_add_group",
-        "edit_location": "scener_edit_location",
-        "edit_real_name": "scener_edit_real_name",
-        "convert_to_group": "scener_convert_to_group",
-    }
+    @property
+    def url_routes(self):
+        routes = {
+            "add_credit": "releaser_add_credit",
+            "edit_notes": "releaser_edit_notes",
+            "add_nick": "releaser_add_nick",
+            "edit_primary_nick": "releaser_edit_primary_nick",
+            "delete": "delete_releaser",
+            "edit_external_links": "releaser_edit_external_links",
+            "lock": "lock_releaser",
+            "protected": "releaser_protected",
+            "add_member": "group_add_member",
+            "add_subgroup": "group_add_subgroup",
+            "convert_to_scener": "group_convert_to_scener",
+            "add_group": "scener_add_group",
+            "edit_location": "scener_edit_location",
+            "edit_real_name": "scener_edit_real_name",
+            "convert_to_group": "scener_convert_to_group",
+        }
+        if self.is_group:
+            routes["history"] = "group_history"
+        else:
+            routes["history"] = "scener_history"
+
+        return routes
 
     def save(self, *args, **kwargs):
         # auto-populate updated_at; this will only happen on creation
@@ -94,12 +102,6 @@ class Releaser(URLMixin, LocationMixin, PrefetchSnoopingMixin, Lockable):
             return reverse("group", args=[str(self.id)])
         else:
             return reverse("scener", args=[str(self.id)])
-
-    def get_history_url(self):
-        if self.is_group:
-            return reverse("group_history", args=[str(self.id)])
-        else:
-            return reverse("scener_history", args=[str(self.id)])
 
     def productions(self):
         from productions.models import Production
