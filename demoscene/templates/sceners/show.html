@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags releaser_tags compress safe_markdown %}
+{% load demoscene_tags releaser_tags ui_tags compress safe_markdown %}
 
 {% block html_title %}{{ scener.name_with_affiliations }} - Demozoo{% endblock %}
 
@@ -25,14 +25,14 @@
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
             <ul class="actions">
                 {% if show_lock_button %}
-                    <li><a class="action_button icon-unlocked edit_chunk" data-lightbox href="{{ scener.urls.lock }}" title="Lock this scener">Unlocked</a></li>
+                    <li>{% action_button icon="unlocked" classname="edit_chunk" lightbox=True url=scener.urls.lock title="Lock this scener" label="Unlocked" %}</li>
                 {% endif %}
                 {% if show_locked_button %}
-                    <li><a class="action_button icon-locked edit_chunk" data-lightbox href="{{ scener.urls.protected }}">Protected</a></li>
+                    <li>{% action_button icon="locked" classname="edit_chunk" lightbox="True" url=scener.urls.protected label="Protected" %}</li>
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        <a href="{{ scener.urls.edit_primary_nick }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
+                        {% action_button url=scener.urls.edit_primary_nick icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit name" nofollow=True label="Edit" %}
                     </li>
                 {% endif %}
             </ul>
@@ -66,7 +66,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{{ scener.urls.add_nick }}" class="action_button icon-add" data-lightbox>Add another name</a></li>
+                    <li>{% action_button url=scener.urls.add_nick icon="add" lightbox=True label="Add another name" %}</li>
                 </ul>
             {% endif %}
         </div>
@@ -116,7 +116,7 @@
         {% if can_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{{ scener.urls.edit_external_links }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                    {% action_button url=scener.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" nofollow=True label="Edit" %}
                 </li>
             </ul>
         {% endif %}
@@ -131,7 +131,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{{ scener.urls.edit_notes }}">Edit notes</a></li>
+                    <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=scener.urls.edit_notes label="Edit notes" %}</li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -158,7 +158,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{{ scener.urls.add_group }}" class="action_button icon-add" data-lightbox>Add group</a></li>
+                    <li>{% action_button url=scener.urls.add_group icon="add" lightbox=True label="Add group" %}</li>
                 </ul>
             {% endif %}
         </div>
@@ -215,10 +215,10 @@
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
             {% if not scener.is_referenced %}
-                <li><a href="{{ scener.urls.delete }}" class="action_button icon-delete" data-lightbox>Delete scener</a></li>
+                <li>{% action_button url=scener.urls.delete icon="delete" lightbox=True label="Delete scener" %}</li>
             {% endif %}
             {% if scener.can_be_converted_to_group %}
-                <li><a href="{{ scener.urls.convert_to_group }}" class="action_button icon-switch" data-lightbox>Convert to group</a></li>
+                <li>{% action_button url=scener.urls.convert_to_group icon="switch" lightbox=True label="Convert to group" %}</li>
             {% endif %}
         </ul>
     {% endif %}

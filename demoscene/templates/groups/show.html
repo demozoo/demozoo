@@ -25,14 +25,14 @@
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
             <ul class="actions">
                 {% if show_lock_button %}
-                    <li><a class="action_button icon-unlocked edit_chunk" data-lightbox href="{{ group.urls.lock }}" title="Lock this group">Unlocked</a></li>
+                    <li>{% action_button icon="unlocked" classname="edit_chunk" lightbox=True url=group.urls.lock title="Lock this group" label="Unlocked" %}</li>
                 {% endif %}
                 {% if show_locked_button %}
-                    <li><a class="action_button icon-locked edit_chunk" data-lightbox href="{{ group.urls.protected }}">Protected</a></li>
+                    <li>{% action_button icon="locked" classname="edit_chunk" lightbox=True url=group.urls.protected label="Protected" %}</li>
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        <a href="{{ group.urls.edit_primary_nick }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit name" rel="nofollow">Edit</a>
+                        {% action_button url=group.urls.edit_primary_nick icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit name" nofollow=True label="Edit" %}
                     </li>
                 {% endif %}
             </ul>
@@ -72,7 +72,7 @@
                 </ul>
                 {% if can_edit %}
                     <ul class="listing_actions">
-                        <li><a href="{{ group.urls.add_nick }}" class="action_button icon-add" data-lightbox>Add another name</a></li>
+                        <li>{% action_button url=group.urls.add_nick icon="add" lightbox=True label="Add another name" %}</li>
                     </ul>
                 {% endif %}
             </div>
@@ -84,7 +84,7 @@
         {% if can_edit %}
             <ul class="actions">
                 <li>
-                    <a href="{{ group.urls.edit_external_links }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                    {% action_button url=group.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" nofollow=True label="Edit" %}
                 </li>
             </ul>
         {% endif %}
@@ -99,7 +99,7 @@
         <div class="editable_chunk panel notes_panel">
             {% if request.user.is_staff and site_is_writeable %}
                 <ul class="actions">
-                    <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{{ group.urls.edit_notes }}" title="Edit notes">Edit notes</a></li>
+                    <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=group.urls.edit_notes title="Edit notes" label="Edit notes" %}</li>
                 </ul>
             {% endif %}
             <div class="notes">
@@ -141,7 +141,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{{ group.urls.add_member }}" class="action_button icon-add" data-lightbox>Add member</a></li>
+                    <li>{% action_button url=group.urls.add_member icon="add" lightbox=True label="Add member" %}</li>
                 </ul>
             {% endif %}
         </div>
@@ -164,7 +164,7 @@
             </ul>
             {% if can_edit %}
                 <ul class="listing_actions">
-                    <li><a href="{{ group.urls.add_subgroup }}" class="action_button icon-add" data-lightbox>Add subgroup</a></li>
+                    <li>{% action_button url=group.urls.add_subgroup icon="add" lightbox=True label="Add subgroup" %}</li>
                 </ul>
             {% endif %}
         </div>
@@ -231,10 +231,10 @@
     {% if request.user.is_staff and site_is_writeable %}
         <ul class="maintenance_actions">
             {% if not group.is_referenced %}
-                <li><a href="{{ group.urls.delete }}" class="action_button icon-delete" data-lightbox>Delete group</a></li>
+                <li>{% action_button url=group.urls.delete icon="delete" lightbox=True label="Delete group" %}</li>
             {% endif %}
             {% if group.can_be_converted_to_scener %}
-                <li><a href="{{ group.urls.convert_to_scener }}" class="action_button icon-switch" data-lightbox>Convert to scener</a></li>
+                <li>{% action_button url=group.urls.convert_to_scener icon="switch" lightbox=True label="Convert to scener" %}</li>
             {% endif %}
         </ul>
     {% endif %}
