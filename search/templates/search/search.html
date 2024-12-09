@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load compress static %}
+{% load ui_tags compress static %}
 
 {% block html_title %}Search: {{ query }} - Demozoo{% endblock %}
 
@@ -32,9 +32,7 @@
                        placeholder="Search Demozoo"
                        type="search"
                        value="{{ query }}" />
-                <svg class="icon">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{% static 'images/icons.svg' %}#icon--search"></use>
-                </svg>
+                {% icon "search" %}
                 <noscript>
                     <button type="submit" class="button button--search">
                         <span class="button__text">Search</span>

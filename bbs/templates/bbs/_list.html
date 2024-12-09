@@ -5,9 +5,7 @@
         <li class="list__item">
             <div class="result">
                 <div class="media media--thumbnail">
-                    <svg class="icon">
-                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/images/icons.svg#icon--bbs"></use>
-                    </svg>
+                    {% icon "bbs" %}
                 </div>
                 <div>
                     <a href="{% url 'bbs' bbs.id %}">{{ bbs.name }}</a>
