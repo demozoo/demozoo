@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% load demoscene_tags compress laces %}
+{% load demoscene_tags ui_tags compress laces %}
 
 {% block base_main %}
 <header class="page__header">
     {% if perms.homepage.add_newsstory and site_is_writeable %}
         <ul class="actions">
             <li>
-                <a href="{% url 'add_news' %}" class="action_button icon-add">Add news</a>
+                {% action_button url="add_news" icon="add" label="Add news" %}
             </li>
         </ul>
     {% endif %}

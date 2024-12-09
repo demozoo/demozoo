@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load safe_markdown demoscene_tags laces %}
+{% load safe_markdown demoscene_tags ui_tags laces %}
 
 {% block html_title %}BBSes tagged '{{ tag.name }}' - Demozoo{% endblock %}
 
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'new_bbs' %}" class="action_button icon-add" data-lightbox>New BBS</a></li>
+            <li>{% action_button url="new_bbs" icon="add" lightbox=True label="New BBS" %}</li>
         </ul>
     {% endif %}
 

@@ -57,7 +57,7 @@
 <ul id="results_table"></ul>
 
 <ul class="actions">
-    <li><a href="{% url 'party' competition.party.id %}" class="action_button icon-done">Done</a></li>
+    <li>{% action_button url=competition.party.get_absolute_url icon="done" label="Done" %}</li>
 </ul>
 
     {% last_edited_by competition %}

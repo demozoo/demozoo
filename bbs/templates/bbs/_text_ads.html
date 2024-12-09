@@ -1,9 +1,11 @@
+{% load ui_tags %}
+
 <div class="panel editable_chunk text_ads_panel">
     <h3 class="panel__title">Text ads</h3>
     {% if can_edit %}
         <ul class="actions">
             <li>
-                <a href="{% url 'bbs_edit_text_ads' bbs.id %}" class="action_button icon-edit edit_chunk" data-lightbox rel="nofollow">Edit text ads</a>
+                {% action_button url=bbs.urls.edit_text_ads icon="edit" classname="edit_chunk" lightbox=True nofollow=True label="Edit text ads" %}
             </li>
         </ul>
     {% endif %}

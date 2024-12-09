@@ -8,7 +8,7 @@
     
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'new_scener' %}" class="action_button icon-add" data-lightbox>New scener</a></li>
+            <li>{% action_button url="new_scener" icon="add" lightbox=True label="New scener" %}</li>
         </ul>
     {% endif %}
     

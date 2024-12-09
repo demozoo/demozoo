@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress %}
+{% load demoscene_tags ui_tags compress %}
 
 
 {% block html_title %}Discussions - Demozoo{% endblock %}
@@ -9,7 +9,7 @@
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'forums_new_topic' %}" class="action_button icon-add" data-lightbox>New topic</a></li>
+            <li>{% action_button url="forums_new_topic" icon="add" lightbox=True label="New topic" %}</li>
         </ul>
     {% endif %}
 
