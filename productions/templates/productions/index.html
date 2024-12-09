@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load production_tags laces %}
+{% load production_tags ui_tags laces %}
 
 {% block html_title %}Productions - Demozoo{% endblock %}
 
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'new_production' %}" class="action_button icon-add" data-lightbox>New production</a></li>
+            <li>{% action_button url="new_production" icon="add" lightbox=True label="New production" %}</li>
         </ul>
     {% endif %}
 

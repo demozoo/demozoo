@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load compress %}
+{% load ui_tags compress %}
 
 
 {% block html_title %}Parties - Demozoo{% endblock %}
@@ -7,7 +7,7 @@
 {% block base_main %}
     {% if site_is_writeable %}
         <ul class="actions">
-            <li><a href="{% url 'new_party' %}" class="action_button icon-add" data-lightbox>New party</a></li>
+            <li>{% action_button url="new_party" icon="add" lightbox=True label="New party" %}</li>
         </ul>
     {% endif %}
 

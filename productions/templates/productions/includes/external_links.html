@@ -1,9 +1,11 @@
+{% load ui_tags %}
+
 <div class="editable_chunk panel external_links_panel">
     <h3 class="panel__title">External links</h3>
     {% if can_edit %}
         <ul class="actions">
             <li>
-                <a href="{{ production.urls.edit_external_links }}" class="action_button icon-edit edit_chunk" data-lightbox data-focus="empty" title="Edit external links" rel="nofollow">Edit</a>
+                {% action_button url=production.urls.edit_external_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit external links" nofollow=True label="Edit" %}
             </li>
         </ul>
     {% endif %}

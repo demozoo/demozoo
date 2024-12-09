@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load laces urlsub %}
+{% load ui_tags laces urlsub %}
 
 {% block html_title %}BBSes - Demozoo{% endblock %}
 
@@ -8,7 +8,7 @@
     <header class="page__header">
         {% if site_is_writeable %}
             <ul class="actions">
-                <li><a href="{% url 'new_bbs' %}" class="action_button icon-add" data-lightbox>New BBS</a></li>
+                <li>{% action_button url="new_bbs" icon="add" lightbox=True label="New BBS" %}</li>
             </ul>
         {% endif %}
         <h1 class="page__title">BBSes</h1>

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load safe_markdown compress %}
+{% load ui_tags safe_markdown compress %}
 
 {% block html_title %}Homepage banners - Demozoo{% endblock %}
 
@@ -8,7 +8,7 @@
 
     <ul class="actions">
         <li>
-            <a href="{% url 'add_banner' %}" class="action_button icon-add">Add new banner</a>
+            {% action_button url="add_banner" icon="add" label="Add new banner" %}
         </li>
     </ul>
 

@@ -1,10 +1,10 @@
-{% load safe_markdown %}
+{% load ui_tags safe_markdown %}
 
 {% if production.notes or request.user.is_staff %}
     <div class="editable_chunk panel notes_panel">
         {% if request.user.is_staff and site_is_writeable %}
             <ul class="actions">
-                <li><a class="action_button icon-edit edit_chunk" data-lightbox href="{{ production.urls.edit_notes }}" title="Edit notes">Edit notes</a></li>
+                <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=production.urls.edit_notes label="Edit notes" %}</li>
             </ul>
         {% endif %}
         <div class="notes">
