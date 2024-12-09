@@ -70,7 +70,7 @@
 
     {% if can_edit %}
         <ul class="actions">
-            <li><a href="{% url 'new_party' %}?party_series_name={{ party_series.name|urlencode }}" class="action_button icon-add" data-lightbox>New party edition</a></li>
+            <li>{% action_button url=new_edition_url icon="add" lightbox=True label="New party edition" %}</li>
         </ul>
     {% endif %}
     <div style="clear: both;"></div>

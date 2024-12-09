@@ -1,7 +1,6 @@
 import datetime
 import json
 import re
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -13,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.http import urlencode
 
 from comments.forms import CommentForm
 from comments.models import Comment
@@ -164,6 +164,7 @@ def show_series(request, party_series_id):
             "parties": party_series.parties.order_by("start_date_date", "name"),
             "prompt_to_edit": settings.SITE_IS_WRITEABLE,
             "can_edit": settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
+            "new_edition_url": f"{reverse('new_party')}?{urlencode({'party_series_name':party_series.name})}",
         },
     )
 

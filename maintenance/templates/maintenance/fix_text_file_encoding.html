@@ -1,5 +1,5 @@
 {% extends "maintenance/base.html" %}
-{% load compress %}
+{% load ui_tags compress %}
 
 {% block html_title %}{{ title }} - Demozoo{% endblock %}
 
@@ -46,7 +46,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="encoding" value="{{ encoding }}">
                     {% if return_to %}<input type="hidden" name="return_to" value="{{ return_to }}" />{% endif %}
-                    <button class="action_button icon-done">Accept this encoding</button>
+                    {% action_button icon="done" label="Accept this encoding" %}
                 </form>
             </li>
         </ul>
