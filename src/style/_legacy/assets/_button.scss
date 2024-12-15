@@ -156,12 +156,28 @@ a.action_button, button.action_button {
 
 /* Icon button */
 .icon-button {
+    svg.icon {
+        fill: #aaa;
+        height: 20px;
+        width: 20px;
+        margin-left: 2px;
+        margin-top: -3px;  /* fudge factor to align with text labels, e.g. "Edit notes" */
+        padding: 0;
+    }
     &:hover svg.icon {
         fill: #444;
     }
+    &:visited {
+        color: #888;
+    }
+    &:hover {
+        color: #444;
+    }
     background-color: transparent;
     border: none;
-    margin: 0;
-    padding: 0;
+    color: #888;  /* label darker than icon so that it doesn't look greyed-out */
     cursor: pointer;
+    margin: 0;
+    padding: 6px;
+    text-decoration: none;
 }
