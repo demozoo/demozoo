@@ -54,130 +54,38 @@
     </div>
 
     {% if alternative_nicks %}
-        {% include "releasers/includes/alternative_nicks.html" with releaser=group %}
+        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=group %}
     {% endif %}
 
-    {% include "shared/external_links.html" with obj=group %}
+    {% include "shared/external_links_panel.html" with obj=group %}
 
     {% if group.notes or request.user.is_staff %}
-        {% include "shared/notes.html" with obj=group %}
+        {% include "shared/notes_panel.html" with obj=group %}
     {% endif %}
 
     <div id="side_column">
         {% if supergroupships %}
-            <div class="panel supergroups_panel">
-                <h3 class="panel__title">Subgroup of</h3>
-                <ul class="memberships">
-                    {% for membership in supergroupships %}
-                        <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-                            <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
-                            {% location_flag membership.group %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% include "groups/includes/supergroups_panel.html" %}
         {% endif %}
 
-        <div class="panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Members</h3>
+        {% include "groups/includes/members_panel.html" %}
 
-            <ul class="memberships">
-                {% for membership in memberships %}
-                    <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
-                        {% location_flag membership.member %}
-                        {% if can_edit %}
-                            <a href="{% url 'group_edit_membership' group.id membership.id %}" class="edit_membership" data-lightbox>
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                <ul class="listing_actions">
-                    <li>{% action_button url=group.urls.add_member icon="add" lightbox=True label="Add member" %}</li>
-                </ul>
-            {% endif %}
-        </div>
-
-        <div class="panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Subgroups</h3>
-
-            <ul class="memberships">
-                {% for membership in subgroupships %}
-                    <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
-                        {% location_flag membership.member %}
-                        {% if can_edit %}
-                            <a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="edit_subgroup" data-lightbox>
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                <ul class="listing_actions">
-                    <li>{% action_button url=group.urls.add_subgroup icon="add" lightbox=True label="Add subgroup" %}</li>
-                </ul>
-            {% endif %}
-        </div>
+        {% include "groups/includes/subgroups_panel.html" %}
 
         {% if bbs_affiliations %}
-            <div class="panel bbs_panel">
-                <h3 class="panel__title">BBS affiliations</h3>
-
-                <ul class="bbses">
-                    {% for affiliation in bbs_affiliations %}
-                        <li class="bbs">
-                            <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
-                            {% location_flag affiliation.bbs %}
-                            {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% include "groups/includes/bbs_affiliations_panel.html" %}
         {% endif %}
     </div>
 
     <div id="main_column">
         {% if parties_organised %}
-            <div class="panel parties_organised_panel">
-                <h3 class="panel__title">Organiser of</h3>
-                <ul class="parties">
-                    {% for organiser in parties_organised %}
-                        {% with party=organiser.party %}
-                            <li>
-                                {% if party.is_cancelled %}<del>{% endif %}
-                                <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
-                                    {% if party.is_online %}
-                                        <img src="/static/images/icons/computer.png" alt="[Online]" />
-                                    {% elif party.country_code %}
-                                        <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
-                                    {% endif %}
-                                    {{ party.name }}
-                                </a>
-                                {% if party.start_date %}
-                                    - {% date_range party.start_date party.end_date %}
-                                {% endif %}
-                                {% if party.is_cancelled %}</del>{% endif %}
-                                {% if organiser.role %}({{ organiser.role }}){% endif %}
-                            </li>
-                        {% endwith %}
-                    {% endfor %}
-                </ul>
-            </div>
+            {% include "releasers/includes/parties_organised_panel.html" %}
         {% endif %}
 
         {% combined_releases group %}
 
         {% if member_productions %}
-            <div class="panel">
-                <h3 class="panel__title member_productions_header">Member productions ({{ member_productions|length }})</h3>
-
-                {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
-            </div>
+            {% include "groups/includes/member_productions_panel.html" %}
         {% endif %}
     </div>
 

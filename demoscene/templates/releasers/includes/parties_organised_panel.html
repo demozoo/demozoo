@@ -1,0 +1,27 @@
+{% load demoscene_tags %}
+
+<div class="panel parties_organised_panel">
+    <h3 class="panel__title">Organiser of</h3>
+    <ul class="parties">
+        {% for organiser in parties_organised %}
+            {% with party=organiser.party %}
+                <li>
+                    {% if party.is_cancelled %}<del>{% endif %}
+                    <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
+                        {% if party.is_online %}
+                            <img src="/static/images/icons/computer.png" alt="[Online]" />
+                        {% elif party.country_code %}
+                            <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
+                        {% endif %}
+                        {{ party.name }}
+                    </a>
+                    {% if party.start_date %}
+                        - {% date_range party.start_date party.end_date %}
+                    {% endif %}
+                    {% if party.is_cancelled %}</del>{% endif %}
+                    {% if organiser.role %}({{ organiser.role }}){% endif %}
+                </li>
+            {% endwith %}
+        {% endfor %}
+    </ul>
+</div>

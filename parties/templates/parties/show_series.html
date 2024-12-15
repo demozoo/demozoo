@@ -36,11 +36,11 @@
     </div>
 
     {% if external_links or can_edit %}
-        {% include "shared/external_links.html" with obj=party_series %}
+        {% include "shared/external_links_panel.html" with obj=party_series %}
     {% endif %}
 
     {% if party_series.notes or request.user.is_staff %}
-        {% include "shared/notes.html" with obj=party_series %}
+        {% include "shared/notes_panel.html" with obj=party_series %}
     {% endif %}
 
     {% if can_edit %}

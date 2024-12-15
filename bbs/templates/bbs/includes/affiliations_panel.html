@@ -1,0 +1,24 @@
+{% load ui_tags %}
+
+<div class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
+    <h3 class="panel__title">Affiliated with</h3>
+
+    <ul class="affiliations">
+        {% for affiliation in affiliations %}
+            <li class="group">
+                <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
+                {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
+                {% if can_edit %}
+                    <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="edit_affiliation" data-lightbox>
+                        <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <ul class="listing_actions">
+            <li>{% action_button url=bbs.urls.add_affiliation icon="add" lightbox=True label="Add group" %}</li>
+        </ul>
+    {% endif %}
+</div>

@@ -1,0 +1,8 @@
+<div class="panel results_file_panel">
+    <h3 class="panel__title">Results file</h3>
+    <ul class="results_files">
+        {% for file in results_files %}
+            <li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
+        {% endfor %}
+    </ul>
+</div>

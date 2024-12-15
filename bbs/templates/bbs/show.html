@@ -55,84 +55,28 @@
     </div>
 
     {% if external_links or can_edit %}
-        {% include "shared/external_links.html" with obj=bbs %}
+        {% include "shared/external_links_panel.html" with obj=bbs %}
     {% endif %}
 
     {% if bbs.notes or request.user.is_staff %}
-        {% include "shared/notes.html" with obj=bbs %}
+        {% include "shared/notes_panel.html" with obj=bbs %}
     {% endif %}
 
     <div id="side_column">
-        <div class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Staff</h3>
+        {% include "bbs/includes/staff_panel.html" %}
 
-            <ul class="staff">
-                {% for operator in staff %}
-                    <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
-                        {% location_flag operator.releaser %}
-                        - {{ operator.get_role_display }}
-                        {% if can_edit %}
-                            <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="edit_operator" data-lightbox>
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit staff member" title="Edit staff member" />
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                <ul class="listing_actions">
-                    <li>{% action_button url=bbs.urls.add_operator icon="add" lightbox=True label="Add staff member" %}</li>
-                </ul>
-            {% endif %}
-        </div>
-
-        <div class="panel affiliations_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_affiliations %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Affiliated with</h3>
-
-            <ul class="affiliations">
-                {% for affiliation in affiliations %}
-                    <li class="group">
-                        <a href="{% url 'group' affiliation.group.id %}">{{ affiliation.group.name }}</a>
-                        {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
-                        {% if can_edit %}
-                            <a href="{% url 'bbs_edit_affiliation' bbs.id affiliation.id %}" class="edit_affiliation" data-lightbox>
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit affiliation" title="Edit affiliation" />
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                <ul class="listing_actions">
-                    <li>{% action_button url=bbs.urls.add_affiliation icon="add" lightbox=True label="Add group" %}</li>
-                </ul>
-            {% endif %}
-        </div>
+        {% include "bbs/includes/affiliations_panel.html" %}
     </div>
     
     <div id="main_column">
         {% if text_ads or can_edit %}
-            {% include "bbs/_text_ads.html" %}
+            {% include "bbs/includes/text_ads_panel.html" %}
         {% endif %}
 
-        {% include "bbs/_tags.html" %}
+        {% include "bbs/includes/tags_panel.html" %}
 
         {% if bbstros or can_edit %}
-            <div class="panel bbstros_panel editable_chunk">
-                <h3 class="panel__title">
-                    Promoted in
-                </h3>
-                {% if can_edit %}
-                    <ul class="actions">
-                        <li>{% edit_button url=bbs.urls.edit_bbstros classname="edit_chunk" lightbox=True title="Edit production list" %}</li>
-                    </ul>
-                {% endif %}
-
-                {% if bbstros %}
-                    {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
-                {% endif %}
-            </div>
+            {% include "bbs/includes/bbstros_panel.html" %}
         {% endif %}
     </div>
 

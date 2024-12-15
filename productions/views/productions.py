@@ -1064,7 +1064,7 @@ def render_credits_update(request, production):
         can_edit = prompt_to_edit and request.user.is_authenticated
 
         credits_html = render_to_string(
-            "productions/includes/credits.html",
+            "productions/includes/credits_panel.html",
             {
                 "production": production,
                 "credits": production.credits_for_listing(),

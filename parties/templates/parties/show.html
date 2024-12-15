@@ -133,64 +133,14 @@
         </ul>
     </div>
 
-    <div class="editable_chunk panel organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
-        <h3 class="panel__title">Organisers</h3>
-
-        {% regroup organisers by releaser.is_group as orga_type_list %}
-        {% for is_group, orga_list in orga_type_list %}
-            {% if is_group %}
-                <ul class="organisers">
-                    <li>Presented by:</li>
-
-                    {% for organiser in orga_list %}
-                        <li class="group">
-                            <a href="{% url 'group' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                            {% if organiser.role %}({{ organiser.role}}){% endif %}
-                            {% if can_edit %}
-                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="edit_organiser" data-lightbox>
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
-                                </a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <ul class="organisers">
-                    {% for organiser in orga_list %}
-                        <li class="scener">
-                            <a href="{% url 'scener' organiser.releaser.id %}">{{ organiser.releaser.name }}</a>
-                            {% location_flag organiser.releaser %}
-                            {% if organiser.role %}({{ organiser.role}}){% endif %}
-                            {% if can_edit %}
-                                <a href="{% url 'party_edit_organiser' party.id organiser.id %}" class="edit_organiser" data-lightbox>
-                                    <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit organiser" title="Edit organiser" />
-                                </a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endfor %}
-        {% if can_edit %}
-            <ul class="listing_actions">
-                <li>{% action_button url=party.urls.add_organiser icon="add" lightbox=True label="Add organiser" %}</li>
-            </ul>
-        {% endif %}
-    </div>
+    {% include "parties/includes/organisers_panel.html" %}
 
     {% if results_files %}
-        <div class="panel results_file_panel">
-            <h3 class="panel__title">Results file</h3>
-            <ul class="results_files">
-                {% for file in results_files %}
-                    <li><a href="{% url 'party_results_file' party.id file.id %}">{{ file.filename }}</a> ({{ file.filesize }} bytes)</li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% include "parties/includes/results_file_panel.html" %}
     {% endif %}
 
     {% if external_links or can_edit %}
-        {% include "shared/external_links.html" with obj=party %}
+        {% include "shared/external_links_panel.html" with obj=party %}
     {% endif %}
 
     {% if parties_in_series.count > 1 %}
@@ -213,141 +163,19 @@
     {% endif %}
 
     {% if party.notes or request.user.is_staff %}
-        {% include "shared/notes.html" with obj=party %}
+        {% include "shared/notes_panel.html" with obj=party %}
     {% endif %}
 
     {% if invitations or can_edit %}
-        <div class="panel invitations_panel editable_chunk">
-            <h3 class="panel__title">
-                Invitation{{ invitations|length|pluralize }}
-            </h3>
-            {% if can_edit %}
-                <ul class="actions">
-                    <li>{% edit_button url=party.urls.edit_invitations classname="edit_chunk" lightbox=True title="Edit invitations" %}</li>
-                </ul>
-            {% endif %}
-
-            {% if invitations %}
-                {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
-            {% endif %}
-        </div>
+        {% include "parties/includes/invitations_panel.html" %}
     {% endif %}
 
     {% if releases or can_edit %}
-        <div class="panel releases_panel editable_chunk">
-            <h3 class="panel__title">Releases</h3>
-            {% if can_edit %}
-                <ul class="actions">
-                    <li>{% edit_button url=party.urls.edit_releases classname="edit_chunk" lightbox=True title="Edit releases" %}</li>
-                </ul>
-            {% endif %}
-
-            {% if releases %}
-                {% production_listing releases show_screenshots=1 show_prod_types=1 %}
-            {% endif %}
-        </div>
+        {% include "parties/includes/releases_panel.html" %}
     {% endif %}
 
     {% if competitions_with_placings_and_screenshots or tournaments or can_edit %}
-        <div class="panel results_panel">
-            <div class="results_menu_column">
-                <div class="results_menu">
-                    <h3 class="panel__title">Results</h3>
-                    {% if competitions_with_placings_and_screenshots or tournaments %}
-                        <ul class="results-menu__list">
-                            {% for compo, placings in competitions_with_placings_and_screenshots %}
-                                <li><a href="#competition_{{ compo.id }}">{{ compo.name}}</a></li>
-                            {% endfor %}
-                            {% for tournament in tournaments %}
-                                <li><a href="#tournament_{{ tournament.id }}">{{ tournament.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="results_body">
-                {% for compo, placings in competitions_with_placings_and_screenshots %}
-                    <section class="competition editable_chunk" id="competition_{{ compo.id }}">
-
-                        {% if can_edit %}
-                            <ul class="actions">
-                                <li>{% edit_button classname="edit_chunk" url=compo.urls.edit title="Edit competition" %}</li>
-                                {% if request.user.is_staff and not placings %}
-                                    <li>{% icon_button icon="delete" classname="edit_chunk" lightbox=True url=compo.urls.delete label="Delete competition" %}</li>
-                                {% endif %}
-                            </ul>
-                        {% endif %}
-
-                        <h4 class="competition__heading">{{ compo.name }}</h4>
-
-                        {% if placings %}
-                            {% include "competitions/includes/results.html" %}
-                        {% endif %}
-                    </section>
-                {% endfor %}
-
-                {% for tournament in tournaments %}
-                    <section class="tournament" id="tournament_{{ tournament.id }}">
-                        <h4 class="tournament__heading">{{ tournament.name }}</h4>
-                        <ul class="external_links">
-                            <li><a href="{{ tournament.livecode_url }}" style="background-image: url('/static/images/icons/external_sites/livecode.png')" title="{{ party.name }} {{ tournament.name }} on livecode.demozoo.org">Livecode</a></li>
-                            {% for link in tournament.external_links.all %}
-                                <li>{{ link.html_link|safe }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% with tournament.phases.all as phases %}
-                            {% for phase in phases %}
-                                {% if phases|length > 1 or phase.staff.all %}
-                                    <div>
-                                        {% if phases|length > 1 %}<b>{{ phase.name }}</b>{% endif %}
-                                        {% if phases|length > 1 and phase.staff.all %}-{% endif %}
-                                        {% regroup phase.staff.all by get_role_display as role_list %}
-                                        {% for role in role_list %}
-                                            {{ role.grouper }}:
-                                            <ul class="staff">
-                                                {% for staff_member in role.list %}
-                                                    {% if staff_member.nick %}
-                                                        <li class="{% if staff_member.nick.releaser.is_group %}group{% else %}scener{% endif %}">
-                                                            <a href="{{ staff_member.nick.releaser.get_absolute_url }}">{{ staff_member.nick.name }}</a>{% if not forloop.last %},{% endif %}
-                                                        </li>
-                                                    {% else %}
-                                                        <li class="scener">
-                                                            {{ staff_member.name }}{% if not forloop.last %},{% endif %}
-                                                        </li>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </ul>
-                                            {% if not forloop.last %}-{% endif %}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                {% if phase.external_links.all %}
-                                    <ul class="external_links">
-                                        {% for link in phase.external_links.all %}
-                                            <li>{{ link.html_link|safe }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                                {% if phase.entries.all|length > 4 %}
-                                    {% include "tournaments/_results_table.html" %}
-                                {% else %}
-                                    {% include "tournaments/_results_bar.html" %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endwith %}
-                    </section>
-                {% endfor %}
-
-                {% if can_edit %}
-                    <ul class="actions">
-                        <li>
-                            {% action_button icon="add" lightbox=True url=party.urls.add_competition label="Add competition" %}
-                        </li>
-                    </ul>
-                {% endif %}
-            </div>
-        </div>
+        {% include "parties/includes/results_panel.html" %}
     {% endif %}
 
     {% last_edited_by party %}

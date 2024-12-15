@@ -1,0 +1,15 @@
+{% load ui_tags %}
+
+<div class="panel bbs_panel">
+    <h3 class="panel__title">BBS affiliations</h3>
+
+    <ul class="bbses">
+        {% for affiliation in bbs_affiliations %}
+            <li class="bbs">
+                <a href="{% url 'bbs' affiliation.bbs.id %}">{{ affiliation.bbs.name }}</a>
+                {% location_flag affiliation.bbs %}
+                {% if affiliation.role %}- {{ affiliation.get_role_display }}{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

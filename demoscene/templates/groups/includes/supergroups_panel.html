@@ -1,0 +1,13 @@
+{% load ui_tags %}
+
+<div class="panel supergroups_panel">
+    <h3 class="panel__title">Subgroup of</h3>
+    <ul class="memberships">
+        {% for membership in supergroupships %}
+            <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+                <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="ex-parent group"{% endif %}>{{ membership.group.name }}</a>
+                {% location_flag membership.group %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
