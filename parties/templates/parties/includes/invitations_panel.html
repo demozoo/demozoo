@@ -4,13 +4,15 @@
 {% block classnames %}invitations_panel editable_chunk{% endblock %}
 {% block title %}Invitation{{ invitations|length|pluralize }}{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=party.urls.edit_invitations classname="edit_chunk" lightbox=True title="Edit invitations" %}</li>
         </ul>
     {% endif %}
+{% endblock %}
 
+{% block body %}
     {% if invitations %}
         {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
     {% endif %}

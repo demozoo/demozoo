@@ -11,7 +11,7 @@
 {% block classnames %}editable_chunk external_links_panel{% endblock %}
 {% block title %}External links{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -19,6 +19,9 @@
             </li>
         </ul>
     {% endif %}
+{% endblock %}
+
+{% block body %}
     <ul class="external_links">
         {% for link in external_links %}
             <li>{{ link.html_link|safe }}</li>
