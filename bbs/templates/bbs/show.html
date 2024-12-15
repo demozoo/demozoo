@@ -63,9 +63,9 @@
     {% endif %}
 
     <div id="side_column">
-        {% include "bbs/includes/staff_panel.html" %}
+        {% include "bbs/includes/staff_panel.html" with is_editing=editing_staff %}
 
-        {% include "bbs/includes/affiliations_panel.html" %}
+        {% include "bbs/includes/affiliations_panel.html" with is_editing=editing_affiliations %}
     </div>
     
     <div id="main_column">

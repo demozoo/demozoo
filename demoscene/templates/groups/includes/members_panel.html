@@ -1,7 +1,7 @@
-{% extends "shared/panel.html" %}
+{% extends "shared/edit_toggle_panel.html" %}
 {% load ui_tags %}
 
-{% block classnames %}members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}{% endblock %}
+{% block classnames %}{{ block.super }} members_panel{% endblock %}
 {% block title %}Members{% endblock %}
 
 {% block body %}

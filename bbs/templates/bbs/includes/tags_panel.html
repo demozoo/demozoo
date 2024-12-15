@@ -1,6 +1,6 @@
-{% extends "shared/panel.html" %}
+{% extends "shared/edit_toggle_panel.html" %}
 
-{% block classnames %}editable_chunk tags_panel {% if can_edit %}edit_toggle{% endif %}{% endblock %}
+{% block classnames %}{{ block.super }} tags_panel{% endblock %}
 {% block title %}Tags{% endblock %}
 
 {% block body %}

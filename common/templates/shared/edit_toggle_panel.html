@@ -1,0 +1,4 @@
+{% extends "shared/panel.html" %}
+{% load ui_tags %}
+
+{% block classnames %}editable_chunk {% if can_edit %}edit_toggle {% if is_editing %}editing{% endif %}{% endif %}{% endblock %}

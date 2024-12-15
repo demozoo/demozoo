@@ -122,7 +122,7 @@
     {% endif %}
 
     <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-        {% include "productions/includes/credits_panel.html" %}
+        {% include "productions/includes/credits_panel.html" with is_editing=editing_credits %}
 
         {% if production.can_have_pack_members %}
             {% include "productions/includes/pack_contents_panel.html" %}

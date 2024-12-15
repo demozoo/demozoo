@@ -133,7 +133,7 @@
         </ul>
     </div>
 
-    {% include "parties/includes/organisers_panel.html" %}
+    {% include "parties/includes/organisers_panel.html" with is_editing=editing_organisers %}
 
     {% if results_files %}
         {% include "parties/includes/results_file_panel.html" %}
