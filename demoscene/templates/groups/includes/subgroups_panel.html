@@ -1,7 +1,7 @@
-{% extends "shared/panel.html" %}
+{% extends "shared/edit_toggle_panel.html" %}
 {% load ui_tags %}
 
-{% block classnames %}subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}{% endblock %}
+{% block classnames %}{{ block.super }} subgroups_panel{% endblock %}
 {% block title %}Subgroups{% endblock %}
 
 {% block body %}

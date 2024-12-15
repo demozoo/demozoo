@@ -49,7 +49,7 @@
     </div>
 
     {% if alternative_nicks %}
-        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=scener %}
+        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=scener is_editing=editing_nicks %}
     {% endif %}
 
     <div>
@@ -97,7 +97,7 @@
     {% endif %}
 
     <div id="side_column">
-        {% include "sceners/includes/groups_panel.html" %}
+        {% include "sceners/includes/groups_panel.html" with is_editing=editing_groups %}
     </div>
     
     <div id="main_column">

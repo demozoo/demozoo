@@ -1068,7 +1068,7 @@ def render_credits_update(request, production):
             {
                 "production": production,
                 "credits": production.credits_for_listing(),
-                "editing_credits": True,
+                "is_editing": True,
                 "prompt_to_edit": prompt_to_edit,
                 "can_edit": can_edit,
             },

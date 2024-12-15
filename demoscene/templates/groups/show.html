@@ -54,7 +54,7 @@
     </div>
 
     {% if alternative_nicks %}
-        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=group %}
+        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=group is_editing=editing_nicks %}
     {% endif %}
 
     {% include "shared/external_links_panel.html" with obj=group %}
@@ -68,9 +68,9 @@
             {% include "groups/includes/supergroups_panel.html" %}
         {% endif %}
 
-        {% include "groups/includes/members_panel.html" %}
+        {% include "groups/includes/members_panel.html" with is_editing=editing_members %}
 
-        {% include "groups/includes/subgroups_panel.html" %}
+        {% include "groups/includes/subgroups_panel.html" with is_editing=editing_subgroups %}
 
         {% if bbs_affiliations %}
             {% include "groups/includes/bbs_affiliations_panel.html" %}
