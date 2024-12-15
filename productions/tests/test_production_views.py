@@ -1507,7 +1507,7 @@ class TestAddCredit(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
-        self.assertContains(response, "edit_toggle editing")
+        self.assertContains(response, "editable_chunk editing")
 
 
 class TestEditCredit(TestCase):

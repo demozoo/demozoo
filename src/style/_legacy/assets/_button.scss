@@ -159,4 +159,9 @@ a.action_button, button.action_button {
     &:hover svg.icon {
         fill: #444;
     }
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
 }

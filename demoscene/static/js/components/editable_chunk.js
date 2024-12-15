@@ -8,33 +8,39 @@ function initEditChunkHover(context) {
 
 function initEditToggle(elem) {
     var panel = $(elem);
-    var actions = $('<ul class="actions"></ul>');
-    var editButton = $('<button class="action_button edit_chunk"></button>');
+    var actionsTemplate = $('[data-edit-toggle-actions]', elem);
+    actionsTemplate.replaceWith(actionsTemplate.html());
+    var editLi = $('[data-edit-toggle-edit]', elem);
+    var doneLi = $('[data-edit-toggle-done]', elem);
 
     function updateEditButtonState() {
         if (panel.hasClass('editing')) {
             panel.removeClass('hide_edit_controls');
-            editButton.removeClass('icon-edit').addClass('icon-done').text('Done');
+            editLi.hide();
+            doneLi.show();
             panel.trigger('panelEditEnable')
         } else {
             panel.addClass('hide_edit_controls');
-            editButton.removeClass('icon-done').addClass('icon-edit').text('Edit');
+            doneLi.hide();
+            editLi.show();
             panel.trigger('panelEditDisable')
         }
     }
 
-    actions.append(editButton.wrap('<li></li>'));
-    actions.insertAfter(panel.find('h3'));
     updateEditButtonState();
 
-    editButton.click(function() {
-        panel.toggleClass('editing');
+    editLi.find('button').click(function() {
+        panel.addClass('editing');
+        updateEditButtonState();
+    });
+    doneLi.find('button').click(function() {
+        panel.removeClass('editing');
         updateEditButtonState();
     });
 }
 
 $(function() {
-    $('.edit_toggle').each(function() {
+    $('[data-edit-toggle]').each(function() {
         initEditToggle(this);
     });
     initEditChunkHover();
