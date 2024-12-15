@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel editable_chunk text_ads_panel">
-    <h3 class="panel__title">Text ads</h3>
+{% block classnames %}editable_chunk text_ads_panel{% endblock %}
+{% block title %}Text ads{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -14,4 +17,4 @@
             <li><a href="{% url 'bbs_text_ad' bbs.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

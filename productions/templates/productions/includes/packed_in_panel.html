@@ -1,6 +1,9 @@
+{% extends "shared/panel.html" %}
 {% load production_tags %}
 
-<div class="packed_in_panel panel">
-    <h3 class="panel__title">Packed in:</h3>
+{% block classnames %}packed_in_panel{% endblock %}
+{% block title %}Packed in:{% endblock %}
+
+{% block body %}
     {% production_listing packed_in_productions show_screenshots=1 %}
-</div>
+{% endblock %}

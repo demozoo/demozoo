@@ -1,9 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load production_tags ui_tags %}
 
-<div class="panel bbstros_panel editable_chunk">
-    <h3 class="panel__title">
-        Promoted in
-    </h3>
+{% block classnames %}bbstros_panel editable_chunk{% endblock %}
+{% block title %}Promoted in{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=bbs.urls.edit_bbstros classname="edit_chunk" lightbox=True title="Edit production list" %}</li>
@@ -13,4 +14,4 @@
     {% if bbstros %}
         {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
     {% endif %}
-</div>
+{% endblock %}

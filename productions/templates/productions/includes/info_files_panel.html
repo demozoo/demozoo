@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel editable_chunk info_files_panel">
-    <h3 class="panel__title">Info file{{ info_files|length|pluralize }}</h3>
+{% block classnames %}editable_chunk info_files_panel{% endblock %}
+{% block title %}Info file{{ info_files|length|pluralize }}{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -14,4 +17,4 @@
             <li><a href="{% url 'production_info_file' production.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

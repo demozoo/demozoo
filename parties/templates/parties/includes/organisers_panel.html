@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="editable_chunk panel organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}">
-    <h3 class="panel__title">Organisers</h3>
+{% block classnames %}editable_chunk organisers_panel {% if can_edit %}edit_toggle {% if editing_organisers %}editing{% endif %}{% endif %}{% endblock %}
+{% block title %}Organisers{% endblock %}
 
+{% block body %}
     {% regroup organisers by releaser.is_group as orga_type_list %}
     {% for is_group, orga_list in orga_type_list %}
         {% if is_group %}
@@ -43,4 +45,4 @@
             <li>{% action_button url=party.urls.add_organiser icon="add" lightbox=True label="Add organiser" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}

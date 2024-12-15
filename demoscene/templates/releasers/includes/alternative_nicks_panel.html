@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load releaser_tags ui_tags %}
 
-<div class="panel alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}">
-    <h3 class="panel__title">Also known as</h3>
+{% block classnames %}alternative_nicks_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_nicks %}editing{% endif %}{% endif %}{% endblock %}
+{% block title %}Also known as{% endblock %}
 
+{% block body %}
     <ul class="nicks">
         {% for nick in alternative_nicks %}
             <li>
@@ -20,4 +22,4 @@
             <li>{% action_button url=releaser.urls.add_nick icon="add" lightbox=True label="Add another name" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}

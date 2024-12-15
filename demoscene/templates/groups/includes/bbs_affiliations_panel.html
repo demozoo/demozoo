@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel bbs_panel">
-    <h3 class="panel__title">BBS affiliations</h3>
+{% block classnames %}bbs_panel{% endblock %}
+{% block title %}BBS affiliations{% endblock %}
 
+{% block body %}
     <ul class="bbses">
         {% for affiliation in bbs_affiliations %}
             <li class="bbs">
@@ -12,4 +14,4 @@
             </li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

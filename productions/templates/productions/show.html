@@ -82,7 +82,9 @@
                 {% include "shared/external_links_panel.html" with obj=production %}
             {% endif %}
 
-            {% include "productions/includes/tags_panel.html" %}
+            {% if tags or can_edit %}
+                {% include "productions/includes/tags_panel.html" %}
+            {% endif %}
 
             {% if can_edit %}
                 <div class="panel tell_us_something_panel">

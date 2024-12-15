@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="editable_chunk panel downloads_panel">
-    <h3 class="panel__title">Downloads</h3>
+{% block classnames %}editable_chunk downloads_panel{% endblock %}
+{% block title %}Downloads{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -16,4 +19,4 @@
             </li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load production_tags ui_tags %}
 
-<div class="soundtracks_panel panel editable_chunk">
-    <h3 class="panel__title">Soundtrack</h3>
+{% block classnames %}soundtracks_panel editable_chunk{% endblock %}
+{% block title %}Soundtrack{% endblock %}
 
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -12,4 +14,4 @@
     {% endif %}
 
     {% production_listing soundtracks %}
-</div>
+{% endblock %}
