@@ -32,7 +32,7 @@
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
-                        {% action_button url=scener.urls.edit_primary_nick icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit name" nofollow=True label="Edit" %}
+                        {% edit_button url=scener.urls.edit_primary_nick classname="edit_chunk" lightbox=True focus_empty=True title="Edit name" nofollow=True %}
                     </li>
                 {% endif %}
             </ul>

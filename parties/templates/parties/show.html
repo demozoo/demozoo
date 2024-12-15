@@ -92,14 +92,14 @@
 
         {% if prompt_to_edit %}
             <ul class="actions">
-                <li>
-                    {% action_button url=party.urls.edit icon="edit" classname="edit_chunk" lightbox=True title="Edit party details" label="Edit" %}
-                </li>
                 {% if request.user.is_staff %}
                     <li>
                         {% action_button url=party.urls.edit_share_image icon="picture_edit" label="Edit social share image" %}
                     </li>
                 {% endif %}
+                <li>
+                    {% edit_button url=party.urls.edit classname="edit_chunk" lightbox=True title="Edit party details" %}
+                </li>
             </ul>
         {% endif %}
 
@@ -223,7 +223,7 @@
             </h3>
             {% if can_edit %}
                 <ul class="actions">
-                    <li>{% action_button url=party.urls.edit_invitations icon="edit" classname="edit_chunk" lightbox=True label="Edit invitations" %}</li>
+                    <li>{% edit_button url=party.urls.edit_invitations classname="edit_chunk" lightbox=True title="Edit invitations" %}</li>
                 </ul>
             {% endif %}
 
@@ -238,7 +238,7 @@
             <h3 class="panel__title">Releases</h3>
             {% if can_edit %}
                 <ul class="actions">
-                    <li>{% action_button url=party.urls.edit_releases icon="edit" classname="edit_chunk" lightbox=True label="Edit releases" %}</li>
+                    <li>{% edit_button url=party.urls.edit_releases classname="edit_chunk" lightbox=True title="Edit releases" %}</li>
                 </ul>
             {% endif %}
 
@@ -272,7 +272,7 @@
 
                         {% if can_edit %}
                             <ul class="actions">
-                                <li>{% action_button icon="edit" classname="edit_chunk" url=compo.urls.edit label="Edit competition" %}</li>
+                                <li>{% edit_button classname="edit_chunk" url=compo.urls.edit title="Edit competition" %}</li>
                                 {% if request.user.is_staff and not placings %}
                                     <li>{% action_button icon="delete" lightbox=True url=compo.urls.delete label="Delete competition" %}</li>
                                 {% endif %}

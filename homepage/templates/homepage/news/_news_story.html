@@ -7,7 +7,7 @@
         </li>
         {% if perms.homepage.change_newsstory and site_is_writeable %}
             <li>
-                {% action_button url=story.urls.edit icon="edit" label="Edit" %}
+                {% edit_button url=story.urls.edit title="Edit news story" %}
             </li>
         {% endif %}
     </ul>

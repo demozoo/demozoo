@@ -153,3 +153,10 @@ a.action_button, button.action_button {
         background-image: url('/static/images/icons/wrench.png');
     }
 }
+
+/* Icon button */
+.icon-button {
+    &:hover svg.icon {
+        fill: #444;
+    }
+}

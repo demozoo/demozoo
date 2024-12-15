@@ -10,7 +10,7 @@
                 <li>{% action_button icon="locked" classname="edit_chunk" lightbox=True url=production.urls.protected nofollow=True label="Protected" %}</li>
             {% endif %}
             {% if show_edit_button %}
-                <li>{% action_button icon="edit" classname="edit_chunk" lightbox=True url=production.urls.edit_core_details title="Edit production details" nofollow=True label="Edit" %}</li>
+                <li>{% edit_button classname="edit_chunk" lightbox=True url=production.urls.edit_core_details title="Edit production details" nofollow=True %}</li>
             {% endif %}
             {% if show_back_button %}
                 <li>{% action_button icon="back" url=production.get_absolute_url label="Back to production" %}</li>

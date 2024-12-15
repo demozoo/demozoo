@@ -1,0 +1,4 @@
+{% load ui_tags %}
+<{{ tag }}{% if url %} href="{{ url }}"{% endif %} class="icon-button{% if classname %} {{ classname }}{% endif %}"{% if lightbox %} data-lightbox{% endif %}{% if focus_empty %} data-focus="empty"{% endif %}{% if title %} title="{{ title }}"{% endif %}{% if nofollow %} rel="nofollow"{% endif %}>
+    {% icon icon %}
+</{{ tag }}>

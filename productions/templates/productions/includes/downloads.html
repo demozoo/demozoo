@@ -5,7 +5,7 @@
     {% if can_edit %}
         <ul class="actions">
             <li>
-                {% action_button url=production.urls.edit_download_links icon="edit" classname="edit_chunk" lightbox=True focus_empty=True title="Edit download links" nofollow=True label="Edit" %}
+                {% edit_button url=production.urls.edit_download_links classname="edit_chunk" lightbox=True focus_empty=True title="Edit download links" nofollow=True %}
             </li>
         </ul>
     {% endif %}
