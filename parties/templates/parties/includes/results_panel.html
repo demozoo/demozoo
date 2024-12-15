@@ -25,7 +25,7 @@
                     <ul class="actions">
                         <li>{% edit_button classname="edit_chunk" url=compo.urls.edit title="Edit competition" %}</li>
                         {% if request.user.is_staff and not placings %}
-                            <li>{% icon_button icon="delete" classname="edit_chunk" lightbox=True url=compo.urls.delete label="Delete competition" %}</li>
+                            <li>{% icon_button icon="delete" classname="edit_chunk" lightbox=True url=compo.urls.delete title="Delete competition" %}</li>
                         {% endif %}
                     </ul>
                 {% endif %}
