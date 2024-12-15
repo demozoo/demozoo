@@ -17,7 +17,7 @@
         </div>
     {% endif %}
 
-    {% include "bbs/_list.html" with bbses=page.object_list %}
+    {% include "bbs/includes/list.html" with bbses=page.object_list %}
     <br />
 
     {% component pagination_controls %}

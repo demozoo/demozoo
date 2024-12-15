@@ -1,0 +1,24 @@
+{% load ui_tags %}
+
+<div class="panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
+    <h3 class="panel__title">Subgroups</h3>
+
+    <ul class="memberships">
+        {% for membership in subgroupships %}
+            <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
+                <a href="{% url 'group' membership.member.id %}" {% if not membership.is_current %}title="ex-subgroup"{% endif %}>{{ membership.member.name }}</a>
+                {% location_flag membership.member %}
+                {% if can_edit %}
+                    <a href="{% url 'group_edit_subgroup' group.id membership.id %}" class="edit_subgroup" data-lightbox>
+                        <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit subgroup" title="Edit subgroup" />
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <ul class="listing_actions">
+            <li>{% action_button url=group.urls.add_subgroup icon="add" lightbox=True label="Add subgroup" %}</li>
+        </ul>
+    {% endif %}
+</div>

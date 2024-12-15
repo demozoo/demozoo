@@ -1,0 +1,15 @@
+{% load production_tags ui_tags %}
+
+<div class="pack_contents_panel panel editable_chunk">
+    <h3 class="panel__title">Pack contents</h3>
+
+    {% if can_edit %}
+        <ul class="actions">
+            <li>
+                {% edit_button url=production.urls.edit_pack_contents classname="edit_chunk" lightbox=True title="Edit pack contents" nofollow=True %}
+            </li>
+        </ul>
+    {% endif %}
+
+    {% production_listing pack_members show_screenshots=1 %}
+</div>

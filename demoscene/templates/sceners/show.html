@@ -49,7 +49,7 @@
     </div>
 
     {% if alternative_nicks %}
-        {% include "releasers/includes/alternative_nicks.html" with releaser=scener %}
+        {% include "releasers/includes/alternative_nicks_panel.html" with releaser=scener %}
     {% endif %}
 
     <div>
@@ -90,77 +90,23 @@
 
     </div>
 
-    {% include "shared/external_links.html" with obj=scener %}
+    {% include "shared/external_links_panel.html" with obj=scener %}
 
     {% if scener.notes or request.user.is_staff %}
-        {% include "shared/notes.html" with obj=scener %}
+        {% include "shared/notes_panel.html" with obj=scener %}
     {% endif %}
 
     <div id="side_column">
-        <div class="panel groups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_groups %}editing{% endif %}{% endif %}">
-            <h3 class="panel__title">Member of</h3>
-
-            <ul class="memberships">
-                {% for membership in memberships %}
-                    <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
-                        <a href="{% url 'group' membership.group.id %}" {% if not membership.is_current %}title="previous membership"{% endif %}>{{ membership.group.name }}</a>
-                        {% if can_edit %}
-                            <a href="{% url 'scener_edit_membership' scener.id membership.id %}" class="edit_membership" data-lightbox>
-                                <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
-                            </a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if can_edit %}
-                <ul class="listing_actions">
-                    <li>{% action_button url=scener.urls.add_group icon="add" lightbox=True label="Add group" %}</li>
-                </ul>
-            {% endif %}
-        </div>
+        {% include "sceners/includes/groups_panel.html" %}
     </div>
     
     <div id="main_column">
         {% if parties_organised %}
-            <div class="panel parties_organised_panel">
-                <h3 class="panel__title">Organiser of</h3>
-                <ul class="parties">
-                    {% for organiser in parties_organised %}
-                        {% with party=organiser.party %}
-                            <li>
-                                {% if party.is_cancelled %}<del>{% endif %}
-                                <a href="{% url 'party' party.id %}" title="{% if party.is_cancelled %}Cancelled - {% endif %}{% if party.is_online %}Online{% elif party.location %}{{ party.location }}{% endif %}">
-                                    {% if party.is_online %}
-                                        <img src="/static/images/icons/computer.png" alt="[Online]" />
-                                    {% elif party.country_code %}
-                                        <img src="/static/images/icons/flags/{{ party.country_code|lower }}.png" alt="[{{ party.country_code }}]" />
-                                    {% endif %}
-                                    {{ party.name }}
-                                </a>
-                                {% if party.start_date %}
-                                    - {% date_range party.start_date party.end_date %}
-                                {% endif %}
-                                {% if party.is_cancelled %}</del>{% endif %}
-                                {% if organiser.role %}({{ organiser.role }}){% endif %}
-                            </li>
-                        {% endwith %}
-                    {% endfor %}
-                </ul>
-            </div>
+            {% include "releasers/includes/parties_organised_panel.html" %}
         {% endif %}
 
         {% if bbses_operated %}
-            <div class="panel bbses_operated_panel">
-                <h3 class="panel__title">BBS</h3>
-                <ul class="bbses">
-                    {% for operator in bbses_operated %}
-                        <li {% if not operator.is_current %}class="previous_membership"{% endif %}>
-                            <a href="{% url 'bbs' operator.bbs.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.bbs.name }}</a>
-                            - {{ operator.get_role_display }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% include "sceners/includes/bbses_operated_panel.html" %}
         {% endif %}
 
         {% combined_releases scener include_tournaments=True %}

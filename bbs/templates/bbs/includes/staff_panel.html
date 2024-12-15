@@ -1,0 +1,25 @@
+{% load ui_tags %}
+
+<div class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
+    <h3 class="panel__title">Staff</h3>
+
+    <ul class="staff">
+        {% for operator in staff %}
+            <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
+                <a href="{% url 'scener' operator.releaser.id %}" {% if not operator.is_current %}title="ex-staff"{% endif %}>{{ operator.releaser.name }}</a>
+                {% location_flag operator.releaser %}
+                - {{ operator.get_role_display }}
+                {% if can_edit %}
+                    <a href="{% url 'bbs_edit_operator' bbs.id operator.id %}" class="edit_operator" data-lightbox>
+                        <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit staff member" title="Edit staff member" />
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <ul class="listing_actions">
+            <li>{% action_button url=bbs.urls.add_operator icon="add" lightbox=True label="Add staff member" %}</li>
+        </ul>
+    {% endif %}
+</div>

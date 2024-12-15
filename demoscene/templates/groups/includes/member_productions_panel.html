@@ -1,0 +1,7 @@
+{% load production_tags %}
+
+<div class="panel">
+    <h3 class="panel__title member_productions_header">Member productions ({{ member_productions|length }})</h3>
+
+    {% production_listing member_productions show_screenshots=1 show_prod_types=1 %}
+</div>

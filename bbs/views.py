@@ -585,14 +585,14 @@ class BBSAddTagView(AddTagView):
     subject_model = BBS
     pk_url_kwarg = "bbs_id"
     action_type = "bbs_add_tag"
-    template_name = "bbs/_tags_list.html"
+    template_name = "bbs/includes/tags_list.html"
 
 
 class BBSRemoveTagView(RemoveTagView):
     subject_model = BBS
     pk_url_kwarg = "bbs_id"
     action_type = "bbs_remove_tag"
-    template_name = "bbs/_tags_list.html"
+    template_name = "bbs/includes/tags_list.html"
 
 
 @writeable_site_required

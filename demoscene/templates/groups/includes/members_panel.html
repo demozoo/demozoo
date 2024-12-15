@@ -1,0 +1,24 @@
+{% load ui_tags %}
+
+<div class="panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
+    <h3 class="panel__title">Members</h3>
+
+    <ul class="memberships">
+        {% for membership in memberships %}
+            <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
+                <a href="{% url 'scener' membership.member.id %}" {% if not membership.is_current %}title="ex-member"{% endif %}>{{ membership.member.name }}</a>
+                {% location_flag membership.member %}
+                {% if can_edit %}
+                    <a href="{% url 'group_edit_membership' group.id membership.id %}" class="edit_membership" data-lightbox>
+                        <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit membership" title="Edit membership" />
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <ul class="listing_actions">
+            <li>{% action_button url=group.urls.add_member icon="add" lightbox=True label="Add member" %}</li>
+        </ul>
+    {% endif %}
+</div>
