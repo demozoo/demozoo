@@ -48,18 +48,37 @@ def megathumb(screenshot):
     }
 
 
+# Values that are passed directly from attributes of the {% action_button %} or {% icon_button %} tag
+# to the template context
+COMMON_BUTTON_KWARGS = ["icon", "classname", "lightbox", "focus_empty", "title", "nofollow"]
+
+
 @register.inclusion_tag("tags/action_button.html")
-def action_button(
-    label=None, icon=None, url=None, classname=None, lightbox=False, focus_empty=False, title=None, nofollow=False
-):
-    return {
-        "tag": "a" if url else "button",
-        "url": reverse(url) if (url and not url.startswith("/")) else url,
-        "label": label,
-        "icon": icon,
-        "classname": classname,
-        "lightbox": lightbox,
-        "focus_empty": focus_empty,
-        "title": title,
-        "nofollow": nofollow,
-    }
+def action_button(url=None, label=None, **kwargs):
+    context = {key: kwargs.get(key) for key in COMMON_BUTTON_KWARGS}
+    context.update(
+        {
+            "tag": "a" if url else "button",
+            "url": reverse(url) if (url and not url.startswith("/")) else url,
+            "label": label,
+        }
+    )
+    return context
+
+
+@register.inclusion_tag("tags/icon_button.html")
+def icon_button(url=None, **kwargs):
+    context = {key: kwargs.get(key) for key in COMMON_BUTTON_KWARGS}
+    context.update(
+        {
+            "tag": "a" if url else "button",
+            "url": reverse(url) if (url and not url.startswith("/")) else url,
+        }
+    )
+    return context
+
+
+# shortcut for {% icon_button %} with icon defaulting to "edit"
+@register.inclusion_tag("tags/icon_button.html")
+def edit_button(icon="edit", **kwargs):
+    return icon_button(icon=icon, **kwargs)

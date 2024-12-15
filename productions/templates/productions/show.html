@@ -51,7 +51,7 @@
             <div class="blurb">
                 <ul class="actions">
                     {% url 'production_edit_blurb' production.id blurb.id as edit_blurb_url %}
-                    <li>{% action_button url=edit_blurb_url icon="edit" lightbox=True label="Edit" %}</li>
+                    <li>{% edit_button url=edit_blurb_url lightbox=True title="Edit blurb" %}</li>
                 </ul>
                 <p>{{ blurb.body }}</p>
             </div>
@@ -129,7 +129,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            {% action_button url=production.urls.edit_pack_contents icon="edit" classname="edit_chunk" lightbox=True title="Edit pack contents" nofollow=True label="Edit" %}
+                            {% edit_button url=production.urls.edit_pack_contents classname="edit_chunk" lightbox=True title="Edit pack contents" nofollow=True %}
                         </li>
                     </ul>
                 {% endif %}
@@ -159,7 +159,7 @@
                 {% if can_edit %}
                     <ul class="actions">
                         <li>
-                            {% action_button url=production.urls.edit_soundtracks icon="edit" classname="edit_chunk" lightbox=True title="Edit soundtrack details" nofollow=True label="Edit" %}
+                            {% edit_button url=production.urls.edit_soundtracks classname="edit_chunk" lightbox=True title="Edit soundtrack details" nofollow=True %}
                         </li>
                     </ul>
                 {% endif %}

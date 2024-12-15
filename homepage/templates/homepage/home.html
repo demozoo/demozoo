@@ -10,7 +10,7 @@
                 {% if perms.homepage.add_banner and site_is_writeable %}
                     <ul class="actions">
                         <li>
-                            {% action_button url="banners_index" icon="edit" title="Edit banner" label="Edit" %}
+                            {% edit_button url="banners_index" title="Edit banner" %}
                         </li>
                     </ul>
                     <div style="clear: both;"></div>

@@ -23,7 +23,7 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    {% action_button url=bbs.urls.edit icon="edit" classname="edit_chunk" lightbox=True nofollow=True label="Edit" %}
+                    {% edit_button url=bbs.urls.edit classname="edit_chunk" lightbox=True nofollow=True title="Edit BBS details" %}
                 </li>
             </ul>
         {% endif %}
@@ -125,7 +125,7 @@
                 </h3>
                 {% if can_edit %}
                     <ul class="actions">
-                        <li>{% action_button url=bbs.urls.edit_bbstros icon="edit" classname="edit_chunk" lightbox=True label="Edit production list" %}</li>
+                        <li>{% edit_button url=bbs.urls.edit_bbstros classname="edit_chunk" lightbox=True title="Edit production list" %}</li>
                     </ul>
                 {% endif %}
 

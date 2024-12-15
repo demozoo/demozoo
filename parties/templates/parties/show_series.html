@@ -19,7 +19,7 @@
         {% if prompt_to_edit %}
             <ul class="actions">
                 <li>
-                    {% action_button url=party_series.urls.edit icon="edit" classname="edit_chunk" lightbox=True title="Edit party details" label="Edit" %}
+                    {% edit_button url=party_series.urls.edit classname="edit_chunk" lightbox=True title="Edit party details" %}
                 </li>
             </ul>
         {% endif %}
