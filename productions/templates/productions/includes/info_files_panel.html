@@ -4,7 +4,7 @@
 {% block classnames %}editable_chunk info_files_panel{% endblock %}
 {% block title %}Info file{{ info_files|length|pluralize }}{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -12,6 +12,9 @@
             </li>
         </ul>
     {% endif %}
+{% endblock %}
+
+{% block body %}
     <ul class="info_files">
         {% for file in info_files %}
             <li><a href="{% url 'production_info_file' production.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>

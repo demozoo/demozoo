@@ -4,7 +4,7 @@
 {% block classnames %}editable_chunk text_ads_panel{% endblock %}
 {% block title %}Text ads{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -12,6 +12,9 @@
             </li>
         </ul>
     {% endif %}
+{% endblock %}
+
+{% block body %}
     <ul class="text_ads">
         {% for file in text_ads %}
             <li><a href="{% url 'bbs_text_ad' bbs.id file.id %}" title="{{ file.filename }} - ({{ file.filesize }} bytes)">{{ file.filename }}</a></li>

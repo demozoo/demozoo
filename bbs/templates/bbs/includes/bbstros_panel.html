@@ -4,13 +4,15 @@
 {% block classnames %}bbstros_panel editable_chunk{% endblock %}
 {% block title %}Promoted in{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=bbs.urls.edit_bbstros classname="edit_chunk" lightbox=True title="Edit production list" %}</li>
         </ul>
     {% endif %}
+{% endblock %}
 
+{% block body %}
     {% if bbstros %}
         {% production_listing bbstros show_screenshots=1 show_prod_types=1 %}
     {% endif %}

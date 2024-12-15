@@ -4,13 +4,15 @@
 {% block classnames %}releases_panel editable_chunk{% endblock %}
 {% block title %}Releases{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=party.urls.edit_releases classname="edit_chunk" lightbox=True title="Edit releases" %}</li>
         </ul>
     {% endif %}
+{% endblock %}
 
+{% block body %}
     {% if releases %}
         {% production_listing releases show_screenshots=1 show_prod_types=1 %}
     {% endif %}

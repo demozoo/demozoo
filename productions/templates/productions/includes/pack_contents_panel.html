@@ -4,7 +4,7 @@
 {% block classnames %}pack_contents_panel editable_chunk{% endblock %}
 {% block title %}Pack contents{% endblock %}
 
-{% block body %}
+{% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -12,6 +12,8 @@
             </li>
         </ul>
     {% endif %}
+{% endblock %}
 
+{% block body %}
     {% production_listing pack_members show_screenshots=1 %}
 {% endblock %}
