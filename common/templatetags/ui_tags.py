@@ -50,17 +50,16 @@ def megathumb(screenshot):
 
 # Values that are passed directly from attributes of the {% action_button %} or {% icon_button %} tag
 # to the template context
-COMMON_BUTTON_KWARGS = ["icon", "classname", "lightbox", "focus_empty", "title", "nofollow"]
+COMMON_BUTTON_KWARGS = ["icon", "classname", "lightbox", "focus_empty", "title", "nofollow", "label"]
 
 
 @register.inclusion_tag("tags/action_button.html")
-def action_button(url=None, label=None, **kwargs):
+def action_button(url=None, **kwargs):
     context = {key: kwargs.get(key) for key in COMMON_BUTTON_KWARGS}
     context.update(
         {
             "tag": "a" if url else "button",
             "url": reverse(url) if (url and not url.startswith("/")) else url,
-            "label": label,
         }
     )
     return context
