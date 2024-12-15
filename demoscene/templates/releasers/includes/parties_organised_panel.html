@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load demoscene_tags %}
 
-<div class="panel parties_organised_panel">
-    <h3 class="panel__title">Organiser of</h3>
+{% block classnames %}parties_organised_panel{% endblock %}
+{% block title %}Organiser of{% endblock %}
+
+{% block body %}
     <ul class="parties">
         {% for organiser in parties_organised %}
             {% with party=organiser.party %}
@@ -24,4 +27,4 @@
             {% endwith %}
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

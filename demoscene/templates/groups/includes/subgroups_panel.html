@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}">
-    <h3 class="panel__title">Subgroups</h3>
+{% block classnames %}subgroups_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_subgroups %}editing{% endif %}{% endif %}{% endblock %}
+{% block title %}Subgroups{% endblock %}
 
+{% block body %}
     <ul class="memberships">
         {% for membership in subgroupships %}
             <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
@@ -21,4 +23,4 @@
             <li>{% action_button url=group.urls.add_subgroup icon="add" lightbox=True label="Add subgroup" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}

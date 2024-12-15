@@ -1,6 +1,9 @@
+{% extends "shared/panel.html" %}
 {% load production_tags %}
 
-<div class="featured_in_panel panel">
-    <h3 class="panel__title">Featured in:</h3>
+{% block classnames %}featured_in_panel{% endblock %}
+{% block title %}Featured in:{% endblock %}
+
+{% block body %}
     {% production_listing featured_in_productions show_screenshots=1 %}
-</div>
+{% endblock %}

@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load production_tags ui_tags %}
 
-<div class="panel releases_panel editable_chunk">
-    <h3 class="panel__title">Releases</h3>
+{% block classnames %}releases_panel editable_chunk{% endblock %}
+{% block title %}Releases{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=party.urls.edit_releases classname="edit_chunk" lightbox=True title="Edit releases" %}</li>
@@ -11,4 +14,4 @@
     {% if releases %}
         {% production_listing releases show_screenshots=1 show_prod_types=1 %}
     {% endif %}
-</div>
+{% endblock %}

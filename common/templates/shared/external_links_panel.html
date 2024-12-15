@@ -1,3 +1,4 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
 {% comment %}
@@ -7,8 +8,10 @@
     can_edit = whether the current user can edit
 {% endcomment %}
 
-<div class="editable_chunk panel external_links_panel">
-    <h3 class="panel__title">External links</h3>
+{% block classnames %}editable_chunk external_links_panel{% endblock %}
+{% block title %}External links{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>
@@ -21,4 +24,4 @@
             <li>{{ link.html_link|safe }}</li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

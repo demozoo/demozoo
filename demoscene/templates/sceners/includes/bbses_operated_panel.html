@@ -1,5 +1,9 @@
-<div class="panel bbses_operated_panel">
-    <h3 class="panel__title">BBS</h3>
+{% extends "shared/panel.html" %}
+
+{% block classnames %}bbses_operated_panel{% endblock %}
+{% block title %}BBS{% endblock %}
+
+{% block body %}
     <ul class="bbses">
         {% for operator in bbses_operated %}
             <li {% if not operator.is_current %}class="previous_membership"{% endif %}>
@@ -8,4 +12,4 @@
             </li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

@@ -1,5 +1,9 @@
-<div class="panel awards_panel">
-    <h3 class="panel__title">Awards</h3>
+{% extends "shared/panel.html" %}
+
+{% block classnames %}awards_panel{% endblock %}
+{% block title %}Awards{% endblock %}
+
+{% block body %}
     <ul class="awards">
         {% for nomination in award_nominations %}
             <li class="{{ nomination.status }}">
@@ -12,4 +16,4 @@
             </li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

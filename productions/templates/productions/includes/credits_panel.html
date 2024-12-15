@@ -1,8 +1,11 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="editable_chunk credits_panel panel {% if not credits %}hidden{% endif %} {% if can_edit %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}" id="credits_panel">
-    <h3 class="panel__title">Credits</h3>
+{% block classnames %}editable_chunk credits_panel {% if not credits %}hidden{% endif %} {% if can_edit %}edit_toggle {% if editing_credits %}editing{% endif %}{% endif %}{% endblock %}
+{% block panel_attributes %}id="credits_panel"{% endblock %}
+{% block title %}Credits{% endblock %}
 
+{% block body %}
     <ul class="credits">
         {% regroup credits by nick as nick_list %}
         {% for nick_credits in nick_list %}
@@ -26,4 +29,4 @@
             <li>{% action_button url=production.urls.add_credit icon="add" classname="add_credit" label="Add credit" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}

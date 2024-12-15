@@ -1,9 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load production_tags ui_tags %}
 
-<div class="panel invitations_panel editable_chunk">
-    <h3 class="panel__title">
-        Invitation{{ invitations|length|pluralize }}
-    </h3>
+{% block classnames %}invitations_panel editable_chunk{% endblock %}
+{% block title %}Invitation{{ invitations|length|pluralize }}{% endblock %}
+
+{% block body %}
     {% if can_edit %}
         <ul class="actions">
             <li>{% edit_button url=party.urls.edit_invitations classname="edit_chunk" lightbox=True title="Edit invitations" %}</li>
@@ -13,4 +14,4 @@
     {% if invitations %}
         {% production_listing invitations show_screenshots=1 show_prod_types=1 %}
     {% endif %}
-</div>
+{% endblock %}

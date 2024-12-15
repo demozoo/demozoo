@@ -1,7 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel supergroups_panel">
-    <h3 class="panel__title">Subgroup of</h3>
+{% block classnames %}supergroups_panel{% endblock %}
+{% block title %}Subgroup of{% endblock %}
+
+{% block body %}
     <ul class="memberships">
         {% for membership in supergroupships %}
             <li class="group {% if not membership.is_current %}previous_membership{% endif %}">
@@ -10,4 +13,4 @@
             </li>
         {% endfor %}
     </ul>
-</div>
+{% endblock %}

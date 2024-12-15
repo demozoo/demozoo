@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}">
-    <h3 class="panel__title">Staff</h3>
+{% block classnames %}staff_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_staff %}editing{% endif %}{% endif %}{% endblock %}
+{% block title %}Staff{% endblock %}
 
+{% block body %}
     <ul class="staff">
         {% for operator in staff %}
             <li class="scener {% if not operator.is_current %}previous_membership{% endif %}">
@@ -22,4 +24,4 @@
             <li>{% action_button url=bbs.urls.add_operator icon="add" lightbox=True label="Add staff member" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}

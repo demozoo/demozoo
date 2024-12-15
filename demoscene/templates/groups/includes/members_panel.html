@@ -1,8 +1,10 @@
+{% extends "shared/panel.html" %}
 {% load ui_tags %}
 
-<div class="panel members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}">
-    <h3 class="panel__title">Members</h3>
+{% block classnames %}members_panel editable_chunk {% if can_edit %}edit_toggle {% if editing_members %}editing{% endif %}{% endif %}{% endblock %}
+{% block title %}Members{% endblock %}
 
+{% block body %}
     <ul class="memberships">
         {% for membership in memberships %}
             <li class="scener {% if not membership.is_current %}previous_membership{% endif %}">
@@ -21,4 +23,4 @@
             <li>{% action_button url=group.urls.add_member icon="add" lightbox=True label="Add member" %}</li>
         </ul>
     {% endif %}
-</div>
+{% endblock %}
