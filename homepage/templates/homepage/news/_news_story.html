@@ -3,7 +3,7 @@
 <div class="news-story news_story {% if not story.is_public %}private{% endif %}" id="news-{{ story.id }}">
     <ul class="actions">
         <li>
-            <a href="{{ story.get_absolute_url }}" title="Permalink">#</a>
+            {% icon_button url=story.get_absolute_url icon="hash" title="Permalink" %}
         </li>
         {% if perms.homepage.change_newsstory and site_is_writeable %}
             <li>

@@ -25,10 +25,10 @@
         {% if prompt_to_edit or show_lock_button or show_locked_button %}
             <ul class="actions">
                 {% if show_lock_button %}
-                    <li>{% action_button icon="unlocked" classname="edit_chunk" lightbox=True url=scener.urls.lock title="Lock this scener" label="Unlocked" %}</li>
+                    <li>{% icon_button icon="lock-open" classname="edit_chunk" lightbox=True url=scener.urls.lock title="Lock this scener" %}</li>
                 {% endif %}
                 {% if show_locked_button %}
-                    <li>{% action_button icon="locked" classname="edit_chunk" lightbox="True" url=scener.urls.protected label="Protected" %}</li>
+                    <li>{% icon_button icon="lock" classname="edit_chunk" lightbox="True" url=scener.urls.protected title="Protected" %}</li>
                 {% endif %}
                 {% if prompt_to_edit %}
                     <li>
