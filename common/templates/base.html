@@ -53,6 +53,17 @@
       ga('send', 'pageview');
     </script>
 
+    <template data-lightbox-template>
+        <div id="lightbox_outer">
+            <div id="lightbox_middle">
+                <div id="lightbox">
+                    <a href="javascript:void(0);" class="lightbox_close" data-lightbox-close title="Close">Close</a>
+                    <div data-lightbox-content></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <div class="site">
         {% if request.user.is_authenticated and not site_is_writeable %}
             <div class="maintenance">Demozoo is currently in <strong>read-only mode</strong>. We'll get things back to normal as soon as possible.</div>
