@@ -3,25 +3,19 @@
 
     var isInitialised = false;
     var isShowing = false;
-    var lightboxOuter, lightboxElem, lightboxContent, lightboxClose;
+    var lightboxOuter, lightboxElem, lightboxContent;
 
     function init() {
         if (isInitialised) return;
 
-        lightboxOuter = $('<div id="lightbox_outer"></div>');
-        var lightboxMiddle = $('<div id="lightbox_middle"></div>');
-        lightboxElem = $('<div id="lightbox"></div>');
-        lightboxClose = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
-        lightboxContent = $('<div></div>');
-        lightboxElem.append(lightboxClose, lightboxContent);
-        lightboxMiddle.append(lightboxElem);
-        lightboxOuter.append(lightboxMiddle);
-        $('body').append(lightboxOuter);
-        lightboxElem.click(function(e) {
-            e.stopPropagation();
-        });
-        lightboxClose.click(self.close);
+        var template = $('[data-lightbox-template]');
+        $('body').append(template.html());
+
+        lightboxOuter = $('#lightbox_outer');
         lightboxOuter.hide();
+        lightboxElem = $('#lightbox');
+        lightboxElem.find('[data-lightbox-close]').click(self.close);
+        lightboxContent = lightboxElem.find('[data-lightbox-content]');
         isInitialised = true;
     }
 
