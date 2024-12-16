@@ -2,12 +2,12 @@
     window.MediaLightbox = function() {
         this.mediaItem = null;
 
-        this.overlay = $('<div class="media_lightbox_overlay"></div>');
-        this.mediaWrapper = $('<div class="media_lightbox_wrapper"></div>');
-        this.closeButton = $('<a href="javascript:void(0);" class="lightbox_close" title="Close">Close</div>');
+        var template = $('[data-media-lightbox-template]');
+        $('body').append(template.html());
 
-        $('body').append(this.overlay, this.mediaWrapper);
-        this.mediaWrapper.append(this.closeButton);
+        this.overlay = $('.media_lightbox_overlay');
+        this.mediaWrapper = $('.media_lightbox_wrapper');
+        this.closeButton = this.mediaWrapper.find('[data-lightbox-close]');
 
         this.overlay.css({
             'opacity': 0.5

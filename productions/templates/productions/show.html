@@ -44,6 +44,8 @@
 {% block body_class %}show_production{% endblock %}
 
 {% block base_main %}
+    {% include "productions/includes/media_lightbox_template.html" %}
+
     {% production_core_details production %}
 
     {% if request.user.is_staff %}
