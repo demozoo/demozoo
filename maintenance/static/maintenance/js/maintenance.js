@@ -11,7 +11,7 @@ $(function() {
             $(this).prepend(deleteButton);
         }
         deleteButton.click(function() {
-            $.post('/maintenance/exclude', {
+            $.post('/maintenance/exclude/', {
                 'report_name': reportName,
                 'record_id': recordId,
                 'csrfmiddlewaretoken': $.cookie('csrftoken')
