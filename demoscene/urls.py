@@ -60,12 +60,6 @@ urlpatterns = [
     ),
     path("releasers/<int:releaser_id>/add_credit/", releasers_views.add_credit, {}, "releaser_add_credit"),
     path(
-        "releasers/<int:releaser_id>/edit_credit/<int:nick_id>/<int:production_id>/",
-        releasers_views.edit_credit,
-        {},
-        "releaser_edit_credit",
-    ),
-    path(
         "releasers/<int:releaser_id>/delete_credit/<int:nick_id>/<int:production_id>/",
         releasers_views.DeleteCreditView.as_view(),
         {},
