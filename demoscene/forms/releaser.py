@@ -330,18 +330,6 @@ class GroupSubgroupForm(forms.Form):
             )
 
 
-class ReleaserCreditForm(forms.Form):
-    def __init__(self, releaser, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["nick"] = forms.ModelChoiceField(
-            label="Credited as", queryset=releaser.nicks.order_by("name"), initial=releaser.primary_nick.id
-        )
-        self.fields["production_name"] = forms.CharField(
-            label="On production", widget=forms.TextInput(attrs={"class": "production_autocomplete"})
-        )
-        self.fields["production_id"] = forms.CharField(widget=forms.HiddenInput)
-
-
 class ReleaserExternalLinkForm(ExternalLinkForm):
     class Meta:
         model = ReleaserExternalLink
