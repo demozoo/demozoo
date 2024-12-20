@@ -9,68 +9,14 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from common.views import AjaxConfirmationView, writeable_site_required
-from demoscene.forms.common import CreditFormSet
 from demoscene.forms.releaser import (
     GroupNickForm,
-    ReleaserCreditForm,
     ReleaserEditNotesForm,
     ReleaserExternalLinkFormSet,
     ScenerNickForm,
 )
 from demoscene.models import Edit, Nick, Releaser
 from demoscene.shortcuts import simple_ajax_form
-from productions.models import Credit, Production
-
-
-@writeable_site_required
-@login_required
-def add_credit(request, releaser_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-
-    if not releaser.editable_by_user(request.user):
-        raise PermissionDenied
-
-    if request.method == "POST":
-        form = ReleaserCreditForm(releaser, request.POST)
-        credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
-        if form.is_valid() and credit_formset.is_valid():
-            production = Production.objects.get(id=form.cleaned_data["production_id"])
-            credits = credit_formset.save(commit=False)
-            if credits:
-                nick = form.cleaned_data["nick"]
-                for credit in credits:
-                    credit.nick = nick
-                    credit.production = production
-                    credit.save()
-
-                production.updated_at = datetime.datetime.now()
-                production.has_bonafide_edits = True
-                production.save()
-                releaser.updated_at = datetime.datetime.now()
-                releaser.save()
-                credits_description = ", ".join([credit.description for credit in credits])
-                description = "Added credit for %s on %s: %s" % (nick, production, credits_description)
-                Edit.objects.create(
-                    action_type="add_credit",
-                    focus=production,
-                    focus2=nick.releaser,
-                    description=description,
-                    user=request.user,
-                )
-            return HttpResponseRedirect(releaser.get_absolute_url())
-    else:
-        form = ReleaserCreditForm(releaser)
-        credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
-
-    return render(
-        request,
-        "releasers/add_credit.html",
-        {
-            "releaser": releaser,
-            "form": form,
-            "credit_formset": credit_formset,
-        },
-    )
 
 
 @writeable_site_required

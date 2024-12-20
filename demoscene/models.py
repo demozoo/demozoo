@@ -56,7 +56,6 @@ class Releaser(URLMixin, LocationMixin, PrefetchSnoopingMixin, Lockable):
     @property
     def url_routes(self):
         routes = {
-            "add_credit": "releaser_add_credit",
             "edit_notes": "releaser_edit_notes",
             "add_nick": "releaser_add_nick",
             "edit_primary_nick": "releaser_edit_primary_nick",

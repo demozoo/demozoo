@@ -58,7 +58,6 @@ urlpatterns = [
         {},
         "scener_convert_to_group",
     ),
-    path("releasers/<int:releaser_id>/add_credit/", releasers_views.add_credit, {}, "releaser_add_credit"),
     path("releasers/<int:releaser_id>/edit_notes/", releasers_views.edit_notes, {}, "releaser_edit_notes"),
     path("releasers/<int:releaser_id>/edit_nick/<int:nick_id>/", releasers_views.edit_nick, {}, "releaser_edit_nick"),
     path("releasers/<int:releaser_id>/add_nick/", releasers_views.add_nick, {}, "releaser_add_nick"),
