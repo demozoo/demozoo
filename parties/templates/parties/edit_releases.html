@@ -6,11 +6,6 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.party_release_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
@@ -25,7 +20,7 @@
         {% endif %}
     </div>
 
-    <form action="{% url 'party_edit_releases' party.id %}" method="post" class="entry_form party_release_form">
+    <form action="{% url 'party_edit_releases' party.id %}" method="post" data-edit-form class="entry_form party_release_form">
         {% csrf_token %}
 
         {% spawningformset formset %}

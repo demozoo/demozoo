@@ -6,17 +6,12 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.edit_membership_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
     <h2>Editing {{ membership.member.name }}'s membership of {{ group.name }}</h2>
 
-    <form action="{% url 'group_edit_membership' group.id membership.id %}" method="post" class="entry_form edit_membership_form">
+    <form action="{% url 'group_edit_membership' group.id membership.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {% for field in form.visible_fields %}
