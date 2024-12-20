@@ -161,3 +161,7 @@ function applyEditControls(context) {
         $(this).addClass('ajaxified');
     });
 }
+
+$(function() {
+    applyEditControls($('[data-edit-form]'));
+})

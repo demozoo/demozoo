@@ -10,7 +10,7 @@
         <h2>{{ title }}</h2>
     {% endif %}
 
-    <form action="{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {% block html_form_class %}{{ html_form_class }}{% endblock %}">
+    <form action="{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="entry_form {% block html_form_class %}{{ html_form_class }}{% endblock %}" {% block form_attrs %}{% endblock %}>
         {% csrf_token %}
 
         {% for field in form.visible_fields %}

@@ -6,17 +6,12 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.bbstro_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
     <h2>Editing productions promoting {{ bbs.name }}:</h2>
 
-    <form action="{% url 'bbs_edit_bbstros' bbs.id %}" method="post" class="entry_form bbstro_form">
+    <form action="{% url 'bbs_edit_bbstros' bbs.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {% spawningformset formset %}
