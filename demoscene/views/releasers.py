@@ -73,45 +73,6 @@ def add_credit(request, releaser_id):
     )
 
 
-class DeleteCreditView(AjaxConfirmationView):
-    def get_object(self, request, releaser_id, nick_id, production_id):
-        self.releaser = Releaser.objects.get(id=releaser_id)
-        self.nick = Nick.objects.get(releaser=self.releaser, id=nick_id)
-        self.production = Production.objects.get(id=production_id)
-
-    def is_permitted(self):
-        return self.releaser.editable_by_user(self.request.user)
-
-    def get_redirect_url(self):
-        return self.releaser.get_absolute_url()
-
-    def get_action_url(self):
-        return reverse("releaser_delete_credit", args=[self.releaser.id, self.nick.id, self.production.id])
-
-    def get_message(self):
-        return "Are you sure you want to delete %s's credit from %s?" % (self.nick.name, self.production.title)
-
-    def get_html_title(self):
-        return "Deleting %s's credit from %s" % (self.nick.name, self.production.title)
-
-    def perform_action(self):
-        credits = Credit.objects.filter(nick=self.nick, production=self.production)
-        if credits:
-            credits.delete()
-            self.releaser.updated_at = datetime.datetime.now()
-            self.releaser.save()
-            self.production.updated_at = datetime.datetime.now()
-            self.production.has_bonafide_edits = True
-            self.production.save()
-            Edit.objects.create(
-                action_type="delete_credit",
-                focus=self.production,
-                focus2=self.releaser,
-                description=("Deleted %s's credit on %s" % (self.nick, self.production)),
-                user=self.request.user,
-            )
-
-
 @writeable_site_required
 @login_required
 def edit_notes(request, releaser_id):
