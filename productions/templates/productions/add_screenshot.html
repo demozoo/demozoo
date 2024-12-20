@@ -6,11 +6,6 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.production_screenshot_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
@@ -26,7 +21,7 @@
         <p style="text-align: right;">Thanks for brightening up our pages!</p>
     </div>
 
-    <form action="{% url 'production_add_screenshot' production.id %}" method="post" enctype="multipart/form-data" class="entry_form production_screenshot_form">
+    <form action="{% url 'production_add_screenshot' production.id %}" method="post" enctype="multipart/form-data" data-edit-form class="entry_form">
         {% csrf_token %}
 
         <div class="field">

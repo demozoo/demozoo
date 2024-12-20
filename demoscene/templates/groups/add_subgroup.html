@@ -6,17 +6,12 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.add_subgroup_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
     <h2>New subgroup for {{ group.name }}:</h2>
 
-    <form action="{% url 'group_add_subgroup' group.id %}" method="post" class="entry_form add_subgroup_form">
+    <form action="{% url 'group_add_subgroup' group.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {% for field in form.visible_fields %}

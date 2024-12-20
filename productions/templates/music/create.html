@@ -7,11 +7,6 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.production_create_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
@@ -22,7 +17,7 @@
             | <a href="{% url 'new_graphics' %}{% urlsub %}" data-lightbox>New graphics</a>)</p>
     </div>
 
-    <form action="{% url 'new_music' %}" method="post" class="entry_form production_create_form">
+    <form action="{% url 'new_music' %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {% include "shared/form_field.html" with field=form.title %}

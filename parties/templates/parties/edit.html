@@ -7,17 +7,12 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.edit_party_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
     <h2>Editing party: {{ party.name }}</h2>
 
-    <form action="{% url 'edit_party' party.id %}" method="post" class="entry_form edit_party_form">
+    <form action="{% url 'edit_party' party.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {% include "shared/form_field.html" with field=form.name %}

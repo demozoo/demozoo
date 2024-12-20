@@ -12,11 +12,6 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.production_edit_info_files_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
@@ -26,7 +21,7 @@
         <h2>Editing info files for {{ production.title }}:</h2>
     {% endif %}
 
-    <form action="{% url 'production_edit_info_files' production.id %}" method="post" enctype="multipart/form-data" class="entry_form production_edit_info_files_form">
+    <form action="{% url 'production_edit_info_files' production.id %}" method="post" enctype="multipart/form-data" data-edit-form class="entry_form">
         {% csrf_token %}
 
         {{ formset.management_form }}

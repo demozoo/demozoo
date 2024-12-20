@@ -6,17 +6,12 @@
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
-    <script>
-        $(function() {
-            applyEditControls($('form.add_competition_form'));
-        })
-    </script>
 {% endblock %}
 
 {% block base_main %}
     <h2>New competition for {{ party.name }}:</h2>
 
-    <form action="{% url 'party_add_competition' party.id %}" method="post" class="entry_form add_competition_form">
+    <form action="{% url 'party_add_competition' party.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
         
         {% for field in form.visible_fields %}
