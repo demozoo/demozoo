@@ -90,8 +90,8 @@ $(function() {
         $('body').unbind('click', hideLoginMenuOnBodyClick);
     }
     
-    $('#login_status_panel .login_status').wrapInner('<a href="javascript:void(0)"></a>');
-    $('#login_status_panel .login_status a').click(function() {
+    $('#login_status_panel .login_status').wrapInner('<button></button>');
+    $('#login_status_panel .login_status button').click(function() {
         if (loginMenuVisible) {
             hideLoginMenu();
         } else {

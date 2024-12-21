@@ -8,13 +8,22 @@
         line-height: 33px;
         text-indent: 32px;
 
-        a {
+        button {
+            background-color: transparent;
             background-image: url('/static/images/icons/arrow_down.png');
             background-position: 145px center;
             background-repeat: no-repeat;
+            border-style: none;
             color: inherit;
+            cursor: pointer;
             display: block;
+            font: inherit;
+            line-height: 33px;
+            padding: 0;
+            text-indent: 32px;
+            text-align: left;
             text-decoration: none;
+            width: 100%;
         }
     }
 
