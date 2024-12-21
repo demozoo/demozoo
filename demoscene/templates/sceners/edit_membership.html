@@ -8,12 +8,7 @@
     <form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
 
-        {% for field in form.visible_fields %}
-            {% include "shared/form_field.html" %}
-        {% endfor %}
-        {% for field in form.hidden_fields %}
-            {{ field }}
-        {% endfor %}
+        {% include "shared/form_fields.html" %}
 
         <div class="field">
             <input type="submit" value="Edit membership"/>

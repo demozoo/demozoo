@@ -8,9 +8,7 @@
     <form action="{% url 'party_add_competition' party.id %}" method="post" data-edit-form class="entry_form">
         {% csrf_token %}
         
-        {% for field in form.visible_fields %}
-            {% include "shared/form_field.html" %}
-        {% endfor %}
+        {% include "shared/form_fields.html" %}
         
         <div class="field">
             <input type="submit" value="Create" />
