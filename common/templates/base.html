@@ -93,34 +93,34 @@
                 {% if not is_ip_banned %}
                     <div id="login_status_panel">
                         {% if request.user.is_authenticated %}
-                        <div class="login_status logged_in">
-                            {{ request.user.username }}
-                        </div>
-                        <div class="login_menu">
-                            {% user_menu %}
-                        </div>
-                        {% else %}
-                        <div class="login_status logged_out">
-                            Not logged in
-                        </div>
-                        <div class="login_menu">
-                            <form class="login__form login__form--compact" action="{% url 'log_in' %}" method="post">
-                                {% csrf_token %}
-                                {{ global_login_form.as_p }}
-                                {% block login_next_field %}
-                                <input type="hidden" name="next" value="{{ request.path }}">
-                                {% endblock %}
-                                <input type="submit" value="Log in" />
-                            </form>
-                            <ul class="login_links">
-                                <li><a href="{% url 'user_signup' %}">Register new account</a></li>
-                                <li><a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
-                            </ul>
-                            <div class="login_sceneid">
-                                ...or log in with
-                                <a class='sceneid' href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}">Log in with SceneID</a>
+                            <div data-login-status class="login_status logged_in">
+                                {{ request.user.username }}
                             </div>
-                        </div>
+                            <div data-login-menu class="login_menu">
+                                {% user_menu %}
+                            </div>
+                        {% else %}
+                            <div data-login-status class="login_status logged_out">
+                                Not logged in
+                            </div>
+                            <div data-login-menu class="login_menu">
+                                <form class="login__form login__form--compact" action="{% url 'log_in' %}" method="post">
+                                    {% csrf_token %}
+                                    {{ global_login_form.as_p }}
+                                    {% block login_next_field %}
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    {% endblock %}
+                                    <input type="submit" value="Log in" />
+                                </form>
+                                <ul class="login_links">
+                                    <li><a href="{% url 'user_signup' %}">Register new account</a></li>
+                                    <li><a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
+                                </ul>
+                                <div class="login_sceneid">
+                                    ...or log in with
+                                    <a class='sceneid' href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}">Log in with SceneID</a>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                 {% endif %}

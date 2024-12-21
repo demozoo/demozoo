@@ -69,7 +69,7 @@ function applyGlobalBehaviours(context) {
 }
 
 $(function() {
-    var loginMenu = $('#login_status_panel .login_menu');
+    var loginMenu = $('[data-login-menu]');
     
     loginMenu.hide();
     var loginMenuVisible = false;
@@ -90,8 +90,8 @@ $(function() {
         $('body').unbind('click', hideLoginMenuOnBodyClick);
     }
     
-    $('#login_status_panel .login_status').wrapInner('<button></button>');
-    $('#login_status_panel .login_status button').click(function() {
+    $('[data-login-status]').wrapInner('<button></button>');
+    $('[data-login-status] button').click(function() {
         if (loginMenuVisible) {
             hideLoginMenu();
         } else {
