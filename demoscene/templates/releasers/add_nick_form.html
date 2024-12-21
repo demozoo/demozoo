@@ -1,11 +1,6 @@
-{% extends base_template_with_ajax_option %}
+{% extends "generic/edit_form_with_ajax_option.html" %}
 
 {% block html_title %}Adding another nick for {{ releaser.name }} - Demozoo{% endblock %}
-
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
 
 {% block base_main %}
     {% include "releasers/nick_form.html" %}

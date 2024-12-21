@@ -1,12 +1,7 @@
-{% extends base_template_with_ajax_option %}
-{% load spawning_formset compress %}
-
+{% extends "generic/edit_form_with_ajax_option.html" %}
+{% load spawning_formset %}
 
 {% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
 
 {% block base_main %}
     <h2>Editing releases for {{ party.name }}:</h2>

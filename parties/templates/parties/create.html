@@ -1,14 +1,7 @@
-{% extends base_template_with_ajax_option %}
-{% load json_filter %}
-{% load demoscene_tags %}
-
+{% extends "generic/edit_form_with_ajax_option.html" %}
+{% load demoscene_tags json_filter %}
 
 {% block html_title %}New party - Demozoo{% endblock %}
-
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
 
 {% block base_main %}
     <h2>New party</h2>

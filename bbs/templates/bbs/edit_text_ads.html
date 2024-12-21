@@ -1,5 +1,4 @@
-{% extends base_template_with_ajax_option %}
-
+{% extends "generic/edit_form_with_ajax_option.html" %}
 
 {% block html_title %}
     {% if add_only %}
@@ -7,11 +6,6 @@
     {% else %}
         Editing text ads for {{ bbs.name }} - Demozoo
     {% endif %}
-{% endblock %}
-
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
 {% endblock %}
 
 {% block base_main %}

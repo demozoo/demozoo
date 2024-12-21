@@ -1,12 +1,6 @@
-{% extends base_template_with_ajax_option %}
-
+{% extends "generic/edit_form_with_ajax_option.html" %}
 
 {% block html_title %}New group for {{ scener.name }} - Demozoo{% endblock %}
-
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
 
 {% block base_main %}
     <h2>New group for {{ scener.name }}</h2>
