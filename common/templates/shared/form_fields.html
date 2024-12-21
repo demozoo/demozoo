@@ -1,0 +1,6 @@
+{% for field in form.visible_fields %}
+    {% include "shared/form_field.html" %}
+{% endfor %}
+{% for field in form.hidden_fields %}
+    {{ field }}
+{% endfor %}

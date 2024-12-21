@@ -1,6 +1,4 @@
 {% extends base_template_with_ajax_option %}
-{% load compress %}
-
 
 {% block html_title %}
     Editing blurb for {{ production.title }} - Demozoo
@@ -12,12 +10,7 @@
     <form action="{{ action_url }}" method="post" class="entry_form {{ html_form_class }}">
         {% csrf_token %}
 
-        {% for field in form.visible_fields %}
-            {% include "shared/form_field.html" %}
-        {% endfor %}
-        {% for field in form.hidden_fields %}
-            {{ field }}
-        {% endfor %}
+        {% include "shared/form_fields.html" %}
 
         <div class="field">
             <input type="submit" />

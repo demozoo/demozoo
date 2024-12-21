@@ -1,7 +1,5 @@
 {% extends base_template_with_ajax_option %}
 
-{% load compress %}
-
 {% block html_title %}New topic - Demozoo{% endblock %}
 
 {% block base_main %}
@@ -10,12 +8,7 @@
     <form action="{% url 'forums_new_topic' %}" class="entry_form" method="POST">
         {% csrf_token %}
         <div>
-            {% for field in form.visible_fields %}
-                {% include "shared/form_field.html" %}
-            {% endfor %}
-            {% for field in form.hidden_fields %}
-                {{ field }}
-            {% endfor %}
+            {% include "shared/form_fields.html" %}
         </div>
         <div style="clear: both;">
             <input type="submit" value="Create topic">
