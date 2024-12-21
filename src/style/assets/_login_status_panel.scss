@@ -82,6 +82,12 @@
     }
 }
 
+@media (max-width: 601px) {
+    #login_status_panel {
+        margin-right: 16px;
+    }
+}
+
 
 
 #login_status_panel a.sceneid,
