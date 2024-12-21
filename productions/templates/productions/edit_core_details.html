@@ -1,12 +1,7 @@
-{% extends base_template_with_ajax_option %}
+{% extends "generic/edit_form_with_ajax_option.html" %}
 {% load spawning_formset %}
 
 {% block html_title %}Editing {{ production.supertype }}: {{ production.title }} - Demozoo{% endblock %}
-
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
 
 {% block base_main %}
     <h2>Editing {{ production.supertype }}: {{ production.title }}</h2>
