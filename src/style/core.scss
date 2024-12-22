@@ -50,10 +50,11 @@ nav {
 
 a {
     color: #02a;
+}
 
-    &:visited {
-        color: #42a;
-    }
+:visited {
+    /* not a:visited, so that it doesn't take precedence over class-only selectors as used in BEM */
+    color: #42a;
 }
 
 pre {

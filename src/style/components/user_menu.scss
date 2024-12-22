@@ -4,58 +4,77 @@
     margin-right: 64px;
     width: 169px;
 
-    .login_status {
+    &__login_status {
         line-height: 33px;
         text-indent: 32px;
 
-        button {
-            background-color: transparent;
-            background-image: url('/static/images/icons/arrow_down.png');
-            background-position: 145px center;
+        &--logged_out {
+            color: #9d9d9d;
+            font-style: italic;
+        }
+
+        &--logged_in {
+            background-image: url('/static/images/icons/scener.png');
+            background-position: 8px center;
             background-repeat: no-repeat;
-            border-style: none;
-            color: inherit;
-            cursor: pointer;
-            display: block;
-            font: inherit;
-            line-height: 33px;
-            padding: 0;
-            text-indent: 32px;
-            text-align: left;
-            text-decoration: none;
-            width: 100%;
+            color: #5e5f5f;
+            font-weight: bold;
         }
     }
 
-    .logged_out {
-        color: #9d9d9d;
-        font-style: italic;
-    }
-
-    .logged_in {
-        background-image: url('/static/images/icons/scener.png');
-        background-position: 8px center;
+    &__login_status_button {
+        background-color: transparent;
+        background-image: url('/static/images/icons/arrow_down.png');
+        background-position: 145px center;
         background-repeat: no-repeat;
-        color: #5e5f5f;
-        font-weight: bold;
+        border-style: none;
+        color: inherit;
+        cursor: pointer;
+        display: block;
+        font: inherit;
+        line-height: 33px;
+        padding: 0;
+        text-indent: 32px;
+        text-align: left;
+        text-decoration: none;
+        width: 100%;
     }
 
-    .login_menu {
+    &__link {
+        background: none;
+        border: none;
+        border-bottom: 1px solid #5e5f5f;
+        color: #5e5f5f;
+        cursor: pointer;
+        display: block;
+        line-height: 24px;
+        padding: 0;
+        text-indent: 8px;
+        text-decoration: none;
+        text-align: left;
+        width: 100%;
+
+        &:hover {
+            background-color: #d3d3d3;
+        }
+    }
+
+    &__body {
         background-color: #e8e8e8;
         border-top: 1px solid #5d5f5f;
         position: absolute;
         width: 169px;
         z-index: 10;
+    }
 
-        form.login__form {
-            border-bottom: 1px solid #5e5f5f;
-            color: #5e5f5f;
-            padding: 8px;
+    &__login_form {
+        border-bottom: 1px solid #5e5f5f;
+        color: #5e5f5f;
+        padding: 8px;
 
-            p {
-                margin-bottom: 8px;
-                margin-top: 0;
-            }
+        p {
+            margin-bottom: 8px;
+            margin-top: 0;
         }
 
         input[type=text],
@@ -64,34 +83,9 @@
             max-width: 100%;
             width: 100%;
         }
-
-        ul.login_links {
-
-            li {
-                border-bottom: 1px solid #5e5f5f;
-
-                a, button {
-                    background: none;
-                    border: none;
-                    color: #5e5f5f;
-                    cursor: pointer;
-                    display: block;
-                    line-height: 24px;
-                    padding: 0;
-                    text-indent: 8px;
-                    text-decoration: none;
-                    text-align: left;
-                    width: 100%;
-
-                    &:hover {
-                        background-color: #d3d3d3;
-                    }
-                }
-            }
-        }
     }
 
-    .login_sceneid {
+    &__sceneid_login_prompt {
         border-bottom: 1px solid black;
         color: #5e5f5f;
         padding: 8px;
