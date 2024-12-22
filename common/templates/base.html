@@ -89,9 +89,9 @@
                         </form>
                     {% endblock %}
                 </nav>
-                {% block login_status_panel %}
+                {% block user_menu %}
                 {% if not is_ip_banned %}
-                    <div class="login_status_panel">
+                    <div class="user_menu">
                         {% if request.user.is_authenticated %}
                             <div data-login-status class="login_status logged_in">
                                 {{ request.user.username }}

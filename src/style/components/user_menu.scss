@@ -1,4 +1,4 @@
-.login_status_panel {
+.user_menu {
     background-color: #e8e8e8;
     float: right;
     margin-right: 64px;
@@ -99,7 +99,7 @@
 }
 
 @media (max-width: 601px) {
-    .login_status_panel {
+    .user_menu {
         margin-right: 16px;
     }
 }
