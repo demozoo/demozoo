@@ -93,18 +93,18 @@
                 {% if not is_ip_banned %}
                     <div class="user_menu">
                         {% if request.user.is_authenticated %}
-                            <div data-login-status class="login_status logged_in">
+                            <div data-login-status class="user_menu__login_status user_menu__login_status--logged_in">
                                 {{ request.user.username }}
                             </div>
-                            <div data-login-menu class="login_menu">
+                            <div data-login-menu class="user_menu__body">
                                 {% user_menu %}
                             </div>
                         {% else %}
-                            <div data-login-status class="login_status logged_out">
+                            <div data-login-status class="user_menu__login_status user_menu__login_status--logged_out">
                                 Not logged in
                             </div>
-                            <div data-login-menu class="login_menu">
-                                <form class="login__form login__form--compact" action="{% url 'log_in' %}" method="post">
+                            <div data-login-menu class="user_menu__body">
+                                <form class="user_menu__login_form" action="{% url 'log_in' %}" method="post">
                                     {% csrf_token %}
                                     {{ global_login_form.as_p }}
                                     {% block login_next_field %}
@@ -112,11 +112,11 @@
                                     {% endblock %}
                                     <input type="submit" value="Log in" />
                                 </form>
-                                <ul class="login_links">
-                                    <li><a href="{% url 'user_signup' %}">Register new account</a></li>
-                                    <li><a href="{% url 'password_reset' %}">{{ _("Forgotten password") }}</a></li>
+                                <ul>
+                                    <li><a href="{% url 'user_signup' %}" class="user_menu__link">Register new account</a></li>
+                                    <li><a href="{% url 'password_reset' %}" class="user_menu__link">{{ _("Forgotten password") }}</a></li>
                                 </ul>
-                                <div class="login_sceneid">
+                                <div class="user_menu__sceneid_login_prompt">
                                     ...or log in with
                                     <a class="sceneid_login_button" href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}" title="Log in with SceneID">SceneID</a>
                                 </div>

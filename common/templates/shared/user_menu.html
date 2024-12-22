@@ -1,13 +1,13 @@
-<ul class="login_links">
+<ul>
     {% for menu_item in menu_items %}
         <li>
             {% if menu_item.post %}
                 <form action="{{ menu_item.url }}" method="post">
                     {% csrf_token %}
-                    <button type="submit">{{ menu_item.label }}</button>
+                    <button type="submit" class="user_menu__link">{{ menu_item.label }}</button>
                 </form>
             {% else %}
-                <a href="{{ menu_item.url }}">{{ menu_item.label }}</a>
+                <a href="{{ menu_item.url }}" class="user_menu__link">{{ menu_item.label }}</a>
             {% endif %}
         </li>
     {% endfor %}

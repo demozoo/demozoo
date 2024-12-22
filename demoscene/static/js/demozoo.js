@@ -90,7 +90,7 @@ $(function() {
         $('body').unbind('click', hideLoginMenuOnBodyClick);
     }
     
-    $('[data-login-status]').wrapInner('<button></button>');
+    $('[data-login-status]').wrapInner('<button class="user_menu__login_status_button"></button>');
     $('[data-login-status] button').click(function() {
         if (loginMenuVisible) {
             hideLoginMenu();
