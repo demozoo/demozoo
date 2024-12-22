@@ -8,13 +8,13 @@
 {% block login_sceneid_next_param %}{% endblock %}
 
 {% block base_main %}
-    {% if form.errors %}
-        <p>Your username and password didn't match. Please try again.</p>
-    {% elif is_ajax %}
-        <p>Please log in to proceed:</p>
-    {% endif %}
+    <form class="login_form" method="post" action="{% url 'log_in' %}">
+        {% if form.errors %}
+            <p>Your username and password didn't match. Please try again.</p>
+        {% elif is_ajax %}
+            <p>Please log in to proceed:</p>
+        {% endif %}
 
-    <form method="post" action="{% url 'log_in' %}">
         {% csrf_token %}
         <table>
             <tr>
@@ -26,14 +26,14 @@
                 <td>{{ form.password }}</td>
             </tr>
         </table>
-        <div class="buttons">
+        <div>
             <button type="submit">
                 <span>Log in</span>
             </button>
 
             <input type="hidden" name="next" value="{{ next }}" />
 
-            <div class='login_sceneid'>
+            <div class="login_form__sceneid_login_prompt">
                 ...or log in with
                 <a class="sceneid_login_button" href="{% url 'sceneid_auth' %}{% if next %}?next={{ next|urlencode }}{% endif %}" title="Log in with SceneID">SceneID</a>
             </div>
