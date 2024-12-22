@@ -91,7 +91,7 @@
                 </nav>
                 {% block login_status_panel %}
                 {% if not is_ip_banned %}
-                    <div id="login_status_panel">
+                    <div class="login_status_panel">
                         {% if request.user.is_authenticated %}
                             <div data-login-status class="login_status logged_in">
                                 {{ request.user.username }}
