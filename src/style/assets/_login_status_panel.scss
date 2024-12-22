@@ -1,4 +1,4 @@
-#login_status_panel {
+.login_status_panel {
     background-color: #e8e8e8;
     float: right;
     margin-right: 64px;
@@ -92,14 +92,14 @@
 }
 
 @media (max-width: 601px) {
-    #login_status_panel {
+    .login_status_panel {
         margin-right: 16px;
     }
 }
 
 
 
-#login_status_panel a.sceneid,
+.login_status_panel a.sceneid,
 .site__content a.sceneid,
 #lightbox a.sceneid {
     background: url('/static/images/SceneID_Icon_120x44.png');
