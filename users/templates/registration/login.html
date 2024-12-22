@@ -35,7 +35,7 @@
 
             <div class='login_sceneid'>
                 ...or log in with
-                <a class='sceneid' href="{% url 'sceneid_auth' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Log in with SceneID</a>
+                <a class='sceneid' href="{% url 'sceneid_auth' %}{% if next %}?next={{ next|urlencode }}{% endif %}" title="Log in with SceneID">SceneID</a>
             </div>
         </div>
     </form>

@@ -118,7 +118,7 @@
                                 </ul>
                                 <div class="login_sceneid">
                                     ...or log in with
-                                    <a class='sceneid' href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}">Log in with SceneID</a>
+                                    <a class='sceneid' href="{% url 'sceneid_auth' %}{% block login_sceneid_next_param %}?next={{ request.path|urlencode }}{% endblock %}" title="Log in with SceneID">SceneID</a>
                                 </div>
                             </div>
                         {% endif %}
