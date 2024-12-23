@@ -13,6 +13,17 @@ function initEditCreditLink(context) {
                 'done': function(modal, jsonData) {
                     modal.respond('creditsUpdated', jsonData.panel_html);
                     modal.close();
+                },
+                'confirm': function(modal) {
+                    $('.yes_button', modal.body).click(function() {
+                        var form = $('form.confirmation_form', modal.body);
+                        modal.postForm(form.attr('action'), form.serialize() + '&yes=Yes');
+                        return false;
+                    });
+                    $('.no_button', modal.body).click(function() {
+                        modal.close();
+                        return false;
+                    });
                 }
             }
         });

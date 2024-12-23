@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from common.utils.ajax import request_is_ajax
-from common.utils.modal_workflow import render_modal_workflow
 
 
 def get_page(queryset, page_number, **kwargs):
@@ -61,18 +60,5 @@ def simple_ajax_form(request, url_name, instance, form_class, **kwargs):
             "html_title": clean_title,
             "action_url": reverse(url_name, args=[instance.id]),
             "ajax_submit": kwargs.get("ajax_submit"),
-        },
-    )
-
-
-def modal_workflow_confirmation(request, action_url, message, html_title=None):
-    return render_modal_workflow(
-        request,
-        "generic/simple_confirmation.html",
-        "generic/simple_confirmation.js",
-        {
-            "html_title": html_title,
-            "message": message,
-            "action_url": action_url,
         },
     )

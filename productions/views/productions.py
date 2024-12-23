@@ -28,7 +28,7 @@ from common.views import (
 )
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
-from demoscene.shortcuts import get_page, modal_workflow_confirmation, simple_ajax_form
+from demoscene.shortcuts import get_page, simple_ajax_form
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm,
@@ -800,11 +800,16 @@ def delete_credit(request, production_id, nick_id):
                 )
         return render_credits_update(request, production)
     else:
-        return modal_workflow_confirmation(
+        return render_modal_workflow(
             request,
-            reverse("production_delete_credit", args=[production_id, nick_id]),
-            "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-            html_title="Deleting %s's credit from %s" % (nick.name, production.title),
+            "generic/simple_confirmation.html",
+            None,
+            {
+                "html_title": "Deleting %s's credit from %s" % (nick.name, production.title),
+                "message": "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
+                "action_url": reverse("production_delete_credit", args=[production_id, nick_id]),
+            },
+            json_data={"step": "confirm"},
         )
 
 
