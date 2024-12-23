@@ -677,12 +677,13 @@ def add_credit(request, production_id):
         return render_modal_workflow(
             request,
             "productions/add_credit.html",
-            "productions/add_credit.js",
+            None,
             {
                 "production": production,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
             },
+            json_data={"step": "form"},
         )
     else:
         return render(
@@ -753,13 +754,14 @@ def edit_credit(request, production_id, nick_id):
         return render_modal_workflow(
             request,
             "productions/edit_credit.html",
-            "productions/edit_credit.js",
+            None,
             {
                 "production": production,
                 "nick": nick,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
             },
+            json_data={"step": "form"},
         )
     else:
         return render(
@@ -1077,9 +1079,10 @@ def render_credits_update(request, production):
         return render_modal_workflow(
             request,
             None,
-            "productions/edit_credit_done.js",
-            {
-                "credits_html": credits_html,
+            None,
+            json_data={
+                "step": "done",
+                "panel_html": credits_html,
             },
         )
     else:
