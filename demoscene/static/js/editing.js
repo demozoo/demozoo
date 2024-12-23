@@ -35,7 +35,7 @@ function applyEditControls(context) {
         }
     });
 
-    $('.byline_field', context).bylineField();
+    $('[data-byline-field]', context).bylineField();
 
     $('.production_field', context).each(function() {
         var staticView = $("> .static_view", this);

@@ -191,8 +191,7 @@ class BylineWidget(forms.Widget):
             '<div class="byline_match_container">' + matched_nick_html + "</div>",
         ]
 
-        root_classname = "byline_field"
-        return mark_safe('<div class="' + root_classname + '">' + "".join(output) + "</div>")
+        return mark_safe('<div class="byline_field" data-byline-field>' + "".join(output) + "</div>")
 
 
 class BylineField(forms.Field):
