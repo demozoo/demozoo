@@ -165,6 +165,8 @@ function BylineField(elem, searchTerm, authorMatches, affiliationMatches, fieldP
         if (!lastField) lastField = searchField.get(0);
         return (lastField == document.activeElement);
     }
-    
+
+    $elem.addClass('byline_field--ajaxified');
+
     return self;
 }
