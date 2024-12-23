@@ -4,6 +4,16 @@ function initEditCreditLink(context) {
             'url': this.href,
             'responses': {
                 'creditsUpdated': replaceCreditsPanel
+            },
+            'onload': {
+                'form': function(modal) {
+                    modal.ajaxifyForm($('[data-edit-form]', modal.body));
+                    modal.ajaxifyLink($('a.delete_credit', modal.body));
+                },
+                'done': function(modal, jsonData) {
+                    modal.respond('creditsUpdated', jsonData.panel_html);
+                    modal.close();
+                }
             }
         });
         return false;

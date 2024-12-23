@@ -61,12 +61,12 @@ function ModalWorkflow(opts) {
         if (onload && body.html) {
             Lightbox.openContent(body.html, function(elem) {
                 self.body = elem;
-                onload(self);
+                onload(self, body);
             });
         } else if (body.html) {
             Lightbox.openContent(body.html);
         } else if (onload) {
-            onload(self);
+            onload(self, body);
         }
     };
 
