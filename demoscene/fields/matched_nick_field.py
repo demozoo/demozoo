@@ -98,7 +98,7 @@ class MatchedNickWidget(forms.Widget):
             self.select_widget.render(name + "_id", selected_id, attrs=attrs, renderer=renderer),
             self.name_widget.render(name + "_name", self.nick_search.search_term, attrs=attrs, renderer=renderer),
         ]
-        return mark_safe('<div class="nick_match">' + "".join(output) + "</div>")
+        return mark_safe('<div class="nick_match" data-nick-match>' + "".join(output) + "</div>")
 
 
 class MatchedNickField(forms.Field):

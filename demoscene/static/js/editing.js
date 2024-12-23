@@ -107,7 +107,7 @@ function applyEditControls(context) {
         $(this).addClass('ajaxified');
     });
 
-    $('.nick_match', context).nickMatchWidget();
+    $('[data-nick-match]', context).nickMatchWidget();
 
     $('.nick_field', context).each(function() {
         var nickFieldElement = this;

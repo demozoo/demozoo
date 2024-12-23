@@ -1,0 +1,123 @@
+/* NickField matched names */
+.nick_match {
+    font-size: 0.9em;
+    position: relative;
+    float: left;
+    margin-right: 4px;
+
+    a.selected_result {
+        line-height: 24px;
+        display: block;
+        padding-right: 4px;
+        cursor: pointer;
+        border: 2px solid #eee;
+        padding-left: 20px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
+        color: black;
+        text-decoration: none;
+
+        &:hover {
+            border-top: 2px solid #ccc;
+            border-left: 2px solid #ccc;
+            border-bottom: 2px solid #888;
+            border-right: 2px solid #888;
+        }
+
+        span {
+            padding-right: 20px;
+            padding-left: 4px;
+        }
+
+    }
+
+    a.active.selected_result {
+        border-bottom: 2px solid #ccc;
+        border-right: 2px solid #ccc;
+        border-top: 2px solid #888;
+        border-left: 2px solid #888;
+        background-color: #ddd;
+    }
+
+    a:hover.selected_result span,
+    a.active.selected_result span {
+        background-image: url(/static/images/icons/arrow_down.png);
+        background-position: right center;
+        background-repeat: no-repeat;
+    }
+
+    a.error {
+        background-image: url(/static/images/icons/error.png);
+        color: red;
+    }
+
+    a.scener,
+    li.scener {
+        background-image: url(/static/images/icons/scener.png);
+    }
+
+    a.group,
+    li.group {
+        background-image: url(/static/images/icons/group.png);
+    }
+
+    a.add_scener,
+    li.add_scener {
+        background-image: url(/static/images/icons/add_scener.png);
+    }
+
+    a.add_group,
+    li.add_group {
+        background-image: url(/static/images/icons/add_group.png);
+    }
+
+    ul {
+        white-space: nowrap;
+        top: 28px;
+        border: 1px solid #888;
+        background-color: white;
+
+        li {
+            display: block;
+            color: black;
+            text-decoration: none;
+            padding-left: 28px;
+            padding-right: 4px;
+            padding-bottom: 0;
+            background-position: 4px center;
+            background-repeat: no-repeat;
+
+            &:hover {
+                background-color: #eee;
+            }
+
+            &.selected {
+                background-color: #ddd;
+            }
+
+            label {
+                display: block;
+                margin-left: -28px;
+                padding-left: 28px;
+                margin-right: -4px;
+                padding-right: 4px;
+                line-height: 24px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.nick_match.ajaxified {
+
+    ul {
+        position: absolute;
+        z-index: 100;
+
+        li {
+            input[type=radio] {
+                display: none;
+            }
+        }
+    }
+}
