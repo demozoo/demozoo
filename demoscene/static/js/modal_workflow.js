@@ -5,13 +5,15 @@ possibly after several navigation steps
 
 function ModalWorkflow(opts) {
     /* options passed in 'opts':
-        'url' (required): initial 
+        'url' (required): initial
+        'onload' (optional): dict of callbacks to be called on loading a subpage, keyed by step name
         'responses' (optional): dict of callbacks to be called when the modal content
             calls modal.respond(callbackName, params)
     */
 
     var self = {};
     var responseCallbacks = opts.responses || {};
+    var onLoadCallbacks = opts.onload || {};
 
     self.loadUrl = function(url, urlParams) {
         $.get(url, urlParams, self.loadResponseText, 'text');
@@ -50,13 +52,21 @@ function ModalWorkflow(opts) {
     };
 
     self.loadBody = function(body) {
-        if (body.onload) {
+        var onload;
+        if (body.step) {
+            onload = onLoadCallbacks[body.step];
+        } else {
+            onload = body.onload;
+        }
+        if (onload && body.html) {
             Lightbox.openContent(body.html, function(elem) {
                 self.body = elem;
-                body.onload(self);
+                onload(self);
             });
-        } else {
+        } else if (body.html) {
             Lightbox.openContent(body.html);
+        } else if (onload) {
+            onload(self);
         }
     };
 

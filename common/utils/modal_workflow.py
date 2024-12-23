@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 
 
-def render_modal_workflow(request, html_template, js_template, template_vars={}):
+def render_modal_workflow(request, html_template, js_template, template_vars=None, json_data=None):
     """ "
     Render a response consisting of an HTML chunk and a JS onload chunk
     in the format required by the modal-workflow framework.
@@ -12,12 +12,16 @@ def render_modal_workflow(request, html_template, js_template, template_vars={})
     response_keyvars = []
 
     if html_template:
-        html = render_to_string(html_template, template_vars, request=request)
+        html = render_to_string(html_template, template_vars or {}, request=request)
         response_keyvars.append("'html': %s" % json.dumps(html))
 
     if js_template:
-        js = render_to_string(js_template, template_vars, request=request)
+        js = render_to_string(js_template, template_vars or {}, request=request)
         response_keyvars.append("'onload': %s" % js)
+
+    if json_data:
+        for key, value in json_data.items():
+            response_keyvars.append("'%s': %s" % (key, json.dumps(value)))
 
     response_text = "{%s}" % ",".join(response_keyvars)
 

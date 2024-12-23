@@ -125,8 +125,9 @@ def browse_images(request):
     return render_modal_workflow(
         request,
         "homepage/banners/browse_images.html",
-        "homepage/banners/browse_images.js",
+        None,
         {
             "images": images,
         },
+        json_data={"step": "browse"},
     )
