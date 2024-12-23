@@ -677,7 +677,6 @@ def add_credit(request, production_id):
         return render_modal_workflow(
             request,
             "productions/add_credit.html",
-            None,
             {
                 "production": production,
                 "nick_form": nick_form,
@@ -754,7 +753,6 @@ def edit_credit(request, production_id, nick_id):
         return render_modal_workflow(
             request,
             "productions/edit_credit.html",
-            None,
             {
                 "production": production,
                 "nick": nick,
@@ -803,7 +801,6 @@ def delete_credit(request, production_id, nick_id):
         return render_modal_workflow(
             request,
             "generic/simple_confirmation.html",
-            None,
             {
                 "html_title": "Deleting %s's credit from %s" % (nick.name, production.title),
                 "message": "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
@@ -1083,7 +1080,6 @@ def render_credits_update(request, production):
         )
         return render_modal_workflow(
             request,
-            None,
             None,
             json_data={
                 "step": "done",
