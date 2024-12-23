@@ -147,9 +147,11 @@ class NickWidget(forms.Widget):
             root_classname = "nick_field"
 
         if self.prefer_members_of:
-            root_attrs = ' data-group_ids="%s"' % ",".join([str(group.id) for group in self.prefer_members_of])
+            root_attrs = 'data-nick-field data-group_ids="%s"' % ",".join(
+                [str(group.id) for group in self.prefer_members_of]
+            )
         else:
-            root_attrs = ""
+            root_attrs = "data-nick-field"
 
         output = [
             '<div class="nick_search">' + "".join(search_html_output) + "</div>",
