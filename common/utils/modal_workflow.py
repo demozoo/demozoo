@@ -1,24 +1,18 @@
-import json
-
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.template.loader import render_to_string
 
 
 def render_modal_workflow(request, html_template, template_vars=None, json_data=None):
-    """ "
+    """
     Render a response consisting of an HTML chunk and a JS onload chunk
     in the format required by the modal-workflow framework.
     """
-    response_keyvars = []
+    response_data = {}
 
     if html_template:
-        html = render_to_string(html_template, template_vars or {}, request=request)
-        response_keyvars.append("'html': %s" % json.dumps(html))
+        response_data["html"] = render_to_string(html_template, template_vars or {}, request=request)
 
     if json_data:
-        for key, value in json_data.items():
-            response_keyvars.append("'%s': %s" % (key, json.dumps(value)))
+        response_data.update(json_data)
 
-    response_text = "{%s}" % ",".join(response_keyvars)
-
-    return HttpResponse(response_text, content_type="text/javascript")
+    return JsonResponse(response_data)
