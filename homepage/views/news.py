@@ -155,7 +155,6 @@ def browse_images(request):
     return render_modal_workflow(
         request,
         "homepage/news/browse_images.html",
-        None,
         {
             "images": images,
         },
