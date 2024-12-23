@@ -109,7 +109,7 @@ function applyEditControls(context) {
 
     $('[data-nick-match]', context).nickMatchWidget();
 
-    $('.nick_field', context).each(function() {
+    $('[data-nick-field]', context).each(function() {
         var nickFieldElement = this;
         var nickField = $(this);
         var uid = $.uid('nickfield');
@@ -158,7 +158,7 @@ function applyEditControls(context) {
             }
         });
         
-        $(this).addClass('ajaxified');
+        $(this).addClass('nick_field--ajaxified');
     });
 }
 
