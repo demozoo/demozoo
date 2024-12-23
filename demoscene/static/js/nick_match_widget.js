@@ -194,7 +194,7 @@ function NickMatchWidget(elem, nickSelection, choices, fieldPrefix) {
         wasFocusedOnLastMousedown = selectedResult.hasClass('active');
     });
 
-    $elem.addClass('ajaxified');
+    $elem.addClass('nick_match--ajaxified');
 
     self.isValid = function() {
         var id = suggestionsUl.find('input:checked').val();

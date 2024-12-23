@@ -106,17 +106,16 @@
             }
         }
     }
-}
 
-.nick_match.ajaxified {
+    &--ajaxified {
+        ul {
+            position: absolute;
+            z-index: 100;
 
-    ul {
-        position: absolute;
-        z-index: 100;
-
-        li {
-            input[type=radio] {
-                display: none;
+            li {
+                input[type=radio] {
+                    display: none;
+                }
             }
         }
     }
