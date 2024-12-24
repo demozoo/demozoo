@@ -9,7 +9,7 @@ urlpatterns = [
     path("<int:bbs_id>/", views.show, {}, "bbs"),
     path("new/", views.create, {}, "new_bbs"),
     path("<int:bbs_id>/edit/", views.edit, {}, "edit_bbs"),
-    path("<int:bbs_id>/edit_notes/", views.edit_notes, {}, "bbs_edit_notes"),
+    path("<int:bbs_id>/edit_notes/", views.EditNotesView.as_view(), {}, "bbs_edit_notes"),
     path("<int:bbs_id>/delete/", views.DeleteBBSView.as_view(), {}, "delete_bbs"),
     path("<int:bbs_id>/edit_bbstros/", views.edit_bbstros, {}, "bbs_edit_bbstros"),
     path("<int:bbs_id>/history/", views.history, {}, "bbs_history"),

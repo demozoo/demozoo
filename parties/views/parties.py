@@ -17,7 +17,7 @@ from django.utils.http import urlencode
 from comments.forms import CommentForm
 from comments.models import Comment
 from common.utils.ajax import request_is_ajax
-from common.views import AjaxConfirmationView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import simple_ajax_form
 from parties.forms import (
@@ -253,25 +253,18 @@ def edit(request, party_id):
     )
 
 
-@writeable_site_required
-@login_required
-def edit_notes(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(party.get_absolute_url())
+class EditNotesView(EditingFormView):
+    form_class = PartyEditNotesForm
+    action_url_name = "party_edit_notes"
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(Party, id=self.kwargs["party_id"])
 
-    return simple_ajax_form(
-        request,
-        "party_edit_notes",
-        party,
-        PartyEditNotesForm,
-        title="Editing notes for %s" % party.name,
-        on_success=success,
-        # update_datestamp = True
-    )
+    def can_edit(self, object):
+        return self.request.user.is_staff
+
+    def get_title(self):
+        return "Editing notes for %s" % self.object.name
 
 
 @writeable_site_required
@@ -341,25 +334,18 @@ def edit_series_external_links(request, party_series_id):
     )
 
 
-@writeable_site_required
-@login_required
-def edit_series_notes(request, party_series_id):
-    party_series = get_object_or_404(PartySeries, id=party_series_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(party_series.get_absolute_url())
+class EditSeriesNotesView(EditingFormView):
+    form_class = PartySeriesEditNotesForm
+    action_url_name = "party_edit_series_notes"
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(PartySeries, id=self.kwargs["party_series_id"])
 
-    return simple_ajax_form(
-        request,
-        "party_edit_series_notes",
-        party_series,
-        PartySeriesEditNotesForm,
-        title="Editing notes for %s" % party_series.name,
-        on_success=success,
-        # update_datestamp = True
-    )
+    def can_edit(self, object):
+        return self.request.user.is_staff
+
+    def get_title(self):
+        return "Editing notes for %s" % self.object.name
 
 
 @writeable_site_required

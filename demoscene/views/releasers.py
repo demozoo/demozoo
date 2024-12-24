@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from common.views import AjaxConfirmationView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
 from demoscene.forms.releaser import (
     GroupNickForm,
     ReleaserEditNotesForm,
@@ -16,28 +16,21 @@ from demoscene.forms.releaser import (
     ScenerNickForm,
 )
 from demoscene.models import Edit, Nick, Releaser
-from demoscene.shortcuts import simple_ajax_form
 
 
-@writeable_site_required
-@login_required
-def edit_notes(request, releaser_id):
-    releaser = get_object_or_404(Releaser, id=releaser_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(releaser.get_absolute_url())
+class EditNotesView(EditingFormView):
+    form_class = ReleaserEditNotesForm
+    action_url_name = "releaser_edit_notes"
+    update_datestamp = True
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(Releaser, id=self.kwargs["releaser_id"])
 
-    return simple_ajax_form(
-        request,
-        "releaser_edit_notes",
-        releaser,
-        ReleaserEditNotesForm,
-        title="Editing notes for %s" % releaser.name,
-        update_datestamp=True,
-        on_success=success,
-    )
+    def can_edit(self, object):
+        return self.request.user.is_staff
+
+    def get_title(self):
+        return "Editing notes for %s" % self.object.name
 
 
 @writeable_site_required
