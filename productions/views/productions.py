@@ -21,6 +21,7 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
+    EditingFormView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
@@ -28,7 +29,7 @@ from common.views import (
 )
 from demoscene.forms.common import CreditFormSet
 from demoscene.models import Edit, Nick
-from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import (
     CreateProductionForm,
@@ -217,26 +218,20 @@ def edit_core_details(request, production_id):
     )
 
 
-@writeable_site_required
-@login_required
-def edit_notes(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
+class EditNotesView(EditingFormView):
+    form_class = ProductionEditNotesForm
+    action_url_name = "production_edit_notes"
+    update_bonafide_flag = True
+    update_datestamp = True
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(Production, id=self.kwargs["production_id"])
 
-    return simple_ajax_form(
-        request,
-        "production_edit_notes",
-        production,
-        ProductionEditNotesForm,
-        title="Editing notes for %s:" % production.title,
-        update_datestamp=True,
-        update_bonafide_flag=True,
-        on_success=success,
-    )
+    def can_edit(self, object):
+        return self.request.user.is_staff
+
+    def get_title(self):
+        return "Editing notes for %s:" % self.object.title
 
 
 @writeable_site_required

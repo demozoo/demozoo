@@ -18,7 +18,10 @@ urlpatterns = [
     path("parties/series/<int:party_series_id>/history/", party_views.series_history, {}, "party_series_history"),
     path("parties/series/<int:party_series_id>/edit/", party_views.edit_series, {}, "party_edit_series"),
     path(
-        "parties/series/<int:party_series_id>/edit_notes/", party_views.edit_series_notes, {}, "party_edit_series_notes"
+        "parties/series/<int:party_series_id>/edit_notes/",
+        party_views.EditSeriesNotesView.as_view(),
+        {},
+        "party_edit_series_notes",
     ),
     path(
         "parties/series/<int:party_series_id>/edit_external_links/",
@@ -35,7 +38,7 @@ urlpatterns = [
         {},
         "party_edit_competition",
     ),
-    path("parties/<int:party_id>/edit_notes/", party_views.edit_notes, {}, "party_edit_notes"),
+    path("parties/<int:party_id>/edit_notes/", party_views.EditNotesView.as_view(), {}, "party_edit_notes"),
     path(
         "parties/<int:party_id>/edit_external_links/", party_views.edit_external_links, {}, "party_edit_external_links"
     ),

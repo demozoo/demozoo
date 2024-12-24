@@ -14,6 +14,7 @@ from taggit.models import Tag
 from common.utils.ajax import request_is_ajax
 from common.utils.text import slugify_tag
 from demoscene.models import BlacklistedTag, Edit
+from demoscene.shortcuts import simple_ajax_form
 
 
 if settings.SITE_IS_WRITEABLE:
@@ -111,6 +112,39 @@ class AjaxConfirmationView(View):
                     "action_url": self.get_action_url(),
                 },
             )
+
+
+class EditingFormView(View):
+    form_class = None
+    update_bonafide_flag = False
+    update_datestamp = False
+
+    def get_object(self):
+        raise NotImplementedError
+
+    def can_edit(self, object):
+        return True
+
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.can_edit(self.object):
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+        def success(form):
+            form.log_edit(request.user)
+
+        return simple_ajax_form(
+            request,
+            self.action_url_name,
+            self.object,
+            self.form_class,
+            title=self.get_title(),
+            update_datestamp=self.update_datestamp,
+            update_bonafide_flag=self.update_bonafide_flag,
+            on_success=success,
+        )
 
 
 class EditTextFilesView(View):

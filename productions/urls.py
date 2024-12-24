@@ -58,7 +58,12 @@ urlpatterns = [
         {},
         "production_delete_credit",
     ),
-    path("productions/<int:production_id>/edit_notes/", production_views.edit_notes, {}, "production_edit_notes"),
+    path(
+        "productions/<int:production_id>/edit_notes/",
+        production_views.EditNotesView.as_view(),
+        {},
+        "production_edit_notes",
+    ),
     path(
         "productions/<int:production_id>/edit_external_links/",
         production_views.edit_external_links,

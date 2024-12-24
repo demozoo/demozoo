@@ -30,13 +30,14 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
+    EditingFormView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
     writeable_site_required,
 )
 from demoscene.models import Edit
-from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.shortcuts import get_page
 from search.indexing import index as search_index
 
 
@@ -226,19 +227,18 @@ def edit(request, bbs_id):
     )
 
 
-@writeable_site_required
-@login_required
-def edit_notes(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    if not request.user.is_staff:
-        return redirect("bbs", bbs.id)
+class EditNotesView(EditingFormView):
+    form_class = BBSEditNotesForm
+    action_url_name = "bbs_edit_notes"
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(BBS, id=self.kwargs["bbs_id"])
 
-    return simple_ajax_form(
-        request, "bbs_edit_notes", bbs, BBSEditNotesForm, title="Editing notes for %s" % bbs.name, on_success=success
-    )
+    def can_edit(self, object):
+        return self.request.user.is_staff
+
+    def get_title(self):
+        return "Editing notes for %s" % self.object.name
 
 
 class DeleteBBSView(AjaxConfirmationView):
