@@ -1,5 +1,9 @@
 {% extends base_template_with_ajax_option %}
-{% load compress %}
+
+{% block extra_head %}
+    {% include "shared/editor_css.html" %}
+    {% include "shared/editor_js.html" %}
+{% endblock %}
 
 {% block html_title %}
     {% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
