@@ -144,6 +144,7 @@ class EditingFormView(View):
             update_datestamp=self.update_datestamp,
             update_bonafide_flag=self.update_bonafide_flag,
             on_success=success,
+            ajax_submit=request.GET.get("ajax_submit"),
         )
 
 

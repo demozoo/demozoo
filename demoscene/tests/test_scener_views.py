@@ -86,7 +86,7 @@ class TestEditLocation(TestCase):
     def test_locked(self):
         self.client.login(username="testuser", password="12345")
         response = self.client.get("/sceners/%d/edit_location/" % self.yerzmyey.id)
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, "/sceners/%d/" % self.yerzmyey.id)
 
     def test_get(self):
         self.client.login(username="testuser", password="12345")

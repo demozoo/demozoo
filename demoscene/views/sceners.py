@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from common.utils.pagination import PaginationControls
-from common.views import AjaxConfirmationView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
 from demoscene.forms.releaser import (
     CreateScenerForm,
     ScenerEditLocationForm,
@@ -17,7 +17,7 @@ from demoscene.forms.releaser import (
     ScenerMembershipForm,
 )
 from demoscene.models import Edit, Membership, Nick, Releaser
-from demoscene.shortcuts import get_page, simple_ajax_form
+from demoscene.shortcuts import get_page
 
 
 def index(request):
@@ -100,48 +100,34 @@ def history(request, scener_id):
     )
 
 
-@writeable_site_required
-@login_required
-def edit_location(request, scener_id):
-    scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+class EditLocationView(EditingFormView):
+    form_class = ScenerEditLocationForm
+    action_url_name = "scener_edit_location"
+    update_datestamp = True
 
-    if not scener.editable_by_user(request.user):
-        raise PermissionDenied
+    def get_object(self):
+        return get_object_or_404(Releaser, is_group=False, id=self.kwargs["scener_id"])
 
-    def success(form):
-        form.log_edit(request.user)
+    def can_edit(self, object):
+        return object.editable_by_user(self.request.user)
 
-    return simple_ajax_form(
-        request,
-        "scener_edit_location",
-        scener,
-        ScenerEditLocationForm,
-        title="Editing location for %s:" % scener.name,
-        update_datestamp=True,
-        on_success=success,
-    )
+    def get_title(self):
+        return "Editing location for %s:" % self.object.name
 
 
-@writeable_site_required
-@login_required
-def edit_real_name(request, scener_id):
-    scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-    if not request.user.has_perm("demoscene.change_releaser_real_names"):
-        return HttpResponseRedirect(scener.get_absolute_url())
+class EditRealNameView(EditingFormView):
+    form_class = ScenerEditRealNameForm
+    action_url_name = "scener_edit_real_name"
+    update_datestamp = True
 
-    def success(form):
-        form.log_edit(request.user)
+    def get_object(self):
+        return get_object_or_404(Releaser, is_group=False, id=self.kwargs["scener_id"])
 
-    return simple_ajax_form(
-        request,
-        "scener_edit_real_name",
-        scener,
-        ScenerEditRealNameForm,
-        title="Editing %s's real name:" % scener.name,
-        update_datestamp=True,
-        on_success=success,
-        ajax_submit=request.GET.get("ajax_submit"),
-    )
+    def can_edit(self, object):
+        return self.request.user.has_perm("demoscene.change_releaser_real_names")
+
+    def get_title(self):
+        return "Editing %s's real name:" % self.object.name
 
 
 @writeable_site_required
