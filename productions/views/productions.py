@@ -21,6 +21,7 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
+    EditingFormView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
@@ -234,41 +235,36 @@ class EditNotesView(UpdateFormView):
         return "Editing notes for %s:" % self.object.title
 
 
-@writeable_site_required
-@login_required
-def add_blurb(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
+class AddBlurbView(EditingFormView):
+    form_class = ProductionBlurbForm
 
-    blurb = ProductionBlurb(production=production)
-    if request.POST:
-        form = ProductionBlurbForm(request.POST, instance=blurb)
-        if form.is_valid():
-            form.save()
-            production.has_bonafide_edits = True
-            production.save()
-            Edit.objects.create(
-                action_type="add_production_blurb",
-                focus=production,
-                description="Added blurb",
-                user=request.user,
-                admin_only=True,
-            )
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        form = ProductionBlurbForm(instance=blurb)
+    def get_object(self):
+        return get_object_or_404(Production, id=self.kwargs["production_id"])
 
-    return render(
-        request,
-        "generic/simple_form.html",
-        {
-            "form": form,
-            "title": "Adding blurb for %s:" % production.title,
-            "html_title": "Adding blurb for %s" % production.title,
-            "action_url": reverse("production_add_blurb", args=[production.id]),
-        },
-    )
+    def check_permission(self):
+        if not self.request.user.is_staff:
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+    def get_form_kwargs(self):
+        return {"instance": ProductionBlurb(production=self.object)}
+
+    def form_valid(self):
+        self.form.save()
+        self.object.has_bonafide_edits = True
+        self.object.save()
+        Edit.objects.create(
+            action_type="add_production_blurb",
+            focus=self.object,
+            description="Added blurb",
+            user=self.request.user,
+            admin_only=True,
+        )
+
+    def get_title(self):
+        return "Adding blurb for %s:" % self.object.title
+
+    def get_action_url(self):
+        return reverse("production_add_blurb", args=[self.object.id])
 
 
 @writeable_site_required
