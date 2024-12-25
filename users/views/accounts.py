@@ -4,10 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
-from django.urls import reverse
 
 from common.utils.ajax import request_is_ajax
-from common.views import writeable_site_required
+from common.views import EditingFormView, writeable_site_required
 from demoscene.forms.account import UserSignupForm
 from demoscene.models import CaptchaQuestion
 from users.utils import is_login_banned, is_registration_banned
@@ -71,25 +70,16 @@ def signup(request):
     )
 
 
-@writeable_site_required
-@login_required
-def change_password(request):
-    if request.method == "POST":
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Password updated")
-            return redirect("home")
-    else:
-        form = PasswordChangeForm(request.user)
+class ChangePasswordView(EditingFormView):
+    page_title = "Change password"
+    action_url_name = "account_change_password"
 
-    return render(
-        request,
-        "generic/simple_form.html",
-        {
-            "form": form,
-            "title": "Change password",
-            "html_title": "Change password",
-            "action_url": reverse("account_change_password"),
-        },
-    )
+    def get_form(self):
+        if self.request.method == "POST":
+            return PasswordChangeForm(self.request.user, self.request.POST)
+        else:
+            return PasswordChangeForm(self.request.user)
+
+    def render_success_response(self):
+        messages.success(self.request, "Password updated")
+        return redirect("home")

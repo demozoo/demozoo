@@ -11,7 +11,7 @@ urlpatterns = [
     path("account/login/", account_views.LoginViewWithIPCheck.as_view(), {}, "log_in"),
     path("account/logout/", auth_views.LogoutView.as_view(next_page="/"), {}, "log_out"),
     path("account/signup/", account_views.signup, {}, "user_signup"),
-    path("account/change_password/", account_views.change_password, {}, "account_change_password"),
+    path("account/change_password/", account_views.ChangePasswordView.as_view(), {}, "account_change_password"),
     # forgotten password
     path("account/forgotten_password/", auth_views.PasswordResetView.as_view(), {}, "password_reset"),
     path("account/forgotten_password/success/", auth_views.PasswordResetDoneView.as_view(), {}, "password_reset_done"),

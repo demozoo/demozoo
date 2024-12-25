@@ -148,8 +148,14 @@ class EditingFormView(View):
     def get_form_kwargs(self):
         return {"instance": self.object}
 
+    def get_form(self):
+        if self.request.method == "POST":
+            return self.form_class(self.request.POST, self.request.FILES, **self.get_form_kwargs())
+        else:
+            return self.form_class(**self.get_form_kwargs())
+
     def post(self, request, *args, **kwargs):
-        self.form = self.form_class(request.POST, **self.get_form_kwargs())
+        self.form = self.get_form()
         if self.form.is_valid():
             self.form_valid()
             return self.render_success_response()
@@ -166,7 +172,7 @@ class EditingFormView(View):
             return HttpResponseRedirect(self.object.get_absolute_url())
 
     def get(self, request, *args, **kwargs):
-        self.form = self.form_class(**self.get_form_kwargs())
+        self.form = self.get_form()
         return self.render_to_response()
 
     def get_action_url(self):
