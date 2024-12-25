@@ -50,8 +50,12 @@ urlpatterns = [
         {},
         "scener_edit_membership",
     ),
-    path("sceners/<int:scener_id>/edit_location/", sceners_views.edit_location, {}, "scener_edit_location"),
-    path("sceners/<int:scener_id>/edit_real_name/", sceners_views.edit_real_name, {}, "scener_edit_real_name"),
+    path(
+        "sceners/<int:scener_id>/edit_location/", sceners_views.EditLocationView.as_view(), {}, "scener_edit_location"
+    ),
+    path(
+        "sceners/<int:scener_id>/edit_real_name/", sceners_views.EditRealNameView.as_view(), {}, "scener_edit_real_name"
+    ),
     path(
         "sceners/<int:scener_id>/convert_to_group/",
         sceners_views.ConvertToGroupView.as_view(),
