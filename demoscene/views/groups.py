@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from common.utils.pagination import PaginationControls
-from common.views import AjaxConfirmationView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page
@@ -112,28 +112,14 @@ def history(request, group_id):
     )
 
 
-@writeable_site_required
-@login_required
-def create(request):
-    if request.method == "POST":
-        form = CreateGroupForm(request.POST)
-        if form.is_valid():
-            group = form.save()
-            form.log_creation(request.user)
-            return HttpResponseRedirect(group.get_absolute_url())
-    else:
-        form = CreateGroupForm()
+class CreateGroupView(EditingFormView):
+    form_class = CreateGroupForm
+    action_url_name = "new_group"
+    title = "New group"
 
-    return render(
-        request,
-        "generic/simple_form.html",
-        {
-            "form": form,
-            "title": "New group",
-            "html_title": "New group",
-            "action_url": reverse("new_group"),
-        },
-    )
+    def form_valid(self):
+        super().form_valid()
+        self.form.log_creation(self.request.user)
 
 
 @writeable_site_required
