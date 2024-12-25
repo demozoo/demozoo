@@ -17,7 +17,7 @@ from django.utils.http import urlencode
 from comments.forms import CommentForm
 from comments.models import Comment
 from common.utils.ajax import request_is_ajax
-from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
+from common.views import AjaxConfirmationView, UpdateFormView, writeable_site_required
 from demoscene.models import Edit
 from parties.forms import (
     CompetitionForm,
@@ -252,7 +252,7 @@ def edit(request, party_id):
     )
 
 
-class EditNotesView(EditingFormView):
+class EditNotesView(UpdateFormView):
     form_class = PartyEditNotesForm
     action_url_name = "party_edit_notes"
 
@@ -333,7 +333,7 @@ def edit_series_external_links(request, party_series_id):
     )
 
 
-class EditSeriesNotesView(EditingFormView):
+class EditSeriesNotesView(UpdateFormView):
     form_class = PartySeriesEditNotesForm
     action_url_name = "party_edit_series_notes"
 
@@ -347,7 +347,7 @@ class EditSeriesNotesView(EditingFormView):
         return "Editing notes for %s" % self.object.name
 
 
-class EditSeriesView(EditingFormView):
+class EditSeriesView(UpdateFormView):
     form_class = EditPartySeriesForm
     action_url_name = "party_edit_series"
 

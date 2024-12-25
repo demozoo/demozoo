@@ -30,10 +30,10 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
-    EditingFormView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
+    UpdateFormView,
     writeable_site_required,
 )
 from demoscene.models import Edit
@@ -227,7 +227,7 @@ def edit(request, bbs_id):
     )
 
 
-class EditNotesView(EditingFormView):
+class EditNotesView(UpdateFormView):
     form_class = BBSEditNotesForm
     action_url_name = "bbs_edit_notes"
 

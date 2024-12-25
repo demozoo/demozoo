@@ -118,14 +118,16 @@ class AjaxConfirmationView(View):
 
 class EditingFormView(View):
     form_class = None
-    update_bonafide_flag = False
-    update_datestamp = False
+    title = ""
 
-    def get_object(self):  # pragma: no cover
-        raise NotImplementedError
+    def get_title(self):
+        return self.title
 
-    def can_edit(self, object):
-        return True
+    def get_object(self):
+        return None
+
+    def check_permission(self):
+        pass
 
     def get_login_return_url(self):
         return self.request.get_full_path()
@@ -137,38 +139,39 @@ class EditingFormView(View):
 
         self.object = self.get_object()
 
-        if not self.can_edit(self.object):
-            return HttpResponseRedirect(self.object.get_absolute_url())
+        response = self.check_permission()
+        if response:
+            return response
 
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.form = self.form_class(request.POST, instance=self.object)
         if self.form.is_valid():
-            if self.update_datestamp:
-                self.object.updated_at = datetime.datetime.now()
-            if self.update_bonafide_flag:
-                self.object.has_bonafide_edits = True
-            self.form.save()
-            self.form.log_edit(request.user)
-
-            if request.GET.get("ajax_submit") and request_is_ajax(request):
-                return HttpResponse("OK", content_type="text/plain")
-            else:
-                return HttpResponseRedirect(self.object.get_absolute_url())
+            self.form_valid()
+            return self.render_success_response()
         else:
             return self.render_to_response()
+
+    def form_valid(self):
+        self.object = self.form.save()
+
+    def render_success_response(self):
+        if self.request.GET.get("ajax_submit") and request_is_ajax(self.request):
+            return HttpResponse("OK", content_type="text/plain")
+        else:
+            return HttpResponseRedirect(self.object.get_absolute_url())
 
     def get(self, request, *args, **kwargs):
         self.form = self.form_class(instance=self.object)
         return self.render_to_response()
 
+    def get_action_url(self):
+        return reverse(self.action_url_name)
+
     def render_to_response(self):
         title = self.get_title()
-        if title and title.endswith(":"):
-            clean_title = title[:-1]
-        else:
-            clean_title = title
+        clean_title = title.rstrip(":")
 
         return render(
             self.request,
@@ -178,10 +181,36 @@ class EditingFormView(View):
                 "html_form_class": "",
                 "title": title,
                 "html_title": clean_title,
-                "action_url": reverse(self.action_url_name, args=[self.object.id]),
+                "action_url": self.get_action_url(),
                 "ajax_submit": self.request.GET.get("ajax_submit"),
             },
         )
+
+
+class UpdateFormView(EditingFormView):
+    update_bonafide_flag = False
+    update_datestamp = False
+
+    def get_object(self):  # pragma: no cover
+        raise NotImplementedError
+
+    def can_edit(self, object):
+        return True
+
+    def check_permission(self):
+        if not self.can_edit(self.object):
+            return HttpResponseRedirect(self.object.get_absolute_url())
+
+    def get_action_url(self):
+        return reverse(self.action_url_name, args=[self.object.id])
+
+    def form_valid(self):
+        if self.update_datestamp:
+            self.object.updated_at = datetime.datetime.now()
+        if self.update_bonafide_flag:
+            self.object.has_bonafide_edits = True
+        self.form.save()
+        self.form.log_edit(self.request.user)
 
 
 class EditTextFilesView(View):

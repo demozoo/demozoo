@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from common.utils.pagination import PaginationControls
-from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, UpdateFormView, writeable_site_required
 from demoscene.forms.releaser import (
     CreateScenerForm,
     ScenerEditLocationForm,
@@ -100,7 +100,7 @@ def history(request, scener_id):
     )
 
 
-class EditLocationView(EditingFormView):
+class EditLocationView(UpdateFormView):
     form_class = ScenerEditLocationForm
     action_url_name = "scener_edit_location"
     update_datestamp = True
@@ -115,7 +115,7 @@ class EditLocationView(EditingFormView):
         return "Editing location for %s:" % self.object.name
 
 
-class EditRealNameView(EditingFormView):
+class EditRealNameView(UpdateFormView):
     form_class = ScenerEditRealNameForm
     action_url_name = "scener_edit_real_name"
     update_datestamp = True
@@ -130,28 +130,14 @@ class EditRealNameView(EditingFormView):
         return "Editing %s's real name:" % self.object.name
 
 
-@writeable_site_required
-@login_required
-def create(request):
-    if request.method == "POST":
-        form = CreateScenerForm(request.POST)
-        if form.is_valid():
-            scener = form.save()
-            form.log_creation(request.user)
-            return HttpResponseRedirect(scener.get_absolute_url())
-    else:
-        form = CreateScenerForm()
+class CreateScenerView(EditingFormView):
+    form_class = CreateScenerForm
+    action_url_name = "new_scener"
+    title = "New scener"
 
-    return render(
-        request,
-        "generic/simple_form.html",
-        {
-            "form": form,
-            "html_title": "New scener",
-            "title": "New scener",
-            "action_url": reverse("new_scener"),
-        },
-    )
+    def form_valid(self):
+        super().form_valid()
+        self.form.log_creation(self.request.user)
 
 
 @writeable_site_required
