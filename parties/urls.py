@@ -16,7 +16,7 @@ urlpatterns = [
     path("parties/<int:party_id>/history/", party_views.history, {}, "party_history"),
     path("parties/series/<int:party_series_id>/", party_views.show_series, {}, "party_series"),
     path("parties/series/<int:party_series_id>/history/", party_views.series_history, {}, "party_series_history"),
-    path("parties/series/<int:party_series_id>/edit/", party_views.edit_series, {}, "party_edit_series"),
+    path("parties/series/<int:party_series_id>/edit/", party_views.EditSeriesView.as_view(), {}, "party_edit_series"),
     path(
         "parties/series/<int:party_series_id>/edit_notes/",
         party_views.EditSeriesNotesView.as_view(),
