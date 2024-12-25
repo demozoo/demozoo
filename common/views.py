@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect, JsonResponse
@@ -119,16 +120,22 @@ class EditingFormView(View):
     update_bonafide_flag = False
     update_datestamp = False
 
-    def get_object(self):
+    def get_object(self):  # pragma: no cover
         raise NotImplementedError
 
     def can_edit(self, object):
         return True
 
+    def get_login_return_url(self):
+        return self.request.get_full_path()
+
     @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(self.get_login_return_url())
+
         self.object = self.get_object()
+
         if not self.can_edit(self.object):
             return HttpResponseRedirect(self.object.get_absolute_url())
 

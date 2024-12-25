@@ -19,7 +19,6 @@ from comments.models import Comment
 from common.utils.ajax import request_is_ajax
 from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
 from demoscene.models import Edit
-from demoscene.shortcuts import simple_ajax_form
 from parties.forms import (
     CompetitionForm,
     EditPartyForm,
@@ -348,28 +347,21 @@ class EditSeriesNotesView(EditingFormView):
         return "Editing notes for %s" % self.object.name
 
 
-@writeable_site_required
-def edit_series(request, party_series_id):
-    if not request.user.is_authenticated:
+class EditSeriesView(EditingFormView):
+    form_class = EditPartySeriesForm
+    action_url_name = "party_edit_series"
+
+    def get_object(self):
+        return get_object_or_404(PartySeries, id=self.kwargs["party_series_id"])
+
+    def get_title(self):
+        return "Editing party: %s" % self.object.name
+
+    def get_login_return_url(self):
         # Instead of redirecting back to this edit form after login, redirect to the party series page.
         # This is because the edit button pointing here is the only one a non-logged-in user sees,
         # so they may intend to edit something else on the party series page.
-        return redirect_to_login(reverse("party_series", args=[party_series_id]))
-
-    party_series = get_object_or_404(PartySeries, id=party_series_id)
-
-    def success(form):
-        form.log_edit(request.user)
-
-    return simple_ajax_form(
-        request,
-        "party_edit_series",
-        party_series,
-        EditPartySeriesForm,
-        title="Editing party: %s" % party_series.name,
-        on_success=success,
-        # update_datestamp = True
-    )
+        return reverse("party_series", args=[self.kwargs["party_series_id"]])
 
 
 @writeable_site_required
