@@ -145,7 +145,12 @@ urlpatterns = [
         {},
         "delete_production",
     ),
-    path("productions/<int:production_id>/add_blurb/", production_views.add_blurb, {}, "production_add_blurb"),
+    path(
+        "productions/<int:production_id>/add_blurb/",
+        production_views.AddBlurbView.as_view(),
+        {},
+        "production_add_blurb",
+    ),
     path(
         "productions/<int:production_id>/edit_blurb/<int:blurb_id>/",
         production_views.edit_blurb,
