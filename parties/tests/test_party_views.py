@@ -479,6 +479,18 @@ class TestEditSeries(TestCase):
         ps = PartySeries.objects.get(id=self.party_series.id)
         self.assertEqual(ps.website, "http://forever.zeroteam.sk/")
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/series/%d/edit/" % self.party_series.id,
+            {
+                "name": "",
+                "website": "http://forever.zeroteam.sk/",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        ps = PartySeries.objects.get(id=self.party_series.id)
+        self.assertEqual(ps.name, "Forever")
+
 
 class TestAddCompetition(TestCase):
     fixtures = ["tests/gasman.json"]

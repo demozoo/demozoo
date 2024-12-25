@@ -1,10 +1,12 @@
+import datetime
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Count
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -15,7 +17,6 @@ from taggit.models import Tag
 from common.utils.ajax import request_is_ajax
 from common.utils.text import slugify_tag
 from demoscene.models import BlacklistedTag, Edit
-from demoscene.shortcuts import simple_ajax_form
 
 
 if settings.SITE_IS_WRITEABLE:
@@ -139,19 +140,47 @@ class EditingFormView(View):
         if not self.can_edit(self.object):
             return HttpResponseRedirect(self.object.get_absolute_url())
 
-        def success(form):
-            form.log_edit(request.user)
+        return super().dispatch(request, *args, **kwargs)
 
-        return simple_ajax_form(
-            request,
-            self.action_url_name,
-            self.object,
-            self.form_class,
-            title=self.get_title(),
-            update_datestamp=self.update_datestamp,
-            update_bonafide_flag=self.update_bonafide_flag,
-            on_success=success,
-            ajax_submit=request.GET.get("ajax_submit"),
+    def post(self, request, *args, **kwargs):
+        self.form = self.form_class(request.POST, instance=self.object)
+        if self.form.is_valid():
+            if self.update_datestamp:
+                self.object.updated_at = datetime.datetime.now()
+            if self.update_bonafide_flag:
+                self.object.has_bonafide_edits = True
+            self.form.save()
+            self.form.log_edit(request.user)
+
+            if request.GET.get("ajax_submit") and request_is_ajax(request):
+                return HttpResponse("OK", content_type="text/plain")
+            else:
+                return HttpResponseRedirect(self.object.get_absolute_url())
+        else:
+            return self.render_to_response()
+
+    def get(self, request, *args, **kwargs):
+        self.form = self.form_class(instance=self.object)
+        return self.render_to_response()
+
+    def render_to_response(self):
+        title = self.get_title()
+        if title and title.endswith(":"):
+            clean_title = title[:-1]
+        else:
+            clean_title = title
+
+        return render(
+            self.request,
+            "generic/simple_form.html",
+            {
+                "form": self.form,
+                "html_form_class": "",
+                "title": title,
+                "html_title": clean_title,
+                "action_url": reverse(self.action_url_name, args=[self.object.id]),
+                "ajax_submit": self.request.GET.get("ajax_submit"),
+            },
         )
 
 
