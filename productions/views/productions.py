@@ -21,10 +21,10 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
-    EditingFormView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
+    UpdateFormView,
     writeable_site_required,
 )
 from demoscene.forms.common import CreditFormSet
@@ -218,7 +218,7 @@ def edit_core_details(request, production_id):
     )
 
 
-class EditNotesView(EditingFormView):
+class EditNotesView(UpdateFormView):
     form_class = ProductionEditNotesForm
     action_url_name = "production_edit_notes"
     update_bonafide_flag = True

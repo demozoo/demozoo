@@ -41,7 +41,7 @@ urlpatterns = [
     path("sceners/", sceners_views.index, {}, "sceners"),
     path("sceners/<int:scener_id>/", sceners_views.show, {}, "scener"),
     path("sceners/<int:scener_id>/history/", sceners_views.history, {}, "scener_history"),
-    path("sceners/new/", sceners_views.create, {}, "new_scener"),
+    path("sceners/new/", sceners_views.CreateScenerView.as_view(), {}, "new_scener"),
     path("sceners/<int:scener_id>/add_group/", sceners_views.add_group, {}, "scener_add_group"),
     path("sceners/<int:scener_id>/remove_group/<int:group_id>/", sceners_views.remove_group, {}, "scener_remove_group"),
     path(

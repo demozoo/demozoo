@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
+from common.views import AjaxConfirmationView, UpdateFormView, writeable_site_required
 from demoscene.forms.releaser import (
     GroupNickForm,
     ReleaserEditNotesForm,
@@ -18,7 +18,7 @@ from demoscene.forms.releaser import (
 from demoscene.models import Edit, Nick, Releaser
 
 
-class EditNotesView(EditingFormView):
+class EditNotesView(UpdateFormView):
     form_class = ReleaserEditNotesForm
     action_url_name = "releaser_edit_notes"
     update_datestamp = True
