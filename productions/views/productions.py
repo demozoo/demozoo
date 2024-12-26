@@ -372,6 +372,7 @@ def edit_external_links(request, production_id):
             "formset": formset,
             "title": title,
             "html_title": title,
+            "submit_button_label": "Update links",
         },
     )
 
@@ -410,6 +411,7 @@ def edit_download_links(request, production_id):
             "formset": formset,
             "title": title,
             "html_title": title,
+            "submit_button_label": "Update links",
         },
     )
 
@@ -556,6 +558,7 @@ def add_screenshot(request, production_id, is_artwork_view=False):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_add_artwork", args=[production.id]),
+                "submit_button_label": "Add artwork",
             },
         )
 
@@ -569,6 +572,7 @@ def add_screenshot(request, production_id, is_artwork_view=False):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_add_screenshot", args=[production.id]),
+                "submit_button_label": "Add screenshot",
             },
         )
 
@@ -695,6 +699,7 @@ def add_credit(request, production_id):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_add_credit", args=[production.id]),
+                "submit_button_label": "Add credit",
             },
             json_data={"step": "form"},
         )
@@ -709,6 +714,7 @@ def add_credit(request, production_id):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_add_credit", args=[production.id]),
+                "submit_button_label": "Add credit",
             },
         )
 
@@ -780,6 +786,7 @@ def edit_credit(request, production_id, nick_id):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_edit_credit", args=[production.id, nick.id]),
+                "submit_button_label": "Update credit",
             },
             json_data={"step": "form"},
         )
@@ -795,6 +802,7 @@ def edit_credit(request, production_id, nick_id):
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("production_edit_credit", args=[production.id, nick.id]),
+                "submit_button_label": "Update credit",
             },
         )
 
@@ -881,6 +889,7 @@ def edit_soundtracks(request, production_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("production_edit_soundtracks", args=[production.id]),
+            "submit_button_label": "Update soundtracks",
         },
     )
 
@@ -931,6 +940,7 @@ def edit_pack_contents(request, production_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("production_edit_pack_contents", args=[production.id]),
+            "submit_button_label": "Update pack contents",
         },
     )
 

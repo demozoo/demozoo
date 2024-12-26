@@ -5,8 +5,6 @@
     {% include "productions/credit_form.html" %}
 {% endblock %}
 
-{% block submit_button_label %}Update credit{% endblock %}
-
 {% block after_form %}
     <ul class="actions">
         {% url 'production_delete_credit' production.id nick.id as delete_url %}
