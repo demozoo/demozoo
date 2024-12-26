@@ -1,4 +1,5 @@
 {% extends "generic/edit_form_with_ajax_option.html" %}
+{% load ui_tags %}
 
 {% block html_title %}Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }} - Demozoo{% endblock %}
 
@@ -11,7 +12,8 @@
 {% block submit_button_label %}Submit edit{% endblock %}
 
 {% block after_form %}
-    <p>
-        <a href="{% url 'bbs_remove_operator' bbs.id operator.id %}" data-lightbox>Remove staff member</a>
-    </p>
+    <ul class="actions">
+        {% url 'bbs_remove_operator' bbs.id operator.id as delete_url %}
+        <li>{% action_button url=delete_url icon="delete" label="Remove staff member" lightbox=True %}</li>
+    </ul>
 {% endblock %}

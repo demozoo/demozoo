@@ -1,4 +1,5 @@
 {% extends "generic/edit_form_with_ajax_option.html" %}
+{% load ui_tags %}
 
 {% block html_title %}Editing {{ affiliation.group.name }}'s affiliation with {{ bbs.name }} - Demozoo{% endblock %}
 
@@ -10,7 +11,8 @@
 {% block submit_button_label %}Submit edit{% endblock %}
 
 {% block after_form %}
-    <p>
-        <a href="{% url 'bbs_remove_affiliation' bbs.id affiliation.id %}" data-lightbox>Remove affiliation</a>
-    </p>
+    <ul class="actions">
+        {% url 'bbs_remove_affiliation' bbs.id affiliation.id as delete_url %}
+        <li>{% action_button url=delete_url icon="delete" label="Remove affiliation" lightbox=True %}</li>
+    </ul>
 {% endblock %}
