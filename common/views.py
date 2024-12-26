@@ -119,6 +119,7 @@ class AjaxConfirmationView(View):
 class EditingFormView(View):
     form_class = None
     title = ""
+    template_name = "generic/simple_form.html"
 
     def get_title(self):
         return self.title
@@ -184,7 +185,7 @@ class EditingFormView(View):
 
         return render(
             self.request,
-            "generic/simple_form.html",
+            self.template_name,
             {
                 "form": self.form,
                 "html_form_class": "",

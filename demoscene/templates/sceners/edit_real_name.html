@@ -1,0 +1,21 @@
+{% extends "generic/simple_form.html" %}
+
+{% block action_url %}{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}{% endblock %}
+
+{% block after_form %}
+    {% if ajax_submit %}
+    <script>
+        $('.entry_form').submit(function() {
+            $.post(this.action, $(this).serialize(), function(response) {
+                if (response == 'OK') {
+                    Lightbox.close();
+                } else {
+                    $('#lightbox').html(response);
+                    applyGlobalBehaviours($('#lightbox'));
+                }
+            });
+            return false;
+        });
+    </script>
+    {% endif %}
+{% endblock %}
