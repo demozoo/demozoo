@@ -150,13 +150,13 @@ def add_member(request, group_id):
     title = f"New member for {group.name}"
     return render(
         request,
-        "groups/add_member.html",
+        "generic/form.html",
         {
-            "group": group,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("group_add_member", args=[group.id]),
+            "submit_button_label": "Add member",
         },
     )
 
@@ -251,14 +251,15 @@ def edit_membership(request, group_id, membership_id):
     title = f"Editing {membership.member.name}'s membership of {group.name}"
     return render(
         request,
-        "groups/edit_membership.html",
+        "generic/form.html",
         {
-            "group": group,
-            "membership": membership,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("group_edit_membership", args=[group.id, membership.id]),
+            "submit_button_label": "Update membership",
+            "delete_url": reverse("group_remove_member", args=[group.id, membership.member.id]),
+            "delete_link_text": "Remove from group",
         },
     )
 
@@ -291,13 +292,13 @@ def add_subgroup(request, group_id):
     title = f"New subgroup for {group.name}"
     return render(
         request,
-        "groups/add_subgroup.html",
+        "generic/form.html",
         {
-            "group": group,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("group_add_subgroup", args=[group.id]),
+            "submit_button_label": "Add subgroup",
         },
     )
 
@@ -374,14 +375,15 @@ def edit_subgroup(request, group_id, membership_id):
     title = f"Editing {membership.member.name} as a subgroup of {group.name}"
     return render(
         request,
-        "groups/edit_subgroup.html",
+        "generic/form.html",
         {
-            "group": group,
-            "membership": membership,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("group_edit_subgroup", args=[group.id, membership.id]),
+            "submit_button_label": "Update subgroup",
+            "delete_url": reverse("group_remove_subgroup", args=[group.id, membership.member.id]),
+            "delete_link_text": "Remove from group",
         },
     )
 
