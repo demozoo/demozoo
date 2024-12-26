@@ -638,11 +638,15 @@ def edit_external_links(request, bbs_id):
             return HttpResponseRedirect(bbs.get_absolute_url())
     else:
         formset = BBSExternalLinkFormSet(instance=bbs)
+
+    title = f"Editing external links for {bbs.name}"
     return render(
         request,
-        "bbs/edit_external_links.html",
+        "generic/edit_external_links.html",
         {
-            "bbs": bbs,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_edit_external_links", args=[bbs.id]),
         },
     )

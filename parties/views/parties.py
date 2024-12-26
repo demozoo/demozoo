@@ -309,12 +309,16 @@ def edit_external_links(request, party_id):
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyExternalLinkFormSet(instance=party)
+
+    title = f"Editing external links for {party.name}"
     return render(
         request,
-        "parties/edit_external_links.html",
+        "generic/edit_external_links.html",
         {
-            "party": party,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_edit_external_links", args=[party.id]),
         },
     )
 
@@ -333,12 +337,16 @@ def edit_series_external_links(request, party_series_id):
             return HttpResponseRedirect(party_series.get_absolute_url())
     else:
         formset = PartySeriesExternalLinkFormSet(instance=party_series)
+
+    title = f"Editing external links for {party_series.name}"
     return render(
         request,
-        "parties/edit_series_external_links.html",
+        "generic/edit_external_links.html",
         {
-            "party_series": party_series,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_edit_series_external_links", args=[party_series.id]),
         },
     )
 

@@ -253,12 +253,16 @@ def edit_external_links(request, releaser_id):
             return HttpResponseRedirect(releaser.get_absolute_url())
     else:
         formset = ReleaserExternalLinkFormSet(instance=releaser)
+
+    title = f"Editing external links for {releaser.name}"
     return render(
         request,
-        "releasers/edit_external_links.html",
+        "generic/edit_external_links.html",
         {
-            "releaser": releaser,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("releaser_edit_external_links", args=[releaser.id]),
         },
     )
 
