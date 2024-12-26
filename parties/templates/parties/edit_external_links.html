@@ -1,5 +1,5 @@
 {% extends "generic/edit_external_links.html" %}
 
 {% block html_title %}Editing external links for {{ party.name }} - Demozoo{% endblock %}
-{% block title %}Editing external links for {{ party.name }}:{% endblock %}
+{% block title %}<h2>Editing external links for {{ party.name }}:</h2>{% endblock %}
 {% block action_url %}{% url 'party_edit_external_links' party.id %}{% endblock %}

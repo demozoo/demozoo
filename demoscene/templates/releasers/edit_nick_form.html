@@ -1,10 +1,8 @@
-{% extends "generic/edit_form_with_ajax_option.html" %}
+{% extends "releasers/nick_form.html" %}
 
 {% block html_title %}Editing name: {{ nick.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
-    {% include "releasers/nick_form.html" %}
-
+{% block after_form %}
     {% if not nick.is_primary_nick %}
         <p>
             <a href="{% url 'releaser_delete_nick' nick.releaser.id nick.id %}" data-lightbox>Delete this name</a>

@@ -8,38 +8,37 @@
     {% endif %}
 {% endblock %}
 
-{% block base_main %}
+{% block title %}
     {% if add_only %}
         <h2>Adding info file for {{ production.title }}:</h2>
     {% else %}
         <h2>Editing info files for {{ production.title }}:</h2>
     {% endif %}
-
-    <form action="{% url 'production_edit_info_files' production.id %}" method="post" enctype="multipart/form-data" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {{ formset.management_form }}
-        {% if formset|length %}
-            <div class="field">
-                <label class="field_label">Info file{{ formset|length|pluralize }}</label>
-                <div class="field_input">
-                    {% for form in formset %}
-                        <li>
-                            {{ form.instance.filename }} ({{ form.instance.filesize }} bytes)
-                            {% if not add_only %}{{ form }}{% endif %}
-                        </li>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="field">
-            <label for="id_info_file" class="field_label">Upload file(s)</label>
-            <input type="file" id="id_info_file" name="info_file" multiple="multiple"/>
-        </div>
-
-        <div class="field">
-            <input type="submit" value="{% if add_only %}Add info file{% else %}Update info files{% endif %}" />
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'production_edit_info_files' production.id %}{% endblock %}
+{% block form_attrs %}enctype="multipart/form-data"{% endblock %}
+
+{% block form_body %}
+    {{ formset.management_form }}
+    {% if formset|length %}
+        <div class="field">
+            <label class="field_label">Info file{{ formset|length|pluralize }}</label>
+            <div class="field_input">
+                {% for form in formset %}
+                    <li>
+                        {{ form.instance.filename }} ({{ form.instance.filesize }} bytes)
+                        {% if not add_only %}{{ form }}{% endif %}
+                    </li>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="field">
+        <label for="id_info_file" class="field_label">Upload file(s)</label>
+        <input type="file" id="id_info_file" name="info_file" multiple="multiple"/>
+    </div>
+{% endblock %}
+
+{% block submit_button_label %}{% if add_only %}Add info file{% else %}Update info files{% endif %}{% endblock %}

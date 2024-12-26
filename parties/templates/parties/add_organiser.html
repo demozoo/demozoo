@@ -2,16 +2,9 @@
 
 {% block html_title %}Add organiser for {{ party.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Add organiser for {{ party.name }}:</h2>
-
-    <form action="{% url 'party_add_organiser' party.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% include "shared/form_fields.html" %}
-
-        <div class="field">
-            <input type="submit" value="Add organiser"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'party_add_organiser' party.id %}{% endblock %}
+{% block submit_button_label %}Add organiser{% endblock %}

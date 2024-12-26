@@ -2,16 +2,9 @@
 
 {% block html_title %}New member for {{ group.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>New member for {{ group.name }}:</h2>
-
-    <form action="{% url 'group_add_member' group.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% include "shared/form_fields.html" %}
-
-        <div class="field">
-            <input type="submit" value="Add member"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'group_add_member' group.id %}{% endblock %}
+{% block submit_button_label %}Add member{% endblock %}

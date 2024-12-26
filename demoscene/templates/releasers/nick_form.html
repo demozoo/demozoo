@@ -1,10 +1,6 @@
-{% if title %}
-    <h2>{{ title }}</h2>
-{% endif %}
+{% extends "generic/edit_form_with_ajax_option.html" %}
 
-<form action="{{ action_url }}" method="post" data-edit-form class="entry_form {{ html_form_class }}">
-    {% csrf_token %}
-
+{% block form_body %}
     {{ form.non_field_errors }}
     {% include "shared/form_field.html" with field=form.name %}
 
@@ -30,8 +26,4 @@
             </div>
         </div>
     {% endwith %}
-    
-    <div class="field">
-        <input type="submit" />
-    </div>
-</form>
+{% endblock %}

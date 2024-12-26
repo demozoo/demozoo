@@ -3,43 +3,39 @@
 
 {% block html_title %}Editing {{ production.supertype }}: {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing {{ production.supertype }}: {{ production.title }}</h2>
+{% endblock %}
 
-    <form action="{{ production.urls.edit_core_details }}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
+{% block action_url %}{{ production.urls.edit_core_details }}{% endblock %}
 
-        {% include "shared/form_field.html" with field=form.title %}
-        {% include "shared/form_field.html" with field=form.byline %}
-        {% include "shared/form_field.html" with field=form.release_date %}
+{% block form_body %}
+    {% include "shared/form_field.html" with field=form.title %}
+    {% include "shared/form_field.html" with field=form.byline %}
+    {% include "shared/form_field.html" with field=form.release_date %}
 
-        {% if form.has_multiple_types %}
-            {% include "shared/form_field.html" with field=form.types %}
-        {% else %}
-            {% include "shared/form_field.html" with field=form.type %}
-        {% endif %}
+    {% if form.has_multiple_types %}
+        {% include "shared/form_field.html" with field=form.types %}
+    {% else %}
+        {% include "shared/form_field.html" with field=form.type %}
+    {% endif %}
 
-        {% include "shared/form_field.html" with field=form.platforms %}
+    {% include "shared/form_field.html" with field=form.platforms %}
 
-        {% if invitation_formset %}
-            <div class="field">
-                <label class="field_label">Invitation for party</label>
-                <div class="field_input">
-                    {% spawningformset invitation_formset add_button_text="another party" %}
-                        {% spawningform as form %}
-                            {{ form.party.errors }}
-                            {{ form.party }}
-                            {% for field in form.hidden_fields %}
-                                {{ field }}
-                            {% endfor %}
-                        {% endspawningform %}
-                    {% endspawningformset %}
-                </div>
-            </div>
-        {% endif %}
-        
+    {% if invitation_formset %}
         <div class="field">
-            <input type="submit" />
+            <label class="field_label">Invitation for party</label>
+            <div class="field_input">
+                {% spawningformset invitation_formset add_button_text="another party" %}
+                    {% spawningform as form %}
+                        {{ form.party.errors }}
+                        {{ form.party }}
+                        {% for field in form.hidden_fields %}
+                            {{ field }}
+                        {% endfor %}
+                    {% endspawningform %}
+                {% endspawningformset %}
+            </div>
         </div>
-    </form>
+    {% endif %}
 {% endblock %}

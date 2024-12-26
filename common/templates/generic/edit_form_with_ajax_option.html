@@ -4,3 +4,27 @@
     {% include "shared/editor_css.html" %}
     {% include "shared/editor_js.html" %}
 {% endblock %}
+
+{% block html_title %}
+    {% if html_title %}{{ html_title }} - Demozoo{% else %}Demozoo{% endif %}
+{% endblock %}
+
+{% block base_main %}
+    {% block title %}{% if title %}<h2>{{ title }}</h2>{% endif %}{% endblock %}
+
+    <form action="{% block action_url %}{{ action_url }}{% if ajax_submit %}?ajax_submit=true{% endif %}{% endblock %}" method="post" data-edit-form class="entry_form {% block html_form_class %}{{ html_form_class }}{% endblock %}" {% block form_attrs %}{% endblock %}>
+        {% csrf_token %}
+
+        {% block form_body %}
+            {% include "shared/form_fields.html" %}
+        {% endblock %}
+
+        {% block submit_button %}
+            <div class="field">
+                <input type="submit" value="{% block submit_button_label %}Submit{% endblock %}">
+            </div>
+        {% endblock %}
+    </form>
+
+    {% block after_form %}{% endblock %}
+{% endblock %}

@@ -3,20 +3,18 @@
 
 {% block html_title %}Editing soundtrack details for {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing soundtrack details for {{ production.title }}:</h2>
-
-    <form action="{% url 'production_edit_soundtracks' production.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% spawningformset sortable formset %}
-            {% spawningform as form %}
-                {{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
-            {% endspawningform %}
-        {% endspawningformset %}
-
-        <div class="field">
-            <input type="submit" Value="Submit edit"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'production_edit_soundtracks' production.id %}{% endblock %}
+
+{% block form_body %}
+    {% spawningformset sortable formset %}
+        {% spawningform as form %}
+            {{ form.ORDER }}{{ form.soundtrack }}{{ form.id }}{{ form.production }}
+        {% endspawningform %}
+    {% endspawningformset %}
+{% endblock %}
+
+{% block submit_button_label %}Update soundtracks{% endblock %}

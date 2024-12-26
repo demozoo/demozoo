@@ -1,9 +1,9 @@
 {% extends "generic/edit_form_with_ajax_option.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
+{% block html_title %}Editing releases for {{ party.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing releases for {{ party.name }}:</h2>
 
     <div class="long_help">
@@ -14,18 +14,17 @@
             <p>For productions that were part of a competition, <a href="{% url 'party_add_competition' party.id %}" data-lightbox>add a competition</a> first.</p>
         {% endif %}
     </div>
-
-    <form action="{% url 'party_edit_releases' party.id %}" method="post" data-edit-form class="entry_form party_release_form">
-        {% csrf_token %}
-
-        {% spawningformset formset %}
-            {% spawningform as form %}
-                {{ form.production }}
-            {% endspawningform %}
-        {% endspawningformset %}
-
-        <div class="field">
-            <input type="submit" value="Submit edit"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'party_edit_releases' party.id %}{% endblock %}
+{% block html_form_class %}party_release_form{% endblock %}
+
+{% block form_body %}
+    {% spawningformset formset %}
+        {% spawningform as form %}
+            {{ form.production }}
+        {% endspawningform %}
+    {% endspawningformset %}
+{% endblock %}
+
+{% block submit_button_label %}Update releases{% endblock %}
