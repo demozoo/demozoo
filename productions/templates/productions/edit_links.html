@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing {{ external_or_download }} links for {{ production.title }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing {{ external_or_download }} links for {{ production.title }}:</h2>
-{% endblock %}
-
-{% block action_url %}{{ submit_url }}{% endblock %}
-
 {% block form_body %}
     <div class="field">
         <label for="id_external_links-0-url" class="field_label">Link URLs</label>

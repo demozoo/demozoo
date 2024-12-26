@@ -1,13 +1,6 @@
 {% extends "generic/form.html" %}
 {% load ui_tags %}
 
-{% block html_title %}Editing {{ scener.name }}'s membership of {{ membership.group.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'scener_edit_membership' scener.id membership.id %}{% endblock %}
 {% block submit_button_label %}Edit membership{% endblock %}
 
 {% block after_form %}

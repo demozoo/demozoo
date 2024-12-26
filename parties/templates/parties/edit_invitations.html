@@ -1,13 +1,6 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing invitations for {{ party.name }}:</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'party_edit_invitations' party.id %}{% endblock %}
 {% block html_form_class %}party_invitation_form{% endblock %}
 
 {% block form_body %}

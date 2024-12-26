@@ -1,10 +1,8 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing releases for {{ party.name }} - Demozoo{% endblock %}
-
 {% block title %}
-    <h2>Editing releases for {{ party.name }}:</h2>
+    {{ block.super }}
 
     <div class="long_help">
         <h3>Non-compo releases only!</h3>
@@ -16,7 +14,6 @@
     </div>
 {% endblock %}
 
-{% block action_url %}{% url 'party_edit_releases' party.id %}{% endblock %}
 {% block html_form_class %}party_release_form{% endblock %}
 
 {% block form_body %}

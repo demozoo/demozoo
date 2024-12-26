@@ -1,9 +1,7 @@
 {% extends "generic/form.html" %}
 
-{% block html_title %}Adding artwork for {{ production.title }} - Demozoo{% endblock %}
-
 {% block title %}
-    <h2>Adding artwork for {{ production.title }}:</h2>
+    {{ block.super }}
 
     <div class="long_help">
         <h3>Guidelines</h3>
@@ -15,7 +13,6 @@
     </div>
 {% endblock %}
 
-{% block action_url %}{% url 'production_add_artwork' production.id %}{% endblock %}
 {% block form_attrs %}enctype="multipart/form-data"{% endblock %}
 
 {% block form_body %}

@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load ui_tags %}
 
-{% block html_title %}Editing credit for {{ production.title }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing credit for {{ production.title }}</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'production_edit_credit' production.id nick.id %}{% endblock %}
-
 {% block form_body %}
     {% include "productions/credit_form.html" %}
 {% endblock %}

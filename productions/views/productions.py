@@ -208,6 +208,7 @@ def edit_core_details(request, production_id):
                 initial=[{"party": party} for party in production.invitation_parties.order_by("start_date_date")]
             )
 
+    title = f"Editing {production.supertype}: {production.title}"
     return render(
         request,
         "productions/edit_core_details.html",
@@ -215,6 +216,9 @@ def edit_core_details(request, production_id):
             "production": production,
             "form": form,
             "invitation_formset": invitation_formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("production_edit_core_details", args=[production.id]),
         },
     )
 
@@ -356,14 +360,18 @@ def edit_external_links(request, production_id):
         formset = ProductionExternalLinkFormSet(
             instance=production, queryset=production.links.filter(is_download_link=False)
         )
+
+    title = f"Editing external links for {production.title}"
     return render(
         request,
         "productions/edit_links.html",
         {
-            "submit_url": reverse("production_edit_external_links", args=[production.id]),
+            "action_url": reverse("production_edit_external_links", args=[production.id]),
             "external_or_download": "external",
             "production": production,
             "formset": formset,
+            "title": title,
+            "html_title": title,
         },
     )
 
@@ -391,14 +399,17 @@ def edit_download_links(request, production_id):
         formset = ProductionDownloadLinkFormSet(
             instance=production, queryset=production.links.filter(is_download_link=True)
         )
+
+    title = f"Editing download links for {production.title}"
     return render(
         request,
         "productions/edit_links.html",
         {
-            "submit_url": reverse("production_edit_download_links", args=[production.id]),
-            "external_or_download": "download",
+            "action_url": reverse("production_edit_download_links", args=[production.id]),
             "production": production,
             "formset": formset,
+            "title": title,
+            "html_title": title,
         },
     )
 
@@ -536,20 +547,28 @@ def add_screenshot(request, production_id, is_artwork_view=False):
             return redirect("production_add_artwork", production_id)
 
     if is_artwork_view:
+        title = f"Adding artwork for {production.title}"
         return render(
             request,
             "productions/add_artwork.html",
             {
                 "production": production,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_add_artwork", args=[production.id]),
             },
         )
 
     else:
+        title = f"Adding screenshots for {production.title}"
         return render(
             request,
             "productions/add_screenshot.html",
             {
                 "production": production,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_add_screenshot", args=[production.id]),
             },
         )
 
@@ -664,6 +683,7 @@ def add_credit(request, production_id):
         nick_form = ProductionCreditedNickForm(production=production)
         credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
 
+    title = f"Adding credit for {production.title}"
     if request_is_ajax(request):
         return render_modal_workflow(
             request,
@@ -672,6 +692,9 @@ def add_credit(request, production_id):
                 "production": production,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_add_credit", args=[production.id]),
             },
             json_data={"step": "form"},
         )
@@ -683,6 +706,9 @@ def add_credit(request, production_id):
                 "production": production,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_add_credit", args=[production.id]),
             },
         )
 
@@ -740,6 +766,8 @@ def edit_credit(request, production_id, nick_id):
         nick_form = ProductionCreditedNickForm(nick=nick, production=production)
         credit_formset = CreditFormSet(queryset=credits, prefix="credit")
 
+    title = f"Editing credit for {production.title}"
+
     if request_is_ajax(request):
         return render_modal_workflow(
             request,
@@ -749,6 +777,9 @@ def edit_credit(request, production_id, nick_id):
                 "nick": nick,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_edit_credit", args=[production.id, nick.id]),
             },
             json_data={"step": "form"},
         )
@@ -761,6 +792,9 @@ def edit_credit(request, production_id, nick_id):
                 "nick": nick,
                 "nick_form": nick_form,
                 "credit_formset": credit_formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_edit_credit", args=[production.id, nick.id]),
             },
         )
 
@@ -836,12 +870,17 @@ def edit_soundtracks(request, production_id):
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         formset = ProductionSoundtrackLinkFormset(instance=production)
+
+    title = f"Editing soundtrack details for {production.title}"
     return render(
         request,
         "productions/edit_soundtracks.html",
         {
             "production": production,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("production_edit_soundtracks", args=[production.id]),
         },
     )
 
@@ -881,12 +920,17 @@ def edit_pack_contents(request, production_id):
             return HttpResponseRedirect(production.get_absolute_url())
     else:
         formset = PackMemberFormset(instance=production)
+
+    title = f"Editing pack contents for {production.title}"
     return render(
         request,
         "productions/edit_pack_contents.html",
         {
             "production": production,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("production_edit_pack_contents", args=[production.id]),
         },
     )
 

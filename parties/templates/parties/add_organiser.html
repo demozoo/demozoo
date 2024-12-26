@@ -1,10 +1,3 @@
 {% extends "generic/form.html" %}
 
-{% block html_title %}Add organiser for {{ party.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Add organiser for {{ party.name }}:</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'party_add_organiser' party.id %}{% endblock %}
 {% block submit_button_label %}Add organiser{% endblock %}

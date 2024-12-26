@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing productions promoting {{ bbs.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing productions promoting {{ bbs.name }}:</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'bbs_edit_bbstros' bbs.id %}{% endblock %}
-
 {% block form_body %}
     {% spawningformset formset %}
         {% spawningform as form %}
