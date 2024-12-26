@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing {{ production.supertype }}: {{ production.title }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing {{ production.supertype }}: {{ production.title }}</h2>
-{% endblock %}
-
-{% block action_url %}{{ production.urls.edit_core_details }}{% endblock %}
-
 {% block form_body %}
     {% include "shared/form_field.html" with field=form.title %}
     {% include "shared/form_field.html" with field=form.byline %}

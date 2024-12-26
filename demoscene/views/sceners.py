@@ -170,12 +170,16 @@ def add_group(request, scener_id):
     else:
         form = ScenerMembershipForm()
 
+    title = f"New group for {scener.name}"
     return render(
         request,
         "sceners/add_group.html",
         {
             "scener": scener,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("scener_add_group", args=[scener.id]),
         },
     )
 
@@ -264,6 +268,8 @@ def edit_membership(request, scener_id, membership_id):
                 "is_current": membership.is_current,
             }
         )
+
+    title = f"Editing {scener.name}'s membership of {membership.group.name}"
     return render(
         request,
         "sceners/edit_membership.html",
@@ -271,6 +277,9 @@ def edit_membership(request, scener_id, membership_id):
             "scener": scener,
             "membership": membership,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("scener_edit_membership", args=[scener.id, membership.id]),
         },
     )
 

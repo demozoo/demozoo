@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load spawning_formset %}
 
-{% block html_title %}Editing pack contents for {{ production.title }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing pack contents for {{ production.title }}:</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'production_edit_pack_contents' production.id %}{% endblock %}
-
 {% block form_body %}
     {% spawningformset sortable formset %}
         {% spawningform as form %}

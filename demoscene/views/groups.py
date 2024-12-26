@@ -146,12 +146,17 @@ def add_member(request, group_id):
             return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
     else:
         form = GroupMembershipForm()
+
+    title = f"New member for {group.name}"
     return render(
         request,
         "groups/add_member.html",
         {
             "group": group,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("group_add_member", args=[group.id]),
         },
     )
 
@@ -242,6 +247,8 @@ def edit_membership(request, group_id, membership_id):
                 "is_current": membership.is_current,
             }
         )
+
+    title = f"Editing {membership.member.name}'s membership of {group.name}"
     return render(
         request,
         "groups/edit_membership.html",
@@ -249,6 +256,9 @@ def edit_membership(request, group_id, membership_id):
             "group": group,
             "membership": membership,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("group_edit_membership", args=[group.id, membership.id]),
         },
     )
 
@@ -277,12 +287,17 @@ def add_subgroup(request, group_id):
             return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
     else:
         form = GroupSubgroupForm()
+
+    title = f"New subgroup for {group.name}"
     return render(
         request,
         "groups/add_subgroup.html",
         {
             "group": group,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("group_add_subgroup", args=[group.id]),
         },
     )
 
@@ -355,6 +370,8 @@ def edit_subgroup(request, group_id, membership_id):
                 "is_current": membership.is_current,
             }
         )
+
+    title = f"Editing {membership.member.name} as a subgroup of {group.name}"
     return render(
         request,
         "groups/edit_subgroup.html",
@@ -362,6 +379,9 @@ def edit_subgroup(request, group_id, membership_id):
             "group": group,
             "membership": membership,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("group_edit_subgroup", args=[group.id, membership.id]),
         },
     )
 

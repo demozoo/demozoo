@@ -203,12 +203,17 @@ def create(request):
                 "scene_org_folder": request.GET.get("scene_org_folder"),
             }
         )
+
+    title = "New party"
     return render(
         request,
         "parties/create.html",
         {
             "form": form,
             "party_series_names": [ps.name for ps in PartySeries.objects.all()],
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("new_party"),
         },
     )
 
@@ -242,12 +247,16 @@ def edit(request, party_id):
     else:
         form = EditPartyForm(instance=party, initial={"start_date": party.start_date, "end_date": party.end_date})
 
+    title = f"Editing party: {party.name}"
     return render(
         request,
         "parties/edit.html",
         {
             "party": party,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("edit_party", args=[party.id]),
         },
     )
 
@@ -387,12 +396,17 @@ def add_competition(request, party_id):
                 "shown_date": party.default_competition_date(),
             },
         )
+
+    title = f"New competition for {party.name}"
     return render(
         request,
         "parties/add_competition.html",
         {
             "party": party,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_add_competition", args=[party.id]),
         },
     )
 
@@ -460,12 +474,17 @@ def edit_invitations(request, party_id):
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyInvitationFormset(initial=initial_forms)
+
+    title = f"Editing invitations for {party.name}"
     return render(
         request,
         "parties/edit_invitations.html",
         {
             "party": party,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_edit_invitations", args=[party.id]),
         },
     )
 
@@ -499,12 +518,17 @@ def edit_releases(request, party_id):
             return HttpResponseRedirect(party.get_absolute_url())
     else:
         formset = PartyReleaseFormset(initial=initial_forms)
+
+    title = f"Editing releases for {party.name}"
     return render(
         request,
         "parties/edit_releases.html",
         {
             "party": party,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_edit_releases", args=[party.id]),
         },
     )
 
@@ -574,12 +598,17 @@ def add_organiser(request, party_id):
             return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
     else:
         form = PartyOrganiserForm()
+
+    title = f"Add organiser for {party.name}"
     return render(
         request,
         "parties/add_organiser.html",
         {
             "party": party,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("party_add_organiser", args=[party.id]),
         },
     )
 
@@ -638,6 +667,7 @@ def edit_organiser(request, party_id, organiser_id):
             },
         )
     else:
+        title = f"Editing {organiser.releaser.name} as organiser of {party.name}"
         return render(
             request,
             "parties/edit_organiser.html",
@@ -645,6 +675,9 @@ def edit_organiser(request, party_id, organiser_id):
                 "party": party,
                 "organiser": organiser,
                 "form": form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("party_edit_organiser", args=[party.id, organiser.id]),
             },
         )
 

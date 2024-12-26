@@ -1,11 +1,3 @@
 {% extends "generic/form.html" %}
 
-{% block html_title %}Add staff member for {{ bbs.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Add staff member for {{ bbs.name }}:</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'bbs_add_operator' bbs.id %}{% endblock %}
-
 {% block submit_button_label %}Add staff member{% endblock %}

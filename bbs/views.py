@@ -302,12 +302,18 @@ def edit_bbstros(request, bbs_id):
             return redirect("bbs", bbs.id)
     else:
         formset = BBStroFormset(initial=initial_forms)
+
+    title = f"Editing productions promoting {bbs.name}"
+
     return render(
         request,
         "bbs/edit_bbstros.html",
         {
             "bbs": bbs,
             "formset": formset,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_edit_bbstros", args=[bbs.id]),
         },
     )
 
@@ -346,12 +352,17 @@ def add_operator(request, bbs_id):
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
     else:
         form = OperatorForm()
+
+    title = f"Add staff member for {bbs.name}"
     return render(
         request,
         "bbs/add_operator.html",
         {
             "bbs": bbs,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_add_operator", args=[bbs.id]),
         },
     )
 
@@ -390,6 +401,8 @@ def edit_operator(request, bbs_id, operator_id):
                 "is_current": operator.is_current,
             }
         )
+
+    title = f"Editing {operator.releaser.name} as staff member of {bbs.name}"
     return render(
         request,
         "bbs/edit_operator.html",
@@ -397,6 +410,9 @@ def edit_operator(request, bbs_id, operator_id):
             "bbs": bbs,
             "operator": operator,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_edit_operator", args=[bbs.id, operator.id]),
         },
     )
 
@@ -458,12 +474,17 @@ def add_affiliation(request, bbs_id):
             return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
     else:
         form = AffiliationForm()
+
+    title = f"Add group affiliation for {bbs.name}"
     return render(
         request,
         "bbs/add_affiliation.html",
         {
             "bbs": bbs,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_add_affiliation", args=[bbs.id]),
         },
     )
 
@@ -499,6 +520,8 @@ def edit_affiliation(request, bbs_id, affiliation_id):
                 "role": affiliation.role,
             }
         )
+
+    title = f"Editing {affiliation.group.name}'s affiliation with {bbs.name}"
     return render(
         request,
         "bbs/edit_affiliation.html",
@@ -506,6 +529,9 @@ def edit_affiliation(request, bbs_id, affiliation_id):
             "bbs": bbs,
             "affiliation": affiliation,
             "form": form,
+            "title": title,
+            "html_title": title,
+            "action_url": reverse("bbs_edit_affiliation", args=[bbs.id, affiliation.id]),
         },
     )
 

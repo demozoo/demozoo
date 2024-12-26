@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load ui_tags %}
 
-{% block html_title %}Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }}</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'bbs_edit_operator' bbs.id operator.id %}{% endblock %}
-
 {% block submit_button_label %}Submit edit{% endblock %}
 
 {% block after_form %}

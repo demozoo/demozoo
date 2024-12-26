@@ -1,10 +1,3 @@
 {% extends "generic/form.html" %}
 
-{% block html_title %}New group for {{ scener.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>New group for {{ scener.name }}</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'scener_add_group' scener.id %}{% endblock %}
 {% block submit_button_label %}Add{% endblock %}

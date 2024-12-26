@@ -1,14 +1,6 @@
 {% extends "generic/form.html" %}
 {% load demoscene_tags json_filter %}
 
-{% block html_title %}New party - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>New party</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'new_party' %}{% endblock %}
-
 {% block form_body %}
     {% include "shared/form_field.html" with field=form.name %}
     {% include "shared/form_field.html" with field=form.start_date %}

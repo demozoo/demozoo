@@ -1,13 +1,6 @@
 {% extends "generic/form.html" %}
 {% load ui_tags %}
 
-{% block html_title %}Editing {{ membership.member.name }}'s membership of {{ group.name }} - Demozoo{% endblock %}
-
-{% block title %}
-    <h2>Editing {{ membership.member.name }}'s membership of {{ group.name }}</h2>
-{% endblock %}
-
-{% block action_url %}{% url 'group_edit_membership' group.id membership.id %}{% endblock %}
 {% block submit_button_label %}Submit edit{% endblock %}
 
 {% block after_form %}
