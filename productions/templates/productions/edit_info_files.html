@@ -1,22 +1,5 @@
 {% extends "generic/form.html" %}
 
-{% block html_title %}
-    {% if add_only %}
-        Add info file for {{ production.title }} - Demozoo
-    {% else %}
-        Editing info files for {{ production.title }} - Demozoo
-    {% endif %}
-{% endblock %}
-
-{% block title %}
-    {% if add_only %}
-        <h2>Adding info file for {{ production.title }}:</h2>
-    {% else %}
-        <h2>Editing info files for {{ production.title }}:</h2>
-    {% endif %}
-{% endblock %}
-
-{% block action_url %}{% url 'production_edit_info_files' production.id %}{% endblock %}
 {% block form_attrs %}enctype="multipart/form-data"{% endblock %}
 
 {% block form_body %}
@@ -40,5 +23,3 @@
         <input type="file" id="id_info_file" name="info_file" multiple="multiple"/>
     </div>
 {% endblock %}
-
-{% block submit_button_label %}{% if add_only %}Add info file{% else %}Update info files{% endif %}{% endblock %}

@@ -1149,6 +1149,9 @@ class EditInfoFilesView(EditTextFilesView):
     upload_field_name = "info_file"
     template_name = "productions/edit_info_files.html"
     subject_context_name = "production"
+    action_url_name = "production_edit_info_files"
+    add_button_label = "Add info file"
+    update_button_label = "Update info files"
 
     def can_edit(self, subject):
         return subject.editable_by_user(self.request.user)
@@ -1157,6 +1160,12 @@ class EditInfoFilesView(EditTextFilesView):
         subject.updated_at = datetime.datetime.now()
         subject.has_bonafide_edits = True
         subject.save()
+
+    def get_title(self):
+        if self.add_only:
+            return f"Adding info file for {self.subject.title}"
+        else:
+            return f"Editing info files for {self.subject.title}"
 
 
 @login_required

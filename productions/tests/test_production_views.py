@@ -2052,10 +2052,17 @@ class TestEditInfoFiles(MediaTestMixin, TestCase):
         response = self.client.get("/productions/%d/edit_info/" % self.mooncheese.id)
         self.assertEqual(response.status_code, 403)
 
-    def test_get(self):
+    def test_get_as_normal_user(self):
         self.client.login(username="testuser", password="12345")
         response = self.client.get("/productions/%d/edit_info/" % self.pondlife.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Adding info file for Pondlife")
+
+    def test_get_as_superuser(self):
+        self.client.login(username="testsuperuser", password="12345")
+        response = self.client.get("/productions/%d/edit_info/" % self.pondlife.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editing info files for Pondlife")
 
     def test_add_one(self):
         self.client.login(username="testuser", password="12345")
