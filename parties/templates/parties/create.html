@@ -3,35 +3,38 @@
 
 {% block html_title %}New party - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>New party</h2>
+{% endblock %}
 
-    <form action="{% url 'new_party' %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-        {% include "shared/form_field.html" with field=form.name %}
-        {% include "shared/form_field.html" with field=form.start_date %}
-        {% include "shared/form_field.html" with field=form.end_date %}
-        {% include "shared/form_field.html" with field=form.tagline %}
+{% block action_url %}{% url 'new_party' %}{% endblock %}
 
-        <div class="field">
-            {% field_label form.location %}
-            <div class="field_input">
-                {{ form.location.errors }}
-                {{ form.location }}<br>
-                {{ form.is_online }} <label for="id_is_online">Online</label>
-                {{ form.is_cancelled }} <label for="id_is_cancelled">Cancelled</label>
-            </div>
+{% block form_body %}
+    {% include "shared/form_field.html" with field=form.name %}
+    {% include "shared/form_field.html" with field=form.start_date %}
+    {% include "shared/form_field.html" with field=form.end_date %}
+    {% include "shared/form_field.html" with field=form.tagline %}
+
+    <div class="field">
+        {% field_label form.location %}
+        <div class="field_input">
+            {{ form.location.errors }}
+            {{ form.location }}<br>
+            {{ form.is_online }} <label for="id_is_online">Online</label>
+            {{ form.is_cancelled }} <label for="id_is_cancelled">Cancelled</label>
         </div>
+    </div>
 
-        {% include "shared/form_field.html" with field=form.website %}
-        {% include "shared/form_field.html" with field=form.party_series_name %}
-        {% for field in form.hidden_fields %}
-            {{ field }}
-        {% endfor %}
-        <div class="field">
-            <input type="submit" value="Add new party"/>
-        </div>
-    </form>
+    {% include "shared/form_field.html" with field=form.website %}
+    {% include "shared/form_field.html" with field=form.party_series_name %}
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+{% endblock %}
+
+{% block submit_button_label %}Add new party{% endblock %}
+
+{% block after_form %}
     <script>/* <![CDATA[ */
         var partySeriesNames = {{ party_series_names|json|safe }};
         var partySeriesNameMatches = {};

@@ -2,19 +2,14 @@
 
 {% block html_title %}Editing {{ organiser.releaser.name }} as organiser of {{ party.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing {{ organiser.releaser.name }} as organiser of {{ party.name }}</h2>
+{% endblock %}
 
-    <form action="{% url 'party_edit_organiser' party.id organiser.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
+{% block action_url %}{% url 'party_edit_organiser' party.id organiser.id %}{% endblock %}
+{% block submit_button_label %}Submit edit{% endblock %}
 
-        {% include "shared/form_fields.html" %}
-
-        <div class="field">
-            <input type="submit" value="Submit edit"/>
-        </div>
-    </form>
-
+{% block after_form %}
     <p>
         <a href="{% url 'party_remove_organiser' party.id organiser.id %}" data-lightbox>Remove organiser</a>
     </p>

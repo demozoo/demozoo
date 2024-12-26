@@ -2,19 +2,14 @@
 
 {% block html_title %}Editing {{ scener.name }}'s membership of {{ membership.group.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing {{ scener.name }}'s membership of {{ membership.group.name }}</h2>
+{% endblock %}
 
-    <form action="{% url 'scener_edit_membership' scener.id membership.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
+{% block action_url %}{% url 'scener_edit_membership' scener.id membership.id %}{% endblock %}
+{% block submit_button_label %}Edit membership{% endblock %}
 
-        {% include "shared/form_fields.html" %}
-
-        <div class="field">
-            <input type="submit" value="Edit membership"/>
-        </div>
-    </form>
-
+{% block after_form %}
     <p>
         <a href="{% url 'scener_remove_group' scener.id membership.group.id %}" data-lightbox>Remove from group</a>
     </p>

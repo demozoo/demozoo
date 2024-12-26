@@ -2,19 +2,15 @@
 
 {% block html_title %}Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing {{ operator.releaser.name }} as staff member of {{ bbs.name }}</h2>
+{% endblock %}
 
-    <form action="{% url 'bbs_edit_operator' bbs.id operator.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
+{% block action_url %}{% url 'bbs_edit_operator' bbs.id operator.id %}{% endblock %}
 
-        {% include "shared/form_fields.html" %}
+{% block submit_button_label %}Submit edit{% endblock %}
 
-        <div class="field">
-            <input type="submit" value="Submit edit"/>
-        </div>
-    </form>
-
+{% block after_form %}
     <p>
         <a href="{% url 'bbs_remove_operator' bbs.id operator.id %}" data-lightbox>Remove staff member</a>
     </p>

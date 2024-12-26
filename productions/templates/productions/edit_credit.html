@@ -3,19 +3,19 @@
 
 {% block html_title %}Editing credit for {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing credit for {{ production.title }}</h2>
+{% endblock %}
 
-    <form action="{% url 'production_edit_credit' production.id nick.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
+{% block action_url %}{% url 'production_edit_credit' production.id nick.id %}{% endblock %}
 
-        {% include "productions/credit_form.html" %}
+{% block form_body %}
+    {% include "productions/credit_form.html" %}
+{% endblock %}
 
-        <div class="field">
-            <input type="submit" value="Update credit"/>
-        </div>
-    </form>
+{% block submit_button_label %}Update credit{% endblock %}
 
+{% block after_form %}
     <ul class="actions">
         {% url 'production_delete_credit' production.id nick.id as delete_credit_url %}
         <li>{% action_button url=delete_credit_url icon="delete" classname="delete_credit" label="Delete credit" %}</li>

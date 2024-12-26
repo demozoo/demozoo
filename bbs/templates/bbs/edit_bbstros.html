@@ -3,20 +3,18 @@
 
 {% block html_title %}Editing productions promoting {{ bbs.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing productions promoting {{ bbs.name }}:</h2>
-
-    <form action="{% url 'bbs_edit_bbstros' bbs.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% spawningformset formset %}
-            {% spawningform as form %}
-                {{ form.production }}
-            {% endspawningform %}
-        {% endspawningformset %}
-
-        <div class="field">
-            <input type="submit" value="Update production list"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'bbs_edit_bbstros' bbs.id %}{% endblock %}
+
+{% block form_body %}
+    {% spawningformset formset %}
+        {% spawningform as form %}
+            {{ form.production }}
+        {% endspawningform %}
+    {% endspawningformset %}
+{% endblock %}
+
+{% block submit_button_label %}Update production list{% endblock %}

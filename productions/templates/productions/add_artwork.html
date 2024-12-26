@@ -2,7 +2,7 @@
 
 {% block html_title %}Adding artwork for {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Adding artwork for {{ production.title }}:</h2>
 
     <div class="long_help">
@@ -13,16 +13,15 @@
         </ul>
         <p style="text-align: right;">Thanks for brightening up our pages!</p>
     </div>
-
-    <form action="{% url 'production_add_artwork' production.id %}" method="post" enctype="multipart/form-data" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        <div class="field">
-            <input type="file" name="screenshot" multiple="multiple"/>
-        </div>
-
-        <div class="field">
-            <input type="submit" value="Submit" value="Add artwork"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'production_add_artwork' production.id %}{% endblock %}
+{% block form_attrs %}enctype="multipart/form-data"{% endblock %}
+
+{% block form_body %}
+    <div class="field">
+        <input type="file" name="screenshot" multiple="multiple"/>
+    </div>
+{% endblock %}
+
+{% block submit_button_label %}Add artwork{% endblock %}

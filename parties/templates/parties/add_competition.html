@@ -2,16 +2,9 @@
 
 {% block html_title %}New competition for {{ party.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>New competition for {{ party.name }}:</h2>
-
-    <form action="{% url 'party_add_competition' party.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-        
-        {% include "shared/form_fields.html" %}
-        
-        <div class="field">
-            <input type="submit" value="Create" />
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'party_add_competition' party.id %}{% endblock %}
+{% block submit_button_label %}Create{% endblock %}

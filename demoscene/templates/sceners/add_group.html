@@ -2,16 +2,9 @@
 
 {% block html_title %}New group for {{ scener.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>New group for {{ scener.name }}</h2>
-
-    <form action="{% url 'scener_add_group' scener.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% include "shared/form_fields.html" %}
-
-        <div class="field">
-            <input type="submit" value="Add"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'scener_add_group' scener.id %}{% endblock %}
+{% block submit_button_label %}Add{% endblock %}

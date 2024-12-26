@@ -3,20 +3,19 @@
 
 {% block html_title %}Editing invitations for {{ party.name }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing invitations for {{ party.name }}:</h2>
-
-    <form action="{% url 'party_edit_invitations' party.id %}" method="post" data-edit-form class="entry_form party_invitation_form">
-        {% csrf_token %}
-
-        {% spawningformset formset %}
-            {% spawningform as form %}
-                {{ form.production }}
-            {% endspawningform %}
-        {% endspawningformset %}
-
-        <div class="field">
-            <input type="submit" value="Update invitations"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'party_edit_invitations' party.id %}{% endblock %}
+{% block html_form_class %}party_invitation_form{% endblock %}
+
+{% block form_body %}
+    {% spawningformset formset %}
+        {% spawningform as form %}
+            {{ form.production }}
+        {% endspawningform %}
+    {% endspawningformset %}
+{% endblock %}
+
+{% block submit_button_label %}Update invitations{% endblock %}

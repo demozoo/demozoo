@@ -3,27 +3,27 @@
 
 {% block html_title %}Editing {{ external_or_download }} links for {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Editing {{ external_or_download }} links for {{ production.title }}:</h2>
-
-    <form action="{{ submit_url }}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-        <div class="field">
-            <label for="id_external_links-0-url" class="field_label">Link URLs</label>
-            <div class="field_input">
-                {% spawningformset formset %}
-                    {% spawningform as form %}
-                        {{ form.url }}
-                        {{ form.url.errors }}
-                        {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
-                        {% endfor %}
-                    {% endspawningform %}
-                {% endspawningformset %}
-            </div>
-        </div>
-        <div class="field">
-            <input type="submit" Value="Submit edit"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{{ submit_url }}{% endblock %}
+
+{% block form_body %}
+    <div class="field">
+        <label for="id_external_links-0-url" class="field_label">Link URLs</label>
+        <div class="field_input">
+            {% spawningformset formset %}
+                {% spawningform as form %}
+                    {{ form.url }}
+                    {{ form.url.errors }}
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                {% endspawningform %}
+            {% endspawningformset %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block submit_button_label %}Update links{% endblock %}

@@ -2,16 +2,14 @@
 
 {% block html_title %}Adding credit for {{ production.title }} - Demozoo{% endblock %}
 
-{% block base_main %}
+{% block title %}
     <h2>Add credit for {{ production.title }}:</h2>
-
-    <form action="{% url 'production_add_credit' production.id %}" method="post" data-edit-form class="entry_form">
-        {% csrf_token %}
-
-        {% include "productions/credit_form.html" %}
-
-        <div class="field">
-            <input type="submit" Value="Add credit"/>
-        </div>
-    </form>
 {% endblock %}
+
+{% block action_url %}{% url 'production_add_credit' production.id %}{% endblock %}
+
+{% block form_body %}
+    {% include "productions/credit_form.html" %}
+{% endblock %}
+
+{% block submit_button_label %}Add credit{% endblock %}
