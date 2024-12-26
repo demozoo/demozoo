@@ -1,4 +1,5 @@
 {% extends base_template_with_ajax_option %}
+{% load ui_tags %}
 
 {% block extra_head %}
     {% include "shared/editor_css.html" %}
@@ -21,10 +22,16 @@
 
         {% block submit_button %}
             <div class="field">
-                <input type="submit" value="{% block submit_button_label %}Submit{% endblock %}">
+                <input type="submit" value="{% block submit_button_label %}{% if submit_button_label %}{{ submit_button_label }}{% else %}Submit{% endif %}{% endblock %}">
             </div>
         {% endblock %}
     </form>
 
-    {% block after_form %}{% endblock %}
+    {% block after_form %}
+        {% if delete_url and delete_link_text %}
+            <ul class="actions">
+                <li>{% action_button url=delete_url icon="delete" label=delete_link_text lightbox=True %}</li>
+            </ul>
+        {% endif %}
+    {% endblock %}
 {% endblock %}

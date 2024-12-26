@@ -257,6 +257,7 @@ def edit(request, party_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("edit_party", args=[party.id]),
+            "submit_button_label": "Update party",
         },
     )
 
@@ -400,13 +401,13 @@ def add_competition(request, party_id):
     title = f"New competition for {party.name}"
     return render(
         request,
-        "parties/add_competition.html",
+        "generic/form.html",
         {
-            "party": party,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("party_add_competition", args=[party.id]),
+            "submit_button_label": "Create",
         },
     )
 
@@ -485,6 +486,7 @@ def edit_invitations(request, party_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("party_edit_invitations", args=[party.id]),
+            "submit_button_label": "Update invitations",
         },
     )
 
@@ -529,6 +531,7 @@ def edit_releases(request, party_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("party_edit_releases", args=[party.id]),
+            "submit_button_label": "Update releases",
         },
     )
 
@@ -602,13 +605,13 @@ def add_organiser(request, party_id):
     title = f"Add organiser for {party.name}"
     return render(
         request,
-        "parties/add_organiser.html",
+        "generic/form.html",
         {
-            "party": party,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("party_add_organiser", args=[party.id]),
+            "submit_button_label": "Add organiser",
         },
     )
 
@@ -670,14 +673,15 @@ def edit_organiser(request, party_id, organiser_id):
         title = f"Editing {organiser.releaser.name} as organiser of {party.name}"
         return render(
             request,
-            "parties/edit_organiser.html",
+            "generic/form.html",
             {
-                "party": party,
-                "organiser": organiser,
                 "form": form,
                 "title": title,
                 "html_title": title,
                 "action_url": reverse("party_edit_organiser", args=[party.id, organiser.id]),
+                "submit_button_label": "Save changes",
+                "delete_url": reverse("party_remove_organiser", args=[party.id, organiser.id]),
+                "delete_link_text": "Remove organiser",
             },
         )
 

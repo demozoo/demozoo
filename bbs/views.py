@@ -314,6 +314,7 @@ def edit_bbstros(request, bbs_id):
             "title": title,
             "html_title": title,
             "action_url": reverse("bbs_edit_bbstros", args=[bbs.id]),
+            "submit_button_label": "Update production list",
         },
     )
 
@@ -356,13 +357,13 @@ def add_operator(request, bbs_id):
     title = f"Add staff member for {bbs.name}"
     return render(
         request,
-        "bbs/add_operator.html",
+        "generic/form.html",
         {
-            "bbs": bbs,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("bbs_add_operator", args=[bbs.id]),
+            "submit_button_label": "Add staff member",
         },
     )
 
@@ -405,14 +406,15 @@ def edit_operator(request, bbs_id, operator_id):
     title = f"Editing {operator.releaser.name} as staff member of {bbs.name}"
     return render(
         request,
-        "bbs/edit_operator.html",
+        "generic/form.html",
         {
-            "bbs": bbs,
-            "operator": operator,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("bbs_edit_operator", args=[bbs.id, operator.id]),
+            "submit_button_label": "Update staff member",
+            "delete_url": reverse("bbs_remove_operator", args=[bbs.id, operator.id]),
+            "delete_link_text": "Remove staff member",
         },
     )
 
@@ -478,13 +480,13 @@ def add_affiliation(request, bbs_id):
     title = f"Add group affiliation for {bbs.name}"
     return render(
         request,
-        "bbs/add_affiliation.html",
+        "generic/form.html",
         {
-            "bbs": bbs,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("bbs_add_affiliation", args=[bbs.id]),
+            "submit_button_label": "Add group",
         },
     )
 
@@ -524,14 +526,15 @@ def edit_affiliation(request, bbs_id, affiliation_id):
     title = f"Editing {affiliation.group.name}'s affiliation with {bbs.name}"
     return render(
         request,
-        "bbs/edit_affiliation.html",
+        "generic/form.html",
         {
-            "bbs": bbs,
-            "affiliation": affiliation,
             "form": form,
             "title": title,
             "html_title": title,
             "action_url": reverse("bbs_edit_affiliation", args=[bbs.id, affiliation.id]),
+            "submit_button_label": "Update affiliation",
+            "delete_url": reverse("bbs_remove_affiliation", args=[bbs.id, affiliation.id]),
+            "delete_link_text": "Remove affiliation",
         },
     )
 
