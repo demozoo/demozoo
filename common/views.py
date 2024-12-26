@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.views import View
 from taggit.models import Tag
 
@@ -232,6 +233,13 @@ class EditTextFilesView(View):
     def mark_as_edited(self, subject):  # pragma: no cover
         pass
 
+    @cached_property
+    def add_only(self):
+        return (not self.request.user.is_staff) or (self.relation.count() == 0)
+
+    def get_title(self):  # pragma: no cover
+        raise NotImplementedError
+
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -294,13 +302,23 @@ class EditTextFilesView(View):
         else:
             formset = self.formset_class(instance=self.subject)
 
+        title = self.get_title()
         return render(
             request,
             self.template_name,
             {
                 self.subject_context_name: self.subject,
                 "formset": formset,
-                "add_only": (not request.user.is_staff) or (self.relation.count() == 0),
+                "add_only": self.add_only,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse(
+                    self.action_url_name,
+                    args=[
+                        self.subject.pk,
+                    ],
+                ),
+                "submit_button_label": self.add_button_label if self.add_only else self.update_button_label,
             },
         )
 

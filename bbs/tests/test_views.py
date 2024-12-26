@@ -507,10 +507,17 @@ class TestEditTextAds(MediaTestMixin, TestCase):
             sha1="1234123412341235",
         )
 
-    def test_get(self):
+    def test_get_as_normal_user(self):
         self.client.login(username="testuser", password="12345")
         response = self.client.get("/bbs/%d/edit_text_ads/" % self.starport.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Adding text ad for StarPort")
+
+    def test_get_as_superuser(self):
+        self.client.login(username="testsuperuser", password="12345")
+        response = self.client.get("/bbs/%d/edit_text_ads/" % self.starport.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editing text ads for StarPort")
 
     def test_add_one(self):
         self.client.login(username="testuser", password="12345")

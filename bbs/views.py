@@ -581,6 +581,15 @@ class EditTextAdsView(EditTextFilesView):
     upload_field_name = "text_ad"
     template_name = "bbs/edit_text_ads.html"
     subject_context_name = "bbs"
+    action_url_name = "bbs_edit_text_ads"
+    add_button_label = "Add text ad"
+    update_button_label = "Update text ads"
+
+    def get_title(self):
+        if self.add_only:
+            return f"Adding text ad for {self.subject.name}"
+        else:
+            return f"Editing text ads for {self.subject.name}"
 
 
 @login_required
