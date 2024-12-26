@@ -1,14 +1,9 @@
-{% extends "generic/simple_form.html" %}
+{% extends "generic/edit_form_with_ajax_option.html" %}
 {% load spawning_formset %}
 
-{% block extra_head %}
-    {% include "shared/editor_css.html" %}
-    {% include "shared/editor_js.html" %}
-{% endblock %}
+{% block form_body %}
+    {% include "shared/form_fields.html" %}
 
-{% block form_attrs %}data-edit-form{% endblock %}
-
-{% block after_form_fields %}
     <div class="field">
         <label class="field_label">Also known as</label>
         <div class="field_input">
