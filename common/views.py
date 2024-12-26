@@ -119,7 +119,7 @@ class AjaxConfirmationView(View):
 class EditingFormView(View):
     form_class = None
     title = ""
-    template_name = "generic/simple_form.html"
+    template_name = "generic/edit_form_with_ajax_option.html"
 
     def get_title(self):
         return self.title
