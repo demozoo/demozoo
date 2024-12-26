@@ -1,4 +1,5 @@
 {% extends "generic/edit_form_with_ajax_option.html" %}
+{% load ui_tags %}
 
 {% block html_title %}Editing {{ organiser.releaser.name }} as organiser of {{ party.name }} - Demozoo{% endblock %}
 
@@ -10,7 +11,8 @@
 {% block submit_button_label %}Submit edit{% endblock %}
 
 {% block after_form %}
-    <p>
-        <a href="{% url 'party_remove_organiser' party.id organiser.id %}" data-lightbox>Remove organiser</a>
-    </p>
+    <ul class="actions">
+        {% url 'party_remove_organiser' party.id organiser.id as delete_url %}
+        <li>{% action_button url=delete_url icon="delete" label="Remove organiser" lightbox=True %}</li>
+    </ul>
 {% endblock %}

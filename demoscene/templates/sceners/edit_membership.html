@@ -1,4 +1,5 @@
 {% extends "generic/edit_form_with_ajax_option.html" %}
+{% load ui_tags %}
 
 {% block html_title %}Editing {{ scener.name }}'s membership of {{ membership.group.name }} - Demozoo{% endblock %}
 
@@ -10,7 +11,8 @@
 {% block submit_button_label %}Edit membership{% endblock %}
 
 {% block after_form %}
-    <p>
-        <a href="{% url 'scener_remove_group' scener.id membership.group.id %}" data-lightbox>Remove from group</a>
-    </p>
+    <ul class="actions">
+        {% url 'scener_remove_group' scener.id membership.group.id as delete_url %}
+        <li>{% action_button url=delete_url icon="delete" label="Remove from group" lightbox=True %}</li>
+    </ul>
 {% endblock %}
