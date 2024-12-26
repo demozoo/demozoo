@@ -119,6 +119,7 @@ class EditRealNameView(UpdateFormView):
     form_class = ScenerEditRealNameForm
     action_url_name = "scener_edit_real_name"
     update_datestamp = True
+    template_name = "sceners/edit_real_name.html"
 
     def get_object(self):
         return get_object_or_404(Releaser, is_group=False, id=self.kwargs["scener_id"])
