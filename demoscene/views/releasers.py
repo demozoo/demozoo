@@ -60,13 +60,15 @@ def edit_nick(request, releaser_id, nick_id):
     else:
         form = nick_form_class(releaser, instance=nick, for_admin=request.user.is_staff)
 
+    title = f"Editing name: {nick.name}"
     return render(
         request,
         "releasers/edit_nick_form.html",
         {
             "form": form,
             "nick": nick,
-            "title": "Editing name: %s" % nick.name,
+            "title": title,
+            "html_title": title,
             "action_url": reverse("releaser_edit_nick", args=[releaser.id, nick.id]),
         },
     )
@@ -100,12 +102,14 @@ def add_nick(request, releaser_id):
     else:
         form = nick_form_class(releaser, for_admin=request.user.is_staff)
 
+    title = f"Adding another nick for {releaser.name}"
     return render(
         request,
-        "releasers/add_nick_form.html",
+        "releasers/nick_form.html",
         {
             "form": form,
-            "title": "Adding another nick for %s" % releaser.name,
+            "title": title,
+            "html_title": title,
             "action_url": reverse("releaser_add_nick", args=[releaser.id]),
         },
     )
