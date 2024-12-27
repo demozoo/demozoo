@@ -1,7 +1,5 @@
 {% extends "releasers/nick_form.html" %}
 
-{% block html_title %}Editing name: {{ nick.name }} - Demozoo{% endblock %}
-
 {% block after_form %}
     {% if not nick.is_primary_nick %}
         <p>
