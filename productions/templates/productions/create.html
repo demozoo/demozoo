@@ -1,18 +1,14 @@
 {% extends "generic/form.html" %}
 {% load urlsub %}
 
-{% block html_title %}New production - Demozoo{% endblock %}
-
 {% block title %}
     <div class="form_title">
-        <h2>New production</h2>
+        {{ block.super }}
         <p>(see also:
             <a href="{% url 'new_music' %}{% urlsub %}" data-lightbox>New music</a>
             | <a href="{% url 'new_graphics' %}{% urlsub %}" data-lightbox>New graphics</a>)</p>
     </div>
 {% endblock %}
-
-{% block action_url %}{% url 'new_production' %}{% endblock %}
 
 {% block form_body %}
     {% include "shared/form_field.html" with field=form.title %}
@@ -23,5 +19,3 @@
 
     {% include "productions/includes/download_formset.html" %}
 {% endblock %}
-
-{% block submit_button_label %}Add new production{% endblock %}

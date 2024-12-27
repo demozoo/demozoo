@@ -42,3 +42,6 @@ class GraphicsHistoryView(HistoryView):
 class CreateGraphicsView(CreateView):
     form_class = CreateGraphicsForm
     template = "graphics/create.html"
+    title = "New graphics"
+    action_url_name = "new_graphics"
+    submit_button_label = "Add new graphics prod"

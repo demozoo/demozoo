@@ -38,3 +38,6 @@ class MusicHistoryView(HistoryView):
 class CreateMusicView(CreateView):
     form_class = CreateMusicForm
     template = "music/create.html"
+    title = "New music"
+    action_url_name = "new_music"
+    submit_button_label = "Add new music"
