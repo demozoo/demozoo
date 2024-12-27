@@ -648,6 +648,9 @@ class DeleteArtworkView(DeleteScreenshotView):
 class CreateProductionView(CreateView):
     form_class = CreateProductionForm
     template = "productions/create.html"
+    title = "New production"
+    action_url_name = "new_production"
+    submit_button_label = "Add new production"
 
 
 @writeable_site_required

@@ -171,7 +171,7 @@ class HistoryView(View):
 
 
 class CreateView(View):
-    # subclasses provide form_class, template
+    # subclasses provide form_class, template, title, action_url_name, submit_button_label
 
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
@@ -194,5 +194,9 @@ class CreateView(View):
             {
                 "form": form,
                 "download_link_formset": download_link_formset,
+                "title": self.title,
+                "html_title": self.title,
+                "action_url": reverse(self.action_url_name),
+                "submit_button_label": self.submit_button_label,
             },
         )
