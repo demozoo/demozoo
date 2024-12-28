@@ -153,7 +153,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/edit_blurb/<int:blurb_id>/",
-        production_views.edit_blurb,
+        production_views.EditBlurbView.as_view(),
         {},
         "production_edit_blurb",
     ),
