@@ -13,6 +13,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
 from taggit.models import Tag
 
 from common.utils.ajax import request_is_ajax
@@ -130,61 +132,64 @@ class ProductionHistoryView(HistoryView):
     supertype = "production"
 
 
-@writeable_site_required
-@transaction.atomic
-def edit_core_details(request, production_id):
-    if not request.user.is_authenticated:
-        # Instead of redirecting back to this edit form after login, redirect to the production page.
-        # This is because the 'edit' button pointing here is the only one that non-logged-in users
-        # see, and thus it's the one they'll click on even if the thing they want to edit is something
-        # else on the page. Taking them back to the production page will give them the full complement
-        # of edit buttons, allowing them to locate the one they actually want.
-        return redirect_to_login(reverse("production", args=[production_id]))
+class EditCoreDetailsView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(transaction.atomic)
+    def dispatch(self, request, production_id):
+        if not request.user.is_authenticated:
+            # Instead of redirecting back to this edit form after login, redirect to the production page.
+            # This is because the 'edit' button pointing here is the only one that non-logged-in users
+            # see, and thus it's the one they'll click on even if the thing they want to edit is something
+            # else on the page. Taking them back to the production page will give them the full complement
+            # of edit buttons, allowing them to locate the one they actually want.
+            return redirect_to_login(reverse("production", args=[production_id]))
 
-    production = get_object_or_404(Production, id=production_id)
+        self.production = get_object_or_404(Production, id=production_id)
 
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
 
-    use_invitation_formset = False
-    invitation_formset = None
+        self.use_invitation_formset = False
+        self.invitation_formset = None
 
-    if production.supertype == "production":
-        form_class = ProductionEditCoreDetailsForm
-        use_invitation_formset = True
-    elif production.supertype == "graphics":
-        form_class = GraphicsEditCoreDetailsForm
-    else:  # production.supertype == 'music':
-        form_class = MusicEditCoreDetailsForm
+        if self.production.supertype == "production":
+            self.form_class = ProductionEditCoreDetailsForm
+            self.use_invitation_formset = True
+        elif self.production.supertype == "graphics":
+            self.form_class = GraphicsEditCoreDetailsForm
+        else:  # self.production.supertype == 'music':
+            self.form_class = MusicEditCoreDetailsForm
 
-    if request.method == "POST":
-        form = form_class(request.POST, instance=production)
+        return super().dispatch(request, production_id)
 
-        if use_invitation_formset:
-            invitation_formset = ProductionInvitationPartyFormset(
+    def post(self, request, production_id):
+        self.form = self.form_class(request.POST, instance=self.production)
+
+        if self.use_invitation_formset:
+            self.invitation_formset = ProductionInvitationPartyFormset(
                 request.POST,
-                initial=[{"party": party} for party in production.invitation_parties.order_by("start_date_date")],
+                initial=[{"party": party} for party in self.production.invitation_parties.order_by("start_date_date")],
             )
 
-        if form.is_valid() and ((not use_invitation_formset) or invitation_formset.is_valid()):
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            form.save()
+        if self.form.is_valid() and ((not self.use_invitation_formset) or self.invitation_formset.is_valid()):
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.form.save()
 
             edit_descriptions = []
-            main_edit_description = form.changed_data_description
+            main_edit_description = self.form.changed_data_description
             if main_edit_description:
                 edit_descriptions.append(main_edit_description)
 
-            if use_invitation_formset:
+            if self.use_invitation_formset:
                 invitation_parties = [
                     party_form.cleaned_data["party"].commit()
-                    for party_form in invitation_formset.forms
-                    if party_form.cleaned_data.get("party") and party_form not in invitation_formset.deleted_forms
+                    for party_form in self.invitation_formset.forms
+                    if party_form.cleaned_data.get("party") and party_form not in self.invitation_formset.deleted_forms
                 ]
-                production.invitation_parties.set(invitation_parties)
+                self.production.invitation_parties.set(invitation_parties)
 
-                if invitation_formset.has_changed():
+                if self.invitation_formset.has_changed():
                     party_names = [party.name for party in invitation_parties]
                     if party_names:
                         edit_descriptions.append("Set invitation for %s" % (", ".join(party_names)))
@@ -194,33 +199,39 @@ def edit_core_details(request, production_id):
             if edit_descriptions:
                 Edit.objects.create(
                     action_type="edit_production_core_details",
-                    focus=production,
+                    focus=self.production,
                     description="; ".join(edit_descriptions),
                     user=request.user,
                 )
 
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        form = form_class(instance=production)
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        else:
+            return self.render_to_response(request)
 
-        if use_invitation_formset:
-            invitation_formset = ProductionInvitationPartyFormset(
-                initial=[{"party": party} for party in production.invitation_parties.order_by("start_date_date")]
+    def get(self, request, production_id):
+        self.form = self.form_class(instance=self.production)
+
+        if self.use_invitation_formset:
+            self.invitation_formset = ProductionInvitationPartyFormset(
+                initial=[{"party": party} for party in self.production.invitation_parties.order_by("start_date_date")]
             )
 
-    title = f"Editing {production.supertype}: {production.title}"
-    return render(
-        request,
-        "productions/edit_core_details.html",
-        {
-            "production": production,
-            "form": form,
-            "invitation_formset": invitation_formset,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("production_edit_core_details", args=[production.id]),
-        },
-    )
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Editing {self.production.supertype}: {self.production.title}"
+        return render(
+            request,
+            "productions/edit_core_details.html",
+            {
+                "production": self.production,
+                "form": self.form,
+                "invitation_formset": self.invitation_formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_edit_core_details", args=[self.production.id]),
+            },
+        )
 
 
 class EditNotesView(UpdateFormView):
