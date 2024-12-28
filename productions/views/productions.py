@@ -906,15 +906,19 @@ def delete_credit(request, production_id, nick_id):
         )
 
 
-@writeable_site_required
-@login_required
-def edit_soundtracks(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    if request.method == "POST":
-        formset = ProductionSoundtrackLinkFormset(request.POST, instance=production)
-        if formset.is_valid():
+class EditSoundtracksView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
+
+        return super().dispatch(request, production_id)
+
+    def post(self, request, production_id):
+        self.formset = ProductionSoundtrackLinkFormset(request.POST, instance=self.production)
+        if self.formset.is_valid():
 
             def form_order_key(form):
                 if form.is_valid():
@@ -922,39 +926,44 @@ def edit_soundtracks(request, production_id):
                 else:
                     return 9999
 
-            sorted_forms = sorted(formset.forms, key=form_order_key)
+            sorted_forms = sorted(self.formset.forms, key=form_order_key)
             for i, form in enumerate(sorted_forms):
                 form.instance.position = i + 1
-            formset.save()
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
-            for stl in production.soundtrack_links.all():
+            self.formset.save()
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
+            for stl in self.production.soundtrack_links.all():
                 stl.soundtrack.has_bonafide_edits = True
                 stl.soundtrack.save()
             Edit.objects.create(
                 action_type="edit_soundtracks",
-                focus=production,
-                description=("Edited soundtrack details for %s" % production.title),
+                focus=self.production,
+                description=("Edited soundtrack details for %s" % self.production.title),
                 user=request.user,
             )
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        formset = ProductionSoundtrackLinkFormset(instance=production)
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        else:
+            return self.render_to_response(request)
 
-    title = f"Editing soundtrack details for {production.title}"
-    return render(
-        request,
-        "productions/edit_soundtracks.html",
-        {
-            "production": production,
-            "formset": formset,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("production_edit_soundtracks", args=[production.id]),
-            "submit_button_label": "Update soundtracks",
-        },
-    )
+    def get(self, request, production_id):
+        self.formset = ProductionSoundtrackLinkFormset(instance=self.production)
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Editing soundtrack details for {self.production.title}"
+        return render(
+            request,
+            "productions/edit_soundtracks.html",
+            {
+                "production": self.production,
+                "formset": self.formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_edit_soundtracks", args=[self.production.id]),
+                "submit_button_label": "Update soundtracks",
+            },
+        )
 
 
 @writeable_site_required

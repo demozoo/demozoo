@@ -116,7 +116,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/edit_soundtracks/",
-        production_views.edit_soundtracks,
+        production_views.EditSoundtracksView.as_view(),
         {},
         "production_edit_soundtracks",
     ),
