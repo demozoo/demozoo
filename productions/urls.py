@@ -66,7 +66,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/edit_external_links/",
-        production_views.edit_external_links,
+        production_views.EditExternalLinksView.as_view(),
         {},
         "production_edit_external_links",
     ),
