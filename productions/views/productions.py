@@ -526,88 +526,99 @@ def edit_artwork(request, production_id):
     )
 
 
-@writeable_site_required
-@login_required
-def add_screenshot(request, production_id, is_artwork_view=False):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
+class AddScreenshotView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id, is_artwork_view=False):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
 
-    if request.method == "POST":
+        self.is_artwork_view = is_artwork_view
+        return super().dispatch(request, production_id)
+
+    def post(self, request, production_id):
         uploaded_files = request.FILES.getlist("screenshot")
         file_count = len(uploaded_files)
         for f in uploaded_files:
-            screenshot = Screenshot.objects.create(production=production)
+            screenshot = Screenshot.objects.create(production=self.production)
             capture_upload_for_processing(f, screenshot.id)
 
         if file_count:
             # at least one screenshot was uploaded
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
 
             if file_count == 1:
-                if is_artwork_view:
+                if self.is_artwork_view:
                     Edit.objects.create(
-                        action_type="add_screenshot", focus=production, description=("Added artwork"), user=request.user
+                        action_type="add_screenshot",
+                        focus=self.production,
+                        description=("Added artwork"),
+                        user=request.user,
                     )
                 else:
                     Edit.objects.create(
                         action_type="add_screenshot",
-                        focus=production,
+                        focus=self.production,
                         description=("Added screenshot"),
                         user=request.user,
                     )
             else:
-                if is_artwork_view:
+                if self.is_artwork_view:
                     Edit.objects.create(
                         action_type="add_screenshot",
-                        focus=production,
+                        focus=self.production,
                         description=("Added %s artworks" % file_count),
                         user=request.user,
                     )
                 else:
                     Edit.objects.create(
                         action_type="add_screenshot",
-                        focus=production,
+                        focus=self.production,
                         description=("Added %s screenshots" % file_count),
                         user=request.user,
                     )
 
-        return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        if is_artwork_view and production.supertype != "music":
+        return HttpResponseRedirect(self.production.get_absolute_url())
+
+    def get(self, request, production_id):
+        if self.is_artwork_view and self.production.supertype != "music":
             return redirect("production_add_screenshot", production_id)
-        elif not is_artwork_view and production.supertype == "music":
+        elif not self.is_artwork_view and self.production.supertype == "music":
             return redirect("production_add_artwork", production_id)
 
-    if is_artwork_view:
-        title = f"Adding artwork for {production.title}"
-        return render(
-            request,
-            "productions/add_artwork.html",
-            {
-                "production": production,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("production_add_artwork", args=[production.id]),
-                "submit_button_label": "Add artwork",
-            },
-        )
+        return self.render_to_response(request)
 
-    else:
-        title = f"Adding screenshots for {production.title}"
-        return render(
-            request,
-            "productions/add_screenshot.html",
-            {
-                "production": production,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("production_add_screenshot", args=[production.id]),
-                "submit_button_label": "Add screenshot",
-            },
-        )
+    def render_to_response(self, request):
+        if self.is_artwork_view:
+            title = f"Adding artwork for {self.production.title}"
+            return render(
+                request,
+                "productions/add_artwork.html",
+                {
+                    "production": self.production,
+                    "title": title,
+                    "html_title": title,
+                    "action_url": reverse("production_add_artwork", args=[self.production.id]),
+                    "submit_button_label": "Add artwork",
+                },
+            )
+
+        else:
+            title = f"Adding screenshots for {self.production.title}"
+            return render(
+                request,
+                "productions/add_screenshot.html",
+                {
+                    "production": self.production,
+                    "title": title,
+                    "html_title": title,
+                    "action_url": reverse("production_add_screenshot", args=[self.production.id]),
+                    "submit_button_label": "Add screenshot",
+                },
+            )
 
 
 class DeleteScreenshotView(AjaxConfirmationView):

@@ -78,13 +78,13 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/add_screenshot/",
-        production_views.add_screenshot,
+        production_views.AddScreenshotView.as_view(),
         {},
         "production_add_screenshot",
     ),
     path(
         "productions/<int:production_id>/add_artwork/",
-        production_views.add_screenshot,
+        production_views.AddScreenshotView.as_view(),
         {"is_artwork_view": True},
         "production_add_artwork",
     ),
