@@ -697,73 +697,81 @@ class CreateProductionView(CreateView):
     submit_button_label = "Add new production"
 
 
-@writeable_site_required
-@login_required
-def add_credit(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    if request.method == "POST":
-        nick_form = ProductionCreditedNickForm(request.POST, production=production)
-        credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
-        if nick_form.is_valid() and credit_formset.is_valid():
-            credits = credit_formset.save(commit=False)
+class AddCreditView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
+
+        return super().dispatch(request, production_id)
+
+    def post(self, request, production_id):
+        self.nick_form = ProductionCreditedNickForm(request.POST, production=self.production)
+        self.credit_formset = CreditFormSet(request.POST, queryset=Credit.objects.none(), prefix="credit")
+        if self.nick_form.is_valid() and self.credit_formset.is_valid():
+            credits = self.credit_formset.save(commit=False)
             if credits:
-                nick = nick_form.cleaned_data["nick"].commit()
+                nick = self.nick_form.cleaned_data["nick"].commit()
                 for credit in credits:
                     credit.nick = nick
-                    credit.production = production
+                    credit.production = self.production
                     credit.save()
                 credits_description = ", ".join([credit.description for credit in credits])
-                description = "Added credit for %s on %s: %s" % (nick, production, credits_description)
+                description = "Added credit for %s on %s: %s" % (nick, self.production, credits_description)
                 Edit.objects.create(
                     action_type="add_credit",
-                    focus=production,
+                    focus=self.production,
                     focus2=nick.releaser,
                     description=description,
                     user=request.user,
                 )
 
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
-            # form.log_creation(request.user)
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
 
-            return render_credits_update(request, production)
-    else:
-        nick_form = ProductionCreditedNickForm(production=production)
-        credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
+            return render_credits_update(request, self.production)
+        else:
+            return self.render_to_response(request)
 
-    title = f"Adding credit for {production.title}"
-    if request_is_ajax(request):
-        return render_modal_workflow(
-            request,
-            "productions/add_credit.html",
-            {
-                "production": production,
-                "nick_form": nick_form,
-                "credit_formset": credit_formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("production_add_credit", args=[production.id]),
-                "submit_button_label": "Add credit",
-            },
-            json_data={"step": "form"},
-        )
-    else:
-        return render(
-            request,
-            "productions/add_credit.html",
-            {
-                "production": production,
-                "nick_form": nick_form,
-                "credit_formset": credit_formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("production_add_credit", args=[production.id]),
-                "submit_button_label": "Add credit",
-            },
-        )
+    def get(self, request, production_id):
+        self.nick_form = ProductionCreditedNickForm(production=self.production)
+        self.credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Adding credit for {self.production.title}"
+        if request_is_ajax(request):
+            return render_modal_workflow(
+                request,
+                "productions/add_credit.html",
+                {
+                    "production": self.production,
+                    "nick_form": self.nick_form,
+                    "credit_formset": self.credit_formset,
+                    "title": title,
+                    "html_title": title,
+                    "action_url": reverse("production_add_credit", args=[self.production.id]),
+                    "submit_button_label": "Add credit",
+                },
+                json_data={"step": "form"},
+            )
+        else:
+            return render(
+                request,
+                "productions/add_credit.html",
+                {
+                    "production": self.production,
+                    "nick_form": self.nick_form,
+                    "credit_formset": self.credit_formset,
+                    "title": title,
+                    "html_title": title,
+                    "action_url": reverse("production_add_credit", args=[self.production.id]),
+                    "submit_button_label": "Add credit",
+                },
+            )
 
 
 @writeable_site_required
