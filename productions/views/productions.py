@@ -282,39 +282,46 @@ class AddBlurbView(EditingFormView):
         return reverse("production_add_blurb", args=[self.object.id])
 
 
-@writeable_site_required
-@login_required
-def edit_blurb(request, production_id, blurb_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not request.user.is_staff:
-        return HttpResponseRedirect(production.get_absolute_url())
-    blurb = get_object_or_404(ProductionBlurb, production=production, id=blurb_id)
+class EditBlurbView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id, blurb_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not request.user.is_staff:
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        self.blurb = get_object_or_404(ProductionBlurb, production=self.production, id=blurb_id)
+        return super().dispatch(request, production_id, blurb_id)
 
-    if request.POST:
-        form = ProductionBlurbForm(request.POST, instance=blurb)
-        if form.is_valid():
-            form.save()
+    def post(self, request, production_id, blurb_id):
+        self.form = ProductionBlurbForm(request.POST, instance=self.blurb)
+        if self.form.is_valid():
+            self.form.save()
             Edit.objects.create(
                 action_type="edit_production_blurb",
-                focus=production,
+                focus=self.production,
                 description="Edited blurb",
                 user=request.user,
                 admin_only=True,
             )
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        form = ProductionBlurbForm(instance=blurb)
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        else:
+            return self.render_to_response(request)
 
-    return render(
-        request,
-        "productions/edit_blurb_form.html",
-        {
-            "form": form,
-            "production": production,
-            "blurb": blurb,
-            "action_url": reverse("production_edit_blurb", args=[production.id, blurb.id]),
-        },
-    )
+    def get(self, request, production_id, blurb_id):
+        self.form = ProductionBlurbForm(instance=self.blurb)
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        return render(
+            request,
+            "productions/edit_blurb_form.html",
+            {
+                "form": self.form,
+                "production": self.production,
+                "blurb": self.blurb,
+                "action_url": reverse("production_edit_blurb", args=[self.production.id, self.blurb.id]),
+            },
+        )
 
 
 class DeleteBlurbView(AjaxConfirmationView):
