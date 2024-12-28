@@ -72,7 +72,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/edit_download_links/",
-        production_views.edit_download_links,
+        production_views.EditDownloadLinksView.as_view(),
         {},
         "production_edit_download_links",
     ),

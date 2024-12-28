@@ -402,43 +402,51 @@ class EditExternalLinksView(View):
         )
 
 
-@writeable_site_required
-@login_required
-def edit_download_links(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
+class EditDownloadLinksView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
+        return super().dispatch(request, production_id)
 
-    if request.method == "POST":
-        formset = ProductionDownloadLinkFormSet(
-            request.POST, instance=production, queryset=production.links.filter(is_download_link=True)
+    def post(self, request, production_id):
+        self.formset = ProductionDownloadLinkFormSet(
+            request.POST, instance=self.production, queryset=self.production.links.filter(is_download_link=True)
         )
-        if formset.is_valid():
-            formset.save_ignoring_uniqueness()
-            formset.log_edit(request.user, "production_edit_download_links")
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
+        if self.formset.is_valid():
+            self.formset.save_ignoring_uniqueness()
+            self.formset.log_edit(request.user, "production_edit_download_links")
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
 
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        formset = ProductionDownloadLinkFormSet(
-            instance=production, queryset=production.links.filter(is_download_link=True)
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        else:
+            return self.render_to_response(request)
+
+    def get(self, request, production_id):
+        self.formset = ProductionDownloadLinkFormSet(
+            instance=self.production, queryset=self.production.links.filter(is_download_link=True)
         )
+        return self.render_to_response(request)
 
-    title = f"Editing download links for {production.title}"
-    return render(
-        request,
-        "productions/edit_links.html",
-        {
-            "action_url": reverse("production_edit_download_links", args=[production.id]),
-            "production": production,
-            "formset": formset,
-            "title": title,
-            "html_title": title,
-            "submit_button_label": "Update links",
-        },
-    )
+    def render_to_response(self, request):
+        title = f"Editing download links for {self.production.title}"
+        return render(
+            request,
+            "productions/edit_links.html",
+            {
+                "action_url": reverse("production_edit_download_links", args=[self.production.id]),
+                "external_or_download": "download",
+                "production": self.production,
+                "formset": self.formset,
+                "title": title,
+                "html_title": title,
+                "submit_button_label": "Update links",
+            },
+        )
 
 
 def screenshots(request, production_id):
