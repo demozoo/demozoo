@@ -19,7 +19,7 @@ urlpatterns = [
     path("music/<int:production_id>/", music_views.MusicShowView.as_view(), {}, "music"),
     path(
         "music/<int:production_id>/edit_core_details/",
-        production_views.edit_core_details,
+        production_views.EditCoreDetailsView.as_view(),
         {},
         "music_edit_core_details",
     ),
@@ -29,7 +29,7 @@ urlpatterns = [
     path("graphics/<int:production_id>/", graphic_views.GraphicsShowView.as_view(), {}, "graphic"),
     path(
         "graphics/<int:production_id>/edit_core_details/",
-        production_views.edit_core_details,
+        production_views.EditCoreDetailsView.as_view(),
         {},
         "graphics_edit_core_details",
     ),
@@ -41,7 +41,7 @@ urlpatterns = [
     path("productions/tagged/<str:tag_name>/", production_views.tagged, {}, "productions_tagged"),
     path(
         "productions/<int:production_id>/edit_core_details/",
-        production_views.edit_core_details,
+        production_views.EditCoreDetailsView.as_view(),
         {},
         "production_edit_core_details",
     ),
