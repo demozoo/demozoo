@@ -360,41 +360,55 @@ def history(request, bbs_id):
     )
 
 
-@writeable_site_required
-@login_required
-def add_operator(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
+class AddOperatorView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        return super().dispatch(request, bbs_id)
 
-    if request.method == "POST":
-        form = OperatorForm(request.POST)
-        if form.is_valid():
-            releaser = form.cleaned_data["releaser_nick"].commit().releaser
+    def post(self, request, bbs_id):
+        self.form = OperatorForm(request.POST)
+        if self.form.is_valid():
+            releaser = self.form.cleaned_data["releaser_nick"].commit().releaser
             operator = Operator(
-                releaser=releaser, bbs=bbs, role=form.cleaned_data["role"], is_current=form.cleaned_data["is_current"]
+                releaser=releaser,
+                bbs=self.bbs,
+                role=self.form.cleaned_data["role"],
+                is_current=self.form.cleaned_data["is_current"],
             )
             operator.save()
-            description = "Added %s as staff member of %s" % (releaser.name, bbs.name)
+            description = "Added %s as staff member of %s" % (releaser.name, self.bbs.name)
             Edit.objects.create(
-                action_type="add_bbs_operator", focus=releaser, focus2=bbs, description=description, user=request.user
+                action_type="add_bbs_operator",
+                focus=releaser,
+                focus2=self.bbs,
+                description=description,
+                user=request.user,
             )
-            bbs.updated_at = datetime.datetime.now()
-            bbs.save(update_fields=["updated_at"])
-            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
-    else:
-        form = OperatorForm()
+            self.bbs.updated_at = datetime.datetime.now()
+            self.bbs.save(update_fields=["updated_at"])
+            return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=staff")
+        else:
+            return self.render_to_response(request)
 
-    title = f"Add staff member for {bbs.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_add_operator", args=[bbs.id]),
-            "submit_button_label": "Add staff member",
-        },
-    )
+    def get(self, request, bbs_id):
+        self.form = OperatorForm()
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Add staff member for {self.bbs.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": self.form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_add_operator", args=[self.bbs.id]),
+                "submit_button_label": "Add staff member",
+            },
+        )
 
 
 @writeable_site_required
