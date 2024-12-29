@@ -185,57 +185,68 @@ class CreateView(View):
         )
 
 
-@writeable_site_required
-def edit(request, bbs_id):
-    if not request.user.is_authenticated:
-        # Instead of redirecting back to this edit form after login, redirect to the BBS page.
-        # This is because the edit button pointing here is the only one a non-logged-in user sees,
-        # so they may intend to edit something else on the BBS page.
-        return redirect_to_login(reverse("bbs", args=[bbs_id]))
+class EditView(View):
+    @method_decorator(writeable_site_required)
+    def dispatch(self, request, bbs_id):
+        if not request.user.is_authenticated:
+            # Instead of redirecting back to this edit form after login, redirect to the BBS page.
+            # This is because the edit button pointing here is the only one a non-logged-in user sees,
+            # so they may intend to edit something else on the BBS page.
+            return redirect_to_login(reverse("bbs", args=[bbs_id]))
 
-    bbs = get_object_or_404(BBS, id=bbs_id)
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        return super().dispatch(request, bbs_id)
 
-    if request.method == "POST":
-        form = BBSForm(request.POST, instance=bbs)
-        alternative_name_formset = AlternativeNameFormSet(
-            request.POST, instance=bbs, queryset=bbs.alternative_names.all()
+    def post(self, request, bbs_id):
+        self.form = BBSForm(request.POST, instance=self.bbs)
+        self.alternative_name_formset = AlternativeNameFormSet(
+            request.POST, instance=self.bbs, queryset=self.bbs.alternative_names.all()
         )
-        form_is_valid = form.is_valid()
-        alternative_name_formset_is_valid = alternative_name_formset.is_valid()
+        form_is_valid = self.form.is_valid()
+        alternative_name_formset_is_valid = self.alternative_name_formset.is_valid()
         if form_is_valid and alternative_name_formset_is_valid:
-            form.save()
-            alternative_name_formset.save()
-            search_index(bbs)
+            self.form.save()
+            self.alternative_name_formset.save()
+            search_index(self.bbs)
 
-            edit_description = form.changed_data_description
-            if alternative_name_formset.has_changed():
-                alternative_names = ", ".join([name.name for name in bbs.alternative_names.all()])
+            edit_description = self.form.changed_data_description
+            if self.alternative_name_formset.has_changed():
+                alternative_names = ", ".join([name.name for name in self.bbs.alternative_names.all()])
                 if edit_description:
                     edit_description += ", alternative names to %s" % alternative_names
                 else:
                     edit_description = "Set alternative names to %s" % alternative_names
 
             if edit_description:
-                Edit.objects.create(action_type="edit_bbs", focus=bbs, description=edit_description, user=request.user)
+                Edit.objects.create(
+                    action_type="edit_bbs", focus=self.bbs, description=edit_description, user=request.user
+                )
 
             messages.success(request, "BBS updated")
-            return redirect("bbs", bbs.id)
-    else:
-        form = BBSForm(instance=bbs)
-        alternative_name_formset = AlternativeNameFormSet(instance=bbs, queryset=bbs.alternative_names.all())
+            return redirect("bbs", self.bbs.id)
+        else:
+            return self.render_to_response(request)
 
-    title = "Editing BBS: %s" % bbs.name
-    return render(
-        request,
-        "bbs/bbs_form.html",
-        {
-            "html_title": title,
-            "title": title,
-            "form": form,
-            "alternative_name_formset": alternative_name_formset,
-            "action_url": reverse("edit_bbs", args=[bbs.id]),
-        },
-    )
+    def get(self, request, bbs_id):
+        self.form = BBSForm(instance=self.bbs)
+        self.alternative_name_formset = AlternativeNameFormSet(
+            instance=self.bbs, queryset=self.bbs.alternative_names.all()
+        )
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = "Editing BBS: %s" % self.bbs.name
+        return render(
+            request,
+            "bbs/bbs_form.html",
+            {
+                "html_title": title,
+                "title": title,
+                "form": self.form,
+                "alternative_name_formset": self.alternative_name_formset,
+                "action_url": reverse("edit_bbs", args=[self.bbs.id]),
+            },
+        )
 
 
 class EditNotesView(UpdateFormView):
