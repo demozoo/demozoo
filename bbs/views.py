@@ -10,6 +10,8 @@ from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
 from taggit.models import Tag
 
 from bbs.forms import (
@@ -141,37 +143,46 @@ def show(request, bbs_id):
     )
 
 
-@writeable_site_required
-@login_required
-def create(request):
-    if request.method == "POST":
+class CreateView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request):
+        return super().dispatch(request)
+
+    def post(self, request):
         bbs = BBS()
-        form = BBSForm(request.POST, instance=bbs)
-        alternative_name_formset = AlternativeNameFormSet(request.POST, instance=bbs)
-        form_is_valid = form.is_valid()
-        alternative_name_formset_is_valid = alternative_name_formset.is_valid()
+        self.form = BBSForm(request.POST, instance=bbs)
+        self.alternative_name_formset = AlternativeNameFormSet(request.POST, instance=bbs)
+        form_is_valid = self.form.is_valid()
+        alternative_name_formset_is_valid = self.alternative_name_formset.is_valid()
         if form_is_valid and alternative_name_formset_is_valid:
-            form.save()
-            alternative_name_formset.save()
-            form.log_creation(request.user)
+            self.form.save()
+            self.alternative_name_formset.save()
+            self.form.log_creation(request.user)
             search_index(bbs)
 
             messages.success(request, "BBS added")
             return redirect("bbs", bbs.id)
-    else:
-        form = BBSForm()
-        alternative_name_formset = AlternativeNameFormSet()
-    return render(
-        request,
-        "bbs/bbs_form.html",
-        {
-            "form": form,
-            "alternative_name_formset": alternative_name_formset,
-            "title": "New BBS",
-            "html_title": "New bbs",
-            "action_url": reverse("new_bbs"),
-        },
-    )
+        else:
+            return self.render_to_response(request)
+
+    def get(self, request):
+        self.form = BBSForm()
+        self.alternative_name_formset = AlternativeNameFormSet()
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        return render(
+            request,
+            "bbs/bbs_form.html",
+            {
+                "form": self.form,
+                "alternative_name_formset": self.alternative_name_formset,
+                "title": "New BBS",
+                "html_title": "New BBS",
+                "action_url": reverse("new_bbs"),
+            },
+        )
 
 
 @writeable_site_required
