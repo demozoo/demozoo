@@ -8,7 +8,7 @@ urlpatterns = [
     path("tagged/<str:tag_name>/", views.tagged, {}, "bbses_tagged"),
     path("<int:bbs_id>/", views.show, {}, "bbs"),
     path("new/", views.CreateView.as_view(), {}, "new_bbs"),
-    path("<int:bbs_id>/edit/", views.edit, {}, "edit_bbs"),
+    path("<int:bbs_id>/edit/", views.EditView.as_view(), {}, "edit_bbs"),
     path("<int:bbs_id>/edit_notes/", views.EditNotesView.as_view(), {}, "bbs_edit_notes"),
     path("<int:bbs_id>/delete/", views.DeleteBBSView.as_view(), {}, "delete_bbs"),
     path("<int:bbs_id>/edit_bbstros/", views.edit_bbstros, {}, "bbs_edit_bbstros"),
