@@ -730,10 +730,10 @@ class AddCreditView(EditingView):
             )
 
 
-class EditCreditView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id, nick_id):
+class EditCreditView(EditingView):
+    template_name = "productions/edit_credit.html"
+
+    def prepare(self, request, production_id, nick_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not self.production.editable_by_user(request.user):
             raise PermissionDenied
@@ -743,7 +743,6 @@ class EditCreditView(View):
             .extra(select={"category_order": "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"})
             .order_by("category_order")
         )
-        return super().dispatch(request, production_id, nick_id)
 
     def post(self, request, production_id, nick_id):
         self.nick_form = ProductionCreditedNickForm(request.POST, nick=self.nick, production=self.production)
@@ -783,46 +782,43 @@ class EditCreditView(View):
 
             return render_credits_update(request, self.production)
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id, nick_id):
         self.nick_form = ProductionCreditedNickForm(nick=self.nick, production=self.production)
         self.credit_formset = CreditFormSet(queryset=self.credits, prefix="credit")
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing credit for {self.production.title}"
+    def get_title(self):
+        return f"Editing credit for {self.production.title}"
 
-        if request_is_ajax(request):
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "production": self.production,
+                "nick": self.nick,
+                "nick_form": self.nick_form,
+                "credit_formset": self.credit_formset,
+                "action_url": reverse("production_edit_credit", args=[self.production.id, self.nick.id]),
+                "submit_button_label": "Update credit",
+            }
+        )
+        return context
+
+    def render_to_response(self):
+        if request_is_ajax(self.request):
             return render_modal_workflow(
-                request,
-                "productions/edit_credit.html",
-                {
-                    "production": self.production,
-                    "nick": self.nick,
-                    "nick_form": self.nick_form,
-                    "credit_formset": self.credit_formset,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_edit_credit", args=[self.production.id, self.nick.id]),
-                    "submit_button_label": "Update credit",
-                },
+                self.request,
+                self.template_name,
+                self.get_context_data(),
                 json_data={"step": "form"},
             )
         else:
             return render(
-                request,
-                "productions/edit_credit.html",
-                {
-                    "production": self.production,
-                    "nick": self.nick,
-                    "nick_form": self.nick_form,
-                    "credit_formset": self.credit_formset,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_edit_credit", args=[self.production.id, self.nick.id]),
-                    "submit_button_label": "Update credit",
-                },
+                self.request,
+                self.template_name,
+                self.get_context_data(),
             )
 
 
