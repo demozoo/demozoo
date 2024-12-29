@@ -117,13 +117,49 @@ class AjaxConfirmationView(View):
             )
 
 
-class EditingFormView(View):
-    form_class = None
+class EditingView(View):
     title = ""
     template_name = "generic/form.html"
 
     def get_title(self):
         return self.title
+
+    def get_login_return_url(self):
+        return self.request.get_full_path()
+
+    def prepare(self, request, *args, **kwargs):
+        pass
+
+    @method_decorator(writeable_site_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(self.get_login_return_url())
+
+        response = self.prepare(request, *args, **kwargs)
+        if response:
+            return response
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self):
+        title = self.get_title()
+        clean_title = title.rstrip(":")
+        return {
+            "html_form_class": "",
+            "title": title,
+            "html_title": clean_title,
+        }
+
+    def render_to_response(self):
+        return render(
+            self.request,
+            self.template_name,
+            self.get_context_data(),
+        )
+
+
+class EditingFormView(EditingView):
+    form_class = None
 
     def get_object(self):
         return None
@@ -131,21 +167,9 @@ class EditingFormView(View):
     def check_permission(self):
         pass
 
-    def get_login_return_url(self):
-        return self.request.get_full_path()
-
-    @method_decorator(writeable_site_required)
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect_to_login(self.get_login_return_url())
-
+    def prepare(self, request, *args, **kwargs):
         self.object = self.get_object()
-
-        response = self.check_permission()
-        if response:
-            return response
-
-        return super().dispatch(request, *args, **kwargs)
+        return self.check_permission()
 
     def get_form_kwargs(self):
         return {"instance": self.object}
@@ -180,22 +204,16 @@ class EditingFormView(View):
     def get_action_url(self):
         return reverse(self.action_url_name)
 
-    def render_to_response(self):
-        title = self.get_title()
-        clean_title = title.rstrip(":")
-
-        return render(
-            self.request,
-            self.template_name,
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
-                "html_form_class": "",
-                "title": title,
-                "html_title": clean_title,
                 "action_url": self.get_action_url(),
                 "ajax_submit": self.request.GET.get("ajax_submit"),
-            },
+            }
         )
+        return context
 
 
 class UpdateFormView(EditingFormView):
