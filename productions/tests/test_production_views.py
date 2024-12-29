@@ -931,6 +931,17 @@ class TestEditBlurb(TestCase):
         response = self.client.get("/productions/%d/edit_blurb/%d/" % (self.pondlife.id, self.blurb.id))
         self.assertEqual(response.status_code, 200)
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/productions/%d/edit_blurb/%d/" % (self.pondlife.id, self.blurb.id),
+            {
+                "body": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+        self.assertEqual(self.pondlife.blurbs.get().body, "Hooy-Program's love letter to the humble duck")
+
     def test_post(self):
         response = self.client.post(
             "/productions/%d/edit_blurb/%d/" % (self.pondlife.id, self.blurb.id),
@@ -1019,6 +1030,21 @@ class TestEditExternalLinks(TestCase):
         self.assertTrue(
             ProductionLink.objects.get(production=self.pondlife, link_class="SceneOrgFile").is_download_link
         )
+
+    def test_post_unicode(self):
+        response = self.client.post(
+            "/productions/%d/edit_external_links/" % self.pondlife.id,
+            {
+                "links-TOTAL_FORMS": 1,
+                "links-INITIAL_FORMS": 0,
+                "links-MIN_NUM_FORMS": 0,
+                "links-MAX_NUM_FORMS": 1000,
+                "links-0-url": "https://files.scene.org/get/parties/2001/forever01/spectrum/pöndlife.zip",
+                "links-0-production": self.pondlife.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
 
 
 class TestEditDownloadLinks(TestCase):
@@ -1562,6 +1588,29 @@ class TestEditCredit(TestCase):
         )
         self.assertRedirects(response, "/productions/%d/?editing=credits#credits_panel" % self.pondlife.id)
         self.assertEqual("Music", pondlife.credits.get(nick=self.gasman).category)
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/productions/%d/edit_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id),
+            {
+                "nick_search": "",
+                "nick_match_id": "",
+                "nick_match_name": "",
+                "credit-TOTAL_FORMS": 2,
+                "credit-INITIAL_FORMS": 1,
+                "credit-MIN_NUM_FORMS": 0,
+                "credit-MAX_NUM_FORMS": 1000,
+                "credit-0-id": self.pondlife_credit.id,
+                "credit-0-category": "Code",
+                "credit-0-role": "",
+                "credit-0-DELETE": "credit-0-DELETE",
+                "credit-1-id": "",
+                "credit-1-category": "Music",
+                "credit-1-role": "Part 1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
     def test_change_nick(self):
         pondlife = Production.objects.get(title="Pondlife")
