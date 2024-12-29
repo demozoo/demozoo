@@ -411,55 +411,62 @@ class AddOperatorView(View):
         )
 
 
-@writeable_site_required
-@login_required
-def edit_operator(request, bbs_id, operator_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    operator = get_object_or_404(Operator, bbs=bbs, id=operator_id)
+class EditOperatorView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id, operator_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        self.operator = get_object_or_404(Operator, bbs=self.bbs, id=operator_id)
+        return super().dispatch(request, bbs_id, operator_id)
 
-    if request.method == "POST":
-        form = OperatorForm(
+    def post(self, request, bbs_id, operator_id):
+        self.form = OperatorForm(
             request.POST,
             initial={
-                "releaser_nick": operator.releaser.primary_nick,
-                "role": operator.role,
-                "is_current": operator.is_current,
+                "releaser_nick": self.operator.releaser.primary_nick,
+                "role": self.operator.role,
+                "is_current": self.operator.is_current,
             },
         )
-        if form.is_valid():
-            releaser = form.cleaned_data["releaser_nick"].commit().releaser
-            operator.releaser = releaser
-            operator.role = form.cleaned_data["role"]
-            operator.is_current = form.cleaned_data["is_current"]
-            operator.save()
-            form.log_edit(request.user, releaser, bbs)
-            bbs.updated_at = datetime.datetime.now()
-            bbs.save(update_fields=["updated_at"])
+        if self.form.is_valid():
+            releaser = self.form.cleaned_data["releaser_nick"].commit().releaser
+            self.operator.releaser = releaser
+            self.operator.role = self.form.cleaned_data["role"]
+            self.operator.is_current = self.form.cleaned_data["is_current"]
+            self.operator.save()
+            self.form.log_edit(request.user, releaser, self.bbs)
+            self.bbs.updated_at = datetime.datetime.now()
+            self.bbs.save(update_fields=["updated_at"])
 
-            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=staff")
-    else:
-        form = OperatorForm(
+            return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=staff")
+        else:
+            return self.render_to_response(request)
+
+    def get(self, request, bbs_id, operator_id):
+        self.form = OperatorForm(
             initial={
-                "releaser_nick": operator.releaser.primary_nick,
-                "role": operator.role,
-                "is_current": operator.is_current,
+                "releaser_nick": self.operator.releaser.primary_nick,
+                "role": self.operator.role,
+                "is_current": self.operator.is_current,
             }
         )
+        return self.render_to_response(request)
 
-    title = f"Editing {operator.releaser.name} as staff member of {bbs.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_edit_operator", args=[bbs.id, operator.id]),
-            "submit_button_label": "Update staff member",
-            "delete_url": reverse("bbs_remove_operator", args=[bbs.id, operator.id]),
-            "delete_link_text": "Remove staff member",
-        },
-    )
+    def render_to_response(self, request):
+        title = f"Editing {self.operator.releaser.name} as staff member of {self.bbs.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": self.form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_edit_operator", args=[self.bbs.id, self.operator.id]),
+                "submit_button_label": "Update staff member",
+                "delete_url": reverse("bbs_remove_operator", args=[self.bbs.id, self.operator.id]),
+                "delete_link_text": "Remove staff member",
+            },
+        )
 
 
 class RemoveOperatorView(AjaxConfirmationView):

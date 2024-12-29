@@ -14,7 +14,7 @@ urlpatterns = [
     path("<int:bbs_id>/edit_bbstros/", views.EditBBStrosView.as_view(), {}, "bbs_edit_bbstros"),
     path("<int:bbs_id>/history/", views.history, {}, "bbs_history"),
     path("<int:bbs_id>/add_operator/", views.AddOperatorView.as_view(), {}, "bbs_add_operator"),
-    path("<int:bbs_id>/edit_operator/<int:operator_id>/", views.edit_operator, {}, "bbs_edit_operator"),
+    path("<int:bbs_id>/edit_operator/<int:operator_id>/", views.EditOperatorView.as_view(), {}, "bbs_edit_operator"),
     path(
         "<int:bbs_id>/remove_operator/<int:operator_id>/", views.RemoveOperatorView.as_view(), {}, "bbs_remove_operator"
     ),
