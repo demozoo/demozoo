@@ -293,52 +293,59 @@ class DeleteBBSView(AjaxConfirmationView):
         messages.success(self.request, "'%s' deleted" % self.object.name)
 
 
-@writeable_site_required
-@login_required
-def edit_bbstros(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    initial_forms = [{"production": production} for production in bbs.bbstros.all()]
+class EditBBStrosView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        self.initial_forms = [{"production": production} for production in self.bbs.bbstros.all()]
+        return super().dispatch(request, bbs_id)
 
-    if request.method == "POST":
-        formset = BBStroFormset(request.POST, initial=initial_forms)
-        if formset.is_valid():
+    def post(self, request, bbs_id):
+        self.formset = BBStroFormset(request.POST, initial=self.initial_forms)
+        if self.formset.is_valid():
             bbstros = [
                 prod_form.cleaned_data["production"].commit()
-                for prod_form in formset.forms
-                if prod_form not in formset.deleted_forms and "production" in prod_form.cleaned_data
+                for prod_form in self.formset.forms
+                if prod_form not in self.formset.deleted_forms and "production" in prod_form.cleaned_data
             ]
-            bbs.bbstros.set(bbstros)
+            self.bbs.bbstros.set(bbstros)
 
-            if formset.has_changed():
+            if self.formset.has_changed():
                 bbstro_titles = [prod.title for prod in bbstros] or ["none"]
                 bbstro_titles = ", ".join(bbstro_titles)
                 Edit.objects.create(
                     action_type="edit_bbs_bbstros",
-                    focus=bbs,
+                    focus=self.bbs,
                     description="Set promoted in to %s" % bbstro_titles,
                     user=request.user,
                 )
-                bbs.updated_at = datetime.datetime.now()
-                bbs.save(update_fields=["updated_at"])
+                self.bbs.updated_at = datetime.datetime.now()
+                self.bbs.save(update_fields=["updated_at"])
 
-            return redirect("bbs", bbs.id)
-    else:
-        formset = BBStroFormset(initial=initial_forms)
+            return redirect("bbs", self.bbs.id)
+        else:
+            return self.render_to_response(request)
 
-    title = f"Editing productions promoting {bbs.name}"
+    def get(self, request, bbs_id):
+        self.formset = BBStroFormset(initial=self.initial_forms)
+        return self.render_to_response(request)
 
-    return render(
-        request,
-        "bbs/edit_bbstros.html",
-        {
-            "bbs": bbs,
-            "formset": formset,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_edit_bbstros", args=[bbs.id]),
-            "submit_button_label": "Update production list",
-        },
-    )
+    def render_to_response(self, request):
+        title = f"Editing productions promoting {self.bbs.name}"
+
+        return render(
+            request,
+            "bbs/edit_bbstros.html",
+            {
+                "bbs": self.bbs,
+                "formset": self.formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_edit_bbstros", args=[self.bbs.id]),
+                "submit_button_label": "Update production list",
+            },
+        )
 
 
 def history(request, bbs_id):
