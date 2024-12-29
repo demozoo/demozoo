@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views import View
 from taggit.models import Tag
 
 from common.utils.ajax import request_is_ajax
@@ -916,14 +915,13 @@ class EditSoundtracksView(EditingView):
         return context
 
 
-class EditPackContentsView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id):
+class EditPackContentsView(EditingView):
+    template_name = "productions/edit_pack_contents.html"
+
+    def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not self.production.editable_by_user(request.user):
             raise PermissionDenied
-        return super().dispatch(request, production_id)
 
     def post(self, request, production_id):
         self.formset = PackMemberFormset(request.POST, instance=self.production)
@@ -953,26 +951,26 @@ class EditPackContentsView(View):
             )
             return HttpResponseRedirect(self.production.get_absolute_url())
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id):
         self.formset = PackMemberFormset(instance=self.production)
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing pack contents for {self.production.title}"
-        return render(
-            request,
-            "productions/edit_pack_contents.html",
+    def get_title(self):
+        return f"Editing pack contents for {self.production.title}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "production": self.production,
                 "formset": self.formset,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("production_edit_pack_contents", args=[self.production.id]),
                 "submit_button_label": "Update pack contents",
-            },
+            }
         )
+        return context
 
 
 class ProductionEditTagsView(EditTagsView):
