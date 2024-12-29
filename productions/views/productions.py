@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
@@ -24,6 +23,7 @@ from common.views import (
     AddTagView,
     AjaxConfirmationView,
     EditingFormView,
+    EditingView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
@@ -132,18 +132,22 @@ class ProductionHistoryView(HistoryView):
     supertype = "production"
 
 
-class EditCoreDetailsView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(transaction.atomic)
-    def dispatch(self, request, production_id):
-        if not request.user.is_authenticated:
-            # Instead of redirecting back to this edit form after login, redirect to the production page.
-            # This is because the 'edit' button pointing here is the only one that non-logged-in users
-            # see, and thus it's the one they'll click on even if the thing they want to edit is something
-            # else on the page. Taking them back to the production page will give them the full complement
-            # of edit buttons, allowing them to locate the one they actually want.
-            return redirect_to_login(reverse("production", args=[production_id]))
+class EditCoreDetailsView(EditingView):
+    template_name = "productions/edit_core_details.html"
 
+    def get_login_return_url(self):
+        # Instead of redirecting back to this edit form after login, redirect to the production page.
+        # This is because the 'edit' button pointing here is the only one that non-logged-in users
+        # see, and thus it's the one they'll click on even if the thing they want to edit is something
+        # else on the page. Taking them back to the production page will give them the full complement
+        # of edit buttons, allowing them to locate the one they actually want.
+        return reverse("production", args=[self.kwargs["production_id"]])
+
+    @method_decorator(transaction.atomic)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
 
         if not self.production.editable_by_user(request.user):
@@ -159,8 +163,6 @@ class EditCoreDetailsView(View):
             self.form_class = GraphicsEditCoreDetailsForm
         else:  # self.production.supertype == 'music':
             self.form_class = MusicEditCoreDetailsForm
-
-        return super().dispatch(request, production_id)
 
     def post(self, request, production_id):
         self.form = self.form_class(request.POST, instance=self.production)
@@ -206,7 +208,7 @@ class EditCoreDetailsView(View):
 
             return HttpResponseRedirect(self.production.get_absolute_url())
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id):
         self.form = self.form_class(instance=self.production)
@@ -216,22 +218,22 @@ class EditCoreDetailsView(View):
                 initial=[{"party": party} for party in self.production.invitation_parties.order_by("start_date_date")]
             )
 
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing {self.production.supertype}: {self.production.title}"
-        return render(
-            request,
-            "productions/edit_core_details.html",
+    def get_title(self):
+        return f"Editing {self.production.supertype}: {self.production.title}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "production": self.production,
                 "form": self.form,
                 "invitation_formset": self.invitation_formset,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("production_edit_core_details", args=[self.production.id]),
-            },
+            }
         )
+        return context
 
 
 class EditNotesView(UpdateFormView):
