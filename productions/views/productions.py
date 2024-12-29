@@ -284,15 +284,12 @@ class AddBlurbView(EditingFormView):
         return reverse("production_add_blurb", args=[self.object.id])
 
 
-class EditBlurbView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id, blurb_id):
+class EditBlurbView(EditingView):
+    def prepare(self, request, production_id, blurb_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not request.user.is_staff:
             return HttpResponseRedirect(self.production.get_absolute_url())
         self.blurb = get_object_or_404(ProductionBlurb, production=self.production, id=blurb_id)
-        return super().dispatch(request, production_id, blurb_id)
 
     def post(self, request, production_id, blurb_id):
         self.form = ProductionBlurbForm(request.POST, instance=self.blurb)
@@ -307,23 +304,27 @@ class EditBlurbView(View):
             )
             return HttpResponseRedirect(self.production.get_absolute_url())
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id, blurb_id):
         self.form = ProductionBlurbForm(instance=self.blurb)
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        return render(
-            request,
-            "productions/edit_blurb_form.html",
+    def get_title(self):
+        return f"Editing blurb for {self.production.title}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
-                "production": self.production,
-                "blurb": self.blurb,
                 "action_url": reverse("production_edit_blurb", args=[self.production.id, self.blurb.id]),
-            },
+                "submit_button_label": "Update blurb",
+                "delete_url": reverse("production_delete_blurb", args=[self.production.id, self.blurb.id]),
+                "delete_link_text": "Delete this blurb",
+            }
         )
+        return context
 
 
 class DeleteBlurbView(AjaxConfirmationView):
