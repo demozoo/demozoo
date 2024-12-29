@@ -498,16 +498,11 @@ def edit_artwork(request, production_id):
     )
 
 
-class AddScreenshotView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id, is_artwork_view=False):
+class AddImageView(EditingView):
+    def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not self.production.editable_by_user(request.user):
             raise PermissionDenied
-
-        self.is_artwork_view = is_artwork_view
-        return super().dispatch(request, production_id)
 
     def post(self, request, production_id):
         uploaded_files = request.FILES.getlist("screenshot")
@@ -522,75 +517,67 @@ class AddScreenshotView(View):
             self.production.has_bonafide_edits = True
             self.production.save()
 
-            if file_count == 1:
-                if self.is_artwork_view:
-                    Edit.objects.create(
-                        action_type="add_screenshot",
-                        focus=self.production,
-                        description=("Added artwork"),
-                        user=request.user,
-                    )
-                else:
-                    Edit.objects.create(
-                        action_type="add_screenshot",
-                        focus=self.production,
-                        description=("Added screenshot"),
-                        user=request.user,
-                    )
-            else:
-                if self.is_artwork_view:
-                    Edit.objects.create(
-                        action_type="add_screenshot",
-                        focus=self.production,
-                        description=("Added %s artworks" % file_count),
-                        user=request.user,
-                    )
-                else:
-                    Edit.objects.create(
-                        action_type="add_screenshot",
-                        focus=self.production,
-                        description=("Added %s screenshots" % file_count),
-                        user=request.user,
-                    )
+            Edit.objects.create(
+                action_type="add_screenshot",
+                focus=self.production,
+                description=self.get_log_description(file_count),
+                user=request.user,
+            )
 
         return HttpResponseRedirect(self.production.get_absolute_url())
 
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "production": self.production,
+                "action_url": reverse(self.action_url_name, args=[self.production.id]),
+                "submit_button_label": self.submit_button_label,
+            }
+        )
+        return context
+
+
+class AddScreenshotView(AddImageView):
+    template_name = "productions/add_screenshot.html"
+    action_url_name = "production_add_screenshot"
+    submit_button_label = "Add screenshot"
+
+    def get_log_description(self, file_count):
+        if file_count == 1:
+            return "Added screenshot"
+        else:
+            return "Added %s screenshots" % file_count
+
     def get(self, request, production_id):
-        if self.is_artwork_view and self.production.supertype != "music":
-            return redirect("production_add_screenshot", production_id)
-        elif not self.is_artwork_view and self.production.supertype == "music":
+        if self.production.supertype == "music":
             return redirect("production_add_artwork", production_id)
 
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        if self.is_artwork_view:
-            title = f"Adding artwork for {self.production.title}"
-            return render(
-                request,
-                "productions/add_artwork.html",
-                {
-                    "production": self.production,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_add_artwork", args=[self.production.id]),
-                    "submit_button_label": "Add artwork",
-                },
-            )
+    def get_title(self):
+        return f"Adding screenshots for {self.production.title}"
 
+
+class AddArtworkView(AddImageView):
+    template_name = "productions/add_artwork.html"
+    action_url_name = "production_add_artwork"
+    submit_button_label = "Add artwork"
+
+    def get_log_description(self, file_count):
+        if file_count == 1:
+            return "Added artwork"
         else:
-            title = f"Adding screenshots for {self.production.title}"
-            return render(
-                request,
-                "productions/add_screenshot.html",
-                {
-                    "production": self.production,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_add_screenshot", args=[self.production.id]),
-                    "submit_button_label": "Add screenshot",
-                },
-            )
+            return "Added %s artworks" % file_count
+
+    def get(self, request, production_id):
+        if self.production.supertype != "music":
+            return redirect("production_add_screenshot", production_id)
+
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Adding artwork for {self.production.title}"
 
 
 class DeleteScreenshotView(AjaxConfirmationView):
@@ -669,15 +656,13 @@ class CreateProductionView(CreateView):
     submit_button_label = "Add new production"
 
 
-class AddCreditView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id):
+class AddCreditView(EditingView):
+    template_name = "productions/add_credit.html"
+
+    def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not self.production.editable_by_user(request.user):
             raise PermissionDenied
-
-        return super().dispatch(request, production_id)
 
     def post(self, request, production_id):
         self.nick_form = ProductionCreditedNickForm(request.POST, production=self.production)
@@ -706,43 +691,42 @@ class AddCreditView(View):
 
             return render_credits_update(request, self.production)
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id):
         self.nick_form = ProductionCreditedNickForm(production=self.production)
         self.credit_formset = CreditFormSet(queryset=Credit.objects.none(), prefix="credit")
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Adding credit for {self.production.title}"
-        if request_is_ajax(request):
+    def get_title(self):
+        return f"Adding credit for {self.production.title}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "production": self.production,
+                "nick_form": self.nick_form,
+                "credit_formset": self.credit_formset,
+                "action_url": reverse("production_add_credit", args=[self.production.id]),
+                "submit_button_label": "Add credit",
+            }
+        )
+        return context
+
+    def render_to_response(self):
+        if request_is_ajax(self.request):
             return render_modal_workflow(
-                request,
-                "productions/add_credit.html",
-                {
-                    "production": self.production,
-                    "nick_form": self.nick_form,
-                    "credit_formset": self.credit_formset,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_add_credit", args=[self.production.id]),
-                    "submit_button_label": "Add credit",
-                },
+                self.request,
+                self.template_name,
+                self.get_context_data(),
                 json_data={"step": "form"},
             )
         else:
             return render(
-                request,
-                "productions/add_credit.html",
-                {
-                    "production": self.production,
-                    "nick_form": self.nick_form,
-                    "credit_formset": self.credit_formset,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("production_add_credit", args=[self.production.id]),
-                    "submit_button_label": "Add credit",
-                },
+                self.request,
+                self.template_name,
+                self.get_context_data(),
             )
 
 
