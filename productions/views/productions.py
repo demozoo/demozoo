@@ -358,98 +358,67 @@ class DeleteBlurbView(AjaxConfirmationView):
         )
 
 
-class EditExternalLinksView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id):
+class EditLinksView(EditingView):
+    template_name = "productions/edit_links.html"
+
+    def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
         if not self.production.editable_by_user(request.user):
             raise PermissionDenied
-        return super().dispatch(request, production_id)
 
     def post(self, request, production_id):
-        self.formset = ProductionExternalLinkFormSet(
-            request.POST, instance=self.production, queryset=self.production.links.filter(is_download_link=False)
+        self.formset = self.formset_class(
+            request.POST,
+            instance=self.production,
+            queryset=self.production.links.filter(is_download_link=self.is_download_link),
         )
         if self.formset.is_valid():
             self.formset.save_ignoring_uniqueness()
-            self.formset.log_edit(request.user, "production_edit_external_links")
+            self.formset.log_edit(request.user, self.log_action_type)
             self.production.updated_at = datetime.datetime.now()
             self.production.has_bonafide_edits = True
             self.production.save()
 
             return HttpResponseRedirect(self.production.get_absolute_url())
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, production_id):
-        self.formset = ProductionExternalLinkFormSet(
-            instance=self.production, queryset=self.production.links.filter(is_download_link=False)
+        self.formset = self.formset_class(
+            instance=self.production, queryset=self.production.links.filter(is_download_link=self.is_download_link)
         )
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing external links for {self.production.title}"
-        return render(
-            request,
-            "productions/edit_links.html",
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "action_url": reverse("production_edit_external_links", args=[self.production.id]),
-                "external_or_download": "external",
-                "production": self.production,
+                "action_url": reverse(self.action_url_name, args=[self.production.id]),
                 "formset": self.formset,
-                "title": title,
-                "html_title": title,
                 "submit_button_label": "Update links",
-            },
+            }
         )
+        return context
 
 
-class EditDownloadLinksView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, production_id):
-        self.production = get_object_or_404(Production, id=production_id)
-        if not self.production.editable_by_user(request.user):
-            raise PermissionDenied
-        return super().dispatch(request, production_id)
+class EditExternalLinksView(EditLinksView):
+    formset_class = ProductionExternalLinkFormSet
+    is_download_link = False
+    log_action_type = "production_edit_external_links"
+    action_url_name = "production_edit_external_links"
 
-    def post(self, request, production_id):
-        self.formset = ProductionDownloadLinkFormSet(
-            request.POST, instance=self.production, queryset=self.production.links.filter(is_download_link=True)
-        )
-        if self.formset.is_valid():
-            self.formset.save_ignoring_uniqueness()
-            self.formset.log_edit(request.user, "production_edit_download_links")
-            self.production.updated_at = datetime.datetime.now()
-            self.production.has_bonafide_edits = True
-            self.production.save()
+    def get_title(self):
+        return f"Editing external links for {self.production.title}"
 
-            return HttpResponseRedirect(self.production.get_absolute_url())
-        else:
-            return self.render_to_response(request)
 
-    def get(self, request, production_id):
-        self.formset = ProductionDownloadLinkFormSet(
-            instance=self.production, queryset=self.production.links.filter(is_download_link=True)
-        )
-        return self.render_to_response(request)
+class EditDownloadLinksView(EditLinksView):
+    formset_class = ProductionDownloadLinkFormSet
+    is_download_link = True
+    log_action_type = "production_edit_download_links"
+    action_url_name = "production_edit_download_links"
 
-    def render_to_response(self, request):
-        title = f"Editing download links for {self.production.title}"
-        return render(
-            request,
-            "productions/edit_links.html",
-            {
-                "action_url": reverse("production_edit_download_links", args=[self.production.id]),
-                "external_or_download": "download",
-                "production": self.production,
-                "formset": self.formset,
-                "title": title,
-                "html_title": title,
-                "submit_button_label": "Update links",
-            },
-        )
+    def get_title(self):
+        return f"Editing download links for {self.production.title}"
 
 
 def screenshots(request, production_id):
