@@ -127,7 +127,7 @@ class EditingView(View):
     def get_login_return_url(self):
         return self.request.get_full_path()
 
-    def prepare(self, request, *args, **kwargs):
+    def prepare(self, request, *args, **kwargs):  # pragma: no cover
         pass
 
     @method_decorator(writeable_site_required)
