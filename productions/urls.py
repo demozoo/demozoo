@@ -122,7 +122,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/edit_pack_contents/",
-        production_views.edit_pack_contents,
+        production_views.EditPackContentsView.as_view(),
         {},
         "production_edit_pack_contents",
     ),

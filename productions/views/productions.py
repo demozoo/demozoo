@@ -966,15 +966,18 @@ class EditSoundtracksView(View):
         )
 
 
-@writeable_site_required
-@login_required
-def edit_pack_contents(request, production_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    if request.method == "POST":
-        formset = PackMemberFormset(request.POST, instance=production)
-        if formset.is_valid():
+class EditPackContentsView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, production_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
+        return super().dispatch(request, production_id)
+
+    def post(self, request, production_id):
+        self.formset = PackMemberFormset(request.POST, instance=self.production)
+        if self.formset.is_valid():
 
             def form_order_key(form):
                 if form.is_valid():
@@ -982,39 +985,44 @@ def edit_pack_contents(request, production_id):
                 else:
                     return 9999
 
-            sorted_forms = sorted(formset.forms, key=form_order_key)
+            sorted_forms = sorted(self.formset.forms, key=form_order_key)
             for i, form in enumerate(sorted_forms):
                 form.instance.position = i + 1
-            formset.save()
-            production.updated_at = datetime.datetime.now()
-            production.has_bonafide_edits = True
-            production.save()
-            for stl in production.pack_members.all():
+            self.formset.save()
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
+            for stl in self.production.pack_members.all():
                 stl.member.has_bonafide_edits = True
                 stl.member.save()
             Edit.objects.create(
                 action_type="edit_pack_contents",
-                focus=production,
-                description=("Edited pack contents of %s" % production.title),
+                focus=self.production,
+                description=("Edited pack contents of %s" % self.production.title),
                 user=request.user,
             )
-            return HttpResponseRedirect(production.get_absolute_url())
-    else:
-        formset = PackMemberFormset(instance=production)
+            return HttpResponseRedirect(self.production.get_absolute_url())
+        else:
+            return self.render_to_response(request)
 
-    title = f"Editing pack contents for {production.title}"
-    return render(
-        request,
-        "productions/edit_pack_contents.html",
-        {
-            "production": production,
-            "formset": formset,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("production_edit_pack_contents", args=[production.id]),
-            "submit_button_label": "Update pack contents",
-        },
-    )
+    def get(self, request, production_id):
+        self.formset = PackMemberFormset(instance=self.production)
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Editing pack contents for {self.production.title}"
+        return render(
+            request,
+            "productions/edit_pack_contents.html",
+            {
+                "production": self.production,
+                "formset": self.formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("production_edit_pack_contents", args=[self.production.id]),
+                "submit_button_label": "Update pack contents",
+            },
+        )
 
 
 class ProductionEditTagsView(EditTagsView):
