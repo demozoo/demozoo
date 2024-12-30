@@ -181,3 +181,21 @@ a.action_button, button.action_button {
     padding: 6px;
     text-decoration: none;
 }
+
+/* Copy-to-clipboard button */
+.clipboard-button-container{
+    display:flex;
+    flex-direction:row;
+    margin-bottom:15px;
+    min-width:400px;
+}
+
+/* The text field expands to fill */
+.clipboard-field{
+    flex-grow:1;
+}
+
+/* to make the tight wrapping on the grid of country feeds look a bit nicer */
+.clipboard-button{
+    min-width:71px;
+}

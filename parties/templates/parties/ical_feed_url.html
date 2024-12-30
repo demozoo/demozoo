@@ -1,0 +1,27 @@
+{% extends base_template_with_ajax_option %}
+{% load ui_tags %}
+
+{% block base_main %}
+    <h3>Main calendar feed</h3>
+    <p>Subscribe to the iCal feed for recent and upcoming demo parties by adding this URL to your calendar app.</p>
+    {% text_to_clipboard text=feed_url %}
+    {% if is_ajax %}
+        <h3>Other calendar feeds</h3>
+        <p>More feeds are available <a href='{{other_feeds_url}}'>here</a></p>
+    {% else %}
+        <h3>Historical feed</h3>
+        <p>Subscribe to the historical feed to include all past events.</p>
+        {% text_to_clipboard text=historical_feed_url %}
+        <h3>Online parties only</h3>
+        {% text_to_clipboard text=online_only_url %}
+        <h3>Country-specific feeds</h3>
+        <ul style='display:flex;flex-wrap:wrap;'>
+            {% for feed in country_feeds %}
+                <li style='flex: 1 1 0px;'>
+                    <h4>{% location_flag feed.location %} {{feed.location.location}}</h4>
+                    {% text_to_clipboard text=feed.url %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
