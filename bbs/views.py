@@ -32,6 +32,7 @@ from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
     AddTagView,
     AjaxConfirmationView,
+    EditingView,
     EditTagsView,
     EditTextFilesView,
     RemoveTagView,
@@ -143,11 +144,9 @@ def show(request, bbs_id):
     )
 
 
-class CreateView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request):
-        return super().dispatch(request)
+class CreateView(EditingView):
+    template_name = "bbs/bbs_form.html"
+    title = "New BBS"
 
     def post(self, request):
         bbs = BBS()
@@ -164,25 +163,23 @@ class CreateView(View):
             messages.success(request, "BBS added")
             return redirect("bbs", bbs.id)
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request):
         self.form = BBSForm()
         self.alternative_name_formset = AlternativeNameFormSet()
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        return render(
-            request,
-            "bbs/bbs_form.html",
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
                 "alternative_name_formset": self.alternative_name_formset,
-                "title": "New BBS",
-                "html_title": "New BBS",
                 "action_url": reverse("new_bbs"),
-            },
+            }
         )
+        return context
 
 
 class EditView(View):
