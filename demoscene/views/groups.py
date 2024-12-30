@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
 from common.utils.pagination import PaginationControls
-from common.views import AjaxConfirmationView, EditingFormView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, EditingView, writeable_site_required
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page
@@ -122,43 +122,53 @@ class CreateGroupView(EditingFormView):
         self.form.log_creation(self.request.user)
 
 
-@writeable_site_required
-@login_required
-def add_member(request, group_id):
-    group = get_object_or_404(Releaser, is_group=True, id=group_id)
+class AddMemberView(EditingView):
+    def prepare(self, request, group_id):
+        self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
 
-    if not group.editable_by_user(request.user):
-        raise PermissionDenied
+        if not self.group.editable_by_user(request.user):
+            raise PermissionDenied
 
-    if request.method == "POST":
-        form = GroupMembershipForm(request.POST)
-        if form.is_valid():
-            member = form.cleaned_data["scener_nick"].commit().releaser
-            if not group.member_memberships.filter(member=member).count():
-                membership = Membership(member=member, group=group, is_current=form.cleaned_data["is_current"])
-                membership.save()
-                group.updated_at = datetime.datetime.now()
-                group.save()
-                description = "Added %s as a member of %s" % (member.name, group.name)
-                Edit.objects.create(
-                    action_type="add_membership", focus=member, focus2=group, description=description, user=request.user
+    def post(self, request, group_id):
+        self.form = GroupMembershipForm(request.POST)
+        if self.form.is_valid():
+            member = self.form.cleaned_data["scener_nick"].commit().releaser
+            if not self.group.member_memberships.filter(member=member).count():
+                membership = Membership(
+                    member=member, group=self.group, is_current=self.form.cleaned_data["is_current"]
                 )
-            return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
-    else:
-        form = GroupMembershipForm()
+                membership.save()
+                self.group.updated_at = datetime.datetime.now()
+                self.group.save()
+                description = "Added %s as a member of %s" % (member.name, self.group.name)
+                Edit.objects.create(
+                    action_type="add_membership",
+                    focus=member,
+                    focus2=self.group,
+                    description=description,
+                    user=request.user,
+                )
+            return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=members")
+        else:
+            return self.render_to_response()
 
-    title = f"New member for {group.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("group_add_member", args=[group.id]),
-            "submit_button_label": "Add member",
-        },
-    )
+    def get(self, request, group_id):
+        self.form = GroupMembershipForm()
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"New member for {self.group.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "form": self.form,
+                "action_url": reverse("group_add_member", args=[self.group.id]),
+                "submit_button_label": "Add member",
+            },
+        )
+        return context
 
 
 @writeable_site_required
