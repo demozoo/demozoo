@@ -491,12 +491,9 @@ class RemoveOperatorView(AjaxConfirmationView):
         self.bbs.save(update_fields=["updated_at"])
 
 
-class AddAffiliationView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, bbs_id):
+class AddAffiliationView(EditingView):
+    def prepare(self, request, bbs_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
-        return super().dispatch(request, bbs_id)
 
     def post(self, request, bbs_id):
         self.form = AffiliationForm(request.POST)
@@ -519,25 +516,25 @@ class AddAffiliationView(View):
             self.bbs.save(update_fields=["updated_at"])
             return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=affiliations")
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id):
         self.form = AffiliationForm()
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Add group affiliation for {self.bbs.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get_title(self):
+        return f"Add group affiliation for {self.bbs.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("bbs_add_affiliation", args=[self.bbs.id]),
                 "submit_button_label": "Add group",
-            },
+            }
         )
+        return context
 
 
 class EditAffiliationView(View):
