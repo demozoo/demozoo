@@ -108,6 +108,19 @@ class TestAddMember(TestCase):
         self.assertRedirects(response, "/groups/%d/?editing=members" % self.hooy_program.id)
         self.assertEqual(1, Membership.objects.filter(member=self.laesq, group=self.hooy_program).count())
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/groups/%d/add_member/" % self.hooy_program.id,
+            {
+                "scener_nick_search": "",
+                "scener_nick_match_id": "",
+                "scener_nick_match_name": "",
+                "is_current": "on",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
 
 class TestRemoveMember(TestCase):
     fixtures = ["tests/gasman.json"]
@@ -209,6 +222,19 @@ class TestEditMembership(TestCase):
         edit = Edit.for_model(self.hooy_program, True).first()
         self.assertIn("changed member to LaesQ", edit.description)
 
+    def test_post_invalid(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.post(
+            "/groups/%d/edit_membership/%d/" % (self.hooy_program.id, membership.id),
+            {
+                "scener_nick_search": "",
+                "scener_nick_match_id": "",
+                "scener_nick_match_name": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
     def test_post_make_current_member(self):
         membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
         membership.is_current = False
@@ -273,6 +299,19 @@ class TestAddSubgroup(TestCase):
         )
         self.assertRedirects(response, "/groups/%d/?editing=subgroups" % self.hooy_program.id)
         self.assertEqual(1, Membership.objects.filter(member=self.papaya_dezign, group=self.hooy_program).count())
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/groups/%d/add_subgroup/" % self.hooy_program.id,
+            {
+                "subgroup_nick_search": "",
+                "subgroup_nick_match_id": "",
+                "subgroup_nick_match_name": "",
+                "is_current": "on",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestRemoveSubgroup(TestCase):
@@ -376,6 +415,21 @@ class TestEditSubgroup(TestCase):
         self.assertTrue(Membership.objects.get(member=self.limp_ninja, group=self.raww_arse).is_current)
         edit = Edit.for_model(self.raww_arse, True).first()
         self.assertIn("changed subgroup to Limp Ninja", edit.description)
+
+    def test_post_invalid(self):
+        membership = Membership.objects.get(member=self.papaya_dezign, group=self.raww_arse)
+
+        response = self.client.post(
+            "/groups/%d/edit_subgroup/%d/" % (self.raww_arse.id, membership.id),
+            {
+                "subgroup_nick_search": "",
+                "subgroup_nick_match_id": "",
+                "subgroup_nick_match_name": "",
+                "is_current": "is_current",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestConvertToScener(TestCase):

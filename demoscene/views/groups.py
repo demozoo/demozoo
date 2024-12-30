@@ -177,153 +177,167 @@ class RemoveMemberView(View):
     @method_decorator(writeable_site_required)
     @method_decorator(login_required)
     def dispatch(self, request, group_id, scener_id):
-        group = get_object_or_404(Releaser, is_group=True, id=group_id)
-        scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+        self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
+        self.scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 
-        if not group.editable_by_user(request.user):
+        if not self.group.editable_by_user(request.user):
             raise PermissionDenied
 
-        if request.method == "POST":
-            deletion_type = request.POST.get("deletion_type")
-            if deletion_type == "ex_member":
-                # set membership to is_current=False - do not delete
-                group.member_memberships.filter(member=scener).update(is_current=False)
-                group.updated_at = datetime.datetime.now()
-                group.save()
-                Edit.objects.create(
-                    action_type="edit_membership",
-                    focus=scener,
-                    focus2=group,
-                    description="Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
-                    user=request.user,
-                )
-                return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
-            elif deletion_type == "full":
-                group.member_memberships.filter(member=scener).delete()
-                group.updated_at = datetime.datetime.now()
-                group.save()
-                description = "Removed %s as a member of %s" % (scener.name, group.name)
-                Edit.objects.create(
-                    action_type="remove_membership",
-                    focus=scener,
-                    focus2=group,
-                    description=description,
-                    user=request.user,
-                )
-                return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
-            else:
-                show_error_message = True
+        return super().dispatch(request, group_id, scener_id)
 
+    def post(self, request, group_id, scener_id):
+        deletion_type = request.POST.get("deletion_type")
+        if deletion_type == "ex_member":
+            # set membership to is_current=False - do not delete
+            self.group.member_memberships.filter(member=self.scener).update(is_current=False)
+            self.group.updated_at = datetime.datetime.now()
+            self.group.save()
+            Edit.objects.create(
+                action_type="edit_membership",
+                focus=self.scener,
+                focus2=self.group,
+                description="Updated %s's membership of %s: set as ex-member" % (self.scener.name, self.group.name),
+                user=request.user,
+            )
+            return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=members")
+        elif deletion_type == "full":
+            self.group.member_memberships.filter(member=self.scener).delete()
+            self.group.updated_at = datetime.datetime.now()
+            self.group.save()
+            description = "Removed %s as a member of %s" % (self.scener.name, self.group.name)
+            Edit.objects.create(
+                action_type="remove_membership",
+                focus=self.scener,
+                focus2=self.group,
+                description=description,
+                user=request.user,
+            )
+            return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=members")
         else:
-            show_error_message = False
+            self.show_error_message = True
+            return self.render_to_response(request)
 
+    def get(self, request, group_id, scener_id):
+        self.show_error_message = False
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
         return render(
             request,
             "groups/remove_member.html",
             {
-                "group": group,
-                "scener": scener,
-                "show_error_message": show_error_message,
+                "group": self.group,
+                "scener": self.scener,
+                "show_error_message": self.show_error_message,
             },
         )
 
 
-class EditMembershipView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, group_id, membership_id):
-        group = get_object_or_404(Releaser, is_group=True, id=group_id)
-        membership = get_object_or_404(Membership, group=group, id=membership_id)
+class EditMembershipView(EditingView):
+    def prepare(self, request, group_id, membership_id):
+        self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
+        self.membership = get_object_or_404(Membership, group=self.group, id=membership_id)
 
-        if not group.editable_by_user(request.user):
+        if not self.group.editable_by_user(request.user):
             raise PermissionDenied
 
+    def post(self, request, group_id, membership_id):
         if request.method == "POST":
-            form = GroupMembershipForm(
+            self.form = GroupMembershipForm(
                 request.POST,
                 initial={
-                    "scener_nick": membership.member.primary_nick,
-                    "is_current": membership.is_current,
+                    "scener_nick": self.membership.member.primary_nick,
+                    "is_current": self.membership.is_current,
                 },
             )
-            if form.is_valid():
-                member = form.cleaned_data["scener_nick"].commit().releaser
+            if self.form.is_valid():
+                member = self.form.cleaned_data["scener_nick"].commit().releaser
                 # skip saving if the value of the member (scener) field duplicates an existing one on this group
-                if not group.member_memberships.exclude(id=membership_id).filter(member=member).count():
-                    membership.member = member
-                    membership.is_current = form.cleaned_data["is_current"]
-                    membership.save()
-                    group.updated_at = datetime.datetime.now()
-                    group.save()
-                    form.log_edit(request.user, member, group)
+                if not self.group.member_memberships.exclude(id=self.membership.id).filter(member=member).count():
+                    self.membership.member = member
+                    self.membership.is_current = self.form.cleaned_data["is_current"]
+                    self.membership.save()
+                    self.group.updated_at = datetime.datetime.now()
+                    self.group.save()
+                    self.form.log_edit(request.user, member, self.group)
 
-                return HttpResponseRedirect(group.get_absolute_url() + "?editing=members")
-        else:
-            form = GroupMembershipForm(
-                initial={
-                    "scener_nick": membership.member.primary_nick,
-                    "is_current": membership.is_current,
-                }
-            )
+                return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=members")
+            else:
+                return self.render_to_response()
 
-        title = f"Editing {membership.member.name}'s membership of {group.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get(self, request, group_id, membership_id):
+        self.form = GroupMembershipForm(
+            initial={
+                "scener_nick": self.membership.member.primary_nick,
+                "is_current": self.membership.is_current,
+            }
+        )
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing {self.membership.member.name}'s membership of {self.group.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("group_edit_membership", args=[group.id, membership.id]),
+                "form": self.form,
+                "action_url": reverse("group_edit_membership", args=[self.group.id, self.membership.id]),
                 "submit_button_label": "Update membership",
-                "delete_url": reverse("group_remove_member", args=[group.id, membership.member.id]),
+                "delete_url": reverse("group_remove_member", args=[self.group.id, self.membership.member.id]),
                 "delete_link_text": "Remove from group",
             },
         )
+        return context
 
 
-class AddSubgroupView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, group_id):
-        group = get_object_or_404(Releaser, is_group=True, id=group_id)
+class AddSubgroupView(EditingView):
+    def prepare(self, request, group_id):
+        self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
 
-        if not group.editable_by_user(request.user):
+        if not self.group.editable_by_user(request.user):
             raise PermissionDenied
 
-        if request.method == "POST":
-            form = GroupSubgroupForm(request.POST)
-            if form.is_valid():
-                member = form.cleaned_data["subgroup_nick"].commit().releaser
-                if not group.member_memberships.filter(member=member).count():
-                    membership = Membership(member=member, group=group, is_current=form.cleaned_data["is_current"])
-                    membership.save()
-                    group.updated_at = datetime.datetime.now()
-                    group.save()
-                    description = "Added %s as a subgroup of %s" % (member.name, group.name)
-                    Edit.objects.create(
-                        action_type="add_subgroup",
-                        focus=member,
-                        focus2=group,
-                        description=description,
-                        user=request.user,
-                    )
-                return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
+    def post(self, request, group_id):
+        self.form = GroupSubgroupForm(request.POST)
+        if self.form.is_valid():
+            member = self.form.cleaned_data["subgroup_nick"].commit().releaser
+            if not self.group.member_memberships.filter(member=member).count():
+                membership = Membership(
+                    member=member, group=self.group, is_current=self.form.cleaned_data["is_current"]
+                )
+                membership.save()
+                self.group.updated_at = datetime.datetime.now()
+                self.group.save()
+                description = "Added %s as a subgroup of %s" % (member.name, self.group.name)
+                Edit.objects.create(
+                    action_type="add_subgroup",
+                    focus=member,
+                    focus2=self.group,
+                    description=description,
+                    user=request.user,
+                )
+            return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=subgroups")
         else:
-            form = GroupSubgroupForm()
+            return self.render_to_response()
 
-        title = f"New subgroup for {group.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get(self, request, group_id):
+        self.form = GroupSubgroupForm()
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"New subgroup for {self.group.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("group_add_subgroup", args=[group.id]),
+                "form": self.form,
+                "action_url": reverse("group_add_subgroup", args=[self.group.id]),
                 "submit_button_label": "Add subgroup",
             },
         )
+        return context
 
 
 class RemoveSubgroupView(AjaxConfirmationView):
@@ -360,56 +374,59 @@ class RemoveSubgroupView(AjaxConfirmationView):
         )
 
 
-class EditSubgroupView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, group_id, membership_id):
-        group = get_object_or_404(Releaser, is_group=True, id=group_id)
-        membership = get_object_or_404(Membership, group=group, id=membership_id)
+class EditSubgroupView(EditingView):
+    def prepare(self, request, group_id, membership_id):
+        self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
+        self.membership = get_object_or_404(Membership, group=self.group, id=membership_id)
 
-        if not group.editable_by_user(request.user):
+        if not self.group.editable_by_user(request.user):
             raise PermissionDenied
 
-        if request.method == "POST":
-            form = GroupSubgroupForm(
-                request.POST,
-                initial={
-                    "subgroup_nick": membership.member.primary_nick,
-                    "is_current": membership.is_current,
-                },
-            )
-            if form.is_valid():
-                member = form.cleaned_data["subgroup_nick"].commit().releaser
-                if not group.member_memberships.exclude(id=membership_id).filter(member=member).count():
-                    membership.member = member
-                    membership.is_current = form.cleaned_data["is_current"]
-                    membership.save()
-                    group.updated_at = datetime.datetime.now()
-                    group.save()
-                    form.log_edit(request.user, member, group)
-                return HttpResponseRedirect(group.get_absolute_url() + "?editing=subgroups")
+    def post(self, request, group_id, membership_id):
+        self.form = GroupSubgroupForm(
+            request.POST,
+            initial={
+                "subgroup_nick": self.membership.member.primary_nick,
+                "is_current": self.membership.is_current,
+            },
+        )
+        if self.form.is_valid():
+            member = self.form.cleaned_data["subgroup_nick"].commit().releaser
+            if not self.group.member_memberships.exclude(id=self.membership.id).filter(member=member).count():
+                self.membership.member = member
+                self.membership.is_current = self.form.cleaned_data["is_current"]
+                self.membership.save()
+                self.group.updated_at = datetime.datetime.now()
+                self.group.save()
+                self.form.log_edit(request.user, member, self.group)
+            return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=subgroups")
         else:
-            form = GroupSubgroupForm(
-                initial={
-                    "subgroup_nick": membership.member.primary_nick,
-                    "is_current": membership.is_current,
-                }
-            )
+            return self.render_to_response()
 
-        title = f"Editing {membership.member.name} as a subgroup of {group.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get(self, request, group_id, membership_id):
+        self.form = GroupSubgroupForm(
+            initial={
+                "subgroup_nick": self.membership.member.primary_nick,
+                "is_current": self.membership.is_current,
+            }
+        )
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing {self.membership.member.name} as a subgroup of {self.group.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("group_edit_subgroup", args=[group.id, membership.id]),
+                "form": self.form,
+                "action_url": reverse("group_edit_subgroup", args=[self.group.id, self.membership.id]),
                 "submit_button_label": "Update subgroup",
-                "delete_url": reverse("group_remove_subgroup", args=[group.id, membership.member.id]),
+                "delete_url": reverse("group_remove_subgroup", args=[self.group.id, self.membership.member.id]),
                 "delete_link_text": "Remove from group",
             },
         )
+        return context
 
 
 class ConvertToScenerView(AjaxConfirmationView):
