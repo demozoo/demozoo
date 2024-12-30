@@ -12,14 +12,19 @@ urlpatterns = [
     path("groups/<int:group_id>/history/", groups_views.history, {}, "group_history"),
     path("groups/new/", groups_views.CreateGroupView.as_view(), {}, "new_group"),
     path("groups/<int:group_id>/add_member/", groups_views.AddMemberView.as_view(), {}, "group_add_member"),
-    path("groups/<int:group_id>/remove_member/<int:scener_id>/", groups_views.remove_member, {}, "group_remove_member"),
+    path(
+        "groups/<int:group_id>/remove_member/<int:scener_id>/",
+        groups_views.RemoveMemberView.as_view(),
+        {},
+        "group_remove_member",
+    ),
     path(
         "groups/<int:group_id>/edit_membership/<int:membership_id>/",
-        groups_views.edit_membership,
+        groups_views.EditMembershipView.as_view(),
         {},
         "group_edit_membership",
     ),
-    path("groups/<int:group_id>/add_subgroup/", groups_views.add_subgroup, {}, "group_add_subgroup"),
+    path("groups/<int:group_id>/add_subgroup/", groups_views.AddSubgroupView.as_view(), {}, "group_add_subgroup"),
     path(
         "groups/<int:group_id>/remove_subgroup/<int:subgroup_id>/",
         groups_views.RemoveSubgroupView.as_view(),
@@ -28,7 +33,7 @@ urlpatterns = [
     ),
     path(
         "groups/<int:group_id>/edit_subgroup/<int:membership_id>/",
-        groups_views.edit_subgroup,
+        groups_views.EditSubgroupView.as_view(),
         {},
         "group_edit_subgroup",
     ),
