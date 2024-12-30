@@ -503,42 +503,53 @@ class RemoveOperatorView(AjaxConfirmationView):
         self.bbs.save(update_fields=["updated_at"])
 
 
-@writeable_site_required
-@login_required
-def add_affiliation(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
+class AddAffiliationView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        return super().dispatch(request, bbs_id)
 
-    if request.method == "POST":
-        form = AffiliationForm(request.POST)
-        if form.is_valid():
-            group = form.cleaned_data["group_nick"].commit().releaser
-            affiliation = Affiliation(group=group, bbs=bbs, role=form.cleaned_data["role"])
+    def post(self, request, bbs_id):
+        self.form = AffiliationForm(request.POST)
+        if self.form.is_valid():
+            group = self.form.cleaned_data["group_nick"].commit().releaser
+            affiliation = Affiliation(group=group, bbs=self.bbs, role=self.form.cleaned_data["role"])
             affiliation.save()
             if affiliation.role:
-                description = "Added BBS %s as %s for %s" % (bbs.name, affiliation.get_role_display(), group.name)
+                description = "Added BBS %s as %s for %s" % (self.bbs.name, affiliation.get_role_display(), group.name)
             else:
-                description = "Added affiliation with BBS %s for %s" % (bbs.name, group.name)
+                description = "Added affiliation with BBS %s for %s" % (self.bbs.name, group.name)
             Edit.objects.create(
-                action_type="add_bbs_affiliation", focus=group, focus2=bbs, description=description, user=request.user
+                action_type="add_bbs_affiliation",
+                focus=group,
+                focus2=self.bbs,
+                description=description,
+                user=request.user,
             )
-            bbs.updated_at = datetime.datetime.now()
-            bbs.save(update_fields=["updated_at"])
-            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
-    else:
-        form = AffiliationForm()
+            self.bbs.updated_at = datetime.datetime.now()
+            self.bbs.save(update_fields=["updated_at"])
+            return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=affiliations")
+        else:
+            return self.render_to_response(request)
 
-    title = f"Add group affiliation for {bbs.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_add_affiliation", args=[bbs.id]),
-            "submit_button_label": "Add group",
-        },
-    )
+    def get(self, request, bbs_id):
+        self.form = AffiliationForm()
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Add group affiliation for {self.bbs.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": self.form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_add_affiliation", args=[self.bbs.id]),
+                "submit_button_label": "Add group",
+            },
+        )
 
 
 @writeable_site_required
