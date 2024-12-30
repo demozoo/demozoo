@@ -4,7 +4,6 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
@@ -182,17 +181,17 @@ class CreateView(EditingView):
         return context
 
 
-class EditView(View):
-    @method_decorator(writeable_site_required)
-    def dispatch(self, request, bbs_id):
-        if not request.user.is_authenticated:
-            # Instead of redirecting back to this edit form after login, redirect to the BBS page.
-            # This is because the edit button pointing here is the only one a non-logged-in user sees,
-            # so they may intend to edit something else on the BBS page.
-            return redirect_to_login(reverse("bbs", args=[bbs_id]))
+class EditView(EditingView):
+    template_name = "bbs/bbs_form.html"
 
+    def get_login_return_url(self):
+        # Instead of redirecting back to this edit form after login, redirect to the BBS page.
+        # This is because the edit button pointing here is the only one a non-logged-in user sees,
+        # so they may intend to edit something else on the BBS page.
+        return reverse("bbs", args=[self.kwargs["bbs_id"]])
+
+    def prepare(self, request, bbs_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
-        return super().dispatch(request, bbs_id)
 
     def post(self, request, bbs_id):
         self.form = BBSForm(request.POST, instance=self.bbs)
@@ -222,28 +221,28 @@ class EditView(View):
             messages.success(request, "BBS updated")
             return redirect("bbs", self.bbs.id)
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id):
         self.form = BBSForm(instance=self.bbs)
         self.alternative_name_formset = AlternativeNameFormSet(
             instance=self.bbs, queryset=self.bbs.alternative_names.all()
         )
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = "Editing BBS: %s" % self.bbs.name
-        return render(
-            request,
-            "bbs/bbs_form.html",
+    def get_title(self):
+        return "Editing BBS: %s" % self.bbs.name
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "html_title": title,
-                "title": title,
                 "form": self.form,
                 "alternative_name_formset": self.alternative_name_formset,
                 "action_url": reverse("edit_bbs", args=[self.bbs.id]),
-            },
+            }
         )
+        return context
 
 
 class EditNotesView(UpdateFormView):
