@@ -9,8 +9,6 @@ from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
 from taggit.models import Tag
 
 from bbs.forms import (
@@ -36,7 +34,6 @@ from common.views import (
     EditTextFilesView,
     RemoveTagView,
     UpdateFormView,
-    writeable_site_required,
 )
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
@@ -683,12 +680,11 @@ class BBSRemoveTagView(RemoveTagView):
     template_name = "bbs/includes/tags_list.html"
 
 
-class EditExternalLinksView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, bbs_id):
+class EditExternalLinksView(EditingView):
+    template_name = "generic/edit_external_links.html"
+
+    def prepare(self, request, bbs_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
-        return super().dispatch(request, bbs_id)
 
     def post(self, request, bbs_id):
         self.formset = BBSExternalLinkFormSet(request.POST, instance=self.bbs)
@@ -698,21 +694,21 @@ class EditExternalLinksView(View):
 
             return HttpResponseRedirect(self.bbs.get_absolute_url())
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id):
         self.formset = BBSExternalLinkFormSet(instance=self.bbs)
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing external links for {self.bbs.name}"
-        return render(
-            request,
-            "generic/edit_external_links.html",
+    def get_title(self):
+        return f"Editing external links for {self.bbs.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "formset": self.formset,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("bbs_edit_external_links", args=[self.bbs.id]),
             },
         )
+        return context
