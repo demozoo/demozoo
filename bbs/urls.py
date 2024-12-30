@@ -19,7 +19,12 @@ urlpatterns = [
         "<int:bbs_id>/remove_operator/<int:operator_id>/", views.RemoveOperatorView.as_view(), {}, "bbs_remove_operator"
     ),
     path("<int:bbs_id>/add_affiliation/", views.AddAffiliationView.as_view(), {}, "bbs_add_affiliation"),
-    path("<int:bbs_id>/edit_affiliation/<int:affiliation_id>/", views.edit_affiliation, {}, "bbs_edit_affiliation"),
+    path(
+        "<int:bbs_id>/edit_affiliation/<int:affiliation_id>/",
+        views.EditAffiliationView.as_view(),
+        {},
+        "bbs_edit_affiliation",
+    ),
     path(
         "<int:bbs_id>/remove_affiliation/<int:affiliation_id>/",
         views.RemoveAffiliationView.as_view(),
