@@ -7,6 +7,8 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
 
 from common.utils.pagination import PaginationControls
 from common.views import AjaxConfirmationView, EditingFormView, UpdateFormView, writeable_site_required
@@ -141,148 +143,159 @@ class CreateScenerView(EditingFormView):
         self.form.log_creation(self.request.user)
 
 
-@writeable_site_required
-@login_required
-def add_group(request, scener_id):
-    scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+class AddGroupView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, scener_id):
+        scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 
-    if not scener.editable_by_user(request.user):
-        raise PermissionDenied
+        if not scener.editable_by_user(request.user):
+            raise PermissionDenied
 
-    if request.method == "POST":
-        form = ScenerMembershipForm(request.POST)
-        if form.is_valid():
-            group = form.cleaned_data["group_nick"].commit().releaser
-            if not scener.group_memberships.filter(group=group).count():
-                membership = Membership(
-                    member=scener,
-                    group=form.cleaned_data["group_nick"].commit().releaser,
-                    is_current=form.cleaned_data["is_current"],
-                )
-                membership.save()
-                scener.updated_at = datetime.datetime.now()
-                scener.save()
-                description = "Added %s as a member of %s" % (scener.name, group.name)
-                Edit.objects.create(
-                    action_type="add_membership", focus=scener, focus2=group, description=description, user=request.user
-                )
-            return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
-    else:
-        form = ScenerMembershipForm()
-
-    title = f"New group for {scener.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("scener_add_group", args=[scener.id]),
-            "submit_button_label": "Add",
-        },
-    )
-
-
-@writeable_site_required
-@login_required
-def remove_group(request, scener_id, group_id):
-    scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-    group = get_object_or_404(Releaser, is_group=True, id=group_id)
-
-    if not scener.editable_by_user(request.user):
-        raise PermissionDenied
-
-    if request.method == "POST":
-        deletion_type = request.POST.get("deletion_type")
-        if deletion_type == "ex_member":
-            # set membership to is_current=False - do not delete
-            scener.group_memberships.filter(group=group).update(is_current=False)
-            scener.updated_at = datetime.datetime.now()
-            scener.save()
-            Edit.objects.create(
-                action_type="edit_membership",
-                focus=scener,
-                focus2=group,
-                description="Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
-                user=request.user,
-            )
-            return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
-        elif deletion_type == "full":
-            scener.group_memberships.filter(group=group).delete()
-            scener.updated_at = datetime.datetime.now()
-            scener.save()
-            description = "Removed %s as a member of %s" % (scener.name, group.name)
-            Edit.objects.create(
-                action_type="remove_membership", focus=scener, focus2=group, description=description, user=request.user
-            )
-            return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
+        if request.method == "POST":
+            form = ScenerMembershipForm(request.POST)
+            if form.is_valid():
+                group = form.cleaned_data["group_nick"].commit().releaser
+                if not scener.group_memberships.filter(group=group).count():
+                    membership = Membership(
+                        member=scener,
+                        group=form.cleaned_data["group_nick"].commit().releaser,
+                        is_current=form.cleaned_data["is_current"],
+                    )
+                    membership.save()
+                    scener.updated_at = datetime.datetime.now()
+                    scener.save()
+                    description = "Added %s as a member of %s" % (scener.name, group.name)
+                    Edit.objects.create(
+                        action_type="add_membership",
+                        focus=scener,
+                        focus2=group,
+                        description=description,
+                        user=request.user,
+                    )
+                return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
         else:
-            show_error_message = True
+            form = ScenerMembershipForm()
 
-    else:
-        show_error_message = False
-
-    return render(
-        request,
-        "sceners/remove_group.html",
-        {
-            "scener": scener,
-            "group": group,
-            "show_error_message": show_error_message,
-        },
-    )
-
-
-@writeable_site_required
-@login_required
-def edit_membership(request, scener_id, membership_id):
-    scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
-    membership = get_object_or_404(Membership, member=scener, id=membership_id)
-
-    if not scener.editable_by_user(request.user):
-        raise PermissionDenied
-
-    if request.method == "POST":
-        form = ScenerMembershipForm(
-            request.POST,
-            initial={
-                "group_nick": membership.group.primary_nick,
-                "is_current": membership.is_current,
+        title = f"New group for {scener.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("scener_add_group", args=[scener.id]),
+                "submit_button_label": "Add",
             },
         )
-        if form.is_valid():
-            group = form.cleaned_data["group_nick"].commit().releaser
-            if not scener.group_memberships.exclude(id=membership_id).filter(group=group).count():
-                membership.group = group
-                membership.is_current = form.cleaned_data["is_current"]
-                membership.save()
+
+
+class RemoveGroupView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, scener_id, group_id):
+        scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+        group = get_object_or_404(Releaser, is_group=True, id=group_id)
+
+        if not scener.editable_by_user(request.user):
+            raise PermissionDenied
+
+        if request.method == "POST":
+            deletion_type = request.POST.get("deletion_type")
+            if deletion_type == "ex_member":
+                # set membership to is_current=False - do not delete
+                scener.group_memberships.filter(group=group).update(is_current=False)
                 scener.updated_at = datetime.datetime.now()
                 scener.save()
-                form.log_edit(request.user, scener, group)
-            return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
-    else:
-        form = ScenerMembershipForm(
-            initial={
-                "group_nick": membership.group.primary_nick,
-                "is_current": membership.is_current,
-            }
+                Edit.objects.create(
+                    action_type="edit_membership",
+                    focus=scener,
+                    focus2=group,
+                    description="Updated %s's membership of %s: set as ex-member" % (scener.name, group.name),
+                    user=request.user,
+                )
+                return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
+            elif deletion_type == "full":
+                scener.group_memberships.filter(group=group).delete()
+                scener.updated_at = datetime.datetime.now()
+                scener.save()
+                description = "Removed %s as a member of %s" % (scener.name, group.name)
+                Edit.objects.create(
+                    action_type="remove_membership",
+                    focus=scener,
+                    focus2=group,
+                    description=description,
+                    user=request.user,
+                )
+                return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
+            else:
+                show_error_message = True
+
+        else:
+            show_error_message = False
+
+        return render(
+            request,
+            "sceners/remove_group.html",
+            {
+                "scener": scener,
+                "group": group,
+                "show_error_message": show_error_message,
+            },
         )
 
-    title = f"Editing {scener.name}'s membership of {membership.group.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("scener_edit_membership", args=[scener.id, membership.id]),
-            "submit_button_label": "Update membership",
-            "delete_url": reverse("scener_remove_group", args=[scener.id, membership.group.id]),
-            "delete_link_text": "Remove from group",
-        },
-    )
+
+class EditMembershipView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, scener_id, membership_id):
+        scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
+        membership = get_object_or_404(Membership, member=scener, id=membership_id)
+
+        if not scener.editable_by_user(request.user):
+            raise PermissionDenied
+
+        if request.method == "POST":
+            form = ScenerMembershipForm(
+                request.POST,
+                initial={
+                    "group_nick": membership.group.primary_nick,
+                    "is_current": membership.is_current,
+                },
+            )
+            if form.is_valid():
+                group = form.cleaned_data["group_nick"].commit().releaser
+                if not scener.group_memberships.exclude(id=membership_id).filter(group=group).count():
+                    membership.group = group
+                    membership.is_current = form.cleaned_data["is_current"]
+                    membership.save()
+                    scener.updated_at = datetime.datetime.now()
+                    scener.save()
+                    form.log_edit(request.user, scener, group)
+                return HttpResponseRedirect(scener.get_absolute_url() + "?editing=groups")
+        else:
+            form = ScenerMembershipForm(
+                initial={
+                    "group_nick": membership.group.primary_nick,
+                    "is_current": membership.is_current,
+                }
+            )
+
+        title = f"Editing {scener.name}'s membership of {membership.group.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("scener_edit_membership", args=[scener.id, membership.id]),
+                "submit_button_label": "Update membership",
+                "delete_url": reverse("scener_remove_group", args=[scener.id, membership.group.id]),
+                "delete_link_text": "Remove from group",
+            },
+        )
 
 
 class ConvertToGroupView(AjaxConfirmationView):
