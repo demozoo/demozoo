@@ -36,5 +36,5 @@ urlpatterns = [
     path("<int:bbs_id>/edit_tags/", views.BBSEditTagsView.as_view(), {}, "bbs_edit_tags"),
     path("<int:bbs_id>/add_tag/", views.BBSAddTagView.as_view(), {}, "bbs_add_tag"),
     path("<int:bbs_id>/remove_tag/", views.BBSRemoveTagView.as_view(), {}, "bbs_remove_tag"),
-    path("<int:bbs_id>/edit_external_links/", views.edit_external_links, {}, "bbs_edit_external_links"),
+    path("<int:bbs_id>/edit_external_links/", views.EditExternalLinksView.as_view(), {}, "bbs_edit_external_links"),
 ]

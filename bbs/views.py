@@ -701,29 +701,36 @@ class BBSRemoveTagView(RemoveTagView):
     template_name = "bbs/includes/tags_list.html"
 
 
-@writeable_site_required
-@login_required
-def edit_external_links(request, bbs_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
+class EditExternalLinksView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        return super().dispatch(request, bbs_id)
 
-    if request.method == "POST":
-        formset = BBSExternalLinkFormSet(request.POST, instance=bbs)
-        if formset.is_valid():
-            formset.save_ignoring_uniqueness()
-            formset.log_edit(request.user, "bbs_edit_external_links")
+    def post(self, request, bbs_id):
+        self.formset = BBSExternalLinkFormSet(request.POST, instance=self.bbs)
+        if self.formset.is_valid():
+            self.formset.save_ignoring_uniqueness()
+            self.formset.log_edit(request.user, "bbs_edit_external_links")
 
-            return HttpResponseRedirect(bbs.get_absolute_url())
-    else:
-        formset = BBSExternalLinkFormSet(instance=bbs)
+            return HttpResponseRedirect(self.bbs.get_absolute_url())
+        else:
+            return self.render_to_response(request)
 
-    title = f"Editing external links for {bbs.name}"
-    return render(
-        request,
-        "generic/edit_external_links.html",
-        {
-            "formset": formset,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_edit_external_links", args=[bbs.id]),
-        },
-    )
+    def get(self, request, bbs_id):
+        self.formset = BBSExternalLinkFormSet(instance=self.bbs)
+        return self.render_to_response(request)
+
+    def render_to_response(self, request):
+        title = f"Editing external links for {self.bbs.name}"
+        return render(
+            request,
+            "generic/edit_external_links.html",
+            {
+                "formset": self.formset,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_edit_external_links", args=[self.bbs.id]),
+            },
+        )
