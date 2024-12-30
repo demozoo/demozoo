@@ -5,7 +5,6 @@ import re
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
@@ -19,7 +18,7 @@ from django.views import View
 from comments.forms import CommentForm
 from comments.models import Comment
 from common.utils.ajax import request_is_ajax
-from common.views import AjaxConfirmationView, UpdateFormView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingView, UpdateFormView, writeable_site_required
 from demoscene.models import Edit
 from parties.forms import (
     CompetitionForm,
@@ -182,88 +181,101 @@ def series_history(request, party_series_id):
     )
 
 
-class CreateView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request):
-        if request.method == "POST":
-            party = Party()
-            form = PartyForm(request.POST, instance=party)
-            if form.is_valid():
-                form.save()
-                form.log_creation(request.user)
+class CreateView(EditingView):
+    title = "New party"
+    template_name = "parties/create.html"
 
-                if request_is_ajax(request):
-                    return HttpResponse("OK: %s" % party.get_absolute_url(), content_type="text/plain")
-                else:
-                    messages.success(request, "Party added")
-                    return redirect("party", party.id)
+    def post(self, request):
+        party = Party()
+        self.form = PartyForm(request.POST, instance=party)
+        if self.form.is_valid():
+            self.form.save()
+            self.form.log_creation(request.user)
+
+            if request_is_ajax(request):
+                return HttpResponse("OK: %s" % party.get_absolute_url(), content_type="text/plain")
+            else:
+                messages.success(request, "Party added")
+                return redirect("party", party.id)
         else:
-            form = PartyForm(
-                initial={
-                    "name": request.GET.get("name"),
-                    "party_series_name": request.GET.get("party_series_name"),
-                    "scene_org_folder": request.GET.get("scene_org_folder"),
-                }
-            )
+            return self.render_to_response()
 
-        title = "New party"
-        return render(
-            request,
-            "parties/create.html",
+    def get(self, request):
+        self.form = PartyForm(
+            initial={
+                "name": request.GET.get("name"),
+                "party_series_name": request.GET.get("party_series_name"),
+                "scene_org_folder": request.GET.get("scene_org_folder"),
+            }
+        )
+        return self.render_to_response()
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "form": form,
+                "form": self.form,
                 "party_series_names": [ps.name for ps in PartySeries.objects.all()],
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("new_party"),
             },
         )
+        return context
 
 
-class EditView(View):
-    @method_decorator(writeable_site_required)
-    def dispatch(self, request, party_id):
-        if not request.user.is_authenticated:
-            # Instead of redirecting back to this edit form after login, redirect to the party page.
-            # This is because the edit button pointing here is the only one a non-logged-in user sees,
-            # so they may intend to edit something else on the party page.
-            return redirect_to_login(reverse("party", args=[party_id]))
+class EditView(EditingView):
+    template_name = "parties/edit.html"
 
-        party = get_object_or_404(Party, id=party_id)
-        if request.method == "POST":
-            form = EditPartyForm(
-                request.POST, instance=party, initial={"start_date": party.start_date, "end_date": party.end_date}
-            )
-            if form.is_valid():
-                party.start_date = form.cleaned_data["start_date"]
-                party.end_date = form.cleaned_data["end_date"]
-                form.save()
-                form.log_edit(request.user)
+    def get_login_return_url(self):
+        # Instead of redirecting back to this edit form after login, redirect to the party page.
+        # This is because the edit button pointing here is the only one a non-logged-in user sees,
+        # so they may intend to edit something else on the party page.
+        return reverse("party", args=[self.kwargs["party_id"]])
 
-                # if we now have a website entry but the PartySeries record doesn't, copy it over
-                if party.website and not party.party_series.website:
-                    party.party_series.website = party.website
-                    party.party_series.save()
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
 
-                messages.success(request, "Party updated")
-                return redirect("party", party.id)
+    def post(self, request, party_id):
+        self.form = EditPartyForm(
+            request.POST,
+            instance=self.party,
+            initial={"start_date": self.party.start_date, "end_date": self.party.end_date},
+        )
+        if self.form.is_valid():
+            self.party.start_date = self.form.cleaned_data["start_date"]
+            self.party.end_date = self.form.cleaned_data["end_date"]
+            self.form.save()
+            self.form.log_edit(request.user)
+
+            # if we now have a website entry but the PartySeries record doesn't, copy it over
+            if self.party.website and not self.party.party_series.website:
+                self.party.party_series.website = self.party.website
+                self.party.party_series.save()
+
+            messages.success(request, "Party updated")
+            return redirect("party", self.party.id)
         else:
-            form = EditPartyForm(instance=party, initial={"start_date": party.start_date, "end_date": party.end_date})
+            return self.render_to_response()
 
-        title = f"Editing party: {party.name}"
-        return render(
-            request,
-            "parties/edit.html",
+    def get(self, request, party_id):
+        self.form = EditPartyForm(
+            instance=self.party, initial={"start_date": self.party.start_date, "end_date": self.party.end_date}
+        )
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing party: {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "party": party,
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("edit_party", args=[party.id]),
+                "party": self.party,
+                "form": self.form,
+                "action_url": reverse("edit_party", args=[self.party.id]),
                 "submit_button_label": "Update party",
             },
         )
+        return context
 
 
 class EditNotesView(UpdateFormView):
@@ -280,81 +292,91 @@ class EditNotesView(UpdateFormView):
         return "Editing notes for %s" % self.object.name
 
 
-class EditExternalLinksView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id):
-        party = get_object_or_404(Party, id=party_id)
+class EditExternalLinksView(EditingView):
+    template_name = "generic/edit_external_links.html"
 
-        if request.method == "POST":
-            formset = PartyExternalLinkFormSet(request.POST, instance=party)
-            if formset.is_valid():
-                formset.save_ignoring_uniqueness()
-                formset.log_edit(request.user, "party_edit_external_links")
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
 
-                # see if there's anything useful we can extract for the PartySeries record
-                try:
-                    pouet_party_link = party.external_links.get(link_class="PouetParty")
-                    pouet_party_id = pouet_party_link.parameter.split("/")[0]
-                except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
-                    pass
-                else:
+    def post(self, request, party_id):
+        self.formset = PartyExternalLinkFormSet(request.POST, instance=self.party)
+        if self.formset.is_valid():
+            self.formset.save_ignoring_uniqueness()
+            self.formset.log_edit(request.user, "party_edit_external_links")
+
+            # see if there's anything useful we can extract for the PartySeries record
+            try:
+                pouet_party_link = self.party.external_links.get(link_class="PouetParty")
+                pouet_party_id = pouet_party_link.parameter.split("/")[0]
+            except (PartyExternalLink.DoesNotExist, PartyExternalLink.MultipleObjectsReturned):
+                pass
+            else:
+                PartySeriesExternalLink.objects.get_or_create(
+                    party_series=self.party.party_series, link_class="PouetPartySeries", parameter=pouet_party_id
+                )
+
+            # look for a Twitter username which *does not* end in a number -
+            # assume that ones with a number are year-specific
+            for link in self.party.external_links.filter(link_class="TwitterAccount"):
+                if not re.search(r"\d$", link.parameter):
                     PartySeriesExternalLink.objects.get_or_create(
-                        party_series=party.party_series, link_class="PouetPartySeries", parameter=pouet_party_id
+                        party_series=self.party.party_series, link_class="TwitterAccount", parameter=link.parameter
                     )
 
-                # look for a Twitter username which *does not* end in a number -
-                # assume that ones with a number are year-specific
-                for link in party.external_links.filter(link_class="TwitterAccount"):
-                    if not re.search(r"\d$", link.parameter):
-                        PartySeriesExternalLink.objects.get_or_create(
-                            party_series=party.party_series, link_class="TwitterAccount", parameter=link.parameter
-                        )
-
-                return HttpResponseRedirect(party.get_absolute_url())
+            return HttpResponseRedirect(self.party.get_absolute_url())
         else:
-            formset = PartyExternalLinkFormSet(instance=party)
+            return self.render_to_response()
 
-        title = f"Editing external links for {party.name}"
-        return render(
-            request,
-            "generic/edit_external_links.html",
+    def get(self, request, party_id):
+        self.formset = PartyExternalLinkFormSet(instance=self.party)
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing external links for {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "formset": formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_edit_external_links", args=[party.id]),
+                "formset": self.formset,
+                "action_url": reverse("party_edit_external_links", args=[self.party.id]),
             },
         )
+        return context
 
 
-class EditSeriesExternalLinksView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_series_id):
-        party_series = get_object_or_404(PartySeries, id=party_series_id)
+class EditSeriesExternalLinksView(EditingView):
+    template_name = "generic/edit_external_links.html"
 
-        if request.method == "POST":
-            formset = PartySeriesExternalLinkFormSet(request.POST, instance=party_series)
-            if formset.is_valid():
-                formset.save_ignoring_uniqueness()
-                formset.log_edit(request.user, "party_series_edit_external_links")
+    def prepare(self, request, party_series_id):
+        self.party_series = get_object_or_404(PartySeries, id=party_series_id)
 
-                return HttpResponseRedirect(party_series.get_absolute_url())
+    def post(self, request, party_series_id):
+        self.formset = PartySeriesExternalLinkFormSet(request.POST, instance=self.party_series)
+        if self.formset.is_valid():
+            self.formset.save_ignoring_uniqueness()
+            self.formset.log_edit(request.user, "party_series_edit_external_links")
+
+            return HttpResponseRedirect(self.party_series.get_absolute_url())
         else:
-            formset = PartySeriesExternalLinkFormSet(instance=party_series)
+            return self.render_to_response()
 
-        title = f"Editing external links for {party_series.name}"
-        return render(
-            request,
-            "generic/edit_external_links.html",
+    def get(self, request, party_series_id):
+        self.formset = PartySeriesExternalLinkFormSet(instance=self.party_series)
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing external links for {self.party_series.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "formset": formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_edit_series_external_links", args=[party_series.id]),
+                "formset": self.formset,
+                "action_url": reverse("party_edit_series_external_links", args=[self.party_series.id]),
             },
         )
+        return context
 
 
 class EditSeriesNotesView(UpdateFormView):
@@ -388,43 +410,47 @@ class EditSeriesView(UpdateFormView):
         return reverse("party_series", args=[self.kwargs["party_series_id"]])
 
 
-class AddCompetitionView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id):
-        party = get_object_or_404(Party, id=party_id)
-        competition = Competition(party=party)
-        if request.method == "POST":
-            form = CompetitionForm(request.POST, instance=competition)
-            if form.is_valid():
-                competition.shown_date = form.cleaned_data["shown_date"]
-                form.save()
-                form.log_creation(request.user)
-                # TODO: party updated_at datestamps
-                # party.updated_at = datetime.datetime.now()
-                # party.save()
+class AddCompetitionView(EditingView):
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
+        self.competition = Competition(party=self.party)
 
-                return redirect("competition_edit", competition.id)
+    def post(self, request, party_id):
+        self.form = CompetitionForm(request.POST, instance=self.competition)
+        if self.form.is_valid():
+            self.competition.shown_date = self.form.cleaned_data["shown_date"]
+            self.form.save()
+            self.form.log_creation(request.user)
+            # TODO: party updated_at datestamps
+            # self.party.updated_at = datetime.datetime.now()
+            # self.party.save()
+
+            return redirect("competition_edit", self.competition.id)
         else:
-            form = CompetitionForm(
-                instance=competition,
-                initial={
-                    "shown_date": party.default_competition_date(),
-                },
-            )
+            return self.render_to_response()
 
-        title = f"New competition for {party.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get(self, request, party_id):
+        self.form = CompetitionForm(
+            instance=self.competition,
+            initial={
+                "shown_date": self.party.default_competition_date(),
+            },
+        )
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"New competition for {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_add_competition", args=[party.id]),
+                "form": self.form,
+                "action_url": reverse("party_add_competition", args=[self.party.id]),
                 "submit_button_label": "Create",
             },
         )
+        return context
 
 
 def results_file(request, party_id, file_id):
@@ -461,96 +487,106 @@ def autocomplete(request):
     return HttpResponse(json.dumps(party_data), content_type="text/javascript")
 
 
-class EditInvitationsView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id):
-        party = get_object_or_404(Party, id=party_id)
-        initial_forms = [{"production": production} for production in party.invitations.all()]
+class EditInvitationsView(EditingView):
+    template_name = "parties/edit_invitations.html"
 
-        if request.method == "POST":
-            formset = PartyInvitationFormset(request.POST, initial=initial_forms)
-            if formset.is_valid():
-                invitations = [
-                    prod_form.cleaned_data["production"].commit()
-                    for prod_form in formset.forms
-                    if prod_form not in formset.deleted_forms and "production" in prod_form.cleaned_data
-                ]
-                party.invitations.set(invitations)
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
+        self.initial_forms = [{"production": production} for production in self.party.invitations.all()]
 
-                if formset.has_changed():
-                    invitation_titles = [prod.title for prod in invitations] or ["none"]
-                    invitation_titles = ", ".join(invitation_titles)
-                    Edit.objects.create(
-                        action_type="edit_party_invitations",
-                        focus=party,
-                        description="Set invitations to %s" % invitation_titles,
-                        user=request.user,
-                    )
+    def post(self, request, party_id):
+        self.formset = PartyInvitationFormset(request.POST, initial=self.initial_forms)
+        if self.formset.is_valid():
+            invitations = [
+                prod_form.cleaned_data["production"].commit()
+                for prod_form in self.formset.forms
+                if prod_form not in self.formset.deleted_forms and "production" in prod_form.cleaned_data
+            ]
+            self.party.invitations.set(invitations)
 
-                return HttpResponseRedirect(party.get_absolute_url())
+            if self.formset.has_changed():
+                invitation_titles = [prod.title for prod in invitations] or ["none"]
+                invitation_titles = ", ".join(invitation_titles)
+                Edit.objects.create(
+                    action_type="edit_party_invitations",
+                    focus=self.party,
+                    description="Set invitations to %s" % invitation_titles,
+                    user=request.user,
+                )
+
+            return HttpResponseRedirect(self.party.get_absolute_url())
         else:
-            formset = PartyInvitationFormset(initial=initial_forms)
+            return self.render_to_response()
 
-        title = f"Editing invitations for {party.name}"
-        return render(
-            request,
-            "parties/edit_invitations.html",
+    def get(self, request, party_id):
+        self.formset = PartyInvitationFormset(initial=self.initial_forms)
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing invitations for {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "party": party,
-                "formset": formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_edit_invitations", args=[party.id]),
+                "party": self.party,
+                "formset": self.formset,
+                "action_url": reverse("party_edit_invitations", args=[self.party.id]),
                 "submit_button_label": "Update invitations",
             },
         )
+        return context
 
 
-class EditReleasesView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id):
-        party = get_object_or_404(Party, id=party_id)
-        initial_forms = [{"production": production} for production in party.releases.all()]
+class EditReleasesView(EditingView):
+    template_name = "parties/edit_releases.html"
 
-        if request.method == "POST":
-            formset = PartyReleaseFormset(request.POST, initial=initial_forms)
-            if formset.is_valid():
-                releases = [
-                    prod_form.cleaned_data["production"].commit()
-                    for prod_form in formset.forms
-                    if prod_form not in formset.deleted_forms and "production" in prod_form.cleaned_data
-                ]
-                party.releases.set(releases)
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
+        self.initial_forms = [{"production": production} for production in self.party.releases.all()]
 
-                if formset.has_changed():
-                    release_titles = [prod.title for prod in releases] or ["none"]
-                    release_titles = ", ".join(release_titles)
-                    Edit.objects.create(
-                        action_type="edit_party_releases",
-                        focus=party,
-                        description="Set releases to %s" % release_titles,
-                        user=request.user,
-                    )
+    def post(self, request, party_id):
+        self.formset = PartyReleaseFormset(request.POST, initial=self.initial_forms)
+        if self.formset.is_valid():
+            releases = [
+                prod_form.cleaned_data["production"].commit()
+                for prod_form in self.formset.forms
+                if prod_form not in self.formset.deleted_forms and "production" in prod_form.cleaned_data
+            ]
+            self.party.releases.set(releases)
 
-                return HttpResponseRedirect(party.get_absolute_url())
+            if self.formset.has_changed():
+                release_titles = [prod.title for prod in releases] or ["none"]
+                release_titles = ", ".join(release_titles)
+                Edit.objects.create(
+                    action_type="edit_party_releases",
+                    focus=self.party,
+                    description="Set releases to %s" % release_titles,
+                    user=request.user,
+                )
+
+            return HttpResponseRedirect(self.party.get_absolute_url())
         else:
-            formset = PartyReleaseFormset(initial=initial_forms)
+            return self.render_to_response()
 
-        title = f"Editing releases for {party.name}"
-        return render(
-            request,
-            "parties/edit_releases.html",
+    def get(self, request, party_id):
+        self.formset = PartyReleaseFormset(initial=self.initial_forms)
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Editing releases for {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
-                "party": party,
-                "formset": formset,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_edit_releases", args=[party.id]),
+                "party": self.party,
+                "formset": self.formset,
+                "action_url": reverse("party_edit_releases", args=[self.party.id]),
                 "submit_button_label": "Update releases",
             },
         )
+        return context
 
 
 @writeable_site_required
@@ -566,37 +602,105 @@ class EditShareImageView(View):
         if not request.user.is_staff:
             return redirect("home")
 
-        party = get_object_or_404(Party, id=party_id)
-        if request.method == "POST":
-            form = PartyShareImageForm(request.POST, request.FILES, instance=party)
-            if form.is_valid():
-                form.save()
+        self.party = get_object_or_404(Party, id=party_id)
 
-                messages.success(request, "Social share image updated")
-                return redirect("party", party.id)
+        return super().dispatch(request, party_id)
+
+    def post(self, request, party_id):
+        self.form = PartyShareImageForm(request.POST, request.FILES, instance=self.party)
+        if self.form.is_valid():
+            self.form.save()
+
+            messages.success(request, "Social share image updated")
+            return redirect("party", self.party.id)
         else:
-            form = PartyShareImageForm(instance=party)
+            return self.render_to_response()
 
+    def get(self, request, party_id):
+        self.form = PartyShareImageForm(instance=self.party)
+        return self.render_to_response()
+
+    def render_to_response(self):
         return render(
-            request,
+            self.request,
             "parties/edit_share_image.html",
             {
-                "party": party,
-                "form": form,
+                "party": self.party,
+                "form": self.form,
             },
         )
 
 
-class AddOrganiserView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id):
-        party = get_object_or_404(Party, id=party_id)
+class AddOrganiserView(EditingView):
+    def prepare(self, request, party_id):
+        self.party = get_object_or_404(Party, id=party_id)
 
-        if request.method == "POST":
-            form = PartyOrganiserForm(request.POST)
-            if form.is_valid():
-                releaser = form.cleaned_data["releaser_nick"].commit().releaser
+    def post(self, request, party_id):
+        self.form = PartyOrganiserForm(request.POST)
+        if self.form.is_valid():
+            releaser = self.form.cleaned_data["releaser_nick"].commit().releaser
+            if releaser.locked and not request.user.is_staff:
+                messages.error(
+                    request,
+                    format_html(
+                        "The scener profile for {} is protected and cannot be added as an organiser. "
+                        "If you wish to add this organiser, "
+                        '<a href="/forums/3/">let us know in this thread</a>.',
+                        releaser.name,
+                    ),
+                )
+            else:
+                organiser = Organiser(releaser=releaser, party=self.party, role=self.form.cleaned_data["role"])
+                organiser.save()
+                description = "Added %s as organiser of %s" % (releaser.name, self.party.name)
+                Edit.objects.create(
+                    action_type="add_party_organiser",
+                    focus=releaser,
+                    focus2=self.party,
+                    description=description,
+                    user=request.user,
+                )
+            return HttpResponseRedirect(self.party.get_absolute_url() + "?editing=organisers")
+        else:
+            return self.render_to_response()
+
+    def get(self, request, party_id):
+        self.form = PartyOrganiserForm()
+        return self.render_to_response()
+
+    def get_title(self):
+        return f"Add organiser for {self.party.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "form": self.form,
+                "action_url": reverse("party_add_organiser", args=[self.party.id]),
+                "submit_button_label": "Add organiser",
+            },
+        )
+        return context
+
+
+class EditOrganiserView(EditingView):
+    def prepare(self, request, party_id, organiser_id):
+        self.party = get_object_or_404(Party, id=party_id)
+        self.organiser = get_object_or_404(Organiser, party=self.party, id=organiser_id)
+
+    def post(self, request, party_id, organiser_id):
+        if self.organiser.releaser.locked and not request.user.is_staff:
+            raise PermissionDenied
+        else:
+            self.form = PartyOrganiserForm(
+                request.POST,
+                initial={
+                    "releaser_nick": self.organiser.releaser.primary_nick,
+                    "role": self.organiser.role,
+                },
+            )
+            if self.form.is_valid():
+                releaser = self.form.cleaned_data["releaser_nick"].commit().releaser
                 if releaser.locked and not request.user.is_staff:
                     messages.error(
                         request,
@@ -607,105 +711,54 @@ class AddOrganiserView(View):
                             releaser.name,
                         ),
                     )
-                else:
-                    organiser = Organiser(releaser=releaser, party=party, role=form.cleaned_data["role"])
-                    organiser.save()
-                    description = "Added %s as organiser of %s" % (releaser.name, party.name)
-                    Edit.objects.create(
-                        action_type="add_party_organiser",
-                        focus=releaser,
-                        focus2=party,
-                        description=description,
-                        user=request.user,
-                    )
-                return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
-        else:
-            form = PartyOrganiserForm()
+                    return HttpResponseRedirect(self.party.get_absolute_url() + "?editing=organisers")
 
-        title = f"Add organiser for {party.name}"
-        return render(
-            request,
-            "generic/form.html",
-            {
-                "form": form,
-                "title": title,
-                "html_title": title,
-                "action_url": reverse("party_add_organiser", args=[party.id]),
-                "submit_button_label": "Add organiser",
-            },
-        )
+                self.organiser.releaser = releaser
+                self.organiser.role = self.form.cleaned_data["role"]
+                self.organiser.save()
+                self.form.log_edit(request.user, releaser, self.party)
 
-
-class EditOrganiserView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, party_id, organiser_id):
-        party = get_object_or_404(Party, id=party_id)
-        organiser = get_object_or_404(Organiser, party=party, id=organiser_id)
-
-        if request.method == "POST":
-            if organiser.releaser.locked and not request.user.is_staff:
-                raise PermissionDenied
+                return HttpResponseRedirect(self.party.get_absolute_url() + "?editing=organisers")
             else:
-                form = PartyOrganiserForm(
-                    request.POST,
-                    initial={
-                        "releaser_nick": organiser.releaser.primary_nick,
-                        "role": organiser.role,
-                    },
-                )
-                if form.is_valid():
-                    releaser = form.cleaned_data["releaser_nick"].commit().releaser
-                    if releaser.locked and not request.user.is_staff:
-                        messages.error(
-                            request,
-                            format_html(
-                                "The scener profile for {} is protected and cannot be added as an organiser. "
-                                "If you wish to add this organiser, "
-                                '<a href="/forums/3/">let us know in this thread</a>.',
-                                releaser.name,
-                            ),
-                        )
-                        return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
+                return self.render_to_response()
 
-                    organiser.releaser = releaser
-                    organiser.role = form.cleaned_data["role"]
-                    organiser.save()
-                    form.log_edit(request.user, releaser, party)
+    def get(self, request, party_id, organiser_id):
+        self.form = PartyOrganiserForm(
+            initial={
+                "releaser_nick": self.organiser.releaser.primary_nick,
+                "role": self.organiser.role,
+            }
+        )
+        return self.render_to_response()
 
-                    return HttpResponseRedirect(party.get_absolute_url() + "?editing=organisers")
-        else:
-            form = PartyOrganiserForm(
-                initial={
-                    "releaser_nick": organiser.releaser.primary_nick,
-                    "role": organiser.role,
-                }
-            )
+    def get_title(self):
+        return f"Editing {self.organiser.releaser.name} as organiser of {self.party.name}"
 
-        if organiser.releaser.locked and not request.user.is_staff:
+    def render_to_response(self):
+        if self.organiser.releaser.locked and not self.request.user.is_staff:
             return render(
-                request,
+                self.request,
                 "parties/edit_organiser_protected.html",
                 {
-                    "party": party,
-                    "organiser": organiser,
+                    "party": self.party,
+                    "organiser": self.organiser,
                 },
             )
         else:
-            title = f"Editing {organiser.releaser.name} as organiser of {party.name}"
-            return render(
-                request,
-                "generic/form.html",
-                {
-                    "form": form,
-                    "title": title,
-                    "html_title": title,
-                    "action_url": reverse("party_edit_organiser", args=[party.id, organiser.id]),
-                    "submit_button_label": "Save changes",
-                    "delete_url": reverse("party_remove_organiser", args=[party.id, organiser.id]),
-                    "delete_link_text": "Remove organiser",
-                },
-            )
+            return super().render_to_response()
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
+            {
+                "form": self.form,
+                "action_url": reverse("party_edit_organiser", args=[self.party.id, self.organiser.id]),
+                "submit_button_label": "Save changes",
+                "delete_url": reverse("party_remove_organiser", args=[self.party.id, self.organiser.id]),
+                "delete_link_text": "Remove organiser",
+            },
+        )
+        return context
 
 
 class RemoveOrganiserView(AjaxConfirmationView):
