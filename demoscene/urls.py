@@ -11,7 +11,7 @@ urlpatterns = [
     path("groups/<int:group_id>/", groups_views.show, {}, "group"),
     path("groups/<int:group_id>/history/", groups_views.history, {}, "group_history"),
     path("groups/new/", groups_views.CreateGroupView.as_view(), {}, "new_group"),
-    path("groups/<int:group_id>/add_member/", groups_views.add_member, {}, "group_add_member"),
+    path("groups/<int:group_id>/add_member/", groups_views.AddMemberView.as_view(), {}, "group_add_member"),
     path("groups/<int:group_id>/remove_member/<int:scener_id>/", groups_views.remove_member, {}, "group_remove_member"),
     path(
         "groups/<int:group_id>/edit_membership/<int:membership_id>/",
