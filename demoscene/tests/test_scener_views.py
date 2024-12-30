@@ -182,6 +182,19 @@ class TestAddGroup(TestCase):
         self.assertRedirects(response, "/sceners/%d/?editing=groups" % self.gasman.id)
         self.assertEqual(1, Membership.objects.filter(member=self.gasman, group=self.limp_ninja).count())
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/sceners/%d/add_group/" % self.gasman.id,
+            {
+                "group_nick_search": "",
+                "group_nick_match_id": "",
+                "group_nick_match_name": "",
+                "is_current": "on",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
 
 class TestRemoveGroup(TestCase):
     fixtures = ["tests/gasman.json"]
@@ -317,6 +330,20 @@ class TestEditMembership(TestCase):
         self.assertTrue(Membership.objects.get(member=self.gasman, group=self.hooy_program).is_current)
         edit = Edit.for_model(self.gasman, True).first()
         self.assertIn("set as current member", edit.description)
+
+    def test_post_invalid(self):
+        membership = Membership.objects.get(member=self.gasman, group=self.hooy_program)
+        response = self.client.post(
+            "/sceners/%d/edit_membership/%d/" % (self.gasman.id, membership.id),
+            {
+                "group_nick_search": "",
+                "group_nick_match_id": "",
+                "group_nick_match_name": "",
+                "is_current": "is_current",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestConvertToGroup(TestCase):
