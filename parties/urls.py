@@ -25,13 +25,15 @@ urlpatterns = [
     ),
     path(
         "parties/series/<int:party_series_id>/edit_external_links/",
-        party_views.edit_series_external_links,
+        party_views.EditSeriesExternalLinksView.as_view(),
         {},
         "party_edit_series_external_links",
     ),
-    path("parties/new/", party_views.create, {}, "new_party"),
-    path("parties/<int:party_id>/add_competition/", party_views.add_competition, {}, "party_add_competition"),
-    path("parties/<int:party_id>/edit/", party_views.edit, {}, "edit_party"),
+    path("parties/new/", party_views.CreateView.as_view(), {}, "new_party"),
+    path(
+        "parties/<int:party_id>/add_competition/", party_views.AddCompetitionView.as_view(), {}, "party_add_competition"
+    ),
+    path("parties/<int:party_id>/edit/", party_views.EditView.as_view(), {}, "edit_party"),
     path(
         "parties/<int:party_id>/edit_competition/<int:competition_id>/",
         party_views.edit_competition,
@@ -40,17 +42,30 @@ urlpatterns = [
     ),
     path("parties/<int:party_id>/edit_notes/", party_views.EditNotesView.as_view(), {}, "party_edit_notes"),
     path(
-        "parties/<int:party_id>/edit_external_links/", party_views.edit_external_links, {}, "party_edit_external_links"
+        "parties/<int:party_id>/edit_external_links/",
+        party_views.EditExternalLinksView.as_view(),
+        {},
+        "party_edit_external_links",
     ),
     path("parties/<int:party_id>/results_file/<int:file_id>/", party_views.results_file, {}, "party_results_file"),
     path("parties/autocomplete/", party_views.autocomplete, {}),
-    path("parties/<int:party_id>/edit_invitations/", party_views.edit_invitations, {}, "party_edit_invitations"),
-    path("parties/<int:party_id>/edit_releases/", party_views.edit_releases, {}, "party_edit_releases"),
-    path("parties/<int:party_id>/edit_share_image/", party_views.edit_share_image, {}, "party_edit_share_image"),
-    path("parties/<int:party_id>/add_organiser/", party_views.add_organiser, {}, "party_add_organiser"),
+    path(
+        "parties/<int:party_id>/edit_invitations/",
+        party_views.EditInvitationsView.as_view(),
+        {},
+        "party_edit_invitations",
+    ),
+    path("parties/<int:party_id>/edit_releases/", party_views.EditReleasesView.as_view(), {}, "party_edit_releases"),
+    path(
+        "parties/<int:party_id>/edit_share_image/",
+        party_views.EditShareImageView.as_view(),
+        {},
+        "party_edit_share_image",
+    ),
+    path("parties/<int:party_id>/add_organiser/", party_views.AddOrganiserView.as_view(), {}, "party_add_organiser"),
     path(
         "parties/<int:party_id>/edit_organiser/<int:organiser_id>/",
-        party_views.edit_organiser,
+        party_views.EditOrganiserView.as_view(),
         {},
         "party_edit_organiser",
     ),
