@@ -1,18 +1,15 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
 
 from common.utils.pagination import PaginationControls
-from common.views import AjaxConfirmationView, EditingFormView, EditingView, writeable_site_required
+from common.views import AjaxConfirmationView, EditingFormView, EditingView
 from demoscene.forms.releaser import CreateGroupForm, GroupMembershipForm, GroupSubgroupForm
 from demoscene.models import Edit, Membership, Nick, Releaser
 from demoscene.shortcuts import get_page
@@ -173,17 +170,15 @@ class AddMemberView(EditingView):
         return context
 
 
-class RemoveMemberView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, group_id, scener_id):
+class RemoveMemberView(EditingView):
+    template_name = "groups/remove_member.html"
+
+    def prepare(self, request, group_id, scener_id):
         self.group = get_object_or_404(Releaser, is_group=True, id=group_id)
         self.scener = get_object_or_404(Releaser, is_group=False, id=scener_id)
 
         if not self.group.editable_by_user(request.user):
             raise PermissionDenied
-
-        return super().dispatch(request, group_id, scener_id)
 
     def post(self, request, group_id, scener_id):
         deletion_type = request.POST.get("deletion_type")
@@ -215,22 +210,28 @@ class RemoveMemberView(View):
             return HttpResponseRedirect(self.group.get_absolute_url() + "?editing=members")
         else:
             self.show_error_message = True
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, group_id, scener_id):
         self.show_error_message = False
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        return render(
-            request,
-            "groups/remove_member.html",
+    def get_title(self):
+        return f"Removing {self.scener.name} as a member of {self.group.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "group": self.group,
                 "scener": self.scener,
                 "show_error_message": self.show_error_message,
+                "action_url": reverse("group_remove_member", args=[self.group.id, self.scener.id]),
+                "html_form_class": "remove_member_form",
+                "submit_button_label": "Remove membership",
             },
         )
+        return context
 
 
 class EditMembershipView(EditingView):
