@@ -76,6 +76,21 @@ class TestCreate(TestCase):
         )
         self.assertRedirects(response, "/bbs/%d/" % BBS.objects.get(name="Eclipse").id)
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/new/",
+            {
+                "name": "",
+                "location": "",
+                "names-TOTAL_FORMS": "0",
+                "names-INITIAL_FORMS": "0",
+                "names-MIN_NUM_FORMS": "0",
+                "names-MAX_NUM_FORMS": "1000",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
     def test_create_with_alternative_name(self):
         response = self.client.post(
             "/bbs/new/",
@@ -164,6 +179,24 @@ class TestEdit(TestCase):
         self.assertTrue(self.bbs.names.filter(name="Star Whisky episode V").exists())
         edit = Edit.for_model(self.bbs, True).first()
         self.assertEqual("Set alternative names to Star Whisky episode V", edit.description)
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/%d/edit/" % self.bbs.id,
+            {
+                "name": "",
+                "location": "Helsinki, Finland",
+                "names-TOTAL_FORMS": "1",
+                "names-INITIAL_FORMS": "1",
+                "names-MIN_NUM_FORMS": "0",
+                "names-MAX_NUM_FORMS": "1000",
+                "names-0-name": "Star Whisky episode V",
+                "names-0-id": self.alt_name.id,
+                "names-0-bbs": self.bbs.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestEditNotes(TestCase):
@@ -272,6 +305,21 @@ class TestEditBBStros(TestCase):
         self.assertRedirects(response, "/bbs/%d/" % self.bbs.id)
         self.assertEqual(edit_count, Edit.for_model(self.bbs, True).count())
 
+    def test_post_without_id(self):
+        response = self.client.post(
+            "/bbs/%d/edit_bbstros/" % self.bbs.id,
+            {
+                "form-TOTAL_FORMS": 1,
+                "form-INITIAL_FORMS": 0,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+                "form-0-production_id": "",
+                "form-0-production_title": "Pondlife",
+                "form-0-production_byline_search": "pondlife",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+
 
 class TestShowHistory(TestCase):
     fixtures = ["tests/gasman.json"]
@@ -307,6 +355,19 @@ class TestAddOperator(TestCase):
         )
         self.assertRedirects(response, "/bbs/%d/?editing=staff" % self.bbs.id)
         self.assertEqual(1, Operator.objects.filter(releaser=self.gasman, bbs=self.bbs).count())
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/%d/add_operator/" % self.bbs.id,
+            {
+                "releaser_nick_search": "",
+                "releaser_nick_match_id": "",
+                "releaser_nick_match_name": "",
+                "role": "co-sysop",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestEditOperator(TestCase):
@@ -363,6 +424,20 @@ class TestEditOperator(TestCase):
         self.assertFalse(self.operator.is_current)
         edit = Edit.for_model(self.yerzmyey, True).first()
         self.assertIn("set as ex-staff", edit.description)
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/%d/edit_operator/%d/" % (self.bbs.id, self.operator.id),
+            {
+                "releaser_nick_search": "",
+                "releaser_nick_match_id": "",
+                "releaser_nick_match_name": "",
+                "role": "co-sysop",
+                "is_current": "is_current",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestRemoveOperator(TestCase):
@@ -429,6 +504,19 @@ class TestAddAffiliation(TestCase):
         self.assertRedirects(response, "/bbs/%d/?editing=affiliations" % self.bbs.id)
         self.assertEqual(1, Affiliation.objects.filter(group=self.hprg, bbs=self.bbs).count())
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/%d/add_affiliation/" % self.bbs.id,
+            {
+                "group_nick_search": "",
+                "group_nick_match_id": "",
+                "group_nick_match_name": "",
+                "role": "020-hq",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
 
 class TestEditAffiliation(TestCase):
     fixtures = ["tests/gasman.json"]
@@ -459,6 +547,19 @@ class TestEditAffiliation(TestCase):
         self.affiliation.refresh_from_db()
         self.assertEqual(self.affiliation.role, "020-hq")
         self.assertEqual(self.affiliation.group, self.hprg)
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/bbs/%d/edit_affiliation/%d/" % (self.bbs.id, self.affiliation.id),
+            {
+                "group_nick_search": "",
+                "group_nick_match_id": "",
+                "group_nick_match_name": "",
+                "role": "020-hq",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestRemoveAffiliation(TestCase):
@@ -692,3 +793,18 @@ class TestEditExternalLinks(TestCase):
         )
         self.assertRedirects(response, "/bbs/%d/" % self.bbs.id)
         self.assertEqual(BBSExternalLink.objects.filter(bbs=self.bbs, link_class="CsdbBBS").count(), 1)
+
+    def test_post_unicode(self):
+        response = self.client.post(
+            "/bbs/%d/edit_external_links/" % self.bbs.id,
+            {
+                "external_links-TOTAL_FORMS": 1,
+                "external_links-INITIAL_FORMS": 0,
+                "external_links-MIN_NUM_FORMS": 0,
+                "external_links-MAX_NUM_FORMS": 1000,
+                "external_links-0-url": "https://en.wikipedia.org/wiki/StarPört_(BBS)",
+                "external_links-0-bbs": self.bbs.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
