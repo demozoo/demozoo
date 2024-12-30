@@ -289,13 +289,12 @@ class DeleteBBSView(AjaxConfirmationView):
         messages.success(self.request, "'%s' deleted" % self.object.name)
 
 
-class EditBBStrosView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, bbs_id):
+class EditBBStrosView(EditingView):
+    template_name = "bbs/edit_bbstros.html"
+
+    def prepare(self, request, bbs_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
         self.initial_forms = [{"production": production} for production in self.bbs.bbstros.all()]
-        return super().dispatch(request, bbs_id)
 
     def post(self, request, bbs_id):
         self.formset = BBStroFormset(request.POST, initial=self.initial_forms)
@@ -321,27 +320,26 @@ class EditBBStrosView(View):
 
             return redirect("bbs", self.bbs.id)
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id):
         self.formset = BBStroFormset(initial=self.initial_forms)
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing productions promoting {self.bbs.name}"
+    def get_title(self):
+        return f"Editing productions promoting {self.bbs.name}"
 
-        return render(
-            request,
-            "bbs/edit_bbstros.html",
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "bbs": self.bbs,
                 "formset": self.formset,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("bbs_edit_bbstros", args=[self.bbs.id]),
                 "submit_button_label": "Update production list",
             },
         )
+        return context
 
 
 def history(request, bbs_id):
