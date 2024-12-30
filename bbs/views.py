@@ -552,52 +552,59 @@ class AddAffiliationView(View):
         )
 
 
-@writeable_site_required
-@login_required
-def edit_affiliation(request, bbs_id, affiliation_id):
-    bbs = get_object_or_404(BBS, id=bbs_id)
-    affiliation = get_object_or_404(Affiliation, bbs=bbs, id=affiliation_id)
+class EditAffiliationView(View):
+    @method_decorator(writeable_site_required)
+    @method_decorator(login_required)
+    def dispatch(self, request, bbs_id, affiliation_id):
+        self.bbs = get_object_or_404(BBS, id=bbs_id)
+        self.affiliation = get_object_or_404(Affiliation, bbs=self.bbs, id=affiliation_id)
+        return super().dispatch(request, bbs_id, affiliation_id)
 
-    if request.method == "POST":
-        form = AffiliationForm(
+    def post(self, request, bbs_id, affiliation_id):
+        self.form = AffiliationForm(
             request.POST,
             initial={
-                "group_nick": affiliation.group.primary_nick,
-                "role": affiliation.role,
+                "group_nick": self.affiliation.group.primary_nick,
+                "role": self.affiliation.role,
             },
         )
-        if form.is_valid():
-            group = form.cleaned_data["group_nick"].commit().releaser
-            affiliation.group = group
-            affiliation.role = form.cleaned_data["role"]
-            affiliation.save()
-            form.log_edit(request.user, affiliation)
-            bbs.updated_at = datetime.datetime.now()
-            bbs.save(update_fields=["updated_at"])
+        if self.form.is_valid():
+            group = self.form.cleaned_data["group_nick"].commit().releaser
+            self.affiliation.group = group
+            self.affiliation.role = self.form.cleaned_data["role"]
+            self.affiliation.save()
+            self.form.log_edit(request.user, self.affiliation)
+            self.bbs.updated_at = datetime.datetime.now()
+            self.bbs.save(update_fields=["updated_at"])
 
-            return HttpResponseRedirect(bbs.get_absolute_url() + "?editing=affiliations")
-    else:
-        form = AffiliationForm(
+            return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=affiliations")
+        else:
+            return self.render_to_response(request)
+
+    def get(self, request, bbs_id, affiliation_id):
+        self.form = AffiliationForm(
             initial={
-                "group_nick": affiliation.group.primary_nick,
-                "role": affiliation.role,
+                "group_nick": self.affiliation.group.primary_nick,
+                "role": self.affiliation.role,
             }
         )
+        return self.render_to_response(request)
 
-    title = f"Editing {affiliation.group.name}'s affiliation with {bbs.name}"
-    return render(
-        request,
-        "generic/form.html",
-        {
-            "form": form,
-            "title": title,
-            "html_title": title,
-            "action_url": reverse("bbs_edit_affiliation", args=[bbs.id, affiliation.id]),
-            "submit_button_label": "Update affiliation",
-            "delete_url": reverse("bbs_remove_affiliation", args=[bbs.id, affiliation.id]),
-            "delete_link_text": "Remove affiliation",
-        },
-    )
+    def render_to_response(self, request):
+        title = f"Editing {self.affiliation.group.name}'s affiliation with {self.bbs.name}"
+        return render(
+            request,
+            "generic/form.html",
+            {
+                "form": self.form,
+                "title": title,
+                "html_title": title,
+                "action_url": reverse("bbs_edit_affiliation", args=[self.bbs.id, self.affiliation.id]),
+                "submit_button_label": "Update affiliation",
+                "delete_url": reverse("bbs_remove_affiliation", args=[self.bbs.id, self.affiliation.id]),
+                "delete_link_text": "Remove affiliation",
+            },
+        )
 
 
 class RemoveAffiliationView(AjaxConfirmationView):
