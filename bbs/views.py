@@ -354,12 +354,9 @@ def history(request, bbs_id):
     )
 
 
-class AddOperatorView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, bbs_id):
+class AddOperatorView(EditingView):
+    def prepare(self, request, bbs_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
-        return super().dispatch(request, bbs_id)
 
     def post(self, request, bbs_id):
         self.form = OperatorForm(request.POST)
@@ -384,25 +381,25 @@ class AddOperatorView(View):
             self.bbs.save(update_fields=["updated_at"])
             return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=staff")
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id):
         self.form = OperatorForm()
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Add staff member for {self.bbs.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get_title(self):
+        return f"Add staff member for {self.bbs.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("bbs_add_operator", args=[self.bbs.id]),
                 "submit_button_label": "Add staff member",
-            },
+            }
         )
+        return context
 
 
 class EditOperatorView(View):
