@@ -537,13 +537,10 @@ class AddAffiliationView(EditingView):
         return context
 
 
-class EditAffiliationView(View):
-    @method_decorator(writeable_site_required)
-    @method_decorator(login_required)
-    def dispatch(self, request, bbs_id, affiliation_id):
+class EditAffiliationView(EditingView):
+    def prepare(self, request, bbs_id, affiliation_id):
         self.bbs = get_object_or_404(BBS, id=bbs_id)
         self.affiliation = get_object_or_404(Affiliation, bbs=self.bbs, id=affiliation_id)
-        return super().dispatch(request, bbs_id, affiliation_id)
 
     def post(self, request, bbs_id, affiliation_id):
         self.form = AffiliationForm(
@@ -564,7 +561,7 @@ class EditAffiliationView(View):
 
             return HttpResponseRedirect(self.bbs.get_absolute_url() + "?editing=affiliations")
         else:
-            return self.render_to_response(request)
+            return self.render_to_response()
 
     def get(self, request, bbs_id, affiliation_id):
         self.form = AffiliationForm(
@@ -573,23 +570,23 @@ class EditAffiliationView(View):
                 "role": self.affiliation.role,
             }
         )
-        return self.render_to_response(request)
+        return self.render_to_response()
 
-    def render_to_response(self, request):
-        title = f"Editing {self.affiliation.group.name}'s affiliation with {self.bbs.name}"
-        return render(
-            request,
-            "generic/form.html",
+    def get_title(self):
+        return f"Editing {self.affiliation.group.name}'s affiliation with {self.bbs.name}"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context.update(
             {
                 "form": self.form,
-                "title": title,
-                "html_title": title,
                 "action_url": reverse("bbs_edit_affiliation", args=[self.bbs.id, self.affiliation.id]),
                 "submit_button_label": "Update affiliation",
                 "delete_url": reverse("bbs_remove_affiliation", args=[self.bbs.id, self.affiliation.id]),
                 "delete_link_text": "Remove affiliation",
             },
         )
+        return context
 
 
 class RemoveAffiliationView(AjaxConfirmationView):
