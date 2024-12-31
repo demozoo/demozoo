@@ -148,6 +148,19 @@ class TestCreateParty(TestCase):
         )
         self.assertRedirects(response, "/parties/%d/" % Party.objects.get(name="Evoke 2012").id)
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/new/",
+            {
+                "name": "",
+                "start_date": "10 aug 2012",
+                "end_date": "12 aug 2012",
+                "party_series_name": "Evoke",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
     def test_inherit_party_series_data(self):
         ps = PartySeries.objects.get(name="Forever")
         ps.website = "http://forever8.net/"
@@ -256,6 +269,20 @@ class TestEditParty(TestCase):
         self.assertRedirects(response, "/parties/%d/" % self.party.id)
         self.assertEqual(edit_count, Edit.for_model(self.party, True).count())
 
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/%d/edit/" % self.party.id,
+            {
+                "name": "",
+                "start_date": "17 march 2000",
+                "end_date": "19 march 2000",
+                "party_series_name": "Forever",
+                "website": "http://forever.zeroteam.sk/",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
+
     def test_edit_all_fields(self):
         response = self.client.post(
             "/parties/%d/edit/" % self.party.id,
@@ -359,6 +386,21 @@ class TestEditExternalLinks(TestCase):
             "forever8party",
         )
 
+    def test_post_unicode(self):
+        response = self.client.post(
+            "/parties/%d/edit_external_links/" % self.party.id,
+            {
+                "external_links-TOTAL_FORMS": 1,
+                "external_links-INITIAL_FORMS": 0,
+                "external_links-MIN_NUM_FORMS": 0,
+                "external_links-MAX_NUM_FORMS": 1000,
+                "external_links-0-url": "https://twitter.com/förever8party",
+                "external_links-0-party": self.party.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
+
     def test_post_with_pouet_link(self):
         response = self.client.post(
             "/parties/%d/edit_external_links/" % self.party.id,
@@ -414,6 +456,21 @@ class TestEditSeriesExternalLinks(TestCase):
             PartySeriesExternalLink.objects.filter(party_series=self.party_series, link_class="TwitterAccount").count(),
             1,
         )
+
+    def test_post_unicode(self):
+        response = self.client.post(
+            "/parties/series/%d/edit_external_links/" % self.party_series.id,
+            {
+                "external_links-TOTAL_FORMS": 1,
+                "external_links-INITIAL_FORMS": 0,
+                "external_links-MIN_NUM_FORMS": 0,
+                "external_links-MAX_NUM_FORMS": 1000,
+                "external_links-0-url": "https://twitter.com/förever8party",
+                "external_links-0-party_series": self.party_series.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "URL must be pure ASCII - try copying it from your browser location bar")
 
 
 class TestEditSeriesNotes(TestCase):
@@ -516,6 +573,17 @@ class TestAddCompetition(TestCase):
             response,
             "/competitions/%d/edit/" % Competition.objects.get(party__name="Forever 2e3", name="ZX Graphics").id,
         )
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/%d/add_competition/" % self.party.id,
+            {
+                "name": "",
+                "shown_date": "18 march 2000",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
 
 class TestShowResultsFile(MediaTestMixin, TestCase):
@@ -622,12 +690,12 @@ class TestEditInvitations(TestCase):
                 "form-0-production_title": "Pondlife",
                 "form-0-production_byline_search": "",
                 "form-1-production_id": "",
-                "form-1-production_title": "",
-                "form-1-production_byline_search": "",
+                "form-1-production_title": "Froob",
+                "form-1-production_byline_search": "froob",
             },
         )
-        self.assertRedirects(response, "/parties/%d/" % self.party.id)
-        self.assertEqual(self.party.invitations.count(), 1)
+        # form is re-shown
+        self.assertEqual(response.status_code, 200)
 
 
 class TestEditReleases(TestCase):
@@ -660,24 +728,20 @@ class TestEditReleases(TestCase):
         self.assertEqual(self.party.releases.count(), 1)
 
     def test_post_with_empty(self):
-        pondlife = Production.objects.get(title="Pondlife")
         response = self.client.post(
             "/parties/%d/edit_releases/" % self.party.id,
             {
-                "form-TOTAL_FORMS": 2,
+                "form-TOTAL_FORMS": 1,
                 "form-INITIAL_FORMS": 0,
                 "form-MIN_NUM_FORMS": 0,
                 "form-MAX_NUM_FORMS": 1000,
-                "form-0-production_id": pondlife.id,
+                "form-0-production_id": "",
                 "form-0-production_title": "Pondlife",
-                "form-0-production_byline_search": "",
-                "form-1-production_id": "",
-                "form-1-production_title": "",
-                "form-1-production_byline_search": "",
+                "form-0-production_byline_search": "pondlife",
             },
         )
-        self.assertRedirects(response, "/parties/%d/" % self.party.id)
-        self.assertEqual(self.party.releases.count(), 1)
+        # form is re-shown
+        self.assertEqual(response.status_code, 200)
 
 
 class TestEditCompetition(TestCase):
@@ -747,7 +811,7 @@ class TestEditShareImage(MediaTestMixin, TestCase):
         self.assertEqual(party.share_image_url, party.share_image_file_url)
         Party.objects.get(id=self.party.id).share_image_file.delete()
 
-    def test_post_select_screenshot(self):
+    def test_post_select_screenshot_invalid(self):
         response = self.client.post(
             "/parties/%d/edit_share_image/" % self.party.id,
             {
@@ -758,6 +822,16 @@ class TestEditShareImage(MediaTestMixin, TestCase):
         party = Party.objects.get(id=self.party.id)
         self.assertEqual(party.share_screenshot, self.madrielle_screenshot)
         self.assertEqual(party.share_image_url, "http://example.com/madrielle.standard.png")
+
+    def test_post_select_screenshot(self):
+        response = self.client.post(
+            "/parties/%d/edit_share_image/" % self.party.id,
+            {
+                "share_screenshot": -1,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "not one of the available choices")
 
 
 class TestAddOrganiser(TestCase):
@@ -786,6 +860,19 @@ class TestAddOrganiser(TestCase):
         )
         self.assertRedirects(response, "/parties/%d/?editing=organisers" % self.party.id)
         self.assertEqual(1, Organiser.objects.filter(releaser=self.gasman, party=self.party).count())
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/%d/add_organiser/" % self.party.id,
+            {
+                "releaser_nick_search": "",
+                "releaser_nick_match_id": "",
+                "releaser_nick_match_name": "",
+                "role": "Beamteam",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
     def test_post_locked(self):
         response = self.client.post(
@@ -865,6 +952,19 @@ class TestEditOrganiser(TestCase):
         self.orga.refresh_from_db()
         self.assertEqual(self.orga.role, "Beamteam")
         self.assertEqual(self.orga.releaser, self.laesq)
+
+    def test_post_invalid(self):
+        response = self.client.post(
+            "/parties/%d/edit_organiser/%d/" % (self.party.id, self.orga.id),
+            {
+                "releaser_nick_search": "",
+                "releaser_nick_match_id": "",
+                "releaser_nick_match_name": "",
+                "role": "Beamteam",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required.")
 
     def test_post_locked(self):
         response = self.client.post(
