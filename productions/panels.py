@@ -185,6 +185,25 @@ class DownloadsPanel(EditablePanel):
         }
 
 
+class ExternalLinksPanel(EditablePanel):
+    template_name = "shared/external_links_panel.html"
+
+    @cached_property
+    def external_links(self):
+        return self.production.external_links
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.external_links)
+
+    def get_context_data(self, parent_context):
+        return {
+            "obj": self.production,
+            "external_links": self.external_links,
+            "can_edit": self.can_edit,
+        }
+
+
 class InfoFilesPanel(EditablePanel):
     template_name = "productions/includes/info_files_panel.html"
 
