@@ -53,9 +53,13 @@ class PackContentsPanel(Component):
     def is_shown(self):
         return self.production.can_have_pack_members()
 
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
     def get_context_data(self, parent_context):
         return {
-            "is_shown": self.is_shown,
             "production": self.production,
             "pack_members": self.pack_members,
             "can_edit": self.can_edit,
@@ -81,9 +85,13 @@ class FeaturedInPanel(Component):
             ).order_by("production__release_date_date")
         ]
 
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
     def get_context_data(self, parent_context):
         return {
-            "is_shown": self.is_shown,
             "production": self.production,
             "featured_in_productions": self.featured_in_productions,
         }
@@ -108,9 +116,13 @@ class PackedInPanel(Component):
             ).order_by("pack__release_date_date")
         ]
 
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
     def get_context_data(self, parent_context):
         return {
-            "is_shown": self.is_shown,
             "production": self.production,
             "packed_in_productions": self.packed_in_productions,
         }
@@ -142,9 +154,13 @@ class SoundtracksPanel(Component):
     def is_shown(self):
         return bool(self.soundtracks)
 
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
     def get_context_data(self, parent_context):
         return {
-            "is_shown": self.is_shown,
             "production": self.production,
             "soundtracks": self.soundtracks,
             "can_edit": self.can_edit,

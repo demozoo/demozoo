@@ -124,23 +124,9 @@
     {% endif %}
 
     <div class="secondary_panels {% if not show_secondary_panels %}hidden{% endif %}">
-        {% component credits_panel %}
-
-        {% if pack_contents_panel.is_shown %}
-            {% component pack_contents_panel %}
-        {% endif %}
-
-        {% if packed_in_panel.is_shown %}
-            {% component packed_in_panel %}
-        {% endif %}
-
-        {% if featured_in_panel.is_shown %}
-            {% component featured_in_panel %}
-        {% endif %}
-
-        {% if soundtracks_panel.is_shown %}
-            {% component soundtracks_panel %}
-        {% endif %}
+        {% for panel in secondary_panels %}
+            {% component panel %}
+        {% endfor %}
     </div>
 
     {% last_edited_by production %}
