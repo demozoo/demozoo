@@ -19,7 +19,7 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
-from productions.panels import CreditsPanel
+from productions.panels import CreditsPanel, PackContentsPanel
 
 
 class IndexView(View):
@@ -109,18 +109,6 @@ class ShowView(View):
                 (event, None) for event in Event.accepting_recommendations_for(self.production)
             ]
 
-        if self.production.can_have_pack_members():
-            pack_members = [
-                link.member
-                for link in (
-                    self.production.pack_members.select_related("member").prefetch_related(
-                        "member__author_nicks__releaser", "member__author_affiliation_nicks__releaser"
-                    )
-                )
-            ]
-        else:
-            pack_members = []
-
         try:
             meta_screenshot = random.choice(self.production.screenshots.exclude(standard_url=""))
         except IndexError:
@@ -133,6 +121,10 @@ class ShowView(View):
             production=self.production,
             user=self.request.user,
             is_editing=(self.request.GET.get("editing") == "credits"),
+        )
+        pack_contents_panel = PackContentsPanel(
+            production=self.production,
+            user=self.request.user,
         )
 
         if self.production.supertype == "music":
@@ -168,7 +160,7 @@ class ShowView(View):
             credits_panel.is_shown
             or featured_in_productions
             or soundtracks
-            or self.production.can_have_pack_members()
+            or pack_contents_panel.is_shown
             or packed_in_productions
         )
 
@@ -180,6 +172,7 @@ class ShowView(View):
             "external_links": self.production.external_links,
             "info_files": self.production.info_files.all(),
             "credits_panel": credits_panel,
+            "pack_contents_panel": pack_contents_panel,
             "carousel": Carousel(self.production, self.request.user),
             "award_nominations": (
                 self.production.award_nominations.select_related("category", "category__event")
@@ -192,7 +185,6 @@ class ShowView(View):
             "tags_form": tags_form,
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
-            "pack_members": pack_members,
             "featured_in_productions": featured_in_productions,
             "packed_in_productions": packed_in_productions,
             "soundtracks": soundtracks,
