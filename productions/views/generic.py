@@ -130,13 +130,15 @@ class ShowView(View):
         packed_in_panel = PackedInPanel(self.production)
         soundtracks_panel = SoundtracksPanel(production=self.production, user=self.request.user)
 
-        show_secondary_panels = (
-            credits_panel.is_shown
-            or featured_in_panel.is_shown
-            or soundtracks_panel.is_shown
-            or pack_contents_panel.is_shown
-            or packed_in_panel.is_shown
-        )
+        secondary_panels = [
+            credits_panel,
+            pack_contents_panel,
+            packed_in_panel,
+            featured_in_panel,
+            soundtracks_panel,
+        ]
+
+        show_secondary_panels = any(panel.is_shown for panel in secondary_panels)
 
         return {
             "production": self.production,
@@ -145,11 +147,7 @@ class ShowView(View):
             "download_links": self.production.download_links,
             "external_links": self.production.external_links,
             "info_files": self.production.info_files.all(),
-            "credits_panel": credits_panel,
-            "pack_contents_panel": pack_contents_panel,
-            "featured_in_panel": featured_in_panel,
-            "packed_in_panel": packed_in_panel,
-            "soundtracks_panel": soundtracks_panel,
+            "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
             "award_nominations": (
                 self.production.award_nominations.select_related("category", "category__event")
