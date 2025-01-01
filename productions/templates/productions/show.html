@@ -138,8 +138,8 @@
             {% component featured_in_panel %}
         {% endif %}
 
-        {% if soundtracks %}
-            {% include "productions/includes/soundtracks_panel.html" %}
+        {% if soundtracks_panel.is_shown %}
+            {% component soundtracks_panel %}
         {% endif %}
     </div>
 
