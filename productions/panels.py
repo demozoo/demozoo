@@ -60,3 +60,30 @@ class PackContentsPanel(Component):
             "pack_members": self.pack_members,
             "can_edit": self.can_edit,
         }
+
+
+class FeaturedInPanel(Component):
+    template_name = "productions/includes/featured_in_panel.html"
+
+    def __init__(self, production):
+        self.production = production
+
+    @cached_property
+    def is_shown(self):
+        return self.production.supertype == "music" and bool(self.featured_in_productions)
+
+    @cached_property
+    def featured_in_productions(self):
+        return [
+            appearance.production
+            for appearance in self.production.appearances_as_soundtrack.prefetch_related(
+                "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
+            ).order_by("production__release_date_date")
+        ]
+
+    def get_context_data(self, parent_context):
+        return {
+            "is_shown": self.is_shown,
+            "production": self.production,
+            "featured_in_productions": self.featured_in_productions,
+        }

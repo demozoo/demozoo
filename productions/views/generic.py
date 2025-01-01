@@ -19,7 +19,7 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
-from productions.panels import CreditsPanel, PackContentsPanel
+from productions.panels import CreditsPanel, FeaturedInPanel, PackContentsPanel
 
 
 class IndexView(View):
@@ -126,16 +126,7 @@ class ShowView(View):
             production=self.production,
             user=self.request.user,
         )
-
-        if self.production.supertype == "music":
-            featured_in_productions = [
-                appearance.production
-                for appearance in self.production.appearances_as_soundtrack.prefetch_related(
-                    "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
-                ).order_by("production__release_date_date")
-            ]
-        else:
-            featured_in_productions = []
+        featured_in_panel = FeaturedInPanel(self.production)
 
         if self.production.supertype == "production":
             soundtracks = [
@@ -158,7 +149,7 @@ class ShowView(View):
 
         show_secondary_panels = (
             credits_panel.is_shown
-            or featured_in_productions
+            or featured_in_panel.is_shown
             or soundtracks
             or pack_contents_panel.is_shown
             or packed_in_productions
@@ -173,6 +164,7 @@ class ShowView(View):
             "info_files": self.production.info_files.all(),
             "credits_panel": credits_panel,
             "pack_contents_panel": pack_contents_panel,
+            "featured_in_panel": featured_in_panel,
             "carousel": Carousel(self.production, self.request.user),
             "award_nominations": (
                 self.production.award_nominations.select_related("category", "category__event")
@@ -185,7 +177,6 @@ class ShowView(View):
             "tags_form": tags_form,
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
-            "featured_in_productions": featured_in_productions,
             "packed_in_productions": packed_in_productions,
             "soundtracks": soundtracks,
             "show_secondary_panels": show_secondary_panels,
