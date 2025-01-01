@@ -69,10 +69,7 @@
 
         <div class="right">
             {% component awards_panel %}
-
-            {% if download_links %}
-                {% include "productions/includes/downloads_panel.html" %}
-            {% endif %}
+            {% component downloads_panel %}
 
             {% if info_files %}
                 {% include "productions/includes/info_files_panel.html" %}
