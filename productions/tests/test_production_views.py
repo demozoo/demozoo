@@ -213,8 +213,16 @@ class TestShowProduction(TestCase):
     def test_get_pack(self):
         pondlife = Production.objects.get(title="Pondlife")
         pondlife.types.add(ProductionType.objects.get(name="Pack"))
+        mooncheese = Production.objects.get(title="Mooncheese")
+        pondlife.pack_members.create(member=mooncheese, position=1)
         response = self.client.get("/productions/%d/" % pondlife.id)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pack contents")
+        self.assertContains(response, "Mooncheese")
+        response = self.client.get("/productions/%d/" % mooncheese.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Packed in")
+        self.assertContains(response, "Pondlife")
 
     def test_redirect_non_prod(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")

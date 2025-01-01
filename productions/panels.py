@@ -87,3 +87,30 @@ class FeaturedInPanel(Component):
             "production": self.production,
             "featured_in_productions": self.featured_in_productions,
         }
+
+
+class PackedInPanel(Component):
+    template_name = "productions/includes/packed_in_panel.html"
+
+    def __init__(self, production):
+        self.production = production
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.packed_in_productions)
+
+    @cached_property
+    def packed_in_productions(self):
+        return [
+            pack_member.pack
+            for pack_member in self.production.packed_in.prefetch_related(
+                "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
+            ).order_by("pack__release_date_date")
+        ]
+
+    def get_context_data(self, parent_context):
+        return {
+            "is_shown": self.is_shown,
+            "production": self.production,
+            "packed_in_productions": self.packed_in_productions,
+        }

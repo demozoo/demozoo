@@ -130,8 +130,8 @@
             {% component pack_contents_panel %}
         {% endif %}
 
-        {% if packed_in_productions %}
-            {% include "productions/includes/packed_in_panel.html" %}
+        {% if packed_in_panel.is_shown %}
+            {% component packed_in_panel %}
         {% endif %}
 
         {% if featured_in_panel.is_shown %}
