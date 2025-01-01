@@ -87,6 +87,18 @@ class PackedInPanel(StaticPanel):
         ]
 
 
+class AwardsPanel(StaticPanel):
+    template_name = "productions/includes/awards_panel.html"
+    context_object_list_name = "award_nominations"
+
+    def get_object_list(self):
+        return (
+            self.production.award_nominations.select_related("category", "category__event")
+            .only("production__id", "category__name", "category__event__name", "category__event__id", "status")
+            .order_by("category__event__name", "-status", "category__name")
+        )
+
+
 class EditablePanel(Component):
     def __init__(self, production, user):
         self.production = production
