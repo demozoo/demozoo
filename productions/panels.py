@@ -31,59 +31,60 @@ class CreditsPanel(Component):
 
 
 class StaticPanel(Component):
+    context_object_list_name = "object_list"
+
     def __init__(self, production):
         self.production = production
+
+    def get_object_list(self):  # pragma: no cover
+        return []
+
+    @cached_property
+    def object_list(self):
+        return self.get_object_list()
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.object_list)
 
     def render_html(self, parent_context=None):
         if not self.is_shown:
             return ""
         return super().render_html(parent_context)
 
+    def get_context_data(self, parent_context):
+        return {
+            self.context_object_list_name: self.object_list,
+        }
+
 
 class FeaturedInPanel(StaticPanel):
     template_name = "productions/includes/featured_in_panel.html"
+    context_object_list_name = "featured_in_productions"
 
-    @cached_property
-    def is_shown(self):
-        return self.production.supertype == "music" and bool(self.featured_in_productions)
-
-    @cached_property
-    def featured_in_productions(self):
-        return [
-            appearance.production
-            for appearance in self.production.appearances_as_soundtrack.prefetch_related(
-                "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
-            ).order_by("production__release_date_date")
-        ]
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "featured_in_productions": self.featured_in_productions,
-        }
+    def get_object_list(self):
+        if self.production.supertype == "music":
+            return [
+                appearance.production
+                for appearance in self.production.appearances_as_soundtrack.prefetch_related(
+                    "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
+                ).order_by("production__release_date_date")
+            ]
+        else:
+            return []
 
 
 class PackedInPanel(StaticPanel):
     template_name = "productions/includes/packed_in_panel.html"
+    context_object_list_name = "packed_in_productions"
 
-    @cached_property
-    def is_shown(self):
-        return bool(self.packed_in_productions)
-
-    @cached_property
-    def packed_in_productions(self):
+    def get_object_list(self):
         return [
             pack_member.pack
             for pack_member in self.production.packed_in.prefetch_related(
                 "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
             ).order_by("pack__release_date_date")
         ]
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "packed_in_productions": self.packed_in_productions,
-        }
 
 
 class EditablePanel(Component):
