@@ -22,6 +22,7 @@ from productions.models import Byline, Production, ProductionType
 from productions.panels import (
     AwardsPanel,
     CreditsPanel,
+    DownloadsPanel,
     FeaturedInPanel,
     PackContentsPanel,
     PackedInPanel,
@@ -151,7 +152,7 @@ class ShowView(View):
             "production": self.production,
             "prompt_to_edit": prompt_to_edit,
             "can_edit": can_edit,
-            "download_links": self.production.download_links,
+            "downloads_panel": DownloadsPanel(self.production, self.request.user),
             "external_links": self.production.external_links,
             "info_files": self.production.info_files.all(),
             "secondary_panels": secondary_panels,

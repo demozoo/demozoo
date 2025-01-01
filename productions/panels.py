@@ -164,3 +164,22 @@ class SoundtracksPanel(EditablePanel):
             "soundtracks": self.soundtracks,
             "can_edit": self.can_edit,
         }
+
+
+class DownloadsPanel(EditablePanel):
+    template_name = "productions/includes/downloads_panel.html"
+
+    @cached_property
+    def download_links(self):
+        return self.production.download_links
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.download_links)
+
+    def get_context_data(self, parent_context):
+        return {
+            "production": self.production,
+            "download_links": self.download_links,
+            "can_edit": self.can_edit,
+        }
