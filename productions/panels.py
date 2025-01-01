@@ -30,13 +30,76 @@ class CreditsPanel(Component):
         }
 
 
-class PackContentsPanel(Component):
-    template_name = "productions/includes/pack_contents_panel.html"
+class StaticPanel(Component):
+    def __init__(self, production):
+        self.production = production
 
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
+
+class FeaturedInPanel(StaticPanel):
+    template_name = "productions/includes/featured_in_panel.html"
+
+    @cached_property
+    def is_shown(self):
+        return self.production.supertype == "music" and bool(self.featured_in_productions)
+
+    @cached_property
+    def featured_in_productions(self):
+        return [
+            appearance.production
+            for appearance in self.production.appearances_as_soundtrack.prefetch_related(
+                "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
+            ).order_by("production__release_date_date")
+        ]
+
+    def get_context_data(self, parent_context):
+        return {
+            "production": self.production,
+            "featured_in_productions": self.featured_in_productions,
+        }
+
+
+class PackedInPanel(StaticPanel):
+    template_name = "productions/includes/packed_in_panel.html"
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.packed_in_productions)
+
+    @cached_property
+    def packed_in_productions(self):
+        return [
+            pack_member.pack
+            for pack_member in self.production.packed_in.prefetch_related(
+                "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
+            ).order_by("pack__release_date_date")
+        ]
+
+    def get_context_data(self, parent_context):
+        return {
+            "production": self.production,
+            "packed_in_productions": self.packed_in_productions,
+        }
+
+
+class EditablePanel(Component):
     def __init__(self, production, user):
         self.production = production
         self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
         self.can_edit = self.prompt_to_edit and user.is_authenticated
+
+    def render_html(self, parent_context=None):
+        if not self.is_shown:
+            return ""
+        return super().render_html(parent_context)
+
+
+class PackContentsPanel(EditablePanel):
+    template_name = "productions/includes/pack_contents_panel.html"
 
     @cached_property
     def pack_members(self):
@@ -53,11 +116,6 @@ class PackContentsPanel(Component):
     def is_shown(self):
         return self.production.can_have_pack_members()
 
-    def render_html(self, parent_context=None):
-        if not self.is_shown:
-            return ""
-        return super().render_html(parent_context)
-
     def get_context_data(self, parent_context):
         return {
             "production": self.production,
@@ -66,75 +124,8 @@ class PackContentsPanel(Component):
         }
 
 
-class FeaturedInPanel(Component):
-    template_name = "productions/includes/featured_in_panel.html"
-
-    def __init__(self, production):
-        self.production = production
-
-    @cached_property
-    def is_shown(self):
-        return self.production.supertype == "music" and bool(self.featured_in_productions)
-
-    @cached_property
-    def featured_in_productions(self):
-        return [
-            appearance.production
-            for appearance in self.production.appearances_as_soundtrack.prefetch_related(
-                "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
-            ).order_by("production__release_date_date")
-        ]
-
-    def render_html(self, parent_context=None):
-        if not self.is_shown:
-            return ""
-        return super().render_html(parent_context)
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "featured_in_productions": self.featured_in_productions,
-        }
-
-
-class PackedInPanel(Component):
-    template_name = "productions/includes/packed_in_panel.html"
-
-    def __init__(self, production):
-        self.production = production
-
-    @cached_property
-    def is_shown(self):
-        return bool(self.packed_in_productions)
-
-    @cached_property
-    def packed_in_productions(self):
-        return [
-            pack_member.pack
-            for pack_member in self.production.packed_in.prefetch_related(
-                "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
-            ).order_by("pack__release_date_date")
-        ]
-
-    def render_html(self, parent_context=None):
-        if not self.is_shown:
-            return ""
-        return super().render_html(parent_context)
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "packed_in_productions": self.packed_in_productions,
-        }
-
-
-class SoundtracksPanel(Component):
+class SoundtracksPanel(EditablePanel):
     template_name = "productions/includes/soundtracks_panel.html"
-
-    def __init__(self, production, user):
-        self.production = production
-        self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
-        self.can_edit = self.prompt_to_edit and user.is_authenticated
 
     @cached_property
     def soundtracks(self):
@@ -153,11 +144,6 @@ class SoundtracksPanel(Component):
     @cached_property
     def is_shown(self):
         return bool(self.soundtracks)
-
-    def render_html(self, parent_context=None):
-        if not self.is_shown:
-            return ""
-        return super().render_html(parent_context)
 
     def get_context_data(self, parent_context):
         return {
