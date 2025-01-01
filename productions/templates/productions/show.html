@@ -126,8 +126,8 @@
     <div class="secondary_panels {% if not show_secondary_panels %}hidden{% endif %}">
         {% component credits_panel %}
 
-        {% if production.can_have_pack_members %}
-            {% include "productions/includes/pack_contents_panel.html" %}
+        {% if pack_contents_panel.is_shown %}
+            {% component pack_contents_panel %}
         {% endif %}
 
         {% if packed_in_productions %}
