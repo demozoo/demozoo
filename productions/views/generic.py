@@ -19,6 +19,7 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
+from productions.panels import CreditsPanel
 
 
 class IndexView(View):
@@ -118,7 +119,7 @@ class ShowView(View):
                 )
             ]
         else:
-            pack_members = None
+            pack_members = []
 
         try:
             meta_screenshot = random.choice(self.production.screenshots.exclude(standard_url=""))
@@ -128,6 +129,49 @@ class ShowView(View):
         prompt_to_edit = settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked)
         can_edit = prompt_to_edit and self.request.user.is_authenticated
 
+        credits_panel = CreditsPanel(
+            production=self.production,
+            user=self.request.user,
+            is_editing=(self.request.GET.get("editing") == "credits"),
+        )
+
+        if self.production.supertype == "music":
+            featured_in_productions = [
+                appearance.production
+                for appearance in self.production.appearances_as_soundtrack.prefetch_related(
+                    "production__author_nicks__releaser", "production__author_affiliation_nicks__releaser"
+                ).order_by("production__release_date_date")
+            ]
+        else:
+            featured_in_productions = []
+
+        if self.production.supertype == "production":
+            soundtracks = [
+                link.soundtrack
+                for link in self.production.soundtrack_links.order_by("position")
+                .select_related("soundtrack")
+                .prefetch_related(
+                    "soundtrack__author_nicks__releaser", "soundtrack__author_affiliation_nicks__releaser"
+                )
+            ]
+        else:
+            soundtracks = []
+
+        packed_in_productions = [
+            pack_member.pack
+            for pack_member in self.production.packed_in.prefetch_related(
+                "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
+            ).order_by("pack__release_date_date")
+        ]
+
+        show_secondary_panels = (
+            credits_panel.is_shown
+            or featured_in_productions
+            or soundtracks
+            or self.production.can_have_pack_members()
+            or packed_in_productions
+        )
+
         return {
             "production": self.production,
             "prompt_to_edit": prompt_to_edit,
@@ -135,8 +179,7 @@ class ShowView(View):
             "download_links": self.production.download_links,
             "external_links": self.production.external_links,
             "info_files": self.production.info_files.all(),
-            "editing_credits": (self.request.GET.get("editing") == "credits"),
-            "credits": self.production.credits_for_listing(),
+            "credits_panel": credits_panel,
             "carousel": Carousel(self.production, self.request.user),
             "award_nominations": (
                 self.production.award_nominations.select_related("category", "category__event")
@@ -150,6 +193,10 @@ class ShowView(View):
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
             "pack_members": pack_members,
+            "featured_in_productions": featured_in_productions,
+            "packed_in_productions": packed_in_productions,
+            "soundtracks": soundtracks,
+            "show_secondary_panels": show_secondary_panels,
         }
 
 

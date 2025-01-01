@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags ui_tags compress %}
+{% load demoscene_tags production_tags ui_tags compress laces %}
 
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -123,8 +123,8 @@
         {% include "shared/notes_panel.html" with obj=production %}
     {% endif %}
 
-    <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-        {% include "productions/includes/credits_panel.html" with is_editing=editing_credits %}
+    <div class="secondary_panels {% if not show_secondary_panels %}hidden{% endif %}">
+        {% component credits_panel %}
 
         {% if production.can_have_pack_members %}
             {% include "productions/includes/pack_contents_panel.html" %}
