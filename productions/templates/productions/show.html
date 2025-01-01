@@ -70,10 +70,7 @@
         <div class="right">
             {% component awards_panel %}
             {% component downloads_panel %}
-
-            {% if info_files %}
-                {% include "productions/includes/info_files_panel.html" %}
-            {% endif %}
+            {% component info_files_panel %}
 
             {% if external_links %}
                 {% include "shared/external_links_panel.html" with obj=production %}

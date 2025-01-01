@@ -183,3 +183,22 @@ class DownloadsPanel(EditablePanel):
             "download_links": self.download_links,
             "can_edit": self.can_edit,
         }
+
+
+class InfoFilesPanel(EditablePanel):
+    template_name = "productions/includes/info_files_panel.html"
+
+    @cached_property
+    def info_files(self):
+        return self.production.info_files.all()
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.info_files)
+
+    def get_context_data(self, parent_context):
+        return {
+            "production": self.production,
+            "info_files": self.info_files,
+            "can_edit": self.can_edit,
+        }
