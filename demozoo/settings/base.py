@@ -207,6 +207,9 @@ AUTH_PROFILE_MODULE = "demoscene.AccountProfile"
 INTERNAL_IPS = ("127.0.0.1",)
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+# Keep users logged in indefinitely, unless they've not been seen for 30 days
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 30 * 86400  # 30 days
 
 # COMPRESS_ENABLED = False # enable JS/CSS asset packaging/compression
 COMPRESS_URL = "/static/"
