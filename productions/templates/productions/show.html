@@ -71,10 +71,7 @@
             {% component awards_panel %}
             {% component downloads_panel %}
             {% component info_files_panel %}
-
-            {% if external_links %}
-                {% include "shared/external_links_panel.html" with obj=production %}
-            {% endif %}
+            {% component external_links_panel %}
 
             {% if tags or can_edit %}
                 {% include "productions/includes/tags_panel.html" %}
