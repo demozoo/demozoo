@@ -19,7 +19,14 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
-from productions.panels import CreditsPanel, FeaturedInPanel, PackContentsPanel, PackedInPanel, SoundtracksPanel
+from productions.panels import (
+    AwardsPanel,
+    CreditsPanel,
+    FeaturedInPanel,
+    PackContentsPanel,
+    PackedInPanel,
+    SoundtracksPanel,
+)
 
 
 class IndexView(View):
@@ -149,11 +156,7 @@ class ShowView(View):
             "info_files": self.production.info_files.all(),
             "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
-            "award_nominations": (
-                self.production.award_nominations.select_related("category", "category__event")
-                .only("production__id", "category__name", "category__event__name", "category__event__id", "status")
-                .order_by("category__event__name", "-status", "category__name")
-            ),
+            "awards_panel": AwardsPanel(self.production),
             "tags": self.production.tags.order_by("name"),
             "blurbs": self.production.blurbs.all() if self.request.user.is_staff else None,
             "comment_form": comment_form,

@@ -68,9 +68,7 @@
         {{ carousel.render }}
 
         <div class="right">
-            {% if award_nominations %}
-                {% include "productions/includes/awards_panel.html" %}
-            {% endif %}
+            {% component awards_panel %}
 
             {% if download_links %}
                 {% include "productions/includes/downloads_panel.html" %}
