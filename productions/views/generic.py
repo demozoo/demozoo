@@ -24,6 +24,7 @@ from productions.panels import (
     CreditsPanel,
     DownloadsPanel,
     FeaturedInPanel,
+    InfoFilesPanel,
     PackContentsPanel,
     PackedInPanel,
     SoundtracksPanel,
@@ -130,13 +131,10 @@ class ShowView(View):
             user=self.request.user,
             is_editing=(self.request.GET.get("editing") == "credits"),
         )
-        pack_contents_panel = PackContentsPanel(
-            production=self.production,
-            user=self.request.user,
-        )
+        pack_contents_panel = PackContentsPanel(self.production, self.request.user)
         featured_in_panel = FeaturedInPanel(self.production)
         packed_in_panel = PackedInPanel(self.production)
-        soundtracks_panel = SoundtracksPanel(production=self.production, user=self.request.user)
+        soundtracks_panel = SoundtracksPanel(self.production, self.request.user)
 
         secondary_panels = [
             credits_panel,
@@ -154,7 +152,7 @@ class ShowView(View):
             "can_edit": can_edit,
             "downloads_panel": DownloadsPanel(self.production, self.request.user),
             "external_links": self.production.external_links,
-            "info_files": self.production.info_files.all(),
+            "info_files_panel": InfoFilesPanel(self.production, self.request.user),
             "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
             "awards_panel": AwardsPanel(self.production),
