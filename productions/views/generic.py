@@ -19,7 +19,7 @@ from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
 from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
 from productions.models import Byline, Production, ProductionType
-from productions.panels import CreditsPanel, FeaturedInPanel, PackContentsPanel, PackedInPanel
+from productions.panels import CreditsPanel, FeaturedInPanel, PackContentsPanel, PackedInPanel, SoundtracksPanel
 
 
 class IndexView(View):
@@ -128,23 +128,12 @@ class ShowView(View):
         )
         featured_in_panel = FeaturedInPanel(self.production)
         packed_in_panel = PackedInPanel(self.production)
-
-        if self.production.supertype == "production":
-            soundtracks = [
-                link.soundtrack
-                for link in self.production.soundtrack_links.order_by("position")
-                .select_related("soundtrack")
-                .prefetch_related(
-                    "soundtrack__author_nicks__releaser", "soundtrack__author_affiliation_nicks__releaser"
-                )
-            ]
-        else:
-            soundtracks = []
+        soundtracks_panel = SoundtracksPanel(production=self.production, user=self.request.user)
 
         show_secondary_panels = (
             credits_panel.is_shown
             or featured_in_panel.is_shown
-            or soundtracks
+            or soundtracks_panel.is_shown
             or pack_contents_panel.is_shown
             or packed_in_panel.is_shown
         )
@@ -160,6 +149,7 @@ class ShowView(View):
             "pack_contents_panel": pack_contents_panel,
             "featured_in_panel": featured_in_panel,
             "packed_in_panel": packed_in_panel,
+            "soundtracks_panel": soundtracks_panel,
             "carousel": Carousel(self.production, self.request.user),
             "award_nominations": (
                 self.production.award_nominations.select_related("category", "category__event")
@@ -172,7 +162,6 @@ class ShowView(View):
             "tags_form": tags_form,
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
-            "soundtracks": soundtracks,
             "show_secondary_panels": show_secondary_panels,
         }
 

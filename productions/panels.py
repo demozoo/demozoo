@@ -114,3 +114,38 @@ class PackedInPanel(Component):
             "production": self.production,
             "packed_in_productions": self.packed_in_productions,
         }
+
+
+class SoundtracksPanel(Component):
+    template_name = "productions/includes/soundtracks_panel.html"
+
+    def __init__(self, production, user):
+        self.production = production
+        self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
+        self.can_edit = self.prompt_to_edit and user.is_authenticated
+
+    @cached_property
+    def soundtracks(self):
+        if self.production.supertype == "production":
+            return [
+                link.soundtrack
+                for link in self.production.soundtrack_links.order_by("position")
+                .select_related("soundtrack")
+                .prefetch_related(
+                    "soundtrack__author_nicks__releaser", "soundtrack__author_affiliation_nicks__releaser"
+                )
+            ]
+        else:
+            return []
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.soundtracks)
+
+    def get_context_data(self, parent_context):
+        return {
+            "is_shown": self.is_shown,
+            "production": self.production,
+            "soundtracks": self.soundtracks,
+            "can_edit": self.can_edit,
+        }
