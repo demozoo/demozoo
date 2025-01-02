@@ -92,6 +92,7 @@ class TestShowProduction(TestCase):
 
     def test_get_locked(self):
         mooncheese = Production.objects.get(title="Mooncheese")
+        mooncheese.tags.add("dhtml")
         mooncheese.screenshots.create()
         response = self.client.get("/productions/%d/" % mooncheese.id)
         self.assertEqual(response.status_code, 200)

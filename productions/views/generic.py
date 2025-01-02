@@ -17,7 +17,7 @@ from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
-from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
+from productions.forms import ProductionDownloadLinkFormSet
 from productions.models import Byline, Production, ProductionType
 from productions.panels import (
     AwardsPanel,
@@ -29,6 +29,7 @@ from productions.panels import (
     PackContentsPanel,
     PackedInPanel,
     SoundtracksPanel,
+    TagsPanel,
 )
 
 
@@ -105,7 +106,6 @@ class ShowView(View):
         if self.request.user.is_authenticated:
             comment = Comment(commentable=self.production, user=self.request.user)
             comment_form = CommentForm(instance=comment, prefix="comment")
-            tags_form = ProductionTagsForm(instance=self.production)
 
             awards_accepting_recommendations = [
                 (event, event.get_recommendation_options(self.request.user, self.production))
@@ -113,7 +113,6 @@ class ShowView(View):
             ]
         else:
             comment_form = None
-            tags_form = None
 
             awards_accepting_recommendations = [
                 (event, None) for event in Event.accepting_recommendations_for(self.production)
@@ -157,10 +156,9 @@ class ShowView(View):
             "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
             "awards_panel": AwardsPanel(self.production),
-            "tags": self.production.tags.order_by("name"),
+            "tags_panel": TagsPanel(self.production, self.request.user),
             "blurbs": self.production.blurbs.all() if self.request.user.is_staff else None,
             "comment_form": comment_form,
-            "tags_form": tags_form,
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
             "show_secondary_panels": show_secondary_panels,
