@@ -68,11 +68,9 @@
         {{ carousel.render }}
 
         <div class="right">
-            {% component awards_panel %}
-            {% component downloads_panel %}
-            {% component info_files_panel %}
-            {% component external_links_panel %}
-            {% component tags_panel %}
+            {% for panel in primary_panels %}
+                {% component panel %}
+            {% endfor %}
 
             {% if can_edit %}
                 <div class="panel tell_us_something_panel">
