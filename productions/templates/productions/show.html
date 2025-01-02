@@ -72,10 +72,7 @@
             {% component downloads_panel %}
             {% component info_files_panel %}
             {% component external_links_panel %}
-
-            {% if tags or can_edit %}
-                {% include "productions/includes/tags_panel.html" %}
-            {% endif %}
+            {% component tags_panel %}
 
             {% if can_edit %}
                 <div class="panel tell_us_something_panel">

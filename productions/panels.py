@@ -2,6 +2,8 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from laces.components import Component
 
+from productions.forms import ProductionTagsForm
+
 
 class CreditsPanel(Component):
     template_name = "productions/includes/credits_panel.html"
@@ -219,5 +221,30 @@ class InfoFilesPanel(EditablePanel):
         return {
             "production": self.production,
             "info_files": self.info_files,
+            "can_edit": self.can_edit,
+        }
+
+
+class TagsPanel(EditablePanel):
+    template_name = "productions/includes/tags_panel.html"
+
+    @cached_property
+    def tags(self):
+        return self.production.tags.order_by("name")
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.tags) or self.can_edit
+
+    def get_context_data(self, parent_context):
+        if self.can_edit:
+            tags_form = ProductionTagsForm(instance=self.production)
+        else:
+            tags_form = None
+
+        return {
+            "production": self.production,
+            "tags": self.tags,
+            "tags_form": tags_form,
             "can_edit": self.can_edit,
         }
