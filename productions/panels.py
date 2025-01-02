@@ -102,22 +102,43 @@ class AwardsPanel(StaticPanel):
 
 
 class EditablePanel(Component):
+    context_object_list_name = "object_list"
+    context_object_name = "production"
+
     def __init__(self, production, user):
         self.production = production
         self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
         self.can_edit = self.prompt_to_edit and user.is_authenticated
+
+    def get_object_list(self):  # pragma: no cover
+        return []
+
+    @cached_property
+    def object_list(self):
+        return self.get_object_list()
+
+    @cached_property
+    def is_shown(self):
+        return bool(self.object_list)
 
     def render_html(self, parent_context=None):
         if not self.is_shown:
             return ""
         return super().render_html(parent_context)
 
+    def get_context_data(self, parent_context):
+        return {
+            self.context_object_name: self.production,
+            self.context_object_list_name: self.object_list,
+            "can_edit": self.can_edit,
+        }
+
 
 class PackContentsPanel(EditablePanel):
     template_name = "productions/includes/pack_contents_panel.html"
+    context_object_list_name = "pack_members"
 
-    @cached_property
-    def pack_members(self):
+    def get_object_list(self):
         return [
             link.member
             for link in (
@@ -131,19 +152,12 @@ class PackContentsPanel(EditablePanel):
     def is_shown(self):
         return self.production.can_have_pack_members()
 
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "pack_members": self.pack_members,
-            "can_edit": self.can_edit,
-        }
-
 
 class SoundtracksPanel(EditablePanel):
     template_name = "productions/includes/soundtracks_panel.html"
+    context_object_list_name = "soundtracks"
 
-    @cached_property
-    def soundtracks(self):
+    def get_object_list(self):
         if self.production.supertype == "production":
             return [
                 link.soundtrack
@@ -156,95 +170,48 @@ class SoundtracksPanel(EditablePanel):
         else:
             return []
 
-    @cached_property
-    def is_shown(self):
-        return bool(self.soundtracks)
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "soundtracks": self.soundtracks,
-            "can_edit": self.can_edit,
-        }
-
 
 class DownloadsPanel(EditablePanel):
     template_name = "productions/includes/downloads_panel.html"
+    context_object_list_name = "download_links"
 
-    @cached_property
-    def download_links(self):
+    def get_object_list(self):
         return self.production.download_links
-
-    @cached_property
-    def is_shown(self):
-        return bool(self.download_links)
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "download_links": self.download_links,
-            "can_edit": self.can_edit,
-        }
 
 
 class ExternalLinksPanel(EditablePanel):
     template_name = "shared/external_links_panel.html"
+    context_object_list_name = "external_links"
+    context_object_name = "obj"
 
-    @cached_property
-    def external_links(self):
+    def get_object_list(self):
         return self.production.external_links
-
-    @cached_property
-    def is_shown(self):
-        return bool(self.external_links)
-
-    def get_context_data(self, parent_context):
-        return {
-            "obj": self.production,
-            "external_links": self.external_links,
-            "can_edit": self.can_edit,
-        }
 
 
 class InfoFilesPanel(EditablePanel):
     template_name = "productions/includes/info_files_panel.html"
+    context_object_list_name = "info_files"
 
-    @cached_property
-    def info_files(self):
+    def get_object_list(self):
         return self.production.info_files.all()
-
-    @cached_property
-    def is_shown(self):
-        return bool(self.info_files)
-
-    def get_context_data(self, parent_context):
-        return {
-            "production": self.production,
-            "info_files": self.info_files,
-            "can_edit": self.can_edit,
-        }
 
 
 class TagsPanel(EditablePanel):
     template_name = "productions/includes/tags_panel.html"
+    context_object_list_name = "tags"
 
-    @cached_property
-    def tags(self):
+    def get_object_list(self):
         return self.production.tags.order_by("name")
 
     @cached_property
     def is_shown(self):
-        return bool(self.tags) or self.can_edit
+        return bool(self.object_list) or self.can_edit
 
     def get_context_data(self, parent_context):
+        context = super().get_context_data(parent_context)
         if self.can_edit:
-            tags_form = ProductionTagsForm(instance=self.production)
+            context["tags_form"] = ProductionTagsForm(instance=self.production)
         else:
-            tags_form = None
+            context["tags_form"] = None
 
-        return {
-            "production": self.production,
-            "tags": self.tags,
-            "tags_form": tags_form,
-            "can_edit": self.can_edit,
-        }
+        return context

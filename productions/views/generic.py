@@ -126,6 +126,14 @@ class ShowView(View):
         prompt_to_edit = settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked)
         can_edit = prompt_to_edit and self.request.user.is_authenticated
 
+        primary_panels = [
+            AwardsPanel(self.production),
+            DownloadsPanel(self.production, self.request.user),
+            InfoFilesPanel(self.production, self.request.user),
+            ExternalLinksPanel(self.production, self.request.user),
+            TagsPanel(self.production, self.request.user),
+        ]
+
         credits_panel = CreditsPanel(
             production=self.production,
             user=self.request.user,
@@ -150,13 +158,9 @@ class ShowView(View):
             "production": self.production,
             "prompt_to_edit": prompt_to_edit,
             "can_edit": can_edit,
-            "downloads_panel": DownloadsPanel(self.production, self.request.user),
-            "external_links_panel": ExternalLinksPanel(self.production, self.request.user),
-            "info_files_panel": InfoFilesPanel(self.production, self.request.user),
+            "primary_panels": primary_panels,
             "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
-            "awards_panel": AwardsPanel(self.production),
-            "tags_panel": TagsPanel(self.production, self.request.user),
             "blurbs": self.production.blurbs.all() if self.request.user.is_staff else None,
             "comment_form": comment_form,
             "meta_screenshot": meta_screenshot,
