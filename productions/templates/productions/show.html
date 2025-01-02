@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags production_tags ui_tags compress %}
+{% load demoscene_tags production_tags ui_tags compress laces %}
 
 
 {% block html_title %}{{ production.title }} {% if production.byline_string %}by {{ production.byline_string }}{% endif %} - Demozoo{% endblock %}
@@ -68,25 +68,9 @@
         {{ carousel.render }}
 
         <div class="right">
-            {% if award_nominations %}
-                {% include "productions/includes/awards_panel.html" %}
-            {% endif %}
-
-            {% if download_links %}
-                {% include "productions/includes/downloads_panel.html" %}
-            {% endif %}
-
-            {% if info_files %}
-                {% include "productions/includes/info_files_panel.html" %}
-            {% endif %}
-
-            {% if external_links %}
-                {% include "shared/external_links_panel.html" with obj=production %}
-            {% endif %}
-
-            {% if tags or can_edit %}
-                {% include "productions/includes/tags_panel.html" %}
-            {% endif %}
+            {% for panel in primary_panels %}
+                {% component panel %}
+            {% endfor %}
 
             {% if can_edit %}
                 <div class="panel tell_us_something_panel">
@@ -123,24 +107,10 @@
         {% include "shared/notes_panel.html" with obj=production %}
     {% endif %}
 
-    <div class="secondary_panels {% if not credits and not featured_in_productions and not soundtracks and not production.can_have_pack_members and not packed_in_productions %}hidden{% endif %}">
-        {% include "productions/includes/credits_panel.html" with is_editing=editing_credits %}
-
-        {% if production.can_have_pack_members %}
-            {% include "productions/includes/pack_contents_panel.html" %}
-        {% endif %}
-
-        {% if packed_in_productions %}
-            {% include "productions/includes/packed_in_panel.html" %}
-        {% endif %}
-
-        {% if featured_in_productions %}
-            {% include "productions/includes/featured_in_panel.html" %}
-        {% endif %}
-
-        {% if soundtracks %}
-            {% include "productions/includes/soundtracks_panel.html" %}
-        {% endif %}
+    <div class="secondary_panels {% if not show_secondary_panels %}hidden{% endif %}">
+        {% for panel in secondary_panels %}
+            {% component panel %}
+        {% endfor %}
     </div>
 
     {% last_edited_by production %}

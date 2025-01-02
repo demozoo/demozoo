@@ -17,8 +17,20 @@ from common.views import writeable_site_required
 from demoscene.models import Edit
 from demoscene.shortcuts import get_page
 from productions.carousel import Carousel
-from productions.forms import ProductionDownloadLinkFormSet, ProductionTagsForm
+from productions.forms import ProductionDownloadLinkFormSet
 from productions.models import Byline, Production, ProductionType
+from productions.panels import (
+    AwardsPanel,
+    CreditsPanel,
+    DownloadsPanel,
+    ExternalLinksPanel,
+    FeaturedInPanel,
+    InfoFilesPanel,
+    PackContentsPanel,
+    PackedInPanel,
+    SoundtracksPanel,
+    TagsPanel,
+)
 
 
 class IndexView(View):
@@ -94,7 +106,6 @@ class ShowView(View):
         if self.request.user.is_authenticated:
             comment = Comment(commentable=self.production, user=self.request.user)
             comment_form = CommentForm(instance=comment, prefix="comment")
-            tags_form = ProductionTagsForm(instance=self.production)
 
             awards_accepting_recommendations = [
                 (event, event.get_recommendation_options(self.request.user, self.production))
@@ -102,23 +113,10 @@ class ShowView(View):
             ]
         else:
             comment_form = None
-            tags_form = None
 
             awards_accepting_recommendations = [
                 (event, None) for event in Event.accepting_recommendations_for(self.production)
             ]
-
-        if self.production.can_have_pack_members():
-            pack_members = [
-                link.member
-                for link in (
-                    self.production.pack_members.select_related("member").prefetch_related(
-                        "member__author_nicks__releaser", "member__author_affiliation_nicks__releaser"
-                    )
-                )
-            ]
-        else:
-            pack_members = None
 
         try:
             meta_screenshot = random.choice(self.production.screenshots.exclude(standard_url=""))
@@ -128,28 +126,46 @@ class ShowView(View):
         prompt_to_edit = settings.SITE_IS_WRITEABLE and (self.request.user.is_staff or not self.production.locked)
         can_edit = prompt_to_edit and self.request.user.is_authenticated
 
+        primary_panels = [
+            AwardsPanel(self.production),
+            DownloadsPanel(self.production, self.request.user),
+            InfoFilesPanel(self.production, self.request.user),
+            ExternalLinksPanel(self.production, self.request.user),
+            TagsPanel(self.production, self.request.user),
+        ]
+
+        credits_panel = CreditsPanel(
+            production=self.production,
+            user=self.request.user,
+            is_editing=(self.request.GET.get("editing") == "credits"),
+        )
+        pack_contents_panel = PackContentsPanel(self.production, self.request.user)
+        featured_in_panel = FeaturedInPanel(self.production)
+        packed_in_panel = PackedInPanel(self.production)
+        soundtracks_panel = SoundtracksPanel(self.production, self.request.user)
+
+        secondary_panels = [
+            credits_panel,
+            pack_contents_panel,
+            packed_in_panel,
+            featured_in_panel,
+            soundtracks_panel,
+        ]
+
+        show_secondary_panels = any(panel.is_shown for panel in secondary_panels)
+
         return {
             "production": self.production,
             "prompt_to_edit": prompt_to_edit,
             "can_edit": can_edit,
-            "download_links": self.production.download_links,
-            "external_links": self.production.external_links,
-            "info_files": self.production.info_files.all(),
-            "editing_credits": (self.request.GET.get("editing") == "credits"),
-            "credits": self.production.credits_for_listing(),
+            "primary_panels": primary_panels,
+            "secondary_panels": secondary_panels,
             "carousel": Carousel(self.production, self.request.user),
-            "award_nominations": (
-                self.production.award_nominations.select_related("category", "category__event")
-                .only("production__id", "category__name", "category__event__name", "category__event__id", "status")
-                .order_by("category__event__name", "-status", "category__name")
-            ),
-            "tags": self.production.tags.order_by("name"),
             "blurbs": self.production.blurbs.all() if self.request.user.is_staff else None,
             "comment_form": comment_form,
-            "tags_form": tags_form,
             "meta_screenshot": meta_screenshot,
             "awards_accepting_recommendations": awards_accepting_recommendations,
-            "pack_members": pack_members,
+            "show_secondary_panels": show_secondary_panels,
         }
 
 

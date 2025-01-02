@@ -2,7 +2,6 @@ import datetime
 import re
 from urllib.parse import urlencode
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -10,7 +9,6 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from taggit.models import Tag
@@ -51,6 +49,7 @@ from productions.forms import (
     ProductionTagsForm,
 )
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, Screenshot
+from productions.panels import CreditsPanel
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
@@ -97,34 +96,6 @@ def tagged(request, tag_name):
 
 class ProductionShowView(ShowView):
     supertype = "production"
-
-    def get_context_data(self):
-        context = super().get_context_data()
-
-        if self.production.can_have_pack_members():
-            context["pack_members"] = [
-                link.member
-                for link in self.production.pack_members.select_related("member").prefetch_related(
-                    "member__author_nicks__releaser", "member__author_affiliation_nicks__releaser"
-                )
-            ]
-        else:
-            context["pack_members"] = None
-
-        context["soundtracks"] = [
-            link.soundtrack
-            for link in self.production.soundtrack_links.order_by("position")
-            .select_related("soundtrack")
-            .prefetch_related("soundtrack__author_nicks__releaser", "soundtrack__author_affiliation_nicks__releaser")
-        ]
-        context["packed_in_productions"] = [
-            pack_member.pack
-            for pack_member in self.production.packed_in.prefetch_related(
-                "pack__author_nicks__releaser", "pack__author_affiliation_nicks__releaser"
-            ).order_by("pack__release_date_date")
-        ]
-
-        return context
 
 
 class ProductionHistoryView(HistoryView):
@@ -1137,20 +1108,8 @@ def protected(request, production_id):
 
 def render_credits_update(request, production):
     if request_is_ajax(request):
-        prompt_to_edit = settings.SITE_IS_WRITEABLE and (request.user.is_staff or not production.locked)
-        can_edit = prompt_to_edit and request.user.is_authenticated
-
-        credits_html = render_to_string(
-            "productions/includes/credits_panel.html",
-            {
-                "production": production,
-                "credits": production.credits_for_listing(),
-                "is_editing": True,
-                "prompt_to_edit": prompt_to_edit,
-                "can_edit": can_edit,
-            },
-            request=request,
-        )
+        credits_panel = CreditsPanel(production, request.user, is_editing=True)
+        credits_html = credits_panel.render_html()
         return render_modal_workflow(
             request,
             None,
