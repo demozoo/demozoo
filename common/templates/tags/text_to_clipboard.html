@@ -1,0 +1,5 @@
+{% load ui_tags %}
+<div class="clipboard-button-container">
+    <input readonly value="{{ text }}" class="clipboard-field" onClick="this.select();" />
+    {% icon_button icon="copy" label="Copy to Clipboard" onClick="navigator.clipboard.writeText(this.previousElementSibling.value)" classname="clipboard-button" %}
+</div>
