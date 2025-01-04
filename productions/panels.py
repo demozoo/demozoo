@@ -209,6 +209,9 @@ class TagsPanel(EditablePanel):
 
     def get_context_data(self, parent_context):
         context = super().get_context_data(parent_context)
+        if parent_context:
+            context["csrf_token"] = parent_context.get("csrf_token")
+
         if self.can_edit:
             context["tags_form"] = ProductionTagsForm(instance=self.production)
         else:
