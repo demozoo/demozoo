@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db import connection
 from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -201,20 +200,16 @@ def ical_feed_url(request):
 
     country_feeds = []
     if not is_ajax:
-
-        # Django has no group-by, nor select-distinct? Resorted to raw SQL. No parameters, so no risk of injection.
-        with connection.cursor() as cursor:
-            known_countries = cursor.execute('select country_code from parties_party where country_code != \'\' group by country_code;').fetchall()
-            # Add each country as a filtered feed
-            known_countries = sorted(
-                [CountryLocation(code) for (code,) in known_countries],
-                key=lambda c: c.location,
-            )
-            for country in known_countries:
-                country_feeds.append({
-                    'location': country,
-                    'url':request.build_absolute_uri(reverse(country_ical_feed, kwargs={'code':country.country_code})),
-                })
+        known_countries = Party.objects.exclude(country_code="").values_list("country_code", flat=True).order_by("country_code").distinct()
+        known_countries = sorted(
+            [CountryLocation(code) for code in known_countries],
+            key=lambda c: c.location,
+        )
+        for country in known_countries:
+            country_feeds.append({
+                'location': country,
+                'url':request.build_absolute_uri(reverse(country_ical_feed, kwargs={'code':country.country_code})),
+            })
 
     return render(
         request,

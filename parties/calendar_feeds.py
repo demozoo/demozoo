@@ -1,22 +1,14 @@
-# This file maintains the calendar feeds cache, and provides feed data to the 
-# calendar feed endpoints
+# This file provides feed data to the calendar feed endpoints, and caches the results
+# in redis
 
+import redis
+from django.conf import settings
 from django.urls import reverse
-import time
 from datetime import date, timedelta
-import os
-from os import path
 import icalendar
-from parties.models import (
-    Competition,
-    Organiser,
-    Party,
-    PartyExternalLink,
-    PartySeries,
-    PartySeriesExternalLink,
-)
+from parties.models import Party
 
-CACHE_DIR='cache/demozoo/calendar_feeds/'
+CACHE_PREFIX='calendar_feeds/'
 MAX_AGE=(24*60*60) # how long in seconds is a cache entry valid for?
 
 feed_metadata = {
@@ -26,21 +18,22 @@ feed_metadata = {
 }
 
 def full_path(fpath):
-    return path.join(CACHE_DIR, fpath)
+    return f'{CACHE_PREFIX}{fpath}'
 
 def cache_get(fpath):
+    # Fetches a previously cached feed from redis, or returns None
+    r = redis.StrictRedis.from_url(settings.REDIS_URL)
     p = full_path(fpath)
-    try:
-        last_modified = path.getmtime(p)
-        expires = last_modified + MAX_AGE
-        if expires > time.time():
-            # Cache is valid, return cached data
-            return open(p, 'rb').read()
-    except (OSError, FileNotFoundError):
-        pass
-    return None
+    return r.get(p)
+
+def cache_set(fpath, data):
+    # Stores a calendar feed in redis, with an expiry time
+    r = redis.StrictRedis.from_url(settings.REDIS_URL)
+    p = full_path(fpath)
+    r.set(p, data, ex=MAX_AGE)
 
 def query_parties(fpath):
+    # Fetches the data for the specified feed
     min_time = date.today() - timedelta(days=365) # approximate the time one year ago
     if fpath=='main':
         return Party.objects.filter(start_date_date__gte=min_time).order_by("start_date_date", "end_date_date", "name")
@@ -55,6 +48,7 @@ def query_parties(fpath):
         return Party.objects.filter(start_date_date__gte=min_time, country_code=code).order_by("start_date_date", "end_date_date", "name")
 
 def build_feed(fpath, url_base):
+    # Generates the ical file. Only called on a cache miss
     cal = icalendar.Calendar()
     meta = feed_metadata.get(fpath)
     if meta is None:
@@ -79,12 +73,6 @@ def build_feed(fpath, url_base):
     data = cal.to_ical()
     return data
     
-def save_feed(fpath, data):
-    p = full_path(fpath)
-    os.makedirs(path.dirname(p), exist_ok=True)
-    with open(p, 'wb+') as cachefile:
-        cachefile.write(data)
-
 def get_feed(fpath, url_base):
     # Look for this feed in the cache
     cached = cache_get(fpath)
@@ -92,5 +80,5 @@ def get_feed(fpath, url_base):
         return cached
     # Need to rebuild this feed
     data = build_feed(fpath, url_base)
-    save_feed(fpath, data)
+    cache_set(fpath, data)
     return data
