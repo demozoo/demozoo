@@ -1,6 +1,7 @@
 import datetime
 import json
 import re
+import os
 
 from django.conf import settings
 from django.contrib import messages
@@ -43,7 +44,9 @@ from parties.models import (
     PartySeriesExternalLink,
     ResultsFile,
 )
+from parties import calendar_feeds
 from productions.models import Screenshot
+from iso3166 import countries
 
 
 def by_name(request):
@@ -179,6 +182,68 @@ def series_history(request, party_series_id):
             "edits": Edit.for_model(party_series, request.user.is_staff),
         },
     )
+
+class CountryLocation:
+    country_re = re.compile('^[A-Z]{2,3}$')
+    def __init__(self, country_code):
+        if CountryLocation.country_re.match(country_code):
+            self.country_code = country_code
+        else:
+            self.country_code = ''
+        try:
+            self.location = countries.get(country_code).name
+        except:
+            self.location = 'Unknown'
+
+def ical_feed_url(request):
+    is_ajax = request_is_ajax(request)
+
+    country_feeds = []
+    if not is_ajax:
+        known_countries = Party.objects.exclude(country_code="").values_list("country_code", flat=True).order_by("country_code").distinct()
+        known_countries = sorted(
+            [CountryLocation(code) for code in known_countries],
+            key=lambda c: c.location,
+        )
+        for country in known_countries:
+            country_feeds.append({
+                'location': country,
+                'url':request.build_absolute_uri(reverse(country_ical_feed, kwargs={'code':country.country_code})),
+            })
+
+    return render(
+        request,
+        "parties/ical_feed_url.html",
+        {
+            "feed_url": request.build_absolute_uri(reverse(ical_feed)),
+            "historical_feed_url": request.build_absolute_uri(reverse(historical_ical_feed)),
+            "other_feeds_url": request.build_absolute_uri(reverse(ical_feed_url)),
+            "online_only_url":request.build_absolute_uri(reverse(online_ical_feed)),
+            "country_feeds": country_feeds,
+            "is_ajax": is_ajax,
+        },
+    )
+
+def handle_ical_request(request, path):
+    return HttpResponse(
+        calendar_feeds.get_feed(path, request.build_absolute_uri('/')),
+        headers={
+            "Content-Type": "text/calendar"
+        },
+    )
+
+def ical_feed(request):
+    return handle_ical_request(request, 'main')
+
+def historical_ical_feed(request):
+    return handle_ical_request(request, 'historical')
+
+def online_ical_feed(request):
+    return handle_ical_request(request, 'online_only')
+
+def country_ical_feed(request, code):
+    path = os.path.join('country', code)
+    return handle_ical_request(request, path)
 
 
 class CreateView(EditingView):

@@ -30,3 +30,6 @@ crispy-bootstrap3>=2024.1,<2025
 freezegun>=1.2.2,<2
 requests>=2.22,<3.0
 responses>=0.25,<0.26
+# ical pinned to 8.2.0 because 8.3.0 dropped support for python 3.10 but a packaging error shows it as compatible. This can be upgraded if Demozoo migrates to a later python.
+ical==8.2.0
+iso3166>=2.1.1

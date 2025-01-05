@@ -5,11 +5,13 @@
 {% block html_title %}Parties - Demozoo{% endblock %}
 
 {% block base_main %}
-    {% if site_is_writeable %}
-        <ul class="actions">
+
+    <ul class="actions">
+        <li>{% icon_button url="ical_feed_url" icon="event" lightbox=True label="iCal feed" %}</li>
+        {% if site_is_writeable %}
             <li>{% icon_button url="new_party" icon="add" lightbox=True label="New party" %}</li>
-        </ul>
-    {% endif %}
+        {% endif %}
+    </ul>
 
     <h2>Parties</h2>
     

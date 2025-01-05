@@ -90,4 +90,9 @@ urlpatterns = [
     path("competition_api/add_placing/<int:competition_id>/", competition_api_views.add_placing, {}),
     path("competition_api/update_placing/<int:placing_id>/", competition_api_views.update_placing, {}),
     path("competition_api/delete_placing/<int:placing_id>/", competition_api_views.delete_placing, {}),
+    path("parties/ical_info/", party_views.ical_feed_url, {}, "ical_feed_url"),
+    path("parties/demozoo_ical_feed/", party_views.ical_feed, {}, "ical_feed"),
+    path("parties/demozoo_historical_ical_feed/", party_views.historical_ical_feed, {}, "historical_ical_feed"),
+    path("parties/demozoo_online_only_ical_feed/", party_views.online_ical_feed, {}, "online_only_ical_feed"),
+    path("parties/demozoo_country_ical_feed/<str:code>", party_views.country_ical_feed, {}, "country_ical_feed"),
 ]
