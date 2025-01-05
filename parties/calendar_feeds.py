@@ -5,17 +5,13 @@ import redis
 from django.conf import settings
 from django.urls import reverse
 from datetime import date, timedelta
-import icalendar
+from ical.calendar import Calendar
+from ical.event import Event
+from ical.calendar_stream import IcsCalendarStream
 from parties.models import Party
 
 CACHE_PREFIX='calendar_feeds/'
 MAX_AGE=(24*60*60) # how long in seconds is a cache entry valid for?
-
-feed_metadata = {
-    'main': {'summary':'A feed of all upcoming demo parties, and demo parties from the past year.'},
-    'historical': {'summary':'A feed of all demo parties known to Demozoo, past and present.'},
-    'online_only': {'summary':'Upcoming online-only demo parties.'},
-}
 
 def full_path(fpath):
     return f'{CACHE_PREFIX}{fpath}'
@@ -49,28 +45,27 @@ def query_parties(fpath):
 
 def build_feed(fpath, url_base):
     # Generates the ical file. Only called on a cache miss
-    cal = icalendar.Calendar()
-    meta = feed_metadata.get(fpath)
-    if meta is None:
-        cal['summary'] = 'An automatically generated calendar feed from Demozoo'
-    else:
-        cal['summary'] = meta['summary']
+    cal = Calendar()
+    cal.prodid = '-//Demozoo/Party Calendar Feed Generator/EN'
     for party in query_parties(fpath):
         if party.start_date_precision in ['d']:
-            ev = icalendar.Event()
-            ev['uid'] = f'DEMOZOO_{fpath}_PARTY_{party.id}'
-            ev['dtstart'] = party.start_date.date
-            ev['dtend'] = party.end_date.date
-            ev['summary'] = party.name
+            print(type(party.start_date.date))
+            print(party.start_date.date)
+            ev = Event(
+                uid = f'DEMOZOO_{fpath}_PARTY_{party.id}',
+                start = party.start_date.date,
+                end = party.end_date.date,
+                summary = party.name,
+            )
             if url_base.endswith('/'):
                 url_base = url_base[0:-1]
             demozoo_url = url_base + reverse('party', kwargs={'party_id':party.id})
             desc = f'{demozoo_url}\n'
-            ev['description'] = desc
+            ev.description = desc
             if party.location:
-                ev['location'] = party.location
-            cal.add_component(ev)
-    data = cal.to_ical()
+                ev.location = party.location
+            cal.events.append(ev)
+    data = IcsCalendarStream.calendar_to_ics(cal).encode()
     return data
     
 def get_feed(fpath, url_base):
