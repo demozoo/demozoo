@@ -683,21 +683,6 @@ class AddCreditView(EditingView):
         )
         return context
 
-    def render_to_response(self):
-        if self.request.accepts("text/html"):
-            return render(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
-            )
-        else:
-            return render_modal_workflow(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
-                json_data={"step": "form"},
-            )
-
 
 class EditCreditView(EditingView):
     template_name = "productions/edit_credit.html"
@@ -775,61 +760,46 @@ class EditCreditView(EditingView):
         )
         return context
 
-    def render_to_response(self):
-        if self.request.accepts("text/html"):
-            return render(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
-            )
-        else:
-            return render_modal_workflow(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
-                json_data={"step": "form"},
+
+class DeleteCreditView(AjaxConfirmationView):
+    def get_object(self, request, production_id, nick_id):
+        self.production = get_object_or_404(Production, id=production_id)
+        if not self.production.editable_by_user(request.user):
+            raise PermissionDenied
+        self.nick = get_object_or_404(Nick, id=nick_id)
+
+    def perform_action(self):
+        credits = Credit.objects.filter(nick=self.nick, production=self.production)
+        if credits:
+            credits.delete()
+            self.production.updated_at = datetime.datetime.now()
+            self.production.has_bonafide_edits = True
+            self.production.save()
+            Edit.objects.create(
+                action_type="delete_credit",
+                focus=self.production,
+                focus2=self.nick.releaser,
+                description=("Deleted %s's credit on %s" % (self.nick, self.production)),
+                user=self.request.user,
             )
 
+    def redirect(self):
+        return render_credits_update(self.request, self.production)
 
-@writeable_site_required
-@login_required
-def delete_credit(request, production_id, nick_id):
-    production = get_object_or_404(Production, id=production_id)
-    if not production.editable_by_user(request.user):
-        raise PermissionDenied
-    nick = get_object_or_404(Nick, id=nick_id)
-    if request.method == "POST":
-        if request.POST.get("yes"):
-            credits = Credit.objects.filter(nick=nick, production=production)
-            if credits:
-                credits.delete()
-                production.updated_at = datetime.datetime.now()
-                production.has_bonafide_edits = True
-                production.save()
-                Edit.objects.create(
-                    action_type="delete_credit",
-                    focus=production,
-                    focus2=nick.releaser,
-                    description=("Deleted %s's credit on %s" % (nick, production)),
-                    user=request.user,
-                )
-        return render_credits_update(request, production)
-    else:
-        template_name = "generic/simple_confirmation.html"
-        context = {
-            "html_title": "Deleting %s's credit from %s" % (nick.name, production.title),
-            "message": "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-            "action_url": reverse("production_delete_credit", args=[production_id, nick_id]),
-        }
-        if request.accepts("text/html"):
-            return render(request, template_name, context)
-        else:
-            return render_modal_workflow(
-                request,
-                template_name,
-                context,
-                json_data={"step": "confirm"},
-            )
+    def cancel(self):
+        return render_credits_update(self.request, self.production)
+
+    def get_action_url(self):
+        return reverse("production_delete_credit", args=[self.production.id, self.nick.id])
+
+    def get_message(self):
+        return "Are you sure you want to delete %s's credit from %s?" % (
+            self.nick.name,
+            self.production.title,
+        )
+
+    def get_html_title(self):
+        return "Deleting %s's credit from %s" % (self.nick.name, self.production.title)
 
 
 class EditSoundtracksView(EditingView):

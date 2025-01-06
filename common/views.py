@@ -16,6 +16,7 @@ from django.views import View
 from taggit.models import Tag
 
 from common.utils.ajax import request_is_ajax
+from common.utils.modal_workflow import render_modal_workflow
 from common.utils.text import slugify_tag
 from demoscene.models import BlacklistedTag, Edit
 
@@ -106,15 +107,21 @@ class AjaxConfirmationView(View):
             else:
                 return self.cancel()
         else:
-            return render(
-                request,
-                "generic/simple_confirmation.html",
-                {
-                    "html_title": self.get_html_title(),
-                    "message": self.get_message(),
-                    "action_url": self.get_action_url(),
-                },
-            )
+            context = {
+                "html_title": self.get_html_title(),
+                "message": self.get_message(),
+                "action_url": self.get_action_url(),
+            }
+            template_name = "generic/simple_confirmation.html"
+            if request.accepts("text/html"):
+                return render(request, template_name, context)
+            else:
+                return render_modal_workflow(
+                    request,
+                    template_name,
+                    context,
+                    json_data={"step": "confirm"},
+                )
 
 
 class EditingView(View):
@@ -151,11 +158,19 @@ class EditingView(View):
         }
 
     def render_to_response(self):
-        return render(
-            self.request,
-            self.template_name,
-            self.get_context_data(),
-        )
+        if self.request.accepts("text/html"):
+            return render(
+                self.request,
+                self.template_name,
+                self.get_context_data(),
+            )
+        else:
+            return render_modal_workflow(
+                self.request,
+                self.template_name,
+                self.get_context_data(),
+                json_data={"step": "form"},
+            )
 
 
 class EditingFormView(EditingView):

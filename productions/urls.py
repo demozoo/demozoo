@@ -59,7 +59,7 @@ urlpatterns = [
     ),
     path(
         "productions/<int:production_id>/delete_credit/<int:nick_id>/",
-        production_views.delete_credit,
+        production_views.DeleteCreditView.as_view(),
         {},
         "production_delete_credit",
     ),
