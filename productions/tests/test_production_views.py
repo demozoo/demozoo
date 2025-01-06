@@ -1380,11 +1380,17 @@ class TestAddCredit(TestCase):
         pondlife = Production.objects.get(title="Pondlife")
         response = self.client.get("/productions/%d/add_credit/" % pondlife.id)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/html; charset=utf-8")
 
     def test_get_ajax(self):
         pondlife = Production.objects.get(title="Pondlife")
-        response = self.client.get("/productions/%d/add_credit/" % pondlife.id, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.client.get(
+            "/productions/%d/add_credit/" % pondlife.id,
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
+        )
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
 
     def test_post(self):
         pondlife = Production.objects.get(title="Pondlife")
@@ -1539,8 +1545,10 @@ class TestAddCredit(TestCase):
                 "credit-0-role": "Part 2",
             },
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
         )
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
         self.assertEqual(1, pondlife.credits.filter(nick=yerz).count())
         self.assertContains(response, "editable_chunk editing")
 
@@ -1565,13 +1573,16 @@ class TestEditCredit(TestCase):
     def test_get(self):
         response = self.client.get("/productions/%d/edit_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/html; charset=utf-8")
 
     def test_get_ajax(self):
         response = self.client.get(
             "/productions/%d/edit_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id),
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
         )
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
 
     def test_post(self):
         pondlife = Production.objects.get(title="Pondlife")
@@ -1666,12 +1677,33 @@ class TestDeleteCredit(TestCase):
     def test_get(self):
         response = self.client.get("/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/html; charset=utf-8")
+
+    def test_get_ajax(self):
+        response = self.client.get(
+            "/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
 
     def test_post(self):
         response = self.client.post(
             "/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id), {"yes": "yes"}
         )
         self.assertRedirects(response, "/productions/%d/?editing=credits#credits_panel" % self.pondlife.id)
+        self.assertEqual(self.pondlife.credits.count(), 0)
+
+    def test_post_ajax(self):
+        response = self.client.post(
+            "/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id),
+            {"yes": "yes"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
         self.assertEqual(self.pondlife.credits.count(), 0)
 
 
