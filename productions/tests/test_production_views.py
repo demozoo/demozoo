@@ -1695,6 +1695,13 @@ class TestDeleteCredit(TestCase):
         self.assertRedirects(response, "/productions/%d/?editing=credits#credits_panel" % self.pondlife.id)
         self.assertEqual(self.pondlife.credits.count(), 0)
 
+    def test_post_no(self):
+        response = self.client.post(
+            "/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id), {"no": "no"}
+        )
+        self.assertRedirects(response, "/productions/%d/?editing=credits#credits_panel" % self.pondlife.id)
+        self.assertEqual(self.pondlife.credits.count(), 1)
+
     def test_post_ajax(self):
         response = self.client.post(
             "/productions/%d/delete_credit/%d/" % (self.pondlife.id, self.pondlife_credit.id),
