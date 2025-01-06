@@ -16,11 +16,29 @@ function ModalWorkflow(opts) {
     var onLoadCallbacks = opts.onload || {};
 
     self.loadUrl = function(url, urlParams) {
-        $.get(url, urlParams, self.loadResponseText, 'text');
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: urlParams,
+            success: self.loadBody,
+            dataType: 'json',
+            headers: {
+                "Accept": "application/json",
+            },
+        });
     };
 
     self.postForm = function(url, formData) {
-        $.post(url, formData, self.loadResponseText, 'text');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            success: self.loadBody,
+            dataType: 'json',
+            headers: {
+                "Accept": "application/json",
+            },
+        });
     };
 
     self.ajaxifyForm = function(formSelector) {
@@ -44,11 +62,6 @@ function ModalWorkflow(opts) {
             self.loadUrl(this.href);
             return false;
         });
-    };
-
-    self.loadResponseText = function(responseText) {
-        var response = JSON.parse(responseText);
-        self.loadBody(response);
     };
 
     self.loadBody = function(body) {

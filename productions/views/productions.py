@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from taggit.models import Tag
 
-from common.utils.ajax import request_is_ajax
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import PaginationControls, extract_query_params
 from common.views import (
@@ -685,18 +684,18 @@ class AddCreditView(EditingView):
         return context
 
     def render_to_response(self):
-        if request_is_ajax(self.request):
+        if self.request.accepts("text/html"):
+            return render(
+                self.request,
+                self.template_name,
+                self.get_context_data(),
+            )
+        else:
             return render_modal_workflow(
                 self.request,
                 self.template_name,
                 self.get_context_data(),
                 json_data={"step": "form"},
-            )
-        else:
-            return render(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
             )
 
 
@@ -777,18 +776,18 @@ class EditCreditView(EditingView):
         return context
 
     def render_to_response(self):
-        if request_is_ajax(self.request):
+        if self.request.accepts("text/html"):
+            return render(
+                self.request,
+                self.template_name,
+                self.get_context_data(),
+            )
+        else:
             return render_modal_workflow(
                 self.request,
                 self.template_name,
                 self.get_context_data(),
                 json_data={"step": "form"},
-            )
-        else:
-            return render(
-                self.request,
-                self.template_name,
-                self.get_context_data(),
             )
 
 
@@ -816,16 +815,21 @@ def delete_credit(request, production_id, nick_id):
                 )
         return render_credits_update(request, production)
     else:
-        return render_modal_workflow(
-            request,
-            "generic/simple_confirmation.html",
-            {
-                "html_title": "Deleting %s's credit from %s" % (nick.name, production.title),
-                "message": "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
-                "action_url": reverse("production_delete_credit", args=[production_id, nick_id]),
-            },
-            json_data={"step": "confirm"},
-        )
+        template_name = "generic/simple_confirmation.html"
+        context = {
+            "html_title": "Deleting %s's credit from %s" % (nick.name, production.title),
+            "message": "Are you sure you want to delete %s's credit from %s?" % (nick.name, production.title),
+            "action_url": reverse("production_delete_credit", args=[production_id, nick_id]),
+        }
+        if request.accepts("text/html"):
+            return render(request, template_name, context)
+        else:
+            return render_modal_workflow(
+                request,
+                template_name,
+                context,
+                json_data={"step": "confirm"},
+            )
 
 
 class EditSoundtracksView(EditingView):
@@ -1107,7 +1111,9 @@ def protected(request, production_id):
 
 
 def render_credits_update(request, production):
-    if request_is_ajax(request):
+    if request.accepts("text/html"):
+        return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
+    else:
         credits_panel = CreditsPanel(production, request.user, is_editing=True)
         credits_html = credits_panel.render_html()
         return render_modal_workflow(
@@ -1118,8 +1124,6 @@ def render_credits_update(request, production):
                 "panel_html": credits_html,
             },
         )
-    else:
-        return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
 
 
 def carousel(request, production_id):
