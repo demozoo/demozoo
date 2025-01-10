@@ -1,26 +1,28 @@
-function initEditCreditLink(context) {
-    $('a.edit_credit, a.add_credit', context).click(function() {
+function initPanelRefresh(context) {
+    $('a[data-panel-refresh]', context).click(function() {
+        const panelId = this.dataset.panelRefresh;
+
         ModalWorkflow({
             'url': this.href,
             'responses': {
-                'creditsUpdated': replaceCreditsPanel
+                'updated': (html) => {replacePanel(panelId, html);}
             },
             'onload': {
                 'form': function(modal) {
                     modal.ajaxifyForm($('[data-edit-form]', modal.body));
-                    modal.ajaxifyLink($('a.delete_credit', modal.body));
+                    modal.ajaxifyLink($('a[data-delete-link]', modal.body));
                 },
                 'done': function(modal, jsonData) {
-                    modal.respond('creditsUpdated', jsonData.panel_html);
+                    modal.respond('updated', jsonData.panel_html);
                     modal.close();
                 },
                 'confirm': function(modal) {
-                    $('.yes_button', modal.body).click(function() {
+                    $('[data-confirm-yes]', modal.body).click(function() {
                         var form = $('form.confirmation_form', modal.body);
                         modal.postForm(form.attr('action'), form.serialize() + '&yes=Yes');
                         return false;
                     });
-                    $('.no_button', modal.body).click(function() {
+                    $('[data-confirm-no]', modal.body).click(function() {
                         modal.close();
                         return false;
                     });
@@ -31,12 +33,12 @@ function initEditCreditLink(context) {
     });
 }
 
-function replaceCreditsPanel(creditsHtml) {
+function replacePanel(panelId, html) {
     $('.secondary_panels').removeClass('hidden');
-    $('#credits_panel').replaceWith(creditsHtml);
-    var panel = $('#credits_panel');
+    $('#' + panelId).replaceWith(html);
+    var panel = $('#' + panelId);
     applyGlobalBehaviours(panel);
-    initEditCreditLink(panel);
+    initPanelRefresh(panel);
     initEditToggle(panel.get(0));
     initEditChunkHover(panel);
 }
@@ -66,7 +68,7 @@ $(function() {
             dropdownLink.removeClass('active');
         });
     });
-    initEditCreditLink();
+    initPanelRefresh();
 
     initTagEditing();
 });

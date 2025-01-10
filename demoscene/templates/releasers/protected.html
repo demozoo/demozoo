@@ -5,7 +5,7 @@
     {% if request.user.is_staff %}
         <form action="{% url 'releaser_protected' releaser.id %}" class="confirmation_form" method="post">
             {% csrf_token %}
-            <input type="submit" name="yes" value="Unlock {% if releaser.is_group %}group{% else %}scener{% endif %}" class="yes_button" />
+            <input type="submit" name="yes" value="Unlock {% if releaser.is_group %}group{% else %}scener{% endif %}" />
         </form>
     {% endif %}
 {% endblock %}

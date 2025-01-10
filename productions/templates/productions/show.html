@@ -86,7 +86,7 @@
                                     {% if production.supertype == 'music' %}Add artwork{% else %}Add a screenshot{% endif %}
                                 </a>
                             </li>
-                            <li><a href="{{ production.urls.add_credit }}" class="add_credit">Add a credit</a></li>
+                            <li><a href="{{ production.urls.add_credit }}" data-panel-refresh="credits_panel">Add a credit</a></li>
                             <li><a href="{{ production.urls.edit_info_files }}" data-lightbox>Add an info file</a></li>
                             {% if production.can_have_soundtracks %}
                                 <li><a href="{{ production.urls.edit_soundtracks }}" data-lightbox>Add a soundtrack listing</a></li>
