@@ -17,7 +17,7 @@
                 {% endfor %}
 
                 {% if can_edit %}
-                    <a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="edit_credit">
+                    <a href="{% url 'production_edit_credit' production.id nick_credits.grouper.id %}" class="edit_credit" data-panel-refresh="credits_panel">
                         <img src="/static/images/icons/edit.png" width="16" height="16" alt="Edit credit" title="Edit credit" />
                     </a>
                 {% endif %}
@@ -26,7 +26,7 @@
     </ul>
     {% if can_edit %}
         <ul class="listing_actions">
-            <li>{% action_button url=production.urls.add_credit icon="add" classname="add_credit" label="Add credit" %}</li>
+            <li>{% action_button url=production.urls.add_credit icon="add" attrs='data-panel-refresh="credits_panel"' label="Add credit" %}</li>
         </ul>
     {% endif %}
 {% endblock %}

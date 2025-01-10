@@ -50,7 +50,7 @@ def megathumb(screenshot):
 
 # Values that are passed directly from attributes of the {% action_button %} or {% icon_button %} tag
 # to the template context
-COMMON_BUTTON_KWARGS = ["icon", "classname", "lightbox", "focus_empty", "title", "nofollow", "label"]
+COMMON_BUTTON_KWARGS = ["icon", "classname", "lightbox", "focus_empty", "title", "nofollow", "label", "attrs"]
 
 
 @register.inclusion_tag("tags/action_button.html")
