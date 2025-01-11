@@ -48,7 +48,7 @@ from productions.forms import (
     ProductionTagsForm,
 )
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, Screenshot
-from productions.panels import CreditsPanel
+from productions.panels import CreditsPanel, SoundtracksPanel
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
@@ -839,7 +839,21 @@ class EditSoundtracksView(EditingView):
                 description=("Edited soundtrack details for %s" % self.production.title),
                 user=request.user,
             )
-            return HttpResponseRedirect(self.production.get_absolute_url())
+
+            if request.accepts("text/html"):
+                return HttpResponseRedirect(self.production.get_absolute_url())
+            else:
+                soundtracks_panel = SoundtracksPanel(self.production, request.user)
+                soundtracks_html = soundtracks_panel.render_html()
+                return render_modal_workflow(
+                    request,
+                    None,
+                    json_data={
+                        "step": "done",
+                        "panel_html": soundtracks_html,
+                    },
+                )
+
         else:
             return self.render_to_response()
 

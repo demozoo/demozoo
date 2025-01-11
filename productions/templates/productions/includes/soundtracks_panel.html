@@ -2,13 +2,14 @@
 {% load production_tags ui_tags %}
 
 {% block classnames %}soundtracks_panel editable_chunk{% endblock %}
+{% block panel_attributes %}{{ block.super }} id="soundtracks_panel"{% endblock %}
 {% block title %}Soundtrack{% endblock %}
 
 {% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
-                {% edit_button url=production.urls.edit_soundtracks classname="edit_chunk" lightbox=True title="Edit soundtrack details" nofollow=True %}
+                {% edit_button url=production.urls.edit_soundtracks classname="edit_chunk" title="Edit soundtrack details" attrs='data-panel-refresh="soundtracks_panel"' %}
             </li>
         </ul>
     {% endif %}

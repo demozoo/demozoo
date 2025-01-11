@@ -144,6 +144,7 @@ class PackContentsPanel(EditablePanel):
 class SoundtracksPanel(EditablePanel):
     template_name = "productions/includes/soundtracks_panel.html"
     context_object_list_name = "soundtracks"
+    panel_refresh = True
 
     def get_object_list(self):
         if self.production.supertype == "production":

@@ -1764,6 +1764,42 @@ class TestEditSoundtracks(TestCase):
         edit = Edit.for_model(self.pondlife, True).first()
         self.assertIn("Edited soundtrack details for Pondlife", edit.description)
 
+    def test_post_ajax(self):
+        soundtrack_link = self.pondlife.soundtrack_links.get()
+        response = self.client.post(
+            "/productions/%d/edit_soundtracks/" % self.pondlife.id,
+            {
+                "form-TOTAL_FORMS": 3,
+                "form-INITIAL_FORMS": 1,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+                "form-0-ORDER": 1,
+                "form-0-id": soundtrack_link.id,
+                "form-0-soundtrack_id": soundtrack_link.soundtrack_id,
+                "form-0-DELETE": "form-0-DELETE",
+                "form-1-ORDER": 2,
+                "form-1-id": "",
+                "form-1-soundtrack_id": "",
+                "form-1-soundtrack_title": "Fantasia",
+                "form-1-soundtrack_byline_search": "",
+                "form-2-ORDER": 3,
+                "form-2-id": "",
+                "form-2-soundtrack_id": "",
+                "form-2-soundtrack_title": "",
+                "form-2-soundtrack_byline_search": "",
+                "form-2-DELETE": "form-2-DELETE",
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(self.pondlife.soundtrack_links.count(), 1)
+        self.assertEqual(self.pondlife.soundtrack_links.first().soundtrack.title, "Fantasia")
+
+        edit = Edit.for_model(self.pondlife, True).first()
+        self.assertIn("Edited soundtrack details for Pondlife", edit.description)
+
     def test_post_with_empty(self):
         soundtrack_link = self.pondlife.soundtrack_links.get()
         response = self.client.post(
