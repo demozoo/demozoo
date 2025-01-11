@@ -1,4 +1,4 @@
-<div class="panel {% block classnames %}{% endblock %}" {% block panel_attributes %}{% endblock %}>
+<div class="panel{% if not is_shown %} hidden{% endif %} {% block classnames %}{% endblock %}" {% block panel_attributes %}{% endblock %}>
     <h3 class="panel__title">{% block title %}{% endblock %}</h3>
     {% block actions %}{% endblock %}
     {% block body %}{% endblock %}
