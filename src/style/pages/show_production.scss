@@ -207,12 +207,12 @@
         .panel {
             float: left;
             width: 50%;
-        }
-
-        .credits_panel {
             &.hidden {
                 display: none;
             }
+        }
+
+        .credits_panel {
             ul.actions {
                 margin-right: 20px;
             }

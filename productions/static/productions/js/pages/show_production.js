@@ -34,8 +34,12 @@ function initPanelRefresh(context) {
 }
 
 function replacePanel(panelId, html) {
-    $('.secondary_panels').removeClass('hidden');
     $('#' + panelId).replaceWith(html);
+    if (document.querySelector('.secondary_panels > :not(.hidden)')) {
+        $('.secondary_panels').removeClass('hidden');
+    } else {
+        $('.secondary_panels').addClass('hidden');
+    }
     var panel = $('#' + panelId);
     applyGlobalBehaviours(panel);
     initPanelRefresh(panel);
