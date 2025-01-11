@@ -77,9 +77,9 @@ class AwardsPanel(StaticPanel):
 class EditablePanel(Component):
     context_object_list_name = "object_list"
     context_object_name = "production"
-    # if panel_refresh = True, render_html will not skip rendering the template in the case that is_shown is false
-    # (so that the template can render itself in hidden state and be revealed dynamically)
-    panel_refresh = False
+    # if render_hidden = True, the template will be rendered even when is_shown is False.
+    # (Used for panels using the panel-refresh mechanism that may toggle between hidden and visible states)
+    render_hidden = False
 
     def __init__(self, production, user, is_editing=False):
         self.production = production
@@ -99,7 +99,7 @@ class EditablePanel(Component):
         return bool(self.object_list)
 
     def render_html(self, parent_context=None):
-        if not self.is_shown and not self.panel_refresh:
+        if not self.is_shown and not self.render_hidden:
             return ""
         return super().render_html(parent_context)
 
@@ -116,7 +116,7 @@ class EditablePanel(Component):
 class CreditsPanel(EditablePanel):
     template_name = "productions/includes/credits_panel.html"
     context_object_list_name = "credits"
-    panel_refresh = True
+    render_hidden = True
 
     def get_object_list(self):
         return self.production.credits_for_listing()
@@ -144,7 +144,7 @@ class PackContentsPanel(EditablePanel):
 class SoundtracksPanel(EditablePanel):
     template_name = "productions/includes/soundtracks_panel.html"
     context_object_list_name = "soundtracks"
-    panel_refresh = True
+    render_hidden = True
 
     def get_object_list(self):
         if self.production.supertype == "production":

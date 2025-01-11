@@ -2,13 +2,14 @@
 {% load production_tags ui_tags %}
 
 {% block classnames %}pack_contents_panel editable_chunk{% endblock %}
+{% block panel_attributes %}{{ block.super }} id="pack_contents_panel"{% endblock %}
 {% block title %}Pack contents{% endblock %}
 
 {% block actions %}
     {% if can_edit %}
         <ul class="actions">
             <li>
-                {% edit_button url=production.urls.edit_pack_contents classname="edit_chunk" lightbox=True title="Edit pack contents" nofollow=True %}
+                {% edit_button url=production.urls.edit_pack_contents classname="edit_chunk" title="Edit pack contents" attrs='data-panel-refresh="pack_contents_panel"' %}
             </li>
         </ul>
     {% endif %}
