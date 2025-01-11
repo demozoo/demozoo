@@ -48,7 +48,7 @@ from productions.forms import (
     ProductionTagsForm,
 )
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, Screenshot
-from productions.panels import CreditsPanel, SoundtracksPanel
+from productions.panels import CreditsPanel, PackContentsPanel, SoundtracksPanel
 from productions.views.generic import CreateView, HistoryView, IndexView, ShowView, apply_order
 from screenshots.tasks import capture_upload_for_processing
 
@@ -902,7 +902,10 @@ class EditPackContentsView(EditingView):
                 description=("Edited pack contents of %s" % self.production.title),
                 user=request.user,
             )
-            return HttpResponseRedirect(self.production.get_absolute_url())
+            if request.accepts("text/html"):
+                return HttpResponseRedirect(self.production.get_absolute_url())
+            else:
+                return render_panel_refresh_response(request, self.production, PackContentsPanel)
         else:
             return self.render_to_response()
 
