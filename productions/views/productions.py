@@ -843,16 +843,7 @@ class EditSoundtracksView(EditingView):
             if request.accepts("text/html"):
                 return HttpResponseRedirect(self.production.get_absolute_url())
             else:
-                soundtracks_panel = SoundtracksPanel(self.production, request.user)
-                soundtracks_html = soundtracks_panel.render_html()
-                return render_modal_workflow(
-                    request,
-                    None,
-                    json_data={
-                        "step": "done",
-                        "panel_html": soundtracks_html,
-                    },
-                )
+                return render_panel_refresh_response(request, self.production, SoundtracksPanel)
 
         else:
             return self.render_to_response()
@@ -1097,20 +1088,24 @@ def protected(request, production_id):
         )
 
 
+def render_panel_refresh_response(request, production, panel_class):
+    panel = panel_class(production, request.user, is_editing=True)
+    html = panel.render_html()
+    return render_modal_workflow(
+        request,
+        None,
+        json_data={
+            "step": "done",
+            "panel_html": html,
+        },
+    )
+
+
 def render_credits_update(request, production):
     if request.accepts("text/html"):
         return HttpResponseRedirect(production.get_absolute_url() + "?editing=credits#credits_panel")
     else:
-        credits_panel = CreditsPanel(production, request.user, is_editing=True)
-        credits_html = credits_panel.render_html()
-        return render_modal_workflow(
-            request,
-            None,
-            json_data={
-                "step": "done",
-                "panel_html": credits_html,
-            },
-        )
+        return render_panel_refresh_response(request, production, CreditsPanel)
 
 
 def carousel(request, production_id):
