@@ -127,6 +127,9 @@ class AjaxConfirmationView(View):
 class EditingView(View):
     title = ""
     template_name = "generic/form.html"
+    # if panel_refresh = True, the delete button will not be given a data-lightbox attribute
+    # to allow the ModalWorkflow mechanism to handle it instead.
+    panel_refresh = False
 
     def get_title(self):
         return self.title
@@ -155,6 +158,7 @@ class EditingView(View):
             "html_form_class": "",
             "title": title,
             "html_title": clean_title,
+            "open_links_in_lightbox": not self.panel_refresh,
         }
 
     def render_to_response(self):

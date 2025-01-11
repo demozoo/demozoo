@@ -5,33 +5,6 @@ from laces.components import Component
 from productions.forms import ProductionTagsForm
 
 
-class CreditsPanel(Component):
-    template_name = "productions/includes/credits_panel.html"
-
-    def __init__(self, production, user, is_editing):
-        self.production = production
-        self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
-        self.can_edit = self.prompt_to_edit and user.is_authenticated
-        self.is_editing = is_editing
-
-    @cached_property
-    def credits(self):
-        return self.production.credits_for_listing()
-
-    @cached_property
-    def is_shown(self):
-        return bool(self.credits)
-
-    def get_context_data(self, parent_context):
-        return {
-            "is_shown": self.is_shown,
-            "production": self.production,
-            "credits": self.credits,
-            "can_edit": self.can_edit,
-            "is_editing": self.is_editing,
-        }
-
-
 class StaticPanel(Component):
     context_object_list_name = "object_list"
 
@@ -104,11 +77,15 @@ class AwardsPanel(StaticPanel):
 class EditablePanel(Component):
     context_object_list_name = "object_list"
     context_object_name = "production"
+    # if panel_refresh = True, render_html will not skip rendering the template in the case that is_shown is false
+    # (so that the template can render itself in hidden state and be revealed dynamically)
+    panel_refresh = False
 
-    def __init__(self, production, user):
+    def __init__(self, production, user, is_editing=False):
         self.production = production
         self.prompt_to_edit = settings.SITE_IS_WRITEABLE and (user.is_staff or not self.production.locked)
         self.can_edit = self.prompt_to_edit and user.is_authenticated
+        self.is_editing = is_editing
 
     def get_object_list(self):  # pragma: no cover
         return []
@@ -122,7 +99,7 @@ class EditablePanel(Component):
         return bool(self.object_list)
 
     def render_html(self, parent_context=None):
-        if not self.is_shown:
+        if not self.is_shown and not self.panel_refresh:
             return ""
         return super().render_html(parent_context)
 
@@ -131,7 +108,18 @@ class EditablePanel(Component):
             self.context_object_name: self.production,
             self.context_object_list_name: self.object_list,
             "can_edit": self.can_edit,
+            "is_shown": self.is_shown,
+            "is_editing": self.is_editing,
         }
+
+
+class CreditsPanel(EditablePanel):
+    template_name = "productions/includes/credits_panel.html"
+    context_object_list_name = "credits"
+    panel_refresh = True
+
+    def get_object_list(self):
+        return self.production.credits_for_listing()
 
 
 class PackContentsPanel(EditablePanel):
