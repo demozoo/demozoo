@@ -686,6 +686,7 @@ class AddCreditView(EditingView):
 
 class EditCreditView(EditingView):
     template_name = "productions/edit_credit.html"
+    panel_refresh = True
 
     def prepare(self, request, production_id, nick_id):
         self.production = get_object_or_404(Production, id=production_id)
@@ -756,6 +757,8 @@ class EditCreditView(EditingView):
                 "credit_formset": self.credit_formset,
                 "action_url": reverse("production_edit_credit", args=[self.production.id, self.nick.id]),
                 "submit_button_label": "Update credit",
+                "delete_url": reverse("production_delete_credit", args=[self.production.id, self.nick.id]),
+                "delete_link_text": "Delete credit",
             }
         )
         return context

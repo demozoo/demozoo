@@ -1,13 +1,5 @@
 {% extends "generic/form.html" %}
-{% load ui_tags %}
 
 {% block form_body %}
     {% include "productions/credit_form.html" %}
-{% endblock %}
-
-{% block after_form %}
-    <ul class="actions">
-        {% url 'production_delete_credit' production.id nick.id as delete_url %}
-        <li>{% action_button url=delete_url icon="delete" attrs="data-delete-link" label="Delete credit" %}</li>
-    </ul>
 {% endblock %}

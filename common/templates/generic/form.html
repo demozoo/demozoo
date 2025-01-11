@@ -30,7 +30,7 @@
     {% block after_form %}
         {% if delete_url and delete_link_text %}
             <ul class="actions">
-                <li>{% action_button url=delete_url icon="delete" label=delete_link_text lightbox=True %}</li>
+                <li>{% action_button url=delete_url icon="delete" attrs="data-delete-link" label=delete_link_text lightbox=open_links_in_lightbox %}</li>
             </ul>
         {% endif %}
     {% endblock %}
