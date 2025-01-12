@@ -1888,6 +1888,38 @@ class TestEditPackContents(TestCase):
         self.assertEqual(self.pondlife.pack_members.count(), 1)
         self.assertEqual(self.pondlife.pack_members.first().member.title, "Froob")
 
+    def test_post_ajax(self):
+        response = self.client.post(
+            "/productions/%d/edit_pack_contents/" % self.pondlife.id,
+            {
+                "form-TOTAL_FORMS": 3,
+                "form-INITIAL_FORMS": 1,
+                "form-MIN_NUM_FORMS": 0,
+                "form-MAX_NUM_FORMS": 1000,
+                "form-0-ORDER": 1,
+                "form-0-id": self.madrielle.id,
+                "form-0-member_id": self.madrielle.member_id,
+                "form-0-DELETE": "form-0-DELETE",
+                "form-1-ORDER": 2,
+                "form-1-id": "",
+                "form-1-member_id": "",
+                "form-1-member_title": "Froob",
+                "form-1-member_byline_search": "",
+                "form-2-ORDER": 3,
+                "form-2-id": "",
+                "form-2-member_id": "",
+                "form-2-member_title": "",
+                "form-2-member_byline_search": "",
+                "form-2-DELETE": "form-2-DELETE",
+            },
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            HTTP_ACCEPT="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(self.pondlife.pack_members.count(), 1)
+        self.assertEqual(self.pondlife.pack_members.first().member.title, "Froob")
+
     def test_post_with_empty(self):
         response = self.client.post(
             "/productions/%d/edit_pack_contents/" % self.pondlife.id,
