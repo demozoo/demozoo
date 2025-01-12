@@ -30,6 +30,7 @@ class StaticPanel(Component):
     def get_context_data(self, parent_context):
         return {
             self.context_object_list_name: self.object_list,
+            "is_shown": self.is_shown,
         }
 
 
