@@ -210,6 +210,28 @@
     },
 
     {
+        "pk": 10,
+        "model": "demoscene.releaser",
+        "fields": {
+            "name": "Grouphopper",
+            "is_group": false,
+            "created_at": "2014-01-01",
+            "updated_at": "2014-01-01"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "demoscene.nick",
+        "fields": {"releaser": 10, "name": "Grouphopper"}
+    },
+    {
+        "pk": 12,
+        "model": "demoscene.nickvariant",
+        "fields": {"nick": 11, "name": "Grouphopper", "search_title": "grouphopper"}
+    },
+
+
+    {
         "pk": 1,
         "model": "demoscene.membership",
         "fields": {"member": 1, "group": 2}
@@ -249,6 +271,16 @@
         "model": "demoscene.membership",
         "fields": {"member": 8, "group": 9}
     },
+    {
+        "pk": 9,
+        "model": "demoscene.membership",
+        "fields": {"member": 10, "group": 9, "is_current": false}
+    },
+    {
+        "pk": 10,
+        "model": "demoscene.membership",
+        "fields": {"member": 10, "group": 4, "is_current": false}
+    },    
 
     {
         "pk": 1,
