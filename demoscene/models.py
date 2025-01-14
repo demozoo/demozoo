@@ -193,7 +193,7 @@ class Releaser(URLMixin, LocationMixin, PrefetchSnoopingMixin, Lockable):
                 else:
                     # use full group names - not too long
                     group_names = [group.name for group in groups]
-                return "%s / %s" % (self.name, " ^ ".join("ex-"+group for group in group_names)) 
+                return "%s / %s" % (self.name, " ^ ".join("ex-"+group for group in group_names))
             else:
                 return self.name
 
@@ -402,7 +402,7 @@ class Nick(PrefetchSnoopingMixin, models.Model):
                 else:
                     # use full group names - not too long
                     group_names = [group.name for group in groups]
-                return "%s / %s" % (self.name, " ^ ".join("ex-"+group for group in group_names)) 
+                return "%s / %s" % (self.name, " ^ ".join("ex-"+group for group in group_names))
             else:
                 return self.name
 
