@@ -171,6 +171,10 @@ class TestReleaserString(TestCase):
         # do not abbreviate groups that don't have abbreviations (duh)
         self.assertEqual(laesq.name_with_affiliations(), "LaesQ / Papaya Dezign ^ RA")
 
+        grouphopper = Releaser.objects.get(name="Grouphopper")
+        # add ex- to group names if no current groups
+        self.assertEqual(grouphopper.name_with_affiliations(), "Grouphopper / ex-Future Crew ^ ex-H-Prg")
+
 
 class TestReleaserNicks(TestCase):
     fixtures = ["tests/gasman.json"]
