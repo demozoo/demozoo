@@ -648,33 +648,47 @@ class DuplicateProductionExternalLinks(StaffOnlyMixin, Report):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        def prod_duplicates_by_link_class(link_class):
-            return Production.objects.raw(
-                """
-                SELECT DISTINCT productions_production.*, productions_productionlink.parameter
-                FROM productions_production
-                INNER JOIN productions_productionlink ON (
-                    productions_production.id = productions_productionlink.production_id
-                    AND productions_productionlink.link_class = %s
-                    AND productions_productionlink.is_download_link = 'f')
-                INNER JOIN productions_productionlink AS other_link ON (
-                    productions_productionlink.link_class = other_link.link_class
-                    AND productions_productionlink.parameter = other_link.parameter
-                    AND productions_productionlink.id <> other_link.id
-                    AND other_link.is_download_link = 'f'
-                )
-                ORDER BY productions_productionlink.parameter
-            """,
-                [link_class],
+        link_ids = [
+            r.id
+            for r in ProductionLink.objects.raw("""
+            SELECT
+                productions_productionlink.id,
+                productions_productionlink.link_class,
+                productions_productionlink.parameter
+            FROM productions_productionlink INNER JOIN (
+                SELECT productions_productionlink.link_class, productions_productionlink.parameter
+                FROM productions_productionlink
+                WHERE productions_productionlink.is_download_link = 'f'
+                GROUP BY productions_productionlink.link_class, productions_productionlink.parameter
+                HAVING COUNT(*) > 1
+                ORDER BY productions_productionlink.link_class, productions_productionlink.parameter
+            ) AS dupes
+            ON (
+                productions_productionlink.link_class = dupes.link_class
+                AND productions_productionlink.parameter = dupes.parameter
+                AND productions_productionlink.is_download_link = 'f'
             )
+        """)
+        ]
 
-        prod_dupes = {}
-        for link_class in ProductionLink.objects.distinct().values_list("link_class", flat=True):
-            prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
+        duplicate_prods = (
+            Production.objects.filter(links__id__in=link_ids)
+            .annotate(
+                duplicate_link_class=F("links__link_class"),
+                duplicate_link_parameter=F("links__parameter"),
+            )
+            .order_by("duplicate_link_class", "duplicate_link_parameter")
+            .prefetch_related(
+                "author_nicks",
+                "author_affiliation_nicks",
+                "author_nicks__releaser",
+                "author_affiliation_nicks__releaser",
+            )
+        )
 
         context.update(
             {
-                "prod_dupes": prod_dupes,
+                "duplicate_prods": duplicate_prods,
             }
         )
         return context
