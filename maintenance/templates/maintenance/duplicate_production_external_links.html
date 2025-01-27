@@ -7,10 +7,11 @@
 
 {% block base_main %}
     <div id="main_column">
-        {% for column, productions in prod_dupes.items %}
-            <h2>Productions matching by {{ column }}:</h2>
+        {% regroup duplicate_prods by duplicate_link_class as link_class_list %}
+        {% for link_class in link_class_list %}
+            <h2>Productions matching by {{ link_class.grouper }}:</h2>
             <div class="panel report">
-                {% production_listing productions %}
+                {% production_listing link_class.list %}
             </div>
         {% endfor %}
     </div>
