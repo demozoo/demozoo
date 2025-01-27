@@ -132,13 +132,16 @@ class TestReports(TestCase):
         response = self.client.get("/maintenance/same_named_prods_without_special_chars/")
         self.assertEqual(response.status_code, 200)
 
-    def test_duplicate_external_links(self):
+    def test_duplicate_production_external_links(self):
         Production.objects.get(title="Pondlife").links.create(link_class="PouetProduction", parameter="123")
         Production.objects.get(title="Madrielle").links.create(link_class="PouetProduction", parameter="123")
+        response = self.client.get("/maintenance/duplicate_production_external_links/")
+        self.assertEqual(response.status_code, 200)
 
+    def test_duplicate_releaser_external_links(self):
         Releaser.objects.get(name="Gasman").external_links.create(link_class="PouetGroup", parameter="123")
         Releaser.objects.get(name="Raww Arse").external_links.create(link_class="PouetGroup", parameter="123")
-        response = self.client.get("/maintenance/duplicate_external_links/")
+        response = self.client.get("/maintenance/duplicate_releaser_external_links/")
         self.assertEqual(response.status_code, 200)
 
     def test_duplicate_releaser_kestra_links(self):

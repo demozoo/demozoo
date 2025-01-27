@@ -1,0 +1,17 @@
+{% extends "maintenance/base.html" %}
+{% load production_tags %}
+
+{% block html_title %}Duplicate production external links - Demozoo{% endblock %}
+
+{% block body_class %}maintenance_report{% endblock %}
+
+{% block base_main %}
+    <div id="main_column">
+        {% for column, productions in prod_dupes.items %}
+            <h2>Productions matching by {{ column }}:</h2>
+            <div class="panel report">
+                {% production_listing productions %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -640,10 +640,10 @@ class SameNamedProdsWithoutSpecialChars(StaffOnlyMixin, Report):
         return context
 
 
-class DuplicateExternalLinks(StaffOnlyMixin, Report):
-    title = "Duplicate external links"
-    template_name = "maintenance/duplicate_external_links.html"
-    name = "duplicate_external_links"
+class DuplicateProductionExternalLinks(StaffOnlyMixin, Report):
+    title = "Duplicate production external links"
+    template_name = "maintenance/duplicate_production_external_links.html"
+    name = "duplicate_production_external_links"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -668,6 +668,26 @@ class DuplicateExternalLinks(StaffOnlyMixin, Report):
                 [link_class],
             )
 
+        prod_dupes = {}
+        for link_class in ProductionLink.objects.distinct().values_list("link_class", flat=True):
+            prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
+
+        context.update(
+            {
+                "prod_dupes": prod_dupes,
+            }
+        )
+        return context
+
+
+class DuplicateReleaserExternalLinks(StaffOnlyMixin, Report):
+    title = "Duplicate releaser external links"
+    template_name = "maintenance/duplicate_releaser_external_links.html"
+    name = "duplicate_releaser_external_links"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         def releaser_duplicates_by_link_class(link_class):
             return Releaser.objects.raw(
                 """
@@ -686,17 +706,12 @@ class DuplicateExternalLinks(StaffOnlyMixin, Report):
                 [link_class],
             )
 
-        prod_dupes = {}
-        for link_class in ProductionLink.objects.distinct().values_list("link_class", flat=True):
-            prod_dupes[link_class] = prod_duplicates_by_link_class(link_class)
-
         releaser_dupes = {}
         for link_class in ReleaserExternalLink.objects.distinct().values_list("link_class", flat=True):
             releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
 
         context.update(
             {
-                "prod_dupes": prod_dupes,
                 "releaser_dupes": releaser_dupes,
             }
         )
@@ -1861,7 +1876,8 @@ reports = [
             ProdsWithSameNamedCredits,
             SameNamedProdsBySameReleaser,
             SameNamedProdsWithoutSpecialChars,
-            DuplicateExternalLinks,
+            DuplicateProductionExternalLinks,
+            DuplicateReleaserExternalLinks,
             DuplicateReleaserKestraLinks,
             MatchingRealNames,
             MatchingSurnames,
