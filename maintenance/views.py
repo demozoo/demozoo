@@ -4,7 +4,7 @@ from ansipants import ANSIDecoder
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse
@@ -688,31 +688,35 @@ class DuplicateReleaserExternalLinks(StaffOnlyMixin, Report):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        def releaser_duplicates_by_link_class(link_class):
-            return Releaser.objects.raw(
-                """
-                SELECT DISTINCT demoscene_releaser.*, demoscene_releaserexternallink.parameter
-                FROM demoscene_releaser
-                INNER JOIN demoscene_releaserexternallink ON (
-                    demoscene_releaser.id = demoscene_releaserexternallink.releaser_id
-                    AND demoscene_releaserexternallink.link_class = %s)
-                INNER JOIN demoscene_releaserexternallink AS other_link ON (
-                    demoscene_releaserexternallink.link_class = other_link.link_class
-                    AND demoscene_releaserexternallink.parameter = other_link.parameter
-                    AND demoscene_releaserexternallink.id <> other_link.id
-                )
-                ORDER BY demoscene_releaserexternallink.parameter
-            """,
-                [link_class],
+        link_ids = [
+            r.id
+            for r in ReleaserExternalLink.objects.raw("""
+            SELECT demoscene_releaserexternallink.* FROM demoscene_releaserexternallink INNER JOIN (
+                SELECT demoscene_releaserexternallink.link_class, demoscene_releaserexternallink.parameter
+                FROM demoscene_releaserexternallink
+                GROUP BY demoscene_releaserexternallink.link_class, demoscene_releaserexternallink.parameter
+                HAVING COUNT(*) > 1
+                ORDER BY demoscene_releaserexternallink.link_class, demoscene_releaserexternallink.parameter
+            ) AS dupes
+            ON (
+                demoscene_releaserexternallink.link_class = dupes.link_class
+                AND demoscene_releaserexternallink.parameter = dupes.parameter
             )
+        """)
+        ]
 
-        releaser_dupes = {}
-        for link_class in ReleaserExternalLink.objects.distinct().values_list("link_class", flat=True):
-            releaser_dupes[link_class] = releaser_duplicates_by_link_class(link_class)
+        duplicate_releasers = (
+            Releaser.objects.filter(external_links__id__in=link_ids)
+            .annotate(
+                duplicate_link_class=F("external_links__link_class"),
+                duplicate_link_parameter=F("external_links__parameter"),
+            )
+            .order_by("duplicate_link_class", "duplicate_link_parameter")
+        )
 
         context.update(
             {
-                "releaser_dupes": releaser_dupes,
+                "duplicate_releasers": duplicate_releasers,
             }
         )
         return context

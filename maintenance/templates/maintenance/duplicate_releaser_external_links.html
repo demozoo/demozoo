@@ -7,11 +7,12 @@
 
 {% block base_main %}
     <div id="main_column">
-        {% for column, releasers in releaser_dupes.items %}
-            <h2>Releasers matching by {{ column }}:</h2>
+        {% regroup duplicate_releasers by duplicate_link_class as link_class_list %}
+        {% for link_class in link_class_list %}
+            <h2>Releasers matching by {{ link_class.grouper }}:</h2>
             <div class="panel report">
                 <ul class="releaser_list">
-                    {% for releaser in releasers %}
+                    {% for releaser in link_class.list %}
                         <li class="{% if releaser.is_group %}group{% else %}scener{% endif %}">
                             <a href="{{ releaser.get_absolute_url }}">{{ releaser.name }}</a>
                         </li>
