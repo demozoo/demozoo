@@ -101,7 +101,22 @@ IMAGE_FILE_EXTENSIONS = [
     "xpm",
 ]
 
-PIL_READABLE_FORMATS = ["BMP", "GIF", "ICO", "JPEG", "PCD", "PCX", "PNG", "PPM", "PSD", "TGA", "TIFF", "XBM", "XPM"]
+PIL_READABLE_FORMATS = [
+    "BMP",
+    "GIF",
+    "ICO",
+    "JPEG",
+    "MPO",
+    "PCD",
+    "PCX",
+    "PNG",
+    "PPM",
+    "PSD",
+    "TGA",
+    "TIFF",
+    "XBM",
+    "XPM",
+]
 WEB_USABLE_FORMATS = ["PNG", "JPEG", "GIF"]
 EXTENSIONS_BY_FORMAT = {"PNG": "png", "JPEG": "jpg", "GIF": "gif"}
 
@@ -148,6 +163,7 @@ class PILConvertibleImage(object):
             # JPG and potentially losing more fidelity may not me ideal.)
             output = io.BytesIO()
             img = self.image
+            img = ImageOps.exif_transpose(img)
             if img.mode == "RGBX":  # pragma: no cover
                 # image is padded RGB (as seen in certain .tif files) which can't be written as PNG.
                 # Possibly doesn't happen any more as of Pillow 10.4.0...
