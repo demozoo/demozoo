@@ -1911,6 +1911,11 @@ class LivecodeDemozooEvent(UrlPattern):
     pattern = "/serie/<str>.html"
 
 
+class AtariLegendMenuset(UrlPattern):
+    site = Site("Atari Legend", url="https://www.atarilegend.com/")
+    pattern = "/menusets/<int>"
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount,
     BlueskyAccount,
@@ -1977,6 +1982,7 @@ RELEASER_LINK_TYPES = [
     InstagramAccount,
     PolyworkUser,
     TikTokUser,
+    AtariLegendMenuset,
     MastodonAccount,
     DemopartyNetUser,
     WaybackMachinePage,
