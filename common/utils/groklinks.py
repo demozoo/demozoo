@@ -1881,6 +1881,11 @@ class MastodonAccount(AbstractBaseUrl):
             "nepeta.moe",
             "s.basspistol.org",
             "deadinsi.de",
+            "digipres.club",
+            "livellosegreto.it",
+            "mastodon.coffee",
+            "chitter.xyz",
+            "haunted.computer",
         ],
     )
 
