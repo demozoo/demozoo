@@ -7,6 +7,7 @@ from common.utils.groklinks import Site, UrlPattern, grok_link_by_types
 from demoscene.models import Releaser, ReleaserExternalLink
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
+from bbs.models import BBS, BBSExternalLink
 
 
 class TestSiteMatching(TestCase):
@@ -253,6 +254,13 @@ class TestLinkRecognition(TestCase):
         self.assertEqual(link.link_class, "DOPEdition")
         self.assertEqual(link.parameter, "pain/pain1207final")
         self.assertEqual(str(link.link), "https://diskmag.conspiracy.hu/magazine/pain/#/edition=pain1207final")
+
+    def test_telnet_link(self):
+        starport = BBS.objects.get(name="StarPort")
+        link = BBSExternalLink(bbs=starport)
+        link.url = "telnet://starport.com"
+        self.assertEqual(link.parameter, "starport.com")
+        self.assertEqual(link.link_class, "TelnetLink")
 
     def test_retroscene_events_release(self):
         pondlife = Production.objects.get(title="Pondlife")

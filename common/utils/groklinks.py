@@ -1179,6 +1179,14 @@ class VimeoUser(AbstractBaseUrl):
     ]
 
 
+class TelnetLink(AbstractBaseUrl):
+    site = Site("Telnet", classname="telnet", title_format="Telnet link for %s", icon_path="images/icons/external_sites/telnet.png")
+    canonical_format = "telnet://%s"
+    tests = [
+        regex_match(r"telnet://(.*)"),
+    ]
+
+
 class DemosceneTvVideo(AbstractBaseUrl):
     site = Site("Demoscene.tv", classname="demoscene_tv", url="http://demoscene.tv/")
     canonical_format = "http://demoscene.tv/page.php?id=172&vsmaction=view_prod&id_prod=%s"
@@ -1991,6 +1999,7 @@ RELEASER_LINK_TYPES = [
     MastodonAccount,
     DemopartyNetUser,
     WaybackMachinePage,
+    TelnetLink,
     BaseUrl,
 ]
 
@@ -2115,6 +2124,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "DOPEdition",
     "EventsRetrosceneRelease",
     "SpectrumComputingRelease",
+    "TelnetLink",
 ]
 
 PARTY_LINK_TYPES = [
@@ -2174,6 +2184,7 @@ PARTY_SERIES_LINK_TYPES = [
 BBS_LINK_TYPES = [
     PouetBBS,
     CsdbBBS,
+    TelnetLink,
     KestraBitworldAuthor,
     BBSmatesBBS,
     Defacto2Group,
