@@ -3,11 +3,11 @@ from urllib.parse import urlparse
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
+from bbs.models import BBS, BBSExternalLink
 from common.utils.groklinks import Site, UrlPattern, grok_link_by_types
 from demoscene.models import Releaser, ReleaserExternalLink
 from parties.models import Party, PartyExternalLink
 from productions.models import Production, ProductionLink
-from bbs.models import BBS, BBSExternalLink
 
 
 class TestSiteMatching(TestCase):
