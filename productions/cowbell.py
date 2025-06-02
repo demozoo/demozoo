@@ -97,7 +97,7 @@ STREAMING_MUSIC = re.compile(r".*\.(mp3|ogg|wav|opus|flac)$", re.I)
 OPENMPT_MUSIC = re.compile(
     r".*\.(mod|s3m|xm|it|mptm|stm|nst|m15|stk|wow|ult|669|mtm|med|far|mdl|ams|dsm|amf|okt|dmf|ptm"
     r"|psm|mt2|dbm|digi|imf|j2b|gdm|umx|plm|mo3|xpk|ppm|mmcmp|sfx|sfx2|mms|pt36|nt|ft|fmt|dsym"
-    r"|symmod|667|gtk|gt2|xmf|stx|mus|puma|ftm|fc|fc13|fc14|smod|gmc|cba|rtm|ims|etx|unic)$",
+    r"|symmod|667|gtk|gt2|xmf|stx|mus|puma|ftm|fc|fc13|fc14|smod|gmc|cba|rtm|ims|etx|unic|tcb)$",
     re.I,
 )
 # Recognise .sid and .psid files on Modland as SID files, UNLESS they are .sid files in
