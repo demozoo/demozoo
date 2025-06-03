@@ -1,3 +1,5 @@
+import re
+
 from django import template
 from django.urls import reverse
 
@@ -81,3 +83,13 @@ def icon_button(url=None, **kwargs):
 @register.inclusion_tag("tags/icon_button.html")
 def edit_button(icon="edit", **kwargs):
     return icon_button(icon=icon, **kwargs)
+
+
+# replace (s)ftp:// urls with clickable link
+@register.filter(is_safe=True)
+def urlize_ftp(text):
+    if "ftp://" in text:
+        return re.sub(r'((s?ftp):\/\/(?:([^@\s]+)@)?([^\?\s\:]+)(?:\:([0-9]+))?(?:\?(.+))?)',
+                      r'<a href="\1">\1</a>',
+                      text)
+    return text
