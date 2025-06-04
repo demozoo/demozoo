@@ -1180,8 +1180,12 @@ class VimeoUser(AbstractBaseUrl):
 
 
 class TelnetLink(AbstractBaseUrl):
-    site = Site("Telnet", classname="telnet", title_format="Telnet link for %s",
-                icon_path="images/icons/external_sites/telnet.png")
+    site = Site(
+        "Telnet",
+        classname="telnet",
+        title_format="Telnet link for %s",
+        icon_path="images/icons/external_sites/telnet.png",
+    )
     canonical_format = "telnet://%s"
     tests = [
         regex_match(r"telnet://(.*)"),

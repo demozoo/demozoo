@@ -406,11 +406,9 @@ class GroupNicksWithBrackets(StaffOnlyMixin, Report):
 
         nicks = (
             Nick.objects.filter(
-                Q(name__contains="(")|
-                Q(name__contains="[")|
-                Q(name__contains="{")|
-                Q(name__contains="<")).
-                filter(releaser__is_group=True)
+                Q(name__contains="(") | Q(name__contains="[") | Q(name__contains="{") | Q(name__contains="<")
+            )
+            .filter(releaser__is_group=True)
             .extra(
                 where=["demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"],
                 params=[self.exclusion_name],
