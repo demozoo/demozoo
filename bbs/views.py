@@ -72,7 +72,7 @@ def tagged(request, tag_name):
         tag = Tag.objects.get(name=tag_name)
     except Tag.DoesNotExist:
         tag = Tag(name=tag_name)
-    queryset = BBS.objects.filter(tags__name=tag_name).order_by("name")
+    queryset = BBS.objects.filter(tags__name=tag_name).order_by(Lower("name"))
 
     page = get_page(queryset, request.GET.get("page", "1"))
 
@@ -104,7 +104,7 @@ def show(request, bbs_id):
         .defer("group__notes")
         .order_by(
             Concat("role", Value("999")),  # sort role='' after the numbered ones. Ewww.
-            "group__name",
+            Lower("group__name"),
         )
     )
 

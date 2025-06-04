@@ -6,6 +6,7 @@ from functools import lru_cache
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
+from django.db.models.functions import Lower
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.forms import Media
@@ -385,7 +386,7 @@ class Production(URLMixin, PrefetchSnoopingMixin, Commentable, Lockable):
         return (
             self.credits.select_related("nick__releaser")
             .extra(select={"category_order": "CASE WHEN category = 'Other' THEN 'zzzother' ELSE category END"})
-            .order_by("nick__name", "category_order")
+            .order_by(Lower("nick__name"), "category_order")
         )
 
     @property
