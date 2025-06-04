@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import connection
 from django.db.models import F, Q
+from django.db.models.functions import Lower
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse
@@ -404,12 +405,17 @@ class GroupNicksWithBrackets(StaffOnlyMixin, Report):
         context = super().get_context_data(**kwargs)
 
         nicks = (
-            Nick.objects.filter(name__contains="(", releaser__is_group=True)
+            Nick.objects.filter(
+                Q(name__contains="(")|
+                Q(name__contains="[")|
+                Q(name__contains="{")|
+                Q(name__contains="<")).
+                filter(releaser__is_group=True)
             .extra(
                 where=["demoscene_nick.id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)"],
                 params=[self.exclusion_name],
             )
-            .order_by("name")
+            .order_by(Lower("name"))
         )
         context.update(
             {
