@@ -1,4 +1,4 @@
-
+{% load ui_tags }
 
 {% with commentable.get_comments as comments %}
     {% if comments or site_is_writeable %}
@@ -16,7 +16,7 @@
                             {% endif %}
                             <b>{{ comment.user.username }}</b> - {{ comment.created_at|date:"H:i j F Y" }}
                             <a href="{{ comment.get_absolute_url }}">#</a>
-                            <p>{{ comment.body|urlize|linebreaks }}</p>
+                            <p>{{ comment.body|urlize|urlize_ftp|linebreaks }}</p>
                         </div>
                     {% endfor %}
                 </div>
