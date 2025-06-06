@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from maintenance.models import UnsafeLink
+from maintenance.models import UntrustedLinkIdentifier
 
-class UnsafeLinkAdmin(admin.ModelAdmin):
+class UntrustedLinkIdentifierAdmin(admin.ModelAdmin):
     list_display=["url_part"]
     # Custom description in the admin interface
     fieldsets = (
@@ -10,10 +10,10 @@ class UnsafeLinkAdmin(admin.ModelAdmin):
             'fields': ('url_part',)
         }),
         ('Instructions', {
-            'description': 'Add parts of URLs that you identify as unsafe. "Unsafe links" report will use these to list'
-            'unsafe production links',
+            'description': 'Add parts of URLs that you identify as untrsuted. "Untrusted links" report will use '
+            'these to list untrusted production links',
             'fields': (),
         })
     )
 
-admin.site.register(UnsafeLink, UnsafeLinkAdmin)
+admin.site.register(UntrustedLinkIdentifier, UntrustedLinkIdentifierAdmin)
