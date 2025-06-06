@@ -14,6 +14,7 @@ from django.views.generic.base import TemplateView
 
 from bbs.models import BBS, TextAd
 from comments.models import Comment
+from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required
@@ -107,6 +108,12 @@ class FilterableProductionReport(Report):
             }
         )
         return context
+
+
+class ProdsWithoutRecognizedDownloadLinks(StaffOnlyMixin, FilterableProductionReport):
+    title = "Productions with no recognized download links"
+    name = "no_recognized_links"
+    report_class = reports_module.ProductionsWithoutRecognizedDownloadLinks
 
 
 class ProdsWithoutExternalLinks(StaffOnlyMixin, FilterableProductionReport):
@@ -1167,7 +1174,7 @@ class EmptyCompetitions(StaffOnlyMixin, Report):
 
 
 class UntrustedLinks(StaffOnlyMixin, Report):
-    title = "Untrusted download / external links"
+    title = "Productions with untrusted download / external links"
     template_name = "maintenance/production_report.html"
     name = "untrusted_links"
 
@@ -1182,8 +1189,6 @@ class UntrustedLinks(StaffOnlyMixin, Report):
         for idents in untrusted_url_idents:
             query |= Q(links__parameter__icontains=idents)
 
-        print(query)
-
         productions = (
             Production.objects.filter(links__isnull=False)
             .filter(query)
@@ -1196,7 +1201,7 @@ class UntrustedLinks(StaffOnlyMixin, Report):
             {
                 "productions": productions,
                 # don't implement exclusions on this report, because it's possible that a URL being
-                # untrusted today will be tristed in the future, and we don't want those cases to be
+                # untrusted today will be trusted in the future, and we don't want those cases to be
                 # hidden through exclusions
                 "mark_excludable": False,
             }
@@ -1883,7 +1888,7 @@ class ExternalReport(object):
 
 reports = [
     (
-        "Supporting data",
+        "Production links",
         [
             ProdsWithoutExternalLinks,
             ProdsWithoutScreenshots,
@@ -1894,6 +1899,13 @@ reports = [
             ProdsWithoutPlatformsExcludingLost,
             ProdsWithoutPlatformsWithDownloads,
             TrackedMusicWithoutPlayableLinks,
+            UntrustedLinks,
+            ProdsWithoutRecognizedDownloadLinks,
+        ],
+    ),
+    (
+        "Supporting data",
+        [
             UnresolvedScreenshots,
             ProdsWithBlurbs,
             TinyIntrosWithoutDownloadLinks,
@@ -1923,7 +1935,6 @@ reports = [
             CreditsToMoveToText,
             SceneorgDownloadLinksWithUnicode,
             EmptyCompetitions,
-            UntrustedLinks,
         ],
     ),
     (
