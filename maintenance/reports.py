@@ -230,6 +230,7 @@ class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
 
         return (
             Production.objects.filter(links__isnull=False)
+            .filter(links__is_download_link=True)
             .filter(query)
             .distinct()
             .exclude(id__in=excluded_ids)
