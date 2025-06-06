@@ -213,6 +213,30 @@ class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
         )
 
 
+class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
+    master_list_key = "demozoo:productions:without_recognized_download_link"
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(report_name="without_recognized_download_link").values_list("record_id", flat=True)
+
+        recognized_link_classes = groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES
+        if not recognized_link_classes:
+            return
+
+        query = Q()
+        for link_class in recognized_link_classes:
+            query &= ~Q(links__link_class=link_class)
+
+        return (
+            Production.objects.filter(links__isnull=False)
+            .filter(query)
+            .distinct()
+            .exclude(id__in=excluded_ids)
+            .exclude(tags__name__in=["lost", "corrupted-file"])
+            .values_list("id", flat=True)
+        )
+
 class RandomisedProductionsReport(object):
     @classmethod
     def run(cls, limit=100):
