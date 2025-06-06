@@ -26,7 +26,7 @@ from janeway.models import Credit as JanewayCredit
 from janeway.models import Release as JanewayRelease
 from maintenance import reports as reports_module
 from maintenance.forms import ProductionFilterForm
-from maintenance.models import Exclusion, UnsafeLink
+from maintenance.models import Exclusion, UntrustedLinkIdentifier
 from mirror.models import ArchiveMember
 from parties.models import Competition, Party, PartyExternalLink, ResultsFile
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, ProductionLink, ProductionType
@@ -1170,19 +1170,21 @@ class EmptyCompetitions(StaffOnlyMixin, Report):
         return context
 
 
-class UnsafeLinks(StaffOnlyMixin, Report):
-    title = "Unsafe download / external links"
+class UntrustedLinks(StaffOnlyMixin, Report):
+    title = "Untrusted download / external links"
     template_name = "maintenance/production_report.html"
-    name = "unsafe_links"
+    name = "untrusted_links"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        unsafe_urls = UnsafeLink.objects.values_list('url_part', flat=True)
+        untrusted_url_idents = UntrustedLinkIdentifier.objects.values_list('url_part', flat=True)
+        if not untrusted_url_idents:
+            return context
 
         query = Q()
-        for url in unsafe_urls:
-            query |= Q(links__parameter__icontains=url)
+        for idents in untrusted_url_idents:
+            query |= Q(links__parameter__icontains=idents)
 
         print(query)
 
@@ -1198,7 +1200,7 @@ class UnsafeLinks(StaffOnlyMixin, Report):
             {
                 "productions": productions,
                 # don't implement exclusions on this report, because it's possible that a URL being
-                # unsafe today will be safe in the future, and we don't want those cases to be
+                # untrusted today will be tristed in the future, and we don't want those cases to be
                 # hidden through exclusions
                 "mark_excludable": False,
             }
@@ -1925,7 +1927,7 @@ reports = [
             CreditsToMoveToText,
             SceneorgDownloadLinksWithUnicode,
             EmptyCompetitions,
-            UnsafeLinks,
+            UntrustedLinks,
         ],
     ),
     (
