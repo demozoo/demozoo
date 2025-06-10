@@ -1179,6 +1179,19 @@ class VimeoUser(AbstractBaseUrl):
     ]
 
 
+cables = Site("Cables", url="https://cables.gl/", icon_path="images/icons/external_sites/cables.png")
+
+
+class CablesUser(UrlPattern):
+    site = cables
+    pattern = "/user/<slug>"
+
+
+class CablesProd(UrlPattern):
+    site = cables
+    pattern = "/p/<slug>"
+
+
 class TelnetLink(AbstractBaseUrl):
     site = Site(
         "Telnet",
@@ -2005,6 +2018,7 @@ RELEASER_LINK_TYPES = [
     DemopartyNetUser,
     WaybackMachinePage,
     TelnetLink,
+    CablesUser,
     BaseUrl,
 ]
 
@@ -2065,6 +2079,7 @@ PRODUCTION_LINK_TYPES = [
     EventsRetrosceneRelease,
     SpectrumComputingRelease,
     WaybackMachinePage,
+    CablesProd,
     BaseUrl,
 ]
 
@@ -2130,6 +2145,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "EventsRetrosceneRelease",
     "SpectrumComputingRelease",
     "TelnetLink",
+    "CablesProd"
 ]
 
 PARTY_LINK_TYPES = [
