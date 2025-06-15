@@ -3,7 +3,6 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-
 from common.views import writeable_site_required
 from demoscene.models import Edit, Releaser
 from pouet.matching import get_match_data, get_nogroup_prods
