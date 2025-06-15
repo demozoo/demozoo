@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 
 from common.views import writeable_site_required
 from demoscene.models import Edit, Releaser
-from pouet.matching import get_match_data
+from pouet.matching import get_match_data, get_nogroup_prods
 from pouet.models import GroupMatchInfo
 from productions.models import Production, ProductionLink
 
@@ -32,6 +32,22 @@ def groups(request):
             "groups": groups,
             "mode": mode,
         },
+    )
+
+
+@login_required
+def nogroup_prods(request):
+    # get list of prods with no releasers
+    nogroup_prods = get_nogroup_prods()
+    nogroup_prods_amount = len(nogroup_prods)
+
+    return render(
+        request,
+        "pouet/nogroup-prods.html",
+        {
+            'nogroup_prods_amount': nogroup_prods_amount,
+            'nogroup_prods': nogroup_prods,
+        }
     )
 
 
