@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block base_main %}
+    <h2>Pouet release matching</h2>
+
+    <p>
+        Show:
+            <a href="{% url 'pouet_groups' %}">Groups with potential matches</a> |
+            <a href="{% url 'pouet_groups' %}?mode=pouet_unmatched">Unmatched on Pouet</a> |
+            <a href="{% url 'pouet_groups' %}?mode=all">All groups</a> |
+            <strong>Prods with no group assigned</strong>
+    </p>
+
+    <ul>
+        <li>{{ nogroup_prods_amount }} Pouet productions with no group assigned (and thus slipping trough the matching algorithm).<br />
+            Attention: There's no matching in place. Before adding any of these entries to Demozoo, first check if they not already
+            exist using the same or a similar name. Also consider all existing credits information.<br /><br /></li>
+        {% for title, url in nogroup_prods %}
+            <li><a href="{{url}}">{{ title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
