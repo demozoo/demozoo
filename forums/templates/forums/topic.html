@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load demoscene_tags compress laces %}
+{% load demoscene_tags ui_tags compress laces %}
 
 
 {% block html_title %}{{ topic.title }} - Discussions - Demozoo{% endblock %}
@@ -27,7 +27,7 @@
                     {% endif %}
                     <b>{{ post.user.username }}</b> - {{ post.created_at|date:"H:i j F Y" }}
                     <a href="{{ post.get_absolute_url }}" title="Permalink">#</a>
-                    <p>{{ post.body|urlize|linebreaks }}</p>
+                    <p>{{ post.body|urlize|urlize_ftp|linebreaks }}</p>
                 </div>
             {% endfor %}
         </div>
