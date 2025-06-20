@@ -14,7 +14,6 @@ from django.views.generic.base import TemplateView
 
 from bbs.models import BBS, TextAd
 from comments.models import Comment
-from common.utils import groklinks
 from common.utils.fuzzy_date import FuzzyDate
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from maintenance.models import UntrustedLinkIdentifier
 
+
 class UntrustedLinkIdentifierAdmin(admin.ModelAdmin):
     list_display=["url_part"]
     # Custom description in the admin interface
