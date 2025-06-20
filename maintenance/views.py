@@ -26,7 +26,7 @@ from janeway.models import Credit as JanewayCredit
 from janeway.models import Release as JanewayRelease
 from maintenance import reports as reports_module
 from maintenance.forms import ProductionFilterForm
-from maintenance.models import Exclusion
+from maintenance.models import Exclusion, UntrustedLinkIdentifier
 from mirror.models import ArchiveMember
 from parties.models import Competition, Party, PartyExternalLink, ResultsFile
 from productions.models import Credit, InfoFile, Production, ProductionBlurb, ProductionLink, ProductionType
@@ -108,6 +108,12 @@ class FilterableProductionReport(Report):
             }
         )
         return context
+
+
+class ProdsWithoutRecognizedDownloadLinks(StaffOnlyMixin, FilterableProductionReport):
+    title = "Productions with no recognized download links"
+    name = "no_recognized_links"
+    report_class = reports_module.ProductionsWithoutRecognizedDownloadLinks
 
 
 class ProdsWithoutExternalLinks(StaffOnlyMixin, FilterableProductionReport):
@@ -1170,6 +1176,41 @@ class EmptyCompetitions(StaffOnlyMixin, Report):
         return context
 
 
+class UntrustedLinks(StaffOnlyMixin, Report):
+    title = "Productions with untrusted download / external links"
+    template_name = "maintenance/production_report.html"
+    name = "untrusted_links"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        untrusted_url_idents = UntrustedLinkIdentifier.objects.values_list('url_part', flat=True)
+        if not untrusted_url_idents:
+            return context
+
+        query = Q()
+        for idents in untrusted_url_idents:
+            query |= Q(links__parameter__icontains=idents)
+
+        productions = (
+            Production.objects.filter(links__isnull=False)
+            .filter(query)
+            .distinct()
+            .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser")
+            .defer("notes")
+            .order_by("title")
+        )
+        context.update(
+            {
+                "productions": productions,
+                # don't implement exclusions on this report, because it's possible that a URL being
+                # untrusted today will be trusted in the future, and we don't want those cases to be
+                # hidden through exclusions
+                "mark_excludable": False,
+            }
+        )
+        return context
+
 class UnresolvedScreenshots(StaffOnlyMixin, Report):
     title = "Unresolved screenshots"
     template_name = "maintenance/unresolved_screenshots.html"
@@ -1850,7 +1891,7 @@ class ExternalReport(object):
 
 reports = [
     (
-        "Supporting data",
+        "Production links",
         [
             ProdsWithoutExternalLinks,
             ProdsWithoutScreenshots,
@@ -1861,6 +1902,13 @@ reports = [
             ProdsWithoutPlatformsExcludingLost,
             ProdsWithoutPlatformsWithDownloads,
             TrackedMusicWithoutPlayableLinks,
+            UntrustedLinks,
+            ProdsWithoutRecognizedDownloadLinks,
+        ],
+    ),
+    (
+        "Supporting data",
+        [
             UnresolvedScreenshots,
             ProdsWithBlurbs,
             TinyIntrosWithoutDownloadLinks,
