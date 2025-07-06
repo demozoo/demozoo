@@ -218,10 +218,7 @@ class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
 
     @classmethod
     def get_master_list(cls):
-        excluded_ids = (
-            Exclusion.objects.filter(report_name="without_recognized_download_link")
-                .values_list("record_id", flat=True)
-        )
+        excluded_ids = Exclusion.objects.filter(report_name="no_recognized_links").values_list("record_id", flat=True)
 
         recognized_link_classes = groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES
         if not recognized_link_classes:
@@ -240,6 +237,7 @@ class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
             .exclude(tags__name__in=["lost", "corrupted-file"])
             .values_list("id", flat=True)
         )
+
 
 class RandomisedProductionsReport(object):
     @classmethod
