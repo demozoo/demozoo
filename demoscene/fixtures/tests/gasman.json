@@ -513,7 +513,8 @@
             "eligibility_end_date": "2019-12-31",
             "recommendations_enabled": true,
             "reporting_enabled": true,
-            "screening_enabled": true
+            "screening_enabled": true,
+            "screenable_production_types": [1]
         }
     },
     {
