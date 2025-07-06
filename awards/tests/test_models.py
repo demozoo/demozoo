@@ -37,8 +37,9 @@ class TestModels(TestCase):
         meteoriks.jurors.create(user=user)
         self.assertTrue(Event.active_for_user(user).filter(name="The Meteoriks 2020").exists())
 
-        # Events are not active for anyone if neither recommendations nor reporting are enabled
+        # Events are not active for anyone if none of recommendations, screening or reporting are enabled
         meteoriks.reporting_enabled = False
+        meteoriks.screening_enabled = False
         meteoriks.save()
         self.assertFalse(Event.active_for_user(anon).filter(name="The Meteoriks 2020").exists())
         self.assertFalse(Event.active_for_user(user).filter(name="The Meteoriks 2020").exists())
