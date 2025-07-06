@@ -69,7 +69,7 @@ class TestModels(TestCase):
         self.assertEqual(result, [])
 
         # no results for prods of a non-eligible type
-        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        meteoriks.recommendable_production_types.add(ProductionType.objects.get(name="Intro"))
         result = meteoriks.get_recommendation_options(user, brexecutable)
         self.assertEqual(result, [])
 

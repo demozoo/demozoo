@@ -33,7 +33,7 @@ class Event(models.Model):
         help_text="Latest release date a production can have to be considered for these awards"
     )
 
-    production_types = models.ManyToManyField(
+    recommendable_production_types = models.ManyToManyField(
         ProductionType,
         blank=True,
         help_text="If set, these awards only accept recommendations for productions of these types",
@@ -90,7 +90,7 @@ class Event(models.Model):
                 eligibility_start_date__lte=production.release_date_date,
                 eligibility_end_date__gte=production.release_date_date,
             )
-            .filter(Q(production_types__isnull=True) | Q(production_types__in=prod_types))
+            .filter(Q(recommendable_production_types__isnull=True) | Q(recommendable_production_types__in=prod_types))
             .distinct()
         )
 
@@ -129,7 +129,7 @@ class Event(models.Model):
         ):
             return []
 
-        event_prod_types = list(self.production_types.all())
+        event_prod_types = list(self.recommendable_production_types.all())
         if event_prod_types:
             production_prod_types = set(production.types.all())
             if not any(t in production_prod_types for t in event_prod_types):
@@ -164,7 +164,7 @@ class Event(models.Model):
             release_date_date__gte=self.eligibility_start_date,
             release_date_date__lte=self.eligibility_end_date,
         ).distinct()
-        prod_type_ids = list(self.production_types.values_list("id", flat=True))
+        prod_type_ids = list(self.recommendable_production_types.values_list("id", flat=True))
         if prod_type_ids:
             prods = prods.filter(types__id__in=prod_type_ids)
         return prods

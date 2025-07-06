@@ -26,7 +26,7 @@ class TestCandidates(TestCase):
 
     def test_with_prod_type_limits(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
-        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        meteoriks.recommendable_production_types.add(ProductionType.objects.get(name="Intro"))
         response = self.client.get("/awards/meteoriks-2020/low-end/")
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, "The Brexecutable Music Compo Is Over")
@@ -53,7 +53,7 @@ class TestRecommendations(TestCase):
 
     def test_recommendation_prompt_not_shown_for_non_matching_prod_type(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
-        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        meteoriks.recommendable_production_types.add(ProductionType.objects.get(name="Intro"))
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
         response = self.client.get("/productions/%d/" % brexecutable.id)
         self.assertEqual(response.status_code, 200)
@@ -61,7 +61,7 @@ class TestRecommendations(TestCase):
 
     def test_recommendation_prompt_shown_for_matching_prod_type(self):
         meteoriks = Event.objects.get(name="The Meteoriks 2020")
-        meteoriks.production_types.add(ProductionType.objects.get(name="Intro"))
+        meteoriks.recommendable_production_types.add(ProductionType.objects.get(name="Intro"))
         brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
         brexecutable.types.set([ProductionType.objects.get(name="4K Intro")])
         response = self.client.get("/productions/%d/" % brexecutable.id)
