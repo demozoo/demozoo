@@ -41,3 +41,25 @@ class TestScreening(TestCase):
         self.assertNotContains(response, "Welcome, jury member!")
         self.assertNotContains(response, "Production screening")
         self.assertContains(response, "Recommendations are closed right now.")
+
+    def test_screening_page(self):
+        # jurors can access the screening page
+        self.client.login(username="juror", password="67890")
+        response = self.client.get("/awards/meteoriks-2020/screening/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Meteoriks 2020 - Screening")
+
+        # non-jurors cannot access the screening page
+        self.client.login(username="non_juror", password="12345")
+        response = self.client.get("/awards/meteoriks-2020/screening/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_screening_page_without_screenable_productions(self):
+        # if there are no screenable productions, the page should still load but show a message
+        self.meteoriks.screenable_production_types.clear()
+        self.meteoriks.save()
+
+        self.client.login(username="juror", password="67890")
+        response = self.client.get("/awards/meteoriks-2020/screening/", follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertContains(response, "There are no productions available for screening at this time.")

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% load awards_tags demoscene_tags safe_markdown %}
+
+{% block html_title %}{{ event.name }} - Screening - Demozoo{% endblock %}
+
+{% block base_main %}
+
+<h1>{{ event.name }} - Screening</h1>
+
+<h2><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></h2>
+{% endblock %}
