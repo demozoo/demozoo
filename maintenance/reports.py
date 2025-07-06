@@ -222,7 +222,7 @@ class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
 
         recognized_link_classes = groklinks.PRODUCTION_DOWNLOAD_LINK_TYPES
         if not recognized_link_classes:
-            return
+            return  # pragma: no cover
 
         query = Q()
         for link_class in recognized_link_classes:

@@ -11,7 +11,7 @@ from django.test import TestCase
 
 from bbs.models import BBS, TextAd
 from demoscene.models import Releaser
-from maintenance.models import Exclusion
+from maintenance.models import Exclusion, UntrustedLinkIdentifier
 from mirror.models import ArchiveMember, Download, DownloadBlob
 from parties.models import Party, ResultsFile
 from platforms.models import Platform
@@ -550,4 +550,20 @@ class TestReports(TestCase):
         response = self.client.get(
             "/maintenance/janeway_unique_author_name_matches/detail/%d/%d/" % (raww_arse_dz_id, spaceballs_jw_id)
         )
+        self.assertEqual(response.status_code, 200)
+
+    def test_productions_without_recognised_download_links(self):
+        response = self.client.get("/maintenance/no_recognized_links/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_untrusted_links_without_identifiers(self):
+        response = self.client.get("/maintenance/untrusted_links/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_untrusted_links(self):
+        identifier = UntrustedLinkIdentifier.objects.create(
+            url_part="goo.gl",
+        )
+        self.assertEqual(str(identifier), "goo.gl")
+        response = self.client.get("/maintenance/untrusted_links/")
         self.assertEqual(response.status_code, 200)
