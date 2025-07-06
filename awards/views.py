@@ -181,3 +181,24 @@ def candidates(request, event_slug, category_slug):
             ),
         },
     )
+
+
+def screening(request, event_slug):
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    production = event.screenable_productions().order_by("?").first()
+    if not production:
+        messages.info(request, "There are no productions available for screening at this time.")
+        return HttpResponseRedirect(reverse("award", args=(event.slug,)))
+
+    return render(
+        request,
+        "awards/screening.html",
+        {
+            "event": event,
+            "production": production,
+        },
+    )

@@ -12,6 +12,7 @@
     <h1>{{ event.name }} - Welcome, jury member!</h1>
     {% if can_access_screening %}
         <h2>Production screening</h2>
+        <p><a href="{% url "awards_screening" event.slug %}">Start</a></p>
     {% endif %}
     {% if can_view_reports %}
         <h2>Public recommendations</h2>
