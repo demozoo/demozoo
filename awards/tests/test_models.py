@@ -76,3 +76,17 @@ class TestModels(TestCase):
     def test_category_str(self):
         best_lowend = Category.objects.get(name="Best Low-End Production")
         self.assertEqual(str(best_lowend), "The Meteoriks 2020 - Best Low-End Production")
+
+    def test_screenable_productions(self):
+        meteoriks = Event.objects.get(name="The Meteoriks 2020")
+
+        pondlife = Production.objects.get(title="Pondlife")
+        brexecutable = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+
+        screenable_prods = meteoriks.screenable_productions()
+        self.assertNotIn(pondlife, screenable_prods)  # outside date range
+        self.assertIn(brexecutable, screenable_prods)
+
+        meteoriks.screenable_production_types.set(ProductionType.objects.filter(name="Intro"))
+        screenable_prods = meteoriks.screenable_productions()
+        self.assertNotIn(brexecutable, screenable_prods)  # now of a non-eligible type

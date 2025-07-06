@@ -36,7 +36,15 @@ class Event(models.Model):
     recommendable_production_types = models.ManyToManyField(
         ProductionType,
         blank=True,
+        related_name="+",
         help_text="If set, these awards only accept recommendations for productions of these types",
+    )
+
+    screenable_production_types = models.ManyToManyField(
+        ProductionType,
+        blank=True,
+        related_name="+",
+        help_text="The set of production types to be presented to jurors for screening",
     )
 
     recommendations_enabled = models.BooleanField(
@@ -168,6 +176,14 @@ class Event(models.Model):
         if prod_type_ids:
             prods = prods.filter(types__id__in=prod_type_ids)
         return prods
+
+    def screenable_productions(self):
+        prod_type_ids = list(self.screenable_production_types.values_list("id", flat=True))
+        return Production.objects.filter(
+            release_date_date__gte=self.eligibility_start_date,
+            release_date_date__lte=self.eligibility_end_date,
+            types__id__in=prod_type_ids,
+        ).distinct()
 
 
 class Category(models.Model):
