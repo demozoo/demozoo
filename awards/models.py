@@ -48,6 +48,10 @@ class Event(models.Model):
     show_recommendation_counts = models.BooleanField(
         default=False, help_text="If true, reports will show how many times a production has been recommended"
     )
+    screening_enabled = models.BooleanField(
+        default=False,
+        help_text="Whether to enable the interface for jurors to screen eligible productions",
+    )
 
     juror_feed_url = models.URLField(blank=True, max_length=255, help_text="URL to a list of juror SceneIDs")
 
@@ -94,15 +98,21 @@ class Event(models.Model):
     def active_for_user(cls, user):
         """
         Return a queryset of award events that are either open for recommendations or have
-        reports open for the given user
+        reports or screening open for the given user
         """
         if not user.is_authenticated:
             return cls.objects.filter(recommendations_enabled=True)
         elif user.is_staff:
-            return cls.objects.filter(models.Q(recommendations_enabled=True) | models.Q(reporting_enabled=True))
+            return cls.objects.filter(
+                models.Q(recommendations_enabled=True)
+                | models.Q(reporting_enabled=True)
+                | models.Q(screening_enabled=True)
+            )
         else:
             return Event.objects.filter(
-                models.Q(recommendations_enabled=True) | models.Q(reporting_enabled=True, jurors__user=user)
+                models.Q(recommendations_enabled=True)
+                | models.Q(reporting_enabled=True, jurors__user=user)
+                | models.Q(screening_enabled=True, jurors__user=user)
             ).distinct()
 
     def get_recommendation_options(self, user, production):
@@ -138,6 +148,13 @@ class Event(models.Model):
     def user_can_view_reports(self, user):
         return (
             self.reporting_enabled
+            and user.is_authenticated
+            and (user.is_staff or self.jurors.filter(user=user).exists())
+        )
+
+    def user_can_access_screening(self, user):
+        return (
+            self.screening_enabled
             and user.is_authenticated
             and (user.is_staff or self.jurors.filter(user=user).exists())
         )

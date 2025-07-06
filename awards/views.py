@@ -43,7 +43,9 @@ def recommend(request, event_slug, production_id):
 def show(request, event_slug):
     # The main award page at /awards/[event_slug]/ :
     # * If nominees exist, show the results
-    # * If user is a juror and reports are enabled, show the links to the per-category recommendation reports
+    # * If user is a juror:
+    #   * if reports are enabled, show the links to the per-category recommendation reports
+    #   * if screening is enabled, show the link to the screening interface
     # * If user is logged in and recommendations are enabled, show the user's recommendations
 
     event = get_object_or_404(Event, slug=event_slug)
@@ -103,6 +105,7 @@ def show(request, event_slug):
             "recommendations_by_category": recommendations_by_category,
             "nominations_by_category": nominations_by_category,
             "can_view_reports": event.user_can_view_reports(request.user),
+            "can_access_screening": event.user_can_access_screening(request.user),
             # Normally, recommendations will be shown until the nominations are posted, even if the
             # recommendation period closes before then (in which case the recommendations will be
             # shown but "locked-in"). However, an event might leave recommendations open even after
