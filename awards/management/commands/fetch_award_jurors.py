@@ -3,13 +3,16 @@ import re
 import requests
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from awards.models import Event, Juror
 
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        events = Event.objects.filter(reporting_enabled=True).exclude(juror_feed_url="")
+        events = Event.objects.filter(
+            Q(reporting_enabled=True) | Q(screening_enabled=True),
+        ).exclude(juror_feed_url="")
         for event in events:
             sceneids = []
 

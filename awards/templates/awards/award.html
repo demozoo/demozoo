@@ -8,9 +8,15 @@
 
 {% block base_main %}
 
-{% if can_view_reports %}
+{% if can_view_reports or can_access_screening %}
     <h1>{{ event.name }} - Welcome, jury member!</h1>
-    {% include "awards/_report_categories.html" with current_category=None %}
+    {% if can_access_screening %}
+        <h2>Production screening</h2>
+    {% endif %}
+    {% if can_view_reports %}
+        <h2>Public recommendations</h2>
+        {% include "awards/_report_categories.html" with current_category=None %}
+    {% endif %}
 {% else %}
     <h1>{{ event.name }}</h1>
 
