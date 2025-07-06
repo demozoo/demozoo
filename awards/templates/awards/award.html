@@ -68,7 +68,7 @@
     {% endfor %}
 {% endif %}
 
-{% if not can_view_reports and not nominations_by_category and not event.recommendations_enabled %}
+{% if not can_view_reports and not can_access_screening and not nominations_by_category and not event.recommendations_enabled %}
     <p>Recommendations are closed right now. Stay tuned for further announcements!</p>
 {% endif %}
 
