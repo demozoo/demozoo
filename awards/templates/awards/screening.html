@@ -1,12 +1,54 @@
 {% extends 'base.html' %}
 
-{% load awards_tags demoscene_tags safe_markdown %}
+{% load production_tags ui_tags compress laces %}
 
 {% block html_title %}{{ event.name }} - Screening - Demozoo{% endblock %}
 
+{% block extra_js %}
+    {% compress js %}
+        <script src="/static/productions/js/components/media_lightbox.js"></script>
+        <script src="/static/productions/js/components/carousel.js"></script>
+    {% endcompress %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ carousel.media }}
+{% endblock %}
+
+{% block body_class %}award_screening{% endblock %}
+
 {% block base_main %}
+    {% include "productions/includes/media_lightbox_template.html" %}
 
-<h1>{{ event.name }} - Screening</h1>
+    <h1>{{ event.name }} - Screening</h1>
+    <hr>
+    <div class="focus_title">
+        <ul class="actions">
+            <li>{% icon_button icon="arrow-up-right-from-square" url=production.get_absolute_url title="Open production page" %}</li>
+        </ul>
+        <h2>{{ production.title }}</h2>
+        {% if production.byline_string %}
+            <h3>
+                by {% byline production %}
+            </h3>
+        {% endif %}
+    </div>
+    <div>
+        {% for production_type in production.types.all %}
+            <strong>{{ production_type.name }}</strong>
+            {% if not forloop.last %} / {% endif %}
+        {% endfor %}
+        {% for platform in production.platforms.all %}
+            {% if forloop.first %}for{% endif %}
+            <strong>{{ platform.name }}</strong>
+            {% if not forloop.last %} / {% endif %}
+        {% endfor %}
+    </div>
 
-<h2><a href="{{ production.get_absolute_url }}">{{ production.title }}</a></h2>
+    <div class="mainstage">
+        {{ carousel.render }}
+
+        {% component downloads_panel %}
+    </div>
+
 {% endblock %}
