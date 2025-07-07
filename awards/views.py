@@ -2,6 +2,7 @@ import itertools
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.http import HttpResponseRedirect
@@ -13,7 +14,9 @@ from awards.models import Event, Nomination, Recommendation
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required
 from demoscene.shortcuts import get_page
+from productions.carousel import Carousel
 from productions.models import Production, Screenshot
+from productions.panels import DownloadsPanel
 
 
 @require_POST
@@ -200,5 +203,7 @@ def screening(request, event_slug):
         {
             "event": event,
             "production": production,
+            "carousel": Carousel(production, AnonymousUser()),
+            "downloads_panel": DownloadsPanel(production, AnonymousUser()),
         },
     )

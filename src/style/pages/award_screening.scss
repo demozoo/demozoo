@@ -1,0 +1,19 @@
+.award_screening {
+    .mainstage {
+        display: table;
+        margin-top: 1em;
+        width: 100%;
+    }
+    .screenshots_panel {
+        display: table-cell;
+        width: 400px;
+        padding-right: 20px;
+        padding-bottom: 20px;
+    }
+
+    .downloads_panel {
+        display: table-cell;
+        width: auto;
+        vertical-align: top;
+    }
+}
