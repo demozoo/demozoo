@@ -99,6 +99,16 @@ def show(request, event_slug):
     else:
         recommendations_by_category = []
 
+    can_access_screening = event.user_can_access_screening(request.user)
+    if can_access_screening:
+        screenable_productions_count = event.screenable_productions().count()
+        screened_productions_count = event.screening_decisions.values("production_id").distinct().count()
+        screened_by_me_count = event.screening_decisions.filter(user=request.user).count()
+    else:
+        screenable_productions_count = None
+        screened_productions_count = None
+        screened_by_me_count = None
+
     return render(
         request,
         "awards/award.html",
@@ -108,7 +118,10 @@ def show(request, event_slug):
             "recommendations_by_category": recommendations_by_category,
             "nominations_by_category": nominations_by_category,
             "can_view_reports": event.user_can_view_reports(request.user),
-            "can_access_screening": event.user_can_access_screening(request.user),
+            "can_access_screening": can_access_screening,
+            "screenable_productions_count": screenable_productions_count,
+            "screened_productions_count": screened_productions_count,
+            "screened_by_me_count": screened_by_me_count,
             # Normally, recommendations will be shown until the nominations are posted, even if the
             # recommendation period closes before then (in which case the recommendations will be
             # shown but "locked-in"). However, an event might leave recommendations open even after
