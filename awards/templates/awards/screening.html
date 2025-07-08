@@ -48,7 +48,21 @@
     <div class="mainstage">
         {{ carousel.render }}
 
-        {% component downloads_panel %}
+        <div class="right">
+            {% component downloads_panel %}
+
+            <div class="decision">
+                <form action="{{ screening_url }}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="production_id" value="{{ production.id }}">
+
+                    {% icon_button icon="check" label="Yay" attrs='name="accept" value="yes"' %}
+                    {% icon_button icon="circle-xmark" label="Nay" attrs='name="accept" value="no"' %}
+                    {% icon_button url=screening_url icon="arrow-right" label="Skip" %}
+                </form>
+            </div>
+
+        </div>
     </div>
 
 {% endblock %}

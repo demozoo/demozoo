@@ -269,3 +269,16 @@ class Nomination(models.Model):
         unique_together = [
             ("production", "category"),
         ]
+
+
+class ScreeningDecision(models.Model):
+    production = models.ForeignKey(Production, related_name="screening_decisions", on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, related_name="screening_decisions", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="screening_decisions", on_delete=models.CASCADE)
+    is_accepted = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [
+            ("production", "event", "user"),
+        ]

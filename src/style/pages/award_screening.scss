@@ -11,9 +11,24 @@
         padding-bottom: 20px;
     }
 
-    .downloads_panel {
+    .right {
         display: table-cell;
         width: auto;
         vertical-align: top;
+    }
+
+    .decision {
+        button, a {
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #333;
+            font-size: 2em;
+            margin: 5px;
+            padding: 5px;
+
+            &:hover {
+                background-color: #ccc;
+            }
+        }
     }
 }

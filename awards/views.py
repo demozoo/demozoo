@@ -192,18 +192,40 @@ def screening(request, event_slug):
     if not event.user_can_access_screening(request.user):
         raise PermissionDenied
 
-    production = event.screenable_productions().order_by("?").first()
-    if not production:
-        messages.info(request, "There are no productions available for screening at this time.")
-        return HttpResponseRedirect(reverse("award", args=(event.slug,)))
+    screening_url = reverse("awards_screening", args=[event.slug])
 
-    return render(
-        request,
-        "awards/screening.html",
-        {
-            "event": event,
-            "production": production,
-            "carousel": Carousel(production, AnonymousUser()),
-            "downloads_panel": DownloadsPanel(production, AnonymousUser()),
-        },
-    )
+    if request.method == "POST":
+        production_id = request.POST.get("production_id")
+        is_accepted = request.POST.get("accept") == "yes"
+
+        try:
+            production = event.screenable_productions().get(id=production_id)
+        except Production.DoesNotExist:
+            return HttpResponseRedirect(screening_url)
+
+        event.screening_decisions.update_or_create(
+            user=request.user,
+            production=production,
+            defaults={"is_accepted": is_accepted},
+        )
+
+        messages.success(request, f"Given a '{'Yay' if is_accepted else 'Nay'}' to {production.title}.")
+        return HttpResponseRedirect(screening_url)
+
+    else:
+        production = event.screenable_productions().order_by("?").first()
+        if not production:
+            messages.error(request, "There are no productions available for screening at this time.")
+            return HttpResponseRedirect(reverse("award", args=(event.slug,)))
+
+        return render(
+            request,
+            "awards/screening.html",
+            {
+                "event": event,
+                "production": production,
+                "carousel": Carousel(production, AnonymousUser()),
+                "downloads_panel": DownloadsPanel(production, AnonymousUser()),
+                "screening_url": screening_url,
+            },
+        )

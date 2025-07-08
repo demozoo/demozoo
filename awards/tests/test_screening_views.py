@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from awards.models import Event
+from awards.models import Event, ScreeningDecision
+from productions.models import Production
 
 
 class TestScreening(TestCase):
@@ -63,3 +64,33 @@ class TestScreening(TestCase):
         response = self.client.get("/awards/meteoriks-2020/screening/", follow=True)
         self.assertRedirects(response, "/awards/meteoriks-2020/")
         self.assertContains(response, "There are no productions available for screening at this time.")
+
+    def test_post_decision(self):
+        self.client.login(username="juror", password="67890")
+        production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
+
+        response = self.client.post(
+            "/awards/meteoriks-2020/screening/",
+            {"production_id": production_id, "accept": "yes"},
+            follow=True,
+        )
+        self.assertRedirects(response, "/awards/meteoriks-2020/screening/")
+        self.assertTrue(
+            ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
+        )
+        self.assertContains(response, "Given a &#x27;Yay&#x27; to")
+
+    def test_post_decision_on_ineligible_prod(self):
+        self.client.login(username="juror", password="67890")
+        production_id = Production.objects.get(title="Pondlife").id
+
+        response = self.client.post(
+            "/awards/meteoriks-2020/screening/",
+            {"production_id": production_id, "accept": "yes"},
+            follow=True,
+        )
+        self.assertRedirects(response, "/awards/meteoriks-2020/screening/")
+        self.assertFalse(
+            ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
+        )
+        self.assertNotContains(response, "Given a &#x27;Yay&#x27; to")
