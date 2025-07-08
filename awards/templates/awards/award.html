@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load awards_tags demoscene_tags safe_markdown %}
+{% load awards_tags demoscene_tags ui_tags safe_markdown %}
 
 {% block html_title %}{{ event.name }} - Your recommendations - Demozoo{% endblock %}
 
@@ -12,7 +12,14 @@
     <h1>{{ event.name }} - Welcome, jury member!</h1>
     {% if can_access_screening %}
         <h2>Production screening</h2>
-        <p><a href="{% url "awards_screening" event.slug %}">Start</a></p>
+        <p>
+            <strong>{{ screened_productions_count }}</strong> of <strong>{{ screenable_productions_count }}</strong> productions have at least one vote.
+            You have screened <strong>{{ screened_by_me_count }}</strong> of these.
+        </p>
+        <p>
+            {% url 'awards_screening' event.slug as screening_url %}
+            {% icon_button url=screening_url icon="circle-play" label="Start screening" %}
+        </p>
     {% endif %}
     {% if can_view_reports %}
         <h2>Public recommendations</h2>
