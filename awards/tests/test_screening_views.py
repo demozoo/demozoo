@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -63,10 +65,17 @@ class TestScreening(TestCase):
         self.client.login(username="juror", password="67890")
         response = self.client.get("/awards/meteoriks-2020/screening/", follow=True)
         self.assertRedirects(response, "/awards/meteoriks-2020/")
-        self.assertContains(response, "There are no productions available for screening at this time.")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
     def test_post_decision(self):
         self.client.login(username="juror", password="67890")
+
+        # make sure we have one other eligible production to screen, so that we have
+        # something to redirect to after the one we screen here
+        pondlife = Production.objects.get(title="Pondlife")
+        pondlife.release_date_date = datetime.date(2019, 6, 1)
+        pondlife.save()
+
         production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
 
         response = self.client.post(
@@ -79,6 +88,22 @@ class TestScreening(TestCase):
             ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
         )
         self.assertContains(response, "Given a &#x27;Yay&#x27; to")
+
+    def test_post_decision_on_last_prod(self):
+        self.client.login(username="juror", password="67890")
+        production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
+
+        response = self.client.post(
+            "/awards/meteoriks-2020/screening/",
+            {"production_id": production_id, "accept": "yes"},
+            follow=True,
+        )
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertTrue(
+            ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
+        )
+        self.assertContains(response, "Given a &#x27;Yay&#x27; to")
+        self.assertContains(response, "You have screened all productions that fit the chosen criteria. Yay!")
 
     def test_post_decision_on_ineligible_prod(self):
         self.client.login(username="juror", password="67890")

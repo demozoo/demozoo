@@ -226,9 +226,17 @@ def screening(request, event_slug):
         return HttpResponseRedirect(screening_url)
 
     else:
-        production = event.screenable_productions().order_by("?").first()
+        already_screened_production_ids = event.screening_decisions.filter(user=request.user).values_list(
+            "production_id", flat=True
+        )
+        productions_matching_criteria = event.screenable_productions()
+
+        production = productions_matching_criteria.exclude(id__in=already_screened_production_ids).order_by("?").first()
         if not production:
-            messages.error(request, "There are no productions available for screening at this time.")
+            if productions_matching_criteria.exists():
+                messages.success(request, "You have screened all productions that fit the chosen criteria. Yay!")
+            else:
+                messages.error(request, "There are no productions that fit the chosen criteria.")
             return HttpResponseRedirect(reverse("award", args=(event.slug,)))
 
         return render(
