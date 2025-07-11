@@ -105,7 +105,7 @@ def show(request, event_slug):
         screenable_productions_count = event.screenable_productions().count()
         screened_productions_count = event.screening_decisions.values("production_id").distinct().count()
         screened_by_me_count = event.screening_decisions.filter(user=request.user).count()
-        screening_filter_form = ScreeningFilterForm(event)
+        screening_filter_form = ScreeningFilterForm(event, initial=request.GET)
     else:
         screenable_productions_count = None
         screened_productions_count = None
@@ -248,7 +248,8 @@ def screening(request, event_slug):
                 messages.success(request, "You have screened all productions that fit the chosen criteria. Yay!")
             else:
                 messages.error(request, "There are no productions that fit the chosen criteria.")
-            return HttpResponseRedirect(reverse("award", args=(event.slug,)))
+            return_url = f'{reverse("award", args=(event.slug,))}?{query_string}'
+            return HttpResponseRedirect(return_url)
 
         return render(
             request,
