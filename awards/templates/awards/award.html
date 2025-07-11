@@ -13,7 +13,7 @@
     {% if can_access_screening %}
         <h2>Production screening</h2>
         <p>
-            <strong>{{ screened_productions_count }}</strong> of <strong>{{ screenable_productions_count }}</strong> productions have at least one vote.
+            <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong> of these.
         </p>
         <form action="{% url 'awards_screening' event.slug %}" method="get">

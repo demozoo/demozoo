@@ -37,6 +37,8 @@ class TestScreening(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Welcome, jury member!")
         self.assertContains(response, "Production screening")
+        # initially the "rating count" filter should be set to "0" (no ratings)
+        self.assertContains(response, '<option value="0" selected>No ratings</option>')
 
         # non-jurors cannot access the award page
         self.client.login(username="non_juror", password="12345")
@@ -45,6 +47,20 @@ class TestScreening(TestCase):
         self.assertNotContains(response, "Welcome, jury member!")
         self.assertNotContains(response, "Production screening")
         self.assertContains(response, "Recommendations are closed right now.")
+
+    def test_award_page_when_all_prods_screened_once(self):
+        prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        self.meteoriks.screening_decisions.create(
+            user=self.juror,
+            production=prod,
+            is_accepted=True,
+        )
+        self.client.login(username="juror", password="67890")
+        response = self.client.get("/awards/meteoriks-2020/")
+        # if all productions have been screened at least once, the "rating count"
+        # filter should default to "1" (less than two ratings)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<option value="1" selected>Less than two ratings</option>')
 
     def test_screening_page(self):
         # jurors can access the screening page

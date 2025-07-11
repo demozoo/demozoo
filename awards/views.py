@@ -102,13 +102,9 @@ def show(request, event_slug):
 
     can_access_screening = event.user_can_access_screening(request.user)
     if can_access_screening:
-        screenable_productions_count = event.screenable_productions().count()
-        screened_productions_count = event.screening_decisions.values("production_id").distinct().count()
         screened_by_me_count = event.screening_decisions.filter(user=request.user).count()
         screening_filter_form = ScreeningFilterForm(event, initial=request.GET)
     else:
-        screenable_productions_count = None
-        screened_productions_count = None
         screened_by_me_count = None
         screening_filter_form = None
 
@@ -122,8 +118,6 @@ def show(request, event_slug):
             "nominations_by_category": nominations_by_category,
             "can_view_reports": event.user_can_view_reports(request.user),
             "can_access_screening": can_access_screening,
-            "screenable_productions_count": screenable_productions_count,
-            "screened_productions_count": screened_productions_count,
             "screened_by_me_count": screened_by_me_count,
             "screening_filter_form": screening_filter_form,
             # Normally, recommendations will be shown until the nominations are posted, even if the
