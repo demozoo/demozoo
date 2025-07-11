@@ -16,10 +16,10 @@
             <strong>{{ screened_productions_count }}</strong> of <strong>{{ screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong> of these.
         </p>
-        <p>
-            {% url 'awards_screening' event.slug as screening_url %}
-            {% icon_button url=screening_url icon="circle-play" label="Start screening" %}
-        </p>
+        <form action="{% url 'awards_screening' event.slug %}" method="get">
+            {{ screening_filter_form }}
+            {% icon_button attrs='type="submit"' icon="circle-play" label="Start screening" %}
+        </form>
     {% endif %}
     {% if can_view_reports %}
         <h2>Public recommendations</h2>

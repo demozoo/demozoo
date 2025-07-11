@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from awards.forms import ScreeningFilterForm
 from awards.models import Event, Nomination, Recommendation
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required
@@ -104,10 +105,12 @@ def show(request, event_slug):
         screenable_productions_count = event.screenable_productions().count()
         screened_productions_count = event.screening_decisions.values("production_id").distinct().count()
         screened_by_me_count = event.screening_decisions.filter(user=request.user).count()
+        screening_filter_form = ScreeningFilterForm()
     else:
         screenable_productions_count = None
         screened_productions_count = None
         screened_by_me_count = None
+        screening_filter_form = None
 
     return render(
         request,
@@ -122,6 +125,7 @@ def show(request, event_slug):
             "screenable_productions_count": screenable_productions_count,
             "screened_productions_count": screened_productions_count,
             "screened_by_me_count": screened_by_me_count,
+            "screening_filter_form": screening_filter_form,
             # Normally, recommendations will be shown until the nominations are posted, even if the
             # recommendation period closes before then (in which case the recommendations will be
             # shown but "locked-in"). However, an event might leave recommendations open even after
@@ -205,7 +209,10 @@ def screening(request, event_slug):
     if not event.user_can_access_screening(request.user):
         raise PermissionDenied
 
-    screening_url = reverse("awards_screening", args=[event.slug])
+    filter_form = ScreeningFilterForm(request.GET)
+    base_url = reverse("awards_screening", args=[event.slug])
+    query_string = filter_form.as_query_string()
+    screening_url = f"{base_url}?{query_string}" if query_string else base_url
 
     if request.method == "POST":
         production_id = request.POST.get("production_id")
@@ -229,7 +236,7 @@ def screening(request, event_slug):
         already_screened_production_ids = event.screening_decisions.filter(user=request.user).values_list(
             "production_id", flat=True
         )
-        productions_matching_criteria = event.screenable_productions()
+        productions_matching_criteria = filter_form.filter(event.screenable_productions())
 
         production = productions_matching_criteria.exclude(id__in=already_screened_production_ids).order_by("?").first()
         if not production:

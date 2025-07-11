@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from awards.models import Event, ScreeningDecision
+from platforms.models import Platform
 from productions.models import Production
 
 
@@ -67,7 +68,33 @@ class TestScreening(TestCase):
         self.assertRedirects(response, "/awards/meteoriks-2020/")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
+    def test_screening_page_filtered(self):
+        zx_spectrum = Platform.objects.get(name="ZX Spectrum")
+        c64 = Platform.objects.get(name="Commodore 64")
+
+        self.client.login(username="juror", password="67890")
+
+        url = f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # form action url should preserve the filter
+        self.assertContains(response, f'action="{url}"')
+
+        response = self.client.get(f"/awards/meteoriks-2020/screening/?platform={c64.id}", follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+    def test_invalid_filter(self):
+        self.client.login(username="juror", password="67890")
+
+        url = "/awards/meteoriks-2020/screening/?platform=AMIGAAAAA"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # form action url should drop the invalid filter
+        self.assertContains(response, 'action="/awards/meteoriks-2020/screening/"')
+
     def test_post_decision(self):
+        zx_spectrum = Platform.objects.get(name="ZX Spectrum")
         self.client.login(username="juror", password="67890")
 
         # make sure we have one other eligible production to screen, so that we have
@@ -78,12 +105,13 @@ class TestScreening(TestCase):
 
         production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
 
+        url = f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"
         response = self.client.post(
-            "/awards/meteoriks-2020/screening/",
+            url,
             {"production_id": production_id, "accept": "yes"},
             follow=True,
         )
-        self.assertRedirects(response, "/awards/meteoriks-2020/screening/")
+        self.assertRedirects(response, url)
         self.assertTrue(
             ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
         )
@@ -95,6 +123,23 @@ class TestScreening(TestCase):
 
         response = self.client.post(
             "/awards/meteoriks-2020/screening/",
+            {"production_id": production_id, "accept": "yes"},
+            follow=True,
+        )
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertTrue(
+            ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
+        )
+        self.assertContains(response, "Given a &#x27;Yay&#x27; to")
+        self.assertContains(response, "You have screened all productions that fit the chosen criteria. Yay!")
+
+    def test_post_decision_on_last_prod_filtered(self):
+        self.client.login(username="juror", password="67890")
+        production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
+        zx_spectrum = Platform.objects.get(name="ZX Spectrum")
+
+        response = self.client.post(
+            f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}",
             {"production_id": production_id, "accept": "yes"},
             follow=True,
         )
