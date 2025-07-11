@@ -105,7 +105,7 @@ def show(request, event_slug):
         screenable_productions_count = event.screenable_productions().count()
         screened_productions_count = event.screening_decisions.values("production_id").distinct().count()
         screened_by_me_count = event.screening_decisions.filter(user=request.user).count()
-        screening_filter_form = ScreeningFilterForm()
+        screening_filter_form = ScreeningFilterForm(event)
     else:
         screenable_productions_count = None
         screened_productions_count = None
@@ -209,7 +209,7 @@ def screening(request, event_slug):
     if not event.user_can_access_screening(request.user):
         raise PermissionDenied
 
-    filter_form = ScreeningFilterForm(request.GET)
+    filter_form = ScreeningFilterForm(None, request.GET)
     base_url = reverse("awards_screening", args=[event.slug])
     query_string = filter_form.as_query_string()
     screening_url = f"{base_url}?{query_string}" if query_string else base_url
