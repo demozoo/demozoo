@@ -90,6 +90,26 @@ class TestScreening(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f'action="{url}"')
 
+        url = "/awards/meteoriks-2020/screening/?has_youtube=no"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'action="{url}"')
+
+        response = self.client.get("/awards/meteoriks-2020/screening/?has_youtube=yes", follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+        prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        prod.links.create(
+            link_class="YoutubeVideo",
+            parameter="DgNGVoQcN-Y",
+            is_download_link=False,
+        )
+        url = "/awards/meteoriks-2020/screening/?has_youtube=yes"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'action="{url}"')
+
     def test_invalid_filter(self):
         self.client.login(username="juror", password="67890")
 
