@@ -5,6 +5,19 @@ from platforms.models import Platform
 
 
 class ScreeningFilterForm(forms.Form):
+    def __init__(self, event, *args, **kwargs):
+        """
+        Initialize the form with the event's platforms.
+        """
+        super().__init__(*args, **kwargs)
+
+        if event:
+            # limit the queryset of the platform field to those represented
+            # in event.screenable_productions()
+            self.fields["platform"].queryset = Platform.objects.filter(
+                id__in=event.screenable_productions().values_list("platforms__id", flat=True)
+            ).distinct()
+
     platform = forms.ModelChoiceField(
         label="Platform",
         queryset=Platform.objects.all(),
