@@ -44,6 +44,11 @@ class ScreeningFilterForm(forms.Form):
         queryset=ProductionType.objects.all(),
         required=False,
     )
+    has_youtube = forms.ChoiceField(
+        label="Has YouTube video",
+        choices=[("", "Any"), ("yes", "Yes"), ("no", "No")],
+        required=False,
+    )
 
     def filter(self, queryset):
         """
@@ -55,6 +60,11 @@ class ScreeningFilterForm(forms.Form):
             if self.cleaned_data["production_type"]:
                 prod_types = ProductionType.get_tree(self.cleaned_data["production_type"])
                 queryset = queryset.filter(types__in=prod_types)
+            if self.cleaned_data["has_youtube"]:
+                if self.cleaned_data["has_youtube"] == "yes":
+                    queryset = queryset.filter(links__is_download_link=False, links__link_class="YoutubeVideo")
+                elif self.cleaned_data["has_youtube"] == "no":
+                    queryset = queryset.exclude(links__is_download_link=False, links__link_class="YoutubeVideo")
         return queryset
 
     def as_query_string(self):
@@ -68,4 +78,6 @@ class ScreeningFilterForm(forms.Form):
             params["platform"] = self.cleaned_data["platform"].pk
         if self.cleaned_data["production_type"]:
             params["production_type"] = self.cleaned_data["production_type"].pk
+        if self.cleaned_data["has_youtube"]:
+            params["has_youtube"] = self.cleaned_data["has_youtube"]
         return urlencode(params)
