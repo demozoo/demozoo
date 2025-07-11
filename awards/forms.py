@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Count, Q
 from django.utils.http import urlencode
 
 from platforms.models import Platform
@@ -6,13 +7,14 @@ from productions.models import ProductionType
 
 
 class ScreeningFilterForm(forms.Form):
-    def __init__(self, event, *args, **kwargs):
+    def __init__(self, event, *args, filter_options_by_event=True, **kwargs):
         """
         Initialize the form with the event's platforms.
         """
         super().__init__(*args, **kwargs)
+        self.event = event
 
-        if event:
+        if filter_options_by_event:
             # limit the queryset of the platform field to those represented
             # in event.screenable_productions()
             self.fields["platform"].queryset = Platform.objects.filter(
@@ -49,6 +51,12 @@ class ScreeningFilterForm(forms.Form):
         choices=[("", "Any"), ("yes", "Yes"), ("no", "No")],
         required=False,
     )
+    rating_count = forms.ChoiceField(
+        label="Rating count",
+        choices=[("", "Any number"), ("0", "No ratings"), ("1", "Less than two ratings")],
+        initial="0",
+        required=False,
+    )
 
     def filter(self, queryset):
         """
@@ -65,6 +73,10 @@ class ScreeningFilterForm(forms.Form):
                     queryset = queryset.filter(links__is_download_link=False, links__link_class="YoutubeVideo")
                 elif self.cleaned_data["has_youtube"] == "no":
                     queryset = queryset.exclude(links__is_download_link=False, links__link_class="YoutubeVideo")
+            if self.cleaned_data["rating_count"]:
+                queryset = queryset.annotate(
+                    rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event))
+                ).filter(rating_count__lte=self.cleaned_data["rating_count"])
         return queryset
 
     def as_query_string(self):
@@ -80,4 +92,6 @@ class ScreeningFilterForm(forms.Form):
             params["production_type"] = self.cleaned_data["production_type"].pk
         if self.cleaned_data["has_youtube"]:
             params["has_youtube"] = self.cleaned_data["has_youtube"]
+        if self.cleaned_data["rating_count"]:
+            params["rating_count"] = self.cleaned_data["rating_count"]
         return urlencode(params)

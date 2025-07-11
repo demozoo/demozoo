@@ -110,6 +110,28 @@ class TestScreening(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f'action="{url}"')
 
+    def test_filter_by_rating_count(self):
+        other_juror = User.objects.create_user(username="other_juror", password="54321")
+        self.meteoriks.jurors.create(user=other_juror)
+        prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        self.meteoriks.screening_decisions.create(
+            user=other_juror,
+            production=prod,
+            is_accepted=False,
+        )
+        self.client.login(username="juror", password="67890")
+
+        url = "/awards/meteoriks-2020/screening/?rating_count=0"
+        response = self.client.get(url, follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+        url = "/awards/meteoriks-2020/screening/?rating_count=1"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # form action url should preserve the filter
+        self.assertContains(response, f'action="{url}"')
+
     def test_invalid_filter(self):
         self.client.login(username="juror", password="67890")
 
