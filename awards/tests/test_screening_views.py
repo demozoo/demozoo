@@ -82,7 +82,7 @@ class TestScreening(TestCase):
         self.assertContains(response, f'action="{url}"')
 
         response = self.client.get(f"/awards/meteoriks-2020/screening/?platform={c64.id}", follow=True)
-        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertRedirects(response, f"/awards/meteoriks-2020/?platform={c64.id}")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
         url = f"/awards/meteoriks-2020/screening/?production_type={demo.id}"
@@ -96,7 +96,7 @@ class TestScreening(TestCase):
         self.assertContains(response, f'action="{url}"')
 
         response = self.client.get("/awards/meteoriks-2020/screening/?has_youtube=yes", follow=True)
-        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertRedirects(response, "/awards/meteoriks-2020/?has_youtube=yes")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
         prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
@@ -123,7 +123,7 @@ class TestScreening(TestCase):
 
         url = "/awards/meteoriks-2020/screening/?rating_count=0"
         response = self.client.get(url, follow=True)
-        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertRedirects(response, "/awards/meteoriks-2020/?rating_count=0")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
         url = "/awards/meteoriks-2020/screening/?rating_count=1"
@@ -191,7 +191,7 @@ class TestScreening(TestCase):
             {"production_id": production_id, "accept": "yes"},
             follow=True,
         )
-        self.assertRedirects(response, "/awards/meteoriks-2020/")
+        self.assertRedirects(response, f"/awards/meteoriks-2020/?platform={zx_spectrum.id}")
         self.assertTrue(
             ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
         )
