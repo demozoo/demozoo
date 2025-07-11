@@ -2,6 +2,7 @@ from django import forms
 from django.utils.http import urlencode
 
 from platforms.models import Platform
+from productions.models import ProductionType
 
 
 class ScreeningFilterForm(forms.Form):
@@ -18,9 +19,29 @@ class ScreeningFilterForm(forms.Form):
                 id__in=event.screenable_productions().values_list("platforms__id", flat=True)
             ).distinct()
 
+            # limit the queryset of the production_type field to those represented
+            # in event.screenable_productions(), and their ancestors
+            seen_prod_type_paths = (
+                ProductionType.objects.filter(id__in=event.screenable_productions().values_list("types__id", flat=True))
+                .distinct()
+                .values_list("path", flat=True)
+            )
+            ancestor_paths = set()
+            for path in seen_prod_type_paths:
+                # take slices of the path to get all ancestors
+                for i in range(ProductionType.steplen, len(path) + 1, ProductionType.steplen):
+                    ancestor_paths.add(path[:i])
+
+            self.fields["production_type"].queryset = ProductionType.objects.filter(path__in=ancestor_paths)
+
     platform = forms.ModelChoiceField(
         label="Platform",
         queryset=Platform.objects.all(),
+        required=False,
+    )
+    production_type = forms.ModelChoiceField(
+        label="Production type",
+        queryset=ProductionType.objects.all(),
         required=False,
     )
 
@@ -31,6 +52,9 @@ class ScreeningFilterForm(forms.Form):
         if self.is_valid():
             if self.cleaned_data["platform"]:
                 queryset = queryset.filter(platforms=self.cleaned_data["platform"])
+            if self.cleaned_data["production_type"]:
+                prod_types = ProductionType.get_tree(self.cleaned_data["production_type"])
+                queryset = queryset.filter(types__in=prod_types)
         return queryset
 
     def as_query_string(self):
@@ -42,4 +66,6 @@ class ScreeningFilterForm(forms.Form):
         params = {}
         if self.cleaned_data["platform"]:
             params["platform"] = self.cleaned_data["platform"].pk
+        if self.cleaned_data["production_type"]:
+            params["production_type"] = self.cleaned_data["production_type"].pk
         return urlencode(params)
