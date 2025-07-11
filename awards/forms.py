@@ -14,6 +14,10 @@ class ScreeningFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.event = event
 
+        if not event.has_unscreened_productions:
+            # defult rating_count to "less than two ratings" if there are no unscreened productions
+            self.fields["rating_count"].initial = "1"
+
         if filter_options_by_event:
             # limit the queryset of the platform field to those represented
             # in event.screenable_productions()

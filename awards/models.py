@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from platforms.models import Platform
 from productions.models import Production, ProductionType
@@ -184,6 +185,22 @@ class Event(models.Model):
             release_date_date__lte=self.eligibility_end_date,
             types__id__in=prod_type_ids,
         ).distinct()
+
+    @cached_property
+    def screenable_productions_count(self):
+        return self.screenable_productions().count()
+
+    @cached_property
+    def screened_productions_count(self):
+        # Count the number of distinct productions that have been screened at least once
+        return self.screening_decisions.values("production_id").distinct().count()
+
+    @property
+    def has_unscreened_productions(self):
+        """
+        Returns True if there are any productions that have not been screened by any juror.
+        """
+        return self.screenable_productions_count > self.screened_productions_count
 
 
 class Category(models.Model):
