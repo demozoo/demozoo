@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from awards.models import Event, ScreeningDecision
 from platforms.models import Platform
-from productions.models import Production
+from productions.models import Production, ProductionType
 
 
 class TestScreening(TestCase):
@@ -71,6 +71,7 @@ class TestScreening(TestCase):
     def test_screening_page_filtered(self):
         zx_spectrum = Platform.objects.get(name="ZX Spectrum")
         c64 = Platform.objects.get(name="Commodore 64")
+        demo = ProductionType.objects.get(name="Demo")
 
         self.client.login(username="juror", password="67890")
 
@@ -83,6 +84,11 @@ class TestScreening(TestCase):
         response = self.client.get(f"/awards/meteoriks-2020/screening/?platform={c64.id}", follow=True)
         self.assertRedirects(response, "/awards/meteoriks-2020/")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+        url = f"/awards/meteoriks-2020/screening/?production_type={demo.id}"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'action="{url}"')
 
     def test_invalid_filter(self):
         self.client.login(username="juror", password="67890")
