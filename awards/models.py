@@ -299,3 +299,22 @@ class ScreeningDecision(models.Model):
         unique_together = [
             ("production", "event", "user"),
         ]
+
+
+class PlatformGroup(models.Model):
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="An option such as 'Oldschool' that jurors can filter on in the screening view.",
+    )
+    event_series = models.ForeignKey(EventSeries, related_name="platform_groups", on_delete=models.CASCADE)
+    platforms = models.ManyToManyField(
+        Platform, related_name="platform_groups", help_text="Platforms that belong to this group."
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Platform group"
+        verbose_name_plural = "Platform groups"

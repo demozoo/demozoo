@@ -148,6 +148,22 @@ class TestScreening(TestCase):
         # form action url should preserve the filter
         self.assertContains(response, f'action="{url}"')
 
+    def test_filter_by_platform_group(self):
+        oldschool = self.meteoriks.series.platform_groups.get(name="Oldschool")
+        newschool = self.meteoriks.series.platform_groups.get(name="Newschool")
+
+        self.client.login(username="juror", password="67890")
+
+        url = f"/awards/meteoriks-2020/screening/?platform_group={oldschool.id}"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # form action url should preserve the filter
+        self.assertContains(response, f'action="{url}"')
+
+        response = self.client.get(f"/awards/meteoriks-2020/screening/?platform_group={newschool.id}", follow=True)
+        self.assertRedirects(response, f"/awards/meteoriks-2020/?platform_group={newschool.id}")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
     def test_invalid_filter(self):
         self.client.login(username="juror", password="67890")
 

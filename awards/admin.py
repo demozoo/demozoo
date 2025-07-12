@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-from awards.models import Category, Event, EventSeries, Juror, Nomination
+from awards.models import Category, Event, EventSeries, Juror, Nomination, PlatformGroup
 
 
 class CategoryInline(admin.TabularInline):
@@ -32,6 +32,11 @@ class CategoryAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(num_nominations=models.Count("nominations"))
 
 
-admin.site.register(EventSeries)
+class PlatformGroupInline(admin.TabularInline):
+    model = PlatformGroup
+    extra = 0
+
+
+admin.site.register(EventSeries, inlines=[PlatformGroupInline])
 admin.site.register(Event, inlines=[CategoryInline, JurorInline])
 admin.site.register(Category, CategoryAdmin)

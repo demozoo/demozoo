@@ -504,6 +504,24 @@
     },
     {
         "pk": 1,
+        "model": "awards.platformgroup",
+        "fields": {
+            "event_series": 1,
+            "name": "Oldschool",
+            "platforms": [1]
+        }
+    },
+    {
+        "pk": 2,
+        "model": "awards.platformgroup",
+        "fields": {
+            "event_series": 1,
+            "name": "Newschool",
+            "platforms": [2]
+        }
+    },
+    {
+        "pk": 1,
         "model": "awards.event",
         "fields": {
             "name": "The Meteoriks 2020",
