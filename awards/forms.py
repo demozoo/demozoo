@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Count, Q
 from django.utils.http import urlencode
 
+from awards.models import PlatformGroup
 from platforms.models import Platform
 from productions.models import ProductionType
 
@@ -17,6 +18,9 @@ class ScreeningFilterForm(forms.Form):
         if not event.has_unscreened_productions:
             # defult rating_count to "less than two ratings" if there are no unscreened productions
             self.fields["rating_count"].initial = "1"
+
+        # Filter the platform group queryset to only those that belong to the event series of the event
+        self.fields["platform_group"].queryset = PlatformGroup.objects.filter(event_series=event.series)
 
         if filter_options_by_event:
             # limit the queryset of the platform field to those represented
@@ -40,6 +44,11 @@ class ScreeningFilterForm(forms.Form):
 
             self.fields["production_type"].queryset = ProductionType.objects.filter(path__in=ancestor_paths)
 
+    platform_group = forms.ModelChoiceField(
+        label="Platform group",
+        queryset=PlatformGroup.objects.all(),
+        required=False,
+    )
     platform = forms.ModelChoiceField(
         label="Platform",
         queryset=Platform.objects.all(),
@@ -69,6 +78,8 @@ class ScreeningFilterForm(forms.Form):
         if self.is_valid():
             if self.cleaned_data["platform"]:
                 queryset = queryset.filter(platforms=self.cleaned_data["platform"])
+            if self.cleaned_data["platform_group"]:
+                queryset = queryset.filter(platforms__platform_groups=self.cleaned_data["platform_group"])
             if self.cleaned_data["production_type"]:
                 prod_types = ProductionType.get_tree(self.cleaned_data["production_type"])
                 queryset = queryset.filter(types__in=prod_types)
@@ -92,6 +103,8 @@ class ScreeningFilterForm(forms.Form):
         params = {}
         if self.cleaned_data["platform"]:
             params["platform"] = self.cleaned_data["platform"].pk
+        if self.cleaned_data["platform_group"]:
+            params["platform_group"] = self.cleaned_data["platform_group"].pk
         if self.cleaned_data["production_type"]:
             params["production_type"] = self.cleaned_data["production_type"].pk
         if self.cleaned_data["has_youtube"]:
