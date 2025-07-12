@@ -14,7 +14,8 @@
         <h2>Production screening</h2>
         <p>
             <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
-            You have screened <strong>{{ screened_by_me_count }}</strong> of these.
+            You have screened <strong>{{ screened_by_me_count }}</strong>
+            of these{% if screened_by_me_count > 0 %} (<a href="{% url 'awards_screening_review' event.slug %}">review my votes</a>){% endif %}.
         </p>
         <form action="{% url 'awards_screening' event.slug %}" class="screening-form" method="get">
             Show me:
