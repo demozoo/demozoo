@@ -38,7 +38,7 @@ class TestScreening(TestCase):
         self.assertContains(response, "Welcome, jury member!")
         self.assertContains(response, "Production screening")
         # initially the "rating count" filter should be set to "0" (no ratings)
-        self.assertContains(response, '<option value="0" selected>No ratings</option>')
+        self.assertContains(response, '<option value="0" selected>Not been rated yet</option>')
 
         # non-jurors cannot access the award page
         self.client.login(username="non_juror", password="12345")

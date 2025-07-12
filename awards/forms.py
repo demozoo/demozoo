@@ -46,27 +46,30 @@ class ScreeningFilterForm(forms.Form):
 
     platform_group = forms.ModelChoiceField(
         label="Platform group",
+        empty_label="Any category",
         queryset=PlatformGroup.objects.all(),
         required=False,
     )
     platform = forms.ModelChoiceField(
         label="Platform",
+        empty_label="Any platform",
         queryset=Platform.objects.all(),
         required=False,
     )
     production_type = forms.ModelChoiceField(
         label="Production type",
+        empty_label="Any type",
         queryset=ProductionType.objects.all(),
         required=False,
     )
     has_youtube = forms.ChoiceField(
         label="Has YouTube video",
-        choices=[("", "Any"), ("yes", "Yes"), ("no", "No")],
+        choices=[("", "With or without"), ("yes", "With"), ("no", "Without")],
         required=False,
     )
     rating_count = forms.ChoiceField(
         label="Rating count",
-        choices=[("", "Any number"), ("0", "No ratings"), ("1", "Less than two ratings")],
+        choices=[("", "Any number of ratings"), ("0", "Not been rated yet"), ("1", "Less than two ratings")],
         initial="0",
         required=False,
     )
