@@ -16,9 +16,24 @@
             <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong> of these.
         </p>
-        <form action="{% url 'awards_screening' event.slug %}" method="get">
-            {{ screening_filter_form }}
-            {% icon_button attrs='type="submit"' icon="circle-play" label="Start screening" %}
+        <form action="{% url 'awards_screening' event.slug %}" class="screening-form" method="get">
+            Show me:
+            <ul>
+                <li>
+                    {{ screening_filter_form.platform_group }} productions
+                    of type {{ screening_filter_form.production_type }}
+                </li>
+                <li>
+                    on {{ screening_filter_form.platform }}
+                </li>
+                <li>
+                    {{ screening_filter_form.has_youtube }} YouTube videos
+                </li>
+                <li>
+                    that have {{ screening_filter_form.rating_count }}
+                </li>
+            </ul>
+            <button type="submit">Start screening</button>
         </form>
     {% endif %}
     {% if can_view_reports %}
