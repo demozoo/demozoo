@@ -292,3 +292,26 @@ def screening_review(request, event_slug):
             ),
         },
     )
+
+
+@require_POST
+def screening_review_change(request, event_slug, decision_id):
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    decision = get_object_or_404(event.screening_decisions, id=decision_id, user=request.user)
+
+    new_decision = request.POST.get("decision")
+    if new_decision == "skip":
+        decision.delete()
+    else:
+        decision.is_accepted = new_decision == "yay"
+        decision.save()
+
+    redirect_url = reverse("awards_screening_review", args=[event.slug])
+    if request.GET.get("page"):
+        redirect_url += f"?page={request.GET['page']}"
+
+    return HttpResponseRedirect(redirect_url)

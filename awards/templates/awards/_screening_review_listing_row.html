@@ -4,9 +4,14 @@
     {{ block.super }}
 
     <td>
-        <form action="" method="POST">
+        <form action="{% url 'awards_screening_review_change' event.slug decision.id %}{% if request.GET.page %}?page={{ request.GET.page }}{% endif %}" method="POST">
             {% csrf_token %}
-            {% if decision.is_accepted %}Yay{% else %}Nay{% endif %}
+            <select name="decision">
+                <option value="yay" {% if decision.is_accepted %}selected{% endif %}>✅ Yay</option>
+                <option value="nay" {% if not decision.is_accepted %}selected{% endif %}>❌ Nay</option>
+                <option value="skip">Skip</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </td>
 {% endblock %}

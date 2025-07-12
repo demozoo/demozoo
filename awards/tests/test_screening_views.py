@@ -268,3 +268,27 @@ class TestScreening(TestCase):
         )
         response = self.client.get("/awards/meteoriks-2020/screening/review/")
         self.assertContains(response, "The Brexecutable Music Compo Is Over")
+
+    def test_screening_review_page_with_decision_change(self):
+        production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
+        decision = self.meteoriks.screening_decisions.create(
+            user=self.juror,
+            production_id=production_id,
+            is_accepted=True,
+        )
+
+        url = f"/awards/meteoriks-2020/screening/review/{decision.id}/"
+        # non-jurors cannot access the screening review change page
+        self.client.login(username="non_juror", password="12345")
+        response = self.client.post(url, {"decision": "nay"})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username="juror", password="67890")
+        response = self.client.post(url, {"decision": "nay"})
+        self.assertRedirects(response, "/awards/meteoriks-2020/screening/review/")
+        decision.refresh_from_db()
+        self.assertFalse(decision.is_accepted)
+
+        response = self.client.post(f"{url}?page=2", {"decision": "skip"})
+        self.assertRedirects(response, "/awards/meteoriks-2020/screening/review/?page=2")
+        self.assertFalse(ScreeningDecision.objects.filter(id=decision.id).exists())
