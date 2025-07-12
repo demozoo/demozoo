@@ -1,0 +1,12 @@
+{% extends "productions/tags/production_listing_row.html" %}
+
+{% block cells %}
+    {{ block.super }}
+
+    <td>
+        <form action="" method="POST">
+            {% csrf_token %}
+            {% if decision.is_accepted %}Yay{% else %}Nay{% endif %}
+        </form>
+    </td>
+{% endblock %}

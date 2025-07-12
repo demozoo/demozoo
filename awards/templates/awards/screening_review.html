@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load production_tags laces %}
+
+{% block html_title %}{{ event.name }} - Your screened productions - Demozoo{% endblock %}
+
+{% block base_main %}
+
+<h1>{{ event.name }} - Your screened productions</h1>
+
+{% if rows %}
+    {% include "awards/_screening_review_listing.html" %}
+{% else %}
+    <p>You have not screened any productions yet.</p>
+{% endif %}
+
+{% component pagination_controls %}
+
+{% endblock %}

@@ -256,3 +256,39 @@ def screening(request, event_slug):
                 "screening_url": screening_url,
             },
         )
+
+
+def screening_review(request, event_slug):
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    decisions = (
+        event.screening_decisions.filter(user=request.user)
+        .select_related("production")
+        .prefetch_related(
+            "production__author_nicks__releaser",
+            "production__author_affiliation_nicks__releaser",
+            "production__platforms",
+            "production__types",
+        )
+        .order_by("-created_at")
+    )
+    decision_page = get_page(decisions, request.GET.get("page", "1"))
+
+    screenshots = Screenshot.select_for_production_ids([decision.production_id for decision in decision_page])
+
+    rows = [(decision, decision.production, screenshots.get(decision.production_id)) for decision in decision_page]
+
+    return render(
+        request,
+        "awards/screening_review.html",
+        {
+            "event": event,
+            "rows": rows,
+            "pagination_controls": PaginationControls(
+                decision_page, reverse("awards_screening_review", args=[event.slug])
+            ),
+        },
+    )

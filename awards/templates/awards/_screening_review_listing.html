@@ -1,0 +1,12 @@
+{% extends "productions/tags/production_listing.html" %}
+
+{% block columns %}
+    {{ block.super }}
+    <col width="10%" />
+{% endblock %}
+
+{% block rows %}
+    {% for decision, production, screenshot in rows %}
+        {% include "awards/_screening_review_listing_row.html" with show_screenshots=1 show_prod_types=1 %}
+    {% endfor %}
+{% endblock %}

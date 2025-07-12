@@ -244,3 +244,27 @@ class TestScreening(TestCase):
             ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
         )
         self.assertNotContains(response, "Given a &#x27;Yay&#x27; to")
+
+    def test_screening_review_page(self):
+        # non-jurors cannot access the screening page
+        self.client.login(username="non_juror", password="12345")
+        response = self.client.get("/awards/meteoriks-2020/screening/review/")
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username="juror", password="67890")
+        response = self.client.get("/awards/meteoriks-2020/screening/review/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your screened productions")
+
+        # if no productions have been screened, it should show a message
+        self.assertContains(response, "You have not screened any productions yet.")
+
+        # screen a production and check the review page again
+        production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
+        self.meteoriks.screening_decisions.create(
+            user=self.juror,
+            production_id=production_id,
+            is_accepted=True,
+        )
+        response = self.client.get("/awards/meteoriks-2020/screening/review/")
+        self.assertContains(response, "The Brexecutable Music Compo Is Over")
