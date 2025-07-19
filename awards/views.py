@@ -258,6 +258,33 @@ def screening(request, event_slug):
         )
 
 
+def screening_production(request, event_slug, production_id):
+    """Access the screening page for a specific production."""
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    filter_form = ScreeningFilterForm(event, request.GET, filter_options_by_event=False)
+    base_url = reverse("awards_screening", args=[event.slug])
+    query_string = filter_form.as_query_string()
+    screening_url = f"{base_url}?{query_string}" if query_string else base_url
+
+    production = get_object_or_404(event.screenable_productions(), id=production_id)
+
+    return render(
+        request,
+        "awards/screening.html",
+        {
+            "event": event,
+            "production": production,
+            "carousel": Carousel(production, AnonymousUser()),
+            "downloads_panel": DownloadsPanel(production, AnonymousUser()),
+            "screening_url": screening_url,
+        },
+    )
+
+
 def screening_review(request, event_slug):
     event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
 

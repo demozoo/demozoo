@@ -300,3 +300,26 @@ class TestScreening(TestCase):
         response = self.client.post(f"{url}?page=2", {"decision": "skip"})
         self.assertRedirects(response, "/awards/meteoriks-2020/screening/review/?page=2")
         self.assertFalse(ScreeningDecision.objects.filter(id=decision.id).exists())
+
+    def test_screening_production_page(self):
+        prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        zx_spectrum = Platform.objects.get(name="ZX Spectrum")
+
+        # jurors can access the screening page
+        self.client.login(username="juror", password="67890")
+        response = self.client.get(f"/awards/meteoriks-2020/screening/{prod.id}/?platform={zx_spectrum.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The Meteoriks 2020 - Screening")
+        self.assertContains(response, "The Brexecutable Music Compo Is Over")
+        # form action url should preserve the filter
+        self.assertContains(response, f'action="/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"')
+
+        # cannot access the page if the production is not screenable
+        pondlife = Production.objects.get(title="Pondlife")
+        response = self.client.get(f"/awards/meteoriks-2020/screening/{pondlife.id}/")
+        self.assertEqual(response.status_code, 404)
+
+        # non-jurors cannot access the screening page
+        self.client.login(username="non_juror", password="12345")
+        response = self.client.get(f"/awards/meteoriks-2020/screening/{prod.id}/")
+        self.assertEqual(response.status_code, 403)
