@@ -51,6 +51,24 @@
         <div class="right">
             {% component downloads_panel %}
 
+            {% if comments %}
+                <h3>Comments</h3>
+                <ul>
+                    {% for comment in comments %}
+                        <li>
+                            <p>{{ comment.comment }}</p>
+                            - posted by {{ comment.user.username }} at {{ comment.created_at|date:"H:i j F Y" }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <form action="{{ comment_url }}" method="post">
+                {% csrf_token %}
+                {% include "shared/form_fields.html" with form=comment_form %}
+                <button type="submit">Post comment</button>
+            </form>
+
             <div class="decision">
                 <form action="{{ screening_url }}" method="post">
                     {% csrf_token %}

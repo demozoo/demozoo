@@ -10,8 +10,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from awards.forms import ScreeningFilterForm
-from awards.models import Event, Nomination, Recommendation
+from awards.forms import ScreeningCommentForm, ScreeningFilterForm
+from awards.models import Event, Nomination, Recommendation, ScreeningComment
 from common.utils.pagination import PaginationControls
 from common.views import writeable_site_required
 from demoscene.shortcuts import get_page
@@ -245,6 +245,12 @@ def screening(request, event_slug):
             return_url = f'{reverse("award", args=(event.slug,))}?{query_string}'
             return HttpResponseRedirect(return_url)
 
+        comment_form = ScreeningCommentForm()
+        comment_url = reverse("awards_screening_comment", args=[event.slug, production.id])
+        comment_url = f"{comment_url}?{query_string}" if query_string else comment_url
+
+        comments = event.screening_comments.filter(production=production).order_by("created_at").select_related("user")
+
         return render(
             request,
             "awards/screening.html",
@@ -254,6 +260,9 @@ def screening(request, event_slug):
                 "carousel": Carousel(production, AnonymousUser()),
                 "downloads_panel": DownloadsPanel(production, AnonymousUser()),
                 "screening_url": screening_url,
+                "comment_form": comment_form,
+                "comment_url": comment_url,
+                "comments": comments,
             },
         )
 
@@ -271,6 +280,11 @@ def screening_production(request, event_slug, production_id):
     screening_url = f"{base_url}?{query_string}" if query_string else base_url
 
     production = get_object_or_404(event.screenable_productions(), id=production_id)
+    comment_form = ScreeningCommentForm()
+    comment_url = reverse("awards_screening_comment", args=[event.slug, production.id])
+    comment_url = f"{comment_url}?{query_string}" if query_string else comment_url
+
+    comments = event.screening_comments.filter(production=production).order_by("created_at").select_related("user")
 
     return render(
         request,
@@ -281,8 +295,33 @@ def screening_production(request, event_slug, production_id):
             "carousel": Carousel(production, AnonymousUser()),
             "downloads_panel": DownloadsPanel(production, AnonymousUser()),
             "screening_url": screening_url,
+            "comment_form": comment_form,
+            "comment_url": comment_url,
+            "comments": comments,
         },
     )
+
+
+@require_POST
+def screening_comment(request, event_slug, production_id):
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    production = get_object_or_404(event.screenable_productions(), id=production_id)
+    comment = ScreeningComment(production=production, event=event, user=request.user)
+    comment_form = ScreeningCommentForm(request.POST, instance=comment)
+
+    filter_form = ScreeningFilterForm(event, request.GET, filter_options_by_event=False)
+    return_url = reverse("awards_screening_production", args=[event.slug, production_id])
+    query_string = filter_form.as_query_string()
+    return_url = f"{return_url}?{query_string}" if query_string else return_url
+
+    if comment_form.is_valid():
+        comment_form.save()
+
+    return HttpResponseRedirect(return_url)
 
 
 def screening_review(request, event_slug):
