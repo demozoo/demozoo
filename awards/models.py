@@ -311,6 +311,9 @@ class PlatformGroup(models.Model):
     platforms = models.ManyToManyField(
         Platform, related_name="platform_groups", help_text="Platforms that belong to this group."
     )
+    include_no_platform = models.BooleanField(
+        default=False, help_text="Whether to include productions with no associated platform."
+    )
 
     def __str__(self):
         return self.name

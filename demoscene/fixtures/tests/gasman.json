@@ -508,7 +508,8 @@
         "fields": {
             "event_series": 1,
             "name": "Oldschool",
-            "platforms": [1]
+            "platforms": [1],
+            "include_no_platform": false
         }
     },
     {
@@ -517,7 +518,8 @@
         "fields": {
             "event_series": 1,
             "name": "Newschool",
-            "platforms": [2]
+            "platforms": [2],
+            "include_no_platform": true
         }
     },
     {
