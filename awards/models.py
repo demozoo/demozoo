@@ -301,6 +301,14 @@ class ScreeningDecision(models.Model):
         ]
 
 
+class ScreeningComment(models.Model):
+    production = models.ForeignKey(Production, related_name="screening_comments", on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, related_name="screening_comments", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="screening_comments", on_delete=models.CASCADE)
+    comment = models.TextField(help_text="For raising issues and sharing information with other jurors")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class PlatformGroup(models.Model):
     name = models.CharField(
         max_length=255,

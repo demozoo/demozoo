@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Count, Q
 from django.utils.http import urlencode
 
-from awards.models import PlatformGroup
+from awards.models import PlatformGroup, ScreeningComment
 from platforms.models import Platform
 from productions.models import ProductionType
 
@@ -119,3 +119,16 @@ class ScreeningFilterForm(forms.Form):
         if self.cleaned_data["rating_count"]:
             params["rating_count"] = self.cleaned_data["rating_count"]
         return urlencode(params)
+
+
+class ScreeningCommentForm(forms.ModelForm):
+    """
+    Form for submitting comments on productions during screening.
+    """
+
+    class Meta:
+        model = ScreeningComment
+        fields = ["comment"]
+        widgets = {
+            "comment": forms.Textarea(attrs={"rows": 3}),
+        }
