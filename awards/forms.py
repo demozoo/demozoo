@@ -82,7 +82,11 @@ class ScreeningFilterForm(forms.Form):
             if self.cleaned_data["platform"]:
                 queryset = queryset.filter(platforms=self.cleaned_data["platform"])
             if self.cleaned_data["platform_group"]:
-                queryset = queryset.filter(platforms__platform_groups=self.cleaned_data["platform_group"])
+                platform_group = self.cleaned_data["platform_group"]
+                platform_group_filter = Q(platforms__platform_groups=self.cleaned_data["platform_group"])
+                if platform_group.include_no_platform:
+                    platform_group_filter |= Q(platforms__isnull=True)
+                queryset = queryset.filter(platform_group_filter)
             if self.cleaned_data["production_type"]:
                 prod_types = ProductionType.get_tree(self.cleaned_data["production_type"])
                 queryset = queryset.filter(types__in=prod_types)
