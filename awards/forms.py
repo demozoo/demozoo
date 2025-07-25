@@ -126,6 +126,10 @@ class ScreeningCommentForm(forms.ModelForm):
     Form for submitting comments on productions during screening.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["comment"].label = "Add a comment"
+
     class Meta:
         model = ScreeningComment
         fields = ["comment"]

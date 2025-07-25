@@ -51,23 +51,36 @@
         <div class="right">
             {% component downloads_panel %}
 
-            {% if comments %}
-                <h3>Comments</h3>
-                <ul>
-                    {% for comment in comments %}
-                        <li>
-                            <p>{{ comment.comment }}</p>
-                            - posted by {{ comment.user.username }} at {{ comment.created_at|date:"H:i j F Y" }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            <div class="panel">
+                <h3 class="panel__title">Comments</h3>
+                {% if comments %}
+                    <ul class="comments">
+                        {% for comment in comments %}
+                            <li>
+                                {{ comment.comment|urlize|linebreaks }}
+                                <div class="cite">- posted by {{ comment.user.username }} at {{ comment.created_at|date:"H:i j F Y" }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <form action="{{ comment_url }}" class="comments_form" method="post">
+                    {% csrf_token %}
+                    {% include "shared/form_fields.html" with form=comment_form %}
+                    <button type="submit">Post comment</button>
+                </form>
+            </div>
 
-            <form action="{{ comment_url }}" method="post">
-                {% csrf_token %}
-                {% include "shared/form_fields.html" with form=comment_form %}
-                <button type="submit">Post comment</button>
-            </form>
+            <script>
+                $(function() {
+                    const commentFormTrigger = $('<button class="comment_form_trigger">Add a comment</button>');
+                    $('.comments_form').before(commentFormTrigger);
+                    $('.comments_form').hide();
+                    $('.comment_form_trigger').on('click', function() {
+                        $('.comment_form_trigger').slideUp();
+                        $('.comments_form').slideDown();
+                    });
+                })
+            </script>
 
             <div class="decision">
                 <form action="{{ screening_url }}" method="post">

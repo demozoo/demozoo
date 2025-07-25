@@ -31,4 +31,36 @@
             }
         }
     }
+
+    .comment_form_trigger {
+        background: none;
+        border: none;
+        clear: both;
+        color: #02a;
+        cursor: pointer;
+        display: block;
+        text-decoration: underline;
+        margin-bottom: 1em;
+    }
+
+    .comments {
+        clear: both;
+
+        li {
+            margin-bottom: 1em;
+        }
+
+        p {
+            margin: 0.5em 0;
+        }
+
+        .cite {
+            font-size: 0.9em;
+        }
+    }
+
+    .comments_form {
+        clear: both;
+        margin-bottom: 1em;
+    }
 }
