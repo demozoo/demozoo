@@ -1092,47 +1092,44 @@ class EmptyReleasers(StaffOnlyMixin, Report):
             FROM demoscene_releaser
             WHERE
             notes = ''
-            AND id IN ( -- must belong to no groups
-                SELECT demoscene_releaser.id
-                FROM demoscene_releaser
-                LEFT JOIN demoscene_membership AS groups ON groups.member_id = demoscene_releaser.id
-                GROUP BY demoscene_releaser.id
-                HAVING COUNT(group_id) = 0
+            AND id NOT IN ( -- must belong to no groups
+                SELECT DISTINCT member_id FROM demoscene_membership
             )
-            AND id IN ( -- must have no members
-                SELECT demoscene_releaser.id
-                FROM demoscene_releaser
-                LEFT JOIN demoscene_membership AS members ON members.group_id = demoscene_releaser.id
-                GROUP BY demoscene_releaser.id
-                HAVING COUNT(member_id) = 0
+            AND id NOT IN ( -- must have no members
+                SELECT DISTINCT group_id FROM demoscene_membership
             )
-            AND id IN ( -- must have no releases as author
-                SELECT demoscene_releaser.id
-                FROM demoscene_releaser
-                LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-                LEFT JOIN productions_production_author_nicks ON (
+            AND id NOT IN ( -- must have no releases as author
+                SELECT DISTINCT demoscene_nick.releaser_id
+                FROM demoscene_nick
+                INNER JOIN productions_production_author_nicks ON (
                     demoscene_nick.id = productions_production_author_nicks.nick_id
                 )
-                GROUP BY demoscene_releaser.id
-                HAVING COUNT(production_id) = 0
             )
-            AND id IN ( -- must have no releases as author affiliation
-                SELECT demoscene_releaser.id
-                FROM demoscene_releaser
-                LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-                LEFT JOIN productions_production_author_affiliation_nicks ON (
+            AND id NOT IN ( -- must have no releases as author affiliation
+                SELECT DISTINCT demoscene_nick.releaser_id
+                FROM demoscene_nick
+                INNER JOIN productions_production_author_affiliation_nicks ON (
                     demoscene_nick.id = productions_production_author_affiliation_nicks.nick_id
                 )
-                GROUP BY demoscene_releaser.id
-                HAVING COUNT(production_id) = 0
             )
-            AND id IN ( -- must have no credits
-                SELECT demoscene_releaser.id
-                FROM demoscene_releaser
-                LEFT JOIN demoscene_nick ON (demoscene_releaser.id = demoscene_nick.releaser_id)
-                LEFT JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
-                GROUP BY demoscene_releaser.id
-                HAVING COUNT(production_id) = 0
+            AND id NOT IN ( -- must have no credits
+                SELECT DISTINCT demoscene_nick.releaser_id
+                FROM demoscene_nick
+                INNER JOIN productions_credit ON (demoscene_nick.id = productions_credit.nick_id)
+            )
+            AND id NOT IN ( -- must not be orga of any party
+                SELECT DISTINCT releaser_id FROM parties_organiser
+            )
+            AND id NOT IN ( -- must not be staff of any bbs
+                SELECT DISTINCT releaser_id FROM bbs_operator
+            )
+            AND id NOT IN ( -- must not have any BBS affiliations
+                SELECT DISTINCT group_id FROM bbs_affiliation
+            )
+            AND id NOT IN ( -- must not have any external links that aren't BaseUrl
+                SELECT DISTINCT releaser_id
+                FROM demoscene_releaserexternallink
+                WHERE link_class <> 'BaseUrl'
             )
             AND id NOT IN (SELECT releaser_id FROM demoscene_nick where differentiator <> '')
             AND id NOT IN (SELECT record_id FROM maintenance_exclusion WHERE report_name = %s)
@@ -1184,7 +1181,7 @@ class UntrustedLinks(StaffOnlyMixin, Report):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        untrusted_url_idents = UntrustedLinkIdentifier.objects.values_list('url_part', flat=True)
+        untrusted_url_idents = UntrustedLinkIdentifier.objects.values_list("url_part", flat=True)
         if not untrusted_url_idents:
             return context
 
@@ -1210,6 +1207,7 @@ class UntrustedLinks(StaffOnlyMixin, Report):
             }
         )
         return context
+
 
 class UnresolvedScreenshots(StaffOnlyMixin, Report):
     title = "Unresolved screenshots"
