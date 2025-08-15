@@ -640,20 +640,19 @@ function TextGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.key) {
-                    case "Enter":
-                        self._startEdit('capturedText');
-                        return false;
-                    case "Backspace":
-                        self._startEdit('uncapturedText');
-                        input.val('');
-                        return false;
-                    case "v":
-                        if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
-                            self._startEdit('uncapturedText');
-                            return true; /* override grid event handler, defer to browser's own */
-                        }
-                        break;
+                if (event.key === "Enter") {
+                    self._startEdit('capturedText');
+                    return false;
+                } else if (event.key === "Backspace") {
+                    self._startEdit('uncapturedText');
+                    input.val('');
+                    return false;
+                } else if (event.key === "v" && self.eventIsCommandKey(event)) {
+                    /* cmd+V = paste */
+                    self._startEdit('uncapturedText');
+                    return true; /* override grid event handler, defer to browser's own */
+                } else if (event.key.length === 1) {
+                    self._startEdit('uncapturedText');
                 }
                 break;
             case 'capturedText':
@@ -686,13 +685,6 @@ function TextGridCell(opts) {
                         self._finishEdit();
                         return null; /* let grid event handler process the cursor movement */
                 }
-                break;
-        }
-    }
-    self.keypress = function(event) {
-        switch (self._editMode) {
-            case null:
-                self._startEdit('uncapturedText');
                 break;
         }
     }
