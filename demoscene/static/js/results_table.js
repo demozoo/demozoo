@@ -149,21 +149,20 @@ function BylineGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.key) {
-                    case "Enter":
-                        self._startEdit('capturedText');
-                        return false;
-                    case "Backspace":
-                        self._startEdit('uncapturedText');
-                        bylineField.setValue(null);
-                        return false;
-                    case "v":
-                        if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
-                            self._startEdit('uncapturedText');
-                            setTimeout(function() {bylineField.lookUpMatches();}, 10);
-                            return true; /* override grid event handler, defer to browser's own */
-                        }
-                        break;
+                if (event.key === "Enter") {
+                    self._startEdit('capturedText');
+                    return false;
+                } else if (event.key === "Backspace") {
+                    self._startEdit('uncapturedText');
+                    bylineField.setValue(null);
+                    return false;
+                } else if (event.key === "v" && self.eventIsCommandKey(event)) {
+                    /* cmd+V = paste */
+                    self._startEdit('uncapturedText');
+                    setTimeout(function() {bylineField.lookUpMatches();}, 10);
+                    return true; /* override grid event handler, defer to browser's own */
+                } else if (event.key.length === 1) {
+                    self._startEdit('uncapturedText');
                 }
                 break;
             case 'capturedText':
@@ -194,13 +193,6 @@ function BylineGridCell(opts) {
                             return true;
                         }
                 }
-                break;
-        }
-    };
-    self.keypress = function(event) {
-        switch (self._editMode) {
-            case null:
-                self._startEdit('uncapturedText');
                 break;
         }
     };
@@ -254,27 +246,26 @@ function ProductionTitleGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.key) {
-                    case "Enter":
-                        self._startEdit('capturedText');
-                        return false;
-                    case "Backspace":
-                        if (self._isLocked) {
-                            self.requestUnlock.trigger();
-                        } else {
-                            self._startEdit('uncapturedText');
-                            self._input.val('');
-                        }
-                        return false;
-                    case "v":
-                        if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
-                            self._startEdit('uncapturedText');
-                            setTimeout(function() {
-                                self._input.autocomplete('search');
-                            }, 10);
-                            return true; /* override grid event handler, defer to browser's own */
-                        }
-                        break;
+                if (event.key === "Enter") {
+                    self._startEdit('capturedText');
+                    return false;
+                } else if (event.key === "Backspace") {
+                    if (self._isLocked) {
+                        self.requestUnlock.trigger();
+                    } else {
+                        self._startEdit('uncapturedText');
+                        self._input.val('');
+                    }
+                    return false;
+                } else if (event.key === "v" && self.eventIsCommandKey(event)) {
+                    /* cmd+V = paste */
+                    self._startEdit('uncapturedText');
+                    setTimeout(function() {
+                        self._input.autocomplete('search');
+                    }, 10);
+                    return true; /* override grid event handler, defer to browser's own */
+                } else if (event.key.length === 1) {
+                    self._startEdit('uncapturedText');
                 }
                 break;
             case 'capturedText':
