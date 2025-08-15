@@ -141,9 +141,8 @@ function EditableGrid(elem) {
                 - true to pass control to the browser's default handlers */
             if (result != null) return result;
         }
-        
-        switch (event.which) {
-            case 9: /* tab */
+        switch (event.key) {
+            case "Tab":
                 if (event.shiftKey) {
                     if (moveCursorBackward()) {
                         return false;
@@ -161,22 +160,22 @@ function EditableGrid(elem) {
                         return;
                     }
                 }
-            case 13: /* enter */
+            case "Enter":
                 advanceOrCreate();
                 return false;
-            case 37: /* cursor left */
+            case "ArrowLeft":
                 setCursorIfInRange(cursorX - 1, cursorY);
                 //resultsTable.focus();
                 return false;
-            case 38: /* cursor up */
+            case "ArrowUp":
                 setCursorIfInRange(cursorX, cursorY - 1);
                 //resultsTable.focus();
                 return false;
-            case 39: /* cursor right */
+            case "ArrowRight":
                 setCursorIfInRange(cursorX + 1, cursorY);
                 //resultsTable.focus();
                 return false;
-            case 40: /* cursor down */
+            case "ArrowDown":
                 setCursorIfInRange(cursorX, cursorY + 1);
                 //resultsTable.focus();
                 return false;
@@ -641,15 +640,15 @@ function TextGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.which) {
-                    case 13:
+                switch (event.key) {
+                    case "Enter":
                         self._startEdit('capturedText');
                         return false;
-                    case 8: /* backspace */
+                    case "Backspace":
                         self._startEdit('uncapturedText');
                         input.val('');
                         return false;
-                    case 86: /* V */
+                    case "v":
                         if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
                             self._startEdit('uncapturedText');
                             return true; /* override grid event handler, defer to browser's own */
@@ -658,32 +657,32 @@ function TextGridCell(opts) {
                 }
                 break;
             case 'capturedText':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         self._finishEdit();
                         return false;
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         return false;
-                    case 37: /* cursors */
-                    case 38:
-                    case 39:
-                    case 40:
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
                         return true; /* override grid event handler, defer to browser's own */
                 }
                 break;
             case 'uncapturedText':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         self._finishEdit();
                         return null; /* grid's event handler for the enter key will advance to next cell */
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         return false;
-                    case 37: /* cursors */
-                    case 38:
-                    case 39:
-                    case 40:
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
                         self._finishEdit();
                         return null; /* let grid event handler process the cursor movement */
                 }
@@ -738,17 +737,17 @@ function SelectGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                if ( (event.which >= 48 && event.which <= 57) || (event.which >= 65 && event.which <= 90) ) {
+                if ( event.key.length === 1 ) {
                     // respond to alphanumeric keys and enter by focusing the dropdown
                     // (all prod types and platforms start with alphanumerics)
                     self._startEdit('uncapturedText');
                     return true; /* allow select box to handle the keypress */
                 } else {
-                    switch (event.which) {
-                        case 13:
+                    switch (event.key) {
+                        case "Enter":
                             self._startEdit('capturedText');
                             return false;
-                        case 8: /* backspace */
+                        case "Backspace":
                             self._startEdit('uncapturedText');
                             input.val('');
                             return false;
@@ -756,35 +755,35 @@ function SelectGridCell(opts) {
                 }
                 break;
             case 'capturedText':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         self._finishEdit();
                         input.blur();
                         return false;
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         return false;
-                    case 37: /* cursors */
-                    case 38:
-                    case 39:
-                    case 40:
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
                         return true; /* override grid event handler, defer to browser's own */
                 }
                 break;
             case 'uncapturedText':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         self._finishEdit();
                         input.blur();
                         return null; /* grid's event handler for the enter key will advance to next cell */
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         input.blur();
                         return false;
-                    case 38: /* cursors */
-                    case 40:
-                    case 37:
-                    case 39:
+                    case "ArrowUp":
+                    case "ArrowDown":
+                    case "ArrowLeft":
+                    case "ArrowRight":
                         self._finishEdit();
                         input.blur();
                         return null; /* let grid event handler process the cursor movement */
