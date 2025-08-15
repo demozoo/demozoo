@@ -149,15 +149,15 @@ function BylineGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.which) {
-                    case 13:
+                switch (event.key) {
+                    case "Enter":
                         self._startEdit('capturedText');
                         return false;
-                    case 8: /* backspace */
+                    case "Backspace":
                         self._startEdit('uncapturedText');
                         bylineField.setValue(null);
                         return false;
-                    case 86: /* V */
+                    case "v":
                         if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
                             self._startEdit('uncapturedText');
                             setTimeout(function() {bylineField.lookUpMatches();}, 10);
@@ -169,20 +169,20 @@ function BylineGridCell(opts) {
             case 'capturedText':
             case 'uncapturedText': /* no distinction between captured and uncaptured text here (except for
             whether to cancel default 'advance' event on enter) */
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         self._finishEdit();
                         return (self._editMode == 'capturedText' ? false : null);
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         return false;
-                    case 37: /* cursors */
-                    case 38:
-                    case 39:
-                    case 40:
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
                         /* let bylineField handle cursor keys, unimpeded by EditableGrid behaviour */
                         return true;
-                    case 9: /* tab */
+                    case "Tab":
                         if (
                             (bylineField.firstFieldIsFocused() && event.shiftKey) ||
                             (bylineField.lastFieldIsFocused() && !event.shiftKey)
@@ -254,11 +254,11 @@ function ProductionTitleGridCell(opts) {
     self.keydown = function(event) {
         switch (self._editMode) {
             case null:
-                switch (event.which) {
-                    case 13:
+                switch (event.key) {
+                    case "Enter":
                         self._startEdit('capturedText');
                         return false;
-                    case 8: /* backspace */
+                    case "Backspace":
                         if (self._isLocked) {
                             self.requestUnlock.trigger();
                         } else {
@@ -266,7 +266,7 @@ function ProductionTitleGridCell(opts) {
                             self._input.val('');
                         }
                         return false;
-                    case 86: /* V */
+                    case "v":
                         if (self.eventIsCommandKey(event)) { /* cmd+V = paste */
                             self._startEdit('uncapturedText');
                             setTimeout(function() {
@@ -279,8 +279,8 @@ function ProductionTitleGridCell(opts) {
                 break;
             case 'capturedText':
             case 'unlock':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         /* we want to finish edit UNLESS this keypress causes an autocomplete item to be
                         selected, in which case we want the autocomplete's select event to fire and trigger
                         the finishEdit call *after* having processed the autocomplete event handler which
@@ -291,21 +291,21 @@ function ProductionTitleGridCell(opts) {
                             if (self._editMode) self._finishEdit();
                         }, 1);
                         return false;
-                    case 27: /* escape */
+                    case "Escape":
                         var wasUnlocking = (self._editMode == 'unlock');
                         self._cancelEdit();
                         if (wasUnlocking) self.cancelUnlock.trigger();
                         return false;
-                    case 37: /* cursors */
-                    case 38:
-                    case 39:
-                    case 40:
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
                         return true; /* override grid event handler, defer to browser's own */
                 }
                 break;
             case 'uncapturedText':
-                switch(event.which) {
-                    case 13: /* enter */
+                switch(event.key) {
+                    case "Enter":
                         setTimeout(function() {
                             /* if we're still in edit mode after autocomplete.select has had chance to fire,
                                 assume we're finishing the edit in the regular way */
@@ -315,15 +315,15 @@ function ProductionTitleGridCell(opts) {
                             }
                         }, 1);
                         return false;
-                    case 27: /* escape */
+                    case "Escape":
                         self._cancelEdit();
                         return false;
-                    case 37: /* cursors left/right */
-                    case 39:
+                    case "ArrowLeft":
+                    case "ArrowRight":
                         self._finishEdit();
                         return null; /* let grid event handler process the cursor movement */
-                    case 38: /* cursors up/down */
-                    case 40:
+                    case "ArrowUp":
+                    case "ArrowDown":
                         return true; /* override grid event handler, defer to browser's own */
                 }
                 break;
