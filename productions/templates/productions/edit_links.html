@@ -3,12 +3,16 @@
 
 {% block form_body %}
     <div class="field">
-        <label for="id_external_links-0-url" class="field_label">Link URLs</label>
+        <label for="id_links-0-url" class="field_label">Link URLs</label>
         <div class="field_input">
             {% spawningformset formset %}
                 {% spawningform as form %}
                     {{ form.url }}
                     {{ form.url.errors }}
+                    {% if form.description %}
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    {% endif %}
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}

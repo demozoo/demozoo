@@ -19,6 +19,7 @@
         {% for link in download_links %}
             <li class="download_link {{ link.html_link_class }}">
                 {{ link.as_download_link|safe }}
+                {% if link.description %}({{ link.description }}){% endif %}
             </li>
         {% endfor %}
     </ul>
