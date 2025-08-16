@@ -111,15 +111,9 @@ fieldset {
     }
 }
 
-/* external links form needs bigger labels */
-.external_links_form .field {
-
-    label.field_label {
-        width: 200px;
-    }
-
-    .field_input {
-        width: 400px;
+.download_links_form {
+    .spawned_form {
+        margin-bottom: 1em;
     }
 }
 

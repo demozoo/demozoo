@@ -329,6 +329,7 @@ class DeleteBlurbView(AjaxConfirmationView):
 
 class EditLinksView(EditingView):
     template_name = "productions/edit_links.html"
+    html_form_class = ""
 
     def prepare(self, request, production_id):
         self.production = get_object_or_404(Production, id=production_id)
@@ -365,6 +366,7 @@ class EditLinksView(EditingView):
                 "action_url": reverse(self.action_url_name, args=[self.production.id]),
                 "formset": self.formset,
                 "submit_button_label": "Update links",
+                "html_form_class": self.html_form_class,
             }
         )
         return context
@@ -375,6 +377,7 @@ class EditExternalLinksView(EditLinksView):
     is_download_link = False
     log_action_type = "production_edit_external_links"
     action_url_name = "production_edit_external_links"
+    html_form_class = "external_links_form"
 
     def get_title(self):
         return f"Editing external links for {self.production.title}"
@@ -385,6 +388,7 @@ class EditDownloadLinksView(EditLinksView):
     is_download_link = True
     log_action_type = "production_edit_download_links"
     action_url_name = "production_edit_download_links"
+    html_form_class = "download_links_form"
 
     def get_title(self):
         return f"Editing download links for {self.production.title}"

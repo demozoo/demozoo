@@ -291,11 +291,12 @@ class ProductionDownloadLinkForm(ExternalLinkForm):
             "link_class",
             "production",
             "is_download_link",
-            "description",
             "demozoo0_id",
             "file_for_screenshot",
             "is_unresolved_for_screenshotting",
         ]
+
+        widgets = {"description": forms.TextInput(attrs={"placeholder": 'Optional description, like "party version"'})}
 
 
 ProductionDownloadLinkFormSet = inlineformset_factory(
