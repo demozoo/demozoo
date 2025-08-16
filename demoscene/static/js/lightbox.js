@@ -32,8 +32,20 @@
         isShowing = true;
 
         if (opts && opts.focusEmptyInput) {
-            /* focus on the first *empty* input field */
-            try {$(':input:visible[value=""]', lightboxContent)[0].focus();}catch(_){}
+            const spawnedForms = lightboxContent.find('.spawned_form');
+            if (spawnedForms.length) {
+                /* focus on the first spawned form whose first visible input is empty */
+                spawnedForms.each(function() {
+                    const firstInput = $(':input:visible', this).first();
+                    if (firstInput.length && firstInput.val() === '') {
+                        firstInput.focus();
+                        return false; // stop the each loop
+                    }
+                });
+            } else {
+                /* focus on the first empty input field */
+                try {$(':input:visible[value=""]', lightboxContent)[0].focus();}catch(_){}
+            }
         } else {
             try {$(':input:visible', lightboxContent)[0].focus();}catch(_){}
         }
