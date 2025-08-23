@@ -135,11 +135,12 @@ class AbstractBaseUrl:
     def html_link_class(self):
         return self.site.classname
 
-    def as_download_link(self):
+    def as_download_link(self, description=""):
         return format_html(
-            '<div class="primary"><a href="{url}">Download ({label})</a></div>',
+            '<div><a href="{url}" class="primary">Download ({label})</a> {description}</div>',
             url=str(self),
             label=self.download_link_label,
+            description="(%s)" % description if description else "",
         )
 
     @property
@@ -677,14 +678,18 @@ class SceneOrgFile(AbstractBaseUrl):
     def download_url(self):
         return self.nl_url
 
-    def as_download_link(self):
+    def as_download_link(self, description=""):
         return format_html(
             """
-                <div><a href="{url}" class="primary">Download (scene.org)</a> -
-                <a href="{info_url}" class="secondary">file info</a></div>
+                <div>
+                    <a href="{url}" class="primary">Download (scene.org)</a> -
+                    <a href="{info_url}" class="secondary">file info</a>
+                    {description}
+                </div>
             """,
             url=self.auto_mirror_url,
             info_url=self.info_url,
+            description="(%s)" % description if description else "",
         )
 
 
@@ -719,13 +724,14 @@ class AmigascneFile(AbstractBaseUrl):
     def us_http_url(self):
         return "http://http.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
 
-    def as_download_link(self):
+    def as_download_link(self, description=""):
         return format_html(
             """
-                <div class="primary"><a href="{url}">Download from amigascne.org</a></div>
+                <div><a href="{url}" class="primary">Download from amigascne.org</a> {description}</div>
                 <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
             """,
             url=str(self),
+            description="(%s)" % description if description else "",
             mirrors_html=mark_safe(" ".join(self.mirror_links)),
         )
 
@@ -761,13 +767,14 @@ class PaduaOrgFile(AbstractBaseUrl):
     def us_http_url(self):
         return "http://http.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
 
-    def as_download_link(self):
+    def as_download_link(self, description=""):
         return format_html(
             """
-                <div class="primary"><a href="{url}">Download from padua.org</a></div>
+                <div><a href="{url}" class="primary">Download from padua.org</a> {description}</div>
                 <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
             """,
             url=str(self),
+            description="(%s)" % description if description else "",
             mirrors_html=mark_safe(" ".join(self.mirror_links)),
         )
 
@@ -833,13 +840,14 @@ class ModlandFile(AbstractBaseUrl):
     def no_url(self):
         return "http://modland.antarctica.no%s" % self.param
 
-    def as_download_link(self):
+    def as_download_link(self, description=""):
         return format_html(
             """
-                <div class="primary"><a href="{url}">Download from Modland</a></div>
+                <div><a href="{url}" class="primary">Download from Modland</a> {description}</div>
                 <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
             """,
             url=str(self),
+            description="(%s)" % description if description else "",
             mirrors_html=mark_safe(" ".join(self.mirror_links)),
         )
 

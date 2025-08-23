@@ -732,7 +732,7 @@ class ProductionLink(ExternalLink):
         return self.link.html_link_class
 
     def as_download_link(self):
-        return self.link.as_download_link()
+        return self.link.as_download_link(description=self.description)
 
     @property
     def download_url(self):
