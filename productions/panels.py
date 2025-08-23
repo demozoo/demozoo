@@ -166,7 +166,9 @@ class DownloadsPanel(EditablePanel):
     context_object_list_name = "download_links"
 
     def get_object_list(self):
-        return self.production.download_links
+        # order by description so that ones without description appear first
+        # (as those are probably the actual release, rather than e.g. a video capture)
+        return self.production.download_links.order_by("description")
 
 
 class ExternalLinksPanel(EditablePanel):
