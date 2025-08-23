@@ -6,7 +6,8 @@ import urllib
 from bs4 import BeautifulSoup
 from django.core.exceptions import ImproperlyConfigured
 from django.templatetags.static import static
-from django.utils.html import escape, format_html
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 
 class Site:
@@ -135,9 +136,10 @@ class AbstractBaseUrl:
         return self.site.classname
 
     def as_download_link(self):
-        return '<div class="primary"><a href="%s">Download (%s)</a></div>' % (
-            escape(str(self)),
-            escape(self.download_link_label),
+        return format_html(
+            '<div class="primary"><a href="{url}">Download ({label})</a></div>',
+            url=str(self),
+            label=self.download_link_label,
         )
 
     @property
@@ -676,10 +678,14 @@ class SceneOrgFile(AbstractBaseUrl):
         return self.nl_url
 
     def as_download_link(self):
-        return """
-            <div><a href="%s" class="primary">Download (scene.org)</a> -
-            <a href="%s" class="secondary">file info</a></div>
-        """ % (escape(self.auto_mirror_url), escape(self.info_url))
+        return format_html(
+            """
+                <div><a href="{url}" class="primary">Download (scene.org)</a> -
+                <a href="{info_url}" class="secondary">file info</a></div>
+            """,
+            url=self.auto_mirror_url,
+            info_url=self.info_url,
+        )
 
 
 class AmigascneFile(AbstractBaseUrl):
@@ -699,8 +705,8 @@ class AmigascneFile(AbstractBaseUrl):
     @property
     def mirror_links(self):
         links = [
-            '<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-            '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
+            format_html('<li><a href="{}" class="country country_nl">nl</a></li>', self.nl_url),
+            format_html('<li><a href="{}" class="country country_us">us</a></li>', self.us_http_url),
         ]
 
         return links
@@ -714,11 +720,14 @@ class AmigascneFile(AbstractBaseUrl):
         return "http://http.us.scene.org/pub/scene.org/mirrors/amigascne%s" % self.param
 
     def as_download_link(self):
-        mirrors_html = " ".join(self.mirror_links)
-        return """
-            <div class="primary"><a href="%s">Download from amigascne.org</a></div>
-            <div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
-        """ % (escape(str(self)), mirrors_html)
+        return format_html(
+            """
+                <div class="primary"><a href="{url}">Download from amigascne.org</a></div>
+                <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
+            """,
+            url=str(self),
+            mirrors_html=mark_safe(" ".join(self.mirror_links)),
+        )
 
 
 class PaduaOrgFile(AbstractBaseUrl):
@@ -738,8 +747,8 @@ class PaduaOrgFile(AbstractBaseUrl):
     @property
     def mirror_links(self):
         links = [
-            '<li><a class="country country_nl" href="%s">nl</a></li>' % escape(self.nl_url),
-            '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_http_url),
+            format_html('<li><a href="{}" class="country country_nl">nl</a></li>', self.nl_url),
+            format_html('<li><a href="{}" class="country country_us">us</a></li>', self.us_http_url),
         ]
 
         return links
@@ -753,11 +762,14 @@ class PaduaOrgFile(AbstractBaseUrl):
         return "http://http.us.scene.org/pub/scene.org/mirrors/padua%s" % self.param
 
     def as_download_link(self):
-        mirrors_html = " ".join(self.mirror_links)
-        return """
-            <div class="primary"><a href="%s">Download from padua.org</a></div>
-            <div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
-        """ % (escape(str(self)), mirrors_html)
+        return format_html(
+            """
+                <div class="primary"><a href="{url}">Download from padua.org</a></div>
+                <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
+            """,
+            url=str(self),
+            mirrors_html=mark_safe(" ".join(self.mirror_links)),
+        )
 
 
 class ModlandFile(AbstractBaseUrl):
@@ -792,11 +804,11 @@ class ModlandFile(AbstractBaseUrl):
     @property
     def mirror_links(self):
         links = [
-            '<li><a class="country country_uk" href="%s">uk</a></li>' % escape(self.uk_url),
-            '<li><a href="%s" class="country country_se">se</a></li>' % escape(self.se_url),
-            '<li><a href="%s" class="country country_us">us</a></li>' % escape(self.us_url),
-            # '<li><a href="%s" class="country country_ca">ca</a></li>' % escape(self.ca_url),
-            '<li><a href="%s" class="country country_no">no</a></li>' % escape(self.no_url),
+            format_html('<li><a href="{}" class="country country_uk">uk</a></li>', self.uk_url),
+            format_html('<li><a href="{}" class="country country_se">se</a></li>', self.se_url),
+            format_html('<li><a href="{}" class="country country_us">us</a></li>', self.us_url),
+            # format_html('<li><a href="{}" class="country country_ca">ca</a></li>', self.ca_url),
+            format_html('<li><a href="{}" class="country country_no">no</a></li>', self.no_url),
         ]
 
         return links
@@ -822,11 +834,14 @@ class ModlandFile(AbstractBaseUrl):
         return "http://modland.antarctica.no%s" % self.param
 
     def as_download_link(self):
-        mirrors_html = " ".join(self.mirror_links)
-        return """
-            <div class="primary"><a href="%s">Download from Modland</a></div>
-            <div class="secondary">mirrors: <ul class="download_mirrors">%s</ul></div>
-        """ % (escape(str(self)), mirrors_html)
+        return format_html(
+            """
+                <div class="primary"><a href="{url}">Download from Modland</a></div>
+                <div class="secondary">mirrors: <ul class="download_mirrors">{mirrors_html}</ul></div>
+            """,
+            url=str(self),
+            mirrors_html=mark_safe(" ".join(self.mirror_links)),
+        )
 
 
 fujiology = Site(
@@ -2145,7 +2160,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "EventsRetrosceneRelease",
     "SpectrumComputingRelease",
     "TelnetLink",
-    "CablesProd"
+    "CablesProd",
 ]
 
 PARTY_LINK_TYPES = [
