@@ -1,6 +1,6 @@
 import redis
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Case, CharField, Count, F, Func, Q, When
 
 from common.utils import groklinks
 from maintenance.models import Exclusion
@@ -212,6 +212,40 @@ class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
             .values_list("id", flat=True)
         )
 
+
+class ProductionsMissingDownloadLinkDescriptions(FilteredProdutionsReport):
+    master_list_key = "demozoo:productions:missing_dl_link_desc"
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(report_name="missing_dl_link_desc").values_list("record_id", flat=True)
+
+        return (
+            Production.objects.filter(links__isnull=False)
+            .annotate(empty_desc_count=Count("links", filter=Q(links__description='')&Q(links__is_download_link=True)))
+            .filter(empty_desc_count__gt=1
+            ) # continue only with prods having more than one empty link description
+            .annotate(
+                # Count distinct within BaseUrl links, just count the link_class amount for all others
+                linktype_hosts=Count(
+                    Case(
+                        When(links__link_class="BaseUrl", then=Func(
+                            F('links__parameter'),
+                            function='regexp_replace',
+                            template='%(function)s(%(expressions)s, \'([^:]+)://([^/:\\s]+).*\', \'\\2\')',
+                            output_field=CharField()
+                        )),
+                        default=F('links__link_class'),
+                    ),
+                    filter=Q(links__description='')&Q(links__is_download_link=True),
+                    distinct=True
+                )
+            )
+            .filter(linktype_hosts__lt=F('empty_desc_count')) # continue if link classes are less than empty links descs
+            .distinct()
+            .exclude(id__in=excluded_ids)
+            .values_list("id", flat=True)
+        )
 
 class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
     master_list_key = "demozoo:productions:without_recognized_download_link"
