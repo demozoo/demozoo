@@ -552,6 +552,10 @@ class TestReports(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_productions_missing_dl_descriptions(self):
+        response = self.client.get("/maintenance/missing_dl_link_desc/")
+        self.assertEqual(response.status_code, 200)
+
     def test_productions_without_recognised_download_links(self):
         response = self.client.get("/maintenance/no_recognized_links/")
         self.assertEqual(response.status_code, 200)
