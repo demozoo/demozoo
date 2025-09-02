@@ -112,7 +112,7 @@ class FilterableProductionReport(Report):
 
 class ProdsMissingDownloadLinkDescriptions(StaffOnlyMixin, FilterableProductionReport):
     title = "Productions with more than one download link but missing download link descriptions."
-    name = "missing_download_link_desc"
+    name = "missing_dl_link_desc"
     report_class = reports_module.ProductionsMissingDownloadLinkDescriptions
 
 
