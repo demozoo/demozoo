@@ -1,6 +1,6 @@
 import redis
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Count, F, Q
 
 from common.utils import groklinks
 from maintenance.models import Exclusion
@@ -212,6 +212,34 @@ class ProductionsWithoutCreditsReport(FilteredProdutionsReport):
             .values_list("id", flat=True)
         )
 
+
+class ProductionsMissingDownloadLinkDescriptions(FilteredProdutionsReport):
+    master_list_key = "demozoo:productions:missing_dl_link_desc"
+
+    @classmethod
+    def get_master_list(cls):
+        excluded_ids = Exclusion.objects.filter(report_name="missing_dl_link_desc").values_list("record_id", flat=True)
+
+        recognized_link_classes = groklinks.PRODUCTION_LINK_TYPES
+        if not recognized_link_classes:
+            return  # pragma: no cover
+
+        query = Q()
+        for link_class in recognized_link_classes:
+            query &= ~Q(links__link_class=link_class)
+
+        return (
+            Production.objects.filter(links__isnull=False)
+            .filter(query)
+            .annotate(empty_desc_count=Count("links", filter=Q(links__description='')&Q(links__is_download_link=True)))
+            .filter(empty_desc_count__gt=1) # continue only with prods having more than one empty link description
+            .annotate(linktype_count=Count("links__link_class", filter=Q(links__is_download_link=True), distinct=True))
+            .filter(linktype_count__lt=F('empty_desc_count')) # continue if link classes are less than empty links descs
+            .distinct()
+            .exclude(id__in=excluded_ids)
+            .exclude(tags__name__in=["lost", "corrupted-file"])
+            .values_list("id", flat=True)
+        )
 
 class ProductionsWithoutRecognizedDownloadLinks(FilteredProdutionsReport):
     master_list_key = "demozoo:productions:without_recognized_download_link"

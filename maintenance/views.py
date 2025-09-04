@@ -110,6 +110,12 @@ class FilterableProductionReport(Report):
         return context
 
 
+class ProdsMissingDownloadLinkDescriptions(StaffOnlyMixin, FilterableProductionReport):
+    title = "Productions with more than one download link but missing download link descriptions."
+    name = "missing_dl_link_desc"
+    report_class = reports_module.ProductionsMissingDownloadLinkDescriptions
+
+
 class ProdsWithoutRecognizedDownloadLinks(StaffOnlyMixin, FilterableProductionReport):
     title = "Productions with no recognized download links"
     name = "no_recognized_links"
@@ -1902,6 +1908,7 @@ reports = [
             TrackedMusicWithoutPlayableLinks,
             UntrustedLinks,
             ProdsWithoutRecognizedDownloadLinks,
+            ProdsMissingDownloadLinkDescriptions,
         ],
     ),
     (
