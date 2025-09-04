@@ -5,7 +5,7 @@ from bbs.models import BBS
 from demoscene.models import Releaser
 from parties.models import Party, PartySeries
 from platforms.models import Platform
-from productions.models import Production, ProductionType
+from productions.models import Production, ProductionLink, ProductionType
 
 
 class PlatformFilter(filters.FilterSet):
@@ -39,12 +39,19 @@ class ProductionFilter(filters.FilterSet):
     competition_placing_min = filters.NumberFilter(
         method="filter_competition_placing_min", label="Minimum competition placing"
     )
+    link_url = filters.CharFilter(method="filter_link_url", label="Link URL")
 
     def filter_author(self, queryset, name, value):
         return queryset.filter(Q(author_nicks__releaser_id=value) | Q(author_affiliation_nicks__releaser_id=value))
 
     def filter_competition_placing_min(self, queryset, name, value):
         return queryset.filter(competition_placings__position__lte=value, competition_placings__ranking__gt="")
+
+    def filter_link_url(self, queryset, name, value):
+        link = ProductionLink.grok(value)
+        if link:
+            return queryset.filter(links__link_class=link.__class__.__name__, links__parameter=link.param)
+        return queryset.none()  # pragma: no cover
 
     class Meta:
         model = Production
