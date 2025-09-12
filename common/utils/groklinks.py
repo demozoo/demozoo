@@ -380,18 +380,28 @@ class PouetBBS(UrlPattern):
     pattern = "/boards.php?which=<int>"
 
 
-deepsid = Site("DeepSID", url="https://deepsid.chordian.net/", icon_path="images/icons/external_sites/deepsid.png",)
+deepsid = Site(
+    "DeepSID",
+    url="https://deepsid.chordian.net/",
+    icon_path="images/icons/external_sites/deepsid.png",
+)
+
 
 class DeepSIDProfile(AbstractBaseUrl):
     site = deepsid
     canonical_format = "https://deepsid.chordian.net/?file=/MUSICIANS/%s"
     tests = [
         regex_match(r"^https?://deepsid\.chordian\.net/\?file=/MUSICIANS/([^/]+/[^/.]+)(?!.*.sid)[\/]?"),
-        regex_match(r"^https?://deepsid\.chordian\.net/\?file=/_High Voltage SID Collection/MUSICIANS/" \
-                    r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"),
-        regex_match(r"^https?://deepsid\.chordian\.net/\?file=/_High%20Voltage%20SID%20Collection/MUSICIANS/" \
-                    r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"),
+        regex_match(
+            r"^https?://deepsid\.chordian\.net/\?file=/_High Voltage SID Collection/MUSICIANS/"
+            r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"
+        ),
+        regex_match(
+            r"^https?://deepsid\.chordian\.net/\?file=/_High%20Voltage%20SID%20Collection/MUSICIANS/"
+            r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"
+        ),
     ]
+
 
 class DeepSIDTrack(AbstractBaseUrl):
     site = deepsid
