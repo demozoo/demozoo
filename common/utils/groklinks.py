@@ -1966,6 +1966,15 @@ class MastodonAccount(AbstractBaseUrl):
             "mastodon.coffee",
             "chitter.xyz",
             "haunted.computer",
+            "topspicy.social",
+            "floss.social",
+            "loud.computer",
+            "mathstodon.xyz",
+            "infosec.exchange",
+            "mastodon.top",
+            "ravenation.club",
+            "toot.cat",
+            "nrw.social",
         ],
     )
 
