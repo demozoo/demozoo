@@ -170,9 +170,12 @@ class SearchForm(forms.Form):
                 )
 
         if tag_names or ("tagged" in filter_expressions):
-            subqueries_to_perform &= set(["production"])
+            subqueries_to_perform &= set(["production", "bbs"])
             for tag_name in filter_expressions["tagged"] | tag_names:
-                production_filter_q &= Q(tags__name=tag_name)
+                production_filter_q &= Q(
+                    id__in=Production.objects.filter(tags__name=tag_name).values_list("id", flat=True)
+                )
+                bbs_filter_q &= Q(id__in=BBS.objects.filter(tags__name=tag_name).values_list("id", flat=True))
 
         if "year" in filter_expressions or "date" in filter_expressions:
             subqueries_to_perform &= set(["production", "party"])
