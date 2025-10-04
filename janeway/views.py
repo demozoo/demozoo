@@ -123,7 +123,7 @@ def production_import(request):
             "dz_url": production.get_absolute_url(),
             "janeway_id": release.janeway_id,
             "janeway_title": release.title,
-            "janeway_url": "http://janeway.exotica.org.uk/release.php?id=%s" % release.janeway_id,
+            "janeway_url": "https://janeway.exotica.org.uk/release.php?id=%s" % release.janeway_id,
             "supertype": production.supertype,
         },
     )

@@ -613,7 +613,7 @@ class ZxdemoItem(UrlPattern):
 kestra_bitworld = Site(
     "Kestra BitWorld",
     classname="kestra_bitworld",
-    url="http://janeway.exotica.org.uk/",
+    url="https://janeway.exotica.org.uk/",
     allowed_hostnames=["janeway.exotica.org.uk"],
 )
 
