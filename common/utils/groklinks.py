@@ -633,6 +633,11 @@ class KestraBitworldParty(UrlPattern):
     pattern = "/party.php?id=<int>"
 
 
+class KestraBitworldPartySeries(UrlPattern):
+    site = kestra_bitworld
+    pattern = "/series.php?id=<int>"
+
+
 sceneorg = Site("scene.org", classname="sceneorg")
 
 
@@ -2250,6 +2255,7 @@ PARTY_LINK_TYPES = [
 
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries,
+    KestraBitworldPartySeries,
     TwitterAccount,
     BlueskyAccount,
     YoutubeUser,
