@@ -93,7 +93,7 @@ def get_production_match_data(releaser):
             matched_janeway_release_names_by_id.get(
                 int(link.parameter), "(Janeway release #%s)" % link.parameter
             ),  # Janeway title with fallback
-            "http://janeway.exotica.org.uk/release.php?id=%s" % link.parameter,
+            "https://janeway.exotica.org.uk/release.php?id=%s" % link.parameter,
             link.production.supertype,
         )
         for link in matched_links
@@ -109,7 +109,7 @@ def get_production_match_data(releaser):
         (
             prod.janeway_id,
             prod.title,
-            "http://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id,
+            "https://janeway.exotica.org.uk/release.php?id=%d" % prod.janeway_id,
             prod.supertype,
         )
         for prod in janeway_release_candidates
