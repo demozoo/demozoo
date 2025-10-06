@@ -1480,6 +1480,16 @@ class ZxArtAuthor(AbstractBaseUrl):
     ]
 
 
+class ZxArtGroup(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/groups/%s/"
+    tests = [
+        path_regex_match(r"/eng/groups/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+        path_regex_match(r"/rus/gruppy/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+        path_regex_match(r"/spa/grupos/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+    ]
+
+
 class ZxArtProduction(AbstractBaseUrl):
     site = zxart
     canonical_format = "https://zxart.ee/eng/authors/%s/"
@@ -2063,6 +2073,7 @@ RELEASER_LINK_TYPES = [
     GameboyDemospottingAuthor,
     PixeljointArtist,
     ZxArtAuthor,
+    ZxArtGroup,
     ZxTunesArtist,
     InternetArchivePage,
     Plus4WorldGroup,
