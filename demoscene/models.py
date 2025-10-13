@@ -638,6 +638,10 @@ class ExternalLink(models.Model):
     link_class = models.CharField(max_length=100)
     parameter = models.CharField(max_length=4096)
 
+    @classmethod
+    def grok(cls, urlstring):
+        return groklinks.grok_link_by_types(urlstring.strip(), cls.link_types)
+
     def _get_url(self):
         if self.link:
             return str(self.link)
@@ -646,7 +650,7 @@ class ExternalLink(models.Model):
 
     def _set_url(self, urlstring):
         if urlstring:
-            self.link = groklinks.grok_link_by_types(urlstring.strip(), self.link_types)
+            self.link = self.grok(urlstring)
             if self.link:
                 self.link_class = self.link.__class__.__name__
                 self.parameter = self.link.param

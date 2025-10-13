@@ -1,10 +1,11 @@
 import json
+from urllib.parse import urlencode
 
 from django.test import TestCase, override_settings
 
 from bbs.models import BBS
 from parties.models import Competition, CompetitionPlacing, Party, PartySeries
-from productions.models import Production
+from productions.models import Production, ProductionLink
 
 
 class TestApiRoot(TestCase):
@@ -58,6 +59,20 @@ class TestProductions(TestCase):
 
     def test_filter_by_author(self):
         response = self.client.get("/api/v1/productions/?author=4")
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        result_titles = [result["title"] for result in response_data["results"]]
+        self.assertIn("Pondlife", result_titles)
+        self.assertNotIn("Madrielle", result_titles)
+
+    def test_filter_by_link_url(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        ProductionLink.objects.create(
+            production=pondlife, link_class="PouetProduction", parameter="2611", is_download_link=False
+        )
+        pouet_url = "https://pouet.net/prod.php?which=2611"
+        response = self.client.get(f"/api/v1/productions/?{urlencode({'link_url': pouet_url})}")
         self.assertEqual(response.status_code, 200)
 
         response_data = json.loads(response.content)

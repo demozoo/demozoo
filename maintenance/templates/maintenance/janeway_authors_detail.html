@@ -79,14 +79,14 @@
     {% if janeway_releases %}
         <p>Releases:
             {% for release in janeway_releases %}
-                <a href="http://janeway.exotica.org.uk/release.php?id={{ release.janeway_id }}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
+                <a href="https://janeway.exotica.org.uk/release.php?id={{ release.janeway_id }}" target="_blank">{{ release.title }}</a>{% if not forloop.last %},{% endif %}
             {% endfor %}
         </p>
     {% endif %}
     {% if janeway_credits %}
         <p>Credited on:
             {% for release_id, release_title, category in janeway_credits %}
-                <a href="http://janeway.exotica.org.uk/release.php?id={{ release_id }}" target="_blank">{{ release_title }}</a> ({{ category }}){% if not forloop.last %},{% endif %}
+                <a href="https://janeway.exotica.org.uk/release.php?id={{ release_id }}" target="_blank">{{ release_title }}</a> ({{ category }}){% if not forloop.last %},{% endif %}
             {% endfor %}
         </p>
     {% endif %}

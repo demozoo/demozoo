@@ -79,6 +79,20 @@ class TestSignup(TestCase):
         response = self.client.get("/account/signup/", REMOTE_ADDR="109.196.230.41")
         self.assertRedirects(response, "/")
 
+    def test_signup_without_captcha_in_session(self):
+        response = self.client.post(
+            "/account/signup/",
+            {
+                "username": "bob",
+                "email": "bob@example.com",
+                "password1": "b0bb0bb0b",
+                "password2": "b0bb0bb0b",
+                "captcha": "four",
+            },
+        )
+        self.assertRedirects(response, "/account/signup/")
+        self.assertEqual(0, User.objects.filter(username="bob").count())
+
     def test_signup(self):
         response = self.client.get("/account/signup/")
         self.assertEqual(response.status_code, 200)

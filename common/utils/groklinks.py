@@ -380,6 +380,37 @@ class PouetBBS(UrlPattern):
     pattern = "/boards.php?which=<int>"
 
 
+deepsid = Site(
+    "DeepSID",
+    url="https://deepsid.chordian.net/",
+    icon_path="images/icons/external_sites/deepsid.png",
+)
+
+
+class DeepSIDProfile(AbstractBaseUrl):
+    site = deepsid
+    canonical_format = "https://deepsid.chordian.net/?file=/MUSICIANS/%s"
+    tests = [
+        regex_match(r"^https?://deepsid\.chordian\.net/\?file=/MUSICIANS/([^/]+/[^/.]+)(?!.*.sid)[\/]?"),
+        regex_match(
+            r"^https?://deepsid\.chordian\.net/\?file=/_High Voltage SID Collection/MUSICIANS/"
+            r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"
+        ),
+        regex_match(
+            r"^https?://deepsid\.chordian\.net/\?file=/_High%20Voltage%20SID%20Collection/MUSICIANS/"
+            r"([^/]+/[^/.]+)(?!.*.sid)[\/]?"
+        ),
+    ]
+
+
+class DeepSIDTrack(AbstractBaseUrl):
+    site = deepsid
+    canonical_format = "https://deepsid.chordian.net/?file=%s"
+    tests = [
+        regex_match(r"^https://deepsid\.chordian\.net/\?file=/([^?]+\.sid(?:&.*)?)$"),
+    ]
+
+
 slengpung = Site("Slengpung", url="http://www.slengpung.com/")
 
 
@@ -582,7 +613,7 @@ class ZxdemoItem(UrlPattern):
 kestra_bitworld = Site(
     "Kestra BitWorld",
     classname="kestra_bitworld",
-    url="http://janeway.exotica.org.uk/",
+    url="https://janeway.exotica.org.uk/",
     allowed_hostnames=["janeway.exotica.org.uk"],
 )
 
@@ -600,6 +631,11 @@ class KestraBitworldAuthor(UrlPattern):
 class KestraBitworldParty(UrlPattern):
     site = kestra_bitworld
     pattern = "/party.php?id=<int>"
+
+
+class KestraBitworldPartySeries(UrlPattern):
+    site = kestra_bitworld
+    pattern = "/series.php?id=<int>"
 
 
 sceneorg = Site("scene.org", classname="sceneorg")
@@ -1444,6 +1480,16 @@ class ZxArtAuthor(AbstractBaseUrl):
     ]
 
 
+class ZxArtGroup(AbstractBaseUrl):
+    site = zxart
+    canonical_format = "https://zxart.ee/eng/groups/%s/"
+    tests = [
+        path_regex_match(r"/eng/groups/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+        path_regex_match(r"/rus/gruppy/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+        path_regex_match(r"/spa/grupos/([^\/]+/[^\/]+)(/qid:\d+)?/?"),
+    ]
+
+
 class ZxArtProduction(AbstractBaseUrl):
     site = zxart
     canonical_format = "https://zxart.ee/eng/authors/%s/"
@@ -1935,6 +1981,15 @@ class MastodonAccount(AbstractBaseUrl):
             "mastodon.coffee",
             "chitter.xyz",
             "haunted.computer",
+            "topspicy.social",
+            "floss.social",
+            "loud.computer",
+            "mathstodon.xyz",
+            "infosec.exchange",
+            "mastodon.top",
+            "ravenation.club",
+            "toot.cat",
+            "nrw.social",
         ],
     )
 
@@ -2018,6 +2073,7 @@ RELEASER_LINK_TYPES = [
     GameboyDemospottingAuthor,
     PixeljointArtist,
     ZxArtAuthor,
+    ZxArtGroup,
     ZxTunesArtist,
     InternetArchivePage,
     Plus4WorldGroup,
@@ -2042,6 +2098,7 @@ RELEASER_LINK_TYPES = [
     WaybackMachinePage,
     TelnetLink,
     CablesUser,
+    DeepSIDProfile,
     BaseUrl,
 ]
 
@@ -2103,6 +2160,7 @@ PRODUCTION_LINK_TYPES = [
     SpectrumComputingRelease,
     WaybackMachinePage,
     CablesProd,
+    DeepSIDTrack,
     BaseUrl,
 ]
 
@@ -2169,6 +2227,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "SpectrumComputingRelease",
     "TelnetLink",
     "CablesProd",
+    "DeepSIDTrack",
 ]
 
 PARTY_LINK_TYPES = [
@@ -2207,6 +2266,7 @@ PARTY_LINK_TYPES = [
 
 PARTY_SERIES_LINK_TYPES = [
     PouetPartySeries,
+    KestraBitworldPartySeries,
     TwitterAccount,
     BlueskyAccount,
     YoutubeUser,

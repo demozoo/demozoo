@@ -45,7 +45,10 @@ def signup(request):
         return redirect("home")
 
     if request.method == "POST":
-        captcha = CaptchaQuestion.objects.get(id=request.session.get("captcha_id"))
+        try:
+            captcha = CaptchaQuestion.objects.get(id=request.session.get("captcha_id"))
+        except CaptchaQuestion.DoesNotExist:
+            return redirect("user_signup")
 
         form = UserSignupForm(request.POST, captcha=captcha)
         if form.is_valid():

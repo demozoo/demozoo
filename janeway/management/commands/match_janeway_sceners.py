@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
             # see if any candidate releasers have TWO or more matching groups by name
             # (>=2 avoids false positives such as JP/Mayhem:
-            #   http://janeway.exotica.org.uk/author.php?id=29340
+            #   https://janeway.exotica.org.uk/author.php?id=29340
             #   https://demozoo.org/sceners/40395/ )
             for candidate_releaser_id in candidate_releaser_ids:
                 if candidate_releaser_id in matching_releaser_ids:
