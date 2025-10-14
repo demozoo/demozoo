@@ -43,7 +43,7 @@ def find_party_from_tournament_data(tournament_data):
 
 
 def find_nick_from_handle_data(handle_data, stdout=sys.stdout):
-    if handle_data["demozoo_id"] is None:
+    if handle_data["demozoo_id"] is None or handle_data["demozoo_id"] == 0:
         return (None, handle_data["name"])
 
     try:
