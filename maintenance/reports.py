@@ -224,20 +224,14 @@ class ProductionsMissingDownloadLinkDescriptions(FilteredProdutionsReport):
         if not recognized_link_classes:
             return  # pragma: no cover
 
-        query = Q()
-        for link_class in recognized_link_classes:
-            query &= ~Q(links__link_class=link_class)
-
         return (
             Production.objects.filter(links__isnull=False)
-            .filter(query)
             .annotate(empty_desc_count=Count("links", filter=Q(links__description='')&Q(links__is_download_link=True)))
             .filter(empty_desc_count__gt=1) # continue only with prods having more than one empty link description
             .annotate(linktype_count=Count("links__link_class", filter=Q(links__is_download_link=True), distinct=True))
             .filter(linktype_count__lt=F('empty_desc_count')) # continue if link classes are less than empty links descs
             .distinct()
             .exclude(id__in=excluded_ids)
-            .exclude(tags__name__in=["lost", "corrupted-file"])
             .values_list("id", flat=True)
         )
 
