@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% load compress %}
+{% block extra_js %}
+    {% compress js %}<script src="/static/maintenance/js/maintenance.js"></script>{% endcompress %}
+{% endblock %}
 
 
 {% block base_main %}
     <h2>scene.org party file matching</h2>
     <p>Another chance to do some hypnotic button clicking to help with our data entry! Now that we know which folders on scene.org correspond to which party compos, it's time to match up the individual download files to the correct compo entries.</p>
-    <p>Pick a folder from the list below - the ones in <strong>bold</strong> contain some uncategorised files that haven't yet been attached to a production as a download link. Your mission is to match them up to the appropriate compo entry...</p>
+    <p>Pick a folder from the list below{% if mode == 'all' %} - the ones in <strong>bold</strong> contain some uncategorised files that haven't yet been attached to a production as a download link. Your mission is to match them up to the appropriate compo entry..{% endif %}.</p>
+    <p>Click <a href="{% url 'sceneorg_compofiles' %}{% if mode != 'all' %}?mode=all{% endif %}">here</a> to {% if mode == 'unmatched' %}also show{% else %}hide{% endif %} directories that are fully matched.</p>
 
     <div style="width: 300px; float: right; border: 1px solid #ccc; padding: 10px;">
         <h3>Leaderboard</h3>
@@ -16,10 +20,10 @@
         </ol>
     </div>
 
-    <ul class="folders">
+    <ul class="folders report" data-report-name="{{ exclusion_name }}" style="border: 0px; padding: 0px; margin: 0px">
         {% for dir in directories %}
-            <li>
-                {% if dir.unmatched_count == 0 %}
+            <li{% if mark_excludable and site_is_writeable %} class="excludable" data-record-id="{{ dir.id }}"{% endif %}>
+                {% if dir.unmatched_count == 0 and mode == 'all' %}
                     <a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a>
                 {% else %}
                     <strong><a href="{% url 'sceneorg_compofile_directory' dir.id %}">{{ dir.path }}</a></strong> ({{ dir.unmatched_count }})
