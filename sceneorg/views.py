@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from common.views import writeable_site_required
 from demoscene.models import Edit
+from maintenance.models import Exclusion
 from parties.models import Competition, Party
 from productions.models import Production, ProductionLink
 from sceneorg.models import Directory, File
@@ -141,7 +142,13 @@ def compofiles(request):
     # annotated with the number of files in the directory,
     # and the number of those files which are used as a download link for some production.
     # Where these numbers differ, there are files in the directory which are unaccounted for.
-    directories = Directory.objects.raw("""
+
+    # valid modes = "unmatched" (as a default), "all"
+    mode = request.GET.get("mode", "unmatched")
+
+    excluded_ids = Exclusion.objects.filter(report_name="sceneorg_compofiles").values_list("record_id", flat=True)
+
+    base_query = """
         SELECT
             sceneorg_directory.id, sceneorg_directory.path,
             COUNT(DISTINCT sceneorg_file.id) - COUNT(DISTINCT productions_productionlink.parameter) AS unmatched_count
@@ -163,10 +170,39 @@ def compofiles(request):
             )
         WHERE
             sceneorg_directory.is_deleted = 'f'
+            {exclude_by_id_condition}
         GROUP BY
             sceneorg_directory.id, sceneorg_directory.path
+        {exclude_fully_matched_condition}
         ORDER BY sceneorg_directory.path
-    """)
+    """
+    # Prepare parameters and conditions
+    conditions = {}
+
+    # Handle excluded IDs
+    if excluded_ids:
+        # we can't pass a tuple as a parameter to raw SQL any more :-(
+        # https://code.djangoproject.com/ticket/34434
+        # Inject it directly into the query instead (ugh) - at least it's a safe value
+        # coming from the database...
+        id_list = ",".join(str(id) for id in excluded_ids)
+        conditions["exclude_by_id_condition"] = "AND sceneorg_directory.id NOT IN ({})".format(id_list)
+    else:
+        conditions["exclude_by_id_condition"] = ""
+
+    # Handle unmatched mode
+    if mode == "unmatched":
+        conditions["exclude_fully_matched_condition"] = (
+            "HAVING (COUNT(DISTINCT sceneorg_file.id) - COUNT(DISTINCT productions_productionlink.parameter)) > 0"
+        )
+    else:
+        conditions["exclude_fully_matched_condition"] = ""
+
+    # Format the query with conditions
+    formatted_query = base_query.format(**conditions)
+
+    # Execute the query
+    directories = Directory.objects.raw(formatted_query)
 
     top_users = User.objects.raw("""
         SELECT
@@ -194,6 +230,9 @@ def compofiles(request):
         {
             "directories": directories,
             "top_users": top_users,
+            "mode": mode,
+            "mark_excludable": True,
+            "exclusion_name": "sceneorg_compofiles",
         },
     )
 
