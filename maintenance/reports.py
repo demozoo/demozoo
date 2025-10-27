@@ -220,16 +220,12 @@ class ProductionsMissingDownloadLinkDescriptions(FilteredProdutionsReport):
     def get_master_list(cls):
         excluded_ids = Exclusion.objects.filter(report_name="missing_dl_link_desc").values_list("record_id", flat=True)
 
-        recognized_link_classes = groklinks.PRODUCTION_LINK_TYPES
-        if not recognized_link_classes:
-            return  # pragma: no cover
-
         return (
             Production.objects.filter(links__isnull=False)
             .annotate(empty_desc_count=Count("links", filter=Q(links__description='')&Q(links__is_download_link=True)))
             .filter(empty_desc_count__gt=1) # continue only with prods having more than one empty link description
-            .annotate(linktype_count=Count("links__link_class", filter=Q(links__is_download_link=True), distinct=True))
-            .filter(linktype_count__lt=F('empty_desc_count')) # continue if link classes are less than empty links descs
+            #.annotate(linktype_count=Count("links__link_class", filter=Q(links__is_download_link=True), distinct=True))
+            #.filter(linktype_count__lt=F('empty_desc_count')) # continue if link classes are less than empty links descs
             .distinct()
             .exclude(id__in=excluded_ids)
             .values_list("id", flat=True)
