@@ -54,11 +54,13 @@ class ScreeningFilterForm(forms.Form):
         label="Platforms",
         queryset=Platform.objects.all(),
         required=False,
+        widget=forms.CheckboxSelectMultiple,
     )
     production_types = forms.ModelMultipleChoiceField(
         label="Production types",
         queryset=ProductionType.objects.all(),
         required=False,
+        widget=forms.CheckboxSelectMultiple,
     )
     has_youtube = forms.ChoiceField(
         label="Has YouTube video",
