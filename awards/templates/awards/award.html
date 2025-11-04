@@ -12,6 +12,9 @@
     <h1>{{ event.name }} - Welcome, jury member!</h1>
     {% if can_access_screening %}
         <h2>Production screening</h2>
+        <p>Screen this year's releases, and help our juries narrow down the candidates...</p>
+        <p><strong>Note:</strong> this isn't the jury process itself - it's just a first pass to filter out the mediocre prods. Do not consider specific categories at this stage - if you think a prod might be interesting enough for <em>any</em> jury to consider further, give it a "yay".</p>
+        <p>Worried that you might be rejecting a hidden treasure? Don't be. We aim for each prod to be screened by at least two people, and one "yay" is enough to put it through. If it doesn't pass that bar, <em>and</em> doesn't get suggested independently by a juror or the public recommendations, it probably wasn't an award candidate anyway :-)</p>
         <p>
             <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong>
