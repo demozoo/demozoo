@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils.html import escape
 
 from awards.models import Event, ScreeningDecision
 from platforms.models import Platform
@@ -88,23 +89,24 @@ class TestScreening(TestCase):
         zx_spectrum = Platform.objects.get(name="ZX Spectrum")
         c64 = Platform.objects.get(name="Commodore 64")
         demo = ProductionType.objects.get(name="Demo")
+        cracktro = ProductionType.objects.get(name="Cracktro")
 
         self.client.login(username="juror", password="67890")
 
-        url = f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"
+        url = f"/awards/meteoriks-2020/screening/?platforms={zx_spectrum.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         # form action url should preserve the filter
         self.assertContains(response, f'action="{url}"')
 
-        response = self.client.get(f"/awards/meteoriks-2020/screening/?platform={c64.id}", follow=True)
-        self.assertRedirects(response, f"/awards/meteoriks-2020/?platform={c64.id}")
+        response = self.client.get(f"/awards/meteoriks-2020/screening/?platforms={c64.id}", follow=True)
+        self.assertRedirects(response, f"/awards/meteoriks-2020/?platforms={c64.id}")
         self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
-        url = f"/awards/meteoriks-2020/screening/?production_type={demo.id}"
+        url = f"/awards/meteoriks-2020/screening/?production_types={demo.id}&production_types={cracktro.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, f'action="{url}"')
+        self.assertContains(response, f'action="{escape(url)}"')
 
         url = "/awards/meteoriks-2020/screening/?has_youtube=no"
         response = self.client.get(url)
@@ -175,7 +177,7 @@ class TestScreening(TestCase):
     def test_invalid_filter(self):
         self.client.login(username="juror", password="67890")
 
-        url = "/awards/meteoriks-2020/screening/?platform=AMIGAAAAA"
+        url = "/awards/meteoriks-2020/screening/?platforms=AMIGAAAAA"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         # form action url should drop the invalid filter
@@ -193,7 +195,7 @@ class TestScreening(TestCase):
 
         production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
 
-        url = f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"
+        url = f"/awards/meteoriks-2020/screening/?platforms={zx_spectrum.id}"
         response = self.client.post(
             url,
             {"production_id": production_id, "accept": "yes"},
@@ -227,11 +229,11 @@ class TestScreening(TestCase):
         zx_spectrum = Platform.objects.get(name="ZX Spectrum")
 
         response = self.client.post(
-            f"/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}",
+            f"/awards/meteoriks-2020/screening/?platforms={zx_spectrum.id}",
             {"production_id": production_id, "accept": "yes"},
             follow=True,
         )
-        self.assertRedirects(response, f"/awards/meteoriks-2020/?platform={zx_spectrum.id}")
+        self.assertRedirects(response, f"/awards/meteoriks-2020/?platforms={zx_spectrum.id}")
         self.assertTrue(
             ScreeningDecision.objects.filter(user=self.juror, production_id=production_id, is_accepted=True).exists()
         )
@@ -307,12 +309,12 @@ class TestScreening(TestCase):
 
         # jurors can access the screening page
         self.client.login(username="juror", password="67890")
-        response = self.client.get(f"/awards/meteoriks-2020/screening/{prod.id}/?platform={zx_spectrum.id}")
+        response = self.client.get(f"/awards/meteoriks-2020/screening/{prod.id}/?platforms={zx_spectrum.id}")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The Meteoriks 2020 - Screening")
         self.assertContains(response, "The Brexecutable Music Compo Is Over")
         # form action url should preserve the filter
-        self.assertContains(response, f'action="/awards/meteoriks-2020/screening/?platform={zx_spectrum.id}"')
+        self.assertContains(response, f'action="/awards/meteoriks-2020/screening/?platforms={zx_spectrum.id}"')
 
         # cannot access the page if the production is not screenable
         pondlife = Production.objects.get(title="Pondlife")

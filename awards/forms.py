@@ -1,6 +1,6 @@
 from django import forms
 from django.db.models import Count, Q
-from django.utils.http import urlencode
+from django.http import QueryDict
 
 from awards.models import PlatformGroup, ScreeningComment
 from platforms.models import Platform
@@ -25,7 +25,7 @@ class ScreeningFilterForm(forms.Form):
         if filter_options_by_event:
             # limit the queryset of the platform field to those represented
             # in event.screenable_productions()
-            self.fields["platform"].queryset = Platform.objects.filter(
+            self.fields["platforms"].queryset = Platform.objects.filter(
                 id__in=event.screenable_productions().values_list("platforms__id", flat=True)
             ).distinct()
 
@@ -42,7 +42,7 @@ class ScreeningFilterForm(forms.Form):
                 for i in range(ProductionType.steplen, len(path) + 1, ProductionType.steplen):
                     ancestor_paths.add(path[:i])
 
-            self.fields["production_type"].queryset = ProductionType.objects.filter(path__in=ancestor_paths)
+            self.fields["production_types"].queryset = ProductionType.objects.filter(path__in=ancestor_paths)
 
     platform_group = forms.ModelChoiceField(
         label="Platform group",
@@ -50,15 +50,13 @@ class ScreeningFilterForm(forms.Form):
         queryset=PlatformGroup.objects.all(),
         required=False,
     )
-    platform = forms.ModelChoiceField(
-        label="Platform",
-        empty_label="Any platform",
+    platforms = forms.ModelMultipleChoiceField(
+        label="Platforms",
         queryset=Platform.objects.all(),
         required=False,
     )
-    production_type = forms.ModelChoiceField(
-        label="Production type",
-        empty_label="Any type",
+    production_types = forms.ModelMultipleChoiceField(
+        label="Production types",
         queryset=ProductionType.objects.all(),
         required=False,
     )
@@ -79,17 +77,22 @@ class ScreeningFilterForm(forms.Form):
         Filter the queryset based on the form data.
         """
         if self.is_valid():
-            if self.cleaned_data["platform"]:
-                queryset = queryset.filter(platforms=self.cleaned_data["platform"])
+            if self.cleaned_data["platforms"]:
+                queryset = queryset.filter(platforms__in=self.cleaned_data["platforms"]).distinct()
             if self.cleaned_data["platform_group"]:
                 platform_group = self.cleaned_data["platform_group"]
                 platform_group_filter = Q(platforms__platform_groups=self.cleaned_data["platform_group"])
                 if platform_group.include_no_platform:
                     platform_group_filter |= Q(platforms__isnull=True)
                 queryset = queryset.filter(platform_group_filter)
-            if self.cleaned_data["production_type"]:
-                prod_types = ProductionType.get_tree(self.cleaned_data["production_type"])
-                queryset = queryset.filter(types__in=prod_types)
+            if self.cleaned_data["production_types"]:
+                prod_type_trees = [
+                    ProductionType.get_tree(prod_type) for prod_type in self.cleaned_data["production_types"]
+                ]
+                prod_types_q = Q(types__in=prod_type_trees[0])
+                for tree in prod_type_trees[1:]:
+                    prod_types_q |= Q(types__in=tree)
+                queryset = queryset.filter(prod_types_q).distinct()
             if self.cleaned_data["has_youtube"]:
                 if self.cleaned_data["has_youtube"] == "yes":
                     queryset = queryset.filter(links__is_download_link=False, links__link_class="YoutubeVideo")
@@ -107,18 +110,18 @@ class ScreeningFilterForm(forms.Form):
         """
         if not self.is_valid():
             return ""
-        params = {}
-        if self.cleaned_data["platform"]:
-            params["platform"] = self.cleaned_data["platform"].pk
+        params = QueryDict(mutable=True)
+        if self.cleaned_data["platforms"]:
+            params.setlist("platforms", [platform.pk for platform in self.cleaned_data["platforms"]])
         if self.cleaned_data["platform_group"]:
             params["platform_group"] = self.cleaned_data["platform_group"].pk
-        if self.cleaned_data["production_type"]:
-            params["production_type"] = self.cleaned_data["production_type"].pk
+        if self.cleaned_data["production_types"]:
+            params.setlist("production_types", [prod_type.pk for prod_type in self.cleaned_data["production_types"]])
         if self.cleaned_data["has_youtube"]:
             params["has_youtube"] = self.cleaned_data["has_youtube"]
         if self.cleaned_data["rating_count"]:
             params["rating_count"] = self.cleaned_data["rating_count"]
-        return urlencode(params)
+        return params.urlencode()
 
 
 class ScreeningCommentForm(forms.ModelForm):
