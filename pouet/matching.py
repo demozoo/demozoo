@@ -22,15 +22,13 @@ def get_pouetable_prod_types():
 
 
 def get_nogroup_prods():
-    pouet_prod_candidates_nogroups = list(
-        PouetProduction.objects.filter(groups__isnull=True).order_by(Lower("name"))
-    )
+    pouet_prod_candidates_nogroups = list(PouetProduction.objects.filter(groups__isnull=True).order_by(Lower("name")))
 
     matched_pouet_ids = list(
         ProductionLink.objects.filter(
             Q(link_class="PouetProduction")
             & Q(parameter__in=[prod.pouet_id for prod in pouet_prod_candidates_nogroups])
-        ).values_list('parameter', flat=True)  # Get only the 'parameter' field
+        ).values_list("parameter", flat=True)  # Get only the 'parameter' field
     )
 
     matched_pouet_ids_set = set(matched_pouet_ids)
@@ -40,8 +38,7 @@ def get_nogroup_prods():
     ]
 
     nogroup_pouet_prods = [
-        (prod.name, "https://www.pouet.net/prod.php?which=%d" % prod.pouet_id)
-        for prod in pouet_prod_candidates
+        (prod.name, "https://www.pouet.net/prod.php?which=%d" % prod.pouet_id) for prod in pouet_prod_candidates
     ]
 
     return nogroup_pouet_prods

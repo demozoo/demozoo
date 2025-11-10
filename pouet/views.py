@@ -45,9 +45,9 @@ def nogroup_prods(request):
         request,
         "pouet/nogroup-prods.html",
         {
-            'nogroup_prods_amount': nogroup_prods_amount,
-            'nogroup_prods': nogroup_prods,
-        }
+            "nogroup_prods_amount": nogroup_prods_amount,
+            "nogroup_prods": nogroup_prods,
+        },
     )
 
 
