@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+from maintenance.models import Exclusion
 from parties.models import Party
 from productions.models import Production
 from sceneorg.models import Directory, File
@@ -132,6 +133,11 @@ class TestCompoFiles(TestCase):
         directory = Directory.objects.get(path="/parties/2000/forever00/zx_1k/")
         zx1k.sceneorg_directories.add(directory)
 
+        response = self.client.get("/sceneorg/compofiles/")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get("/sceneorg/compofiles/?mode=all")
+        self.assertEqual(response.status_code, 200)
+        Exclusion.objects.create(report_name="sceneorg_compofiles", record_id=directory.id)
         response = self.client.get("/sceneorg/compofiles/")
         self.assertEqual(response.status_code, 200)
 
