@@ -224,7 +224,13 @@ class Party(URLMixin, LocationMixin, Commentable):
 
         sceneorg_dirs = self.external_links.filter(link_class="SceneOrgFolder")
         for sceneorg_dir in sceneorg_dirs:
-            for subpath in ["info/results.txt", "misc/results.txt", "results.txt"]:
+            for subpath in [
+                "info/results.txt",
+                "misc/results.txt",
+                "results.txt",
+                "info/results.nfo",
+                "misc/results.nfo",
+            ]:
                 try:
                     return SceneOrgFile.objects.get(path=sceneorg_dir.parameter + subpath, is_deleted=False)
                 except SceneOrgFile.DoesNotExist:
