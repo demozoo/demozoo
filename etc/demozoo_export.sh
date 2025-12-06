@@ -7,7 +7,7 @@ pg_dump -h $POSTGRES_HOST -w -c demozoo -f /home/demozoo/demozoo/data/demozoo-ex
 psql -h $POSTGRES_HOST -w demozoo_export -f /home/demozoo/demozoo/data/demozoo-export-raw.sql
 psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE auth_user SET email='', password='"'!'"', first_name='', last_name='';"
 psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE productions_production SET search_document=NULL;"
-psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE demoscene_releaser SET search_document=NULL;"
+psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE demoscene_releaser SET search_document=NULL, real_name_note='';"
 psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE parties_party SET search_document=NULL;"
 psql -h $POSTGRES_HOST -w demozoo_export -c "UPDATE awards_event SET juror_feed_url='';"
 psql -h $POSTGRES_HOST -w demozoo_export -c "TRUNCATE TABLE celery_taskmeta, celery_tasksetmeta, django_session, djcelery_intervalschedule, djcelery_periodictask, djcelery_crontabschedule, djcelery_periodictasks, djcelery_taskstate, djcelery_workerstate;"
