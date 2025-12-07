@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# NOTE: This script is run from the database server. If it changes, it must be
+# copied there manually.
+
 . /home/demozoo/demozoo/.env
 export PGPASSWORD=$POSTGRES_PASSWORD
 
