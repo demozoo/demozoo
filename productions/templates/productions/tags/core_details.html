@@ -55,7 +55,7 @@
         {% for placing in competition_placings %}
             <li>
                 {{ placing.ranking|ordinal }} in the
-                <a href="{{ placing.competition.party.get_absolute_url }}#competition_{{ placing.competition.id }}">{{ placing.competition.party.name }} {{ placing.competition.name }} competition</a>
+                <a href="{{ placing.competition.party.get_absolute_url }}#competition_{{ placing.competition.id }}">{{ placing.competition.party.name }} {{ placing.competition.suffixed_name }}</a>
             </li>
         {% endfor %}
 

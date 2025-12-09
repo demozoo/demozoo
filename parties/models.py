@@ -367,6 +367,14 @@ class Competition(URLMixin, models.Model):
 
     shown_date = property(_get_shown_date, _set_shown_date)
 
+    @property
+    def suffixed_name(self):
+        """name with 'competition' appended, unless it already ends with a word like 'competition'"""
+        if re.search(r"(?:competition|compo|award|showcase?)\s*$", self.name, re.IGNORECASE):
+            return self.name
+        else:
+            return self.name + " competition"
+
     def get_absolute_url(self):
         return reverse("competition", args=[str(self.id)])
 
