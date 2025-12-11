@@ -31,14 +31,22 @@
                         <option value="all" selected>all types</option>
                         <option value="selected">selected types</option>
                     </select>
-                    {{ screening_filter_form.production_types }}
+                    <div id="id_production_types_choices">
+                        <button type="button" data-action="select_all" data-target="id_production_types_choices">Select all</button>
+                        <button type="button" data-action="select_none" data-target="id_production_types_choices">Select none</button>
+                        {{ screening_filter_form.production_types }}
+                    </div>
                 </li>
                 <li>
                     on <select id="id_all_platforms">
                         <option value="all" selected>all platforms</option>
                         <option value="selected">selected platforms</option>
                     </select>
-                    {{ screening_filter_form.platforms }}
+                    <div id="id_platforms_choices">
+                        <button type="button" data-action="select_all" data-target="id_platforms_choices">Select all</button>
+                        <button type="button" data-action="select_none" data-target="id_platforms_choices">Select none</button>
+                        {{ screening_filter_form.platforms }}
+                    </div>
                 </li>
                 <li>
                     {{ screening_filter_form.has_youtube }} YouTube videos
@@ -47,12 +55,12 @@
                     that have {{ screening_filter_form.rating_count }}
                 </li>
             </ul>
-            <button type="submit">Start screening</button>
+            <button type="submit" class="start">Start screening</button>
         </form>
         <script>
             const updateTypesVisibility = () => {
                 const allTypesSelect = document.getElementById('id_all_types');
-                const typesField = document.getElementById('id_production_types');
+                const typesField = document.getElementById('id_production_types_choices');
                 if (allTypesSelect.value === 'all') {
                     typesField.style.display = 'none';
                     // unset all checkboxes inside typesField
@@ -64,7 +72,7 @@
             };
             const updatePlatformsVisibility = () => {
                 const allPlatformsSelect = document.getElementById('id_all_platforms');
-                const platformsField = document.getElementById('id_platforms');
+                const platformsField = document.getElementById('id_platforms_choices');
                 if (allPlatformsSelect.value === 'all') {
                     platformsField.style.display = 'none';
                     // unset all checkboxes inside platformsField
@@ -79,6 +87,25 @@
             // initial visibility
             updateTypesVisibility();
             updatePlatformsVisibility();
+
+            document.querySelectorAll('button[data-action="select_all"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const targetDiv = document.getElementById(targetId);
+                    targetDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = true;
+                    });
+                });
+            });
+            document.querySelectorAll('button[data-action="select_none"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const targetDiv = document.getElementById(targetId);
+                    targetDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                });
+            });
         </script>
     {% endif %}
     {% if can_view_reports %}
