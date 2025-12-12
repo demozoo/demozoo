@@ -1,3 +1,4 @@
+import datetime
 from itertools import groupby
 
 from django import template
@@ -24,6 +25,7 @@ class ProductionCredit:
         self.nick = nick
         self.roles = roles
         self.screenshot = screenshot
+        self.sort_key = (-(self.date or datetime.date.min).toordinal(), production.sortable_title)
 
 
 class TournamentCredit:
@@ -33,6 +35,7 @@ class TournamentCredit:
         self.tournament = tournament
         self.date = tournament.party.start_date_date
         self.screenshot = screenshot
+        self.sort_key = (-(self.date or datetime.date.min).toordinal(), tournament.name)
 
 
 @register.inclusion_tag("releasers/tags/credited_production_listing.html", takes_context=True)
@@ -96,7 +99,7 @@ def combined_releases(context, releaser, include_tournaments=False):
                 TournamentCredit(tournament, tournament_screenshot_map.get(tournament.id)) for tournament in tournaments
             ]
 
-    credits.sort(key=lambda item: (item.date is None, item.date), reverse=True)
+    credits.sort(key=lambda item: item.sort_key)
 
     return {
         "releaser": releaser,
