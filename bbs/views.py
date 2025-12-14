@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Value
+from django.db.models import F, Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -89,7 +89,7 @@ def tagged(request, tag_name):
 
 def show(request, bbs_id):
     bbs = get_object_or_404(BBS, id=bbs_id)
-    bbstros = bbs.bbstros.order_by("-release_date_date", "title").prefetch_related(
+    bbstros = bbs.bbstros.order_by(F("release_date_date").desc(nulls_last=True), "title").prefetch_related(
         "author_nicks__releaser", "author_affiliation_nicks__releaser", "platforms", "types"
     )
 
