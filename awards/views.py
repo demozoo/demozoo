@@ -235,8 +235,11 @@ def screening(request, event_slug):
             "production_id", flat=True
         )
         productions_matching_criteria = filter_form.filter(event.screenable_productions())
+        unscreened_productions_matching_criteria = productions_matching_criteria.exclude(
+            id__in=already_screened_production_ids
+        )
 
-        production = productions_matching_criteria.exclude(id__in=already_screened_production_ids).order_by("?").first()
+        production = unscreened_productions_matching_criteria.order_by("?").first()
         if not production:
             if productions_matching_criteria.exists():
                 messages.success(request, "You have screened all productions that fit the chosen criteria. Yay!")
@@ -257,6 +260,7 @@ def screening(request, event_slug):
             {
                 "event": event,
                 "production": production,
+                "result_count": unscreened_productions_matching_criteria.count(),
                 "carousel": Carousel(production, AnonymousUser()),
                 "downloads_panel": DownloadsPanel(production, AnonymousUser()),
                 "screening_url": screening_url,
