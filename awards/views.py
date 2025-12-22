@@ -208,6 +208,8 @@ def screening(request, event_slug):
     # presented as an option in the first place), the filter will do the sensible thing
     # (reporting no results) rather than rejecting the form as invalid.
     filter_form = ScreeningFilterForm(event, request.GET, filter_options_by_event=False)
+    form_for_display = ScreeningFilterForm(event, request.GET, filter_options_by_event=True)
+
     base_url = reverse("awards_screening", args=[event.slug])
     query_string = filter_form.as_query_string()
     screening_url = f"{base_url}?{query_string}" if query_string else base_url
@@ -264,6 +266,7 @@ def screening(request, event_slug):
                 "carousel": Carousel(production, AnonymousUser()),
                 "downloads_panel": DownloadsPanel(production, AnonymousUser()),
                 "screening_url": screening_url,
+                "filter_form": form_for_display,
                 "comment_form": comment_form,
                 "comment_url": comment_url,
                 "comments": comments,

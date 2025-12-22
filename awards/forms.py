@@ -74,6 +74,14 @@ class ScreeningFilterForm(forms.Form):
         required=False,
     )
 
+    @property
+    def has_selected_platforms(self):
+        return bool(self["platforms"].value())
+
+    @property
+    def has_selected_production_types(self):
+        return bool(self["production_types"].value())
+
     def filter(self, queryset):
         """
         Filter the queryset based on the form data.

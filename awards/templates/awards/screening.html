@@ -21,7 +21,20 @@
     {% include "productions/includes/media_lightbox_template.html" %}
 
     <h1>{{ event.name }} - Screening</h1>
-    <p>{{ result_count }} matching production{{ result_count|pluralize }} found.</p>
+    <p>{{ result_count }} matching production{{ result_count|pluralize }} found. <button id="change_filter_button">Change filters</button></p>
+    <div id="filter_form" style="display:none;">
+        {% include "awards/_screening_filter_form.html" with form=filter_form %}
+    </div>
+    <script>
+        document.getElementById('change_filter_button').addEventListener('click', function() {
+            const filterForm = document.getElementById('filter_form');
+            if (filterForm.style.display === 'none') {
+                filterForm.style.display = '';
+            } else {
+                filterForm.style.display = 'none';
+            }
+        });
+    </script>
     <hr>
     <div class="focus_title">
         <ul class="actions">

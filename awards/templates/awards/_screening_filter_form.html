@@ -1,0 +1,87 @@
+<form action="{% url 'awards_screening' event.slug %}" class="screening-form" method="get">
+    Show me:
+    <ul>
+        <li>
+            {{ form.platform_group }} productions
+        </li>
+        <li>
+            of <select id="id_all_types">
+                <option value="all" {% if not form.has_selected_production_types %}selected{% endif %}>all types</option>
+                <option value="selected" {% if form.has_selected_production_types %}selected{% endif %}>selected types</option>
+            </select>
+            <div id="id_production_types_choices">
+                <button type="button" data-action="select_all" data-target="id_production_types_choices">Select all</button>
+                <button type="button" data-action="select_none" data-target="id_production_types_choices">Select none</button>
+                {{ form.production_types }}
+            </div>
+        </li>
+        <li>
+            on <select id="id_all_platforms">
+                <option value="all" {% if not form.has_selected_platforms %}selected{% endif %}>all platforms</option>
+                <option value="selected" {% if form.has_selected_platforms %}selected{% endif %}>selected platforms</option>
+            </select>
+            <div id="id_platforms_choices">
+                <button type="button" data-action="select_all" data-target="id_platforms_choices">Select all</button>
+                <button type="button" data-action="select_none" data-target="id_platforms_choices">Select none</button>
+                {{ form.platforms }}
+            </div>
+        </li>
+        <li>
+            {{ form.has_youtube }} YouTube videos
+        </li>
+        <li>
+            that have {{ form.rating_count }}
+        </li>
+    </ul>
+    <button type="submit" class="start">Start screening</button>
+</form>
+<script>
+    const updateTypesVisibility = () => {
+        const allTypesSelect = document.getElementById('id_all_types');
+        const typesField = document.getElementById('id_production_types_choices');
+        if (allTypesSelect.value === 'all') {
+            typesField.style.display = 'none';
+            // unset all checkboxes inside typesField
+            const checkboxes = typesField.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => { checkbox.checked = false; });
+        } else {
+            typesField.style.display = '';
+        }
+    };
+    const updatePlatformsVisibility = () => {
+        const allPlatformsSelect = document.getElementById('id_all_platforms');
+        const platformsField = document.getElementById('id_platforms_choices');
+        if (allPlatformsSelect.value === 'all') {
+            platformsField.style.display = 'none';
+            // unset all checkboxes inside platformsField
+            const checkboxes = platformsField.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => { checkbox.checked = false; });
+        } else {
+            platformsField.style.display = '';
+        }
+    };
+    document.getElementById('id_all_types').addEventListener('change', updateTypesVisibility);
+    document.getElementById('id_all_platforms').addEventListener('change', updatePlatformsVisibility);
+    // initial visibility
+    updateTypesVisibility();
+    updatePlatformsVisibility();
+
+    document.querySelectorAll('button[data-action="select_all"]').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const targetDiv = document.getElementById(targetId);
+            targetDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+    });
+    document.querySelectorAll('button[data-action="select_none"]').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const targetDiv = document.getElementById(targetId);
+            targetDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
+    });
+</script>
