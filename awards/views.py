@@ -348,6 +348,10 @@ def screening_review(request, event_slug):
         )
         .order_by("-created_at")
     )
+    decision_choice = request.GET.get("decision")
+    if decision_choice:
+        decisions = decisions.filter(is_accepted=(decision_choice == "yay"))
+
     decision_page = get_page(decisions, request.GET.get("page", "1"))
 
     screenshots = Screenshot.select_for_production_ids([decision.production_id for decision in decision_page])
@@ -363,6 +367,7 @@ def screening_review(request, event_slug):
             "pagination_controls": PaginationControls(
                 decision_page, reverse("awards_screening_review", args=[event.slug])
             ),
+            "decision_choice": decision_choice,
         },
     )
 

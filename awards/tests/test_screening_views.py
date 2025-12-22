@@ -279,6 +279,11 @@ class TestScreening(TestCase):
         response = self.client.get("/awards/meteoriks-2020/screening/review/")
         self.assertContains(response, "The Brexecutable Music Compo Is Over")
 
+        response = self.client.get("/awards/meteoriks-2020/screening/review/?decision=yay")
+        self.assertContains(response, "The Brexecutable Music Compo Is Over")
+        response = self.client.get("/awards/meteoriks-2020/screening/review/?decision=nay")
+        self.assertNotContains(response, "The Brexecutable Music Compo Is Over")
+
     def test_screening_review_page_with_decision_change(self):
         production_id = Production.objects.get(title="The Brexecutable Music Compo Is Over").id
         decision = self.meteoriks.screening_decisions.create(
