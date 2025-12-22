@@ -8,9 +8,30 @@
 
 <h1>{{ event.name }} - Your screened productions</h1>
 
+<p>
+    Show:
+    {% if decision_choice == None %}
+        <strong>all decisions</strong>
+    {% else %}
+        <a href="{% url 'awards_screening_review' event.slug %}">all decisions</a>
+    {% endif %}
+    |
+    {% if decision_choice == "yay" %}
+        <strong>yay only</strong>
+    {% else %}
+        <a href="{% url 'awards_screening_review' event.slug %}?decision=yay">yay only</a>
+    {% endif %}
+    |
+    {% if decision_choice == "nay" %}
+        <strong>nay only</strong>
+    {% else %}
+        <a href="{% url 'awards_screening_review' event.slug %}?decision=nay">nay only</a>
+    {% endif %}
+</p>
+
 {% if rows %}
     {% include "awards/_screening_review_listing.html" %}
-{% else %}
+{% elif decision_choice == None %}
     <p>You have not screened any productions yet.</p>
 {% endif %}
 
