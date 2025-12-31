@@ -334,11 +334,12 @@ def candidates(request, year):
             elif pouet_prod.pouet_id in (105175,):
                 # Xmas Live 2025 Invitro - miscategorised as 256b
                 pouet_derived_category = "Oldschool"
-            elif pouet_prod.pouet_id in (103665, 103322, 103321, 103660):  # pragma: no cover
+            elif pouet_prod.pouet_id in (103665, 103322, 103321, 103660, 102982):  # pragma: no cover
                 # Cordic Demo 8 - tagged as intro rather than 32b
                 # Lemon Shark Attacks The Sun! - tagged as demo rather than 512b
                 # Love Letter - tagged as demo rather than 1k
                 # Nano Chaos 8 - tagged as intro rather than 32b
+                # Faulty Robots Forever - tagged as musicdisk rather than 512b
                 pouet_derived_category = "Tiny Intro"
             elif any(
                 intro_category in pouet_prodtype_names
