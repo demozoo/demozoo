@@ -49,6 +49,8 @@ POUET_OLDSCHOOL_PLATFORM_NAMES = [
     "Vector-06c",
     "SEGA Master System",
     "Enterprise",
+    "Sinclair QL",
+    "TI-8x (Z80)",
 ]
 POUET_MIDSCHOOL_PLATFORM_NAMES = [
     "MS-Dos",
@@ -63,21 +65,26 @@ POUET_MIDSCHOOL_PLATFORM_NAMES = [
     "Atari Jaguar",
     "PICO-8",
     "TIC-80",
-    "Sinclair QL",
+    "MicroW8",
     "Acorn",
     "Wonderswan",
     "NEC TurboGrafx/PC Engine",
     "Gamecube",
-    "Playstation Portable",
+    "Nintendo Wii",
     "Gameboy Advance",
-    "Nintendo DS",
-    "SEGA Genesis/Mega Drive",
-    "Nintendo 64",
-    "MicroW8",
     "SNES/Super Famicom",
+    "Nintendo DS",
+    "Nintendo 64",
+    "Playstation Portable",
+    "SEGA Genesis/Mega Drive",
+    "Dreamcast",
     "Playstation",
     "Wonderswan",
     "MacOS",
+    "ZX Enhanced",
+    "C64DX/C65/MEGA65",
+    "C64 DTV",
+    "MacOSX PPC",
 ]
 POUET_HIGHEND_PLATFORM_NAMES = [
     "Linux",
@@ -88,17 +95,14 @@ POUET_HIGHEND_PLATFORM_NAMES = [
     "Android",
     "Java",
     "FreeBSD",
-    "Nintendo Wii",
     "iOS",
     "Flash",
+    "SGI/IRIX",
 ]
 POUET_LIMBO_PLATFORM_NAMES = [
     "Animation/Video",
     "Wild",
-    "ZX Enhanced",
-    "Commodore 64-DTV",
     "Mobile Phone",
-    "C64DX/C65/MEGA65",
 ]
 
 DZ_OLDSCHOOL_PLATFORM_NAMES = [
@@ -122,7 +126,7 @@ DZ_OLDSCHOOL_PLATFORM_NAMES = [
     "Oric",
     "Apple II GS",
     "Thomson",
-    "VIC-20",
+    "Commodore VIC-20",
     "Atari 2600 Video Computer System (VCS)",
     "SAM Coupé",
     "Nintendo Game Boy (GB)",
@@ -138,6 +142,8 @@ DZ_OLDSCHOOL_PLATFORM_NAMES = [
     "Vector-06C",
     "Sega Master System",
     "Atari Portfolio",
+    "Sinclair QL",
+    "TRS-80",
 ]
 DZ_MIDSCHOOL_PLATFORM_NAMES = [
     "Amiga OCS/ECS",
@@ -154,20 +160,26 @@ DZ_MIDSCHOOL_PLATFORM_NAMES = [
     "Nintendo GameCube (NGC)",
     "PICO-8",
     "Sega Megadrive/Genesis",
+    "Sega Dreamcast",
     "Acorn Archimedes",
     "Nintendo Game Boy Advance (GBA)",
-    "Sinclair QL",
     "Console Handheld",
     "NEC PC Engine",
     "Nintendo 3DS",
     "Nintendo 64 (N64)",
     "Nintendo SNES/Super FamiCom",
+    "Nintendo Switch (NSW)",
     "NeoGeo",
     "MicroW8",
     "Sony Playstation 1 (PSX)",
     "Wonderswan",
     "Mac OS (Classic)",
     "Nintendo DS (NDS)",
+    "ZX Spectrum Enhanced",
+    "Nintendo Wii",
+    "Commodore 64-DTV",
+    "Sharp X68000",
+    "Neo Geo",
 ]
 DZ_HIGHEND_PLATFORM_NAMES = [
     "Windows",
@@ -179,14 +191,11 @@ DZ_HIGHEND_PLATFORM_NAMES = [
     "Browser",
     "Raspberry Pi",
     "macOS",
-    "Nintendo Wii",
     "Flash",
 ]
 DZ_LIMBO_PLATFORM_NAMES = [
     "Custom Hardware",
-    "ZX Spectrum Enhanced",
     "Mobile",
-    "Commodore 64-DTV",
     "Paper",
 ]
 
@@ -265,6 +274,8 @@ def candidates(request, year):
                 pouet_platform_category.add("highend")
             elif set(pouet_platform_names) == {"MS-Dos", "Windows"}:  # pragma: no cover
                 pouet_platform_category.add("midschool")
+            elif set(pouet_platform_names) == {"MS-Dos", "Linux"}:  # pragma: no cover
+                pouet_platform_category.add("midschool")
             elif set(pouet_platform_names) == {"MS-Dos", "Windows", "MS-Dos/gus"}:  # pragma: no cover
                 pouet_platform_category.add("midschool")
             elif set(pouet_platform_names) == {"Acorn", "Raspberry Pi"}:  # pragma: no cover
@@ -273,9 +284,23 @@ def candidates(request, year):
                 set(pouet_platform_names) == {"Gameboy", "SNES/Super Famicom"} and pouet_prod.name == "EsGeBe Bounce"
             ):  # pragma: no cover
                 pouet_platform_category.add("midschool")
-            elif pouet_prod.pouet_id in (94983, 94385, 94814):  # pragma: no cover
-                # TIC-80 prods with spurious windows / linux platforms assigned
+            elif pouet_prod.pouet_id in (104477,):  # pragma: no cover
+                # SCONNEX - oldschool cross-platform with Linux/Windows ports
+                pouet_platform_category.add("oldschool")
+            elif pouet_prod.pouet_id in (94983, 94385, 94814, 104089):  # pragma: no cover
+                # TIC-80 / Pico-8 prods with spurious windows / linux platforms assigned
                 pouet_platform_category.add("midschool")
+            elif pouet_prod.pouet_id in (104603, 104606, 104332, 104340):  # pragma: no cover
+                # Aleph Null - multi-platform but primarily MMX-class DOS
+                # Space Wolf - for Macintosh Performa 5200
+                # Neko City - Wii with Windows/Linux ports
+                # NekoStation - Wii with Linux port
+                pouet_platform_category.add("midschool")
+            elif pouet_prod.pouet_id in (105393, 105264, 104778):  # pragma: no cover
+                # HeXenium - macOS Intel/ARM miscategorized as MacOS (classic)
+                # L-Packer - Windows-hosted demotool missing Windows platform
+                # Sentinel 7 - macOS ARM miscategorized as MacOS (classic)
+                pouet_platform_category.add("highend")
             elif pouet_prod.pouet_id == 96567:  # pragma: no cover
                 # A Statement on the Platform Wars - multi platform
                 pass
@@ -297,6 +322,36 @@ def candidates(request, year):
 
             if "procedural graphics" in pouet_prodtype_names:  # pragma: no cover
                 pouet_derived_category = "Executable GFX"
+            elif pouet_prod.pouet_id in (104469, 105460):  # pragma: no cover
+                # Grand motel - missing procedural graphics tag
+                # Shaft - missing procedural graphics tag
+                pouet_derived_category = "Executable GFX"
+            elif pouet_prod.pouet_id in (103012, 104184, 105423):  # pragma: no cover
+                # Best Before 2024 - tagged as intro rather than 8k
+                # First - tagged as invitation rather than 64k
+                # 到遐就知到矣 - miscategorised as 32b
+                pouet_derived_category = "High-End Intro"
+            elif pouet_prod.pouet_id in (105175,):
+                # Xmas Live 2025 Invitro - miscategorised as 256b
+                pouet_derived_category = "Oldschool"
+            elif pouet_prod.pouet_id in (103665, 103322, 103321, 103660):  # pragma: no cover
+                # Cordic Demo 8 - tagged as intro rather than 32b
+                # Lemon Shark Attacks The Sun! - tagged as demo rather than 512b
+                # Love Letter - tagged as demo rather than 1k
+                # Nano Chaos 8 - tagged as intro rather than 32b
+                pouet_derived_category = "Tiny Intro"
+            elif any(
+                intro_category in pouet_prodtype_names
+                for intro_category in [
+                    "1k",
+                    "512b",
+                    "256b",
+                    "128b",
+                    "64b",
+                    "32b",
+                ]
+            ):
+                pouet_derived_category = "Tiny Intro"
             elif pouet_platform_category == {"midschool"}:  # pragma: no cover
                 pouet_derived_category = "Midschool"
             elif pouet_platform_category == {"oldschool"}:
@@ -311,12 +366,6 @@ def candidates(request, year):
                         "40k",
                         "32k",
                         "8k",
-                        "256b",
-                        "128b",
-                        "512b",
-                        "1k",
-                        "32b",
-                        "64b",
                     ]
                 ):
                     pouet_derived_category = "High-End Intro"
@@ -344,14 +393,41 @@ def candidates(request, year):
                 dz_platform_category.add("midschool")
             elif set(dz_platform_names) == {"Acorn Archimedes", "Raspberry Pi"}:  # pragma: no cover
                 dz_platform_category.add("midschool")
-            elif dz_prod.id in (334702, 337880, 342318):  # pragma: no cover
+            elif dz_prod.id in (334702, 337880, 342318, 370699):  # pragma: no cover
                 # multi-platform prods:
                 # JoG christmas card pack 2023
                 # Lovebyte 2024 Countdown Invite
                 # A Statement On The Platform Wars
+                # Demo 25 (BBS door thing)
                 pass
-            elif dz_prod.id == 317579:  # pragma: no cover
+            elif dz_prod.id in (374860, 380125):  # pragma: no cover
+                # SCONNEX - oldschool cross-platform with Linux/Windows ports
+                # TinyLife-6502 - oldschool cross-platform with C64-DTV port
+                dz_platform_category.add("oldschool")
+            elif dz_prod.id in (
+                317579,
+                375933,
+                381522,
+                378341,
+                380591,
+                375852,
+                373529,
+                373273,
+                372845,
+                376072,
+                381524,
+            ):  # pragma: no cover
                 # mhm-hny2023 - party version on Windows, final on Amiga?
+                # Aleph Null - multi-platform but primarily MMX-class DOS
+                # Get Ready - primarily Atari ST but multi-platform including Sinclair QL
+                # Gorski - primarily Atari ST but multi-platform including Sinclair QL
+                # Gifted - MacOS but specifically PowerMac G3
+                # Space Wolf - for Macintosh Performa 5200
+                # Neko City - Wii with Windows/Linux ports
+                # NekoStation - Wii with Linux port
+                # Phased - primarily Atari ST but multi-platform including Sinclair QL
+                # Shattered - primarily Atari ST but multi-platform including Sinclair QL
+                # Singen68k v1.2 - multi-platform 68k
                 dz_platform_category.add("midschool")
             else:
                 for platform in dz_platform_names:
@@ -374,6 +450,20 @@ def candidates(request, year):
                 for exegfx_category in ["Executable Graphics", "4K Executable Graphics", "256b Executable Graphics"]
             ):  # pragma: no cover
                 dz_derived_category = "Executable GFX"
+            elif any(
+                intro_category in dz_prodtype_names
+                for intro_category in [
+                    "1K Intro",
+                    "512b Intro",
+                    "256b Intro",
+                    "128b Intro",
+                    "64b Intro",
+                    "32b Intro",
+                    "16b intro",
+                    "8b intro",
+                ]
+            ):
+                dz_derived_category = "Tiny Intro"
             elif dz_platform_category == {"midschool"}:  # pragma: no cover
                 dz_derived_category = "Midschool"
             elif dz_platform_category == {"oldschool"}:
@@ -386,17 +476,9 @@ def candidates(request, year):
                         "40k Intro",
                         "32K Intro",
                         "16K Intro",
+                        "8K Intro",
                         "4K Intro",
                         "2K Intro",
-                        "1K Intro",
-                        "512b Intro",
-                        "256b Intro",
-                        "128b Intro",
-                        "64b Intro",
-                        "8K Intro",
-                        "8b intro",
-                        "32b Intro",
-                        "16b intro",
                     ]
                 ):
                     dz_derived_category = "High-End Intro"
