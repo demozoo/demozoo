@@ -16,8 +16,8 @@ class ScreeningFilterForm(forms.Form):
         self.event = event
 
         if not event.has_unscreened_productions:
-            # defult rating_count to "less than two ratings" if there are no unscreened productions
-            self.fields["rating_count"].initial = "1"
+            # defult rating_count to "one Nay only" if there are no unscreened productions
+            self.fields["rating_count"].initial = "N"
 
         # Filter the platform group queryset to only those that belong to the event series of the event
         self.fields["platform_group"].queryset = PlatformGroup.objects.filter(event_series=event.series)
@@ -69,7 +69,12 @@ class ScreeningFilterForm(forms.Form):
     )
     rating_count = forms.ChoiceField(
         label="Rating count",
-        choices=[("", "Any number of ratings"), ("0", "Not been rated yet"), ("1", "Less than two ratings")],
+        choices=[
+            ("", "Any number of ratings"),
+            ("0", "Not been rated yet"),
+            ("1", "Less than two ratings"),
+            ("N", "One Nay only"),
+        ],
         initial="0",
         required=False,
     )
@@ -109,9 +114,18 @@ class ScreeningFilterForm(forms.Form):
                 elif self.cleaned_data["has_youtube"] == "no":
                     queryset = queryset.exclude(links__is_download_link=False, links__link_class="YoutubeVideo")
             if self.cleaned_data["rating_count"]:
-                queryset = queryset.annotate(
-                    rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event))
-                ).filter(rating_count__lte=self.cleaned_data["rating_count"])
+                if self.cleaned_data["rating_count"] == "N":
+                    queryset = queryset.annotate(
+                        rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event)),
+                        nay_count=Count(
+                            "screening_decisions",
+                            filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=False),
+                        ),
+                    ).filter(rating_count=1, nay_count=1)
+                else:
+                    queryset = queryset.annotate(
+                        rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event))
+                    ).filter(rating_count__lte=self.cleaned_data["rating_count"])
         return queryset
 
     def as_query_string(self):

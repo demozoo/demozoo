@@ -59,9 +59,9 @@ class TestScreening(TestCase):
         self.client.login(username="juror", password="67890")
         response = self.client.get("/awards/meteoriks-2020/")
         # if all productions have been screened at least once, the "rating count"
-        # filter should default to "1" (less than two ratings)
+        # filter should default to "N" (one Nay only)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<option value="1" selected>Less than two ratings</option>')
+        self.assertContains(response, '<option value="N" selected>One Nay only</option>')
 
     def test_screening_page(self):
         # jurors can access the screening page
@@ -149,6 +149,51 @@ class TestScreening(TestCase):
         self.assertEqual(response.status_code, 200)
         # form action url should preserve the filter
         self.assertContains(response, f'action="{url}"')
+
+    def test_filter_by_rating_count_one_nay_only(self):
+        other_juror = User.objects.create_user(username="other_juror", password="54321")
+        self.meteoriks.jurors.create(user=other_juror)
+        other_other_juror = User.objects.create_user(username="other_other_juror", password="54321")
+        self.meteoriks.jurors.create(user=other_other_juror)
+
+        self.client.login(username="juror", password="67890")
+        url = "/awards/meteoriks-2020/screening/?rating_count=N"
+
+        # prods with no decisions should not show
+        response = self.client.get(url, follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/?rating_count=N")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+        # prods with one Nay only should show
+        prod = Production.objects.get(title="The Brexecutable Music Compo Is Over")
+        decision = self.meteoriks.screening_decisions.create(
+            user=other_juror,
+            production=prod,
+            is_accepted=False,
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # form action url should preserve the filter
+        self.assertContains(response, f'action="{url}"')
+
+        # prods with one Yay only should not show
+        decision.is_accepted = True
+        decision.save()
+        response = self.client.get(url, follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/?rating_count=N")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
+
+        # prods with more than one decision should not show
+        decision.is_accepted = False
+        decision.save()
+        self.meteoriks.screening_decisions.create(
+            user=other_other_juror,
+            production=prod,
+            is_accepted=False,
+        )
+        response = self.client.get(url, follow=True)
+        self.assertRedirects(response, "/awards/meteoriks-2020/?rating_count=N")
+        self.assertContains(response, "There are no productions that fit the chosen criteria.")
 
     def test_filter_by_platform_group(self):
         oldschool = self.meteoriks.series.platform_groups.get(name="Oldschool")
