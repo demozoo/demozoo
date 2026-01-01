@@ -331,7 +331,7 @@ def candidates(request, year):
                 # First - tagged as invitation rather than 64k
                 # 到遐就知到矣 - miscategorised as 32b
                 pouet_derived_category = "High-End Intro"
-            elif pouet_prod.pouet_id in (105175,):
+            elif pouet_prod.pouet_id in (105175,):  # pragma: no cover
                 # Xmas Live 2025 Invitro - miscategorised as 256b
                 pouet_derived_category = "Oldschool"
             elif pouet_prod.pouet_id in (103665, 103322, 103321, 103660, 102982):  # pragma: no cover
@@ -351,7 +351,7 @@ def candidates(request, year):
                     "64b",
                     "32b",
                 ]
-            ):
+            ):  # pragma: no cover
                 pouet_derived_category = "Tiny Intro"
             elif pouet_platform_category == {"midschool"}:  # pragma: no cover
                 pouet_derived_category = "Midschool"
@@ -463,7 +463,7 @@ def candidates(request, year):
                     "16b intro",
                     "8b intro",
                 ]
-            ):
+            ):  # pragma: no cover
                 dz_derived_category = "Tiny Intro"
             elif dz_platform_category == {"midschool"}:  # pragma: no cover
                 dz_derived_category = "Midschool"
