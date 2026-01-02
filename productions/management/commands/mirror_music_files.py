@@ -41,6 +41,7 @@ class Command(BaseCommand):
             )
             .filter(filetype_filter)
             .exclude(parameter__istartswith="https://media.demozoo.org/")
+            .exclude(parameter__istartswith="https://asma.atari.org/")
             .select_related("production")
         )
 

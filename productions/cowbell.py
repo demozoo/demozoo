@@ -91,7 +91,8 @@ PLAYERS_BY_FILETYPE = {
 }
 
 ZXDEMO_MUSIC = re.compile(r"https://files\.zxdemo\.org/.*\.(stc|pt3|vtx|sqt|pyg|sndh)$", re.I)
-ABSENCEHQ_PYG_MUSIC = re.compile(r"https://absencehq.de/atari/.*\.(pyg)", re.I)
+ABSENCEHQ_PYG_MUSIC = re.compile(r"https://absencehq.de/atari/.*\.(pyg)$", re.I)
+ASMA_SAP_MUSIC = re.compile(r"https://asma.atari.org/asma/.*\.(sap)(\#\w*)?$", re.I)
 MODLAND_NON_OPENMPT_MUSIC = re.compile(r".*\.(stc|pt3|vtx|sqt|sndh)$", re.I)
 STREAMING_MUSIC = re.compile(r".*\.(mp3|ogg|wav|opus|flac)$", re.I)
 OPENMPT_MUSIC = re.compile(
@@ -142,18 +143,11 @@ def identify_link_as_track(link):
 
         elif link.link_class == "BaseUrl":
             url = link.parameter
-            match = ZXDEMO_MUSIC.match(url)
-            if match:
+            if match := ZXDEMO_MUSIC.match(url) or ABSENCEHQ_PYG_MUSIC.match(url) or ASMA_SAP_MUSIC.match(url):
                 filetype = match.group(1).lower()
                 return (filetype, url)
 
-            match = ABSENCEHQ_PYG_MUSIC.match(url)
-            if match:
-                filetype = match.group(1).lower()
-                return (filetype, url)
-
-            match = MEDIA_DEMOZOO_MUSIC.match(url)
-            if match:
+            elif match := MEDIA_DEMOZOO_MUSIC.match(url):
                 filetype = match.group(1).lower()
                 return (filetype if filetype in ("sid", "sap", "sndh") else "openmpt", url)
 
