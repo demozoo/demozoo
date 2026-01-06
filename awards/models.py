@@ -193,7 +193,12 @@ class Event(models.Model):
     @cached_property
     def screened_productions_count(self):
         # Count the number of distinct productions that have been screened at least once
-        return self.screening_decisions.values("production_id").distinct().count()
+        return (
+            self.screening_decisions.values("production_id")
+            .filter(production_id__in=self.screenable_productions().values_list("id", flat=True))
+            .distinct()
+            .count()
+        )
 
     @property
     def has_unscreened_productions(self):
