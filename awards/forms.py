@@ -74,6 +74,7 @@ class ScreeningFilterForm(forms.Form):
             ("0", "Not been rated yet"),
             ("1", "Less than two ratings"),
             ("N", "One Nay only"),
+            ("Y", "At least one Yay"),
         ],
         initial="0",
         required=False,
@@ -122,6 +123,13 @@ class ScreeningFilterForm(forms.Form):
                             filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=False),
                         ),
                     ).filter(rating_count=1, nay_count=1)
+                elif self.cleaned_data["rating_count"] == "Y":
+                    queryset = queryset.annotate(
+                        yay_count=Count(
+                            "screening_decisions",
+                            filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=True),
+                        ),
+                    ).filter(yay_count__gte=1)
                 else:
                     queryset = queryset.annotate(
                         rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event))
