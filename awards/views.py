@@ -393,3 +393,45 @@ def screening_review_change(request, event_slug, decision_id):
         redirect_url += f"?page={request.GET['page']}"
 
     return HttpResponseRedirect(redirect_url)
+
+
+def screening_report(request, event_slug):
+    event = get_object_or_404(Event.objects.filter(screening_enabled=True), slug=event_slug)
+
+    if not event.user_can_access_screening(request.user):
+        raise PermissionDenied
+
+    # filter_options_by_event=False ensures that if (for example) a platform with no
+    # screenable productions is selected (which would mean that it wouldn't have been
+    # presented as an option in the first place), the filter will do the sensible thing
+    # (reporting no results) rather than rejecting the form as invalid.
+    filter_form = ScreeningFilterForm(event, request.GET, filter_options_by_event=False)
+    form_for_display = ScreeningFilterForm(event, request.GET, filter_options_by_event=True)
+
+    productions = (
+        filter_form.filter(event.screenable_productions())
+        .order_by("sortable_title")
+        .prefetch_related(
+            "author_nicks__releaser",
+            "author_affiliation_nicks__releaser",
+            "types",
+            "platforms",
+        )
+    )
+    production_page = get_page(productions, request.GET.get("page", "1"))
+
+    return render(
+        request,
+        "awards/screening_report.html",
+        {
+            "event": event,
+            "productions": production_page,
+            "production_count": productions.count(),
+            "pagination_controls": PaginationControls(
+                production_page,
+                reverse("awards_screening_report", args=[event.slug]),
+                query_dict=filter_form.as_query_dict(),
+            ),
+            "filter_form": form_for_display,
+        },
+    )

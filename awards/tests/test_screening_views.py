@@ -423,3 +423,13 @@ class TestScreening(TestCase):
         self.assertRedirects(response, f"/awards/meteoriks-2020/screening/{prod.id}/")
         self.assertContains(response, "This is a test comment.")
         self.assertTrue(prod.screening_comments.filter(user=self.juror, comment="This is a test comment.").exists())
+
+    def test_screening_report_page(self):
+        # non-jurors cannot access the screening page
+        self.client.login(username="non_juror", password="12345")
+        response = self.client.get("/awards/meteoriks-2020/screening/report/")
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username="juror", password="67890")
+        response = self.client.get("/awards/meteoriks-2020/screening/report/")
+        self.assertEqual(response.status_code, 200)

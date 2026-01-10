@@ -18,8 +18,12 @@
         <p>
             <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong>
-            of these{% if screened_by_me_count > 0 %} (<a href="{% url 'awards_screening_review' event.slug %}">review my votes</a>){% endif %}.
+            of these.
         </p>
+        <ul>
+            <li><a href="{% url 'awards_screening_review' event.slug %}">Review my votes</a></li>
+            <li><a href="{% url 'awards_screening_report' event.slug %}?rating_count=Y">View screening report</a></li>
+        </ul>
         {% include "awards/_screening_filter_form.html" with form=screening_filter_form %}
     {% endif %}
     {% if can_view_reports %}
