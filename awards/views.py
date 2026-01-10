@@ -435,6 +435,8 @@ def screening_report(request, event_slug):
                 "Demozoo URL",
                 "Type",
                 "Platform",
+                "Yay",
+                "Nay",
             ]
         )
         for production in productions:
@@ -448,6 +450,8 @@ def screening_report(request, event_slug):
                     "https://demozoo.org" + production.get_absolute_url(),
                     types,
                     platforms,
+                    production.yay_count,
+                    production.nay_count,
                 ]
             )
 

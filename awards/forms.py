@@ -93,6 +93,17 @@ class ScreeningFilterForm(forms.Form):
         Filter the queryset based on the form data.
         """
         if self.is_valid():
+            queryset = queryset.annotate(
+                rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event)),
+                yay_count=Count(
+                    "screening_decisions",
+                    filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=True),
+                ),
+                nay_count=Count(
+                    "screening_decisions",
+                    filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=False),
+                ),
+            )
             if self.cleaned_data["platforms"]:
                 queryset = queryset.filter(platforms__in=self.cleaned_data["platforms"]).distinct()
             if self.cleaned_data["platform_group"]:
@@ -116,24 +127,11 @@ class ScreeningFilterForm(forms.Form):
                     queryset = queryset.exclude(links__is_download_link=False, links__link_class="YoutubeVideo")
             if self.cleaned_data["rating_count"]:
                 if self.cleaned_data["rating_count"] == "N":
-                    queryset = queryset.annotate(
-                        rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event)),
-                        nay_count=Count(
-                            "screening_decisions",
-                            filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=False),
-                        ),
-                    ).filter(rating_count=1, nay_count=1)
+                    queryset = queryset.filter(rating_count=1, nay_count=1)
                 elif self.cleaned_data["rating_count"] == "Y":
-                    queryset = queryset.annotate(
-                        yay_count=Count(
-                            "screening_decisions",
-                            filter=Q(screening_decisions__event=self.event, screening_decisions__is_accepted=True),
-                        ),
-                    ).filter(yay_count__gte=1)
+                    queryset = queryset.filter(yay_count__gte=1)
                 else:
-                    queryset = queryset.annotate(
-                        rating_count=Count("screening_decisions", filter=Q(screening_decisions__event=self.event))
-                    ).filter(rating_count__lte=self.cleaned_data["rating_count"])
+                    queryset = queryset.filter(rating_count__lte=self.cleaned_data["rating_count"])
         return queryset
 
     def as_query_dict(self):
