@@ -433,3 +433,7 @@ class TestScreening(TestCase):
         self.client.login(username="juror", password="67890")
         response = self.client.get("/awards/meteoriks-2020/screening/report/")
         self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/awards/meteoriks-2020/screening/report/?format=csv")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")

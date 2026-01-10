@@ -111,6 +111,13 @@ a.action_button, button.action_button {
         background-image: url('/static/images/icons/table_go.png');
     }
 
+    &.icon-export_table {
+        padding-left: 24px;
+        background-position: 4px center;
+        background-repeat: no-repeat;
+        background-image: url('/static/images/icons/table_go.png');
+    }
+
     &.icon-delete {
         padding-left: 24px;
         background-position: 4px center;
