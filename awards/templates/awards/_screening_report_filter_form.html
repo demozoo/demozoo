@@ -1,0 +1,5 @@
+{% extends "awards/_screening_filter_form.html" %}
+
+{% block action_url %}{% url 'awards_screening_report' event.slug %}{% endblock %}
+
+{% block submit_button_label %}Update{% endblock %}

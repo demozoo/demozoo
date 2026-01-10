@@ -8,6 +8,7 @@ from awards.views import (
     screening,
     screening_comment,
     screening_production,
+    screening_report,
     screening_review,
     screening_review_change,
     show,
@@ -28,6 +29,7 @@ urlpatterns = [
         "awards_screening_review_change",
     ),
     path("remove_recommendation/<int:recommendation_id>/", remove_recommendation, {}, "awards_remove_recommendation"),
+    path("<slug:event_slug>/screening/report/", screening_report, {}, "awards_screening_report"),
     path("<slug:event_slug>/report/<int:category_id>/", report, {}, "awards_report"),
     path("<slug:event_slug>/<slug:category_slug>/", candidates, {}, "awards_candidates"),
 ]

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load production_tags laces %}
+
+{% block html_title %}{{ event.name }} - screening report - Demozoo{% endblock %}
+
+{% block base_main %}
+
+<h1>{{ event.name }} - screening report</h1>
+
+{% include "awards/_screening_report_filter_form.html" with form=filter_form %}
+
+<p>Found {{ production_count }} productions.</p>
+
+{% if productions %}
+    {% production_listing productions show_screenshots=True show_prod_types=True %}
+    {% component pagination_controls %}
+{% endif %}
+
+{% endblock %}

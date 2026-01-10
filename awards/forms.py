@@ -136,13 +136,13 @@ class ScreeningFilterForm(forms.Form):
                     ).filter(rating_count__lte=self.cleaned_data["rating_count"])
         return queryset
 
-    def as_query_string(self):
+    def as_query_dict(self):
         """
-        Returns the form data as a querystring.
+        Returns the form data as a QueryDict.
         """
-        if not self.is_valid():
-            return ""
         params = QueryDict(mutable=True)
+        if not self.is_valid():
+            return params
         if self.cleaned_data["platforms"]:
             params.setlist("platforms", [platform.pk for platform in self.cleaned_data["platforms"]])
         if self.cleaned_data["platform_group"]:
@@ -153,7 +153,13 @@ class ScreeningFilterForm(forms.Form):
             params["has_youtube"] = self.cleaned_data["has_youtube"]
         if self.cleaned_data["rating_count"]:
             params["rating_count"] = self.cleaned_data["rating_count"]
-        return params.urlencode()
+        return params
+
+    def as_query_string(self):
+        """
+        Returns the form data as a querystring.
+        """
+        return self.as_query_dict().urlencode()
 
 
 class ScreeningCommentForm(forms.ModelForm):

@@ -1,4 +1,4 @@
-<form action="{% url 'awards_screening' event.slug %}" class="screening-form" method="get">
+<form action="{% block action_url %}{% url 'awards_screening' event.slug %}{% endblock %}" class="screening-form" method="get">
     Show me:
     <ul>
         <li>
@@ -33,7 +33,7 @@
             that have {{ form.rating_count }}
         </li>
     </ul>
-    <button type="submit" class="start">Start screening</button>
+    <button type="submit" class="start">{% block submit_button_label %}Start screening{% endblock %}</button>
 </form>
 <script>
     const updateTypesVisibility = () => {
