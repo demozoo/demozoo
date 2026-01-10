@@ -406,7 +406,6 @@ def screening_report(request, event_slug):
     # presented as an option in the first place), the filter will do the sensible thing
     # (reporting no results) rather than rejecting the form as invalid.
     filter_form = ScreeningFilterForm(event, request.GET, filter_options_by_event=False)
-    form_for_display = ScreeningFilterForm(event, request.GET, filter_options_by_event=True)
 
     productions = (
         filter_form.filter(event.screenable_productions())
@@ -418,20 +417,62 @@ def screening_report(request, event_slug):
             "platforms",
         )
     )
-    production_page = get_page(productions, request.GET.get("page", "1"))
 
-    return render(
-        request,
-        "awards/screening_report.html",
-        {
-            "event": event,
-            "productions": production_page,
-            "production_count": productions.count(),
-            "pagination_controls": PaginationControls(
-                production_page,
-                reverse("awards_screening_report", args=[event.slug]),
-                query_dict=filter_form.as_query_dict(),
-            ),
-            "filter_form": form_for_display,
-        },
-    )
+    if request.GET.get("format") == "csv":
+        # Export CSV
+        import csv
+
+        from django.http import HttpResponse
+
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = f'attachment; filename="{event.slug}_screening_report.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(
+            [
+                "Title",
+                "By",
+                "Demozoo URL",
+                "Type",
+                "Platform",
+            ]
+        )
+        for production in productions:
+            platforms = ", ".join(platform.name for platform in production.platforms.all())
+            types = ", ".join(pt.name for pt in production.types.all())
+
+            writer.writerow(
+                [
+                    production.title,
+                    production.byline_string,
+                    "https://demozoo.org" + production.get_absolute_url(),
+                    types,
+                    platforms,
+                ]
+            )
+
+        return response
+
+    else:
+        production_page = get_page(productions, request.GET.get("page", "1"))
+        form_for_display = ScreeningFilterForm(event, request.GET, filter_options_by_event=True)
+        export_url_params = filter_form.as_query_dict()
+        export_url_params.setlist("format", ["csv"])
+        export_url = f"{reverse('awards_screening_report', args=[event.slug])}?{export_url_params.urlencode()}"
+
+        return render(
+            request,
+            "awards/screening_report.html",
+            {
+                "event": event,
+                "productions": production_page,
+                "production_count": productions.count(),
+                "pagination_controls": PaginationControls(
+                    production_page,
+                    reverse("awards_screening_report", args=[event.slug]),
+                    query_dict=filter_form.as_query_dict(),
+                ),
+                "filter_form": form_for_display,
+                "export_url": export_url,
+            },
+        )
