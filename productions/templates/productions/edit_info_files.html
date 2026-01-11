@@ -20,6 +20,11 @@
 
     <div class="field">
         <label for="id_info_file" class="field_label">Upload file(s)</label>
-        <input type="file" id="id_info_file" name="info_file" multiple="multiple"/>
+        <div class="field_input">
+            <input type="file" id="id_info_file" name="info_file" multiple="multiple"/>
+            <div class="help_text">
+                Text files only (e.g. NFO, DIZ, TXT) - Demozoo does not host files for download
+            </div>
+        </div>
     </div>
 {% endblock %}
