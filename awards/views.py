@@ -433,21 +433,25 @@ def screening_report(request, event_slug):
                 "Title",
                 "By",
                 "Demozoo URL",
+                "Youtube URL",
                 "Type",
                 "Platform",
                 "Yay",
                 "Nay",
             ]
         )
+        productions = productions.prefetch_related("links")
         for production in productions:
             platforms = ", ".join(platform.name for platform in production.platforms.all())
             types = ", ".join(pt.name for pt in production.types.all())
+            youtube_links = [link.url for link in production.links.all() if link.link_class == "YoutubeVideo"]
 
             writer.writerow(
                 [
                     production.title,
                     production.byline_string,
                     "https://demozoo.org" + production.get_absolute_url(),
+                    ", ".join(youtube_links),
                     types,
                     platforms,
                     production.yay_count,
