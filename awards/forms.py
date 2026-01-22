@@ -105,13 +105,15 @@ class ScreeningFilterForm(forms.Form):
                 ),
             )
             if self.cleaned_data["platforms"]:
-                queryset = queryset.filter(platforms__in=self.cleaned_data["platforms"]).distinct()
+                queryset = queryset.filter(
+                    id__in=queryset.values_list("id").filter(platforms__in=self.cleaned_data["platforms"])
+                )
             if self.cleaned_data["platform_group"]:
                 platform_group = self.cleaned_data["platform_group"]
                 platform_group_filter = Q(platforms__platform_groups=self.cleaned_data["platform_group"])
                 if platform_group.include_no_platform:
                     platform_group_filter |= Q(platforms__isnull=True)
-                queryset = queryset.filter(platform_group_filter)
+                queryset = queryset.filter(id__in=queryset.values_list("id").filter(platform_group_filter))
             if self.cleaned_data["production_types"]:
                 prod_type_trees = [
                     ProductionType.get_tree(prod_type) for prod_type in self.cleaned_data["production_types"]
@@ -119,12 +121,20 @@ class ScreeningFilterForm(forms.Form):
                 prod_types_q = Q(types__in=prod_type_trees[0])
                 for tree in prod_type_trees[1:]:
                     prod_types_q |= Q(types__in=tree)
-                queryset = queryset.filter(prod_types_q).distinct()
+                queryset = queryset.filter(id__in=queryset.values_list("id").filter(prod_types_q))
             if self.cleaned_data["has_youtube"]:
                 if self.cleaned_data["has_youtube"] == "yes":
-                    queryset = queryset.filter(links__is_download_link=False, links__link_class="YoutubeVideo")
+                    queryset = queryset.filter(
+                        id__in=queryset.values_list("id").filter(
+                            links__is_download_link=False, links__link_class="YoutubeVideo"
+                        )
+                    )
                 elif self.cleaned_data["has_youtube"] == "no":
-                    queryset = queryset.exclude(links__is_download_link=False, links__link_class="YoutubeVideo")
+                    queryset = queryset.exclude(
+                        id__in=queryset.values_list("id").filter(
+                            links__is_download_link=False, links__link_class="YoutubeVideo"
+                        )
+                    )
             if self.cleaned_data["rating_count"]:
                 if self.cleaned_data["rating_count"] == "N":
                     queryset = queryset.filter(rating_count=1, nay_count=1)

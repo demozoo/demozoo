@@ -181,10 +181,12 @@ class Event(models.Model):
     def screenable_productions(self):
         prod_type_ids = list(self.screenable_production_types.values_list("id", flat=True))
         return Production.objects.filter(
-            release_date_date__gte=self.eligibility_start_date,
-            release_date_date__lte=self.eligibility_end_date,
-            types__id__in=prod_type_ids,
-        ).distinct()
+            id__in=Production.objects.filter(
+                release_date_date__gte=self.eligibility_start_date,
+                release_date_date__lte=self.eligibility_end_date,
+                types__id__in=prod_type_ids,
+            ).values_list("id", flat=True)
+        )
 
     @cached_property
     def screenable_productions_count(self):
