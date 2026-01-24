@@ -40,6 +40,20 @@ class TestNewsIndex(MediaTestMixin, TestCase):
         self.assertContains(response, "Those are the headlines")
 
 
+class TestNewsFeed(MediaTestMixin, TestCase):
+    def setUp(self):
+        self.image = NewsImage.objects.create(image=get_test_image())
+        self.news_story = NewsStory.objects.create(
+            image=self.image, title="Those are the headlines", text="God I wish they weren't.", is_public=True
+        )
+
+    def test_get(self):
+        response = self.client.get("/news/feed/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<title>Those are the headlines</title>")
+        self.assertContains(response, "<description>&lt;p&gt;God I wish they weren't.&lt;/p&gt;</description>")
+
+
 class TestPagination(MediaTestMixin, TestCase):
     def setUp(self):
         self.image = NewsImage.objects.create(image=get_test_image())
