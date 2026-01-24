@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load demoscene_tags ui_tags compress laces %}
 
+{% block extra_head %}
+    <link rel="alternate" type="application/rss+xml" title="Demozoo news" href="{% url 'news_feed' %}" />
+{% endblock %}
+
 {% block base_main %}
 <header class="page__header">
     {% if perms.homepage.add_newsstory and site_is_writeable %}

@@ -1,8 +1,10 @@
 from django.contrib import messages
+from django.contrib.syndication.views import Feed
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from common.templatetags.safe_markdown import safe_markdown
 from common.utils.modal_workflow import render_modal_workflow
 from common.utils.pagination import PaginationControls
 from common.views import AjaxConfirmationView, writeable_site_required
@@ -32,6 +34,24 @@ def news(request):
             "pagination_controls": PaginationControls(news_stories_page, reverse("news")),
         },
     )
+
+
+class NewsFeed(Feed):
+    title = "Demozoo"
+    link = "/news/"
+    description = "News items from Demozoo."
+
+    def items(self):
+        return NewsStory.objects.filter(is_public=True).order_by("-created_at")[:20]
+
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return safe_markdown(item.text)
+
+    def item_pubdate(self, item):
+        return item.created_at
 
 
 def news_story(request, news_story_id):

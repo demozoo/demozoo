@@ -10,6 +10,7 @@ from homepage.views import news as news_views
 urlpatterns = [
     path("", home_views.home, {}, "home"),
     path("news/", news_views.news, {}, "news"),
+    path("news/feed/", news_views.NewsFeed(), {}, "news_feed"),
     path("news/<int:news_story_id>/", news_views.news_story, {}, "news_story"),
     path("news/new/", news_views.add_news, {}, "add_news"),
     path("news/<int:news_story_id>/edit/", news_views.edit_news, {}, "edit_news"),
