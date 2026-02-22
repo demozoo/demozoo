@@ -210,6 +210,14 @@ class TestReports(TestCase):
         response = self.client.get("/maintenance/prods_with_blurbs/")
         self.assertEqual(response.status_code, 200)
 
+    def text_prod_notes_with_html_links(self):
+        response = self.client.get("/maintenance/prod_notes_with_html_links/")
+        self.assertEqual(response.status_code, 200)
+
+    def text_releaser_notes_with_html_links(self):
+        response = self.client.get("/maintenance/releaser_notes_with_html_links/")
+        self.assertEqual(response.status_code, 200)
+
     def test_prod_comments(self):
         response = self.client.get("/maintenance/prod_comments/")
         self.assertEqual(response.status_code, 200)
