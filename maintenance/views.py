@@ -1268,6 +1268,59 @@ class PublicRealNames(StaffOnlyMixin, Report):
         return context
 
 
+class HtmlHyperlinksInProductionNotes(StaffOnlyMixin, Report):
+    title = "Production notes with HTML links"
+    template_name = "maintenance/production_report.html"
+    name = "prod_notes_with_html_links"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        productions = (
+            Production.objects.exclude(notes="")
+                # .filter(notes__contains="<a") did not work here for performance reasons, not sure
+                # why the following regexp is faster though ;-)
+                .extra(where=["productions_production.notes ~ '<a[^>]*href'"])
+                .distinct()
+                .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser")
+                .order_by("title")
+        )
+        context.update(
+            {
+                "productions": productions,
+                # don't implement exclusions on this report, because it's possible that html hyperlinks
+                # will be introduced to notes later on
+                "mark_excludable": False,
+            }
+        )
+        return context
+
+
+class HtmlHyperlinksInReleaserNotes(StaffOnlyMixin, Report):
+    title = "Releaser notes with HTML links"
+    template_name = "maintenance/releaser_report.html"
+    name = "releaser_notes_with_html_links"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        releasers = (
+            Releaser.objects.filter(notes__contains="<a")
+                .distinct()
+                .order_by("name")
+        )
+
+        context.update(
+            {
+                "releasers": releasers,
+                # don't implement exclusions on this report, because it's possible that html hyperlinks
+                # will be introduced to notes later on. this is achieved by setting the "exclusion_name"
+                # to empty string.
+                "exclusion_name": "",
+            }
+        )
+        return context
+
 class ProdsWithBlurbs(StaffOnlyMixin, Report):
     title = "Productions with blurbs"
     template_name = "maintenance/prods_with_blurbs.html"
@@ -1943,6 +1996,8 @@ reports = [
             CreditsToMoveToText,
             SceneorgDownloadLinksWithUnicode,
             EmptyCompetitions,
+            HtmlHyperlinksInProductionNotes,
+            HtmlHyperlinksInReleaserNotes,
         ],
     ),
     (
