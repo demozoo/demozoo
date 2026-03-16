@@ -68,9 +68,16 @@ class TestLinkRecognition(TestCase):
     def test_fujiology_folder(self):
         forever2e3 = Party.objects.get(name="Forever 2e3")
         link = PartyExternalLink(party=forever2e3)
-        link.url = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology/parties/2000/forever00"
+        link.url = "ftp://fujiology.untergrund.net/users/ltk_tscc/fujiology/PARTIES/2000/FOREVER00"
         self.assertEqual(link.link_class, "FujiologyFolder")
-        self.assertEqual(link.parameter, "/parties/2000/forever00/")
+        self.assertEqual(link.parameter, "/PARTIES/2000/FOREVER00/")
+
+    def test_fujiology_folder2(self):
+        forever2e3 = Party.objects.get(name="Forever 2e3")
+        link = PartyExternalLink(party=forever2e3)
+        link.url = "https://fujiology.org/PARTIES/2000/FOREVER00"
+        self.assertEqual(link.link_class, "FujiologyFolder")
+        self.assertEqual(link.parameter, "/PARTIES/2000/FOREVER00/")
 
     def test_pouet_party_needs_query_params(self):
         forever2e3 = Party.objects.get(name="Forever 2e3")
