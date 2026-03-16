@@ -913,7 +913,8 @@ class FujiologyFolder(AbstractBaseUrl):
     canonical_format = "https://fujiology.org%s"
     tests = [
         regex_match(r"https://(?:www\.)?fujiology\.org(/.*)", add_slash=True),
-        regex_match(r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)", add_slash=True),
+        regex_match(r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)",
+                    add_slash=True),
     ]
 
 
