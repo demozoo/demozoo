@@ -890,29 +890,31 @@ class ModlandFile(AbstractBaseUrl):
 
 fujiology = Site(
     "Fujiology",
-    long_name="the Fujiology Archive",
-    url="https://ftp.untergrund.net/",
+    long_name="the Fujiology archive",
+    url="https://fujiology.org/",
     allowed_schemes=["https", "ftp"],
-    allowed_hostnames=["ftp.untergrund.net", "fujiology.untergrund.net"],
+    allowed_hostnames=["fujiology.org", "www.fujiology.org", "ftp.untergrund.net",
+                       "fujiology.untergrund.net", "untergrund.net"],
 )
-
 
 class FujiologyFile(AbstractBaseUrl):
     site = fujiology
-    canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
+    canonical_format = "https://fujiology.org%s"
     tests = [
+        regex_match(r"https://(?:www\.)?fujiology\.org(/.*)"),
+        regex_match(r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)"),
         path_regex_match(r"/users/ltk_tscc/fujiology(/.*)"),
     ]
-    download_link_label = "Fujiology @ untergrund.net"
+    download_link_label = "fujiology.org"
 
 
 class FujiologyFolder(AbstractBaseUrl):
     site = fujiology
-    canonical_format = "https://ftp.untergrund.net/users/ltk_tscc/fujiology%s"
+    canonical_format = "https://fujiology.org%s"
     tests = [
-        regex_match(
-            r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)", add_slash=True
-        ),
+        regex_match(r"https://(?:www\.)?fujiology\.org(/.*)", add_slash=True),
+        regex_match(r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)",
+                    add_slash=True),
     ]
 
 
