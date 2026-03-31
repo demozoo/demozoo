@@ -9,7 +9,9 @@ class Exclusion(models.Model):
 class UntrustedLinkIdentifier(models.Model):
     url_part = models.CharField(
         max_length=64,
-        help_text="Enter identifier for an untrusted link. This is " "usually a part of an URL for example 'goo.gl'.",
+        help_text="Enter identifier for an untrusted link. This is usually a part of an URL for example 'goo.gl'. " \
+                  "You can also specify 'negative' identifiers like this: untergrund.net!web.archive.org will match " \
+                  "any URL that contains 'untergrund.net' but does not contain 'web.archive.org'."
     )
 
     def __str__(self):

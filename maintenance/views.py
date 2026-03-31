@@ -1191,14 +1191,28 @@ class UntrustedLinks(StaffOnlyMixin, Report):
         if not untrusted_url_idents:
             return context
 
-        query = Q()
+        production_ids = set()
         for idents in untrusted_url_idents:
-            query |= Q(links__parameter__icontains=idents)
-
+            if '!' in idents:
+                # allow to specify "negative" identifiers, for example "untergrund.net!web.archive.org"
+                # will match any URL that contains "untergrund.net" but does not contain "web.archive.org".
+                positive, negative = idents.split('!', 1)
+                # operate on production link parameter for performance reasons as we assume known
+                # urls from groklinks should never be "untrusted urls". if they are, we better
+                # remove the groklink before using that url ident part in this report.
+                for link in ProductionLink.objects.filter(parameter__icontains=positive):
+                    # check the "negative" part on the full url, because this allows to exclude
+                    # for example web.archive.org. if we only checked the parameter, we wouldn't
+                    # be able to exclude cases where the "positive" part is in the parameter but
+                    # the "negative" part is in the main URL, which would lead to false positives.
+                    full_url = str(link.link).lower() if link.link else ''
+                    if negative.lower() not in full_url:
+                        production_ids.add(link.production_id)
+            else:
+                for link in ProductionLink.objects.filter(parameter__icontains=idents):
+                    production_ids.add(link.production_id)
         productions = (
-            Production.objects.filter(links__isnull=False)
-            .filter(query)
-            .distinct()
+            Production.objects.filter(id__in=production_ids)
             .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser")
             .defer("notes")
             .order_by("title")
