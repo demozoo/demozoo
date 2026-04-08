@@ -1874,6 +1874,20 @@ class BBSmatesBBS(UrlPattern):
     pattern = "/viewbbs.aspx?id=<int>"
 
 
+steam = Site(
+    "Steam",
+    url="https://steamcommunity.com/",
+    allowed_hostnames=["steamcommunity.com", "www.steamcommunity.com", "s.team"],
+)
+
+
+class SteamProfile(AbstractBaseUrl):
+    site = steam
+    canonical_format = "%s"
+    tests = [
+        lambda urlstring, url: urlstring  # return full url
+    ]
+
 telnetbbsguide = Site("Telnet BBS Guide", url="https://www.telnetbbsguide.com/", classname="telnetbbsguide")
 
 
@@ -2101,6 +2115,7 @@ RELEASER_LINK_TYPES = [
     TelnetLink,
     CablesUser,
     DeepSIDProfile,
+    SteamProfile,
     BaseUrl,
 ]
 
