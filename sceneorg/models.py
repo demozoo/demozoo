@@ -69,10 +69,10 @@ class File(models.Model):
     def fetched_data(self):
         # f = urllib.request.urlopen('http://http.de.scene.org/pub' + self.path)
         f = urllib.request.urlopen("ftp://ftp.scene.org/pub" + self.path)
-        file_content = f.read(65537)
+        file_content = f.read(1048577)
         f.close()
-        if len(file_content) > 65536:
-            raise FileTooBig("Cannot fetch files larger than 64Kb")
+        if len(file_content) > 1048576:
+            raise FileTooBig("Cannot fetch files larger than 1MB")
         return file_content
 
     @property
