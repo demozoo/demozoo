@@ -1,4 +1,5 @@
 # coding=utf-8
+from copy import deepcopy
 import json
 import re
 import urllib
@@ -70,13 +71,13 @@ class Site:
             self.allowed_hostnames is None or url.hostname in self.allowed_hostnames
         )
 
-    def get_link_html(self, url, subject):
+    def get_link_html(self, url, subject, link_label=None):
         return format_html(
             '<a href="{url}" style="background-image: url(\'{icon_path}\')" title="{title}">{label}</a>',
             url=url,
             icon_path=static(self.icon_path),
             title=(self.title_format % subject),
-            label=self.name,
+            label=link_label or self.name,
         )
 
     def get_icon_link_html(self, url, subject):
@@ -122,7 +123,7 @@ class AbstractBaseUrl:
         return self.canonical_format % self.param
 
     def as_html(self, subject):
-        return self.site.get_link_html(str(self), subject)
+        return self.site.get_link_html(str(self), subject, self.link_label)
 
     def as_icon_link(self, subject):
         return self.site.get_icon_link_html(str(self), subject)
@@ -161,6 +162,8 @@ class AbstractBaseUrl:
             return "%s?%s" % (self.oembed_base_url, urllib.parse.urlencode(params))
 
     supports_embed_data = False
+
+    link_label = None
 
     def get_embed_data(self):
         return None
@@ -463,6 +466,8 @@ class CsdbRelease(AbstractBaseUrl):
 
 class CsdbMusic(AbstractBaseUrl):
     site = csdb
+    link_label = "CSDb (SID)"
+
     canonical_format = "https://csdb.dk/sid/?id=%s"
     tests = [
         # need to include the ? in the match so that we don't also match /release/download.php,
