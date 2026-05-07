@@ -1646,6 +1646,14 @@ class StonishDisk(AbstractBaseUrl):
         regex_match(r"https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)"),
     ]
 
+class DosDemosVideo(UrlPattern):
+    site = Site(
+        "DosDemos.com",
+        url="https://dosdemos.com/",
+        icon_path="images/icons/external_sites/dosdemos.png",
+        allowed_hostnames=["dosdemos.com", "www.dosdemos.com"],
+        )
+    pattern = "/demo/<int>"
 
 class ZXPressIssue(AbstractBaseUrl):
     site = Site("ZXPress", url="https://zxpress.ru/")
@@ -2118,6 +2126,7 @@ PRODUCTION_LINK_TYPES = [
     DemosceneTvVideo,
     CappedVideo,
     DhsVideoDbVideo,
+    DosDemosVideo,
     AsciiarenaRelease,
     KestraBitworldRelease,
     StonishDisk,
@@ -2191,6 +2200,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "DemosceneTvVideo",
     "CappedVideo",
     "DhsVideoDbVideo",
+    "DosDemosVideo"
     "AsciiarenaRelease",
     "ScenesatTrack",
     "ModarchiveModule",
