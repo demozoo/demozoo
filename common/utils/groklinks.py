@@ -176,6 +176,11 @@ class BaseUrl(AbstractBaseUrl):  # catch-all handler where nothing more specific
     ]
     canonical_format = "%s"
 
+    @property
+    def link_label(self):
+        url = urllib.parse.urlparse(self.param)
+        return "WWW (%s)" % url.hostname
+
 
 def regex_match(pattern, flags=re.IGNORECASE, add_slash=False):
     """
