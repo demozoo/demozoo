@@ -1192,13 +1192,15 @@ class UntrustedLinks(StaffOnlyMixin, Report):
             return context
 
         query = Q()
-        for idents in untrusted_url_idents:
-            query |= Q(links__parameter__icontains=idents)
+        for ident in untrusted_url_idents:
+            query |= Q(parameter__icontains=ident)
+
+        link_ids = (
+            ProductionLink.objects.filter(link_class="BaseUrl").filter(query).values_list("production_id", flat=True)
+        )
 
         productions = (
-            Production.objects.filter(links__isnull=False)
-            .filter(query)
-            .distinct()
+            Production.objects.filter(id__in=link_ids)
             .prefetch_related("author_nicks__releaser", "author_affiliation_nicks__releaser")
             .defer("notes")
             .order_by("title")
