@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from common.utils.pagination import PaginationControls
+from demoscene.models import AccountProfile
 from demoscene.shortcuts import get_page
 
 
@@ -23,10 +24,12 @@ def index(request):
 def show(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
-    if request.user.is_staff and user.profile:
-        last_ip = user.profile.last_ip
-    else:
-        last_ip = None
+    last_ip = None
+    if request.user.is_staff:
+        try:
+            last_ip = user.profile.last_ip
+        except AccountProfile.DoesNotExist:
+            pass
 
     edits = user.edits.order_by("-timestamp").select_related("user", "focus_content_type", "focus2_content_type")
     if not request.user.is_staff:
