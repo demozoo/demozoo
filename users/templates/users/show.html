@@ -7,6 +7,10 @@
 <div class="user">
     <h1>{{ user.username }}</h1>
 
+    {% if last_ip %}
+        <p>Last IP: {{ last_ip }}</p>
+    {% endif %}
+
     <section class="user__edits">
         <h2>Edits</h2>
         {% include "shared/history_table.html" with edits=edits_page.object_list show_focuses=1 %}

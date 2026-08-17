@@ -23,6 +23,11 @@ def index(request):
 def show(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
+    if request.user.is_staff and user.profile:
+        last_ip = user.profile.last_ip
+    else:
+        last_ip = None
+
     edits = user.edits.order_by("-timestamp").select_related("user", "focus_content_type", "focus2_content_type")
     if not request.user.is_staff:
         edits = edits.filter(admin_only=False)
@@ -33,6 +38,7 @@ def show(request, user_id):
         "users/show.html",
         {
             "user": user,
+            "last_ip": last_ip,
             "edits_page": edits_page,
             "pagination_controls": PaginationControls(edits_page, reverse("user", args=[user_id])),
         },

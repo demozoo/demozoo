@@ -621,8 +621,9 @@ class Membership(models.Model):
 
 
 class AccountProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     demozoo0_id = models.IntegerField(null=True, blank=True, verbose_name="Demozoo v0 ID")
+    last_ip = models.GenericIPAddressField(null=True, blank=True)
 
     def __str__(self):
         try:

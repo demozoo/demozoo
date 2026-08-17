@@ -1323,9 +1323,18 @@ REGISTRATION_BANNED_IPS = set(
 )
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip
+
+
 def is_login_banned(request):
-    return request.META["REMOTE_ADDR"] in LOGIN_BANNED_IPS
+    return get_client_ip(request) in LOGIN_BANNED_IPS
 
 
 def is_registration_banned(request):
-    return request.META["REMOTE_ADDR"] in REGISTRATION_BANNED_IPS
+    return get_client_ip(request) in REGISTRATION_BANNED_IPS

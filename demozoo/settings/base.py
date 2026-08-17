@@ -109,6 +109,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "users.middleware.IPMiddleware",
 ]
 
 if SUBSITE == "zxdemo":
@@ -201,8 +202,6 @@ AWS_S3_URL_PROTOCOL = os.getenv("AWS_S3_URL_PROTOCOL", "https:")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-
-AUTH_PROFILE_MODULE = "demoscene.AccountProfile"
 
 INTERNAL_IPS = ("127.0.0.1",)
 
