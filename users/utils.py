@@ -1319,6 +1319,7 @@ LOGIN_BANNED_IPS = TOR_ENDPOINT_IPS | set(
 REGISTRATION_BANNED_IPS = set(
     [
         "109.196.230.41",  # .pl
+        "2600:4041:5671:9400:c4c9:6ee2:a91c:a80f",  # .us
     ]
 )
 
