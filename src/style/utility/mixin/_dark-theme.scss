@@ -1,0 +1,6 @@
+// Wraps a block of dark-theme rules, gated on the OS colour-scheme preference.
+@mixin dark-theme {
+    @media (prefers-color-scheme: dark) {
+        @content;
+    }
+}
