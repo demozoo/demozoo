@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: .docker/web/Dockerfile
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     env_file:
       - .docker/.env
     environment: 
@@ -29,6 +29,8 @@ services:
     restart: always
     expose:
       - 5432
+    ports:
+      - "127.0.0.1:5432:5432"
     env_file:
       - .docker/.env
     volumes:
