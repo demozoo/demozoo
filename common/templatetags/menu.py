@@ -29,7 +29,8 @@ class NavActiveNode(template.Node):
             try:
                 request = self.request_var.resolve(context)
                 func, args, kwargs = resolve(request.path)
-                current_section_name = func.__module__.split(".")[-1]
+                module_elements = [name for name in func.__module__.split(".") if name != "views"]
+                current_section_name = module_elements[-1]
             except (template.VariableDoesNotExist, Resolver404):
                 return ""
 

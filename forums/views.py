@@ -25,7 +25,6 @@ def index(request):
         request,
         "forums/index.html",
         {
-            "menu_section": "forums",
             "topics": topics,
         },
     )
@@ -52,7 +51,6 @@ def new_topic(request):
         request,
         "forums/new_topic.html",
         {
-            "menu_section": "forums",
             "form": form,
         },
     )
@@ -79,7 +77,6 @@ def topic(request, topic_id):
         request,
         "forums/topic.html",
         {
-            "menu_section": "forums",
             "topic": topic,
             "posts": posts_page,
             "form": form,
@@ -109,7 +106,6 @@ def post(request, post_id):
         request,
         "forums/topic.html",
         {
-            "menu_section": "forums",
             "topic": topic,
             "posts": posts_page,
             "form": form,
@@ -148,7 +144,6 @@ def topic_reply(request, topic_id):
         request,
         "forums/add_reply.html",
         {
-            "menu_section": "forums",
             "topic": topic,
             "form": form,
         },
