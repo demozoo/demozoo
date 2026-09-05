@@ -12,9 +12,14 @@
     <h1>{{ event.name }} - Welcome, jury member!</h1>
     {% if can_access_screening %}
         <h2>Production screening</h2>
-        <p>Screen this year's releases, and help our juries narrow down the candidates...</p>
-        <p><strong>Note:</strong> this isn't the jury process itself - it's just a first pass to filter out the mediocre prods. Do not consider specific categories at this stage - if you think a prod might be interesting enough for <em>any</em> jury to consider further, give it a "yay".</p>
-        <p>Worried that you might be rejecting a hidden treasure? Don't be. We aim for each prod to be screened by at least two people, and one "yay" is enough to put it through. If it doesn't pass that bar, <em>and</em> doesn't get suggested independently by a juror or the public recommendations, it probably wasn't an award candidate anyway :-)</p>
+        <p>Screen this year's releases, and help our juries narrow down the candidates.</p>
+        <details>
+            <summary>Screening guidance</summary>
+            <p>This is not the jury process itself - it's just a first pass to filter out the productions that have no realistic chance of being nominated, so that juries have at most a couple of hundred productions to consider, rather than thousands.</p>
+            <p>Do not consider specific categories at this stage - if you think a prod might be interesting enough for <em>any</em> jury to consider further, give it a "yay".</p>
+            <p>You can afford to be a bit ruthless here: if a prod is "okay" rather than "wow", go ahead and reject it. Ask yourself: can I imagine a universe where a jury is considering this as a potential top five production of the year? If not, do them a favour and save them some work.</p>
+            <p>Worried that you might be rejecting a hidden treasure? Don't be. There are many more opportunities for a deserving production to make it in front of a jury: we aim for each prod to be screened by two or more people, and just one "yay" is enough to put it through. Then there's the public recommendations, and of course jurors can bring their own suggestions to the table.</p>
+        </details>
         <p>
             <strong>{{ event.screened_productions_count }}</strong> of <strong>{{ event.screenable_productions_count }}</strong> productions have at least one vote.
             You have screened <strong>{{ screened_by_me_count }}</strong>
