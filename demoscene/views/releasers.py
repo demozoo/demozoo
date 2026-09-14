@@ -105,7 +105,7 @@ def add_nick(request, releaser_id):
     title = f"Adding another nick for {releaser.name}"
     return render(
         request,
-        "releasers/nick_form.html",
+        "releasers/add_nick_form.html",
         {
             "form": form,
             "title": title,
