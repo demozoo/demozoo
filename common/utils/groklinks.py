@@ -902,9 +902,15 @@ fujiology = Site(
     long_name="the Fujiology archive",
     url="https://fujiology.org/",
     allowed_schemes=["https", "ftp"],
-    allowed_hostnames=["fujiology.org", "www.fujiology.org", "ftp.untergrund.net",
-                       "fujiology.untergrund.net", "untergrund.net"],
+    allowed_hostnames=[
+        "fujiology.org",
+        "www.fujiology.org",
+        "ftp.untergrund.net",
+        "fujiology.untergrund.net",
+        "untergrund.net",
+    ],
 )
+
 
 class FujiologyFile(AbstractBaseUrl):
     site = fujiology
@@ -922,8 +928,9 @@ class FujiologyFolder(AbstractBaseUrl):
     canonical_format = "https://fujiology.org%s"
     tests = [
         regex_match(r"https://(?:www\.)?fujiology\.org(/.*)", add_slash=True),
-        regex_match(r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)",
-                    add_slash=True),
+        regex_match(
+            r"(?:https|ftp)://(?:fujiology\.|ftp\.)?untergrund\.net/users/ltk_tscc/fujiology(/.*)", add_slash=True
+        ),
     ]
 
 
@@ -1651,14 +1658,16 @@ class StonishDisk(AbstractBaseUrl):
         regex_match(r"https?://(?:www\.)?stonish\.net/([\w\-]+\#st\d+)"),
     ]
 
+
 class DosDemosVideo(UrlPattern):
     site = Site(
         "DosDemos.com",
         url="https://dosdemos.com/",
         icon_path="images/icons/external_sites/dosdemos.png",
         allowed_hostnames=["dosdemos.com", "www.dosdemos.com"],
-        )
+    )
     pattern = "/demo/<int>"
+
 
 class ZXPressIssue(AbstractBaseUrl):
     site = Site("ZXPress", url="https://zxpress.ru/")
@@ -2205,7 +2214,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "DemosceneTvVideo",
     "CappedVideo",
     "DhsVideoDbVideo",
-    "DosDemosVideo"
+    "DosDemosVideo",
     "AsciiarenaRelease",
     "ScenesatTrack",
     "ModarchiveModule",
