@@ -1459,7 +1459,7 @@ class SpeccyWikiPage(UrlPattern):
 
 class AtarimaniaPage(UrlPattern):
     site = Site("Atarimania", url="http://www.atarimania.com/")
-    pattern = "/<slug>.html"
+    pattern = "/games/<slug>"
 
 
 pushnpop = Site("Push'n'Pop", classname="pushnpop", url="http://pushnpop.net/")
