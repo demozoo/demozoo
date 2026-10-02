@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load compress %}
+{% load ui_tags %}
 
 {% block html_title %}Demozoo API - Demozoo{% endblock %}
 
@@ -34,4 +34,9 @@
     {% else %}
         <p>You have no API keys.</p>
     {% endif %}
+
+    <ul class="listing_actions">
+        <li>{% action_button url="api_keys_create" icon="add" label="Create API key" lightbox=True %}</li>
+    </ul>
+
 {% endblock %}
