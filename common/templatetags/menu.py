@@ -66,6 +66,10 @@ def user_menu(context):
         )
 
     menu_items.append(
+        MenuItem(reverse("api_keys_index"), "API"),
+    )
+
+    menu_items.append(
         MenuItem(reverse("log_out"), "Log out", post=True),
     )
 

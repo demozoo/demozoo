@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load compress %}
+
+{% block html_title %}Demozoo API - Demozoo{% endblock %}
+
+{% block base_main %}
+    <h2>Demozoo API</h2>
+    <p>
+        Demozoo provides a JSON API at <tt><a href="/api/v1/">https://demozoo.org/api/v1/</a></tt>, giving full programmatic access to production, scener, party and BBS data.
+        You can freely browse this data as a logged-in user.
+        {% if api_keys_enforced %}
+            <strong>To access the API from code, you will need to create an API key.</strong>
+        {% else %}
+            From 1st November 2026, anonymous access to the API will be disabled and <strong>you will need to create an API key to access the API from code</strong>.
+        {% endif %}
+    </p>
+
+    <p>It is recommended to pass the API key as an <tt>Authorization</tt> HTTP header:</p>
+    <pre>Authorization: Api-Key 1234aBCd.yourkeyhere</pre>
+    <p>Alternatively, it can be passed as a URL parameter <tt>api_key</tt>:</p>
+    <pre>https://demozoo.org/api/v1/productions/?api_key=1234aBCd.yourkeyhere</pre>
+
+    <p><strong>Don't be a resource hog!</strong> If you're making repeated API requests, please leave a 1 second pause between them.</p>
+
+    <p>A public SQL dump of the whole database (minus sensitive information such as password hashes) is also available at <tt>https://data.demozoo.org/demozoo-export.sql.gz</tt>, updated nightly.</p>
+
+    <h3>Your API keys</h3>
+    {% if api_keys %}
+        <ul>
+            {% for api_key in api_keys %}
+                <li>{{ api_key.name }} ({{ api_key.prefix }}...)</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no API keys.</p>
+    {% endif %}
+{% endblock %}
