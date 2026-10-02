@@ -32,6 +32,7 @@ urlpatterns = [
     path("account/sceneid/login/", sceneid_views.process_response, {}, "sceneid_return"),
     path("account/sceneid/connect/", sceneid_views.connect_accounts, {}, "sceneid_connect"),
     path("account/api_keys/", api_key_views.APIKeyListView.as_view(), {}, "api_keys_index"),
+    path("account/api_keys/create/", api_key_views.APIKeyCreateView.as_view(), {}, "api_keys_create"),
     path("users/", users_views.index, {}, "users_index"),
     path("users/<int:user_id>/", users_views.show, {}, "user"),
 ]
