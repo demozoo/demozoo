@@ -270,14 +270,14 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 100,
 }
 
-if ENFORCE_API_KEYS:
+if ENFORCE_API_KEYS:  # pragma: no cover
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = [
         "rest_framework.authentication.SessionAuthentication",
     ]
     REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = [
         "api.permissions.IsAuthenticatedOrHasAPIKey",
     ]
-else:
+else:  # pragma: no cover
     # anonymous read-only access only
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = []
     REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = [

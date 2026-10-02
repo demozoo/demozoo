@@ -1,14 +1,27 @@
 import json
 from urllib.parse import urlencode
 
+from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
 from bbs.models import BBS
 from parties.models import Competition, CompetitionPlacing, Party, PartySeries
 from productions.models import Production, ProductionLink
+from users.models import APIKey
 
 
-class TestApiRoot(TestCase):
+class APITestCase(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # create an API key
+        user = User.objects.create_user(username="testuser", password="12345")
+        _, self.api_key = APIKey.objects.create_key(name="test key", user=user)
+
+        self.client.defaults["HTTP_AUTHORIZATION"] = f"Api-Key {self.api_key}"
+
+
+class TestApiRoot(APITestCase):
     def test_get_root(self):
         response = self.client.get("/api/v1/")
         self.assertEqual(response.status_code, 200)
@@ -23,8 +36,16 @@ class TestApiRoot(TestCase):
         response = self.client.get("/api/v1/?format=api")
         self.assertEqual(response.status_code, 200)
 
+    def test_requires_auth(self):
+        response = self.client.get("/api/v1/", headers={"Authorization": "Api-Key invalid"})
+        self.assertEqual(response.status_code, 403)
 
-class TestPlatforms(TestCase):
+    def test_can_pass_api_key_in_url(self):
+        response = self.client.get(f"/api/v1/?api_key={self.api_key}", headers={"Authorization": None})
+        self.assertEqual(response.status_code, 200)
+
+
+class TestPlatforms(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_platforms(self):
@@ -35,7 +56,7 @@ class TestPlatforms(TestCase):
         self.assertIn("ZX Spectrum", [result["name"] for result in response_data["results"]])
 
 
-class TestProdTypes(TestCase):
+class TestProdTypes(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_prod_types(self):
@@ -46,7 +67,7 @@ class TestProdTypes(TestCase):
         self.assertIn("Demo", [result["name"] for result in response_data["results"]])
 
 
-class TestProductions(TestCase):
+class TestProductions(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_productions(self):
@@ -124,7 +145,7 @@ class TestProductions(TestCase):
         self.assertIn("Hooy-Program", [nick["name"] for nick in response_data["author_nicks"]])
 
 
-class TestReleasers(TestCase):
+class TestReleasers(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_releasers(self):
@@ -158,7 +179,7 @@ class TestReleasers(TestCase):
         self.assertIn("Madrielle", [result["title"] for result in response_data])
 
 
-class TestPartySeries(TestCase):
+class TestPartySeries(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_serieses(self):
@@ -177,7 +198,7 @@ class TestPartySeries(TestCase):
         self.assertEqual(response_data["name"], "Forever")
 
 
-class TestParties(TestCase):
+class TestParties(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_parties(self):
@@ -196,7 +217,7 @@ class TestParties(TestCase):
         self.assertEqual(response_data["name"], "Forever 2e3")
 
 
-class TestBBSes(TestCase):
+class TestBBSes(APITestCase):
     fixtures = ["tests/gasman.json"]
 
     def test_get_bbses(self):
