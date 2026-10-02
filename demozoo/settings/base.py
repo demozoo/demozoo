@@ -134,11 +134,14 @@ INSTALLED_APPS = [
     "comments",
     "forums",
     "zxdemo",
-    "users",
     "janeway",
     "awards",
     "bbs",
     "tournaments",
+    "rest_framework_api_key",
+    # users must be after rest_framework_api_key (to unregister its APIKey admin)
+    # and before django.contrib.admin (to override the registration templates)
+    "users",
     "django.contrib.contenttypes",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -251,14 +254,13 @@ CELERYBEAT_SCHEDULE = {
 
 MEDIA_ROOT = os.path.join(FILEROOT, "media")
 
+ENFORCE_API_KEYS = True
+
 REST_FRAMEWORK = {
-    # do not support any authentication mechanism; anonymous read-only access only.
-    "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
@@ -267,6 +269,20 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 }
+
+if ENFORCE_API_KEYS:
+    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = [
+        "rest_framework.authentication.SessionAuthentication",
+    ]
+    REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = [
+        "api.permissions.IsAuthenticatedOrHasAPIKey",
+    ]
+else:
+    # anonymous read-only access only
+    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = []
+    REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ]
 
 AUTHENTICATION_BACKENDS = (
     "users.backends.SceneIDBackend",
