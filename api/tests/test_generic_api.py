@@ -1,6 +1,8 @@
 import json
+import unittest
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
@@ -36,6 +38,7 @@ class TestApiRoot(APITestCase):
         response = self.client.get("/api/v1/?format=api")
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skipIf(not settings.ENFORCE_API_KEYS, "API keys are not enforced")
     def test_requires_auth(self):
         response = self.client.get("/api/v1/", headers={"Authorization": "Api-Key invalid"})
         self.assertEqual(response.status_code, 403)
