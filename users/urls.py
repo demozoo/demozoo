@@ -33,6 +33,7 @@ urlpatterns = [
     path("account/sceneid/connect/", sceneid_views.connect_accounts, {}, "sceneid_connect"),
     path("account/api_keys/", api_key_views.APIKeyListView.as_view(), {}, "api_keys_index"),
     path("account/api_keys/create/", api_key_views.APIKeyCreateView.as_view(), {}, "api_keys_create"),
+    path("account/api_keys/revoke/<str:api_key_id>/", api_key_views.RevokeAPIKeyView.as_view(), {}, "revoke_api_key"),
     path("users/", users_views.index, {}, "users_index"),
     path("users/<int:user_id>/", users_views.show, {}, "user"),
 ]

@@ -30,7 +30,16 @@
     {% if api_keys %}
         <ul class="api_keys">
             {% for api_key in api_keys %}
-                <li>{{ api_key.name }} ({{ api_key.prefix }}...)</li>
+                <li>
+                    {% if api_key.revoked %}
+                        <del>{{ api_key.name }} ({{ api_key.prefix }}...)</del> (revoked)
+                    {% else %}
+                        <b>{{ api_key.name }}</b> ({{ api_key.prefix }}...)
+                        <a href="{% url 'revoke_api_key' api_key.id %}" data-lightbox>
+                            <img src="/static/images/icons/delete.png" width="16" height="16" alt="Revoke API key '{{ api_key.name }}'" title="Revoke API key '{{ api_key.name }}'" />
+                        </a>
+                    {% endif %}
+                </li>
             {% endfor %}
         </ul>
     {% else %}
