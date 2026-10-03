@@ -28,5 +28,6 @@ urlpatterns = [
     path("adhoc/eq/demos/", eq.demos, {}),
     path("adhoc/group-abbreviations/", group_abbreviations.group_abbreviations, {}),
     path("adhoc/meteoriks/candidates/<int:year>/", meteoriks.candidates, {}),
+    path("v1/auth_test/", generic.AuthTestView.as_view(), name="auth_test"),
     path("v1/", include(router.urls)),
 ]

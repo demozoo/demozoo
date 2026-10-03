@@ -1,10 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api import filters, serializers
+from api.permissions import IsAuthenticatedOrHasAPIKey
 from bbs.models import BBS
 from demoscene.models import Releaser
 from parties.models import Party, PartySeries
@@ -140,3 +143,11 @@ class BBSViewSet(ListDetailModelViewSet):
         "longitude",
         "tags",
     ]
+
+
+class AuthTestView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticatedOrHasAPIKey]
+
+    def get(self, request):
+        return Response({"message": "Authenticated OK!"})

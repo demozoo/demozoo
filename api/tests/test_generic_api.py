@@ -39,12 +39,35 @@ class TestApiRoot(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipIf(not settings.ENFORCE_API_KEYS, "API keys are not enforced")
-    def test_requires_auth(self):
+    def test_requires_auth(self):  # pragma: no cover
         response = self.client.get("/api/v1/", headers={"Authorization": "Api-Key invalid"})
         self.assertEqual(response.status_code, 403)
 
     def test_can_pass_api_key_in_url(self):
         response = self.client.get(f"/api/v1/?api_key={self.api_key}", headers={"Authorization": None})
+        self.assertEqual(response.status_code, 200)
+
+
+class TestAuthTest(APITestCase):
+    def test_get(self):
+        response = self.client.get("/api/v1/auth_test/")
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data["message"], "Authenticated OK!")
+
+    def test_requires_auth(self):
+        response = self.client.get("/api/v1/auth_test/", headers={"Authorization": None})
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get("/api/v1/auth_test/", headers={"Authorization": "Api-Key invalid"})
+        self.assertEqual(response.status_code, 403)
+
+    def test_can_pass_api_key_in_url(self):
+        response = self.client.get(f"/api/v1/auth_test/?api_key={self.api_key}", headers={"Authorization": None})
+        self.assertEqual(response.status_code, 200)
+
+    def test_can_authenticate_with_session(self):
+        self.client.login(username="testuser", password="12345")
+        response = self.client.get("/api/v1/auth_test/", headers={"Authorization": None})
         self.assertEqual(response.status_code, 200)
 
 
