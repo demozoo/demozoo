@@ -5,6 +5,9 @@
 
 {% block body_class %}api_keys_index{% endblock %}
 
+{# messages moved into the "Your API keys" section below #}
+{% block messages %}{% endblock %}
+
 {% block base_main %}
     <h2>Demozoo API</h2>
     <p>
@@ -31,6 +34,7 @@
     <p>A public SQL dump of the whole database (minus sensitive information such as password hashes) is also available at <tt>https://data.demozoo.org/demozoo-export.sql.gz</tt>, updated nightly.</p>
 
     <h3>Your API keys</h3>
+    {% include "shared/messages.html" %}
     {% if api_keys %}
         <ul class="api_keys">
             {% for api_key in api_keys %}

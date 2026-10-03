@@ -131,7 +131,7 @@
         </header>
 
         <div class="site__content">
-            {% include "shared/messages.html" %}
+            {% block messages %}{% include "shared/messages.html" %}{% endblock %}
             {% block base_main %}{% endblock %}
             <div style="clear: both;"></div>
         </div>
