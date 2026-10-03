@@ -64,6 +64,14 @@ class TestShowUser(TestCase):
         # user has no logged IP address, so staff user should not see the "Last IP" line
         self.assertNotContains(response, "Last IP:")
 
+    def test_atomic_playboy_cookie(self):
+        response = self.client.get("/")
+        self.assertFalse("is_an_atomic_playboy" in response.cookies)
+        User.objects.create_user(username="testuser", password="12345")
+        self.client.login(username="testuser", password="12345")
+        response = self.client.get("/")
+        self.assertTrue("is_an_atomic_playboy" in response.cookies)
+
 
 class TestRegistrationViews(TestCase):
     fixtures = ["tests/gasman.json"]
