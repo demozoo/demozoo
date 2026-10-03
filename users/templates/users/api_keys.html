@@ -22,6 +22,10 @@
     <p>Alternatively, it can be passed as a URL parameter <tt>api_key</tt>:</p>
     <pre>https://demozoo.org/api/v1/productions/?api_key=1234aBCd.yourkeyhere</pre>
 
+    {% if not api_keys_enforced %}
+        <p>To test that your API key is set up correctly, access <tt>https://demozoo.org/api/v1/auth_test/</tt>.</p>
+    {% endif %}
+
     <p><strong>Don't be a resource hog!</strong> If you're making repeated API requests, please leave a 1 second pause between them.</p>
 
     <p>A public SQL dump of the whole database (minus sensitive information such as password hashes) is also available at <tt>https://data.demozoo.org/demozoo-export.sql.gz</tt>, updated nightly.</p>
