@@ -1,0 +1,13 @@
+.api_keys_index {
+    ul.api_keys {
+        margin-bottom: 8px;
+        li {
+            padding-left: 24px;
+            padding-top: 2px;
+            padding-bottom: 3px;
+            background-position: left center;
+            background-repeat: no-repeat;
+            background-image: url(/static/images/icons/key.png);
+        }
+    }
+}
