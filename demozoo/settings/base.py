@@ -220,7 +220,7 @@ COMPRESS_PRECOMPILERS = (
     # ('text/less', 'lessc --glob --autoprefix="last 2 versions" --clean-css="--s1 --advanced" {infile} {outfile}'),
 )
 
-REDIS_URL = "redis://localhost:6379/0"
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
 # Celery settings
 BROKER_URL = REDIS_URL
