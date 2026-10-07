@@ -9,7 +9,10 @@ FROM mcr.microsoft.com/devcontainers/python:1-3.10-bookworm
 # postgresql-client:   gives you `psql` for poking at the database.
 # redis-tools:         gives you `redis-cli`.
 # libffi-dev:          bcrypt, still used by some legacy account password hashes.
-RUN apt-get update \
+# The base image ships a yarn apt source whose signing key has expired, which makes
+# `apt-get update` fail. Nothing here needs yarn from apt, so drop the source.
+RUN rm -f /etc/apt/sources.list.d/yarn.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         libffi-dev \
