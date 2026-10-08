@@ -2,7 +2,7 @@
 
 ## Developer installation
 
-It's possible to run Demozoo a number of different ways, but work has been done to facilitate running it rather smoothly in either Vagrant or Docker.
+It's possible to run Demozoo a number of different ways, but work has been done to facilitate running it rather smoothly in a dev container, Vagrant or Docker. The dev container is the recommended option.
 
 First, [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this very repository to a folder on your hard drive:
 
@@ -10,6 +10,38 @@ First, [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-
 git clone https://github.com/demozoo/demozoo.git
 cd demozoo
 ```
+
+### Dev container
+
+Requires [Docker](https://www.docker.com/products/docker-desktop) and an editor that
+speaks the [Dev Containers](https://containers.dev/) spec — VS Code with the Dev
+Containers extension, or the [`devcontainer` CLI](https://github.com/devcontainers/cli).
+
+Open the cloned folder and accept the "Reopen in Container" prompt, or from the command
+line:
+
+```bash
+devcontainer up --workspace-folder .
+```
+
+This builds three containers — the workspace itself, PostgreSQL and Redis — then
+installs the Python dependencies, builds the front-end assets, and applies migrations.
+
+> [!NOTE]
+> The first run restores the full public database export, which is large; expect it to
+> take a while. The editor window opens straight away, and progress is printed to the
+> post-create log. Subsequent starts reuse the imported data and are quick.
+
+Once it finishes, start the site from the dev container terminal:
+
+```bash
+./manage.py runserver 0.0.0.0:8000
+```
+
+The site will now be available at http://localhost:8000/.
+
+Unlike the plain Docker setup below, the dev container builds the CSS and SVG icon
+sprite for you, and runs Redis — which the staff maintenance reports need.
 
 ### Vagrant
 
