@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from rest_framework_api_key.admin import APIKeyModelAdmin
+from rest_framework_api_key.admin import APIKeyModelAdmin as DefaultAPIKeyModelAdmin
 from rest_framework_api_key.models import APIKey as DefaultAPIKey
 
 from .models import APIKey
@@ -12,6 +12,18 @@ class UndeletableUserAdmin(UserAdmin):
     # Instead of deleting, users should be disabled by setting the 'active' flag to false.
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+class APIKeyModelAdmin(DefaultAPIKeyModelAdmin):
+    list_display = (
+        "prefix",
+        "name",
+        "user",
+        "created",
+        "expiry_date",
+        "_has_expired",
+        "revoked",
+    )
 
 
 admin.site.unregister(User)
