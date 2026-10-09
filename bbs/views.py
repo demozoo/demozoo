@@ -63,6 +63,7 @@ def index(request):
             ),
             "order": order,
             "asc": asc,
+            "menu_section": "bbs",
         },
     )
 
@@ -83,6 +84,7 @@ def tagged(request, tag_name):
             "tag": tag,
             "page": page,
             "pagination_controls": PaginationControls(page, reverse("bbses_tagged", args=[tag_name])),
+            "menu_section": "bbs",
         },
     )
 
@@ -123,6 +125,7 @@ def show(request, bbs_id):
         "bbs/show.html",
         {
             "bbs": bbs,
+            "menu_section": "bbs",
             "prompt_to_edit": settings.SITE_IS_WRITEABLE,
             "can_edit": settings.SITE_IS_WRITEABLE and request.user.is_authenticated,
             "alternative_names": bbs.alternative_names.all(),
