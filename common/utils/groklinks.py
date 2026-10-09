@@ -414,7 +414,7 @@ class DeepSIDTrack(AbstractBaseUrl):
     site = deepsid
     canonical_format = "https://deepsid.chordian.net/?file=%s"
     tests = [
-        regex_match(r"^https://deepsid\.chordian\.net/\?file=/([^?]+\.sid(?:&.*)?)$"),
+        regex_match(r"^https://deepsid\.chordian\.net/\?file=/?([^?]+\.sid(?:&.*)?)$"),
     ]
 
 
