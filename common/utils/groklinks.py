@@ -179,7 +179,7 @@ class BaseUrl(AbstractBaseUrl):  # catch-all handler where nothing more specific
     @property
     def link_label(self):
         url = urllib.parse.urlparse(self.param)
-        return "WWW (%s)" % url.hostname
+        return "WWW (%s)" % url.hostname.removeprefix("www.")
 
 
 def regex_match(pattern, flags=re.IGNORECASE, add_slash=False):
