@@ -431,9 +431,54 @@ class SlengpungUser(AbstractBaseUrl):
     ]
 
 
-class AmpAuthor(UrlPattern):
-    site = Site("AMP", long_name="Amiga Music Preservation", url="https://amp.dascene.net/")
-    pattern = "/detail.php?view=<int>"
+amp = Site("AMP", long_name="Amiga Music Preservation", url="https://amp.dascene.net/")
+
+
+class AmpAuthor(AbstractBaseUrl):
+    site = amp
+    canonical_format = "https://amp.dascene.net/detail.php?view=%s"
+    tests = [
+        query_path_match("/detail.php", "view"),
+    ]
+
+
+class AmpGroup(AbstractBaseUrl):
+    site = amp
+    canonical_format = "https://amp.dascene.net/newresult.php?request=groupid&search=%s"
+    tests = [
+        query_path_match("/newresult.php", "search", othervars={"request": "groupid"}),
+    ]
+
+
+class AmpModule(AbstractBaseUrl):
+    site = amp
+    canonical_format = "https://amp.dascene.net/downmod.php?index=%s"
+    tests = [
+        query_path_match("/downmod.php", "index"),
+        query_path_match("/analyzer2.php", "idx"),
+    ]
+
+    @property
+    def download_url(self):
+        return str(self)
+
+    @property
+    def analyzer_url(self):
+        return "https://amp.dascene.net/analyzer2.php?idx=%s" % self.param
+
+    def as_download_link(self, description=""):
+        return format_html(
+            """
+                <div>
+                    <a href="{url}" class="primary">Download from Amiga Music Preservation</a> -
+                    <a href="{analyzer_url}" class="secondary">mod info</a>
+                    {description}
+                </div>
+            """,
+            url=self.download_url,
+            analyzer_url=self.analyzer_url,
+            description="(%s)" % description if description else "",
+        )
 
 
 csdb = Site("CSDb", url="https://csdb.dk/", allowed_hostnames=["csdb.dk", "www.csdb.dk", "noname.c64.org"])
@@ -2060,6 +2105,7 @@ RELEASER_LINK_TYPES = [
     SceneidAccount,
     SlengpungUser,
     AmpAuthor,
+    AmpGroup,
     CsdbScener,
     CsdbGroup,
     NectarineArtist,
@@ -2133,6 +2179,7 @@ RELEASER_LINK_TYPES = [
 
 PRODUCTION_LINK_TYPES = [
     PouetProduction,
+    AmpModule,
     CsdbRelease,
     ZxdemoItem,
     Defacto2File,
@@ -2197,6 +2244,7 @@ PRODUCTION_LINK_TYPES = [
 EMBEDDABLE_PRODUCTION_LINK_TYPES = [pl for pl in PRODUCTION_LINK_TYPES if hasattr(pl, "oembed_base_url")]
 
 PRODUCTION_DOWNLOAD_LINK_TYPES = [
+    "AmpModule",
     "AmigascneFile",
     "SceneOrgFile",
     "FujiologyFile",

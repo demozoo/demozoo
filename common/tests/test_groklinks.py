@@ -154,6 +154,17 @@ class TestLinkRecognition(TestCase):
         link.url = "https://modarchive.org/index.php?request=view_by_moduleid&whichone=123"
         self.assertEqual(link.link_class, "BaseUrl")
 
+    def test_amp_module(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        link = ProductionLink(production=cybrev, is_download_link=True)
+        link.url = "https://amp.dascene.net/downmod.php?index=123"
+        self.assertEqual(link.link_class, "AmpModule")
+        self.assertEqual(link.parameter, "123")
+
+        link_html = link.as_download_link()
+        self.assertIn('href="https://amp.dascene.net/downmod.php?index=123"', link_html)
+        self.assertIn('href="https://amp.dascene.net/analyzer2.php?idx=123"', link_html)
+
     def test_youtube_video(self):
         pondlife = Production.objects.get(title="Pondlife")
         link = ProductionLink(production=pondlife, is_download_link=False)
