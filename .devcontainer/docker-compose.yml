@@ -1,0 +1,63 @@
+# Development environment for Demozoo, driven by .devcontainer/devcontainer.json.
+#
+# Deliberately a separate compose project from the repo-root docker-compose.yml so the
+# two can coexist: this one keeps its Postgres data in a named volume rather than in
+# .docker/db/pgdata, and never starts a server of its own (you run ./manage.py runserver).
+name: demozoo-devcontainer
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # The devcontainer attaches to this container; it must outlive the build.
+    command: sleep infinity
+    volumes:
+      - ..:/workspaces/demozoo:cached
+    environment:
+      DJANGO_SETTINGS_MODULE: demozoo.settings.dev
+      # settings/base.py reads each of these via os.getenv.
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB_NAME: demozoo
+      POSTGRES_USER: demozoo
+      POSTGRES_PASSWORD: demozoo
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    # No `condition: service_healthy` on purpose: the first `db` boot imports the full
+    # Demozoo export and takes a long while. Gating on it would leave you staring at a
+    # "starting dev container" spinner; instead the container opens straight away and
+    # post-create.sh waits for the database where you can watch it happen.
+    depends_on:
+      - db
+      - redis
+
+  db:
+    # Reuses the existing image definition, which bakes in the public database export.
+    build:
+      context: ..
+      dockerfile: .docker/db/Dockerfile
+    environment:
+      POSTGRES_DB: demozoo
+      POSTGRES_USER: demozoo
+      POSTGRES_PASSWORD: demozoo
+    volumes:
+      - ../.docker/db/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    # -h 127.0.0.1 matters: while the init scripts run, Postgres listens on the unix
+    # socket only, so a socket-based pg_isready would report ready mid-import.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U demozoo -d demozoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:
