@@ -1,0 +1,686 @@
+// Dark theme
+//
+// Override layer gated on prefers-color-scheme, imported last so it wins on
+// source order without !important (except where a base rule sets styles inline).
+// Deliberately low-contrast - Demozoo gets read in darkened party halls.
+
+$dark-ground:       #141414; // page ground (html), one step below the card
+$dark-card:         #1e1e1e; // centred content card (.site)
+$dark-surface:      #232323; // raised panels, menus, drawers
+$dark-surface-2:    #2a2a2a; // inputs, buttons, chips
+$dark-stripe:       #2b2b2b; // zebra stripes on tables and lists
+$dark-text:         #b8b8b8;
+$dark-text-heading: #9d9d9d; // Fabrica headings render heavy; ease them down
+$dark-text-muted:   #999;
+$dark-hairline:     #2a2a2a;
+$dark-border:       #333;
+$dark-border-strong:#444;
+
+$dark-link:         #7ab8db; // #02a is unreadable on dark; echoes the sky accent
+$dark-link-visited: #b39ad6;
+$dark-link-hover:   #a8d4f0;
+
+$dark-brand:        #7a1e26; // dimmed brand red for nav-active, logo
+$dark-brand-badge:  #9e2a34; // a touch brighter for section-heading badges
+$dark-olive-bg:     rgba(165, 180, 93, 0.3);
+$dark-olive-text:   #d8e59a;
+$dark-sky-bg:       rgba(107, 199, 241, 0.22);
+$dark-sky-text:     #9dd5ef;
+
+@include dark-theme {
+    // Page ground
+    html {
+        background-color: $dark-ground;
+        color: $dark-text;
+    }
+    body {
+        background-color: transparent;
+        color: $dark-text;
+    }
+    .site {
+        background-color: $dark-card;
+    }
+    h3, h4 {
+        color: $dark-text-heading;
+    }
+    .latest-activity h2 { // base sets this to body-text (#333)
+        color: $dark-text;
+    }
+
+    // Links
+    a,
+    a:link {
+        color: $dark-link;
+    }
+    a:visited {
+        color: $dark-link-visited;
+    }
+    a:hover {
+        color: $dark-link-hover;
+    }
+
+    // Header & footer
+    .site__header nav li a {
+        color: #c8c8c8;
+    }
+    .site__header nav li.active a {
+        background-color: $dark-brand;
+        color: #eee;
+    }
+    .site__header nav ul li a:hover {
+        background-color: #2a1e20;
+    }
+    .site__header nav ul li.active a:hover {
+        background-color: $dark-brand;
+    }
+    .site__header .logo a {
+        background-color: $dark-brand;
+    }
+    .submenu li.active {
+        background-color: $dark-brand;
+    }
+    .site__footer {
+        background-color: $dark-ground;
+        border-color: $dark-card;
+        color: $dark-text-muted;
+    }
+    .site__footer li {
+        border-left-color: $dark-border-strong;
+    }
+
+    // User menu
+    .user_menu {
+        background-color: $dark-surface;
+    }
+    .user_menu__login_status--logged_out {
+        color: $dark-text-muted;
+    }
+    .user_menu__login_status--logged_in {
+        color: #c8c8c8;
+    }
+    .user_menu__link {
+        color: #c8c8c8;
+        border-bottom-color: $dark-border;
+    }
+    .user_menu__link:hover {
+        background-color: #2f2f2f;
+    }
+    .user_menu__body {
+        background-color: $dark-surface;
+        border-top-color: $dark-border-strong;
+    }
+    .user_menu__login_form,
+    .user_menu__sceneid_login_prompt {
+        color: $dark-text;
+        border-bottom-color: $dark-border-strong;
+    }
+
+    // Panels & section pills - dim the loud saturated title blocks
+    .panel__title {
+        background-color: $dark-olive-bg;
+        color: $dark-olive-text;
+        border-right-color: $dark-card;
+    }
+    .signpost,
+    .production_core_details .production_types li {
+        background-color: $dark-sky-bg;
+        color: $dark-sky-text;
+    }
+    .block h3.block_heading {
+        background-color: $dark-brand-badge;
+        color: #eee;
+        border-right-color: $dark-card;
+    }
+    // Anchors in the accent pills take the pill's colour, not the link colour.
+    .signpost a,
+    .panel__title a,
+    .block h3.block_heading a {
+        color: inherit;
+    }
+    .panel__footer {
+        border-top-color: $dark-border;
+    }
+
+    // Notes / comments / help boxes
+    .notes_panel {
+        border-color: $dark-hairline;
+        color: #a8a8a8;
+    }
+    .notes_panel .notes .footnote hr {
+        border-top-color: $dark-hairline;
+    }
+    .comments_panel {
+        background-color: $dark-surface;
+        border-color: $dark-hairline;
+    }
+    .comments_panel .comments .comment {
+        border-bottom-color: $dark-hairline;
+    }
+    .long_help {
+        background-color: $dark-surface;
+        border-color: $dark-hairline;
+    }
+    .long_help kbd,
+    .hover_help .help_text {
+        background-color: #24344a;
+        border-color: $dark-hairline;
+        color: $dark-text;
+    }
+    .help_text {
+        color: #bbb;
+    }
+
+    // Party core details + attributes strip
+    .competition__heading,
+    .tournament__heading {
+        color: #cfcfcf;
+    }
+    .party_core_details .attributes,
+    .party_series_core_details .attributes,
+    .attributes {
+        border-top-color: $dark-hairline;
+    }
+    // Page-scoped to beat the more specific base `.show_x ... .attributes li`.
+    .show_production .production_core_details .attributes li,
+    .show_party .party_core_details .attributes li,
+    .show_party_series .party_series_core_details .attributes li,
+    .attributes li {
+        color: $dark-text;
+    }
+    .meta {
+        color: $dark-text-muted;
+    }
+    .redacted {
+        color: #777;
+    }
+
+    // Tables
+    .table tr:nth-child(even) {
+        background-color: $dark-stripe;
+    }
+    // Subtle hairline instead of the light #f0f0f0, which reads as a bright grid.
+    .table tr,
+    .table tr:last-child,
+    .table td,
+    .table th,
+    .maintenance_report table td {
+        border-color: $dark-border;
+    }
+    .table--history tr:nth-child(odd) td,
+    .party_series_index tr.even {
+        background-color: $dark-stripe;
+    }
+    .table--history {
+        color: $dark-text;
+    }
+    // Distinct tile so empty placeholders read against both card and stripes.
+    .table .media--thumbnail,
+    .media--thumbnail {
+        background-color: #363636;
+    }
+
+    // Results menu
+    .results_menu li:nth-child(odd) {
+        background-color: $dark-stripe;
+    }
+    .results_menu a {
+        color: #c8c8c8;
+    }
+    .results_menu a:hover {
+        border-left-color: #ec5a64;
+    }
+    .tournament ul.entries {
+        border-bottom-color: $dark-border;
+    }
+
+    // Buttons
+    .button {
+        background-color: $dark-surface-2;
+        color: #c8c8c8;
+        border-color: $dark-border-strong;
+    }
+    .button:visited {
+        color: #c8c8c8;
+    }
+    .button:hover {
+        background-color: #c32e3b; // brand red reads fine as a hover on dark
+        border-color: #c32e3b;
+        color: #fff;
+    }
+    .button .icon {
+        fill: #bbb;
+    }
+    a.action_button,
+    button.action_button {
+        background-color: $dark-surface-2;
+        color: $dark-text;
+        border-color: #555;
+    }
+    a.action_button:hover,
+    button.action_button:hover {
+        background-color: #3a3a3a;
+    }
+    .icon-button,
+    .icon-button:visited {
+        color: #bbb;
+    }
+    .icon-button:hover {
+        color: #eee;
+    }
+    .icon-button svg.icon {
+        fill: #bbb;
+    }
+    .icon-button:hover svg.icon {
+        fill: #eee;
+    }
+    .editable_chunk.hover {
+        background-color: #22283a;
+    }
+
+    // Search
+    .search input[type=text],
+    .search--inline input[type=search] {
+        background-color: $dark-surface-2;
+        color: $dark-text;
+        border-color: $dark-border-strong;
+    }
+    .search input[type=text].placeholder,
+    .search--inline input[type=search]::placeholder {
+        color: #999;
+    }
+    .search--inline .button {
+        background-color: $dark-surface-2;
+    }
+
+    // Form fields. Full `border` shorthand - a colour-only override leaves the
+    // native 2px inset border, which reads as a heavy frame.
+    input[type=text], input[type=search], input[type=email],
+    input[type=password], input[type=url], input[type=number],
+    input[type=date], textarea, select {
+        background-color: $dark-surface-2;
+        color: $dark-text;
+        border: 1px solid $dark-border-strong;
+    }
+    // Native submit/reset buttons otherwise keep the browser's light default.
+    input[type=submit], input[type=reset], input[type=button],
+    button[type=submit], button[type=reset] {
+        background-color: $dark-surface-2;
+        color: $dark-text;
+        border: 1px solid $dark-border-strong;
+    }
+    input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover,
+    button[type=submit]:hover, button[type=reset]:hover {
+        background-color: #3a3a3a;
+    }
+    input[type=checkbox], input[type=radio] {
+        accent-color: #c32e3b;
+    }
+
+    // Raster icons. CSS can only filter the whole element, so on icon+text rows
+    // we dim gently. The .scener/.group/.add_* classes carry these icons, so
+    // matching them covers credits, memberships, staff, organisers etc. at once.
+    li.scener, li.group, a.scener, a.group,
+    li.add_scener, li.add_group,
+    .action_button[class*="icon-"],
+    .external_links a,
+    .homepage .now_serving ul li a,
+    .downloads_panel ul.download_links li.download_link,
+    .user_menu__login_status--logged_in {
+        filter: brightness(0.92) saturate(0.9);
+    }
+    img[src*="/static/images/icons/"] {
+        filter: brightness(0.95) saturate(0.9);
+    }
+
+    // Message boxes - keep the hue, dim the surface
+    ul.messages li.success {
+        background-color: #1a2a1a;
+        color: #9fd39f;
+        border-color: #3d5a3d;
+    }
+    ul.messages li.error,
+    ul.errorlist {
+        background-color: #2a1a1a;
+        color: #e69090;
+        border-color: #6a3030;
+    }
+
+    // List views. Scoped to .list--results to match the base stripe rule.
+    .list--results .list__item {
+        border-top-color: $dark-hairline;
+    }
+    .list--results .list__item:last-child {
+        border-bottom-color: $dark-hairline;
+    }
+    .list--results .list__item:nth-child(odd) {
+        background-color: $dark-stripe;
+    }
+    .list--results .list__item:nth-child(odd) .media {
+        background-color: $dark-border;
+    }
+
+    // Filter panels
+    .production_listing_filters,
+    .maintenance_report .production_listing_filters {
+        background-color: $dark-surface;
+        border-color: $dark-border;
+    }
+
+    // Forums
+    .forums_index .topics li a,
+    .forum_topics .topics li a,
+    .homepage .forum_topics .topics li a {
+        color: $dark-text;
+    }
+    .forums_index .topics li.even {
+        background-color: $dark-stripe;
+    }
+    .forums_index .topics li.odd {
+        background-color: $dark-card;
+    }
+    .forums_index .topics li.even:hover,
+    .forums_index .topics li.odd:hover,
+    .forum_topics .topics li:hover,
+    .homepage .forum_topics .topics li:hover {
+        background-color: #353535;
+    }
+    .forum_topics .topics li {
+        border-bottom-color: $dark-hairline;
+    }
+    .forums_index .topics li .meta {
+        color: $dark-text-muted;
+    }
+    .show_topic .posts_panel,
+    .posts_panel {
+        background-color: $dark-surface;
+        border-color: $dark-border;
+    }
+
+    // Pagination
+    ul.pagination li a,
+    ul.pagination li.current {
+        background-color: $dark-surface;
+        color: $dark-text;
+        border-color: $dark-border-strong;
+    }
+    ul.pagination li.current {
+        color: #fff;
+        background-color: #2f2f2f;
+    }
+    ul.pagination li a:hover {
+        background-color: $dark-border;
+    }
+    ul.pagination li {
+        border-color: $dark-border-strong;
+    }
+
+    // Downloads panel
+    .downloads_panel ul.download_links li.download_link {
+        background-color: rgba(255, 255, 255, 0.04);
+        border-color: $dark-border;
+    }
+
+    // Tags / blurb / stats
+    .blurb,
+    .show_production .blurb {
+        background-color: $dark-surface;
+        border-color: $dark-border;
+    }
+    .tags_panel ul.tags li a.tag_name {
+        background-color: $dark-surface;
+        border-color: $dark-border;
+        color: $dark-link;
+    }
+    .tags_panel ul.tags li a.tag_name:hover {
+        background-color: $dark-surface-2;
+    }
+    .tags_panel ul.tagit {
+        background: $dark-surface;
+    }
+    .stats {
+        background-color: $dark-card;
+        border-color: $dark-border;
+        color: #888;
+    }
+    .homepage .new_releases .thumbnail {
+        background-color: $dark-surface-2;
+    }
+    // Dark placeholder box; drop the camera/turntable pixel icons (a dark smudge
+    // on dark). Scoped to .carousel to beat the base `.carousel .no_screenshot`.
+    .carousel .no_screenshot {
+        background-color: $dark-card;
+    }
+    .carousel .no_screenshot p {
+        background-image: none;
+        color: $dark-text;
+    }
+    .carousel .no_screenshot.music {
+        background-image: none;
+    }
+    .homepage .now_serving ul li a {
+        color: $dark-text;
+    }
+    .homepage .new_additions ul li a:hover,
+    .show_party_series ul.parties li a:hover {
+        background-color: $dark-surface-2;
+    }
+    .parties_in_series ul li.current {
+        color: #eee;
+    }
+
+    // Nick-match autocomplete popover
+    .nick_match ul {
+        background-color: $dark-surface;
+        border-color: $dark-border-strong;
+    }
+    .nick_match ul li {
+        color: $dark-text;
+    }
+    .nick_match ul li:hover {
+        background-color: $dark-surface-2;
+    }
+    .nick_match ul li.selected,
+    .nick_match a.active.selected_result {
+        background-color: $dark-border;
+    }
+    .nick_match a.selected_result {
+        color: $dark-text;
+        border-color: $dark-border;
+    }
+
+    // Editing UI (grids, formsets)
+    .editable_grid li.data_row ul.fields > li {
+        background-color: $dark-surface-2;
+        border-left-color: $dark-border;
+    }
+    .editable_grid li.header_row ul.fields > li {
+        background-color: #262632;
+        border-left-color: $dark-border-strong;
+    }
+    .byline_match_container {
+        background-color: $dark-surface;
+        border-color: $dark-border-strong;
+    }
+    ul.sortable_formset li.sortable_item {
+        background-color: $dark-surface-2;
+        border-color: #555;
+    }
+    .party_invitation_form .spawning_formset .spawned_form,
+    .party_release_form .spawning_formset .spawned_form {
+        background-color: $dark-surface-2;
+        border-color: #555;
+    }
+    .credits_panel.editing ul.credits li:hover,
+    .show_bbs .staff_panel.editing ul.staff li:hover,
+    .show_bbs .affiliations_panel.editing ul.affiliations li:hover,
+    .show_group .members_panel.editing ul.memberships li:hover,
+    .show_group .subgroups_panel.editing ul.memberships li:hover,
+    .show_scener .groups_panel.editing ul.memberships li:hover,
+    body.unresolved_screenshots a:hover.resolve {
+        background-color: $dark-surface-2;
+    }
+    a.add_button {
+        background-color: $dark-surface-2;
+        color: $dark-text;
+        border-color: $dark-border-strong;
+    }
+    a.add_button:hover {
+        background-color: #3a3a3a;
+    }
+
+    // "Tell us something" prompt. Base rules carry the .show_production prefix.
+    .show_production .tell_us_something_panel .tell_us_something .tell_us_something_title a {
+        background-color: $dark-surface-2;
+        color: #d4d4d4;
+        border-color: $dark-border-strong #555 $dark-border $dark-border-strong;
+    }
+    .show_production .tell_us_something_panel .tell_us_something .tell_us_something_title a:hover {
+        background-color: $dark-border;
+    }
+    .show_production .tell_us_something_panel .tell_us_something .tell_us_something_options {
+        background-color: $dark-surface-2;
+        border-color: $dark-border-strong;
+    }
+    .show_production .tell_us_something_panel .tell_us_something .tell_us_something_options li a:hover {
+        background-color: $dark-border;
+    }
+
+    // Lightbox
+    #lightbox,
+    .media_lightbox_wrapper {
+        background-color: $dark-card;
+        border-color: $dark-border-strong;
+        color: $dark-text;
+    }
+
+    // Awards - keep the winner gold as a dim tint
+    .show_award th.nominee_status_winner {
+        background-color: #3a3200;
+        color: #ffed88;
+    }
+    .show_award th.nominee_status_nominee {
+        background-color: $dark-surface-2;
+    }
+
+    // Private news stories
+    .news .news_story.private {
+        background-color: $dark-surface;
+        border-color: #555;
+    }
+
+    // Homepage new releases / additions - dark greys that go too dark on dark
+    .homepage .new_releases ul li .title,
+    .homepage .new_additions ul li .title {
+        color: $dark-text;
+    }
+    .homepage .new_releases ul li .byline,
+    .homepage .new_additions ul li .byline {
+        color: $dark-text-muted;
+    }
+    .homepage .new_releases ul li a:hover,
+    .homepage .new_additions ul li a:hover {
+        background-color: $dark-surface-2;
+    }
+    // Right-column dotted separators, kept visible and consistent (the base uses
+    // #ccc for most blocks but #888 for comments).
+    .homepage .new_additions li,
+    .homepage .forum_topics .topics li,
+    .homepage .comments ul li {
+        border-bottom-color: $dark-border-strong;
+    }
+    // "Last edited by" links, on every show page. [href] lifts specificity just
+    // enough to beat `.show_x .last_edited_by a.user`.
+    .last_edited_by a.user[href] {
+        color: $dark-link;
+    }
+
+    // Sub-navigation (year / letter filters)
+    .submenu li a,
+    .submenu li button,
+    .submenu li strong {
+        color: #c8c8c8;
+    }
+
+    // Links hardcoded to a dark blue (#008 / #02a)
+    .downloads_panel ul.download_links li.download_link .primary a,
+    .downloads_panel ul.download_links li.download_link .secondary a,
+    .releaser_list li a,
+    .show_scener ul.memberships li a,
+    .show_group ul.memberships li a,
+    .show_bbs ul.memberships li a,
+    .show_bbs ul.affiliations li a {
+        color: $dark-link;
+    }
+    // [href] ties the base's page-prefixed specificity.
+    .parties_organised_panel .parties a[href],
+    .bbses_operated_panel .bbses li a[href] {
+        color: $dark-link;
+    }
+    .releasers .annotation,
+    .releaser_list .annotation {
+        color: $dark-text-muted;
+    }
+    .snippet {
+        color: $dark-text-muted;
+    }
+
+    // Media carousel - soften the play button and nav arrows
+    .cowbell-player,
+    .cowbell-player.no-artwork {
+        background-color: $dark-surface-2;
+    }
+    .carousel a.nav,
+    .carousel .video .play,
+    .carousel .emulator .play {
+        filter: brightness(0.7);
+    }
+    // Homepage party calendar has a 10px solid white spacer border on top.
+    .party_calendar table {
+        border-top-color: $dark-card;
+    }
+
+    // These widgets set their colours inline via JS, so !important is required.
+    .thumb_preview_popup {
+        background-color: $dark-surface !important;
+        border-color: $dark-border-strong !important;
+    }
+    .notes_panel > a[href^="javascript"] { // the "Read more" fade bar
+        background-color: rgba(30, 30, 30, 0.85) !important;
+    }
+
+    // jQuery UI datepicker (the bundled overcast theme is light)
+    .ui-datepicker.ui-widget-content {
+        background: $dark-surface;
+        border-color: $dark-border-strong;
+        color: $dark-text;
+    }
+    .ui-datepicker .ui-datepicker-header {
+        background: $dark-surface-2;
+        border-color: $dark-border-strong;
+        color: $dark-text;
+    }
+    .ui-datepicker .ui-datepicker-title {
+        color: $dark-text;
+    }
+    .ui-datepicker th {
+        color: $dark-text-muted;
+    }
+    .ui-datepicker td a.ui-state-default,
+    .ui-datepicker td span.ui-state-default {
+        background: $dark-surface-2;
+        border-color: $dark-border;
+        color: $dark-text;
+    }
+    .ui-datepicker td a.ui-state-hover {
+        background: #3a3a3a;
+    }
+    .ui-datepicker td a.ui-state-active,
+    .ui-datepicker td .ui-state-highlight {
+        background: $dark-brand-badge;
+        color: #eee;
+    }
+    .ui-datepicker .ui-datepicker-prev .ui-icon,
+    .ui-datepicker .ui-datepicker-next .ui-icon {
+        filter: invert(0.85); // dark sprite chevrons
+    }
+}
