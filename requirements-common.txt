@@ -23,6 +23,8 @@ django-dotenv>=1.4.2,<2.0
 ansipants>=0.1.2,<1.0
 europarse>=1.0.0,<2
 laces>=0.1.1,<0.2
+# kombu 5.7 is picky about redis-py being 6.1.0 or later, and we haven't tested that yet
+kombu>=5.5.4,<5.7
 
 # needed to keep django-compressor happy when analysing django-filter templates
 django-crispy-forms>=2.3,<2.4
