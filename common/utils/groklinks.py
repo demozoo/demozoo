@@ -436,49 +436,30 @@ amp = Site("AMP", long_name="Amiga Music Preservation", url="https://amp.dascene
 
 class AmpAuthor(AbstractBaseUrl):
     site = amp
-    canonical_format = "https://amp.dascene.net/detail.php?view=%s"
+    canonical_format = "https://amp.dascene.net/composer/%s/"
     tests = [
+        path_regex_match(r"/composer/(\d+)/?"),
         query_path_match("/detail.php", "view"),
     ]
 
 
 class AmpGroup(AbstractBaseUrl):
     site = amp
-    canonical_format = "https://amp.dascene.net/newresult.php?request=groupid&search=%s"
+    canonical_format = "https://amp.dascene.net/composers?filter=%s&type=groupid"
     tests = [
+        query_path_match("/composers", "filter", othervars={"type": "groupid"}),
         query_path_match("/newresult.php", "search", othervars={"request": "groupid"}),
     ]
 
 
 class AmpModule(AbstractBaseUrl):
     site = amp
-    canonical_format = "https://amp.dascene.net/downmod.php?index=%s"
+    canonical_format = "https://amp.dascene.net/module/%s"
     tests = [
+        path_regex_match(r"/module/(\d+)/?"),
         query_path_match("/downmod.php", "index"),
         query_path_match("/analyzer2.php", "idx"),
     ]
-
-    @property
-    def download_url(self):
-        return str(self)
-
-    @property
-    def analyzer_url(self):
-        return "https://amp.dascene.net/analyzer2.php?idx=%s" % self.param
-
-    def as_download_link(self, description=""):
-        return format_html(
-            """
-                <div>
-                    <a href="{url}" class="primary">Download from Amiga Music Preservation</a> -
-                    <a href="{analyzer_url}" class="secondary">mod info</a>
-                    {description}
-                </div>
-            """,
-            url=self.download_url,
-            analyzer_url=self.analyzer_url,
-            description="(%s)" % description if description else "",
-        )
 
 
 csdb = Site("CSDb", url="https://csdb.dk/", allowed_hostnames=["csdb.dk", "www.csdb.dk", "noname.c64.org"])
