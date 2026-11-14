@@ -49,6 +49,8 @@
     <div style="clear: both;"></div>
 </div>
 
+{{ carousel_data|json_script:"carousel-data" }}
 <script>
-    $('.carousel').carousel({{ carousel_data|safe }}, "{% url 'production_carousel' production.id %}");
+    const carouselData = JSON.parse(document.getElementById('carousel-data').textContent);
+    $('.carousel').carousel(carouselData, "{% url 'production_carousel' production.id %}");
 </script>
