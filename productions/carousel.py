@@ -246,6 +246,6 @@ class Carousel(object):
                 "add_screenshot_label": add_screenshot_label,
                 "show_manage_screenshots_link": show_manage_screenshots_link,
                 "manage_screenshots_label": manage_screenshots_label,
-                "carousel_data": self.get_slides_json(),
+                "carousel_data": self.slides,
             },
         )

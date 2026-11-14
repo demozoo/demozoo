@@ -45,6 +45,15 @@ class TestShowMusic(TestCase):
         response = self.client.get("/music/%d/" % cybrev.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_carousel_xss(self):
+        cybrev = Production.objects.get(title="Cybernoid's Revenge")
+        cybrev.links.create(
+            link_class="ModlandFile", parameter="/x</script><script>alert(31337)</script>.mod", is_download_link=True
+        )
+
+        response = self.client.get("/music/%d/" % cybrev.id)
+        self.assertNotContains(response, "<script>alert(31337)</script>")
+
     def test_get_with_artwork(self):
         cybrev = Production.objects.get(title="Cybernoid's Revenge")
         cybrev.links.create(
