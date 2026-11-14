@@ -8,7 +8,7 @@ from django.test import TestCase, override_settings
 
 from bbs.models import BBS
 from parties.models import Competition, CompetitionPlacing, Party, PartySeries
-from productions.models import Production, ProductionLink
+from productions.models import Production, ProductionLink, ProductionType
 from users.models import APIKey
 
 
@@ -169,6 +169,43 @@ class TestProductions(APITestCase):
         self.assertEqual(response_data["title"], "Pondlife")
         self.assertEqual(response_data["demozoo_url"], "https://demozoo.org/productions/4/")
         self.assertIn("Hooy-Program", [nick["name"] for nick in response_data["author_nicks"]])
+        self.assertIn("Cybernoid's Revenge", [prod["title"] for prod in response_data["soundtracks"]])
+
+    @override_settings(BASE_URL="https://demozoo.org")
+    def test_get_music(self):
+        response = self.client.get("/api/v1/productions/5/")
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data["title"], "Cybernoid's Revenge")
+        self.assertEqual(response_data["demozoo_url"], "https://demozoo.org/music/5/")
+        self.assertIn("Pondlife", [prod["title"] for prod in response_data["appearances_as_soundtrack"]])
+
+    @override_settings(BASE_URL="https://demozoo.org")
+    def test_get_pack(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        pondlife.types.add(ProductionType.objects.get(name="Pack"))
+        mooncheese = Production.objects.get(title="Mooncheese")
+        pondlife.pack_members.create(member=mooncheese, position=1)
+
+        response = self.client.get("/api/v1/productions/%d/" % pondlife.id)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertIn("Mooncheese", [member["title"] for member in response_data["pack_contents"]])
+
+    @override_settings(BASE_URL="https://demozoo.org")
+    def test_get_pack_member(self):
+        pondlife = Production.objects.get(title="Pondlife")
+        pondlife.types.add(ProductionType.objects.get(name="Pack"))
+        mooncheese = Production.objects.get(title="Mooncheese")
+        pondlife.pack_members.create(member=mooncheese, position=1)
+
+        response = self.client.get("/api/v1/productions/%d/" % mooncheese.id)
+        self.assertEqual(response.status_code, 200)
+
+        response_data = json.loads(response.content)
+        self.assertIn("Pondlife", [member["title"] for member in response_data["packed_in"]])
 
 
 class TestReleasers(APITestCase):

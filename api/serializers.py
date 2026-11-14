@@ -265,6 +265,10 @@ class ProductionSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerial
     invitation_parties = PartySummarySerializer(many=True, read_only=True)
     screenshots = ScreenshotSerializer(many=True, read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
+    soundtracks = serializers.SerializerMethodField(read_only=True)
+    appearances_as_soundtrack = serializers.SerializerMethodField(read_only=True)
+    pack_contents = serializers.SerializerMethodField(read_only=True)
+    packed_in = serializers.SerializerMethodField(read_only=True)
 
     def get_demozoo_url(self, production):
         return settings.BASE_URL + production.get_absolute_url()
@@ -273,8 +277,83 @@ class ProductionSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerial
         release_date = production.release_date
         return release_date and release_date.numeric_format()
 
-    def get_tags(self, bbs):
-        return [tag.name for tag in bbs.tags.all()]
+    def get_tags(self, production):
+        return [tag.name for tag in production.tags.all()]
+
+    def get_soundtracks(self, production):
+        if production.supertype == "production":
+            soundtracks = [
+                link.soundtrack
+                for link in production.soundtrack_links.order_by("position")
+                .select_related("soundtrack")
+                .prefetch_related(
+                    "soundtrack__author_nicks__releaser",
+                    "soundtrack__author_affiliation_nicks__releaser",
+                    "soundtrack__platforms",
+                    "soundtrack__types",
+                    "soundtrack__tags",
+                )
+            ]
+            return ProductionSerializer(
+                instance=soundtracks, many=True, context=self.context, fields=PRODUCTION_LISTING_FIELDS
+            ).data
+        else:
+            return []
+
+    def get_appearances_as_soundtrack(self, production):
+        if production.supertype == "music":
+            appearances = [
+                appearance.production
+                for appearance in production.appearances_as_soundtrack.prefetch_related(
+                    "production__author_nicks__releaser",
+                    "production__author_affiliation_nicks__releaser",
+                    "production__platforms",
+                    "production__types",
+                    "production__tags",
+                ).order_by("production__release_date_date")
+            ]
+            return ProductionSerializer(
+                instance=appearances, many=True, context=self.context, fields=PRODUCTION_LISTING_FIELDS
+            ).data
+        else:
+            return []
+
+    def get_pack_contents(self, production):
+        if production.can_have_pack_members():
+            pack_contents = [
+                link.member
+                for link in (
+                    production.pack_members.select_related("member").prefetch_related(
+                        "member__author_nicks__releaser",
+                        "member__author_affiliation_nicks__releaser",
+                        "member__platforms",
+                        "member__types",
+                        "member__tags",
+                    )
+                )
+            ]
+            return ProductionSerializer(
+                instance=pack_contents, many=True, context=self.context, fields=PRODUCTION_LISTING_FIELDS
+            ).data
+        else:
+            return []
+
+    def get_packed_in(self, production):
+        packs = [
+            link.pack
+            for link in (
+                production.packed_in.select_related("pack").prefetch_related(
+                    "pack__author_nicks__releaser",
+                    "pack__author_affiliation_nicks__releaser",
+                    "pack__platforms",
+                    "pack__types",
+                    "pack__tags",
+                )
+            )
+        ]
+        return ProductionSerializer(
+            instance=packs, many=True, context=self.context, fields=PRODUCTION_LISTING_FIELDS
+        ).data
 
     class Meta:
         model = Production
@@ -297,6 +376,10 @@ class ProductionSerializer(OutputFieldsMixin, serializers.HyperlinkedModelSerial
             "invitation_parties",
             "screenshots",
             "tags",
+            "soundtracks",
+            "appearances_as_soundtrack",
+            "pack_contents",
+            "packed_in",
         ]
 
 
