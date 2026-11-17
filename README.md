@@ -1,5 +1,13 @@
 # Demozoo
 
+## AI contribution policy
+
+The demoscene is a community that celebrates craftsmanship in code. While Demozoo's goal is to support that creative work rather than be an example of it, it fundamentally belongs to the community, and has a responsibility to represent that community to the outside world. It can only succeed by sharing the values of the community, including in its approach to AI.
+
+None of the code that makes up the operational codebase of the website shall be AI authored. We ask contributors to respect our wishes and refrain from submitting pull requests written in whole or part by generative AI. Small-scale code autocompletion (such as GitHub Copilot) is permitted, and AI agents may be used for tasks such as debugging and security auditing, provided that their output is used only for informational purposes and no code that they produce ends up in the codebase.
+
+AI may be used for scripts and maintenance tasks that run externally to the website itself, such as finding alternatives for broken links or setting up developer instances. Wherever such scripts are committed to the Demozoo git repository, AI usage will be clearly marked in the commit log. AI will never be used to directly make decisions about changes to the database - all proposed changes must be reviewed by a human.
+
 ## Developer installation
 
 It's possible to run Demozoo a number of different ways, but work has been done to facilitate running it rather smoothly in either Vagrant or Docker.
