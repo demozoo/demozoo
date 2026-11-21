@@ -2080,6 +2080,37 @@ class AtariLegendMenuset(UrlPattern):
     pattern = "/menusets/<int>"
 
 
+scenegraphics = Site(
+    "scene.graphics",
+    classname="scenegraphics",
+    url="https://scene.graphics/",
+    icon_path="images/icons/external_sites/scenegraphics.png",
+)
+
+
+class ScenegraphicsProduction(UrlPattern):
+    site = scenegraphics
+    canonical_format = "https://scene.graphics/%s"
+    tests = [
+        path_regex_match(r"/((?:amiga|c64|music)/[\w-]+)"),
+    ]
+
+
+class ScenegraphicsGroup(UrlPattern):
+    site = scenegraphics
+    pattern = "/group/<slug>"
+
+
+class ScenegraphicsScener(UrlPattern):
+    site = scenegraphics
+    pattern = "/scener/<slug>"
+
+
+class ScenegraphicsParty(UrlPattern):
+    site = scenegraphics
+    pattern = "/party/<slug>"
+
+
 RELEASER_LINK_TYPES = [
     TwitterAccount,
     BlueskyAccount,
@@ -2155,6 +2186,8 @@ RELEASER_LINK_TYPES = [
     TelnetLink,
     CablesUser,
     DeepSIDProfile,
+    ScenegraphicsGroup,
+    ScenegraphicsScener,
     BaseUrl,
 ]
 
@@ -2219,6 +2252,7 @@ PRODUCTION_LINK_TYPES = [
     WaybackMachinePage,
     CablesProd,
     DeepSIDTrack,
+    ScenegraphicsProduction,
     BaseUrl,
 ]
 
@@ -2288,6 +2322,7 @@ PRODUCTION_EXTERNAL_LINK_TYPES = [
     "TelnetLink",
     "CablesProd",
     "DeepSIDTrack",
+    "ScenegraphicsProduction",
 ]
 
 PARTY_LINK_TYPES = [
@@ -2320,6 +2355,7 @@ PARTY_LINK_TYPES = [
     InstagramAccount,
     C64chParty,
     TikTokUser,
+    ScenegraphicsParty,
     WaybackMachinePage,
     BaseUrl,
 ]
