@@ -2,6 +2,7 @@ import datetime
 from io import BytesIO
 from unittest.mock import patch
 
+import responses
 from django.core.files import File
 from django.core.management import call_command
 from django.test import TestCase, TransactionTestCase
@@ -194,3 +195,57 @@ class TestRefetchResultsFiles(TestCase):
         self.sceneorgfile.delete()
         with captured_stdout():
             call_command("refetch_results_files")
+
+
+class TestAddScenegraphicsLinks(TestCase):
+    fixtures = ["tests/gasman.json"]
+
+    @responses.activate
+    def test_add_production_link(self):
+        madrielle = Production.objects.get(title="Madrielle")
+        madrielle.links.create(is_download_link=False, link_class="ScenegraphicsProduction", parameter="c64/madrielle")
+        gasman = Releaser.objects.get(name="Gasman")
+        gasman.external_links.create(link_class="ScenegraphicsScener", parameter="gasman")
+        raww_arse = Releaser.objects.get(name="Raww Arse")
+        raww_arse.external_links.create(link_class="ScenegraphicsGroup", parameter="groups/raww-arse")
+
+        responses.add(
+            responses.GET,
+            "https://scene.graphics/api/v1/demozoo/links",
+            body="""
+            {
+                "productions": [
+                    {"demozoo_id": 1, "url": "/c64/madrielle"},
+                    {"demozoo_id": 2, "url": "/windows/mooncheese"},
+                    {"demozoo_id": 4, "url": "/c64/pondlife"},
+                    {"demozoo_id": 9999, "url": "/amiga/does-not-exist"}
+                ],
+                "groups": [
+                    {"demozoo_id": 2, "url": "/groups/raww-arse"},
+                    {"demozoo_id": 3, "url": "/groups/papaya-dezign"},
+                    {"demozoo_id": 9999, "url": "/groups/does-not-exist"}
+                ],
+                "sceners": [
+                    {"demozoo_id": 1, "url": "/sceners/gasman"},
+                    {"demozoo_id": 5, "url": "/sceners/yerzmyey"},
+                    {"demozoo_id": 9999, "url": "/sceners/does-not-exist"}
+                ]
+            }
+        """,
+        )
+
+        with captured_stdout() as stdout:
+            call_command("add_scenegraphics_links")
+
+        print(stdout.getvalue())
+
+        pondlife_link = Production.objects.get(title="Pondlife").links.get(link_class="ScenegraphicsProduction")
+        self.assertEqual(pondlife_link.parameter, "c64/pondlife")
+
+        yerzmyey_link = Releaser.objects.get(name="Yerzmyey").external_links.get(link_class="ScenegraphicsScener")
+        self.assertEqual(yerzmyey_link.parameter, "yerzmyey")
+
+        papaya_dezign_link = Releaser.objects.get(name="Papaya Dezign").external_links.get(
+            link_class="ScenegraphicsGroup"
+        )
+        self.assertEqual(papaya_dezign_link.parameter, "papaya-dezign")
