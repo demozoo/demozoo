@@ -136,6 +136,14 @@ class TestCreateParty(TestCase):
         response = self.client.get("/parties/new/")
         self.assertEqual(response.status_code, 200)
 
+    def test_get_xss(self):
+        party_series = PartySeries.objects.get(name="Forever")
+        party_series.name = "</script><script>alert(31337)</script><script>"
+        party_series.save()
+        response = self.client.get("/parties/new/")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "<script>alert(31337)</script>")
+
     def test_post(self):
         response = self.client.post(
             "/parties/new/",

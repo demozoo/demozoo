@@ -1,5 +1,5 @@
 {% extends "generic/form.html" %}
-{% load demoscene_tags json_filter %}
+{% load demoscene_tags %}
 
 {% block form_body %}
     {% include "shared/form_field.html" with field=form.name %}
@@ -27,8 +27,9 @@
 {% block submit_button_label %}Add new party{% endblock %}
 
 {% block after_form %}
+    {{ party_series_names|json_script:"party-series-names" }}
     <script>/* <![CDATA[ */
-        var partySeriesNames = {{ party_series_names|json|safe }};
+        var partySeriesNames = JSON.parse(document.getElementById('party-series-names').textContent);
         var partySeriesNameMatches = {};
         for (var i = 0; i < partySeriesNames.length; i++) {
             var name = partySeriesNames[i];
