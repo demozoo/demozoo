@@ -18,14 +18,13 @@
 {% block body_class %}edit_competition{% endblock %}
 
 {% block base_main %}
+{{ results_table_data|json_script:"results-table-data" }}
 <script type="text/javascript">/* <![CDATA[ */
     $(function() {
-        ResultsTable('#results_table', {
-            platforms: {{ platforms_json|safe }},
-            productionTypes: {{ production_types_json|safe }},
-            competitionPlacings: {{ competition_placings_json|safe }},
-            competition: {{ competition_json|safe }}
-        })
+        ResultsTable(
+            '#results_table',
+            JSON.parse(document.getElementById('results-table-data').textContent)
+        );
     });
 /* ]]> */</script>
 

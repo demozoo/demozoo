@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -86,21 +85,18 @@ def edit(request, competition_id):
         )
     ]
 
-    competition_placings_json = json.dumps(competition_placings)
+    competition_data = {
+        "id": competition.id,
+        "platformId": competition.platform_id,
+        "productionTypeId": competition.production_type_id,
+    }
 
-    platforms = Platform.objects.all()
-    platforms_json = json.dumps([[p.id, p.name] for p in platforms])
-
-    production_types = ProductionType.objects.all()
-    production_types_json = json.dumps([[p.id, p.name] for p in production_types])
-
-    competition_json = json.dumps(
-        {
-            "id": competition.id,
-            "platformId": competition.platform_id,
-            "productionTypeId": competition.production_type_id,
-        }
-    )
+    results_table_data = {
+        "platforms": [[p.id, p.name] for p in Platform.objects.all()],
+        "productionTypes": [[p.id, p.name] for p in ProductionType.objects.all()],
+        "competitionPlacings": competition_placings,
+        "competition": competition_data,
+    }
 
     return render(
         request,
@@ -109,10 +105,7 @@ def edit(request, competition_id):
             "form": competition_form,
             "party": party,
             "competition": competition,
-            "competition_json": competition_json,
-            "competition_placings_json": competition_placings_json,
-            "platforms_json": platforms_json,
-            "production_types_json": production_types_json,
+            "results_table_data": results_table_data,
             "is_admin": request.user.is_staff,
         },
     )

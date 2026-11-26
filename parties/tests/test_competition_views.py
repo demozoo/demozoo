@@ -38,6 +38,14 @@ class TestEditCompetition(TestCase):
         response = self.client.get("/competitions/%d/edit/" % self.competition.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_xss(self):
+        prod = Production.objects.get(title="Madrielle")
+        prod.title = "</script><script>alert(31337)</script><script>"
+        prod.save()
+        response = self.client.get("/competitions/%d/edit/" % self.competition.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "<script>alert(31337)</script>")
+
     def test_post(self):
         response = self.client.post(
             "/competitions/%d/edit/" % self.competition.id,
