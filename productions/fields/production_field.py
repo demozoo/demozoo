@@ -2,7 +2,7 @@ import datetime
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from productions.fields.byline_field import BylineField, BylineWidget
 from productions.fields.production_type_field import ProductionTypeChoiceField
@@ -115,14 +115,11 @@ class ProductionWidget(forms.Widget):
         if production_id:
             byline_text = str(production_selection.production.byline())
             if byline_text:
-                static_view = [
-                    # FIXME: HTMLencode
-                    "<b>%s</b> by %s" % (production_selection.production.title, byline_text)
-                ]
+                static_view = format_html("<b>{}</b> by {}", production_selection.production.title, byline_text)
             else:
-                static_view = ["<b>%s</b>" % production_selection.production.title]
+                static_view = format_html("<b>{}</b>", production_selection.production.title)
         else:
-            static_view = []
+            static_view = ""
 
         title_attrs = self.build_attrs(attrs)
         title_attrs["class"] = "title_field"
@@ -134,31 +131,41 @@ class ProductionWidget(forms.Widget):
         prodtype_attrs = self.build_attrs(attrs)
         prodtype_attrs["id"] += "_type"
 
-        form_view = [
-            self.id_widget.render(name + "_id", production_id, renderer=renderer),
-            self.title_widget.render(name + "_title", "", attrs=title_attrs, renderer=renderer),
-            ' <label for="%s">by</label> ' % self.byline_widget.id_for_label("id_" + name + "_byline"),
-            self.byline_widget.render(name + "_byline", "", attrs=byline_attrs, renderer=renderer),
-        ]
+        id_input = self.id_widget.render(name + "_id", production_id, renderer=renderer)
+        title_input = self.title_widget.render(name + "_title", "", attrs=title_attrs, renderer=renderer)
+        byline_label = format_html(
+            '<label for="{}">by</label>', self.byline_widget.id_for_label("id_" + name + "_byline")
+        )
+        byline_input = self.byline_widget.render(name + "_byline", "", attrs=byline_attrs, renderer=renderer)
         if self.show_production_type_field:
-            form_view += [
-                '<label for="%s">Type:</label> ' % self.production_type_widget.id_for_label("id_" + name + "_type"),
-                self.production_type_widget.render(name + "_type", "", attrs=prodtype_attrs, renderer=renderer),
-            ]
+            production_type_input = format_html(
+                '<label for="{id}">Type:</label> {input}',
+                id=self.production_type_widget.id_for_label("id_" + name + "_type"),
+                input=self.production_type_widget.render(name + "_type", "", attrs=prodtype_attrs, renderer=renderer),
+            )
+        else:
+            production_type_input = ""
 
-        output = [
-            '<div class="production_field">',
-            '<div class="static_view">',
-            '<div class="static_view_text">',
-            "".join(static_view),
-            "</div>",
-            "</div>",
-            '<div class="form_view">',
-            "".join(form_view),
-            "</div>",
-            "</div>",
-        ]
-        return mark_safe("".join(output))
+        return format_html(
+            """
+                <div class="production_field">
+                    <div class="static_view"><div class="static_view_text">{static_view}</div></div>
+                    <div class="form_view">
+                        {id_input}
+                        {title_input}
+                        {byline_label}
+                        {byline_input}
+                        {production_type_input}
+                    </div>
+                </div>
+            """,
+            static_view=static_view,
+            id_input=id_input,
+            title_input=title_input,
+            byline_label=byline_label,
+            byline_input=byline_input,
+            production_type_input=production_type_input,
+        )
 
 
 class ProductionField(forms.Field):
