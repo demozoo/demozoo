@@ -1845,7 +1845,8 @@ class TestEditPackContents(TestCase):
         self.client.login(username="testuser", password="12345")
         self.pondlife = Production.objects.get(title="Pondlife")
         self.pondlife.types.add(ProductionType.objects.get(name="Pack"))
-        self.madrielle = self.pondlife.pack_members.create(member=Production.objects.get(title="Madrielle"), position=1)
+        self.madrielle = Production.objects.get(title="Madrielle")
+        self.madrielle_in_pondlife = self.pondlife.pack_members.create(member=self.madrielle, position=1)
 
         self.mooncheese = Production.objects.get(title="Mooncheese")
         self.mooncheese.types.add(ProductionType.objects.get(name="Pack"))
@@ -1868,8 +1869,8 @@ class TestEditPackContents(TestCase):
                 "form-MIN_NUM_FORMS": 0,
                 "form-MAX_NUM_FORMS": 1000,
                 "form-0-ORDER": 1,
-                "form-0-id": self.madrielle.id,
-                "form-0-member_id": self.madrielle.member_id,
+                "form-0-id": self.madrielle_in_pondlife.id,
+                "form-0-member_id": self.madrielle.id,
                 "form-0-DELETE": "form-0-DELETE",
                 "form-1-ORDER": 2,
                 "form-1-id": "",
@@ -1897,8 +1898,8 @@ class TestEditPackContents(TestCase):
                 "form-MIN_NUM_FORMS": 0,
                 "form-MAX_NUM_FORMS": 1000,
                 "form-0-ORDER": 1,
-                "form-0-id": self.madrielle.id,
-                "form-0-member_id": self.madrielle.member_id,
+                "form-0-id": self.madrielle_in_pondlife.id,
+                "form-0-member_id": self.madrielle.id,
                 "form-0-DELETE": "form-0-DELETE",
                 "form-1-ORDER": 2,
                 "form-1-id": "",
@@ -1929,8 +1930,8 @@ class TestEditPackContents(TestCase):
                 "form-MIN_NUM_FORMS": 0,
                 "form-MAX_NUM_FORMS": 1000,
                 "form-0-ORDER": 1,
-                "form-0-id": self.madrielle.id,
-                "form-0-member_id": self.madrielle.member_id,
+                "form-0-id": self.madrielle_in_pondlife.id,
+                "form-0-member_id": self.madrielle.id,
                 "form-0-DELETE": "form-0-DELETE",
                 "form-1-ORDER": 2,
                 "form-1-id": "",
@@ -1964,8 +1965,8 @@ class TestEditPackContents(TestCase):
                 "form-MIN_NUM_FORMS": 0,
                 "form-MAX_NUM_FORMS": 1000,
                 "form-0-ORDER": 1,
-                "form-0-id": self.madrielle.id,
-                "form-0-member_id": self.madrielle.member_id,
+                "form-0-id": self.madrielle_in_pondlife.id,
+                "form-0-member_id": self.madrielle.id,
                 "form-0-DELETE": "form-0-DELETE",
                 "form-1-ORDER": 2,
                 "form-1-id": "",
@@ -1986,6 +1987,12 @@ class TestEditPackContents(TestCase):
         self.assertEqual(froob.title, "Froob")
         self.assertEqual(froob.author_nicks.first().name, "Gasman")
         self.assertEqual(froob.author_affiliation_nicks.first().name, "Hooy-Program")
+
+    def test_title_escaping(self):
+        self.madrielle.title = "<img src=x onerror=alert(31337)>"
+        self.madrielle.save()
+        response = self.client.get("/productions/%d/edit_pack_contents/" % self.pondlife.id)
+        self.assertNotContains(response, "<img src=x onerror=alert(31337)>")
 
 
 class TestEditTags(TestCase):
