@@ -2,7 +2,7 @@ from itertools import chain
 
 from django import forms
 from django.utils.encoding import force_str
-from django.utils.html import conditional_escape
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from demoscene.models import Nick
@@ -44,25 +44,38 @@ class NickChoicesWidget(forms.RadioSelect):
 
     def create_label(self, choice):
         if choice.get("countryCode"):
-            flag = '<img src="/static/images/icons/flags/%s.png" data-countrycode="%s" alt="(%s)" /> ' % (
-                conditional_escape(choice["countryCode"]),
-                conditional_escape(choice["countryCode"]),
-                conditional_escape(choice["countryCode"].upper()),
+            flag = format_html(
+                '<img src="/static/images/icons/flags/{country}.png" '
+                'data-countrycode="{country}" alt="({country_upper})" /> ',
+                country=choice["countryCode"],
+                country_upper=choice["countryCode"].upper(),
             )
         else:
             flag = ""
 
         if choice.get("differentiator"):
-            differentiator = ' <em class="differentiator">(%s)</em>' % conditional_escape(choice["differentiator"])
+            differentiator = format_html(
+                ' <em class="differentiator">({})</em>',
+                choice["differentiator"],
+            )
         else:
             differentiator = ""
 
         if choice.get("alias"):
-            alias = ' <em class="alias">(%s)</em>' % conditional_escape(choice["alias"])
+            alias = format_html(
+                ' <em class="alias">({})</em>',
+                choice["alias"],
+            )
         else:
             alias = ""
 
-        return mark_safe(flag + choice["nameWithAffiliations"] + differentiator + alias)
+        return format_html(
+            "{}{}{}{}",
+            flag,
+            choice["nameWithAffiliations"],
+            differentiator,
+            alias,
+        )
 
 
 class MatchedNickWidget(forms.Widget):

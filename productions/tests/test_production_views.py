@@ -391,6 +391,30 @@ class TestCreateProduction(TestCase):
             "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.",
         )
 
+    def test_post_unmatched_author_nick_with_xss(self):
+        other_gasman = Releaser.objects.create(name="<script>alert(31337)</script>", is_group=False)
+        other_gasman.primary_nick.variants.create(name="Gasman")
+        response = self.client.post(
+            "/productions/new/",
+            {
+                "title": "Ultraviolet",
+                "byline_search": "Gasman",
+                "release_date": "march 2017",
+                "type": ProductionType.objects.get(name="Demo").id,
+                "platform": Platform.objects.get(name="ZX Spectrum").id,
+                "links-TOTAL_FORMS": 0,
+                "links-INITIAL_FORMS": 0,
+                "links-MIN_NUM_FORMS": 0,
+                "links-MAX_NUM_FORMS": 1000,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Not all names could be matched to a scener or group; please select the appropriate ones from the lists.",
+        )
+        self.assertNotContains(response, "<script>alert(31337)</script>")
+
     def test_post_unmatched_author_affiliation_nick(self):
         response = self.client.post(
             "/productions/new/",
